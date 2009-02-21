@@ -1,22 +1,9 @@
+(* Example for Allegro.pas
+   that displays the text "Hello, world!" in the screen.
+
+   by Ã‘uÃ±o MartÃ­nez <niunio(at)users.sourceforge.net>
+   from an example of Allegro Game Library by Shawn Hargreaves. *)
 PROGRAM exhello;
-(*
-  ______   ___    ___
- /\  _  \ /\_ \  /\_ \
- \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
-  \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
-    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
-     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
-                                    /\____/               \ \_\
-                                    \_/__/                 \/_/
- *
- *	Example that displays the text "Hello, world!" in the screen.
- *
- *	by Ñuño Martínez <>
- *	from an example of Allegro Game Library by Shawn Hargreaves.
- *
- *	See readme.txt for license and copyright information.
- *)
 
 {$H+}
 
@@ -80,4 +67,3 @@ BEGIN { The program starts here. }
 
 { End of the program. }
 END.
-

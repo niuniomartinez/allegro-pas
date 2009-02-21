@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 4.2.2                 \_/__/                 \/_/
+     Version 4.2.3 SVN             \_/__/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Ñuño Martínez, June 23, 2008.
+  by Ñuño Martínez, February 21, 2009.
 
 
 
@@ -71,6 +71,11 @@ License
 ============
 Installation
 ============
+
+NOTE:  This is an SVN version, so the library is under development.
+       DON'T USE IT except for evaluation or testing.
+
+
 
   Current version works only in Windows, since I have no experience building
   .so files for *NIX based systems.  I didn't write an install script (again a

@@ -1,64 +1,37 @@
+(* Base definitions to interface with Allegro and the Allegro.pas dynamic
+   modules.
+   
+   It also defines some constants to identify the library. *)
 UNIT albase;
-(*
-  ______   ___    ___
- /\  _  \ /\_ \  /\_ \
- \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
-  \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
-    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
-     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
-                                    /\____/               \ \_\
-                                    \_/__/                 \/_/
- *
- *	Base definitions to interface with Allegro and the Allegro.pas dynamic
- *	modules.
- *
- *	by Ñuño Martínez <>
- *
- *	See readme.txt for license and copyright information.
- *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$PACKRECORDS C}
- {$LONGSTRINGS ON}
-{$ELSE}
-{ Assumes Borland Delphi/Turbo. }
- {$A-}
- {$H+}
-{$ENDIF}
+{ Defines the frame. }
+{$MODE Delphi}
+{$MACRO ON}
+{$PACKRECORDS C}
+{$H+}
 
 
 
 INTERFACE
 
-{$IFNDEF FPC}
- {$IFDEF MSWINDOWS}
-{ Delphi needs the Windows unit. }
 USES
-  Windows;
- {$ENDIF}
-{$ENDIF}
+  dynlibs;
 
 
 
 CONST
-{ Access to the dynamic modules. }
-{$IFDEF MSWINDOWS}
-  ALLEGRO_SHARED_LIBRARY_NAME = 'alleg42.dll';
-  ALL_PAS_SHARED_LIBRARY_NAME = 'alpas42.dll';
-{$ELSE}
- {$ERROR Can't compile this platform.  Please read below. }
- (* TODO -oÑuño: Add support for *NIX shared objects. *)
- (* TODO -oÑuño: Add support for MacOS X dynamic libraries. *)
-{$ENDIF}
-
-{ To be used as size of Zero-Sized arrays. }
+(* Used to identify the library. *)
+  AL_VERSION = '4.2.3 SVN';
+(* Used to identify the library. *)
+  AL_LIBRARY_NAME = 'Allegro.pas 4.2.3 SVN';
+(* Used as size of Zero-Sized arrays. *)
   AL_UNKNOWN_SIZE = 1024;
 
 
 
-TYPE { Define some useful data types. }
+TYPE
+(* Define some data types.  They're still here just for backwards compatibility
+   but shouldn't be used.  Use Pascal types instead. *)
   AL_PTR	= POINTER;
   AL_CHARptr	= ^AL_CHAR;
   AL_UCHARptr	= ^AL_UCHAR;
@@ -76,15 +49,52 @@ TYPE { Define some useful data types. }
   AL_FLOAT	= DOUBLE;
   AL_STRING	= STRING;
 
+(* To define callback parameters. *)
   AL_SIMPLE_PROC = PROCEDURE; CDECL;
+(* To define callback parameters. *)
   AL_PARAM_PROC  = PROCEDURE (x: AL_PTR); CDECL;
+(* To define callback parameters. *)
   AL_INT_PROC	 = PROCEDURE (x: AL_INT); CDECL;
-
+(* To define callback parameters. *)
   AL_SIMPLE_FUNC = FUNCTION: AL_INT; CDECL;
+
+
+
+VAR
+(* Identificator of the dynamic library.
+
+   Used internally.  It can be used to access to those Allegro's functions
+   that aren't implemented by Allegro.pas. *)
+  __al_library_id__: TLibHandle;
 
 
 
 IMPLEMENTATION
 
-END.
+CONST
+{ Access to the dynamic module. }
+{$IFDEF MSWINDOWS}
+  ALLEGRO_SHARED_LIBRARY_NAME = 'alleg42.dll';
+{$ELSE}
+  {$IFDEF UNIX}
+    {$IFDEF DARWIN}
+      {$ERROR Can't compile on MacOS X. }
+    {$ELSE}
+      ALLEGRO_SHARED_LIBRARY_NAME = 'liballeg-4.2.2.so';
+    {$ENDIF}
+  {$ELSE}
+    {$ERROR Can't compile this platform. }
+ (* TODO -oÑuño: Add support for MacOS X dynamic libraries. *)
+  {$ENDIF}
+{$ENDIF}
 
+INITIALIZATION
+{ Loads the library. }
+  __al_library_id__ := 0;
+  __al_library_id__ := LoadLibrary (PChar(ALLEGRO_SHARED_LIBRARY_NAME));
+FINALIZATION
+{ Releases the library. }
+  IF (__al_library_id__ <> 0) THEN
+    FreeLibrary (__al_library_id__);
+  __al_library_id__ := 0;
+END.

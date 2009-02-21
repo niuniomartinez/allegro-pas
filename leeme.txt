@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Versión 4.2.2                 \_/__/                 \/_/ 
+     Versión 4.2.2 SVN             \_/__/                 \/_/ 
 
   Una envolvente para utilizar la biblioteca Allegro en Pascal
-  por Ñuño Martínez, 23 de Junio de 2008.
+  por Ñuño Martínez, 21 de Febrero de 2009.
 
 
 
@@ -73,6 +73,11 @@ Licencia
 ============================
 Instrucciones de instalación
 ============================
+
+NOTA IMPORTANTE: La versión actual es una versión SVN (Subversion) por lo que
+  ESTÁ INCOMPLETA.  No la utilice salvo para evaluarla o probarla.
+
+
 
   Actualmente Allegro.pas sólo funciona con Windows, ya que no tengo mucha
   experiencia trabajando con "shared objects" en sistemas *NIX.  No he escrito
