@@ -16,24 +16,8 @@ SHELL = /bin/sh
 # Project name
 PROJECT = Allegro.pas
 
-#
-# Dynamic library build.
-
-
-# Binary file name without extension
-LIBRARY = alpas42
-
-# Sources directory
-SRCDIR = src
-
-# Headers directory
-INCDIR = $(SRCDIR)
-
 # Source extension.
 SRCSUF = .c
-
-# Library directory.
-LIBDIR = lib
 
 # Source file for a test program (test if Allegro is installed).
 # (Should be in the root directory) :(
@@ -47,55 +31,16 @@ TESTFILE = test
 # --------------------------------------
 
 # ------------------
-# DJGPP/DOS
-# ------------------
-#  Actually unsuported, but who knows ;-)
-ifeq ($(TARGET),DJGPP)
-	# Platform name
-	PLATFORM=DOS/DJGPP
-	# Compiller for C code
-	GCC = gcc
-	# Binary sufix
-	BINSUF = .exe
-	LIBSUF = .a
-	# Object sufix
-	OBJSUF = .o
-	# Link options (libraries, etc)
-	LFLAGS = -g
-	LIBS = -lalleg
-	#LFLAGS = -s
-	# Compiler options
-	CFLAGS = -I$(INCDIR) -Wall -g
-	#CFLAGS = -I$(INCDIR) -Wall -O3
-	# Free Pascal options
-	FPCFLAGS = -O2
-
-	# File management
-	DELETE = del
-	COPY   = xcopy
-endif
-
-# ------------------
 # MinGW32/Win32
 # ------------------
 ifeq ($(TARGET),MINGW32)
 	# Platform name
 	PLATFORM=Win32/MinGW32
-	# Compiler for C code
-	GCC = gcc
-       	LIBCC = gcc -shared
 	# Binary sufix
 	BINSUF = .exe
 	LIBSUF = .dll
 	# Object sufix
 	OBJSUF = .o
-	# Link options (libraries, etc)
-	LDFLAGS = -Wl,--out-implib,$(LIBDIR)/libalpas.a
-	LIBS = -lalleg
-	# Compiler options
-	CFLAGS = -I$(INCDIR) -Wall -O3
-	# Free Pascal options
-	FPCFLAGS = -dMSWINDOWS -O2 -WG
 
 	# File management
 	# TODO: Detect MSys, Cywing and such...
@@ -110,20 +55,10 @@ endif
 ifeq ($(TARGET),LINUX)
 	# Platform name
 	PLATFORM=GNU/Linux
-	# Compiler for C code
-	GCC = gcc
 	# Binary sufix
-	BINSUF = .bin
-	LIBSUF = .so
+	BINSUF = 
 	# Object sufix
 	OBJSUF = .o
-	# Link options (libraries, etc)
-	LFLAGS = -s -g
-	#LFLAGS = -s 
-	# Compiler options
-	CFLAGS = -I$(INCDIR) -Wall -g3
-	# Free Pascal options
-	FPCFLAGS = -O2
 
 	# File management
 	DELETE = rm -rf
@@ -136,10 +71,14 @@ endif
 # -- No platform specific --
 # --------------------------
 
-OBJDIR = obj
-TOOLDIR = tools
-DEMODIR = demo
-EXMDIR = examples
+OBJDIR = obj/
+TOOLDIR = tools/
+DEMODIR = demo/
+EXMDIR = examples/
+LIBDIR = lib/
+
+FLAGS = -g -O- -pg -Mtp
+#FLAGS = -02 -Mtp -Sh
 
 # -- Source files list --
 include makefile.list

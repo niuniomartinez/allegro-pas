@@ -40,7 +40,7 @@ proc_help()
 {
    echo "Usage: fix platform"
    echo
-   echo "Where platform is one of: djgpp, mingw32 or linux. "
+   echo "Where platform is one of: mingw32 or linux. "
    echo
    echo "NOTICE:"
    echo "You can also call: fix test"
@@ -63,7 +63,6 @@ proc_fix()
 # prepare for the given platform.
 
 case "$1" in
-   "djgpp"   ) proc_fix "DOS (djgpp)"       "DJGPP";;
    "mingw32" ) proc_fix "Windows (Mingw32)" "MINGW32";;
    "linux"   ) proc_fix "Linux (GCC)"       "LINUX";;
    "test"    ) proc_test;;

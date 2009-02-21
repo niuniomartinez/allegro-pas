@@ -3,13 +3,9 @@
 .PHONY: all
 
 # Main objective: the whole project
-all: adbanner lib examples demo tools
+all: adbanner examples demo tools
 	@echo "Finished $(PROJECT)"
-	@echo "To create the HTML documentation, run 'make' from the docs directory"
-
-# Dynamic library/shared object
-lib: $(LIBDIR)/$(LIBRARY)$(LIBSUF)
-	@echo "Finished $@"
+#	@echo "To create the HTML documentation, run 'make' from the docs directory"
 
 # Examples.
 examples: $(EXMFILES)
@@ -19,29 +15,21 @@ examples: $(EXMFILES)
 demo: $(DEMO)
 
 # Tools.
-tools: $(TOOLDIR)/charfont.exe
+tools: $(TOOLDIR)charfont($BINSUF)
 
 # Executables.
-$(EXMDIR)/%$(BINSUF): $(EXMDIR)/%.dpr
-	fpc $(FPCFLAGS) -Fu$(LIBDIR) -FE$(EXMDIR) -FU$(LIBDIR) $< -o$@
+$(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR) -FU$(LIBDIR) $< -o$@
 	@echo Example $@ ready!
 
-$(DEMODIR)/%$(BINSUF): $(DEMOSRC)
-	fpc $(FPCFLAGS) -Fu$(LIBDIR) -FE$(DEMODIR) $< -o$@
+$(DEMODIR)%$(BINSUF): $(DEMOSRC)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(DEMODIR) $< -o$@
 	@echo Demo game ready!
 
-$(TOOLDIR)/%$(BINSUF): $(TOOLDIR)/%.dpr
-	fpc $(FPCFLAGS) -Fu$(LIBDIR) -FE$(TOOLDIR) $< -o$@
+$(TOOLDIR)%$(BINSUF): $(TOOLDIR)%.pp
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(TOOLDIR) $< -o$@
 	@echo $@ ready!
 
-
-# Dynamic library.
-$(LIBDIR)/$(LIBRARY)$(LIBSUF): $(OBJS)
-	$(LIBCC) -o $@ $(LDFLAGS) $^ $(LIBS)
-
-# Object files.
-$(OBJDIR)/%$(OBJSUF) : $(SRCDIR)/%$(SRCSUF)
-	$(GCC) $(CFLAGS) -c $< -o $@
 
 # Returns some variables.
 status: adbanner
@@ -50,21 +38,20 @@ status: adbanner
 	@echo "-----------------"
 	@echo "  Project : $(PROJECT)"
 	@echo "  Platform : $(PLATFORM)"
-	@echo "  Library : $(LIBDIR)/$(LIBRARY)$(LIBSUF)"
 	@echo "  Examples : $(EXMFILES)"
 	@echo "  Demo game : $(DEMO)"
 
 # Cleans everything.
 veryclean: clean
-	$(DELETE) $(LIBDIR)/$(LIBRARY)$(LIBSUF)
-	$(DELETE) $(EXMDIR)/*$(BINSUF)
+	$(DELETE) $(EXMDIR)*$(BINSUF)
+	$(DELETE) $(EXMDIR)*$(BINSUF)
 
 
 # Clean temporary files.
 clean: cleantest
-	$(DELETE) $(OBJDIR)/*$(OBJSUF)
-	$(DELETE) $(EXMDIR)/*$(OBJSUF)
-	$(DELETE) $(LIBDIR)/*$(OBJSUF)
+	$(DELETE) $(OBJDIR)*$(OBJSUF)
+	$(DELETE) $(EXMDIR)*$(OBJSUF)
+	$(DELETE) $(LIBDIR)*$(OBJSUF)
 
 # Strip symbols and compress with upx packer (http://upx.sf.net/)
 upx:
@@ -82,7 +69,7 @@ test:
 	echo "don't edit me" > test.run
 
 # Clean the test file.
-cleantest: 
+cleantest:
 	$(DELETE) $(TESTFILE)$(BINSUF)
 	$(DELETE) test.run
 
@@ -92,7 +79,6 @@ help: adbanner
 	@echo "- Help -"
 	@echo "--------"
 	@echo "make all            } Builds the whole project."
-	@echo "make lib            } Creates the library only."
 	@echo "make examples       } Builds the examples only."
 	@echo "make tools          } Builds the tools only."
 	@echo "make demo           } Builds the demo game."
@@ -105,4 +91,3 @@ help: adbanner
 # Some info.
 adbanner:
 	@echo "$(PROJECT) - http://allegro-pas.sourceforge.net/"
-
