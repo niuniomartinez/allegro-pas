@@ -48,10 +48,11 @@ veryclean: clean
 
 
 # Clean temporary files.
-clean: cleantest
+clean:
 	$(DELETE) $(OBJDIR)*$(OBJSUF)
 	$(DELETE) $(EXMDIR)*$(OBJSUF)
 	$(DELETE) $(LIBDIR)*$(OBJSUF)
+	$(DELETE) $(LIBDIR)*.ppu
 
 # Strip symbols and compress with upx packer (http://upx.sf.net/)
 upx:

@@ -1,6 +1,6 @@
 (* Base definitions to interface with Allegro and the Allegro.pas dynamic
    modules.
-   
+
    It also defines some constants to identify the library. *)
 UNIT albase;
 
