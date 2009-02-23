@@ -201,7 +201,7 @@ CONST
 IMPLEMENTATION
 
 USES
-  albase, dynlibs;
+  albase;
 
 
 
@@ -219,23 +219,23 @@ VAR
 
 INITIALIZATION
 { Gets procedure and function address. }
-  @al_install_keyboard := GetProcAddress (__al_library_id__, 'install_keyboard');
-  @al_remove_keyboard := GetProcAddress (__al_library_id__, 'remove_keyboard');
-  @al_poll_keyboard := GetProcAddress (__al_library_id__, 'poll_keyboard');
-  @al_keyboard_needs_poll := GetProcAddress (__al_library_id__, 'keyboard_needs_poll');
-  @al_keypressed := GetProcAddress (__al_library_id__, 'keypressed');
-  @al_readkey := GetProcAddress (__al_library_id__, 'readkey');
-  @al_ureadkey := GetProcAddress (__al_library_id__, 'ureadkey');
-  @al_simulate_keypress := GetProcAddress (__al_library_id__, 'simulate_keypress');
-  @al_simulate_ukeypress  := GetProcAddress (__al_library_id__, 'simulate_ukeypress');
-  @al_clear_keybuf := GetProcAddress (__al_library_id__, 'clear_keybuf');
-  @al_set_leds := GetProcAddress (__al_library_id__, 'set_leds');
-  @al_set_keyboard_rate := GetProcAddress (__al_library_id__, 'set_keyboard_rate');
-  @al_scancode_to_ascii := GetProcAddress (__al_library_id__, 'scancode_to_ascii');
-  @scancode_to_name := GetProcAddress (__al_library_id__, 'scancode_to_name');
+  @al_install_keyboard := al_get_object_address ('install_keyboard');
+  @al_remove_keyboard := al_get_object_address ('remove_keyboard');
+  @al_poll_keyboard := al_get_object_address ('poll_keyboard');
+  @al_keyboard_needs_poll := al_get_object_address ('keyboard_needs_poll');
+  @al_keypressed := al_get_object_address ('keypressed');
+  @al_readkey := al_get_object_address ('readkey');
+  @al_ureadkey := al_get_object_address ('ureadkey');
+  @al_simulate_keypress := al_get_object_address ('simulate_keypress');
+  @al_simulate_ukeypress  := al_get_object_address ('simulate_ukeypress');
+  @al_clear_keybuf := al_get_object_address ('clear_keybuf');
+  @al_set_leds := al_get_object_address ('set_leds');
+  @al_set_keyboard_rate := al_get_object_address ('set_keyboard_rate');
+  @al_scancode_to_ascii := al_get_object_address ('scancode_to_ascii');
+  @scancode_to_name := al_get_object_address ('scancode_to_name');
 { Gets variable address. }
-  al_key := GetProcAddress (__al_library_id__, 'key');
-  al_key_shifts := GetProcAddress (__al_library_id__, 'key_shifts');
-  al_three_finger_flag := GetProcAddress (__al_library_id__, 'three_finger_flag');
-  al_key_led_flag := GetProcAddress (__al_library_id__, 'key_led_flag');
+  al_key := al_get_object_address ('key');
+  al_key_shifts := al_get_object_address ('key_shifts');
+  al_three_finger_flag := al_get_object_address ('three_finger_flag');
+  al_key_led_flag := al_get_object_address ('key_led_flag');
 END.

@@ -7,6 +7,8 @@ PROGRAM exhello;
 
 {$H+}
 
+
+
 USES
 { It needs some Allegro.pas units. }
   alcolor,  { Color manipulation. }

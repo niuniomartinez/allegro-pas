@@ -144,7 +144,7 @@ VAR
 IMPLEMENTATION
 
 USES
-  albase, dynlibs;
+  albase;
 
 
 
@@ -202,12 +202,12 @@ END;
 
 INITIALIZATION
 { Get procedure and variable addess. }
-  @al_set_color_depth := GetProcAddress (__al_library_id__, 'set_color_depth');
-  @al_get_color_depth := GetProcAddress (__al_library_id__, 'get_color_depth');
-  @al_set_color_conversion := GetProcAddress (__al_library_id__, 'set_color_conversion');
-  @al_get_color_conversion := GetProcAddress (__al_library_id__, 'get_color_conversion');
-  @al_vsync := GetProcAddress (__al_library_id__, 'vsync');
-  @_set_gfx_mode := GetProcAddress (__al_library_id__, 'set_gfx_mode');
-  _screen := GetProcAddress (__al_library_id__, 'screen');
-  _gfx_capabilities := GetProcAddress (__al_library_id__, 'gfx_capabilities');
+  @al_set_color_depth := al_get_object_address ('set_color_depth');
+  @al_get_color_depth := al_get_object_address ('get_color_depth');
+  @al_set_color_conversion := al_get_object_address ('set_color_conversion');
+  @al_get_color_conversion := al_get_object_address ('get_color_conversion');
+  @al_vsync := al_get_object_address ('vsync');
+  @_set_gfx_mode := al_get_object_address ('set_gfx_mode');
+  _screen := al_get_object_address ('screen');
+  _gfx_capabilities := al_get_object_address ('gfx_capabilities');
 END.

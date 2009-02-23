@@ -12,9 +12,6 @@ UNIT alfixed;
 
 INTERFACE
 
-USES
-  albase; { Some basic definitions. }
-
 TYPE
 (* This is a fixed point integer which can replace float with similar results
    and is faster than float on low end machines. *)
@@ -88,7 +85,7 @@ VAR
 IMPLEMENTATION
 
 USES
-  dynlibs,
+  albase,
   alsystem; { For al_errno. }
 
 
@@ -259,7 +256,7 @@ END;
 
 INITIALIZATION
 { Get table address. }
-  _cos_tbl := GetProcAddress (__al_library_id__, '_cos_tbl_');
-  _tan_tbl := GetProcAddress (__al_library_id__, '_tan_tbl_');
-  _acos_tbl:= GetProcAddress (__al_library_id__, '_acos_tbl_');
+  _cos_tbl := al_get_object_address ('_cos_tbl');
+  _tan_tbl := al_get_object_address ('_tan_tbl');
+  _acos_tbl:= al_get_object_address ('_acos_tbl');
 END.

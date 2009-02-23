@@ -116,9 +116,6 @@ VAR
 
 IMPLEMENTATION
 
-USES
-  dynlibs;
-
 VAR
   _RGB_map: ^AL_RGB_MAPptr;
 
@@ -135,28 +132,28 @@ END;
 
 INITIALIZATION
 { Loads Procedure Address. }
-  @al_set_color := GetProcAddress (__al_library_id__, 'set_color');
-  @al_set_palette := GetProcAddress (__al_library_id__, 'set_palette');
-  @al_set_palette_range := GetProcAddress (__al_library_id__, 'set_palette_range');
-  @al_get_color := GetProcAddress (__al_library_id__, 'get_color');
-  @al_get_palette := GetProcAddress (__al_library_id__, 'get_palette');
-  @al_get_palette_range := GetProcAddress (__al_library_id__, 'get_palette_range');
-  @al_fade_interpolate := GetProcAddress (__al_library_id__, 'fade_interpolate');
-  @al_fade_from_range := GetProcAddress (__al_library_id__, 'fade_from_range');
-  @al_fade_in_range := GetProcAddress (__al_library_id__, 'fade_in_range');
-  @al_fade_out_range := GetProcAddress (__al_library_id__, 'fade_out_range');
-  @al_fade_from := GetProcAddress (__al_library_id__, 'fade_from');
-  @al_fade_in := GetProcAddress (__al_library_id__, 'fade_in');
-  @al_fade_out := GetProcAddress (__al_library_id__, 'fade_out');
-  @al_select_palette := GetProcAddress (__al_library_id__, 'select_palette');
-  @al_unselect_palette := GetProcAddress (__al_library_id__, 'unselect_palette');
-  @al_generate_332_palette := GetProcAddress (__al_library_id__, 'generate_332_palette');
-  @al_bestfit_color := GetProcAddress (__al_library_id__, 'bestfit_color');
-  @al_create_rgb_table := GetProcAddress (__al_library_id__, 'create_rgb_table');
+  @al_set_color := al_get_object_address ('set_color');
+  @al_set_palette := al_get_object_address ('set_palette');
+  @al_set_palette_range := al_get_object_address ('set_palette_range');
+  @al_get_color := al_get_object_address ('get_color');
+  @al_get_palette := al_get_object_address ('get_palette');
+  @al_get_palette_range := al_get_object_address ('get_palette_range');
+  @al_fade_interpolate := al_get_object_address ('fade_interpolate');
+  @al_fade_from_range := al_get_object_address ('fade_from_range');
+  @al_fade_in_range := al_get_object_address ('fade_in_range');
+  @al_fade_out_range := al_get_object_address ('fade_out_range');
+  @al_fade_from := al_get_object_address ('fade_from');
+  @al_fade_in := al_get_object_address ('fade_in');
+  @al_fade_out := al_get_object_address ('fade_out');
+  @al_select_palette := al_get_object_address ('select_palette');
+  @al_unselect_palette := al_get_object_address ('unselect_palette');
+  @al_generate_332_palette := al_get_object_address ('generate_332_palette');
+  @al_bestfit_color := al_get_object_address ('bestfit_color');
+  @al_create_rgb_table := al_get_object_address ('create_rgb_table');
 { Variables. }
-  al_black_palette := GetProcAddress (__al_library_id__, 'black_palette');
-  al_desktop_palette := GetProcAddress (__al_library_id__, 'desktop_palette');
-  al_default_palette := GetProcAddress (__al_library_id__, 'default_palette');
-  _RGB_map := GetProcAddress (__al_library_id__, 'rgb_map');
+  al_black_palette := al_get_object_address ('black_palette');
+  al_desktop_palette := al_get_object_address ('desktop_palette');
+  al_default_palette := al_get_object_address ('default_palette');
+  _RGB_map := al_get_object_address ('rgb_map');
 END.
 

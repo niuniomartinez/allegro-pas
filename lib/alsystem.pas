@@ -85,11 +85,6 @@ VAR
 
 IMPLEMENTATION
 
-USES
-  dynlibs;
-
-
-
 VAR
 (* Function for internal use. *)
   _install_allegro_version_check: FUNCTION (
@@ -166,12 +161,12 @@ END;
 
 INITIALIZATION
 { Gets the function and procedure address. }
-  @_install_allegro_version_check := GetProcAddress (__al_library_id__, '_install_allegro_version_check');
-  @al_exit := GetProcAddress (__al_library_id__, 'allegro_exit');
-  @al_set_close_button_callback := GetProcAddress (__al_library_id__, 'set_close_button_callback');
-  @_allegro_message := GetProcAddress (__al_library_id__, 'allegro_message');
+  @_install_allegro_version_check := al_get_object_address ('_install_allegro_version_check');
+  @al_exit := al_get_object_address ('allegro_exit');
+  @al_set_close_button_callback := al_get_object_address ('set_close_button_callback');
+  @_allegro_message := al_get_object_address ('allegro_message');
 { Idem with variables. }
-  al_errno := GetProcAddress (__al_library_id__, 'allegro_errno');
-  al_error := GetProcAddress (__al_library_id__, 'allegro_error');
-  al_id_string := GetProcAddress (__al_library_id__, 'allegro_id');
+  al_errno := al_get_object_address ('allegro_errno');
+  al_error := al_get_object_address ('allegro_error');
+  al_id_string := al_get_object_address ('allegro_id');
 END.

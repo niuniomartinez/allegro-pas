@@ -82,7 +82,7 @@ VAR
 IMPLEMENTATION
 
 USES
-  albase, dynlibs;
+  albase;
 
 
 
@@ -142,11 +142,11 @@ END;
 
 
 INITIALIZATION
-  @al_create_bitmap := GetProcAddress (__al_library_id__, 'create_bitmap');
-  @al_create_bitmap_ex := GetProcAddress (__al_library_id__, 'create_bitmap_ex');
-  @al_create_sub_bitmap := GetProcAddress (__al_library_id__, 'create_sub_bitmap');
-  @al_destroy_bitmap := GetProcAddress (__al_library_id__, 'destroy_bitmap');
-  @al_generate_optimized_palette := GetProcAddress (__al_library_id__, 'generate_optimized_palette');
-  @al_load_bitmap := GetProcAddress (__al_library_id__, 'load_bitmap');
-  @al_save_bitmap := GetProcAddress (__al_library_id__, 'save_bitmap');
+  @al_create_bitmap := al_get_object_address ('create_bitmap');
+  @al_create_bitmap_ex := al_get_object_address ('create_bitmap_ex');
+  @al_create_sub_bitmap := al_get_object_address ('create_sub_bitmap');
+  @al_destroy_bitmap := al_get_object_address ('destroy_bitmap');
+  @al_generate_optimized_palette := al_get_object_address ('generate_optimized_palette');
+  @al_load_bitmap := al_get_object_address ('load_bitmap');
+  @al_save_bitmap := al_get_object_address ('save_bitmap');
 END.

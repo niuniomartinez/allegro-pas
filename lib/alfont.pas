@@ -35,7 +35,7 @@ VAR
 IMPLEMENTATION
 
 USES
-  albase, alcolor, dynlibs;
+  albase, alcolor;
 
 
 
@@ -53,11 +53,11 @@ VAR
 
 INITIALIZATION
 { Gets function and procedure addess. }
-  @al_grab_font_from_bitmap := GetProcAddress (__al_library_id__, 'grab_font_from_bitmap');
-  @al_is_color_font := GetProcAddress (__al_library_id__, 'is_color_font');
-  @al_is_mono_font := GetProcAddress (__al_library_id__, 'is_mono_font');
-  @al_is_compatible_font := GetProcAddress (__al_library_id__, 'is_compatible_font');
-  @al_destroy_font := GetProcAddress (__al_library_id__, 'destroy_font');
-  @_load_font := GetProcAddress (__al_library_id__, 'load_font');
+  @al_grab_font_from_bitmap := al_get_object_address ('grab_font_from_bitmap');
+  @al_is_color_font := al_get_object_address ('is_color_font');
+  @al_is_mono_font := al_get_object_address ('is_mono_font');
+  @al_is_compatible_font := al_get_object_address ('is_compatible_font');
+  @al_destroy_font := al_get_object_address ('destroy_font');
+  @_load_font := al_get_object_address ('load_font');
 END.
 

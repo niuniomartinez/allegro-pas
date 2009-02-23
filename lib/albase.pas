@@ -14,9 +14,6 @@ UNIT albase;
 
 INTERFACE
 
-USES
-  dynlibs;
-
 
 
 CONST
@@ -60,16 +57,17 @@ TYPE
 
 
 
-VAR
-(* Identificator of the dynamic library.
-
-   Used internally.  It can be used to access to those Allegro's functions
-   that aren't implemented by Allegro.pas. *)
-  __al_library_id__: TLibHandle;
+(* Returns the pointer to the requested object. *)
+  FUNCTION al_get_object_address (obj_name: STRING): POINTER;
 
 
 
 IMPLEMENTATION
+
+USES
+  dynlibs, sysutils;
+
+
 
 CONST
 { Access to the dynamic module. }
@@ -87,6 +85,32 @@ CONST
  (* TODO -oÑuño: Add support for MacOS X dynamic libraries. *)
   {$ENDIF}
 {$ENDIF}
+
+
+
+VAR
+(* Identificator of the dynamic library.
+
+   Used internally.  It can be used to access to those Allegro's functions
+   that aren't implemented by Allegro.pas. *)
+  __al_library_id__: TLibHandle;
+
+
+
+(* Returns the pointer to the requested object. *)
+FUNCTION al_get_object_address (obj_name: STRING): POINTER;
+VAR
+  ObjPtr: POINTER;
+BEGIN
+  TRY
+    ObjPtr := GetProcAddress (__al_library_id__, obj_name);
+    IF ObjPtr = NIL THEN
+      RAISE Exception.Create ('Doh!');
+    al_get_object_address := ObjPtr;
+  EXCEPT
+    RAISE Exception.Create ('Error loading '+obj_name+' from '+ALLEGRO_SHARED_LIBRARY_NAME);
+  END;
+END;
 
 
 

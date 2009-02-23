@@ -63,7 +63,7 @@ VAR
 IMPLEMENTATION
 
 USES
-  albase, dynlibs;
+  albase;
 
 
 
@@ -153,12 +153,12 @@ END;
 
 INITIALIZATION
 { Get procedure address. }
-  @al_set_clip_rect := GetProcAddress (__al_library_id__, 'set_clip_rect');
-  @al_add_clip_rect := GetProcAddress (__al_library_id__, 'add_clip_rect');
-  @al_drawing_mode := GetProcAddress (__al_library_id__, 'drawing_mode');
-  @al_xor_mode := GetProcAddress (__al_library_id__, 'xor_mode');
-  @al_solid_mode := GetProcAddress (__al_library_id__, 'solid_mode');
-  @al_clear_bitmap := GetProcAddress (__al_library_id__, 'clear_bitmap');
-  @al_clear_to_color := GetProcAddress (__al_library_id__, 'clear_to_color');
+  @al_set_clip_rect := al_get_object_address ('set_clip_rect');
+  @al_add_clip_rect := al_get_object_address ('add_clip_rect');
+  @al_drawing_mode := al_get_object_address ('drawing_mode');
+  @al_xor_mode := al_get_object_address ('xor_mode');
+  @al_solid_mode := al_get_object_address ('solid_mode');
+  @al_clear_bitmap := al_get_object_address ('clear_bitmap');
+  @al_clear_to_color := al_get_object_address ('clear_to_color');
 END.
 

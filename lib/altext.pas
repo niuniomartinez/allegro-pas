@@ -34,7 +34,7 @@ VAR
 IMPLEMENTATION
 
 USES
-  albase, dynlibs;
+  albase;
 
 
 
@@ -84,13 +84,13 @@ END;
 
 INITIALIZATION
 { Gets function and procedure address. }
-  @al_text_height := GetProcAddress (__al_library_id__, 'text_height');
-  @textout_ex := GetProcAddress (__al_library_id__, 'textout_ex');
-  @textout_centre_ex := GetProcAddress (__al_library_id__, 'textout_centre_ex');
-  @textout_right_ex := GetProcAddress (__al_library_id__, 'textout_right_ex');
-  @textout_justify_ex := GetProcAddress (__al_library_id__, 'textout_justify_ex');
-  @text_length := GetProcAddress (__al_library_id__, 'text_length');
+  @al_text_height := al_get_object_address ('text_height');
+  @textout_ex := al_get_object_address ('textout_ex');
+  @textout_centre_ex := al_get_object_address ('textout_centre_ex');
+  @textout_right_ex := al_get_object_address ('textout_right_ex');
+  @textout_justify_ex := al_get_object_address ('textout_justify_ex');
+  @text_length := al_get_object_address ('text_length');
 { Gets variable address. }
-  al_font := GetProcAddress (__al_library_id__, 'font');
-  al_404_char := GetProcAddress (__al_library_id__, 'allegro_404_char');
+  al_font := al_get_object_address ('font');
+  al_404_char := al_get_object_address ('allegro_404_char');
 END.
