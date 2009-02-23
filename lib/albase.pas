@@ -78,7 +78,7 @@ CONST
     {$IFDEF DARWIN}
       {$ERROR Can't compile on MacOS X. }
     {$ELSE}
-      ALLEGRO_SHARED_LIBRARY_NAME = 'liballeg-4.2.2.so';
+      ALLEGRO_SHARED_LIBRARY_NAME = 'liballeg.so.4.2';
     {$ENDIF}
   {$ELSE}
     {$ERROR Can't compile this platform. }
