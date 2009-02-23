@@ -1,84 +1,48 @@
+(* Keyboard support. *)
 UNIT alkeybrd;
-(*
-  ______   ___    ___
- /\  _  \ /\_ \  /\_ \
- \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
-  \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
-    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
-     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
-                                    /\____/               \ \_\
-                                    \_/__/                 \/_/
- *
- *	Keyboard support.
- *	by Ñuño Martínez <>
- *	Based on the file "keyboard.h" of the Allegro library by Shawn
- *	Hargreaves.  Some parts of the code was created by the "h2pas" utility.
- *
- *	See readme.txt for license and copyright information.
- *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$PACKRECORDS C}
- {$LONGSTRINGS ON}
-{$ELSE}
-{ Assumes Borland Delphi/Turbo. }
- {$A-}
- {$H+}
-{$ENDIF}
+{ Defines the frame. }
+{$MODE Delphi}
+{$PACKRECORDS C}
+{$H+}
 
 
 
 INTERFACE
 
-USES
-  albase;
-
 
 
 (* Functions and procedures. *)
-  FUNCTION al_install_keyboard: AL_INT;
-  PROCEDURE al_remove_keyboard;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_keyboard';
-  FUNCTION al_poll_keyboard: AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'poll_keyboard';
-  FUNCTION al_keyboard_needs_poll: AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'keyboard_needs_poll';
-  FUNCTION al_keypressed: AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'keypressed';
-  FUNCTION al_readkey: AL_INT; 
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'readkey';
-  FUNCTION al_ureadkey (scancode: AL_INTPTR): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'ureadkey';
-  PROCEDURE al_simulate_keypress (keycode: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'simulate_keypress';
-  PROCEDURE al_simulate_ukeypress (keycode, scancode: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'simulate_ukeypress';
-  PROCEDURE al_clear_keybuf;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clear_keybuf';
-  PROCEDURE al_set_leds (leds: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_leds';
-  PROCEDURE al_set_keyboard_rate (key_delay, key_repeat: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_keyboard_rate';
-  FUNCTION al_scancode_to_ascii (scancode: AL_INT): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scancode_to_ascii';
-  FUNCTION al_scancode_to_name (scancode: AL_INT): AL_STRING;
+VAR
+  al_install_keyboard: FUNCTION : LONGINT; CDECL;
+  al_remove_keyboard: PROCEDURE; CDECL;
+  al_poll_keyboard: FUNCTION : LONGINT; CDECL;
+  al_keyboard_needs_poll: FUNCTION : LONGINT; CDECL;
+  al_keypressed: FUNCTION : LONGINT; CDECL;
+  al_readkey: FUNCTION : LONGINT; CDECL;
+  al_ureadkey: FUNCTION (scancode: PLONGINT): LONGINT; CDECL;
+  al_simulate_keypress: PROCEDURE (keycode: LONGINT); CDECL;
+  al_simulate_ukeypress: PROCEDURE (keycode, scancode: LONGINT); CDECL;
+  al_clear_keybuf: PROCEDURE; CDECL;
+  al_set_leds: PROCEDURE (leds: LONGINT); CDECL;
+  al_set_keyboard_rate: PROCEDURE (key_delay, key_repeat: LONGINT); CDECL;
+  al_scancode_to_ascii: FUNCTION (scancode: LONGINT): LONGINT; CDECL;
+  FUNCTION al_scancode_to_name (scancode: LONGINT): STRING;
 
 
 
 (* Access to the Allegro's public variables. *)
 TYPE
   AL_KEY_LISTptr = ^AL_KEY_LIST;
-  AL_KEY_LIST	 = ARRAY [0..126] OF AL_CHAR;
+  AL_KEY_LIST	 = ARRAY [0..126] OF CHAR;
 
 
 
 VAR
   al_key: AL_KEY_LISTptr;
-  al_key_shifts: AL_INTptr;
-  al_three_finger_flag: AL_INTptr;
-  al_key_led_flag: AL_INTptr;
+  al_key_shifts: PLONGINT;
+  al_three_finger_flag: PLONGINT;
+  al_key_led_flag: PLONGINT;
 
 
 
@@ -86,34 +50,34 @@ CONST
 { Key scan-code identifiers. }
   AL_KEY_A		= 1;
   AL_KEY_B		= 2;
-  AL_KEY_C              = 3;
-  AL_KEY_D              = 4;
-  AL_KEY_E              = 5;
-  AL_KEY_F              = 6;
+  AL_KEY_C		= 3;
+  AL_KEY_D		= 4;
+  AL_KEY_E		= 5;
+  AL_KEY_F		= 6;
   AL_KEY_G		= 7;
   AL_KEY_H		= 8;
-  AL_KEY_I              = 9;
-  AL_KEY_J              = 10;
-  AL_KEY_K              = 11;
-  AL_KEY_L              = 12;
-  AL_KEY_M              = 13;
-  AL_KEY_N              = 14;
-  AL_KEY_O              = 15;
-  AL_KEY_P              = 16;
-  AL_KEY_Q              = 17;
-  AL_KEY_R              = 18;
-  AL_KEY_S              = 19;
-  AL_KEY_T              = 20;
-  AL_KEY_U              = 21;
-  AL_KEY_V              = 22;
-  AL_KEY_W              = 23;
-  AL_KEY_X              = 24;
-  AL_KEY_Y              = 25;
-  AL_KEY_Z              = 26;
-  AL_KEY_0	        = 27;
-  AL_KEY_1	        = 28;
+  AL_KEY_I		= 9;
+  AL_KEY_J		= 10;
+  AL_KEY_K		= 11;
+  AL_KEY_L		= 12;
+  AL_KEY_M		= 13;
+  AL_KEY_N		= 14;
+  AL_KEY_O		= 15;
+  AL_KEY_P		= 16;
+  AL_KEY_Q		= 17;
+  AL_KEY_R		= 18;
+  AL_KEY_S		= 19;
+  AL_KEY_T		= 20;
+  AL_KEY_U		= 21;
+  AL_KEY_V		= 22;
+  AL_KEY_W		= 23;
+  AL_KEY_X		= 24;
+  AL_KEY_Y		= 25;
+  AL_KEY_Z		= 26;
+  AL_KEY_0		= 27;
+  AL_KEY_1		= 28;
   AL_KEY_2		= 29;
-  AL_KEY_3	        = 30;
+  AL_KEY_3		= 30;
   AL_KEY_4		= 31;
   AL_KEY_5		= 32;
   AL_KEY_6		= 33;
@@ -159,32 +123,32 @@ CONST
   AL_KEY_STOP		= 73;
   AL_KEY_SLASH  	= 74;
   AL_KEY_SPACE  	= 75;
-  AL_KEY_INSERT  	= 76;
-  AL_KEY_DEL  	     	= 77;
-  AL_KEY_HOME  	     	= 78;
-  AL_KEY_END  	     	= 79;
-  AL_KEY_PGUP  	     	= 80;
-  AL_KEY_PGDN  	     	= 81;
+  AL_KEY_INSERT 	= 76;
+  AL_KEY_DEL  		= 77;
+  AL_KEY_HOME  		= 78;
+  AL_KEY_END  		= 79;
+  AL_KEY_PGUP  		= 80;
+  AL_KEY_PGDN  		= 81;
   AL_KEY_LEFT  		= 82;
   AL_KEY_RIGHT  	= 83;
-  AL_KEY_UP  	     	= 84;
-  AL_KEY_DOWN  	     	= 85;
+  AL_KEY_UP  		= 84;
+  AL_KEY_DOWN  		= 85;
   AL_KEY_SLASH_PAD      = 86;
   AL_KEY_ASTERISK       = 87;
   AL_KEY_MINUS_PAD      = 88;
   AL_KEY_PLUS_PAD       = 89;
-  AL_KEY_DEL_PAD  	= 90;
+  AL_KEY_DEL_PAD	= 90;
   AL_KEY_ENTER_PAD      = 91;
-  AL_KEY_PRTSCR  	= 92;
+  AL_KEY_PRTSCR 	= 92;
   AL_KEY_PAUSE  	= 93;
-  AL_KEY_ABNT_C1  	= 94;
-  AL_KEY_YEN  	  	= 95;
-  AL_KEY_KANA  	     	= 96;
-  AL_KEY_CONVERT  	= 97;
+  AL_KEY_ABNT_C1	= 94;
+  AL_KEY_YEN  		= 95;
+  AL_KEY_KANA  		= 96;
+  AL_KEY_CONVERT	= 97;
   AL_KEY_NOCONVERT      = 98;
-  AL_KEY_AT  	      	= 99;
+  AL_KEY_AT  		= 99;
   AL_KEY_CIRCUMFLEX     = 100;
-  AL_KEY_COLON2  	= 101;
+  AL_KEY_COLON2 	= 101;
   AL_KEY_KANJI  	= 102;
   AL_KEY_EQUALS_PAD	= 103;  { MacOS X }
   AL_KEY_BACKQUOTE	= 104;  { MacOS X }
@@ -198,20 +162,20 @@ CONST
   AL_KEY_UNKNOWN6	= 112;
   AL_KEY_UNKNOWN7	= 113;
   AL_KEY_UNKNOWN8	= 114;
-  
+
   AL_KEY_MODIFIERS      = 115;
 
-  AL_KEY_LSHIFT  	= 115;
+  AL_KEY_LSHIFT 	= 115;
   AL_KEY_RSHIFT 	= 116;
-  AL_KEY_LCONTROL       = 117;
+  AL_KEY_LCONTROL	= 117;
   AL_KEY_RCONTROL       = 118;
-  AL_KEY_ALT  	      	= 119;
+  AL_KEY_ALT  		= 119;
   AL_KEY_ALTGR  	= 120;
-  AL_KEY_LWIN  	      	= 121;
-  AL_KEY_RWIN  	      	= 122;
-  AL_KEY_MENU  	      	= 123;
-  AL_KEY_SCRLOCK  	= 124;
-  AL_KEY_NUMLOCK  	= 125;
+  AL_KEY_LWIN  		= 121;
+  AL_KEY_RWIN  		= 122;
+  AL_KEY_MENU  		= 123;
+  AL_KEY_SCRLOCK	= 124;
+  AL_KEY_NUMLOCK	= 125;
   AL_KEY_CAPSLOCK       = 126;
 
   AL_KEY_MAX		= 127;
@@ -236,43 +200,42 @@ CONST
 
 IMPLEMENTATION
 
-(* Delphi can't access to the public variables from Allegro, so we need some
- * magic to access them. *)
-FUNCTION install_keyboard: AL_INT;
-  CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION _get_key_: AL_KEY_LISTptr;
-  CDECL; EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-FUNCTION _get_key_shifts_: AL_INTptr;
-  CDECL; EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-FUNCTION _get_three_finger_flag_: AL_INTptr;
-  CDECL; EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-FUNCTION _get_key_led_flag_: AL_INTptr;
-  CDECL; EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
+USES
+  albase, dynlibs;
 
-FUNCTION al_install_keyboard: AL_INT;
+
+
 VAR
-  R: AL_INT;
-BEGIN
-  R := install_keyboard;
-  IF R = 0 THEN
-  BEGIN
-  { Get pointers of public variables. }
-    al_key := _get_key_;
-    al_key_shifts := _get_key_shifts_;
-    al_three_finger_flag := _get_three_finger_flag_;
-    al_key_led_flag := _get_key_led_flag_;
-  END;
-  al_install_keyboard := R;
-END;
+  scancode_to_name: FUNCTION (scancode: LONGINT): PCHAR; CDECL;
 
 
 
-  FUNCTION scancode_to_name (scancode: AL_INT): PCHAR;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scancode_to_name';
-
-  FUNCTION al_scancode_to_name (scancode: AL_INT): AL_STRING;
+  FUNCTION al_scancode_to_name (scancode: LONGINT): STRING;
   BEGIN
     al_scancode_to_name := scancode_to_name (scancode);
   END;
 
+
+
+INITIALIZATION
+{ Gets procedure and function address. }
+  @al_install_keyboard := GetProcAddress (__al_library_id__, 'install_keyboard');
+  @al_remove_keyboard := GetProcAddress (__al_library_id__, 'remove_keyboard');
+  @al_poll_keyboard := GetProcAddress (__al_library_id__, 'poll_keyboard');
+  @al_keyboard_needs_poll := GetProcAddress (__al_library_id__, 'keyboard_needs_poll');
+  @al_keypressed := GetProcAddress (__al_library_id__, 'keypressed');
+  @al_readkey := GetProcAddress (__al_library_id__, 'readkey');
+  @al_ureadkey := GetProcAddress (__al_library_id__, 'ureadkey');
+  @al_simulate_keypress := GetProcAddress (__al_library_id__, 'simulate_keypress');
+  @al_simulate_ukeypress  := GetProcAddress (__al_library_id__, 'simulate_ukeypress');
+  @al_clear_keybuf := GetProcAddress (__al_library_id__, 'clear_keybuf');
+  @al_set_leds := GetProcAddress (__al_library_id__, 'set_leds');
+  @al_set_keyboard_rate := GetProcAddress (__al_library_id__, 'set_keyboard_rate');
+  @al_scancode_to_ascii := GetProcAddress (__al_library_id__, 'scancode_to_ascii');
+  @scancode_to_name := GetProcAddress (__al_library_id__, 'scancode_to_name');
+{ Gets variable address. }
+  al_key := GetProcAddress (__al_library_id__, 'key');
+  al_key_shifts := GetProcAddress (__al_library_id__, 'key_shifts');
+  al_three_finger_flag := GetProcAddress (__al_library_id__, 'three_finger_flag');
+  al_key_led_flag := GetProcAddress (__al_library_id__, 'key_led_flag');
 END.

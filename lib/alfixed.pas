@@ -1,52 +1,4 @@
-(* Allegro provides some routines for working with fixed point numbers, and
-   defines the type AL_FIXED to be a signed 32-bit integer.  The high word is
-   used for the integer part and the low word for the fraction, giving a range
-   of -32768 to 32767 and an accuracy of about four or five decimal places.
-   Fixed point numbers can be assigned, compared, added, subtracted, negated
-   and shifted (for multiplying or dividing by powers of two) using the normal
-   integer operators, but you should take care to use the appropriate
-   conversion routines when mixing fixed point with integer or floating point
-   values.  Writing fixed_point_1 + fixed_point_2 is 0K,
-   but fixed_point + integer is not.
-
-   One of the advantage of fixed point math routines is that you don't require
-   a floating point coprocessor to use them. This was great in the time period
-   of i386 and i486 machines, but stopped being so useful with the coming of
-   the Pentium class of processors.  From Pentium onwards, CPUs have increased
-   their strength in floating point operations, equaling or even surpassing
-   integer math performance.  Other advantage is the use of fixed point indexes
-   to arrays, wich would be faster than floating point.
-
-   Depending on the type of operations your program may need, using floating
-   point types may be faster than fixed types if you are targeting a specific
-   machine class.  Allegro comes with a test program in the `allegro/tests'
-   directory.  Its `Misc' menu contains a basic profile test which can give you
-   an idea of the speed difference between fixed and float types for a few
-   basic operations on your machine.  However, don't forget to profile your
-   program in real life conditions, tight loop benchmarks are after all
-   artificial.
-
-   The fixed point square root, sin, cos, tan, inverse sin, and inverse cos
-   functions are implemented using lookup tables, which are very fast but not
-   particularly accurate.  At the moment the inverse tan uses an iterative
-   search on the tan table, so it is a lot slower than the others.  Note that
-   on machines with very good floating point processors using these functions
-   could be slower in real life code due to cache misses:  it may be faster to
-   wait a few extra cicles for a floating point sine result rather than wait
-   for the CPU to fetch the precalculated table from main memory.  Always
-   profile your code.
-
-   Angles are represented in a binary format with 256 equal to a full circle,
-   64 being a right angle and so on.  This has the advantage that a simple
-   bitwise AND can be used to keep the angle within the range zero to a full
-   circle, eliminating all those tiresome IF angle >= 360 checks.
-
-   Fixed point math is considered "add-on" material and is kept only for
-   backwards compatibility.  Whenever a future release of Allegro breaks
-   backwards compatibility, fixed point math will likely be moved to a separate
-   add-on package for the very few users who still find it convenient and
-   useful, and Allegro functions using fixed point math will use other types.
- *)
+(* Fixed point maths. *)
 UNIT alfixed;
 
 (* TODO: Doesn't check overflows. *)
@@ -70,66 +22,32 @@ TYPE
 
 
 
-(* Converts an integer to fixed point.  This is the same thing as x SHL 16.
-   Remember that overflows (trying to convert an integer greater than 32767)
-   and underflows (trying to convert an integer lesser than -32768) are not
-   detected even in debug builds!  The values simply "wrap around". *)
+(* Converts an integer to fixed point. *)
   FUNCTION al_itofix (x: LONGINT): AL_FIXED;
 
 (* Converts fixed point to integer, rounding as required to the nearest
    integer. *)
   FUNCTION al_fixtoi (x: AL_FIXED): LONGINT;
 
-(* Converts a floating point value to fixed point.  Unlike al_itofix, this
-   function clamps values which could overflow the type conversion, setting
-   al_errno to non-zero in the process if this happens. *)
+(* Converts a floating point value to fixed point. *)
   FUNCTION al_ftofix (x: REAL): AL_FIXED;
 
 (* Converts fixed point to floating point. *)
   FUNCTION al_fixtof (x: AL_FIXED): REAL;
 
-(* Safe function to add fixed point numbers clamping overflow.
-
-   Although fixed point numbers can be added with the normal '+' integer
-   operator, that doesn't provide any protection against overflow.  If overflow
-   is a problem, you should use this function instead.  It is slower than using
-   integer operators, but if an overflow occurs it will set al_errno and clamp
-   the result, rather than just letting it wrap. *)
+(* Safe function to add fixed point numbers clamping overflow. *)
   FUNCTION al_fixadd (x, y: AL_FIXED): AL_FIXED;
 
-(* Safe function to subtract fixed point numbers clamping underflow.
-
-   Although fixed point numbers can be subtracted with the normal '-' integer
-   operator, that doesn't provide any protection against overflow.  If overflow
-   is a problem, you should use this function instead.  It is slower than using
-   integer operators, but if an overflow occurs it will set `errno' and clamp
-   the result, rather than just letting it wrap. *)
+(* Safe function to subtract fixed point numbers clamping underflow. *)
   FUNCTION al_fixsub (x, y: AL_FIXED): AL_FIXED;
 
-(* Multiplies two fixed point values together.
-
-   A fixed point value can be multiplied or divided by an integer with the
-   normal `*' and `/' operators.  To multiply two fixed point values, though,
-   you must use this function.
-
-   If an overflow occurs, al_errno will be set and the maximum possible value
-   will be returned, but al_errno is not cleared if the operation is
-   successful.  This means that if you are going to test for overflow you
-   should set al_errno:=0 before calling al_fixmul. *)
+(* Multiplies two fixed point values together. *)
   FUNCTION al_fixmul (x, y: AL_FIXED): AL_FIXED;
 
-(* Fixed point division.
-
-   A fixed point value can be divided by an integer with the normal `/' and DIV
-   operators.  To divide two fixed point values, though, you must use this
-   function.  If a division by zero occurs, al_errno will be set and the
-   maximum possible value will be returned, but al_errno is not cleared if the
-   operation is successful.  This means that if you are going to test for
-   division by zero you should set al_errno:=0 before calling al_fixdiv. *)
+(* Fixed point division. *)
   FUNCTION al_fixdiv (x, y: AL_FIXED): AL_FIXED;
 
-(* This finds out the non negative square root of `x'.  If `x' is negative,
-   al_errno is set to EDOM and the function returns zero. *)
+(* This finds out the non negative square root of `x'. *)
   FUNCTION al_fixsqrt (x: AL_FIXED): AL_FIXED;
 
 
@@ -137,58 +55,32 @@ TYPE
 (* Trigonometry. *)
 CONST
 (* This constant gives a ratio which can be used to convert a fixed point
-   number in binary angle format to a fixed point number in radians.  Example:
-
-VAR
-  RadAngle, BinaryAngle: AL_FIXED;
-		...
-   RadAngle := al_fixmul (BinaryAngle, al_fixtorad);
- *)
+   number in binary angle format to a fixed point number in radians. *)
   al_fixtorad: AL_FIXED = 1608;	   { al_ftofix (2pi/256) }
 
 (* This constant gives a ratio which can be used to convert a fixed point
-   number in radians to a fixed point number in binary angle format.  Example:
-
-VAR
-  RadAngle, BinaryAngle: AL_FIXED;
-		...
-		BinaryAngle := al_fixmul (RadAngle, al_radtofix);
- *)
+   number in radians to a fixed point number in binary angle format. *)
   al_radtofix: AL_FIXED = 2670177; { al_ftofix (256/2pi) }
 
-(* This function finds the sine of a value using a lookup table.  The input
-   value must be a fixed point binary angle. *)
+(* This function finds the sine of a value using a lookup table. *)
   FUNCTION al_fixsin (x: AL_FIXED): AL_FIXED;
 
-(* This function finds the cosine of a value using a lookup table.  The input
-   value must be a fixed point binary angle. *)
+(* This function finds the cosine of a value using a lookup table. *)
   FUNCTION al_fixcos (x: AL_FIXED): AL_FIXED;
-(* This function finds the tangent of a value using a lookup table.  The input
-   value must be a fixed point binary angle. *)
+(* This function finds the tangent of a value using a lookup table. *)
   FUNCTION al_fixtan (x: AL_FIXED): AL_FIXED;
 
-(* This function finds the inverse sine of a value using a lookup table.  The
-   input value must be a fixed point value.  The inverse sine is defined only
-   in the domain from -1 to 1.  Outside of this input range, the function will
-   set `errno' to EDOM and return zero. *)
+(* This function finds the inverse sine of a value using a lookup table. *)
   FUNCTION al_fixasin (x: AL_FIXED): AL_FIXED;
 
-(* This function finds the inverse cosine of a value using a lookup table.  The
-   input value must be a fixed point radian. The inverse cosine is defined only
-   in the domain from -1 to 1. Outside of this input range, the function will
-   set `errno' to EDOM and return zero. *)
+(* This function finds the inverse cosine of a value using a lookup table. *)
   FUNCTION al_fixacos (x: AL_FIXED): AL_FIXED;
 
 VAR
-(* This function finds the inverse tangent of a value using a lookup table.
-   The input value must be a fixed point radian.  The inverse tangent is the
-   value whose tangent is x. *)
+(* This function finds the inverse tangent of a value using a lookup table. *)
   al_fixatan: FUNCTION (x: AL_FIXED): AL_FIXED; CDECL;
 
-(* This is a fixed point version of the libc atan2 () routine.  It computes the
-   arc tangent of y / x, but the signs of both arguments are used to determine
-   the quadrant of the result, and x is permitted to be zero.  This function is
-   useful to convert Cartesian coordinates to polar coordinates. *)
+(* This is a fixed point version of the libc atan2 () routine. *)
   al_fixatan2: FUNCTION (x, y: AL_FIXED): AL_FIXED; CDECL;
 
 

@@ -1,70 +1,46 @@
+(* Defines the bitmap. *)
 UNIT albitmap;
-(*
-  ______   ___    ___
- /\  _  \ /\_ \  /\_ \
- \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
-  \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
-    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
-     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
-                                    /\____/               \ \_\
-                                    \_/__/                 \/_/
- *
- *	Bitmap manipulation.
- *	by Ñuño Martínez <>
- *	Based on the file "gfx.h" of the Allegro library by Shawn Hargreaves.
- *      Some parts of the code was created by the "h2pas" utility.
- *
- *	See readme.txt for license and copyright information.
- *)
+(*	Based on the file "gfx.h" of the Allegro library by Shawn Hargreaves.
+ *	Some parts of the code was created by the "h2pas" utility. *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$PACKRECORDS C}
- {$LONGSTRINGS ON}
-{$ELSE}
-{ Assumes Borland Delphi/Turbo. }
- {$A-}
- {$H+}
-{$ENDIF}
+{ Defines the frame. }
+{$MODE Delphi}
+{$PACKRECORDS C}
+{$H+}
 
 
 
 INTERFACE
 
 USES
-  albase, alpalete, alvtable
-{$IFNDEF FPC}
- {$IFDEF MSWINDOWS}
-{ Delphi needs the Windows unit. }
-  , Windows
- {$ENDIF}
-{$ENDIF}
-  ;
+  alpalete, alvtable;
+
 
 
 TYPE
+(* Pointer to a bitmap. *)
   AL_BITMAPptr = ^AL_BITMAP;
+(* Stores the contents of a bitmap. *)
   AL_BITMAP = RECORD
-    w, h: AL_INT;		{ width and height in pixels }
-    clip: AL_INT;		{ flag if clipping is turned on }
-    cl, cr, ct, cb: AL_INT;	{ clip left, right, top and bottom values }
-    vtable: AL_GFX_VTABLEptr;	{ drawing functions }
-    write_bank: AL_PTR;		{ C func on some machines, asm on i386 }
-    read_bank: AL_PTR;		{ C func on some machines, asm on i386 }
-    dat: AL_PTR;		{ the memory we allocated for the bitmap }
-    id: DWORD;			{ for identifying sub-bitmaps }
-    extra: AL_PTR;		{ points to a structure with more info }
-    x_ofs: AL_INT;		{ horizontal offset (for sub-bitmaps) }
-    y_ofs: AL_INT;		{ vertical offset (for sub-bitmaps) }
-    seg: AL_INT;		{ bitmap segment }
-    line: AL_PTR;		{ ZERO_SIZE_ARRAY(unsigned char *, line); }
+    w, h: LONGINT;		{<width and height in pixels }
+    clip: LONGINT;		{<flag if clipping is turned on }
+    cl, cr, ct, cb: LONGINT;	{<clip left, right, top and bottom values }
+    vtable: AL_GFX_VTABLEptr;	{<drawing functions }
+    write_bank: POINTER;	{<C func on some machines, asm on i386 }
+    read_bank: POINTER;		{<C func on some machines, asm on i386 }
+    dat: POINTER;		{<the memory we allocated for the bitmap }
+    id: DWORD;			{<for identifying sub-bitmaps }
+    extra: POINTER;		{<points to a structure with more info }
+    x_ofs: LONGINT;		{<horizontal offset (for sub-bitmaps) }
+    y_ofs: LONGINT;		{<vertical offset (for sub-bitmaps) }
+    seg: LONGINT;		{<bitmap segment }
+    line: POINTER;		{<ZERO_SIZE_ARRAY(unsigned char *, line); }
   END;
 
 
 
 CONST
-(* Identify bitmap type *)
+(* Identify bitmap type.  Internal use only. *)
   AL_BMP_ID_VIDEO     = $80000000;
   AL_BMP_ID_SYSTEM    = $40000000;
   AL_BMP_ID_SUB       = $20000000;
@@ -76,49 +52,48 @@ CONST
 
 
 
+VAR
 (* Creates bitmaps. *)
-  FUNCTION al_create_bitmap (w, h: AL_INT): AL_BITMAPptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_bitmap';
-  FUNCTION al_create_bitmap_ex (bpp, w, h: AL_INT): AL_BITMAPptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_bitmap_ex';
-  FUNCTION al_create_sub_bitmap (parent: AL_BITMAPptr; x, y, w, h: AL_INT): AL_BITMAPptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_sub_bitmap';
+  al_create_bitmap: FUNCTION (w, h: LONGINT): AL_BITMAPptr; CDECL;
+  al_create_bitmap_ex: FUNCTION (bpp, w, h: LONGINT): AL_BITMAPptr; CDECL;
+  al_create_sub_bitmap: FUNCTION (parent: AL_BITMAPptr; x, y, w, h: LONGINT): AL_BITMAPptr; CDECL;
 (* Frees the bitmap resources. *)
-  PROCEDURE al_destroy_bitmap (bmp: AL_BITMAPptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_bitmap';
+  al_destroy_bitmap: PROCEDURE (bmp: AL_BITMAPptr); CDECL;
+
 (* Gets bitmap information. *)
-  FUNCTION al_bitmap_color_depth (bmp: AL_BITMAPptr): AL_INT;
-  FUNCTION al_bitmap_mask_color (bmp: AL_BITMAPptr): AL_INT;
+  FUNCTION al_bitmap_color_depth (bmp: AL_BITMAPptr): LONGINT;
+  FUNCTION al_bitmap_mask_color (bmp: AL_BITMAPptr): LONGINT;
   FUNCTION al_is_same_bitmap (bmp1, bmp2: AL_BITMAPptr): BOOLEAN;
   FUNCTION al_is_sub_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
 (* Acquire and release bitmap. *)
   PROCEDURE al_acquire_bitmap (bmp: AL_BITMAPptr);
   PROCEDURE al_release_bitmap (bmp: AL_BITMAPptr);
+
+VAR
 (* Palette. *)
-  FUNCTION  al_generate_optimized_palette (image: AL_BITMAPptr; pal: AL_PALETTEptr; rsvdcols: ARRAY OF AL_CHAR): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'generate_optimized_palette';
+  al_generate_optimized_palette: FUNCTION (image: AL_BITMAPptr; pal: AL_PALETTEptr; rsvdcols: ARRAY OF CHAR): LONGINT; CDECL;
 
 (* Loading and saving bitmaps. *)
-  FUNCTION al_load_bitmap (filename: AL_STRING; pal: AL_PALETTEptr): AL_BITMAPptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_bitmap';
-
-  FUNCTION al_save_bitmap (filename: AL_STRING; bmp: AL_BITMAPptr; pal: AL_PALETTEptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'save_bitmap';
+  al_load_bitmap: FUNCTION (filename: STRING; pal: AL_PALETTEptr): AL_BITMAPptr; CDECL;
+  al_save_bitmap: FUNCTION (filename: STRING; bmp: AL_BITMAPptr; pal: AL_PALETTEptr): LONGINT; CDECL;
 
 
 
 IMPLEMENTATION
 
+USES
+  albase, dynlibs;
 
 
-FUNCTION al_bitmap_color_depth (bmp: AL_BITMAPptr): AL_INT;
+
+FUNCTION al_bitmap_color_depth (bmp: AL_BITMAPptr): LONGINT;
 BEGIN
   al_bitmap_color_depth := bmp^.vtable^.color_depth;
 END;
 
 
 
-FUNCTION al_bitmap_mask_color (bmp: AL_BITMAPptr): AL_INT;
+FUNCTION al_bitmap_mask_color (bmp: AL_BITMAPptr): LONGINT;
 BEGIN
   al_bitmap_mask_color := bmp^.vtable^.mask_color;
 END;
@@ -166,5 +141,12 @@ END;
 
 
 
+INITIALIZATION
+  @al_create_bitmap := GetProcAddress (__al_library_id__, 'create_bitmap');
+  @al_create_bitmap_ex := GetProcAddress (__al_library_id__, 'create_bitmap_ex');
+  @al_create_sub_bitmap := GetProcAddress (__al_library_id__, 'create_sub_bitmap');
+  @al_destroy_bitmap := GetProcAddress (__al_library_id__, 'destroy_bitmap');
+  @al_generate_optimized_palette := GetProcAddress (__al_library_id__, 'generate_optimized_palette');
+  @al_load_bitmap := GetProcAddress (__al_library_id__, 'load_bitmap');
+  @al_save_bitmap := GetProcAddress (__al_library_id__, 'save_bitmap');
 END.
-

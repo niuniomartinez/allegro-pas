@@ -29,12 +29,12 @@ BEGIN { The program starts here. }
   al_install_keyboard;
 
 { Set a graphics mode sized 320x200. }
-  IF (al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) <> 0) THEN
+  IF (al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) <> 0) THEN
     IF (al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) <> 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
-      al_message (al_error);
+      al_message (STRING (al_error));
     { Shutdown Allegro.  You should do it because it isn't automatic. }
       al_exit;
       EXIT;

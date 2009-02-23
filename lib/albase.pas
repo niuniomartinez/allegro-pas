@@ -88,6 +88,8 @@ CONST
   {$ENDIF}
 {$ENDIF}
 
+
+
 INITIALIZATION
 { Loads the library. }
   __al_library_id__ := 0;

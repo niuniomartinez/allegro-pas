@@ -1,30 +1,10 @@
+(* Color palette manipulation. *)
 UNIT alpalete;
-(*
-  ______   ___    ___
- /\  _  \ /\_ \  /\_ \
- \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
-  \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
-    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
-     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
-                                    /\____/               \ \_\
-                                    \_/__/                 \/_/
- *
- *	Color palette manipulation.
- *	by Ñuño Martínez <>
- *
- *	See readme.txt for license and copyright information.
- *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$PACKRECORDS C}
- {$LONGSTRINGS ON}
-{$ELSE}
-{ Assumes Borland Delphi/Turbo. }
- {$A-}
- {$H+}
-{$ENDIF}
+{ Defines the frame. }
+{$MODE Delphi}
+{$PACKRECORDS C}
+{$H+}
 
 
 
@@ -41,72 +21,142 @@ CONST
 
 
 TYPE
-(* Color palette description for indexed modes (8bpp). *)
+(* Pointer to color palette. *)
   AL_PALETTEptr = ^AL_PALETTE;
+(* Color palette description for indexed modes (8bpp). *)
   AL_PALETTE = ARRAY [0..AL_PAL_SIZE-1] OF AL_RGB;
-(* Speed up reducing RGB values to 8-bit paletted colors. *)
+(* Pointer to AL_RGB_MAP. *)
   AL_RGB_MAPptr = ^AL_RGB_MAP;
+(* Speed up reducing RGB values to 8-bit paletted colors. *)
   AL_RGB_MAP = RECORD
-    data: ARRAY [0..31, 0..31, 0..31] OF AL_UCHAR;
+    data: ARRAY [0..31, 0..31, 0..31] OF BYTE;
   END;
 
-  
+
 VAR
-(* Predefined palettes. *)
-  al_black_palette, al_desktop_palette, al_default_palette: AL_PALETTEptr;
-  
+(* A palette containing solid black colors, used by the fade routines. *)
+  al_black_palette,
+(* The palette used by the Atari ST low resolution desktop. *)
+  al_desktop_palette,
+(* The default IBM BIOS palette. *)
+  al_default_palette: AL_PALETTEptr;
 
 
-  PROCEDURE al_set_color (idx: AL_INT; p: AL_RGBptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_color';
-  PROCEDURE al_set_palette (p: AL_PALETTE); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_palette';
-  PROCEDURE al_set_palette_range (p: AL_PALETTE; from, ato, retrace: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_palette_range';
-  
-  PROCEDURE al_get_color (idx: AL_INT; p: AL_RGBptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_color';
-  PROCEDURE al_get_palette (p: AL_PALETTEptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_palette';
-  PROCEDURE al_get_palette_range (p: AL_PALETTEptr; from, ato, retrace: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_palette_range';
 
-  PROCEDURE al_fade_interpolate (spource, dest: AL_PALETTE; aoutput: AL_PALETTEptr; apos, from, ato: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fade_interpolate';
-  PROCEDURE al_fade_from_range (source, dest: AL_PALETTE; speed, from, ato: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fade_from_range';
-  PROCEDURE al_fade_in_range (p: AL_PALETTE; speed, from, ato: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fade_in_range';
-  PROCEDURE al_fade_out_range (speed, from, ato: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fade_out_range';
-  PROCEDURE al_fade_from (source, dest: AL_PALETTE; speed: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fade_from';
-  PROCEDURE al_fade_in (p: AL_PALETTE; speed: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fade_in';
-  PROCEDURE al_fade_out (speed: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fade_out';
+(* Sets the specified palette entry to the specified AL_RGB triplet. *)
+  al_set_color: PROCEDURE (idx: LONGINT; p: AL_RGBptr); CDECL;
 
-  PROCEDURE al_select_palette (p: AL_PALETTE); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'select_palette';
-  PROCEDURE al_unselect_palette; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'unselect_palette';
+(* Sets the entire palette of 256 colors. *)
+  al_set_palette: PROCEDURE (p: AL_PALETTE); CDECL;
 
-  PROCEDURE al_generate_332_palette (p: AL_PALETTEptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'generate_332_palette';
+(* Sets the palette entries between from and to *)
+  al_set_palette_range: PROCEDURE (p: AL_PALETTE; from, ato, retrace: LONGINT); CDECL;
 
-  FUNCTION al_bestfit_color (pal: AL_PALETTE; r, g, b: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'bestfit_color';
+(* Retrieves the specified palette entry. *)
+  al_get_color: PROCEDURE (idx: LONGINT; p: AL_RGBptr); CDECL;
 
-  PROCEDURE al_set_rgb_map (map: AL_RGB_MAPptr); CDECL;
-    EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
+(* Retrieves the entire palette of 256 colors.  You should provide a pointer to
+   an AL_PALETTE to store it in. *)
+  al_get_palette: PROCEDURE (p: AL_PALETTEptr); CDECL;
 
-  PROCEDURE al_create_rgb_table (table: AL_RGB_MAPptr; pal: AL_PALETTE;
+(* Retrieves the palette entries between from and to (inclusive:  pass 0 and
+   255 to get the entire palette). *)
+  al_get_palette_range: PROCEDURE (p: AL_PALETTEptr; from, ato, retrace: LONGINT); CDECL;
+
+(* Calculates a temporary palette part way between source and dest, returning
+   it in the output parameter. *)
+  al_fade_interpolate: PROCEDURE (spource, dest: AL_PALETTE; aoutput: AL_PALETTEptr; apos, from, ato: LONGINT); CDECL;
+
+(* Gradually fades a part of the palette from the source palette to the dest
+   palette. *)
+  al_fade_from_range: PROCEDURE (source, dest: AL_PALETTE; speed, from, ato: LONGINT); CDECL;
+
+(* Gradually fades a part of the palette from a black screen to the specified
+   palette. *)
+  al_fade_in_range: PROCEDURE (p: AL_PALETTE; speed, from, ato: LONGINT); CDECL;
+
+(* Gradually fades a part of the palette from the current palette to a black
+   screen. *)
+  al_fade_out_range: PROCEDURE (speed, from, ato: LONGINT); CDECL;
+
+(* Fades gradually from the source palette to the dest palette. *)
+  al_fade_from: PROCEDURE (source, dest: AL_PALETTE; speed: LONGINT); CDECL;
+
+(* Fades gradually from a black screen to the specified palette. *)
+  al_fade_in: PROCEDURE (p: AL_PALETTE; speed: LONGINT); CDECL;
+
+(* Fades gradually from the current palette to a black screen. *)
+  al_fade_out: PROCEDURE (speed: LONGINT); CDECL;
+
+(* Ugly hack for use in various dodgy situations where you need to convert
+   between paletted and truecolor image formats. *)
+  al_select_palette: PROCEDURE (p: AL_PALETTE); CDECL;
+
+(* Restores the palette tables that were in use before the last call to
+   al_select_palette. *)
+  al_unselect_palette: PROCEDURE; CDECL;
+
+(* Constructs a fake truecolor palette, using three bits for red and green and
+   two for the blue. *)
+  al_generate_332_palette: PROCEDURE (p: AL_PALETTEptr); CDECL;
+
+(* Searches the specified palette for the closest match to the requested color,
+   which are specified in the VGA hardware 0-63 format. *)
+  al_bestfit_color: FUNCTION (pal: AL_PALETTE; r, g, b: LONGINT): LONGINT; CDECL;
+
+(* Fills the specified RGB mapping table with lookup data for the specified
+   palette. *)
+  al_create_rgb_table: PROCEDURE (table: AL_RGB_MAPptr; pal: AL_PALETTE;
 				 callback: AL_INT_PROC); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_rgb_table';
+
+(* Sets a look up table to speed up reducing RGB values to palette colors. *)
+  PROCEDURE al_set_rgb_map (map: AL_RGB_MAPptr);
 
 
 
 IMPLEMENTATION
 
+USES
+  dynlibs;
+
+VAR
+  _RGB_map: ^AL_RGB_MAPptr;
+
+
+
+
+(* Sets a look up table to speed up reducing RGB values to palette colors. *)
+PROCEDURE al_set_rgb_map (map: AL_RGB_MAPptr);
+BEGIN
+  _RGB_map^ := map;
+END;
+
+
+
+INITIALIZATION
+{ Loads Procedure Address. }
+  @al_set_color := GetProcAddress (__al_library_id__, 'set_color');
+  @al_set_palette := GetProcAddress (__al_library_id__, 'set_palette');
+  @al_set_palette_range := GetProcAddress (__al_library_id__, 'set_palette_range');
+  @al_get_color := GetProcAddress (__al_library_id__, 'get_color');
+  @al_get_palette := GetProcAddress (__al_library_id__, 'get_palette');
+  @al_get_palette_range := GetProcAddress (__al_library_id__, 'get_palette_range');
+  @al_fade_interpolate := GetProcAddress (__al_library_id__, 'fade_interpolate');
+  @al_fade_from_range := GetProcAddress (__al_library_id__, 'fade_from_range');
+  @al_fade_in_range := GetProcAddress (__al_library_id__, 'fade_in_range');
+  @al_fade_out_range := GetProcAddress (__al_library_id__, 'fade_out_range');
+  @al_fade_from := GetProcAddress (__al_library_id__, 'fade_from');
+  @al_fade_in := GetProcAddress (__al_library_id__, 'fade_in');
+  @al_fade_out := GetProcAddress (__al_library_id__, 'fade_out');
+  @al_select_palette := GetProcAddress (__al_library_id__, 'select_palette');
+  @al_unselect_palette := GetProcAddress (__al_library_id__, 'unselect_palette');
+  @al_generate_332_palette := GetProcAddress (__al_library_id__, 'generate_332_palette');
+  @al_bestfit_color := GetProcAddress (__al_library_id__, 'bestfit_color');
+  @al_create_rgb_table := GetProcAddress (__al_library_id__, 'create_rgb_table');
+{ Variables. }
+  al_black_palette := GetProcAddress (__al_library_id__, 'black_palette');
+  al_desktop_palette := GetProcAddress (__al_library_id__, 'desktop_palette');
+  al_default_palette := GetProcAddress (__al_library_id__, 'default_palette');
+  _RGB_map := GetProcAddress (__al_library_id__, 'rgb_map');
 END.
 

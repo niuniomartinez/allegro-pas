@@ -1,37 +1,17 @@
+(* Graphic initialization. *)
 UNIT algraph;
-(*
-  ______   ___    ___
- /\  _  \ /\_ \  /\_ \
- \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
-  \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
-    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
-     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
-                                    /\____/               \ \_\
-                                    \_/__/                 \/_/
- *
- *	Graphic initialization.
- *	by Ñuño Martínez <>
- *
- *	See readme.txt for license and copyright information.
- *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$PACKRECORDS C}
- {$LONGSTRINGS ON}
-{$ELSE}
-{ Assumes Borland Delphi/Turbo. }
- {$A-}
- {$H+}
-{$ENDIF}
+{ Defines the frame. }
+{$MODE Delphi}
+{$PACKRECORDS C}
+{$H+}
 
 
 
 INTERFACE
 
 USES
-  albase, albitmap;
+  albitmap;
 
 
 
@@ -71,11 +51,11 @@ CONST
 
 
 VAR
-  al_gfx_capabilities: AL_INTptr;
+  al_gfx_capabilities: PLONGINT;
 
 (* Screen bitmap *)
   al_screen: AL_BITMAPptr;
-  AL_SCREEN_W, AL_SCREEN_H, AL_VIRTUAL_W, AL_VIRTUAL_H: AL_INT;
+  AL_SCREEN_W, AL_SCREEN_H, AL_VIRTUAL_W, AL_VIRTUAL_H: LONGINT;
 
 
 
@@ -143,49 +123,48 @@ CONST
 
 
 
+VAR
 (* Configure graphic mode. *)
-  PROCEDURE al_set_color_depth (depth: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_color_depth';
-  FUNCTION al_get_color_depth: AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_color_depth';
-  PROCEDURE al_set_color_conversion (mode: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_color_conversion';
-  FUNCTION al_get_color_conversion: AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_color_conversion';
-  FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: AL_INT): AL_INT;
+  al_set_color_depth: PROCEDURE (depth: LONGINT); CDECL;
+  al_get_color_depth: FUNCTION : LONGINT; CDECL;
+  al_set_color_conversion: PROCEDURE  (mode: LONGINT); CDECL;
+  al_get_color_conversion: FUNCTION : LONGINT; CDECL;
+(* Waits for a retrace. *)
+  al_vsync: PROCEDURE ; CDECL;
 
+(* Configure graphic mode. *)
+  FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: LONGINT): LONGINT;
 (* Screen bitmap. *)
   FUNCTION al_is_screen_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
   PROCEDURE al_acquire_screen;
   PROCEDURE al_release_screen;
 
-(* Waits for a retrace. *)
-  PROCEDURE al_vsync; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'vsync';
-
 
 
 IMPLEMENTATION
 
-(* Delphi can't access to the public variables from Allegro, so we need some
- * magic to access them. *)
-FUNCTION set_gfx_mode (card, w, h, v_w, v_h: AL_INT): AL_INT; CDECL;
-  EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION _get_gfx_capabilities_: AL_INTPTR; CDECL;
-  EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-FUNCTION _get_screen_: AL_BITMAPptr; CDECL;
-  EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
+USES
+  albase, dynlibs;
 
-FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: AL_INT): AL_INT;
+
+
 VAR
-  R: AL_INT;
+  _screen: ^AL_BITMAPptr;
+  _gfx_capabilities: PLONGINT;
+  _set_gfx_mode: FUNCTION (card, w, h, v_w, v_h: LONGINT): LONGINT; CDECL;
+
+
+
+FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: LONGINT): LONGINT;
+VAR
+  R: LONGINT;
 BEGIN
-  R := set_gfx_mode (card, w, h, v_w, v_h);
+  R := _set_gfx_mode (card, w, h, v_w, v_h);
   IF R = 0 THEN
   BEGIN
   { Get pointers of public variables and public values. }
-    al_gfx_capabilities := _get_gfx_capabilities_;
-    al_screen := _get_screen_;
+    al_gfx_capabilities := _gfx_capabilities;
+    al_screen := _screen^;
     IF al_screen <> NIL THEN
     BEGIN
       AL_SCREEN_W := w;
@@ -221,6 +200,14 @@ BEGIN
 END;
 
 
-
+INITIALIZATION
+{ Get procedure and variable addess. }
+  @al_set_color_depth := GetProcAddress (__al_library_id__, 'set_color_depth');
+  @al_get_color_depth := GetProcAddress (__al_library_id__, 'get_color_depth');
+  @al_set_color_conversion := GetProcAddress (__al_library_id__, 'set_color_conversion');
+  @al_get_color_conversion := GetProcAddress (__al_library_id__, 'get_color_conversion');
+  @al_vsync := GetProcAddress (__al_library_id__, 'vsync');
+  @_set_gfx_mode := GetProcAddress (__al_library_id__, 'set_gfx_mode');
+  _screen := GetProcAddress (__al_library_id__, 'screen');
+  _gfx_capabilities := GetProcAddress (__al_library_id__, 'gfx_capabilities');
 END.
-

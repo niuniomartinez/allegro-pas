@@ -43,8 +43,7 @@ status: adbanner
 
 # Cleans everything.
 veryclean: clean
-	$(DELETE) $(EXMDIR)*$(BINSUF)
-	$(DELETE) $(EXMDIR)*$(BINSUF)
+	$(DELETE) $(EXMFILES)
 
 
 # Clean temporary files.

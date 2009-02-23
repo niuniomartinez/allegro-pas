@@ -14,7 +14,6 @@ UNIT alcolor;
 
 { Defines the frame. }
 {$MODE Delphi}
-{$MACRO ON}
 {$PACKRECORDS C}
 {$H+}
 

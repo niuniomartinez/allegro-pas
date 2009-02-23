@@ -1,105 +1,96 @@
+(* Text drawing. *)
 UNIT altext;
-(*
-  ______   ___    ___
- /\  _  \ /\_ \  /\_ \
- \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
-  \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
-    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
-     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
-                                    /\____/               \ \_\
-                                    \_/__/                 \/_/
- *
- *	Text drawing.
- *	by Ñuño Martínez <>
- *
- *	See readme.txt for license and copyright information.
- *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$PACKRECORDS C}
- {$LONGSTRINGS ON}
-{$ELSE}
-{ Assumes Borland Delphi/Turbo. }
- {$A-}
- {$H+}
-{$ENDIF}
+{ Defines the frame. }
+{$MODE Delphi}
+{$PACKRECORDS C}
+{$H+}
 
 
 
 INTERFACE
 
 USES
-  albase, albitmap, alfont; { Needs some basic definitions. }
+  albitmap, alfont; { Needs some basic definitions. }
 
 
 
 VAR
   al_font: ^AL_FONTptr; { A pointer to a pointer because we can change it. }
-  al_404_char: AL_INTptr;
+  al_404_char: PLONGINT;
 
 
 
-  PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x, y, color, bg: AL_INT);
-  PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x, y, color, bg: AL_INT);
-  PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x, y, color, bg: AL_INT);
-  PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x1, x2, y, diff, color, bg: AL_INT);
+  al_text_height: FUNCTION (f: AL_FONTptr): LONGINT; CDECL;
+  PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+  PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+  PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+  PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x1, x2, y, diff, color, bg: LONGINT);
 
-  FUNCTION al_text_length (f: AL_FONTptr; str: AL_STRING): AL_INT;
-  FUNCTION al_text_height (f: AL_FONTptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'text_height';
+  FUNCTION al_text_length (f: AL_FONTptr; str: STRING): LONGINT;
 
 
 
 IMPLEMENTATION
 
-PROCEDURE textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: AL_INT); CDECL;
-  EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_ex';
+USES
+  albase, dynlibs;
 
-PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x, y, color, bg: AL_INT);
+
+
+VAR
+  textout_ex: PROCEDURE (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
+  textout_centre_ex: PROCEDURE (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
+  textout_right_ex: PROCEDURE (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
+  textout_justify_ex: PROCEDURE (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x1, x2, y, diff, color, bg: LONGINT); CDECL;
+  text_length: FUNCTION (f: AL_FONTptr; str: PCHAR): LONGINT; CDECL;
+
+
+
+PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
 BEGIN
   textout_ex (bmp, f, PCHAR (str), x, y, color, bg);
 END;
 
 
 
-PROCEDURE textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: AL_INT); CDECL;
-  EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_centre_ex';
-
-PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x, y, color, bg: AL_INT);
+PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
 BEGIN
   textout_centre_ex (bmp, f, PCHAR (str), x, y, color, bg);
 END;
 
 
-PROCEDURE textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: AL_INT); CDECL;
-  EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_right_ex';
 
-PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x, y, color, bg: AL_INT);
+PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
 BEGIN
   textout_right_ex (bmp, f, PCHAR (str), x, y, color, bg);
 END;
 
 
 
-PROCEDURE textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x1, x2, y, diff, color, bg: AL_INT); CDECL;
-  EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_justify_ex';
-
-PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x1, x2, y, diff, color, bg: AL_INT);
+PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x1, x2, y, diff, color, bg: LONGINT);
 BEGIN
   textout_justify_ex (bmp, f, PCHAR (str), x1, x2, y, diff, color, bg);
 END;
 
 
 
-FUNCTION text_length (f: AL_FONTptr; str: PCHAR): AL_INT; CDECL;
-  EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'text_length';
-
-FUNCTION al_text_length (f: AL_FONTptr; str: AL_STRING): AL_INT;
+FUNCTION al_text_length (f: AL_FONTptr; str: STRING): LONGINT;
 BEGIN
   al_text_length := text_length (f, PCHAR (str));
 END;
 
-END.
 
+
+INITIALIZATION
+{ Gets function and procedure address. }
+  @al_text_height := GetProcAddress (__al_library_id__, 'text_height');
+  @textout_ex := GetProcAddress (__al_library_id__, 'textout_ex');
+  @textout_centre_ex := GetProcAddress (__al_library_id__, 'textout_centre_ex');
+  @textout_right_ex := GetProcAddress (__al_library_id__, 'textout_right_ex');
+  @textout_justify_ex := GetProcAddress (__al_library_id__, 'textout_justify_ex');
+  @text_length := GetProcAddress (__al_library_id__, 'text_length');
+{ Gets variable address. }
+  al_font := GetProcAddress (__al_library_id__, 'font');
+  al_404_char := GetProcAddress (__al_library_id__, 'allegro_404_char');
+END.
