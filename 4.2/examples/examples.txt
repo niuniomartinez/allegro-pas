@@ -1,0 +1,14 @@
+exblend.dpr:	How to use the translucency functions in truecolor video modes.
+excolmap.dpr:	Creating graphical effects with color mapping tables.
+exdata.dpr:	Appending datafiles onto your executable.
+exdbuf.dpr:	How to use double buffering to avoid flicker.
+exfixed.dpr:	Using fixed point maths.
+exhello.dpr:	Simple graphical "hello world" program.
+exhsvrgb.dpr:	Translating HSV space -> RGB values.
+exmouse.dpr:	Getting input from the mouse.
+expal.dpr:	Palette effects and color cycling.
+expat.dpr:	Using patterned drawing modes and sub-bitmaps.
+exsprite.dpr:	Datafiles access and sprite animation.
+extrans.dpr:	Lighting and translucency effects.
+extruec.dpr:	Truecolor pixel format conversions.
+

@@ -1,0 +1,143 @@
+ ______   ___    ___
+/\  _  \ /\_ \  /\_ \
+\ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
+ \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
+  \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
+   \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
+    \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
+                                   /\____/               \ \_\
+     Versión 4.3.0                 \_/__/                 \/_/ 
+
+  Una envolvente para utilizar la biblioteca Allegro en Pascal
+  por Ñuño Martínez, 2 de Marzo de 2009.
+
+
+
+======
+Índice
+======
+
+ - Introducción
+ - Licencia
+ - Instrucciones de instalación
+ - Utilizar la biblioteca
+ - Distribuir programas que usan Allegro.pas
+ - Se busca colaboración
+ - Cómo buscar y recibir ayuda.
+
+
+
+============
+Introducción
+============
+
+  Allegro.pas es una envolvente para poder utilizar la biblioteca Allegro con
+  compiladores Pascal, como Free Pascal y Delphi.
+
+  En principio, la he programado para uso propio, por lo que no he incluido
+  toda la funcionalidad disponible en Allegro.  Aun así,  la iré corrigiendo y
+  ampliándo según vaya necesitándose.  También administraré las modificaciones
+  o añadidos que lleguen a mis manos para que estén disponibles para todos.
+
+  Esta es una versión "SVN" por lo que puede ser totalmente no funcional.
+
+
+========
+Licencia
+========
+
+  Allegro y Allegro.pas son un regalo (gift-ware).  Fueron creado por un grupo
+  de personas en cooperación, y le es entregado a usted libremente como regalo.
+  Puede usarla, modificarla, distribuirla y, en definitiva, hackearla de
+  cualquier forma que desee y no tiene que entregarnos nada a cambio.  Sin
+  embargo, si le gusta este producto le rogamos que nos lo agradezca haciendo
+  un regalo a la comunidad de Allegro.  Este puede ser escribir una extensión,
+  facilitar una descripción de errores útil, hacer alguna mejora a la
+  biblioteca, o simplemente publicar las fuentes de su programa de forma que
+  otras personas puedan aprender de él.  Si usted redistribuye partes de este
+  código o hace un juego con él, sería estupendo si menciona Allegro en alguna
+  parte de los créditos, pero no es necesario que lo haga.  Confiamos que no
+  abusará de nuestra generosidad.
+
+   Disclaimer:
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT.  IN NO EVENT
+   SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE SOFTWARE BE LIABLE
+   FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
+   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+
+
+
+============================
+Instrucciones de instalación
+============================
+
+
+
+======================
+Utilizar la biblioteca
+======================
+
+
+
+========================================
+Distribuir programas que usan Alegro.pas
+========================================
+
+
+
+=====================
+Se busca colaboración
+=====================
+
+  Como ya se ha dicho, esta versión está incompleta.  Si quiere, puede
+  colaborar en su finalización y añadir su nombre a la lista de autores.
+  Necesitamos desde simples probadores hasta personas que ayuden a completar el
+  manual de programación, que lo traduzcan a otros idiomas o que escriban las
+  envolventes que faltan, demostraciones y ejemplos de uso.
+
+  Si desea colaborar, lea la siguiente sección y póngase en contacto *antes* de
+  empezar a trabajar.
+
+
+
+=======================
+Información de contacto
+=======================
+
+  Encontrará la información referente a Allegro.pas y podrá encontrar las
+  últimas versiones liberadas en http://allegro-pas.sourceforge.net.  El sitio
+  del proyecto está en http://sourceforge.net/projects/allegro-pas/.
+  Allí encontrará una lista de correo y un foro público donde podrá exponer sus
+  dudas y hacer sugerencias.
+
+  Otro foro interesante sobre la programación de juegos en Pascal, que también
+  puede ayudarle si tiene problemas con Allegro.pas, se encuentra en el sitio
+  "Pascal Game Development" (http://www.pascalgamedevelopment.com/).
+
+  Si quiere obtener el máximo provecho, le recomendamos que siga las siguientes
+  indicaciones:
+
+    * Antes de hacer cualquier pregunta sobre la biblioteca lea la
+      documentación.  Si no encuentra la respuesta en ella o no entiende algo,
+      entonces sí, diríjase al foro.  Si cree que falta algo en los documentos,
+      no se explica correctamente o que hay errores, lo sabemos: ya dijimos que
+      estamos trabajando en ello, ¿verdad?
+    * Antes de enviar un mensaje compruebe si ya se ha comentado con
+      anterioridad su duda o propuesta.  El foro dispone de un buscador que
+      facilita la tarea de comprobación.  Recuerde que el repetir las mismas
+      preguntas, aunque sea en distintos foros, no asegura encontrar mejores
+      o más rápidas respuestas.
+    * Ponga en el asunto una frase que resuma su mensaje.  Frases como
+      "Necesito ayuda" o "No funciona" tal vez no atraigan la atención de la
+      gente que pueda ayudarle.  Utilize frases como "No se muestra el sprite
+      donde quiero" o "No se reproduce el sonido correctamente".
+    * Si la consulta se refiere a un programa que ha escrito usted, procure
+      incluir el código donde crea que está el problema.  No es preciso que
+      incluya todo el programa (a menos que alguien se lo pida expresamente).
+
+  Siguiendo estas sencillas normas tendrá más posibilidades de obtener una
+  respuesta rápida, correcta y adecuada a sus preguntas y sugerencias.
