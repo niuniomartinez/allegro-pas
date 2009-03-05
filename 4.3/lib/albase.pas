@@ -1,6 +1,6 @@
-(* Base definitions to interface with Allegro and the Allegro.pas dynamic
- * modules. *)
 UNIT albase;
+(*< Base definitions to interface with Allegro and the Allegro.pas dynamic
+ * modules. *)
 
 {$H+}
 {$IFDEF FPC}
@@ -28,14 +28,14 @@ USES
 CONST
 { @exclude }
  {$IFDEF MSWINDOWS}
-   ALLEGRO_SHARED_LIBRARY_NAME = 'alleg42.dll';
+   ALLEGRO_SHARED_LIBRARY_NAME = 'alleg43.dll';
  {$ELSE}
    {$IFDEF UNIX}
      {$IFDEF DARWIN}
        {$ERROR Can't compile on MacOS X. }
      {$ELSE}
 { @exclude }
-       ALLEGRO_SHARED_LIBRARY_NAME = 'liballeg-4.2.2.so';
+       ALLEGRO_SHARED_LIBRARY_NAME = 'liballeg-4.3.10.so';
      {$ENDIF}
    {$ELSE}
      {$ERROR Can't compile this platform. }

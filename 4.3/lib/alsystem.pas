@@ -1,14 +1,15 @@
-(* System level: initialization, cleanup, etc. *)
 UNIT alsystem;
+(*< System level: initialization, cleanup, etc. *)
 
-{$H+}
 {$IFDEF FPC}
 { Free Pascal. }
  {$PACKRECORDS C}
+ {$MODE FPC}
 {$ELSE}
 { Assumes Codegear Delphi/Turbo. }
  {$A-}
 {$ENDIF}
+{$H+}
 
 
 INTERFACE
@@ -49,14 +50,14 @@ CONST
 
 VAR
 (* Stores the last error number. *)
-  al_errno: LONGINT;
+  al_errno: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_errno';
 (* Text string used by @link (al_set_gfx_mode), @link (al_install_sound) and
    other functions to report error messages.  If they fail and you want to tell
    the user why, this is the place to look for a description of the problem. *)
-  al_error,
+  al_error: PCHAR; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_error';
 (* Text string containing a date and version number for the library, in case
    you want to display these somewhere. *)
-  al_id_string: PCHAR;
+  al_id_string: PCHAR; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_id';
 
 
 
@@ -71,7 +72,7 @@ BEGIN
   OSTYPE_LINUX := AL_ID(ORD ('T'), ORD ('U'), ORD ('X'), ORD (' '));
 END;
   #) *)
-  FUNCTION AL_ID (a, b, c, d: CHAR): LONGINT;
+  FUNCTION AL_ID (a, b, c, d: LONGINT): LONGINT;
 
 
 
@@ -124,7 +125,7 @@ END;
    reducing any accented characters to 7-bit ASCII approximations. Example:
 
 @longcode (#
-IF al_init <> 0 THEN
+  IF al_init <> 0 THEN
     EXIT (1);
   IF NOT init_my_data THEN
   BEGIN
@@ -216,7 +217,7 @@ IF depth <> 0 THEN
 @longcode (#
 VAR
   Width, Height: LONGINT;
-BEGIN          
+BEGIN
   al_init;
      ...
   IF al_get_desktop_resolution (width, height) THEN
@@ -247,103 +248,93 @@ al_set_window_title ('Allegro.pas rules!');
 
 IMPLEMENTATION
 
-USES
-  alfixed, alpalete, altext;
-
-
-
-{ Delphi can't access to the public variables from Allegro, so we need some
-  magic to access them. }
-  FUNCTION _al_install_ (system_id: AL_INT; errno_ptr: AL_INTPTR;
-		       atexit_ptr: AL_PTR): AL_INT; CDECL;
-    EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME NAME 'al_install';
-  FUNCTION _al_init_: AL_INT; CDECL;
-    EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME NAME 'al_init';
-  FUNCTION _get_al_id_string_: PCHAR; CDECL;
-    EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-  FUNCTION _get_al_errno_: AL_INTPTR; CDECL;
-    EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-  FUNCTION _get_al_error_: PCHAR; CDECL;
-    EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-  FUNCTION _get_black_palette_: AL_PALETTEptr; CDECL;
-    EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-  FUNCTION _get_default_palette_: AL_PALETTEptr; CDECL;
-    EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-  FUNCTION _get_desktop_palette_: AL_PALETTEptr; CDECL;
-    EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-  FUNCTION _get_font_: AL_PTR; CDECL;
-    EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-  FUNCTION _get_allegro_404_char_: AL_INTptr; CDECL;
-    EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-
-
-
-FUNCTION al_install (system_id: AL_INT; errno_ptr: AL_INTPTR; atexit_ptr: AL_PTR): AL_INT;
 VAR
-  R: AL_INT;
+(* To be used as "errnum". *)
+  NumError: LONGINT;
+
+
+
+(* Function for internal use. *)
+  FUNCTION _install_allegro_version_check (
+	system_id: LONGINT; errno_ptr: PLONGINT; atexit_ptr: POINTER;
+	version: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+(* Function for messages. *)
+  PROCEDURE _allegro_message (CONST msg: PCHAR); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_message';
+
+(* Function for close button handler. *)
+  FUNCTION _set_close_button_callback (proc: AL_SIMPLE_PROC): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_close_button_callback';
+
+
+(* Converts four 8 bit values to a packed 32 bit integer ID. *)
+FUNCTION AL_ID (a, b, c, d: LONGINT): LONGINT;
 BEGIN
-  R := _al_install_ (system_id, errno_ptr, atexit_ptr);
-  IF R = 0 THEN __al_init_system__;
-  al_install := R;
+  AL_ID := (a SHL 24) OR (b SHL 16) OR (c SHL 8) OR d;
 END;
 
 
 
-FUNCTION al_init: AL_INT;
-VAR
-  R: AL_INT;
+(* Initialises the Allegro library. *)
+FUNCTION al_install (system_id: LONGINT): BOOLEAN;
 BEGIN
-  R := _al_init_;
-  IF R = 0 THEN __al_init_system__;
-  BEGIN
-  END;
-  al_init := R;
+  al_install := _install_allegro_version_check (system_id, @NumError, NIL,
+	(4 SHL 16) OR (3 SHL 8) OR 10) = 0;
 END;
 
 
 
-(* __al_init_system__:
- *   Initialises variables and system.  It's also useful if using a 3rd party
- *   library that initialises Allegro. *)
-PROCEDURE __al_init_system__;
+(* Initialises the Allegro library. *)
+FUNCTION al_init: BOOLEAN;
 BEGIN
-{ Get pointers of public variables. }
-  al_id_string := _get_al_id_string_;
-  al_errno := _get_al_errno_;
-  al_error := _get_al_error_;
-  al_black_palette := _get_black_palette_;
-  al_default_palette := _get_default_palette_;
-  al_desktop_palette := _get_desktop_palette_;
-  al_font := _get_font_;
-  al_404_char := _get_allegro_404_char_;
-
-  __al_inittrig__;
+  al_init := _install_allegro_version_check (AL_SYSTEM_AUTODETECT, @NumError,
+	NIL, (4 SHL 16) OR (3 SHL 8) OR 10) = 0;
 END;
 
 
 
-PROCEDURE message (CONST msg: PCHAR); CDECL;
-  EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_message';
-
-PROCEDURE al_message (CONST msg: AL_STRING);
+(* Outputs a message. *)
+PROCEDURE al_message (CONST msg: STRING);
 BEGIN
-  message (PCHAR (msg));
+  _allegro_message (PCHAR (msg));
 END;
 
 
 
-{$IFDEF FPC}
-PROCEDURE set_window_title (CONST title: PCHAR);
-  EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME NAME 'al_set_window_title';
-{$ENDIF}
-
-PROCEDURE al_set_window_title (CONST title: AL_STRING);
+(* On platforms that have a close button, this routine installs a callback
+   function to handle the close event. *)
+FUNCTION al_set_close_button_callback (proc: AL_SIMPLE_PROC): BOOLEAN;
 BEGIN
-{ Delphi compiles it but it throws a segment fault! }
-{$IFDEF FPC}
-  set_window_title (PCHAR (title));
-{$ENDIF}
+  al_set_close_button_callback := _set_close_button_callback (proc) = 0;
+END;
+
+
+
+
+(* Finds out the currently selected desktop color depth. *)
+FUNCTION al_desktop_color_depth: LONGINT;
+BEGIN
+{ It's implemented using inline and drivers so I'll keep it this way at moment. }
+  al_desktop_color_depth := 0;
+END;
+
+
+
+(* Finds out the currently selected desktop resolution. *)
+FUNCTION al_get_desktop_resolution (VAR w, h: LONGINT): BOOLEAN;
+BEGIN
+{ It's implemented using inline and drivers so I'll keep it this way at moment. }
+  al_get_desktop_resolution := FALSE;
+END;
+
+
+
+(* This routine alters the window title. *)
+PROCEDURE al_set_window_title (CONST title: STRING);
+BEGIN
+{ It's implemented using inline and drivers so I'll keep it this way at moment. }
 END;
 
 END.
-
