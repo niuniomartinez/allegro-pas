@@ -4,6 +4,13 @@
 # Builds the list of source files and object files for each bynary type.
 #
 
+# Lib files.
+TEMP = $(wildcard $(LIBDIR)*.pas)
+ifeq ($(strip $(TEMP)),)
+$(error ERROR: No source code found at $(LIBDIR))
+endif
+LIBFILES = $(addprefix $(LIBDIR),$(addsuffix .pas, $(basename $(notdir $(TEMP) ) ) ) )
+
 # For the examples.
 TEM2 = $(wildcard $(EXMDIR)*.pp)
 ifeq ($(strip $(TEM2)),)

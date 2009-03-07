@@ -18,15 +18,15 @@ demo: $(DEMO)
 tools: $(TOOLDIR)charfont($BINSUF)
 
 # Executables.
-$(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp
+$(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR) -FU$(LIBDIR) $< -o$@
 	@echo Example $@ ready!
 
-$(DEMODIR)%$(BINSUF): $(DEMOSRC)
+$(DEMODIR)%$(BINSUF): $(DEMOSRC) $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(DEMODIR) $< -o$@
 	@echo Demo game ready!
 
-$(TOOLDIR)%$(BINSUF): $(TOOLDIR)%.pp
+$(TOOLDIR)%$(BINSUF): $(TOOLDIR)%.pp $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(TOOLDIR) $< -o$@
 	@echo $@ ready!
 
@@ -38,6 +38,7 @@ status: adbanner
 	@echo "-----------------"
 	@echo "  Project : $(PROJECT)"
 	@echo "  Platform : $(PLATFORM)"
+	@echo "  Platform : $(LIBFILES)"
 	@echo "  Examples : $(EXMFILES)"
 	@echo "  Demo game : $(DEMO)"
 

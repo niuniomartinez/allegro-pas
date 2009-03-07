@@ -28,7 +28,7 @@ CONST
    manipulate memory bitmaps, such as the text mode datafile tools or the
    Windows GDI interfacing functions.
 
-   Is equuivalent to @code (AL_ID @('N', 'O', 'N', 'E'@);). *)
+   Is equivalent to @code (AL_ID @('N', 'O', 'N', 'E'@);). *)
   AL_SYSTEM_NONE	= $4E4F4E45;
 (* Defined to the major version of Allegro.  From a version number like 4.1.16,
    this would be defined to the integer 4. *)
@@ -248,11 +248,16 @@ al_set_window_title ('Allegro.pas rules!');
 
 IMPLEMENTATION
 
+TYPE
+{$include alsysdrv.inc}
+
+
+
 VAR
 (* To be used as "errnum". *)
   NumError: LONGINT;
-
-
+(* To access to stytem drivers. *)
+  system_driver: __SYSTEM_DRIVER__PTR; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
 (* Function for internal use. *)
   FUNCTION _install_allegro_version_check (
@@ -267,6 +272,7 @@ VAR
 (* Function for close button handler. *)
   FUNCTION _set_close_button_callback (proc: AL_SIMPLE_PROC): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_close_button_callback';
+
 
 
 (* Converts four 8 bit values to a packed 32 bit integer ID. *)
@@ -307,7 +313,7 @@ END;
    function to handle the close event. *)
 FUNCTION al_set_close_button_callback (proc: AL_SIMPLE_PROC): BOOLEAN;
 BEGIN
-  al_set_close_button_callback := _set_close_button_callback (proc) = 0;
+  al_set_close_button_callback := (_set_close_button_callback (proc) = 0);
 END;
 
 
@@ -316,8 +322,10 @@ END;
 (* Finds out the currently selected desktop color depth. *)
 FUNCTION al_desktop_color_depth: LONGINT;
 BEGIN
-{ It's implemented using inline and drivers so I'll keep it this way at moment. }
-  al_desktop_color_depth := 0;
+  IF system_driver^.desktop_color_depth <> NIL THEN
+    al_desktop_color_depth := (system_driver^.desktop_color_depth ())
+  ELSE
+    al_desktop_color_depth := 0;
 END;
 
 
@@ -325,8 +333,10 @@ END;
 (* Finds out the currently selected desktop resolution. *)
 FUNCTION al_get_desktop_resolution (VAR w, h: LONGINT): BOOLEAN;
 BEGIN
-{ It's implemented using inline and drivers so I'll keep it this way at moment. }
-  al_get_desktop_resolution := FALSE;
+  IF system_driver^.get_desktop_resolution <> NIL THEN
+    al_get_desktop_resolution := (system_driver^.get_desktop_resolution (@w, @h) = 0)
+  ELSE
+    al_get_desktop_resolution := FALSE;
 END;
 
 
@@ -334,7 +344,8 @@ END;
 (* This routine alters the window title. *)
 PROCEDURE al_set_window_title (CONST title: STRING);
 BEGIN
-{ It's implemented using inline and drivers so I'll keep it this way at moment. }
+  IF system_driver^.set_window_title <> NIL THEN
+    system_driver^.set_window_title (PCHAR (title));
 END;
 
 END.

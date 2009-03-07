@@ -1,24 +1,13 @@
+(* Example for Allegro.pas
+   that displays the text "Hello, world!" in the screen.
+
+   by Ã‘uÃ±o MartÃ­nez <niunio(at)users.sourceforge.net>
+   from an example of Allegro Game Library by Shawn Hargreaves. *)
 PROGRAM exhello;
-(*
-  ______   ___    ___
- /\  _  \ /\_ \  /\_ \
- \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
-  \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
-    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
-     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
-                                    /\____/               \ \_\
-                                    \_/__/                 \/_/
- *
- *	Example that displays the text "Hello, world!" in the screen.
- *
- *	by Ñuño Martínez <>
- *	from an example of Allegro Game Library by Shawn Hargreaves.
- *
- *	See readme.txt for license and copyright information.
- *)
 
 {$H+}
+
+
 
 USES
 { It needs some Allegro.pas units. }
@@ -42,12 +31,12 @@ BEGIN { The program starts here. }
   al_install_keyboard;
 
 { Set a graphics mode sized 320x200. }
-  IF (al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) <> 0) THEN
+  IF (al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) <> 0) THEN
     IF (al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) <> 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
-      al_message (al_error);
+      al_message (STRING (al_error));
     { Shutdown Allegro.  You should do it because it isn't automatic. }
       al_exit;
       EXIT;
@@ -80,4 +69,3 @@ BEGIN { The program starts here. }
 
 { End of the program. }
 END.
-
