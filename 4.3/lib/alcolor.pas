@@ -1,29 +1,22 @@
 UNIT alcolor;
-(*
-  ______   ___    ___
- /\  _  \ /\_ \  /\_ \
- \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
-  \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
-    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
-     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
-                                    /\____/               \ \_\
-                                    \_/__/                 \/_/
- *
- *	Color manipulation.
- *	by Ñuño Martínez <>
- *
- *	See readme.txt for license and copyright information.
- *)
+(*< In a truecolor video mode the red, green, and blue components for each
+    pixel are packed directly into the color value, rather than using a palette
+    lookup table.  In a 15-bit mode there are 5 bits for each color, in 16-bit
+    modes there are 5 bits each of red and blue and six bits of green, and both
+    24 and 32-bit modes use 8 bits for each color (the 32-bit pixels simply
+    have an extra padding byte to align the data nicely).  The layout of these
+    components can vary depending on your hardware, but will generally either
+    be RGB or BGR.  Since the layout is not known until you select the video
+    mode you will be using, you must call @link (al_set_gfx_mode) before using
+    any of the following routines!  *)
 
+{$H+}
 {$IFDEF FPC}
 { Free Pascal. }
  {$PACKRECORDS C}
- {$LONGSTRINGS ON}
 {$ELSE}
-{ Assumes Borland Delphi/Turbo. }
+{ Assumes Codegear Delphi/Turbo. }
  {$A-}
- {$H+}
 {$ENDIF}
 
 
@@ -36,120 +29,90 @@ USES
 
 
 TYPE
-(* RGB color descriptor. *)
+(* Pointer to @link (AL_RGB). *)
   AL_RGBptr = ^AL_RGB;
+
+(* Palette entry.  It contains an additional field for the purpose of padding
+   but you should not usually care about it.  Read chapter "Palette routines"
+   for a description on how to obtain/use this structure. *)
   AL_RGB = RECORD
-    r	  : AL_UCHAR;
-    g	  : AL_UCHAR;
-    b	  : AL_UCHAR;
-    filler: AL_UCHAR;
+    r	  : BYTE;
+    g	  : BYTE;
+    b	  : BYTE;
+    filler: BYTE;
   END;
 
 
 
+(* Converts colors from a hardware independent format (red, green, and blue
+   values ranging 0-255) to the pixel format required by the current video
+   mode, calling the preceding 8, 15, 16, 24, or 32-bit makecol functions as
+   appropriate.
 
-  FUNCTION al_makecol (r, g, b: AL_INT): AL_INT; CDECL;
+   @returns (the requested RGB triplet in the current color depth.) *)
+  FUNCTION al_makecol (r, g, b: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'makecol';
-  FUNCTION al_makecol8 (r, g, b: AL_INT): AL_INT; CDECL;
+
+(* Converts colors from a hardware independent form (red, green, and blue
+   values ranging 0-255) into 8-bit color index.  Converting to an 8-bit color
+   involves searching the palette to find the closest match, which is quite
+   slow unless you have set up an RGB mapping table.
+
+   @returns (the requested RGB triplet in the specified color depth.) *)
+  FUNCTION al_makecol8 (r, g, b: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'makecol8';
-  FUNCTION al_makecol_depth (color_depth, r, g, b: AL_INT): AL_INT; CDECL;
+
+(* Converts colors from a hardware independent format (red, green, and blue
+   values ranging 0-255) to the pixel format required by the specified color
+   depth.
+
+   @returns (the requested RGB triplet in the specified color depth.) *)
+  FUNCTION al_makecol_depth (color_depth, r, g, b: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'makecol_depth';
 
-  FUNCTION al_makeacol (r, g, b, a: AL_INT): AL_INT; CDECL;
+(* Convert RGBA colors into display dependent pixel formats.  In anything less
+   than a 32-bit mode, these are the same as calling @link (al_makecol) or
+   @link (al_makecol_depth), but by using these routines it is possible to
+   create 32-bit color values that contain a true 8 bit alpha channel along
+   with the red, green, and blue components.  You should only use RGBA format
+   colors as the input to @link (al_draw_trans_sprite) or @link
+   (al_draw_trans_rle_sprite) after calling @link (al_set_alpha_blender),
+   rather than drawing them directly to the screen.
+
+   @returns (the requested RGBA quadruplet.) *)
+  FUNCTION al_makeacol (r, g, b, a: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'makeacol';
-  FUNCTION al_makeacol_depth (color_depth, r, g, b, a: AL_INT): AL_INT; CDECL;
+  FUNCTION al_makeacol_depth (color_depth, r, g, b, a: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'makeacol_depth';
 
-  PROCEDURE al_hsv_to_rgb (h, s, v: AL_FLOAT; r, g, b: AL_INTptr);
-{ Next commented declaration is for "al_hsv_to_rgb" but for some reason it
-  throws EAccessViolation exception, so this procedure was translated from
-  the original C code.  See implementation.
-  CDECL;
-      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'hsv_to_rgb'; }
-  PROCEDURE al_rgb_to_hsv (r, g, b: AL_INT; h, s, v: AL_FLOATptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rgb_to_hsv';
+
+(* Convert color values between the HSV and RGB color spaces.  The RGB values
+   range from 0 to 255, hue is from 0 to 360, and saturation and value are from
+   0 to 1. *)
+  PROCEDURE al_hsv_to_rgb (h, s, v: DOUBLE; VAR r, g, b: LONGINT);
+  PROCEDURE al_rgb_to_hsv (r, g, b: LONGINT; VAR h, s, v: DOUBLE);
 
 
 
 IMPLEMENTATION
 
-(* al_hsv_to_rgb:
- *   Converts from HSV colorspace to RGB values.  Translated from the original
- *   C code writen by Dave Thomson. *)
-PROCEDURE al_hsv_to_rgb (h, s, v: AL_FLOAT; r, g, b: AL_INTptr);
-VAR
-  f, x, y, z: AL_FLOAT;
-  i: AL_INT;
+  PROCEDURE _hsv_to_rgb_ (h, s, v: DOUBLE; r, g, b: PLONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'hsv_to_rgb';
+  PROCEDURE _rgb_to_hsv (r, g, b: LONGINT; h, s, v: PDOUBLE); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rgb_to_hsv';
+
+
+
+PROCEDURE al_hsv_to_rgb (h, s, v: DOUBLE; VAR r, g, b: LONGINT);
 BEGIN
-  v := v * 255.0;
+  _hsv_to_rgb_ (h, s, v, @r, @g, @b);
+END;
 
-  IF s = 0.0 THEN
-  BEGIN
-  { ok since we don't divide by s, and faster }
-    r^ := TRUNC (v + 0.5); g^ := r^; b^ := r^;
-  END
-  ELSE BEGIN
-    WHILE h >= 360.0 DO
-      h := h - 360.0;
-    h := h / 60.0;
-    IF h < 0.0 THEN
-      h := h + 6.0;
-
-    i := TRUNC (h);
-    f := h - i;
-    x := v * s;
-    y := x * f;
-    v := v + 0.5; { round to the nearest integer below }
-    z := v - x;
-
-    CASE i OF
-    6:
-      BEGIN
-	r^ := TRUNC (v);
-	g^ := TRUNC (z + y);
-	b^ := TRUNC (z);
-      END;
-    0:
-      BEGIN
-	r^ := TRUNC (v);
-	g^ := TRUNC (z + y);
-	b^ := TRUNC (z);
-      END;
-    1:
-      BEGIN
-	r^ := TRUNC (v - y);
-	g^ := TRUNC (v);
-	b^ := TRUNC (z);
-      END;
-    2:
-      BEGIN
-	r^ := TRUNC (z);
-	g^ := TRUNC (v);
-	b^ := TRUNC (z + y);
-      END;
-    3:
-      BEGIN
-	r^ := TRUNC (z);
-	g^ := TRUNC (v - y);
-	b^ := TRUNC (v);
-      END;
-    4:
-      BEGIN
-	r^ := TRUNC (z + y);
-	g^ := TRUNC (z);
-	b^ := TRUNC (v);
-      END;
-    5:
-      BEGIN
-	r^ := TRUNC (v);
-	g^ := TRUNC (z);
-	b^ := TRUNC (v - y);
-      END;
-    END;
-  END;
+PROCEDURE al_rgb_to_hsv (r, g, b: LONGINT; VAR h, s, v: DOUBLE);
+BEGIN
+  _rgb_to_hsv (r, g, b, @h, @s, @v);
 END;
 
 
 
 END.
-

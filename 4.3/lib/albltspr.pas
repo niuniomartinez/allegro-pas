@@ -163,7 +163,7 @@ CONST
    @bold (Warning:)  if the hardware acceleration flag is not set, @code
    (masked_blit) will not work correctly when used with a source image in
    system or video memory so the latter must be a memory bitmap. *)
-  PROCEDURE al_masked_blit (source, dest: AL_BITMAPptr; source_x, source_y, dest_x, dest_y, width, height: AL_INT); CDECL;
+  PROCEDURE al_masked_blit (source, dest: AL_BITMAPptr; source_x, source_y, dest_x, dest_y, width, height: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'masked_blit';
 
 (* Like @link (al_masked_blit), except it can scale images (so the source and
@@ -171,7 +171,7 @@ CONST
    doesn't do as much safety checking as the regular @code (al_masked_blit):
    in particular you must take care not to copy from areas outside the source
    bitmap.  Moreover, the source must be a memory bitmap. *)
-  PROCEDURE al_masked_stretch_blit (source, dest: AL_BITMAPptr; source_x, source_y, source_width, source_height, dest_x, dest_y, dest_width, dest_height: AL_INT); CDECL;
+  PROCEDURE al_masked_stretch_blit (source, dest: AL_BITMAPptr; source_x, source_y, source_width, source_height, dest_x, dest_y, dest_width, dest_height: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'masked_stretch_blit';
 
 
@@ -240,30 +240,124 @@ VAR
    ) *)
   PROCEDURE al_draw_sprite_ex (bmp, sprite: AL_BITMAPptr; x, y, mode, flip: LONGINT);
 
-  PROCEDURE al_draw_sprite_h_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
-  PROCEDURE al_draw_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
-  PROCEDURE al_draw_sprite_vh_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
-  PROCEDURE al_draw_trans_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
-  PROCEDURE al_draw_lit_sprite (bmp, sprite: AL_BITMAPptr; x, y, c: AL_INT);
-  
-  PROCEDURE al_rotate_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle: AL_FIXED);
-  PROCEDURE al_rotate_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle: AL_FIXED);
-  
-  PROCEDURE al_rotate_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle, scale: AL_FIXED);
-  PROCEDURE al_rotate_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle, scale: AL_FIXED);
+(* This is like @link (al_draw_sprite), but it additionally flip the image
+   horizontally.  Flipping horizontally means that the x-axis is reversed,
+   between the source and the destination.  This produces exact mirror images,
+   which is not the same as rotating the sprite (and it is a lot faster than
+   the rotation routine).  The sprite must be a memory bitmap. *)
+  PROCEDURE al_draw_sprite_h_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
 
-  PROCEDURE al_pivot_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle: AL_FIXED);
-  PROCEDURE al_pivot_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle: AL_FIXED);
-  
-  PROCEDURE al_pivot_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle, scale: AL_FIXED);
-  PROCEDURE al_pivot_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle, scale: AL_FIXED);
+(* This is like @link (al_draw_sprite), but it additionally flip the image
+   vertically.  Flipping vertically means that the y-axis is reversed,
+   between the source and the destination.  This produces exact mirror images,
+   which is not the same as rotating the sprite (and it is a lot faster than
+   the rotation routine).  The sprite must be a memory bitmap. *)
+  PROCEDURE al_draw_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+
+(* This is like @link (al_draw_sprite), but it additionally flip the image
+   vertically and horizontally.  Flipping vertically means that the y-axis is
+   reversed, while flipping horizontally means that de x-axis is reversed,
+   between the source and the destination.  This produces exact mirror images,
+   which is not the same as rotating the sprite (and it is a lot faster than
+   the rotation routine).  The sprite must be a memory bitmap. *)
+  PROCEDURE al_draw_sprite_vh_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+
+(* Uses the global @link (al_color_map) table or truecolor blender functions
+   to overlay the sprite on top of the existing image.  This must only be used
+   after you have set up the color mapping table (for 256-color modes) or
+   blender functions (for truecolor modes).  Because it involves reading as
+   well as writing the bitmap memory, translucent drawing is very slow if you
+   draw directly to video RAM, so wherever possible you should use a memory
+   bitmap instead. Example:
+@longcode (#
+VAR
+  global_trans_table: AL_COLOR_MAP;
+
+          ...
+   al_create_trans_table (@global_trans_table, my_palette,
+                             128, 128, 128, NIL);
+          ...
+   IF al_get_color_depth = 8
+     al_color_map := @global_trans_table
+   ELSE
+     al_set_trans_blender (128, 128, 128, 128);
+   al_draw_trans_sprite (buffer, ghost_sprite, x, y);
+#)
+
+   The bitmap and sprite must normally be in the same color depth, but as a
+   special case you can draw 32 bit RGBA format sprites onto any hicolor or
+   truecolor bitmap, as long as you call @link (al_set_alpha_blender) first,
+   and you can draw 8-bit alpha images onto a 32-bit RGBA destination, as long
+   as you call @link (al_set_write_alpha_blender) first.  As @link
+   (al_draw_sprite) this function skips transparent pixels, except if the
+   source sprite is an 8-bit image;  if this is the case, you should pay
+   attention to properly set up your color map table for index 0. *)
+  PROCEDURE al_draw_trans_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+
+(* In 256-color modes, uses the global @link (al_color_map) table to tint the
+   sprite image to the specified color or to light it to the level specified by
+   'color', depending on the function which was used to build the table
+   (@link (al_create_trans_table) or @link (al_create_light_table)), and draws
+   the resulting image to the destination bitmap.  In truecolor modes, uses the
+   blender functions to light the sprite image using the alpha level specified
+   by 'color' (the alpha level which was passed to the blender functions is
+   ignored) and draws the resulting image to the destination bitmap.
+
+   @param (c must be in the range [0..255] whatever its actual meaning is.
+     This must only be used after you have set up the color mapping table @(for
+     256-color modes@) or blender functions @(for truecolor modes@).) *)
+  PROCEDURE al_draw_lit_sprite (bmp, sprite: AL_BITMAPptr; x, y, c: LONGINT);
+
+(* Draws the sprite image onto the bitmap.  It is placed with its top left
+   corner at the specified position, then rotated by the specified angle around
+   its centre.  The angle is a fixed point 16.16 number in the same format used
+   by the fixed point trig routines, with 256 equal to a full circle, 64 a
+   right angle, etc.  All rotation functions can draw between any two bitmaps,
+   even screen bitmaps or bitmaps of different color depth.
+
+   Positive increments of the angle will make the sprite rotate clockwise. *)
+  PROCEDURE al_rotate_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
+
+(* Like @link (al_rotate_sprite), but flips the image vertically before
+   rotating it.  To flip horizontally, use this routine but add @code
+   (al_itofix @(128@)) to the angle.  To flip in both directions, use @code
+   (al_rotate_sprite) and add @code (al_itofix @(128@)) to its angle. *)
+  PROCEDURE al_rotate_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
+
+(* Like @link (al_rotate_sprite), but stretches or shrinks the image at the
+   same time as rotating it. *)
+  PROCEDURE al_rotate_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED);
+
+(* Draws the sprite, similar to @link (al_rotate_scaled_sprite) except that it
+  flips the sprite vertically first. *)
+  PROCEDURE al_rotate_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED);
+
+(* Like @link (al_rotate_sprite), but aligns the point in the sprite given by
+   @code (cx, cy) to @code (x, y) in the bitmap, then rotates around this
+   point. *)
+  PROCEDURE al_pivot_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
+
+(* Like @link (al_rotate_sprite_v_flip), but aligns the point in the sprite
+   given by @code (cx, cy) to @code (x, y) in the bitmap, then rotates around
+   this point. *)
+  PROCEDURE al_pivot_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
+
+(* Like @link (al_rotate_scaled_sprite), but aligns the point in the sprite
+   given by @code (cx, cy) to @code (x, y) in the bitmap, then rotates around
+   this point. *)
+  PROCEDURE al_pivot_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED);
+
+(* Like @link (al_rotate_scaled_sprite_v_flip), but aligns the point in the
+   sprite given by @code (cx, cy) to @code (x, y) in the bitmap, then rotates
+   and scales around this point. *)
+  PROCEDURE al_pivot_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED);
 
 
 
 IMPLEMENTATION
 
 (* Sprites. *)
-PROCEDURE al_draw_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+PROCEDURE al_draw_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
 BEGIN
   IF sprite^.vtable^.color_depth = 8 THEN
     bmp^.vtable^.draw_256_sprite (bmp, sprite, x, y)
@@ -281,26 +375,26 @@ END;
 
 
 
-PROCEDURE al_draw_sprite_h_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+PROCEDURE al_draw_sprite_h_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
 BEGIN
   bmp^.vtable^.draw_sprite_h_flip (bmp, sprite, x, y);
 END;
 
 
 
-PROCEDURE al_draw_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+PROCEDURE al_draw_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
 BEGIN
   bmp^.vtable^.draw_sprite_v_flip (bmp, sprite, x, y);
 END;
 
-PROCEDURE al_draw_sprite_vh_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+PROCEDURE al_draw_sprite_vh_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
 BEGIN
   bmp^.vtable^.draw_sprite_vh_flip (bmp, sprite, x, y);
 END;
 
 
 
-PROCEDURE al_draw_trans_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+PROCEDURE al_draw_trans_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
 BEGIN
   IF sprite^.vtable^.color_depth = 32 THEN
     bmp^.vtable^.draw_trans_rgba_sprite (bmp, sprite, x, y)
@@ -310,14 +404,14 @@ END;
 
 
 
-PROCEDURE al_draw_lit_sprite (bmp, sprite: AL_BITMAPptr; x, y, c: AL_INT);
+PROCEDURE al_draw_lit_sprite (bmp, sprite: AL_BITMAPptr; x, y, c: LONGINT);
 BEGIN
   bmp^.vtable^.draw_lit_sprite (bmp, sprite, x, y, c);
 END;
 
 
   
-PROCEDURE al_rotate_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle: AL_FIXED);
+PROCEDURE al_rotate_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
 BEGIN
   bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * $10000) DIV 2,
 						      (y SHL 16) + (sprite^.h * $10000) DIV 2,
@@ -327,7 +421,7 @@ END;
 
 
 
-PROCEDURE al_rotate_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle: AL_FIXED);
+PROCEDURE al_rotate_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
 BEGIN
   bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * $10000) DIV 2,
 						      (y SHL 16) + (sprite^.h * $10000) DIV 2,
@@ -337,7 +431,7 @@ END;
 
 
 
-PROCEDURE al_rotate_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle, scale: AL_FIXED);
+PROCEDURE al_rotate_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED);
 BEGIN
   bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * scale) DIV 2,
 						      (y SHL 16) + (sprite^.h * scale) DIV 2,
@@ -347,7 +441,7 @@ END;
 
 
 
-PROCEDURE al_rotate_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle, scale: AL_FIXED);
+PROCEDURE al_rotate_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED);
 BEGIN
   bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * scale) DIV 2,
 						      (y SHL 16) + (sprite^.h * scale) DIV 2,
@@ -357,7 +451,7 @@ END;
 
 
 
-PROCEDURE al_pivot_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle: AL_FIXED);
+PROCEDURE al_pivot_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
 BEGIN
   bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
 						      cx SHL 16, cy SHL 16,
@@ -366,7 +460,7 @@ END;
 
 
 
-PROCEDURE al_pivot_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle: AL_FIXED);
+PROCEDURE al_pivot_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
 BEGIN
   bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
 						      cx SHL 16, cy SHL 16,
@@ -375,7 +469,7 @@ END;
 
 
 
-PROCEDURE al_pivot_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle, scale: AL_FIXED);
+PROCEDURE al_pivot_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED);
 BEGIN
   bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
 						      cx SHL 16, cy SHL 16,
@@ -384,7 +478,7 @@ END;
 
 
 
-PROCEDURE al_pivot_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle, scale: AL_FIXED);
+PROCEDURE al_pivot_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED);
 BEGIN
   bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
 						      cx SHL 16, cy SHL 16,

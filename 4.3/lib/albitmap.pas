@@ -80,6 +80,7 @@ USES
 TYPE
 (* Pointer to @link (AL_BITMAP). *)
   AL_BITMAPptr = ^AL_BITMAP;
+
 (* Stores the contents of a bitmap.
 
    There is some stuff in the structure that is liable to change and you
