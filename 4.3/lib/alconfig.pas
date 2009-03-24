@@ -115,23 +115,90 @@ USES
   PROCEDURE al_flush_config_file; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'flush_config_file';
 
+(* Pushes the current configuration state (filename, variable values, etc).
+   onto an internal stack, allowing you to select some other config source and
+   later restore the current settings by calling @link (al_pop_config_state).
+   This function is mostly intended for internal use by other library
+   functions, for example when you specify a config filename to the @link
+   (al_save_joystick_data) function, it pushes the config state before
+   switching to the file you specified. *)
   PROCEDURE al_push_config_state; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'push_config_state';
+
+(* Pops a configuration state previously stored by @link (push_config_state),
+   replacing the current config source with it. *)
   PROCEDURE al_pop_config_state; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pop_config_state';
 
-  FUNCTION al_get_config_string (section, name, def: STRING): STRING;
-  FUNCTION al_get_config_int (section, name: STRING; def: LONGINT): LONGINT;
-  FUNCTION al_get_config_hex (section, name: STRING; def: LONGINT): LONGINT;
-  FUNCTION al_get_config_float (section, name: STRING; def: DOUBLE): DOUBLE;
-  FUNCTION al_get_config_id (section, name: STRING; def: LONGINT): LONGINT;
-  FUNCTION al_get_config_argv (section, name: STRING; argc: PLONGINT): PSTRING;
+(* Retrieves a string variable from the current config file.  The section name
+   may be set to an empty string to read variables from the root of the file,
+   or used to control which set of parameters (eg. sound or joystick) you are
+   interested in reading. Example:
+@longcode (#
+VAR
+  Lang: STRING;
+  ...
+  Lang := al_get_config_string ('system', 'language', 'EN');
+  #)
 
+   @returns (the string to the constant string found in the configuration file.
+     If the named variable cannot be found, or its entry in the config file is
+     empty, the value of @code (def) is returned. *)
+  FUNCTION al_get_config_string (section, name, def: STRING): STRING;
+
+(* Reads an integer variable from the current config file.  See the comments
+   about @link (al_get_config_string). *)
+  FUNCTION al_get_config_int (section, name: STRING; def: LONGINT): LONGINT;
+
+(* Reads an integer variable from the current config file, in hexadecimal.
+   See the comments about @link (al_get_config_string). *)
+  FUNCTION al_get_config_hex (section, name: STRING; def: LONGINT): LONGINT;
+
+(* Reads a floating point variable from the current config file.  See the
+   comments about @link (al_get_config_string). *)
+  FUNCTION al_get_config_float (section, name: STRING; def: DOUBLE): DOUBLE;
+
+(* Reads a 4-letter driver ID variable from the current config file.  See the
+   comments about @link (al_get_config_string). *)
+  FUNCTION al_get_config_id (section, name: STRING; def: LONGINT): LONGINT;
+
+(* AFAIK this doesn't work.
+  FUNCTION al_get_config_argv (section, name: STRING; argc: PLONGINT): PSTRING; *)
+
+(* Writes a string variable to the current config file, replacing any existing
+   value it may have, or removes the variable if @code (val) is empty.  The
+   section name may be set to a empty string to write the variable to the root
+   of the file, or used to control which section the variable is inserted into.
+   The altered file will be cached in memory, and not actually written to disk
+   until you call @link (al_exit).  Note that you can only write to files in
+   this way, so the function will have no effect if the current config source
+   was specified with @link (al_set_config_data) rather than @link
+   (al_set_config_file).
+
+   As a special case, variable or section names that begin with a '#' character
+   are treated specially and will not be read from or written to the disk.
+   Addon packages can use this to store version info or other status
+   information into the config module, from where it can be read with the @link
+   (al_get_config_string() function. *)
   PROCEDURE al_set_config_string (section, name, val: STRING);
+
+(* Writes an integer variable to the current config file.  See the comments
+   about @link (al_set_config_string). *)
   PROCEDURE al_set_config_int (section, name: STRING; val: LONGINT);
+
+(* Writes an integer variable to the current config file, in hexadecimal
+   format.  See the comments about @link (al_set_config_string). *)
   PROCEDURE al_set_config_hex (section, name: STRING; val: LONGINT);
+
+(* Writes a floating point variable to the current config file.  See the
+   comments about @link (al_set_config_string). *)
   PROCEDURE al_set_config_float (section, name:STRING; val: DOUBLE);
+
+(* Writes a 4-letter driver ID variable to the current config file.  See the
+   comments about @link (al_set_config_string). *)
   PROCEDURE al_set_config_id (section, name: STRING; val: LONGINT);
+
+
 
 IMPLEMENTATION
 
@@ -154,7 +221,7 @@ IMPLEMENTATION
   END;
 
 
-  
+
   FUNCTION get_config_string (section, name, def: PCHAR): PCHAR; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_string';
 
@@ -183,7 +250,8 @@ IMPLEMENTATION
     al_get_config_hex := get_config_hex (PCHAR (section), PCHAR (name), def);
   END;
 
-  
+
+
   FUNCTION get_config_float (section, name: PCHAR; def: DOUBLE): DOUBLE; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_float';
 
@@ -193,7 +261,7 @@ IMPLEMENTATION
   END;
 
 
-  
+
   FUNCTION get_config_id (section, name: PCHAR; def: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_id';
 
@@ -203,14 +271,15 @@ IMPLEMENTATION
   END;
 
 
-  
-  FUNCTION get_config_argv (section, name: PCHAR; argc: PLONGINT): PSTRING; CDECL;
+
+{  FUNCTION get_config_argv (section, name: PCHAR; argc: PLONGINT): PSTRING; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_argv';
 
   FUNCTION al_get_config_argv (section, name: STRING; argc: PLONGINT): STRINGptr;
   BEGIN
     al_get_config_argv := get_config_argv (PCHAR (section), PCHAR (name), argc);
   END;
+  }
 
 
 
@@ -221,9 +290,9 @@ IMPLEMENTATION
   BEGIN
     set_config_string (PCHAR (section), PCHAR (name), PCHAR (val));
   END;
-  
 
-  
+
+
   PROCEDURE set_config_int (section, name: PCHAR; val: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_int';
 
@@ -233,7 +302,7 @@ IMPLEMENTATION
   END;
 
 
-  
+
   PROCEDURE set_config_hex (section, name: PCHAR; val: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_hex';
 
