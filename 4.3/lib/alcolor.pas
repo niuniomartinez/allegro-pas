@@ -86,6 +86,36 @@ TYPE
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'makeacol_depth';
 
 
+
+(* Given a color in the format being used by the current video mode, these
+   functions extract one of the red, green, blue, or alpha components (ranging
+   0-255), calling the preceding 8, 15, 16, 24, or 32-bit get functions as
+   appropriate.  The alpha part is only meaningful for 32-bit pixels. *)
+  FUNCTION al_getr (c: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getr';
+  FUNCTION al_getg (c: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getg';
+  FUNCTION al_getb (c: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getn';
+  FUNCTION al_geta (c: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'geta';
+
+
+
+(* Given a color in the format being used by the specified color depth, these
+   functions extract one of the red, green, blue, or alpha components (ranging
+   0-255). The alpha part is only meaningful for 32-bit pixels. *)
+  FUNCTION al_getr_depth (c: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getr_depth';
+  FUNCTION al_getg_depth (c: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getg_depth';
+  FUNCTION al_getb_depth (c: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getn_depth';
+  FUNCTION al_geta_depth (c: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'geta_depth';
+
+
+
 (* Convert color values between the HSV and RGB color spaces.  The RGB values
    range from 0 to 255, hue is from 0 to 360, and saturation and value are from
    0 to 1. *)
