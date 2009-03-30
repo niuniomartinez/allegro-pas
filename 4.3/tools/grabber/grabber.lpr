@@ -9,14 +9,27 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms
-  { you can add units after this }, UnitMainWindow, LResources;
+  Forms, Dialogs, alsystem
+  { you can add units after this }, UnitMainWindow, LResources,
+  UnitProgressWindow;
 
 {$IFDEF WINDOWS}{$R grabber.rc}{$ENDIF}
 
 begin
-  Application.Title := 'Grabber';
-  {$I grabber.lrs}  Application.CreateForm(TMainWindow, MainWindow);
-  Application.Run;
+{ Installs Allegro library without window. }
+  IF al_install (AL_SYSTEM_NONE) THEN
+  TRY
+  { TODO: Initialize sound and time subsystems. }
+  { TODO: Set color conversion mode to "Don't change anything". }
+  { Runs the application. }
+    Application.Title := 'Grabber [<unnamed>]';
+    {$I grabber.lrs}  Application.CreateForm(TMainWindow, MainWindow);
+    Application.Run;
+  FINALLY
+  { Allways exits nice. }
+    al_exit;
+  END
+  ELSE
+    MessageDlg ('Error', 'Can''t initialize Allegro!', mtError, [mbCancel], 0);
 end.
 

@@ -28,7 +28,7 @@ CONST
    manipulate memory bitmaps, such as the text mode datafile tools or the
    Windows GDI interfacing functions.
 
-   Is equivalent to @code (AL_ID @('N', 'O', 'N', 'E'@);). *)
+   Is equivalent to @code (AL_ID @('NONE'@);). *)
   AL_SYSTEM_NONE	= $4E4F4E45;
 (* Defined to the major version of Allegro.  From a version number like 4.1.16,
    this would be defined to the integer 4. *)
@@ -69,10 +69,10 @@ VAR
 VAR
   OSTYPE_LINUX: LONGINT;
 BEGIN
-  OSTYPE_LINUX := AL_ID(ORD ('T'), ORD ('U'), ORD ('X'), ORD (' '));
+  OSTYPE_LINUX := AL_ID('TUX '));
 END;
   #) *)
-  FUNCTION AL_ID (a, b, c, d: LONGINT): LONGINT;
+  FUNCTION AL_ID (str: SHORTSTRING): LONGINT;
 
 
 
@@ -276,9 +276,10 @@ VAR
 
 
 (* Converts four 8 bit values to a packed 32 bit integer ID. *)
-FUNCTION AL_ID (a, b, c, d: LONGINT): LONGINT;
+FUNCTION AL_ID (str: SHORTSTRING): LONGINT;
 BEGIN
-  AL_ID := (a SHL 24) OR (b SHL 16) OR (c SHL 8) OR d;
+  AL_ID := (ORD (str[1]) SHL 24) OR (ORD (str[2]) SHL 16)
+        OR (ORD (str[3]) SHL  8) OR  ORD (str[4]);
 END;
 
 

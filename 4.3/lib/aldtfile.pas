@@ -95,6 +95,19 @@ TYPE
 
 
 
+CONST
+(* Mnemonics for data object types. *)
+  AL_DAT_END = -1; (*< End of data file. *)
+VAR
+(* Mnemonics for data object types.  You must assume this as constants.
+   They're variables for technical reasons. *)
+  AL_DAT_MAGIC, AL_DAT_FILE, AL_DAT_DATA, AL_DAT_FONT, AL_DAT_SAMPLE,
+  AL_DAT_MIDI, AL_DAT_PATCH, AL_DAT_FLI, AL_DAT_BITMAP, AL_DAT_RLE_SPRITE,
+  AL_DAT_C_SPRITE, AL_DAT_XC_SPRITE, AL_DAT_PALETTE, AL_DAT_PROPERTY,
+  AL_DAT_NAME: LONGINT;
+
+
+
 (* Loads a datafile into memory in one go.  If the datafile contains truecolor
    graphics, you must set the video mode or call @link
    (al_set_color_conversion) before loading it.
@@ -137,6 +150,11 @@ VAR
 
 IMPLEMENTATION
 
+USES
+  alsystem;
+
+
+
   FUNCTION load_datafile (filename: PCHAR): AL_DATAFILEptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_datafile';
 
@@ -155,5 +173,24 @@ IMPLEMENTATION
     al_load_datafile_object := load_datafile_object (PCHAR (filename), PCHAR (objectname));
   END;
 
+
+
+INITIALIZATION
+{ Generates identifiers for data objects. }
+  AL_DAT_MAGIC		:= AL_ID ('ALL.');
+  AL_DAT_FILE		:= AL_ID ('FILE');
+  AL_DAT_DATA		:= AL_ID ('DATA');
+  AL_DAT_FONT		:= AL_ID ('FONT');
+  AL_DAT_SAMPLE		:= AL_ID ('SAMP');
+  AL_DAT_MIDI		:= AL_ID ('MIDI');
+  AL_DAT_PATCH		:= AL_ID ('PAT ');
+  AL_DAT_FLI		:= AL_ID ('FLIC');
+  AL_DAT_BITMAP		:= AL_ID ('BMP ');
+  AL_DAT_RLE_SPRITE	:= AL_ID ('RLE ');
+  AL_DAT_C_SPRITE	:= AL_ID ('CMP ');
+  AL_DAT_XC_SPRITE	:= AL_ID ('XCMP');
+  AL_DAT_PALETTE	:= AL_ID ('PAL ');
+  AL_DAT_PROPERTY	:= AL_ID ('prop');
+  AL_DAT_NAME		:= AL_ID ('NAME');
 END.
 

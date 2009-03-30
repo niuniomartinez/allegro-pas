@@ -1,0 +1,11 @@
+{ Este es un archivo de recurso de Lazarus generado automáticamente }
+
+LazarusResources.Add('TProgressWindow','FORMDATA',[
+  'TPF0'#15'TProgressWindow'#14'ProgressWindow'#4'Left'#3'G'#1#6'Height'#2'M'#3
+  +'Top'#3#213#0#5'Width'#3#144#1#7'Caption'#6#8'Progress'#12'ClientHeight'#2'M'
+  +#11'ClientWidth'#3#144#1#10'LCLVersion'#6#8'0.9.26.2'#0#6'TLabel'#11'StatusL'
+  +'abel'#6'Height'#2#24#5'Width'#3#144#1#5'Align'#7#5'alTop'#8'AutoSize'#8#7'C'
+  +'aption'#6#10'Progress..'#11'ParentColor'#8#0#0#12'TProgressBar'#11'Progress'
+  +'Bar'#4'Left'#2#16#6'Height'#2#20#3'Top'#2'('#5'Width'#3'h'#1#8'TabOrder'#2#0
+  +#0#0#0
+]);

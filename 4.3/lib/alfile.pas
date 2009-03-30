@@ -119,7 +119,7 @@ TYPE
    is not compressed.
    @returns (@true on success, @false on failure, storing the error code in
      @link (al_errno).) *)
-  FUNCTION al_pack_seek (f: AL_PACKFILEptr; offset: LONGINT): BOOLEAN;
+  FUNCTION al_pack_fseek (f: AL_PACKFILEptr; offset: LONGINT): BOOLEAN;
 
 (* Finds out if you have reached the end of the file.  It does not wait for you
    to attempt to read beyond the end of the file, contrary to the ISO C @code
@@ -252,13 +252,13 @@ USES
 (* File input and output. *)
   FUNCTION pack_fopen (filename, mode: PCHAR): AL_PACKFILEptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-  FUNCTION pack_seek (f: AL_PACKFILEptr; offset: LONGINT): BOOLEAN; CDECL;
+  FUNCTION pack_fseek (f: AL_PACKFILEptr; offset: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
   FUNCTION pack_feof (f: AL_PACKFILEptr): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-  FUNCTION pack_fgets (p: AL_CHARptr; max: LONGINT; f: AL_PACKFILEptr): AL_CHARptr; CDECL;
+  FUNCTION pack_fgets (p: PCHAR; max: LONGINT; f: AL_PACKFILEptr): PCHAR; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-  FUNCTION pack_fputs (p: AL_CHARptr; f: AL_PACKFILEptr): LONGINT; CDECL;
+  FUNCTION pack_fputs (p: PCHAR; f: AL_PACKFILEptr): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_pack_fopen (filename, mode: STRING): AL_PACKFILEptr;
@@ -266,9 +266,9 @@ USES
     al_pack_fopen := pack_fopen (PCHAR (filename), PCHAR (mode));
   END;
 
-  FUNCTION al_pack_seek (f: AL_PACKFILEptr; offset: LONGINT): BOOLEAN;
+  FUNCTION al_pack_fseek (f: AL_PACKFILEptr; offset: LONGINT): BOOLEAN;
   BEGIN
-    al_pack_seek := (pack_seek (f, offset) = 0);
+    al_pack_fseek := (pack_fseek (f, offset) = 0);
   END;
 
   FUNCTION al_pack_feof (f: AL_PACKFILEptr): BOOLEAN;

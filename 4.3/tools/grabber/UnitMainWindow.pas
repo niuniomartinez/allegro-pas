@@ -37,6 +37,9 @@ TYPE
   (* The datafile we'll edit. *)
     DataFileName: STRING;
     DataFile: TDataFile;
+
+  (* Updates the window's caption. *)
+    PROCEDURE UpdateCaption;
   END;
 
 VAR
@@ -44,11 +47,58 @@ VAR
 
 IMPLEMENTATION
 
+USES
+  UnitProgressWindow;
+
+
+
+CONST
+(* Mnemonics for images. *)
+  BINARY_NDX     = 5; { Raw binary data. }
+  BITMAP_NDX     = 6;
+  DATAFILE_NDX   = 9;
+  FLIC_NDX       = 1; { FLI, FLC and FLIC animations. }
+  FONT_NDX       = 2;
+  MIDI_NDX       = 4;
+  PALETTE_NDX    = 7;
+  RLE_SPRITE_NDX = 0;
+  SAMPLE_NDX     = 3; { Digital sound samples. }
+
+
+
+(* Helper procedures to show progress. *)
+VAR
+  LoadingDatafile: BOOLEAN;
+  TitleDatafile: STRING;
+
+PROCEDURE PrepareProgress (NumItems: INTEGER);
+BEGIN
+  IF LoadingDatafile THEN
+    TitleDatafile := 'Loading '+ExtractFileName (MainWindow.DataFileName)+'...'
+  ELSE
+    TitleDatafile := 'Savng '+ExtractFileName (MainWindow.DataFileName)+'...';
+  ProgressWindow.Init (TitleDatafile, TitleDatafile, NumItems);
+  ProgressWindow.Show;
+  Application.ProcessMessages;
+END;
+
+PROCEDURE AdvanceProgress;
+BEGIN
+  ProgressWindow.AddOne (TitleDatafile);
+  Application.ProcessMessages;
+END;
+
+
+
 { TMainWindow }
 
 PROCEDURE TMainWindow.FormCreate(Sender: TObject);
 BEGIN
-  SELF.DataFile := TDataFile.Create;
+  DataFile := TDataFile.Create;
+  DataFile.PreLoadCallback := @PrepareProgress;
+  DataFile.LoadCallback := @AdvanceProgress;
+  DataFile.PreSaveCallback := @PrepareProgress;
+  DataFile.SaveCallback := @AdvanceProgress;
 END;
 
 PROCEDURE TMainWindow.FormDestroy(Sender: TObject);
@@ -57,20 +107,23 @@ BEGIN
     SELF.DataFile.Free;
 END;
 
+
+
 PROCEDURE TMainWindow.MenuItem_File_LoadClick(Sender: TObject);
 BEGIN
   TRY
+    LoadingDatafile := TRUE;
     IF OpenDialog.Execute THEN
     BEGIN
       SELF.DataFile.LoadFrom (OpenDialog.FileName);
       SELF.DataFileName := OpenDialog.FileName;
-      SELF.Caption := 'Grabber ['+ExtractFileName (SELF.DataFileName)+']';
     END;
   EXCEPT
     ON Error: Exception DO
-      MessageDlg ('Error loading datafile', 'Can''t load '+OpenDialog.FileName,
-                  mtError, [mbCancel], 0);
+      MessageDlg ('Error loading datafile', 'Can''t load '+OpenDialog.FileName
+                 +':'+chr(13)+Error.Message, mtError, [mbCancel], 0);
   END;
+  SELF.UpdateCaption;
 END;
 
 PROCEDURE TMainWindow.MenuItem_File_NewClick(Sender: TObject);
@@ -88,11 +141,14 @@ BEGIN
       SELF.MenuItem_File_SaveClick (Sender);
   END;
   SELF.DataFile.Clean;
+  SELF.DataFileName := '';
+  SELF.UpdateCaption;
 END;
 
 PROCEDURE TMainWindow.MenuItem_File_SaveClick(Sender: TObject);
 BEGIN
   TRY
+    LoadingDatafile := FALSE;
   { If it wasn't saved yet, ask a name. }
     IF SELF.DataFileName = '' THEN
       SELF.MenuItem_File_Save_asClick (Sender)
@@ -100,26 +156,47 @@ BEGIN
       SELF.DataFile.SaveTo (SELF.DataFileName);
   EXCEPT
     ON Error: Exception DO
-      MessageDlg ('Error saving datafile', 'Can''t write '+SELF.DataFileName,
-                  mtError, [mbCancel], 0);
+      MessageDlg ('Error saving datafile', 'Can''t write '+SELF.DataFileName
+                 +':'+chr(13)+Error.Message, mtError, [mbCancel], 0);
   END;
+  SELF.UpdateCaption;
 END;
 
 PROCEDURE TMainWindow.MenuItem_File_Save_asClick(Sender: TObject);
 BEGIN
   TRY
+    LoadingDatafile := FALSE;
     IF SaveDialog.Execute THEN
     BEGIN
       SELF.DataFile.LoadFrom (SaveDialog.FileName);
       SELF.DataFileName := SaveDialog.FileName;
-      SELF.Caption := 'Grabber ['+ExtractFileName (SELF.DataFileName)+']';
     END;
   EXCEPT
     ON Error: Exception DO
-      MessageDlg ('Error saving datafile', 'Can''t write '+SaveDialog.FileName,
-                  mtError, [mbCancel], 0);
+      MessageDlg ('Error saving datafile', 'Can''t write '+SaveDialog.FileName
+                 +':'+chr(13)+Error.Message, mtError, [mbCancel], 0);
   END;
+  SELF.UpdateCaption;
 END;
+
+
+
+(* Updates the window's caption. *)
+PROCEDURE TMainWindow.UpdateCaption;
+VAR
+  Tmp: STRING;
+BEGIN
+  Tmp := 'Grabber [';
+  IF SELF.DataFileName <> '' THEN
+    Tmp := Tmp + SELF.DataFileName + ']'
+  ELSE
+    Tmp := Tmp + '<unnamed>]';
+  IF SELF.DataFile.Modified THEN
+    Tmp := Tmp + ' (modified)';
+  SELF.Caption := Tmp;
+END;
+
+
 
 INITIALIZATION
   {$I UnitMainWindow.lrs}

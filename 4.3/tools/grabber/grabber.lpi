@@ -13,7 +13,7 @@
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
       <TargetFileExt Value=""/>
-      <Title Value="Grabber"/>
+      <Title Value="Grabber [<unnamed>]"/>
       <Icon Value="0"/>
       <UseXPManifest Value="True"/>
     </General>
@@ -37,7 +37,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="4">
       <Unit0>
         <Filename Value="grabber.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -55,6 +55,13 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitDataFile"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="UnitProgressWindow.pas"/>
+        <ComponentName Value="ProgressWindow"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="UnitProgressWindow"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
