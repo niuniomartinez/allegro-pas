@@ -5,27 +5,33 @@ object MainWindow: TMainWindow
   Width = 400
   ActiveControl = DatafileContent
   Caption = 'Grabber [<unnamed>]'
-  ClientHeight = 275
+  ClientHeight = 272
   ClientWidth = 400
   Menu = MainMenu
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '0.9.26.2'
+  ParentFont = False
+  LCLVersion = '0.9.26'
   object DatafileContent: TTreeView
-    Height = 256
+    Height = 248
     Width = 400
     Align = alClient
-    DefaultItemHeight = 17
+    AutoExpand = True
+    DefaultItemHeight = 18
+    ExpandSignType = tvestArrow
+    HideSelection = False
     Images = DatafileImageList
     TabOrder = 0
+    OnExpanding = DatafileContentExpanding
+    Options = [tvoAutoExpand, tvoAutoItemHeight, tvoKeepCollapsedNodes, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips]
     Items.Data = {
       F9FFFFFF020001000000090000000900000009000000FFFFFFFF000000000000
       000000060000003C726F6F743E
     }
   end
   object StatusBar: TStatusBar
-    Height = 19
-    Top = 256
+    Height = 24
+    Top = 248
     Width = 400
     Panels = <    
       item
@@ -58,6 +64,7 @@ object MainWindow: TMainWindow
     end
   end
   object OpenDialog: TOpenDialog
+    Filter = 'DAT files|*.dat|All files|*'
     left = 32
   end
   object DatafileImageList: TImageList
@@ -387,6 +394,7 @@ object MainWindow: TMainWindow
     }
   end
   object SaveDialog: TSaveDialog
+    Filter = 'DAT files|*.dat|All files|*'
     left = 64
   end
 end

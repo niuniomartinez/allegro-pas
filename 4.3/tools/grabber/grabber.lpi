@@ -2,19 +2,18 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="/"/>
-    <Version Value="7"/>
+    <Version Value="6"/>
     <General>
       <Flags>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
         <AlwaysBuild Value="False"/>
-        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <SessionStorage Value="None"/>
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
+      <IconPath Value="./"/>
       <TargetFileExt Value=""/>
       <Title Value="Grabber [<unnamed>]"/>
-      <Icon Value="0"/>
       <UseXPManifest Value="True"/>
     </General>
     <VersionInfo>
@@ -48,6 +47,7 @@
         <ComponentName Value="MainWindow"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <ResourceFilename Value="UnitMainWindow.lrs"/>
         <UnitName Value="UnitMainWindow"/>
       </Unit1>
       <Unit2>
@@ -60,6 +60,7 @@
         <ComponentName Value="ProgressWindow"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <ResourceFilename Value="UnitProgressWindow.lrs"/>
         <UnitName Value="UnitProgressWindow"/>
       </Unit3>
     </Units>

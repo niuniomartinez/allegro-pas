@@ -7,7 +7,7 @@ INTERFACE
 
 USES
   sysutils, Classes,
-  albase, aldtfile, alfile;
+  aldtfile;
 
 
 
@@ -19,6 +19,8 @@ TYPE
     fProperties: TStringList;
   (* Identifies data type.  It's a 32 integer value returned by AL_ID function. *)
     fObjectType: LONGINT;
+  (* Data of the object. *)
+    fData: POINTER; fSize: LONGINT;
   PUBLIC
   (* Constructor. *)
     CONSTRUCTOR Create (aObject: AL_DATAFILE_OBJECTptr);
@@ -53,6 +55,8 @@ TYPE
   (* Callbacks. *)
     fPreLoadCallback, fPreSaveCallback: TCallbackPrepareProcedure;
     fLoadCallback, fSaveCallback: TCallbackProcedure;
+
+    FUNCTION GetItem (Ndx: INTEGER): TDataFileItem;
   PUBLIC
   (* Constructor. *)
     CONSTRUCTOR Create;
@@ -75,6 +79,10 @@ TYPE
     PROPERTY PreSaveCallback: TCallbackPrepareProcedure WRITE fPreSaveCallback;
   (* This callback is called for each saved object. *)
     PROPERTY SaveCallback: TCallbackProcedure WRITE fSaveCallback;
+  (* Number of objects. *)
+    PROPERTY Count: INTEGER READ fCount;
+  (* Access to data item. *)
+    PROPERTY Item[Ndx: INTEGER]: TDataFileItem READ GetItem;
   END;
 
 
@@ -90,6 +98,9 @@ IMPLEMENTATION
 CONSTRUCTOR TDataFileItem.Create (aObject: AL_DATAFILE_OBJECTptr);
 BEGIN
   fProperties := TStringList.Create;
+  fObjectType := aObject^.ftype;
+{ TODO: Get data. }
+{ TODO: Get properties. }
 END;
 
 
@@ -99,6 +110,8 @@ DESTRUCTOR TDataFileItem.Destroy;
 BEGIN
   IF fProperties <> NIL THEN
     fProperties.Free;
+  IF Assigned (fData) THEN
+    Freemem (fData, fSize);
   INHERITED;
 END;
 
@@ -137,6 +150,13 @@ END;
 (*************
  * TDataFile *
  *************)
+
+FUNCTION TDataFile.GetItem (Ndx: INTEGER): TDataFileItem;
+BEGIN
+  RESULT := fData[Ndx];
+END;
+
+
 
 (* Constructor. *)
 CONSTRUCTOR TDataFile.Create;
@@ -179,6 +199,7 @@ VAR
   Cnt: INTEGER;
 BEGIN
 { TODO: Password support. }
+  WriteLn ('Loading file ', FileName);
   IF NOT FileExists (FileName) THEN
     RAISE Exception.Create (FileName+' doesn''t exists.');
   DataFile := al_load_datafile (FileName);
@@ -196,8 +217,9 @@ BEGIN
   Cnt := 0;
   WHILE (Cnt < 1024) AND (DataFile^[Cnt].ftype <> AL_DAT_END) DO
   BEGIN
+//    Write (DataFile^[Cnt].ftype);
     fData[Cnt] := TDataFileItem.Create (@(DataFile^[Cnt]));
-    INC (Cnt);
+    INC (Cnt); INC (fCount);
     IF fLoadCallback <> NIL THEN
       fLoadCallback ();
   END;

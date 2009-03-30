@@ -23,7 +23,9 @@ begin
   { TODO: Set color conversion mode to "Don't change anything". }
   { Runs the application. }
     Application.Title := 'Grabber [<unnamed>]';
-    {$I grabber.lrs}  Application.CreateForm(TMainWindow, MainWindow);
+    {$I grabber.lrs}
+    Application.CreateForm(TMainWindow, MainWindow);
+    Application.CreateForm(TProgressWindow, ProgressWindow);
     Application.Run;
   FINALLY
   { Allways exits nice. }

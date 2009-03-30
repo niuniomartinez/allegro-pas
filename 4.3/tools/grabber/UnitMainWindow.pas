@@ -27,6 +27,8 @@ TYPE
     DatafileContent: TTreeView;
     SaveDialog: TSaveDialog;
     StatusBar: TStatusBar;
+    procedure DatafileContentExpanding(Sender: TObject; Node: TTreeNode;
+      var AllowExpansion: Boolean);
     PROCEDURE FormCreate(Sender: TObject);
     PROCEDURE FormDestroy(Sender: TObject);
     PROCEDURE MenuItem_File_LoadClick(Sender: TObject);
@@ -40,6 +42,8 @@ TYPE
 
   (* Updates the window's caption. *)
     PROCEDURE UpdateCaption;
+  (* Updates the datafile content. *)
+    PROCEDURE UpdateDatafileContent;
   END;
 
 VAR
@@ -48,21 +52,22 @@ VAR
 IMPLEMENTATION
 
 USES
+aldtfile,
   UnitProgressWindow;
 
 
 
 CONST
 (* Mnemonics for images. *)
-  BINARY_NDX     = 5; { Raw binary data. }
-  BITMAP_NDX     = 6;
-  DATAFILE_NDX   = 9;
-  FLIC_NDX       = 1; { FLI, FLC and FLIC animations. }
-  FONT_NDX       = 2;
-  MIDI_NDX       = 4;
-  PALETTE_NDX    = 7;
-  RLE_SPRITE_NDX = 0;
-  SAMPLE_NDX     = 3; { Digital sound samples. }
+  NDX_BINARY     = 5; { Raw binary data. }
+  NDX_BITMAP     = 6;
+  NDX_DATAFILE   = 9;
+  NDX_FLIC       = 1; { FLI, FLC and FLIC animations. }
+  NDX_FONT       = 2;
+  NDX_MIDI       = 4;
+  NDX_PALETTE    = 7;
+  NDX_RLE_SPRITE = 0;
+  NDX_SAMPLE     = 3; { Digital sound samples. }
 
 
 
@@ -101,6 +106,19 @@ BEGIN
   DataFile.SaveCallback := @AdvanceProgress;
 END;
 
+procedure TMainWindow.DatafileContentExpanding(Sender: TObject;
+  Node: TTreeNode; var AllowExpansion: Boolean);
+VAR
+  Cnt: INTEGER;
+begin
+  AllowExpansion := TRUE;
+{ Note the last one is "END". }
+  FOR Cnt := 1 TO (DataFile.Count - 1) DO
+  BEGIN
+    Node.TreeNodes.AddChild (TTreeNode.Create (Node.TreeNodes), 'Child');
+  END;
+end;
+
 PROCEDURE TMainWindow.FormDestroy(Sender: TObject);
 BEGIN
   IF SELF.DataFile <> NIL THEN
@@ -123,7 +141,9 @@ BEGIN
       MessageDlg ('Error loading datafile', 'Can''t load '+OpenDialog.FileName
                  +':'+chr(13)+Error.Message, mtError, [mbCancel], 0);
   END;
+  ProgressWindow.Hide;
   SELF.UpdateCaption;
+  SELF.UpdateDatafileContent;
 END;
 
 PROCEDURE TMainWindow.MenuItem_File_NewClick(Sender: TObject);
@@ -143,6 +163,7 @@ BEGIN
   SELF.DataFile.Clean;
   SELF.DataFileName := '';
   SELF.UpdateCaption;
+  SELF.UpdateDatafileContent;
 END;
 
 PROCEDURE TMainWindow.MenuItem_File_SaveClick(Sender: TObject);
@@ -159,6 +180,7 @@ BEGIN
       MessageDlg ('Error saving datafile', 'Can''t write '+SELF.DataFileName
                  +':'+chr(13)+Error.Message, mtError, [mbCancel], 0);
   END;
+  ProgressWindow.Hide;
   SELF.UpdateCaption;
 END;
 
@@ -176,6 +198,7 @@ BEGIN
       MessageDlg ('Error saving datafile', 'Can''t write '+SaveDialog.FileName
                  +':'+chr(13)+Error.Message, mtError, [mbCancel], 0);
   END;
+  ProgressWindow.Hide;
   SELF.UpdateCaption;
 END;
 
@@ -194,6 +217,79 @@ BEGIN
   IF SELF.DataFile.Modified THEN
     Tmp := Tmp + ' (modified)';
   SELF.Caption := Tmp;
+END;
+
+
+
+
+(* Updates the datafile content. *)
+PROCEDURE TMainWindow.UpdateDatafileContent;
+
+  FUNCTION GetImageIndex (ObjectType: LONGINT): LONGINT;
+  BEGIN
+    IF ObjectType = AL_DAT_DATA THEN
+      RESULT := NDX_BINARY
+    ELSE IF ObjectType = AL_DAT_FLI THEN
+      RESULT := NDX_FLIC
+    ELSE IF ObjectType = AL_DAT_BITMAP THEN
+      RESULT := NDX_BITMAP
+    ELSE IF ObjectType = AL_DAT_FONT THEN
+      RESULT := NDX_FONT
+    ELSE IF ObjectType = AL_DAT_MIDI THEN
+      RESULT := NDX_MIDI
+    ELSE IF ObjectType = AL_DAT_PALETTE THEN
+      RESULT := NDX_PALETTE
+    ELSE IF ObjectType = AL_DAT_SAMPLE THEN
+      RESULT := NDX_SAMPLE
+    ELSE IF (ObjectType = AL_DAT_RLE_SPRITE)
+         OR (ObjectType = AL_DAT_C_SPRITE)
+         OR (ObjectType = AL_DAT_XC_SPRITE) THEN
+      RESULT := NDX_RLE_SPRITE;
+  END;
+
+  FUNCTION GetTypeName (ObjectType: LONGINT): STRING;
+  BEGIN
+    IF ObjectType = AL_DAT_DATA THEN
+      RESULT := 'BIN'
+    ELSE IF ObjectType = AL_DAT_FLI THEN
+      RESULT := 'FLIC'
+    ELSE IF ObjectType = AL_DAT_BITMAP THEN
+      RESULT := 'BMP'
+    ELSE IF ObjectType = AL_DAT_FONT THEN
+      RESULT := 'FONT'
+    ELSE IF ObjectType = AL_DAT_MIDI THEN
+      RESULT := 'MIDI'
+    ELSE IF ObjectType = AL_DAT_PALETTE THEN
+      RESULT := 'PAL'
+    ELSE IF ObjectType = AL_DAT_SAMPLE THEN
+      RESULT := 'SAMP'
+    ELSE IF ObjectType = AL_DAT_RLE_SPRITE THEN
+      Result := 'RLE'
+    ELSE IF ObjectType = AL_DAT_C_SPRITE THEN
+      RESULT := 'CSPR'
+    ELSE IF ObjectType = AL_DAT_XC_SPRITE THEN
+      RESULT := 'XSPR';
+  END;
+
+VAR
+  Node, SubNode: TTreeNode;
+  Cnt: INTEGER;
+BEGIN
+  WITH DatafileContent DO
+  BEGIN
+    Items.Clear;
+    Node := TTreeNode.Create (Items);
+    Items.Add (Node, '<root>');
+    Node.ImageIndex := NDX_DATAFILE;
+    Node.SelectedIndex := NDX_DATAFILE;
+    Node.StateIndex := NDX_DATAFILE;
+    Node.HasChildren := TRUE;
+  { Note the last one is "END". }
+    FOR Cnt := 1 TO (DataFile.Count - 1) DO
+    BEGIN
+      Node.TreeNodes.Add (TTreeNode.Create (Items), GetTypeName (DataFile.Item[Cnt-1].ObjectType));
+    END;
+  END;
 END;
 
 
