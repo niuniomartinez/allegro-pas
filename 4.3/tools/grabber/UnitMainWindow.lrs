@@ -1,0 +1,22 @@
+{ Este es un archivo de recurso de Lazarus generado automáticamente }
+
+LazarusResources.Add('TMainWindow','FORMDATA',[
+  'TPF0'#11'TMainWindow'#10'MainWindow'#4'Left'#3'"'#1#6'Height'#3','#1#3'Top'#3
+  +#213#0#5'Width'#3#144#1#13'ActiveControl'#7#15'DatafileContent'#7'Caption'#6
+  +#7'Grabber'#12'ClientHeight'#3#19#1#11'ClientWidth'#3#144#1#4'Menu'#7#8'Main'
+  +'Menu'#8'OnCreate'#7#10'FormCreate'#9'OnDestroy'#7#11'FormDestroy'#10'LCLVer'
+  +'sion'#6#8'0.9.26.2'#0#9'TTreeView'#15'DatafileContent'#6'Height'#3#0#1#5'Wi'
+  +'dth'#3#144#1#5'Align'#7#8'alClient'#17'DefaultItemHeight'#2#17#6'Images'#7
+  +#17'DatafileImageList'#8'TabOrder'#2#0#0#0#10'TStatusBar'#9'StatusBar'#6'Hei'
+  +'ght'#2#19#3'Top'#3#0#1#5'Width'#3#144#1#6'Panels'#14#1#5'Width'#2'2'#0#0#11
+  +'SimplePanel'#8#0#0#9'TMainMenu'#8'MainMenu'#0#9'TMenuItem'#13'MenuItem_File'
+  +#7'Caption'#6#4'File'#0#9'TMenuItem'#17'MenuItem_File_New'#7'Caption'#6#12'N'
+  +'ew datafile'#7'OnClick'#7#22'MenuItem_File_NewClick'#0#0#9'TMenuItem'#16'Me'
+  +'nuItem_File__1'#7'Enabled'#8#0#0#9'TMenuItem'#18'MenuItem_File_Load'#7'Capt'
+  +'ion'#6#17'Load data file...'#7'OnClick'#7#23'MenuItem_File_LoadClick'#0#0#9
+  +'TMenuItem'#18'MenuItem_File_Save'#7'Caption'#6#4'Save'#7'OnClick'#7#23'Menu'
+  +'Item_File_SaveClick'#0#0#9'TMenuItem'#21'MenuItem_File_Save_as'#7'Caption'#6
+  +#10'Save as...'#7'OnClick'#7#26'MenuItem_File_Save_asClick'#0#0#0#0#11'TOpen'
+  +'Dialog'#10'OpenDialog'#4'left'#2' '#0#0#10'TImageList'#17'DatafileImageList'
+  +#3'top'#2' '#0#0#11'TSaveDialog'#10'SaveDialog'#4'left'#2'@'#0#0#0
+]);

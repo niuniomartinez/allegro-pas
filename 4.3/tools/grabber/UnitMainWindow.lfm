@@ -1,0 +1,65 @@
+object MainWindow: TMainWindow
+  Left = 290
+  Height = 300
+  Top = 213
+  Width = 400
+  ActiveControl = DatafileContent
+  Caption = 'Grabber'
+  ClientHeight = 275
+  ClientWidth = 400
+  Menu = MainMenu
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '0.9.26.2'
+  object DatafileContent: TTreeView
+    Height = 256
+    Width = 400
+    Align = alClient
+    DefaultItemHeight = 17
+    Images = DatafileImageList
+    TabOrder = 0
+  end
+  object StatusBar: TStatusBar
+    Height = 19
+    Top = 256
+    Width = 400
+    Panels = <    
+      item
+        Width = 50
+      end>
+    SimplePanel = False
+  end
+  object MainMenu: TMainMenu
+    object MenuItem_File: TMenuItem
+      Caption = 'File'
+      object MenuItem_File_New: TMenuItem
+        Caption = 'New datafile'
+        OnClick = MenuItem_File_NewClick
+      end
+      object MenuItem_File__1: TMenuItem
+        Enabled = False
+      end
+      object MenuItem_File_Load: TMenuItem
+        Caption = 'Load data file...'
+        OnClick = MenuItem_File_LoadClick
+      end
+      object MenuItem_File_Save: TMenuItem
+        Caption = 'Save'
+        OnClick = MenuItem_File_SaveClick
+      end
+      object MenuItem_File_Save_as: TMenuItem
+        Caption = 'Save as...'
+        OnClick = MenuItem_File_Save_asClick
+      end
+    end
+  end
+  object OpenDialog: TOpenDialog
+    left = 32
+  end
+  object DatafileImageList: TImageList
+    top = 32
+  end
+  object SaveDialog: TSaveDialog
+    left = 64
+  end
+end
