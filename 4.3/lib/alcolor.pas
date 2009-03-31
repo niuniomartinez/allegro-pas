@@ -33,8 +33,8 @@ TYPE
   AL_RGBptr = ^AL_RGB;
 
 (* Palette entry.  It contains an additional field for the purpose of padding
-   but you should not usually care about it.  Read chapter "Palette routines"
-   for a description on how to obtain/use this structure. *)
+   but you should not usually care about it.  Read @code (alpalete) unit for a
+   description on how to obtain/use this structure. *)
   AL_RGB = RECORD
     r	  : BYTE;
     g	  : BYTE;

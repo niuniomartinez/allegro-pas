@@ -247,17 +247,18 @@ BEGIN
   Root.SelectedIndex := NDX_DATAFILE;
   Root.StateIndex := NDX_DATAFILE;
 { Note the last one is "END". }
-  FOR Cnt := 0 TO (DataFile.Count - 2) DO
-  BEGIN
-    aName := DataFile.Item[Cnt].ObjectTypeName;
-    Ndx := GetImageIndex (DataFile.Item[Cnt].ObjectType);
-    WITH DatafileContent.Items.AddChildObject (Root, aName, DataFile.Item[Cnt]) DO
-    BEGIn
-      ImageIndex := Ndx;
-      SelectedIndex := Ndx;
-      StateIndex := Ndx;
+  IF DataFile.Count > 0 THEN
+    FOR Cnt := 0 TO (DataFile.Count - 2) DO
+    BEGIN
+      aName := DataFile.Item[Cnt].ObjectTypeName;
+      Ndx := GetImageIndex (DataFile.Item[Cnt].ObjectType);
+      WITH DatafileContent.Items.AddChildObject (Root, aName, DataFile.Item[Cnt]) DO
+      BEGIn
+        ImageIndex := Ndx;
+        SelectedIndex := Ndx;
+        StateIndex := Ndx;
+      END;
     END;
-  END;
 END;
 
 

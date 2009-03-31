@@ -213,12 +213,15 @@ VAR
   Cnt: INTEGER;
 BEGIN
   IF fCount > 0 THEN
+  BEGIN
     FOR Cnt := 0 TO fCount DO
       IF fData[Cnt] <> NIL THEN
       BEGIN
         fData[Cnt].Free;
         fData[Cnt] := NIL;
       END;
+    fCount := 0;
+  END;
 END;
 
 
