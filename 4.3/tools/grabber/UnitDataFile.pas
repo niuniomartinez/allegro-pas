@@ -32,10 +32,14 @@ TYPE
     FUNCTION GetProperty (Name: STRING): STRING;
   (* Creates or modifies a property. *)
     PROCEDURE SetProperty (Name, Value: STRING);
+  (* Returns the datatype name. *)
+    FUNCTION ObjectTypeName: STRING;
 
   (* Returns the data type identifier.  It's a 32 integer value returned by
      AL_ID function. *)
     PROPERTY ObjectType: LONGINT READ fObjectType;
+  (* Data object. *)
+    PROPERTY Data: POINTER READ fData;
   END;
 
 
@@ -110,8 +114,6 @@ DESTRUCTOR TDataFileItem.Destroy;
 BEGIN
   IF fProperties <> NIL THEN
     fProperties.Free;
-  IF Assigned (fData) THEN
-    Freemem (fData, fSize);
   INHERITED;
 END;
 
@@ -144,6 +146,35 @@ BEGIN
     fProperties.Add (Name+'='+Value);
 END;
 
+
+
+
+(* Returns data type name. *)
+FUNCTION TDataFileItem.ObjectTypeName: STRING;
+BEGIN
+  IF fObjectType = AL_DAT_DATA THEN
+    RESULT := 'BIN'
+  ELSE IF ObjectType = AL_DAT_FLI THEN
+    RESULT := 'FLIC'
+  ELSE IF ObjectType = AL_DAT_BITMAP THEN
+    RESULT := 'BMP'
+  ELSE IF ObjectType = AL_DAT_FONT THEN
+    RESULT := 'FONT'
+  ELSE IF ObjectType = AL_DAT_MIDI THEN
+    RESULT := 'MIDI'
+  ELSE IF ObjectType = AL_DAT_PALETTE THEN
+    RESULT := 'PAL'
+  ELSE IF ObjectType = AL_DAT_SAMPLE THEN
+    RESULT := 'SAMP'
+  ELSE IF ObjectType = AL_DAT_RLE_SPRITE THEN
+    Result := 'RLE'
+  ELSE IF ObjectType = AL_DAT_C_SPRITE THEN
+    RESULT := 'CSPR'
+  ELSE IF ObjectType = AL_DAT_XC_SPRITE THEN
+    RESULT := 'XSPR'
+  ELSE
+    RESULT := '<Unknown>';
+END;
 
 
 

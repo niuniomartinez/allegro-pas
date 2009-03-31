@@ -27,8 +27,6 @@ TYPE
     DatafileContent: TTreeView;
     SaveDialog: TSaveDialog;
     StatusBar: TStatusBar;
-    procedure DatafileContentExpanding(Sender: TObject; Node: TTreeNode;
-      var AllowExpansion: Boolean);
     PROCEDURE FormCreate(Sender: TObject);
     PROCEDURE FormDestroy(Sender: TObject);
     PROCEDURE MenuItem_File_LoadClick(Sender: TObject);
@@ -59,15 +57,15 @@ aldtfile,
 
 CONST
 (* Mnemonics for images. *)
-  NDX_BINARY     = 5; { Raw binary data. }
-  NDX_BITMAP     = 6;
-  NDX_DATAFILE   = 9;
-  NDX_FLIC       = 1; { FLI, FLC and FLIC animations. }
-  NDX_FONT       = 2;
-  NDX_MIDI       = 4;
-  NDX_PALETTE    = 7;
-  NDX_RLE_SPRITE = 0;
-  NDX_SAMPLE     = 3; { Digital sound samples. }
+  NDX_DATAFILE   = 0;
+  NDX_BINARY     = 1; { Raw binary data. }
+  NDX_BITMAP     = 2;
+  NDX_FLIC       = 3; { FLI, FLC and FLIC animations. }
+  NDX_FONT       = 4;
+  NDX_MIDI       = 5;
+  NDX_PALETTE    = 6;
+  NDX_RLE_SPRITE = 7;
+  NDX_SAMPLE     = 8; { Digital sound samples. }
 
 
 
@@ -106,18 +104,7 @@ BEGIN
   DataFile.SaveCallback := @AdvanceProgress;
 END;
 
-procedure TMainWindow.DatafileContentExpanding(Sender: TObject;
-  Node: TTreeNode; var AllowExpansion: Boolean);
-VAR
-  Cnt: INTEGER;
-begin
-  AllowExpansion := TRUE;
-{ Note the last one is "END". }
-  FOR Cnt := 1 TO (DataFile.Count - 1) DO
-  BEGIN
-    Node.TreeNodes.AddChild (TTreeNode.Create (Node.TreeNodes), 'Child');
-  END;
-end;
+
 
 PROCEDURE TMainWindow.FormDestroy(Sender: TObject);
 BEGIN
@@ -211,7 +198,7 @@ VAR
 BEGIN
   Tmp := 'Grabber [';
   IF SELF.DataFileName <> '' THEN
-    Tmp := Tmp + SELF.DataFileName + ']'
+    Tmp := Tmp + ExtractFileName (SELF.DataFileName) + ']'
   ELSE
     Tmp := Tmp + '<unnamed>]';
   IF SELF.DataFile.Modified THEN
@@ -244,50 +231,31 @@ PROCEDURE TMainWindow.UpdateDatafileContent;
     ELSE IF (ObjectType = AL_DAT_RLE_SPRITE)
          OR (ObjectType = AL_DAT_C_SPRITE)
          OR (ObjectType = AL_DAT_XC_SPRITE) THEN
-      RESULT := NDX_RLE_SPRITE;
-  END;
-
-  FUNCTION GetTypeName (ObjectType: LONGINT): STRING;
-  BEGIN
-    IF ObjectType = AL_DAT_DATA THEN
-      RESULT := 'BIN'
-    ELSE IF ObjectType = AL_DAT_FLI THEN
-      RESULT := 'FLIC'
-    ELSE IF ObjectType = AL_DAT_BITMAP THEN
-      RESULT := 'BMP'
-    ELSE IF ObjectType = AL_DAT_FONT THEN
-      RESULT := 'FONT'
-    ELSE IF ObjectType = AL_DAT_MIDI THEN
-      RESULT := 'MIDI'
-    ELSE IF ObjectType = AL_DAT_PALETTE THEN
-      RESULT := 'PAL'
-    ELSE IF ObjectType = AL_DAT_SAMPLE THEN
-      RESULT := 'SAMP'
-    ELSE IF ObjectType = AL_DAT_RLE_SPRITE THEN
-      Result := 'RLE'
-    ELSE IF ObjectType = AL_DAT_C_SPRITE THEN
-      RESULT := 'CSPR'
-    ELSE IF ObjectType = AL_DAT_XC_SPRITE THEN
-      RESULT := 'XSPR';
+      RESULT := NDX_RLE_SPRITE
+    ELSE
+      RESULT := NDX_BINARY;
   END;
 
 VAR
-  Node, SubNode: TTreeNode;
-  Cnt: INTEGER;
+  Root, SubNode: TTreeNode;
+  aName: STRING;
+  Cnt, Ndx: INTEGER;
 BEGIN
-  WITH DatafileContent DO
+  DatafileContent.Items.Clear;
+  Root := DatafileContent.Items.Add (NIL, '<root>');
+  Root.ImageIndex := NDX_DATAFILE;
+  Root.SelectedIndex := NDX_DATAFILE;
+  Root.StateIndex := NDX_DATAFILE;
+{ Note the last one is "END". }
+  FOR Cnt := 0 TO (DataFile.Count - 2) DO
   BEGIN
-    Items.Clear;
-    Node := TTreeNode.Create (Items);
-    Items.Add (Node, '<root>');
-    Node.ImageIndex := NDX_DATAFILE;
-    Node.SelectedIndex := NDX_DATAFILE;
-    Node.StateIndex := NDX_DATAFILE;
-    Node.HasChildren := TRUE;
-  { Note the last one is "END". }
-    FOR Cnt := 1 TO (DataFile.Count - 1) DO
-    BEGIN
-      Node.TreeNodes.Add (TTreeNode.Create (Items), GetTypeName (DataFile.Item[Cnt-1].ObjectType));
+    aName := DataFile.Item[Cnt].ObjectTypeName;
+    Ndx := GetImageIndex (DataFile.Item[Cnt].ObjectType);
+    WITH DatafileContent.Items.AddChildObject (Root, aName, DataFile.Item[Cnt]) DO
+    BEGIn
+      ImageIndex := Ndx;
+      SelectedIndex := Ndx;
+      StateIndex := Ndx;
     END;
   END;
 END;
