@@ -1,6 +1,5 @@
 PROGRAM exdata;
-(*
-  ______   ___    ___
+(*______   ___    ___
  /\  _  \ /\_ \  /\_ \
  \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
   \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
@@ -24,6 +23,7 @@ PROGRAM exdata;
 {$H+}
 
 USES
+  sysutils,
 { It needs some Allegro.pas units. }
   albltspr, { Image blitting and sprite drawing. }
   alcolor,  { Color manipulation. }
@@ -36,27 +36,30 @@ USES
   alsystem; { System initialization. }
 
 
-  
+
 { The grabber produces a header, which contains defines for the names of all
   the objects in the datafile (BIG_FONT, SILLY_BITMAP, etc).  You can
   copnvert that header into Pascal code using the h2pas utility. }
-{$I example.pp}
+{$I example.inc}
 
 
-  
+
 VAR
   datafile: AL_DATAFILEptr;
   palette: AL_PALETTEptr;
-  buf: ANSISTRING;
+  buf: STRING;
 
 BEGIN { The program starts here. }
-  IF al_init <> 0 THEN
+  IF NOT al_init THEN
+  BEGIN
+    WriteLn ('Can''t initialize Allegro!');
     EXIT;
+  END;
   al_install_keyboard;
 
 { Set a graphics mode sized 320x200. }
-  IF (al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) <> 0) THEN
-    IF (al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) <> 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
@@ -70,7 +73,8 @@ BEGIN { The program starts here. }
   al_set_color_conversion (AL_COLORCONV_NONE);
 
 { Load the datafile into memory. }
-  al_replace_filename (buf, argv^, 'example.dat', 256);
+{ TODO: Find a better way to get the path. }
+  buf := ExtractFilePath (ParamStr (0)) + 'example.dat';
   datafile := al_load_datafile (buf);
   IF datafile = NIL THEN
   BEGIN
@@ -88,7 +92,7 @@ BEGIN { The program starts here. }
   al_set_color_conversion (AL_COLORCONV_TOTAL);
    
 { Display the bitmap from the datafile. }
-  al_textout_ex (al_screen, al_font^, 'This is the bitmap:', 32, 16,
+  al_textout_ex (al_screen, al_font, 'This is the bitmap:', 32, 16,
 		 al_makecol (255, 255, 255), -1); 
   al_blit (datafile^[SILLY_BITMAP].dat, al_screen, 0, 0, 64, 32, 64, 64);
 

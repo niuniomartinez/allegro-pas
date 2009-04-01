@@ -281,13 +281,13 @@ USES
     Temp: PChar;
   BEGIN
     Temp := STRALLOC (max + 1);
-    al_pack_fgets := pack_fgets (Temp, max, f);
+    al_pack_fgets := STRING (pack_fgets (Temp, max, f));
     StrDispose (Temp);
   END;
 
   FUNCTION al_pack_fputs (p: STRING; f: AL_PACKFILEptr): BOOLEAN;
   BEGIN
-    al_pack_fputs := (pack_fputs (PChar (p), f) = 0);
+    al_pack_fputs := (pack_fputs (PCHAR (p), f) = 0);
   END;
 
 END.

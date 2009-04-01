@@ -1,6 +1,5 @@
 PROGRAM expal;
-(*
-  ______   ___    ___
+(*______   ___    ___
  /\  _  \ /\_ \  /\_ \
  \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
   \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
@@ -32,16 +31,16 @@ USES
   alsystem, { System initialization. }
   altext;   { Text drawing. }
 
- 
+
   PROCEDURE DrawPattern (bitmap: AL_BITMAPptr; message: ANSISTRING; color: LONGINT);
   VAR
     pattern: AL_BITMAPptr;
   BEGIN
   { Create a pattern bitmap. }
-    pattern := al_create_bitmap (al_text_length (al_font^, message),
-				 al_text_height (al_font^));
+    pattern := al_create_bitmap (al_text_length (al_font, message),
+				 al_text_height (al_font));
     al_clear_to_color (pattern, al_bitmap_mask_color (pattern));
-    al_textout_ex (pattern, al_font^, message, 0, 0,
+    al_textout_ex (pattern, al_font, message, 0, 0,
 		   al_makecol (255,255,255), al_bitmap_mask_color (al_screen));
 
   { Cover the bitmap with the pattern. }
@@ -58,12 +57,15 @@ USES
 VAR
   bitmap: AL_BITMAPptr;
 BEGIN { The program starts here. }
-  IF al_init <> 0 THEN
+  IF NOT al_init THEN
+  BEGIN
+    WriteLn ('Can''t initialize Allegro!');
     EXIT;
+  END;
   al_install_keyboard;
 
-  IF (al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) <> 0) THEN
-    IF (al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) <> 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Shows an error message. }
@@ -72,7 +74,7 @@ BEGIN { The program starts here. }
       al_exit;
       EXIT;
     END;
-  al_set_palette (al_desktop_palette^);
+  al_set_palette (al_desktop_palette);
   al_clear_to_color (al_screen, al_makecol (255, 255, 255));
 
 { First cover the whole screen with a pattern. }

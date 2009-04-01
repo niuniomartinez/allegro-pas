@@ -39,14 +39,14 @@ USES
   VAR
     pal: AL_PALETTE;
     x, y: INTEGER;
-    h, s, v: AL_FLOAT; { Hue, saturation, value. }
-    r, g, b: AL_INT;   { Red, green, blue. }
+    h, s, v: DOUBLE; { Hue, saturation, value. }
+    r, g, b: LONGINT;   { Red, green, blue. }
   BEGIN
   { Set the screen mode }
     al_set_color_depth (colordepth);
 
-    IF al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) <> 0 THEN
-      IF al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) <> 0 THEN
+    IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
+      IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
 	EXIT;
 
   { In case this is a 256 color mode, we'd better make sure that the
@@ -59,10 +59,10 @@ USES
 
     al_clear_to_color (al_screen, al_makecol (0, 0, 0));
 
-    al_textout_ex (al_screen, al_font^, INTTOSTR (colordepth)+' bit color...',
+    al_textout_ex (al_screen, al_font, INTTOSTR (colordepth)+' bit color...',
 		   0, 0, al_makecol (255, 255, 255), -1);
-    
-    al_textout_centre_ex (al_screen, al_font^, 'HSV -> RGB demonstration',
+
+    al_textout_centre_ex (al_screen, al_font, 'HSV -> RGB demonstration',
 			  AL_SCREEN_W DIV 2, 16,
 			  al_makecol (255, 255, 255), -1);
 
@@ -78,20 +78,20 @@ USES
 	{ Calculate value. }
 	  v := x / 150.0; { From 0 to 1. }
 	{ Calculate red, reen and blue values. }
-	  al_hsv_to_rgb (h, 1, v, @r, @g, @b);
+	  al_hsv_to_rgb (h, 1, v, r, g, b);
 	END
 	ELSE BEGIN { Right side, hue and saturation. }
 	{ Calculate saturation. }
 	  s := (150 - (x - 150)) / 150.0; { From 1 to 0. }
 	{ Calculate red, reen and blue values. }
-	  al_hsv_to_rgb (h, s, 1, @r, @g, @b);
+	  al_hsv_to_rgb (h, s, 1, r, g, b);
 	END;
       { Draw the pixel. }
         al_putpixel (al_screen, 192 + x, 50 + y, al_makecol (r, g, b));
       END;
     END;
 
-    al_textout_centre_ex (al_screen, al_font^, '<press a key>',
+    al_textout_centre_ex (al_screen, al_font, '<press a key>',
 			  AL_SCREEN_W DIV 2, AL_SCREEN_H - 16,
 			  al_makecol (255, 255, 255), -1);
 
@@ -103,8 +103,11 @@ END;
 
 
 BEGIN { The program starts here. }
-  IF al_init <> 0 THEN
+  IF NOT al_init THEN
+  BEGIN
+    WriteLn ('Can''t initialize Allegro!');
     EXIT;
+  END;
   al_install_keyboard;
 
 { Try each of the possible possible color depths... }
@@ -119,4 +122,3 @@ BEGIN { The program starts here. }
 
 { End of the program. }
 END.
-

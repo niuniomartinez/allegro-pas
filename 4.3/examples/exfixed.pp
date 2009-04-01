@@ -1,12 +1,21 @@
 PROGRAM exfixed;
-(*< This program demonstrates how to use fixed point numbers, which are signed
-    32-bit integers storing the integer part in the upper 16 bits and the
-    decimal part in the 16 lower bits.  This example also uses the unusual
-    approach of communicating with the user exclusively via the al_message
-    procedure.
+(*______   ___    ___
+ /\  _  \ /\_ \  /\_ \
+ \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
+  \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
+   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
+    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
+     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
+                                    /\____/               \ \_\
+                                    \_/__/                 \/_/
 
-   by Guillermo "Ñuño" Martínez
-   from an example of Allegro Game Library by Shawn Hargreaves. *)
+  This program demonstrates how to use fixed point numbers, which are signed
+  32-bit integers storing the integer part in the upper 16 bits and the decimal
+  part in the 16 lower bits.  This example also uses the unusual approach of
+  communicating with the user exclusively via the al_message procedure.
+
+  by Guillermo "Ñuño" Martínez
+  from an example of Allegro Game Library by Shawn Hargreaves. *)
 
 {$H+}
 

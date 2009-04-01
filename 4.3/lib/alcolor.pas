@@ -126,17 +126,95 @@ TYPE
 
 IMPLEMENTATION
 
+{ Next commented declaration is for "_hsv_to_rgb" but for some reason it
+  throws EAccessViolation exception, so this procedure was translated from
+  the original C code.
   PROCEDURE _hsv_to_rgb_ (h, s, v: DOUBLE; r, g, b: PLONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'hsv_to_rgb';
+  CDECL;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'hsv_to_rgb'; }
+
   PROCEDURE _rgb_to_hsv (r, g, b: LONGINT; h, s, v: PDOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rgb_to_hsv';
 
 
 
+(* al_hsv_to_rgb:
+ *   Converts from HSV colorspace to RGB values.  Translated from the original
+ *   C code writen by Dave Thomson. *)
 PROCEDURE al_hsv_to_rgb (h, s, v: DOUBLE; VAR r, g, b: LONGINT);
+VAR
+  f, x, y, z: DOUBLE;
+  i: LONGINT;
 BEGIN
-  _hsv_to_rgb_ (h, s, v, @r, @g, @b);
+  v := v * 255.0;
+
+  IF s = 0.0 THEN
+  BEGIN
+  { ok since we don't divide by s, and faster }
+    r := TRUNC (v + 0.5); g := r; b := r;
+  END
+  ELSE BEGIN
+    WHILE h >= 360.0 DO
+      h := h - 360.0;
+    h := h / 60.0;
+    IF h < 0.0 THEN
+      h := h + 6.0;
+
+    i := TRUNC (h);
+    f := h - i;
+    x := v * s;
+    y := x * f;
+    v := v + 0.5; { round to the nearest integer below }
+    z := v - x;
+
+    CASE i OF
+    6:
+      BEGIN
+	r := TRUNC (v);
+	g := TRUNC (z + y);
+	b := TRUNC (z);
+      END;
+    0:
+      BEGIN
+	r := TRUNC (v);
+	g := TRUNC (z + y);
+	b := TRUNC (z);
+      END;
+    1:
+      BEGIN
+	r := TRUNC (v - y);
+	g := TRUNC (v);
+	b := TRUNC (z);
+      END;
+    2:
+      BEGIN
+	r := TRUNC (z);
+	g := TRUNC (v);
+	b := TRUNC (z + y);
+      END;
+    3:
+      BEGIN
+	r := TRUNC (z);
+	g := TRUNC (v - y);
+	b := TRUNC (v);
+      END;
+    4:
+      BEGIN
+	r := TRUNC (z + y);
+	g := TRUNC (z);
+	b := TRUNC (v);
+      END;
+    5:
+      BEGIN
+	r := TRUNC (v);
+	g := TRUNC (z);
+	b := TRUNC (v - y);
+      END;
+    END;
+  END;
 END;
+
+
 
 PROCEDURE al_rgb_to_hsv (r, g, b: LONGINT; VAR h, s, v: DOUBLE);
 BEGIN

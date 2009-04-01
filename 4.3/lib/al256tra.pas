@@ -76,7 +76,7 @@ PROCEDURE blend (pal: AL_PALETTE; x, y: LONGINT; rgb: AL_RGB_PTR);
    be called 256 times during the calculation, allowing you to display a
    progress indicator. *)
   PROCEDURE al_create_light_table (table: AL_COLOR_MAPptr; pal: AL_PALETTE;
-				r, g, b: AL_INT; callback: AL_INT_PROC); CDECL;
+				r, g, b: LONGINT; callback: AL_INT_PROC); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_light_table';
 
 (* Fills the specified color mapping table with lookup data for doing
@@ -110,10 +110,10 @@ PROCEDURE blend (pal: AL_PALETTE; x, y: LONGINT; rgb: AL_RGB_PTR);
 
 VAR
 (* Pointer to the color mapping table.  You must allocate your own @link
-   (AL_COLOR_MAP) either statically or dynamically and set @code (al_color_map)
-   to it before using any translucent or lit drawing functions in a 256-color
-   video mode! *)
-  al_color_map: AL_COLOR_MAPptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'color_map';
+   (AL_COLOR_MAP) either statically or dynamically and set @code
+   (al_color_table) to it before using any translucent or lit drawing functions
+   in a 256-color video mode! *)
+  al_color_table: AL_COLOR_MAPptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'color_map';
 
 IMPLEMENTATION
 

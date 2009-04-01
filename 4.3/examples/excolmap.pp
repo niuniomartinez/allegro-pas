@@ -1,6 +1,5 @@
 PROGRAM excolmap;
-(*
-  ______   ___    ___
+(*______   ___    ___
  /\  _  \ /\_ \  /\_ \
  \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
   \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
@@ -54,7 +53,7 @@ VAR
 
 
 
-(* Here comes our custom function. It's designed to take the input colors
+(* Here comes our custom function.  It's designed to take the input colors
  * (red, green & blue) and return a greyscale color for it. This way, when
  * any drawing function draws say over green, it draws the greyscale color
  * for green.
@@ -69,7 +68,7 @@ VAR
  * When you return the rgb value, you don't need to search the palette for
  * the nearest color, Allegro does this automatically.
  *)
-  PROCEDURE ReturnGreyColor (pal: AL_PALETTE; x, y: INTEGER; rgb: AL_RGBptr);
+  PROCEDURE ReturnGreyColor (pal: AL_PALETTE; x, y: LONGINT; rgb: AL_RGBptr);
 	CDECL;
   VAR
     C: INTEGER;
@@ -86,7 +85,7 @@ VAR
 (* The negative_color function is quite the same like the grayscale one,
  * since we are ignoring the value of the drawn color (aka x).
  *)
-  PROCEDURE ReturnNegativeColor (pal: AL_PALETTE; x, y: INTEGER;
+  PROCEDURE ReturnNegativeColor (pal: AL_PALETTE; x, y: LONGINT;
 				 rgb: AL_RGBptr); CDECL;
   BEGIN
   { To get the negative color, substract the color values of red, green
@@ -128,8 +127,11 @@ VAR
 BEGIN { The program starts here. }
   deltax := 1; deltay := 1;
 
-  IF al_init <> 0 THEN
+  IF NOT al_init THEN
+  BEGIN
+    WriteLn ('Can''t initialize Allegro!');
     EXIT;
+  END;
   al_install_keyboard;
 
   temp := al_create_bitmap (320, 200);
@@ -139,7 +141,7 @@ BEGIN { The program starts here. }
 
 { This isn't needed, but it speeds up the color table calculations. }
   al_create_rgb_table (@rgb_table, pal, NIL);
-  al_set_rgb_map (@rgb_table);
+  al_color_table := @rgb_table;
 
 { Build a color lookup table for greyscale effect. }
   al_create_color_table (@greyscale_table, pal, @ReturnGreyColor, NIL);
@@ -147,16 +149,16 @@ BEGIN { The program starts here. }
 { Build a color lookup table for negative effect. }
   al_create_color_table (@negative_table, pal, @ReturnNegativeColor, NIL);
 
-  IF (al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) <> 0) THEN
-    IF (al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) <> 0) THEN
-    BEGIN
-      al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
-    { Shows an error message. }
-      al_message (al_error);
-    { Shutdowns Allegro. }
-      al_exit;
-      EXIT;
-    END;
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
+      BEGIN
+	al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
+      { Shows an error message. }
+	al_message (al_error);
+      { Shutdowns Allegro. }
+	al_exit;
+	EXIT;
+      END;
 
   al_set_palette (pal);
 
@@ -166,7 +168,7 @@ BEGIN { The program starts here. }
   al_drawing_mode (AL_DRAW_MODE_TRANS, NIL, 0, 0);
 
 { Select the greyscale table. }
-  al_set_color_map (@greyscale_table);
+  al_color_table := @greyscale_table;
 
   x := 50; y := 50;
   al_blit (background, temp, 0, 0, 0, 0, 320, 200);
@@ -174,7 +176,7 @@ BEGIN { The program starts here. }
 
   al_blit (temp, al_screen, 0, 0, 0, 0, 320, 200);
 
-  WHILE al_keypressed = 0 DO
+  WHILE NOT al_keypressed DO
   BEGIN
     INC (x, deltax);
     INC (y, deltay);
@@ -186,7 +188,7 @@ BEGIN { The program starts here. }
       deltay := (-deltay);
 
     al_blit (background, temp, 0, 0, 0, 0, 320, 200);
-    al_textout_centre_ex (temp, al_font^, 'Greyscale effect',
+    al_textout_centre_ex (temp, al_font, 'Greyscale effect',
 			AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
 			al_makecol (0, 0, 255), -1);
     al_rectfill (temp, x, y, x+50, y+50, 0);
@@ -207,19 +209,19 @@ BEGIN { The program starts here. }
 { This should go inside the next loop, but since we won't use the background
   image any more, we can optimize it's speed printing the text now. }
 
-  al_textout_centre_ex (background, al_font^, 'Negative effect',
+  al_textout_centre_ex (background, al_font, 'Negative effect',
 			AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
 			al_makecol (0, 0, 0), -1);
 
 { Switch the active color table... }
-  al_set_color_map (@negative_table);
+  al_color_table := @negative_table;
 
   al_blit (background, temp, 0, 0, 0, 0, 320, 200);
   al_rectfill (temp, x, y, x+50, y+50, 0);
 
   al_blit (temp, al_screen, 0, 0, 0, 0, 320, 200);
 
-  WHILE al_keypressed = 0 DO
+  WHILE NOT al_keypressed DO
   BEGIN
     INC (x, deltax);
     INC (y, deltay);
@@ -243,4 +245,3 @@ BEGIN { The program starts here. }
 
 { End of the program. }
 END.
-

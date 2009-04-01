@@ -1,6 +1,5 @@
 PROGRAM expal;
-(*
-  ______   ___    ___
+(*______   ___    ___
  /\  _  \ /\_ \  /\_ \
  \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
   \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
@@ -39,11 +38,14 @@ VAR
   c: INTEGER;
 
 BEGIN { The program starts here. }
-  IF al_init <> 0 THEN
+  IF NOT al_init THEN
+  BEGIN
+    WriteLn ('Can''t initialize Allegro!');
     EXIT;
+  END;
   al_install_keyboard;
-  IF (al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) <> 0) THEN
-    IF (al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) <> 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
@@ -54,7 +56,7 @@ BEGIN { The program starts here. }
     END;
 
 { First set the palette to black to hide what we are doing. }
-  al_set_palette (al_black_palette^);
+  al_set_palette (al_black_palette);
 
 { Draw some circles onto the screen. }
   al_acquire_screen;
@@ -91,14 +93,16 @@ BEGIN { The program starts here. }
   END;
 
 { Animate the image by rotating the palette. }
-  WHILE al_keypressed = 0 DO
+  WHILE NOT al_keypressed DO
   BEGIN
     temp := palette[255];
     FOR c := 255 DOWNTO 1 DO
+    BEGIN
+      al_vsync; { It goes too fast so... }
       palette[c] := palette[c-1];
+    END;
     palette[0] := temp;
     al_set_palette (palette);
-    al_vsync;
   END;
 
 { Shutdown Allegro. }
