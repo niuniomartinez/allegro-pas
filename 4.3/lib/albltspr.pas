@@ -94,16 +94,16 @@ USES
 
 CONST
 (* Drawing modes for al_draw_sprite_ex. *)
-  AL_DRAW_SPRITE_NORMAL = 0; {< @ignore }
-  AL_DRAW_SPRITE_LIT    = 1; {< @ignore }
-  AL_DRAW_SPRITE_TRANS  = 2; {< @ignore }
+  AL_DRAW_SPRITE_NORMAL_MODE = 0; {< @ignore }
+  AL_DRAW_SPRITE_LIT_MODE    = 1; {< @ignore }
+  AL_DRAW_SPRITE_TRANS_MODE  = 2; {< @ignore }
 
 
 (* Flipping modes for al_draw_sprite_ex. *)
-  AL_DRAW_SPRITE_NO_FLIP = 0; {< @ignore }
-  AL_DRAW_SPRITE_H_FLIP  = 1; {< @ignore }
-  AL_DRAW_SPRITE_V_FLIP  = 2; {< @ignore }
-  AL_DRAW_SPRITE_VH_FLIP = 3; {< @ignore }
+  AL_DRAW_SPRITE_NO_FLIP_MODE = 0; {< @ignore }
+  AL_DRAW_SPRITE_H_FLIP_MODE  = 1; {< @ignore }
+  AL_DRAW_SPRITE_V_FLIP_MODE  = 2; {< @ignore }
+  AL_DRAW_SPRITE_VH_FLIP_MODE = 3; {< @ignore }
 
 
 

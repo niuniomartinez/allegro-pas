@@ -41,13 +41,13 @@ VAR
   c: INTEGER;
 
 BEGIN { The program starts here. }
-  IF al_init <> 0 THEN
+  IF NOT al_init THEN
     EXIT;
   al_install_timer;
   al_install_keyboard;
 
-  IF (al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) <> 0) THEN
-    IF (al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) <> 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
@@ -64,31 +64,31 @@ BEGIN { The program starts here. }
   Note use of the global al_retrace_counter to control the speed. We also
   compensate screen size (AL_GFX_SAFE) with a virtual 320 screen width.  }
   al_clear_keybuf();
-  c := al_retrace_count^ + 32;
-  WHILE al_retrace_count^ - c <= 320 + 32 DO
+  c := al_retrace_count + 32;
+  WHILE al_retrace_count - c <= 320 + 32 DO
   BEGIN
     al_acquire_screen;
       al_clear_to_color (al_screen, al_makecol (255, 255, 255));
-      al_circlefill (al_screen, (al_retrace_count^ - c) * AL_SCREEN_W DIV 320,
+      al_circlefill (al_screen, (al_retrace_count - c) * AL_SCREEN_W DIV 320,
 		     AL_SCREEN_H DIV 2, 32, al_makecol (0, 0, 0));
-      al_textout_ex (al_screen, al_font^, 'No buffering', 0, 0,
+      al_textout_ex (al_screen, al_font, 'No buffering', 0, 0,
 		     al_makecol (0, 0, 0), -1);
     al_release_screen();
-    IF al_keypressed <> 0 THEN BREAK;
+    IF al_keypressed THEN BREAK;
   END;
 
 { And now with a double buffer... }
   al_clear_keybuf;
-  c := al_retrace_count^ + 32;
-  WHILE al_retrace_count^ - c <= 320 + 32 DO
+  c := al_retrace_count + 32;
+  WHILE al_retrace_count - c <= 320 + 32 DO
   BEGIN
     al_clear_to_color (buffer, al_makecol (255, 255, 255));
-    al_circlefill (buffer, (al_retrace_count^ - c) * AL_SCREEN_W DIV 320,
+    al_circlefill (buffer, (al_retrace_count - c) * AL_SCREEN_W DIV 320,
 		   AL_SCREEN_H DIV 2, 32, al_makecol (0, 0, 0));
-    al_textout_ex (buffer, al_font^, 'Double buffering', 0, 0,
+    al_textout_ex (buffer, al_font, 'Double buffering', 0, 0,
 		   al_makecol (0, 0, 0), -1);
     al_blit (buffer, al_screen, 0, 0, 0, 0, AL_SCREEN_W, AL_SCREEN_H);
-    IF al_keypressed <> 0 THEN BREAK;
+    IF al_keypressed THEN BREAK;
   END;
 
   al_destroy_bitmap (buffer);

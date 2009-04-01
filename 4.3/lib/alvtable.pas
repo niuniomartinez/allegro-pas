@@ -9,7 +9,6 @@ INTERFACE
 {$H+}
 {$IFDEF FPC}
 { Free Pascal. }
- {$MODE FPC}
  {$PACKRECORDS C}
 {$ELSE}
 { Assumes Codegear Delphi/Turbo. }
@@ -101,7 +100,8 @@ TYPE
     quad3d: POINTER;
     quad3d_f: POINTER;
 
-    draw_sprite_ex: POINTER;
+    draw_sprite_ex: PROCEDURE (bmp, sprite: AL_BITMAPptr; x, y, mode, flip:
+      LONGINT);
   END;
 
 
