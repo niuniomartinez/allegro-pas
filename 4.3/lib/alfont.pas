@@ -54,7 +54,7 @@ TYPE
    @returns (a pointer to the font or @nil on error.  Remember that you are
      responsible for destroying the font when you are finished with it to avoid
      memory leaks.) *)
-  FUNCTION al_load_font (filename: STRING; palette: AL_PALETTEptr; p: AL_PTR)
+  FUNCTION al_load_font (filename: STRING; palette: AL_PALETTEptr; p: POINTER)
 	: AL_FONTptr;
 
   FUNCTION al_grab_font_from_bitmap (bmp: AL_BITMAPptr): AL_FONTptr; CDECL;
@@ -75,8 +75,7 @@ TYPE
 
    @returns (@true if the two fonts are of the same general type (both are
      color fonts or both are monochrome fonts, for instance).) *)
-  FUNCTION al_is_compatible_font (f1, f2: AL_FONTptr): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'is_compatible_font';
+  FUNCTION al_is_compatible_font (f1, f2: AL_FONTptr): BOOLEAN;
 
 (* Frees the memory being used by a font structure.  Don't use this on the
    default global Allegro font or any text routines using it could crash.  You
@@ -94,11 +93,11 @@ IMPLEMENTATION
 
 
 
-  FUNCTION load_font (filename: PCHAR; palette: AL_PALETTEptr; p: AL_PTR)
+  FUNCTION load_font (filename: PCHAR; palette: AL_PALETTEptr; p: POINTER)
 	   : AL_FONTptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_load_font (filename: STRING; palette: AL_PALETTEptr; p: AL_PTR)
+  FUNCTION al_load_font (filename: STRING; palette: AL_PALETTEptr; p: POINTER)
 	: AL_FONTptr;
   BEGIN
     al_load_font := load_font (PCHAR (filename), palette, p);

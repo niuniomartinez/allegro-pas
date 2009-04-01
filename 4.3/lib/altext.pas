@@ -1,30 +1,21 @@
 UNIT altext;
-(*
-  ______   ___    ___
- /\  _  \ /\_ \  /\_ \
- \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
-  \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
-    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
-     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
-                                    /\____/               \ \_\
-                                    \_/__/                 \/_/
- *
- *	Text drawing.
- *	by Ñuño Martínez <>
- *
- *	See readme.txt for license and copyright information.
- *)
+(*< Allegro provides text output routines that work with both monochrome and
+    color fonts, which can contain any number of Unicode character ranges.  The
+    grabber program can create fonts from sets of characters drawn in a bitmap
+    file (see grabber.txt for more information), and can also import GRX or
+    BIOS format font files.  The font structure contains a number of hooks that
+    can be used to extend it with your own custom drawing code:  see the
+    definition in allegro/text.h for details.  *)
 
 {$IFDEF FPC}
 { Free Pascal. }
+ {$MODE FPC}
  {$PACKRECORDS C}
- {$LONGSTRINGS ON}
 {$ELSE}
-{ Assumes Borland Delphi/Turbo. }
+{ Assumes Codegear Delphi/Turbo. }
  {$A-}
- {$H+}
 {$ENDIF}
+{$H+}
 
 
 
@@ -36,67 +27,67 @@ USES
 
 
 VAR
-  al_font: ^AL_FONTptr; { A pointer to a pointer because we can change it. }
-  al_404_char: AL_INTptr;
+  al_font: AL_FONTptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'font';
+  al_404_char: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_404_char';
 
 
 
-  PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x, y, color, bg: AL_INT);
-  PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x, y, color, bg: AL_INT);
-  PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x, y, color, bg: AL_INT);
-  PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x1, x2, y, diff, color, bg: AL_INT);
+  PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+  PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+  PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+  PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x1, x2, y, diff, color, bg: LONGINT);
 
-  FUNCTION al_text_length (f: AL_FONTptr; str: AL_STRING): AL_INT;
-  FUNCTION al_text_height (f: AL_FONTptr): AL_INT; CDECL;
+  FUNCTION al_text_length (f: AL_FONTptr; str: STRING): LONGINT;
+  FUNCTION al_text_height (f: AL_FONTptr): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'text_height';
 
 
 
 IMPLEMENTATION
 
-PROCEDURE textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: AL_INT); CDECL;
+PROCEDURE textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
   EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_ex';
 
-PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x, y, color, bg: AL_INT);
+PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
 BEGIN
   textout_ex (bmp, f, PCHAR (str), x, y, color, bg);
 END;
 
 
 
-PROCEDURE textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: AL_INT); CDECL;
+PROCEDURE textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
   EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_centre_ex';
 
-PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x, y, color, bg: AL_INT);
+PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
 BEGIN
   textout_centre_ex (bmp, f, PCHAR (str), x, y, color, bg);
 END;
 
 
-PROCEDURE textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: AL_INT); CDECL;
+PROCEDURE textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
   EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_right_ex';
 
-PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x, y, color, bg: AL_INT);
+PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
 BEGIN
   textout_right_ex (bmp, f, PCHAR (str), x, y, color, bg);
 END;
 
 
 
-PROCEDURE textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x1, x2, y, diff, color, bg: AL_INT); CDECL;
+PROCEDURE textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x1, x2, y, diff, color, bg: LONGINT); CDECL;
   EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_justify_ex';
 
-PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: AL_STRING; x1, x2, y, diff, color, bg: AL_INT);
+PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x1, x2, y, diff, color, bg: LONGINT);
 BEGIN
   textout_justify_ex (bmp, f, PCHAR (str), x1, x2, y, diff, color, bg);
 END;
 
 
 
-FUNCTION text_length (f: AL_FONTptr; str: PCHAR): AL_INT; CDECL;
+FUNCTION text_length (f: AL_FONTptr; str: PCHAR): LONGINT; CDECL;
   EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'text_length';
 
-FUNCTION al_text_length (f: AL_FONTptr; str: AL_STRING): AL_INT;
+FUNCTION al_text_length (f: AL_FONTptr; str: STRING): LONGINT;
 BEGIN
   al_text_length := text_length (f, PCHAR (str));
 END;

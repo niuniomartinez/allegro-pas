@@ -388,6 +388,9 @@ VAR
 
 IMPLEMENTATION
 
+USES
+  algraph;
+
 CONST
 (* Identify bitmap type *)
   AL_BMP_ID_VIDEO     = $80000000;
@@ -439,16 +442,23 @@ END;
 
 
 
+FUNCTION al_is_screen_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+BEGIN
+  al_is_screen_bitmap := al_is_same_bitmap (bmp, al_screen);
+END;
+
+
+
 FUNCTION al_is_video_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
 BEGIN
-  al_is_memory_bitmap := (bmp^.id AND AL_BMP_ID_VIDEO) <> 0;
+  al_is_video_bitmap := (bmp^.id AND AL_BMP_ID_VIDEO) <> 0;
 END;
 
 
 
 FUNCTION al_is_system_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
 BEGIN
-  al_is_memory_bitmap := (bmp^.id AND AL_BMP_ID_SYSTEM) <> 0;
+  al_is_system_bitmap := (bmp^.id AND AL_BMP_ID_SYSTEM) <> 0;
 END;
 
 

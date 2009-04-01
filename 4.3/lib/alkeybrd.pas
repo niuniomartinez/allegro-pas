@@ -1,32 +1,28 @@
 UNIT alkeybrd;
-(*
-  ______   ___    ___
- /\  _  \ /\_ \  /\_ \
- \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
-  \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
-    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
-     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
-                                    /\____/               \ \_\
-                                    \_/__/                 \/_/
- *
- *	Keyboard support.
- *	by Ñuño Martínez <>
- *	Based on the file "keyboard.h" of the Allegro library by Shawn
- *	Hargreaves.  Some parts of the code was created by the "h2pas" utility.
- *
- *	See readme.txt for license and copyright information.
- *)
+(*< The Allegro keyboard handler provides both buffered input and a set of
+    flags storing the current state of each key.  Note that it is not possible
+    to correctly detect every combination of keys, due to the design of the PC
+    keyboard.  Up to two or three keys at a time will work fine, but if you
+    press more than that the extras are likely to be ignored (exactly which
+    combinations are possible seems to vary from one keyboard to another).
+
+    Allegro comes with a prepackaged `keyboard.dat' file which you can put
+    along with your binary.  If this file is present, Allegro will be able to
+    extract the keyboard mapping information stored there.  However, the end
+    user still needs to select which keyboard mapping to use.  This can be
+    accomplished through the keyboard variable of the system section in a
+    standard `allegro.cfg' configuration file.  Read unit @code (alconfig) for
+    more information about this. *)
 
 {$IFDEF FPC}
 { Free Pascal. }
  {$PACKRECORDS C}
- {$LONGSTRINGS ON}
+ {$MODE FPC}
 {$ELSE}
-{ Assumes Borland Delphi/Turbo. }
+{ Assumes Codegear Delphi/Turbo. }
  {$A-}
- {$H+}
 {$ENDIF}
+{$H+}
 
 
 
@@ -38,47 +34,57 @@ USES
 
 
 (* Functions and procedures. *)
-  FUNCTION al_install_keyboard: AL_INT;
+  FUNCTION al_install_keyboard: BOOLEAN;
+
   PROCEDURE al_remove_keyboard;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_keyboard';
-  FUNCTION al_poll_keyboard: AL_INT;
+
+  FUNCTION al_poll_keyboard: LONGINT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'poll_keyboard';
-  FUNCTION al_keyboard_needs_poll: AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'keyboard_needs_poll';
-  FUNCTION al_keypressed: AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'keypressed';
-  FUNCTION al_readkey: AL_INT; 
+
+  FUNCTION al_keyboard_needs_poll: BOOLEAN;
+
+  FUNCTION al_keypressed: BOOLEAN;
+
+  FUNCTION al_readkey: LONGINT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'readkey';
-  FUNCTION al_ureadkey (scancode: AL_INTPTR): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'ureadkey';
-  PROCEDURE al_simulate_keypress (keycode: AL_INT);
+
+  FUNCTION al_ureadkey (VAR scancode: LONGINT): LONGINT;
+
+  PROCEDURE al_simulate_keypress (keycode: LONGINT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'simulate_keypress';
-  PROCEDURE al_simulate_ukeypress (keycode, scancode: AL_INT);
+
+  PROCEDURE al_simulate_ukeypress (keycode, scancode: LONGINT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'simulate_ukeypress';
+
   PROCEDURE al_clear_keybuf;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clear_keybuf';
-  PROCEDURE al_set_leds (leds: AL_INT);
+
+  PROCEDURE al_set_leds (leds: LONGINT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_leds';
-  PROCEDURE al_set_keyboard_rate (key_delay, key_repeat: AL_INT);
+
+  PROCEDURE al_set_keyboard_rate (key_delay, key_repeat: LONGINT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_keyboard_rate';
-  FUNCTION al_scancode_to_ascii (scancode: AL_INT): AL_INT;
+
+  FUNCTION al_scancode_to_ascii (scancode: LONGINT): LONGINT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scancode_to_ascii';
-  FUNCTION al_scancode_to_name (scancode: AL_INT): AL_STRING;
+
+  FUNCTION al_scancode_to_name (scancode: LONGINT): STRING;
 
 
 
 (* Access to the Allegro's public variables. *)
 TYPE
   AL_KEY_LISTptr = ^AL_KEY_LIST;
-  AL_KEY_LIST	 = ARRAY [0..126] OF AL_CHAR;
+  AL_KEY_LIST	 = ARRAY [0..126] OF BYTE;
 
 
 
 VAR
-  al_key: AL_KEY_LISTptr;
-  al_key_shifts: AL_INTptr;
-  al_three_finger_flag: AL_INTptr;
-  al_key_led_flag: AL_INTptr;
+  al_key: AL_KEY_LISTptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'key';
+  al_key_shifts: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'key_shifts';
+  al_three_finger_flag: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'three_finger_flag';
+  al_key_led_flag: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'key_led_flag';
 
 
 
@@ -238,39 +244,50 @@ IMPLEMENTATION
 
 (* Delphi can't access to the public variables from Allegro, so we need some
  * magic to access them. *)
-FUNCTION install_keyboard: AL_INT;
+FUNCTION install_keyboard: LONGINT;
   CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION _get_key_: AL_KEY_LISTptr;
-  CDECL; EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-FUNCTION _get_key_shifts_: AL_INTptr;
-  CDECL; EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-FUNCTION _get_three_finger_flag_: AL_INTptr;
-  CDECL; EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
-FUNCTION _get_key_led_flag_: AL_INTptr;
-  CDECL; EXTERNAL ALL_PAS_SHARED_LIBRARY_NAME;
 
-FUNCTION al_install_keyboard: AL_INT;
-VAR
-  R: AL_INT;
+FUNCTION al_install_keyboard: BOOLEAN;
 BEGIN
-  R := install_keyboard;
-  IF R = 0 THEN
-  BEGIN
-  { Get pointers of public variables. }
-    al_key := _get_key_;
-    al_key_shifts := _get_key_shifts_;
-    al_three_finger_flag := _get_three_finger_flag_;
-    al_key_led_flag := _get_key_led_flag_;
-  END;
-  al_install_keyboard := R;
+  al_install_keyboard := install_keyboard = 0;
 END;
 
 
 
-  FUNCTION scancode_to_name (scancode: AL_INT): PCHAR;
+  FUNCTION keyboard_needs_poll: LONGINT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_keyboard_needs_poll: BOOLEAN;
+  BEGIN
+    al_keyboard_needs_poll := keyboard_needs_poll <> 0;
+  END;
+
+
+
+  FUNCTION keypressed: LONGINT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_keypressed: BOOLEAN;
+  BEGIN
+    al_keypressed := keypressed <> 0;
+  END;
+
+
+
+  FUNCTION ureadkey (scancode: PLONGINT): LONGINT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_ureadkey (VAR scancode: LONGINT): LONGINT;
+  BEGIN
+    al_ureadkey := ureadkey (@scancode);
+  END;
+
+
+
+  FUNCTION scancode_to_name (scancode: LONGINT): PCHAR;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scancode_to_name';
 
-  FUNCTION al_scancode_to_name (scancode: AL_INT): AL_STRING;
+  FUNCTION al_scancode_to_name (scancode: LONGINT): STRING;
   BEGIN
     al_scancode_to_name := scancode_to_name (scancode);
   END;

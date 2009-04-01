@@ -1,9 +1,9 @@
-(* Example for Allegro.pas
-   that displays the text "Hello, world!" in the screen.
+PROGRAM exhello;
+(*< Example for Allegro.pas that displays the text "Hello, world!" in the
+    screen.
 
    by Ñuño Martínez <niunio(at)users.sourceforge.net>
    from an example of Allegro Game Library by Shawn Hargreaves. *)
-PROGRAM exhello;
 
 {$H+}
 
@@ -24,26 +24,26 @@ USES
 BEGIN { The program starts here. }
 
 { You should always do this at the start of Allegro programs. }
-  IF al_init <> 0 THEN
+  IF NOT al_init THEN
     EXIT;
 
 { Set up the keyboard handler. }
   al_install_keyboard;
 
 { Set a graphics mode sized 320x200. }
-  IF (al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) <> 0) THEN
-    IF (al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) <> 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
-      al_message (STRING (al_error));
+      al_message (al_error);
     { Shutdown Allegro.  You should do it because it isn't automatic. }
       al_exit;
       EXIT;
     END;
 
 { Set the color palette. }
-  al_set_palette (al_desktop_palette^);
+  al_set_palette (al_desktop_palette);
 
 { Clear the screen to white. }
   al_clear_to_color (al_screen, al_makecol (255, 255, 255));
@@ -54,7 +54,7 @@ BEGIN { The program starts here. }
   al_acquire_screen;
 
 { Write some text to the screen with black letters and transparent background. }
-  al_textout_centre_ex (al_screen, al_font^, 'Hello, world!',
+  al_textout_centre_ex (al_screen, al_font, 'Hello, world!',
 			al_SCREEN_W DIV 2, al_SCREEN_H DIV 2,
 			al_makecol (0, 0, 0), -1);
 

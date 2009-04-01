@@ -54,10 +54,10 @@ VAR
 (* Text string used by @link (al_set_gfx_mode), @link (al_install_sound) and
    other functions to report error messages.  If they fail and you want to tell
    the user why, this is the place to look for a description of the problem. *)
-  al_error: PCHAR; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_error';
+  al_error: STRING; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_error';
 (* Text string containing a date and version number for the library, in case
    you want to display these somewhere. *)
-  al_id_string: PCHAR; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_id';
+  al_id_string: STRING; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_id';
 
 
 
