@@ -35,7 +35,10 @@ BEGIN { The program starts here. }
 
 { You should always do this at the start of Allegro programs. }
   IF NOT al_init THEN
+  BEGIN
+    WriteLn ('Can''t initialize Allegro!');
     EXIT;
+  END;
 
 { Set up the keyboard handler. }
   al_install_keyboard;

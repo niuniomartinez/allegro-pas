@@ -57,6 +57,50 @@ TYPE
   FUNCTION al_load_font (filename: STRING; palette: AL_PALETTEptr; p: POINTER)
 	: AL_FONTptr;
 
+(* Tries to grab a font from a bitmap.  The bitmap can be in any format that
+   @link (al_load_bitmap) understands.
+
+   The size of each character is determined by the layout of the image, which
+   should be a rectangular grid containing all the ASCII characters from space
+   (32) up to the tilde (126).  The way the characters are separated depends on
+   the color depth of the image file:
+   @unorderedList (
+     @item (paletted @(8 bit@) image file Use color 0 for the transparent
+       portions of the characters and fill the spaces between each letter with
+       color 255.)
+     @item (High @(15/16 bit@) and true @(24/32 bit@) color image file use
+       bright pink @(maximum red and blue, zero green@) for the transparent
+       portions of the characters and fill the spaces between each letter with
+       bright yellow @(maximum red and green, zero blue@).)
+   )
+   Note that in each horizontal row the bounding boxes around the characters
+   should align and have the same height.
+
+   Probably the easiest way to get to grips with how this works is to load up
+   the `demo.dat' file and export the TITLE_FONT into a PCX file.  Have a look
+   at the resulting picture in your paint program:  that is the format a font
+   should be in.
+
+   Take care with high and true color fonts:  Allegro will convert these to the
+   current color depth when you load the font.  If you try to use a font on a
+   bitmap with a different color depth Allegro will do color conversions on the
+   fly, which will be rather slow.  For optimal performance you should set the
+   color depth to the color depth you want to use before loading any fonts.
+
+   @returns (a pointer to the font or @nil on error.  Remember that you are
+     responsible for destroying the font when you are finished with it to avoid
+     memory leaks.) *)
+  FUNCTION al_load_bitmap_font (filename: STRING; palette: AL_PALETTEptr;
+    p: POINTER): POINTER;
+
+(* This function is the work-horse of @link (al_load_bitmap_font), and can be
+   used to grab a font from a bitmap in memory.  You can use this if you want
+   to generate or modify a font at runtime.  The bitmap should follow the
+   layout described for @link (al_load_bitmap_font).
+
+   @returns (a pointer to the font or @nil on error.  Remember that you are
+     responsible for destroying the font when you are finished with it to avoid
+     memory leaks.) *)
   FUNCTION al_grab_font_from_bitmap (bmp: AL_BITMAPptr): AL_FONTptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'grab_font_from_bitmap';
 
@@ -101,6 +145,18 @@ IMPLEMENTATION
 	: AL_FONTptr;
   BEGIN
     al_load_font := load_font (PCHAR (filename), palette, p);
+  END;
+
+
+
+  FUNCTION load_bitmap_font (filename: PCHAR; palette: AL_PALETTEptr;
+	p: POINTER): POINTER; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_load_bitmap_font (filename: STRING; palette: AL_PALETTEptr;
+    p: POINTER): POINTER;
+  BEGIN
+    al_load_bitmap_font := load_bitmap_font (PCHAR (filename), palette, p);
   END;
 
 

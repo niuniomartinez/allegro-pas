@@ -4,7 +4,7 @@ PROGRAM exhsvrgb;
  /\  _  \ /\_ \  /\_ \
  \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
   \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
+   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\
     \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
      \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                     /\____/               \ \_\
@@ -77,13 +77,13 @@ USES
 	BEGIN
 	{ Calculate value. }
 	  v := x / 150.0; { From 0 to 1. }
-	{ Calculate red, reen and blue values. }
+	{ Calculate red, green and blue values. }
 	  al_hsv_to_rgb (h, 1, v, r, g, b);
 	END
 	ELSE BEGIN { Right side, hue and saturation. }
 	{ Calculate saturation. }
 	  s := (150 - (x - 150)) / 150.0; { From 1 to 0. }
-	{ Calculate red, reen and blue values. }
+	{ Calculate red, green and blue values. }
 	  al_hsv_to_rgb (h, s, 1, r, g, b);
 	END;
       { Draw the pixel. }

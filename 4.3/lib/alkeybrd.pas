@@ -33,42 +33,168 @@ USES
 
 
 
-(* Functions and procedures. *)
+(* Installs the Allegro keyboard interrupt handler.  You must call this before
+   using any of the keyboard input routines.  Once you have set up the Allegro
+   handler, you can no longer use operating system calls or the run-time
+   library functions to access the keyboard.
+
+   Note that on some platforms the keyboard won't work unless you have set a
+   graphics mode, even if this function returns a success value before calling
+   @link (al_set_gfx_mode).  This can happen in environments with graphic
+   windowed modes, since Allegro usually reads the keyboard through the
+   graphical window (which appears after the @code (al_set_gfx_mode) call).
+
+   @returns (@true on success, or @false on failure @(but you may decide not to
+     check the return value as this function is very unlikely to fail@).)  *)
   FUNCTION al_install_keyboard: BOOLEAN;
 
+(* Removes the keyboard handler, returning control to the operating system.
+   You don't normally need to bother calling this, because @link (al_exit) will
+   do it for you.  However, you might want to call this during runtime if you
+   want to change the keyboard mapping on those platforms were keyboard
+   mappings are needed.  You would first modify the configuration variable
+   holding the keyboard mapping and then reinstall the keyboard handler. *)
   PROCEDURE al_remove_keyboard;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_keyboard';
 
+(* Wherever possible, Allegro will read the keyboard input asynchronously (ie.
+   from inside an interrupt handler), but on some platforms that may not be
+   possible, in which case you must call this routine at regular intervals to
+   update the keyboard state variables.
+
+   To help you test your keyboard polling code even if you are programming on
+   a platform that doesn't require it, after the first time that you call this
+   function Allegro will switch into polling mode, so from that point onwards
+   you will have to call this routine in order to get any keyboard input at
+   all, regardless of whether the current driver actually needs to be polled or
+   not.
+
+   The @link (al_keypressed), @link (al_readkey), and @link (al_ureadkey)
+   functions call @code (al_poll_keyboard) automatically, so you only need to
+   use this function when accessing the @link (al_key) array and @link
+   (al_key_shifts) variable.
+
+   @returns (@true on success or @false on failure @(ie. no keyboard driver installed@).) *)
   FUNCTION al_poll_keyboard: LONGINT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'poll_keyboard';
 
+(* Returns @true if the current keyboard driver is operating in polling mode. *)
   FUNCTION al_keyboard_needs_poll: BOOLEAN;
 
+(* Returns @true if there are keypresses waiting in the input buffer.  You can
+   use this to see if the next call to @link (al_readkey) is going to block or
+   to simply wait for the user to press a key while you still update the screen
+   possibly drawing some animation.  Example:
+   @longcode (#
+  WHILE NOT al_keypressed DO
+    AnimateLogo (al_screen);
+   #) *)
   FUNCTION al_keypressed: BOOLEAN;
 
+(* Returns the next character from the keyboard buffer, in ASCII format.  If
+   the buffer is empty, it waits until a key is pressed.  You can see if there
+   are queued keypresses with @link (keypressed).
+
+   The low byte of the return value contains the ASCII code of the key, and the
+   high byte the scancode.  The scancode remains the same whatever the state of
+   the shift, ctrl and alt keys, while the ASCII code is affected by shift and
+   ctrl in the normal way (shift changes case, ctrl+letter gives the position
+   of that letter in the alphabet, eg. ctrl+A = 1, ctrl+B = 2, etc).  Pressing
+   alt+key returns only the scancode, with a zero ASCII code in the low byte.
+   For example:
+   @longcode (#
+VAR
+  val: INTEGER;
+  ...
+  val := al_readkey;
+
+  IF (val AND $ff) = ORD ('d') THEN
+    al_message ('You pressed "d"');
+
+  IF (val RSH 8) = AL_KEY_SPACE THEN
+    al_message ('You pressed Space');
+
+  IF (val AND $ff) = 3 THEN
+    al_message ('You pressed Control+C');
+
+  IF val = (AL_KEY_X LSH 8) THEN
+    al_message ('You pressed Alt+X');
+   #)
+
+   This function cannot return character values greater than 255.  If you need
+   to read Unicode input, use @link (al_ureadkey) instead. *)
   FUNCTION al_readkey: LONGINT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'readkey';
 
+(* Returns the next character from the keyboard buffer, in Unicode format.  If
+   the buffer is empty, it waits until a key is pressed.  You can see if there
+   are queued keypresses with @link (al_keypressed).  The return value contains
+   the Unicode value of the key, and the argument will be set to the scancode.
+   Unlike @link (al_readkey), this function is able to return character values
+   greater than 255.  Example:
+   @longcode (#
+VAR
+  val, scancode: INTEGER;
+  ...
+  val := al_ureadkey (scancode);
+  IF val = $00F1 THEN
+    al_message ('You pressed n with tilde');
+
+  IF val = $00DF THEN
+    al_message ('You pressed sharp s');
+   #)
+
+   You should be able to find Unicode character maps at
+   http://www.unicode.org/. *)
   FUNCTION al_ureadkey (VAR scancode: LONGINT): LONGINT;
 
+(* Stuffs a key into the keyboard buffer, just as if the user had pressed it.
+   The parameter is in the same format returned by @link (al_readkey). *)
   PROCEDURE al_simulate_keypress (keycode: LONGINT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'simulate_keypress';
 
+(* Stuffs a key into the keyboard buffer, just as if the user had pressed it.
+   The parameter is in the same format returned by @link (al_ureadkey). *)
   PROCEDURE al_simulate_ukeypress (keycode, scancode: LONGINT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'simulate_ukeypress';
 
+(* Empties the keyboard buffer.  Usually you want to use this in your program
+   before reading keys to avoid previously buffered keys to be returned by
+   calls to @link (al_readkey) or @link (al_ureadkey). *)
   PROCEDURE al_clear_keybuf;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clear_keybuf';
 
+(* Overrides the state of the keyboard LED indicators.  The parameter is a
+   bitmask containing any of the values @code (AL_KB_SCROLOCK_FLAG), @code
+   (AL_KB_NUMLOCK_FLAG), and @code (AL_KB_CAPSLOCK_FLAG), or -1 to restore
+   the default behavior.
+
+   Note that the led behaviour cannot be guaranteed on some platforms, some
+   leds might not react, or none at all.  Therefore you shouldn't rely only on
+   them to communicate information to the user, just in case it doesn't get
+   through. *)
   PROCEDURE al_set_leds (leds: LONGINT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_leds';
 
+(* Sets the keyboard repeat rate.  Times are given in milliseconds.  Passing
+   zero times will disable the key repeat. *)
   PROCEDURE al_set_keyboard_rate (key_delay, key_repeat: LONGINT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_keyboard_rate';
 
+(* Converts the given scancode to an ASCII character for that key (mangling
+   Unicode values), returning the unshifted uncapslocked result of pressing the
+   key, or zero if the key isn't a character-generating key or the lookup can't
+   be done.  The lookup cannot be done for keys like the F1-F12 keys or the
+   cursor keys, and some drivers will only return approximate values.
+   Generally, if you want to display the name of a key to the user, you should
+   use the @link (al_scancode_to_name) function. *)
   FUNCTION al_scancode_to_ascii (scancode: LONGINT): LONGINT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scancode_to_ascii';
 
+(* This function returns a string pointer containing the name of they key with
+   the given scancode.  This is useful if you e.g. let the user choose a key
+   for some action, and want to display something more meaningful than just the
+   scancode. *)
   FUNCTION al_scancode_to_name (scancode: LONGINT): STRING;
 
 
@@ -81,15 +207,102 @@ TYPE
 
 
 VAR
+(* Array of flags indicating the state of each key, ordered by scancode.
+   Wherever possible these values will be updated asynchronously, but if @link
+   (al_keyboard_needs_poll) returns @true, you must manually call @link
+   (al_poll_keyboard) to update them with the current input state.  The
+   scancodes are defined as a series of @code (AL_KEY_* ) constants (and are
+   also listed below). For example, you could write:
+   @longcode (#
+IF  al_key[AL_KEY_SPACE] <> 0 THEN
+  WriteLn ('Space is pressed');
+   #)
+
+   Note that the array is supposed to represent which keys are physically held
+   down and which keys are not, so it is semantically read-only.
+
+   These are the keyboard scancodes:
+   @longcode (#
+          KEY_A ... KEY_Z,
+          KEY_0 ... KEY_9,
+          KEY_0_PAD ... KEY_9_PAD,
+          KEY_F1 ... KEY_F12,
+
+          KEY_ESC, KEY_TILDE, KEY_MINUS, KEY_EQUALS,
+          KEY_BACKSPACE, KEY_TAB, KEY_OPENBRACE, KEY_CLOSEBRACE,
+          KEY_ENTER, KEY_COLON, KEY_QUOTE, KEY_BACKSLASH,
+          KEY_BACKSLASH2, KEY_COMMA, KEY_STOP, KEY_SLASH,
+          KEY_SPACE,
+
+          KEY_INSERT, KEY_DEL, KEY_HOME, KEY_END, KEY_PGUP,
+          KEY_PGDN, KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN,
+
+          KEY_SLASH_PAD, KEY_ASTERISK, KEY_MINUS_PAD,
+          KEY_PLUS_PAD, KEY_DEL_PAD, KEY_ENTER_PAD,
+
+          KEY_PRTSCR, KEY_PAUSE,
+
+          KEY_ABNT_C1, KEY_YEN, KEY_KANA, KEY_CONVERT, KEY_NOCONVERT,
+          KEY_AT, KEY_CIRCUMFLEX, KEY_COLON2, KEY_KANJI,
+
+          KEY_LSHIFT, KEY_RSHIFT,
+          KEY_LCONTROL, KEY_RCONTROL,
+          KEY_ALT, KEY_ALTGR,
+          KEY_LWIN, KEY_RWIN, KEY_MENU,
+          KEY_SCRLOCK, KEY_NUMLOCK, KEY_CAPSLOCK
+
+          KEY_EQUALS_PAD, KEY_BACKQUOTE, KEY_SEMICOLON, KEY_COMMAND
+   #)
+
+   Finally, you may notice an @italic (`odd') behaviour of the @code
+   (AL_KEY_PAUSE) key.  This key only generates an interrupt when it is
+   pressed, not when it is released.  For this reason, Allegro pretends the
+   pause key is a @italic (`state') key, which is the only way to make it
+   usable. *)
   al_key: AL_KEY_LISTptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'key';
+
+(* Bitmask containing the current state of @code (shift/ctrl/alt), the special
+   Windows keys, and the accent escape characters.  Wherever possible this
+   value will be updated asynchronously, but if @link (al_keyboard_needs_poll)
+   returns @true, you must manually call @link (al_poll_keyboard) to update it
+   with the current input state.  This can contain any of the flags:
+   @longcode (#
+          KB_SHIFT_FLAG
+          KB_CTRL_FLAG
+          KB_ALT_FLAG
+          KB_LWIN_FLAG
+          KB_RWIN_FLAG
+          KB_MENU_FLAG
+          KB_COMMAND_FLAG
+          KB_SCROLOCK_FLAG
+          KB_NUMLOCK_FLAG
+          KB_CAPSLOCK_FLAG
+          KB_INALTSEQ_FLAG
+          KB_ACCENT1_FLAG
+          KB_ACCENT2_FLAG
+          KB_ACCENT3_FLAG
+          KB_ACCENT4_FLAG
+   #) *)
   al_key_shifts: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'key_shifts';
+
+(* The DJGPP keyboard handler provides an 'emergency exit' sequence which you
+   can use to kill off your program.  If you are running under DOS this is the
+   three finger salute, ctrl+alt+del.  Most multitasking OS's will trap this
+   combination before it reaches the Allegro handler, in which case you can use
+   the alternative ctrl+alt+end.  If you want to disable this behaviour in
+   release versions of your program, set this flag to @code (NOT 0). *)
   al_three_finger_flag: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'three_finger_flag';
+
+(* By default, the capslock, numlock, and scroll-lock keys toggle the keyboard
+   LED indicators when they are pressed.  If you are using these keys for input
+   in your game (eg. capslock to fire) this may not be desirable, so you can
+   set this flag to zero and prevent the LED's being updated. *)
   al_key_led_flag: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'key_led_flag';
 
 
 
 CONST
-{ Key scan-code identifiers. }
+{ @ignore Key scan-code identifiers. }
   AL_KEY_A		= 1;
   AL_KEY_B		= 2;
   AL_KEY_C              = 3;
@@ -222,7 +435,7 @@ CONST
 
   AL_KEY_MAX		= 127;
 
-{ Shift keys flags. }
+{ @ignore Shift keys flags. }
   AL_KB_SHIFT_FLAG	 = $0001;
   AL_KB_CTRL_FLAG	 = $0002;
   AL_KB_ALT_FLAG         = $0004;
@@ -242,15 +455,13 @@ CONST
 
 IMPLEMENTATION
 
-(* Delphi can't access to the public variables from Allegro, so we need some
- * magic to access them. *)
-FUNCTION install_keyboard: LONGINT;
-  CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION install_keyboard: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-FUNCTION al_install_keyboard: BOOLEAN;
-BEGIN
-  al_install_keyboard := install_keyboard = 0;
-END;
+  FUNCTION al_install_keyboard: BOOLEAN;
+  BEGIN
+    al_install_keyboard := install_keyboard = 0;
+  END;
 
 
 
