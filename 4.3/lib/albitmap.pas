@@ -1,54 +1,55 @@
 UNIT albitmap;
 (*< Once you have selected a graphics mode, you can draw things onto the
-    display via the @link (al_screen) bitmap.  All the Allegro graphics
-    routines draw onto @link (AL_BITMAP) structures, which are areas of memory
-    containing rectangular images, stored as packed byte arrays (in 8-bit modes
-    one byte per pixel, in 15- and 16-bit modes two bytes per pixel, in 24-bit
-    modes 3 bytes per pixel and in 32-bit modes 4 bytes per pixel).  You can
-    create and manipulate bitmaps in system RAM, or you can write to the special
-    @code (al_screen) bitmap which represents the video memory in your graphics
+    display via the @link(al_screen) bitmap.  All the Allegro graphics routines
+    draw onto @link(AL_BITMAP) structures, which are areas of memory containing
+    rectangular images, stored as packed byte arrays (in 8-bit modes one byte
+    per pixel, in 15- and 16-bit modes two bytes per pixel, in 24-bit modes 3
+    bytes per pixel and in 32-bit modes 4 bytes per pixel).  You can create and
+    manipulate bitmaps in system RAM, or you can write to the special
+    @code(al_screen) bitmap which represents the video memory in your graphics
     card.
 
     Allegro supports several different types of bitmaps:
-    @unorderedList (
-      @item (The @link (al_screen) bitmap, which represents the hardware video
+    @unorderedList(
+      @item(The @link(al_screen) bitmap, which represents the hardware video
 	memory.  Ultimately you have to draw onto this in order for your image
-	to be visible.  It is destroyed by any subsequent calls to @link
-	(al_set_gfx_mode), so you should never attempt to destroy it yourself.)
-      @litem (Memory bitmaps, which are located in system RAM and can be used
-	to store graphics or as temporary drawing spaces for double buffered
-	systems.  These can be obtained by calling @link (al_create_bitmap),
-	@link (al_load_bitmap), or by loading a grabber datafile.)
-      @item (Sub-bitmaps.  These share image memory with a parent bitmap (which
+	to be visible.  It is destroyed by any subsequent calls to
+	@link(al_set_gfx_mode), so you should never attempt to destroy it
+	yourself.)
+      @item(Memory bitmaps, which are located in system RAM and can be used to
+	store graphics or as temporary drawing spaces for double buffered
+	systems.  These can be obtained by calling @link(al_create_bitmap),
+	@link(al_load_bitmap), or by loading a grabber datafile.)
+      @item(Sub-bitmaps.  These share image memory with a parent bitmap (which
 	can be the screen, a video or system bitmap, a memory bitmap, or
 	another sub-bitmap), so drawing onto them will also change their
 	parent.  They can be of any size and located anywhere within the parent
 	bitmap, and can have their own clipping rectangles, so they are a
 	useful way of dividing a bitmap into several smaller units, eg.
-	splitting a large virtual screen into multiple sections.  @bold
-	(Warning:) Make sure not to destroy a bitmap before all of its
+	splitting a large virtual screen into multiple sections.
+	@bold(Warning:) Make sure not to destroy a bitmap before all of its
 	sub-bitmaps, otherwise bad things will happen when you try to access
 	one of these sub-bitmaps.)
-      @item (Video memory bitmaps.  These are created by the @link
-	(al_create_video_bitmap) function, and are usually implemented as
-	sub-bitmaps of the screen object.  They must be destroyed by @link
-	(al_destroy_bitmap) before any subsequent calls to @code
-	(al_set_gfx_mode).)
-      @item (System bitmaps.  These are created by the @link
-	(al_create_system_bitmap) function, and are a sort of halfway house
-	between memory and video bitmaps.  They live in system memory, so you
-	aren't limited by the amount of video ram in your card, but they are
-	stored in a platform-specific format that may enable better hardware
-	acceleration than is possible with a normal memory bitmap (see the
-	@link (AL_GFX_HW_SYS_TO_VRAM_BLIT) and @link
-	(AL_GFX_HW_SYS_TO_VRAM_BLIT_MASKED) flags in @link
-	(al_gfx_capabilities)).  System bitmaps must be accessed in the same
-	way as video bitmaps, using the bank switch functions and @code
-	(bmp_write* ) macros.  Not every platform implements this type of
-	bitmap:  if they aren't available, @code (al_create_system_bitmap) will
-	function identically to @code (al_create_bitmap).  They must be
-	destroyed by @code (al_destroy_bitmap) before any subsequent calls to
-	@code (al_set_gfx_mode).)
+      @item(Video memory bitmaps.  These are created by the
+	@link(al_create_video_bitmap) function, and are usually implemented as
+	sub-bitmaps of the screen object.  They must be destroyed by
+	@link(al_destroy_bitmap) before any subsequent calls to
+	@code(al_set_gfx_mode).)
+      @item(System bitmaps.  These are created by the
+	@link(al_create_system_bitmap) function, and are a sort of halfway
+	house between memory and video bitmaps.  They live in system memory,
+	so you aren't limited by the amount of video ram in your card, but they
+	are stored in a platform-specific format that may enable better
+	hardware acceleration than is possible with a normal memory bitmap (see
+	the @link(AL_GFX_HW_SYS_TO_VRAM_BLIT) and
+	@link(AL_GFX_HW_SYS_TO_VRAM_BLIT_MASKED) flags in
+	@link(al_gfx_capabilities)).  System bitmaps must be accessed in the
+	same way as video bitmaps, using the bank switch functions and
+	@code(bmp_write* ) macros.  Not every platform implements this type of
+	bitmap:  if they aren't available, @code(al_create_system_bitmap) will
+	function identically to @code(al_create_bitmap).  They must be
+	destroyed by @code(al_destroy_bitmap) before any subsequent calls to
+	@code(al_set_gfx_mode).)
     ) *)
 
 {$IFDEF FPC}
@@ -78,15 +79,15 @@ USES
 
 
 TYPE
-(* Pointer to @link (AL_BITMAP). *)
+(* Pointer to @link(AL_BITMAP). *)
   AL_BITMAPptr = ^AL_BITMAP;
 
 (* Stores the contents of a bitmap.
 
    There is some stuff in the structure that is liable to change and you
-   shouldn't use anything except the next.  The @code (w) and @code (h) fields
+   shouldn't use anything except the next.  The @code(w) and @code(h) fields
    can be used to obtain the size of an existing bitmap:
-@longcode (#
+@longcode(#
 CONST
   BS = 'Bitmap size: (%dx%d)\n';
 VAR
@@ -105,7 +106,7 @@ END.
    clipping API, which takes inclusive coordinates for all four corners.  All
    the values of this structure should be regarded as read-only.  If you want
    to modify the clipping region, please refrain from changing this structure.
-   Use @link (al_set_clip_rect) instead. *)
+   Use @link(al_set_clip_rect) instead. *)
   AL_BITMAP = RECORD
     w, h: LONGINT;		{< width and height in pixels }
     clip: LONGINT;		{< flag if clipping is turned on }
@@ -124,34 +125,24 @@ END.
 
 
 
-(* Creates a memory bitmap sized @code (w) by @code (h).  The bitmap will have
+(* Creates a memory bitmap sized @code(w) by @code(h).  The bitmap will have
    clipping turned on, and the clipping rectangle set to the full size of the
    bitmap.  The image memory will not be cleared, so it will probably contain
    garbage:  you should clear the bitmap before using it.  This routine always
-   uses the global pixel format, as specified by calling @link
-   (al_set_color_depth).  The minimum height of the bitmap must be 1 and width
-   can't be negative.  Example:
-@longcode (#
-VAR
-  bmp: AL_BITMAPptr;
-          ...
-  bmp := al_create_bitmap (AL_SCREEN_W, 10);
-  IF bmp = NIL THEN
-    abort_on_error ('Couldn''t create bitmap!');
-          ...
-  al_destroy_bitmap (bmp);
-  #)
+   uses the global pixel format, as specified by calling
+   @link(al_set_color_depth).  The minimum height of the bitmap must be 1 and
+   width can't be negative.
 
-   @returns (a pointer to the created bitmap, or @nil if the bitmap could not
-     be created . Remember to free this bitmap later to avoid memory leaks.  *)
+   @returns(a pointer to the created bitmap, or @nil if the bitmap could not
+     be created . Remember to free this bitmap later to avoid memory leaks.) *)
   FUNCTION al_create_bitmap (w, h: LONGINT): AL_BITMAPptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_bitmap';
 
 (* Creates a bitmap in a specific color depth (8, 15, 16, 24 or 32 bits per
    pixel).
-   @returns (a pointer to the created bitmap, or @nil if the bitmap could not
-     be created . Remember to free this bitmap later to avoid memory leaks.
-   @seealso (al_create_bitmap) *)
+   @returns(a pointer to the created bitmap, or @nil if the bitmap could not
+     be created . Remember to free this bitmap later to avoid memory leaks.)
+   @seealso(al_create_bitmap) *)
   FUNCTION al_create_bitmap_ex (bpp, width, height: LONGINT): AL_BITMAPptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_bitmap_ex';
 
@@ -165,7 +156,7 @@ VAR
    Remember to free the sub bitmap before freeing the parent bitmap to avoid
    memory leaks and potential crashes accessing memory which has been freed.
 
-   @returs (a pointer to the created sub bitmap, or @nil if the sub bitmap
+   @returns(a pointer to the created sub bitmap, or @nil if the sub bitmap
      could not be created.) *)
   FUNCTION al_create_sub_bitmap (parent: AL_BITMAPptr; x, y, w, h: LONGINT): AL_BITMAPptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_sub_bitmap';
@@ -173,19 +164,19 @@ VAR
 (* Allocates a video memory bitmap of the specified size.  This can be used to
    allocate offscreen video memory for storing source graphics ready for a
    hardware accelerated blitting operation, or to create multiple video memory
-   pages which can then be displayed by calling @link (al_show_video_bitmap).
+   pages which can then be displayed by calling @link(al_show_video_bitmap).
    Read the introduction of this chapter for a comparison with other types of
    bitmaps and other specific details.
 
-   @bold (Warning:)  video memory bitmaps are usually allocated from the same
+   @bold(Warning:)  video memory bitmaps are usually allocated from the same
    space as the screen bitmap, so they may overlap with it; it is therefore not
    a good idea to use the global screen at the same time as any surfaces
    returned by this function.
 
-   Remember to destroy this bitmap before any subsequent call to @link
-   (set_gfx_mode).
+   Remember to destroy this bitmap before any subsequent call to
+   @link(al_set_gfx_mode).
 
-   @returns (a pointer to the bitmap on success, or @nil if you have run out of
+   @returns(a pointer to the bitmap on success, or @nil if you have run out of
      video ram.) *)
   FUNCTION al_create_video_bitmap (width, height: LONGINT): AL_BITMAPptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_video_bitmap';
@@ -194,10 +185,10 @@ VAR
    introduction of this chapter for a comparison with other types of bitmaps
    and other specific details.
 
-   Remember to destroy this bitmap before any subsequent call to @link
-   (set_gfx_mode).
+   Remember to destroy this bitmap before any subsequent call to
+   @link(al_set_gfx_mode).
 
-   @returns (a pointer to the bitmap on success, @nil otherwise.) *)
+   @returns(a pointer to the bitmap on success, @nil otherwise.) *)
   FUNCTION al_create_system_bitmap (width, height: LONGINT): AL_BITMAPptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_system_bitmap';
 
@@ -212,38 +203,38 @@ VAR
 
 
 
-(* @returns (the color depth of the specified bitmap @(8, 15, 16, 24, or 32@).) *)
+(* @returns(the color depth of the specified bitmap @(8, 15, 16, 24, or 32@).) *)
   FUNCTION al_bitmap_color_depth (bmp: AL_BITMAPptr): LONGINT;
 
-(* @returns (the mask color for the specified bitmap @(the value which is
+(* @returns(the mask color for the specified bitmap @(the value which is
     skipped when drawing sprites@).  For 256-color bitmaps this is zero, and
     for truecolor bitmaps it is bright pink @(maximum red and blue, zero
     green@).  A frequent use of this function is to clear a bitmap with the
-    mask color so you can later use this bitmap with @link (al_draw_sprite)
+    mask color so you can later use this bitmap with @link(al_draw_sprite)
     after drawing other stuff on it.) *)
   FUNCTION al_bitmap_mask_color (bmp: AL_BITMAPptr): LONGINT;
 
-(* @returns (@true if the two bitmaps describe the same drawing surface, ie.
+(* @returns(@true if the two bitmaps describe the same drawing surface, ie.
     the pointers are equal, one is a sub-bitmap of the other, or they are both
     sub-bitmaps of a common parent.) *)
   FUNCTION al_is_same_bitmap (bmp1, bmp2: AL_BITMAPptr): BOOLEAN;
 
-(* @returns (@true if bmp is a memory bitmap, ie. it was created by calling
-    @link (al_create_bitmap) or loaded from a grabber datafile or image file. *)
+(* @returns(@true if bmp is a memory bitmap, ie. it was created by calling
+    @link(al_create_bitmap) or loaded from a grabber datafile or image file.) *)
   FUNCTION al_is_memory_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
 
-(* @returns (@rue if @code (bmp) is the screen bitmap, or a sub-bitmap of the
+(* @returns(@true if @code(bmp) is the screen bitmap, or a sub-bitmap of the
    screen.) *)
   FUNCTION al_is_screen_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
 
-(* @returns (@true) if bmp is the screen bitmap, a video memory bitmap, or a
+(* @returns(@true) if bmp is the screen bitmap, a video memory bitmap, or a
    sub-bitmap of either.) *) 
   FUNCTION al_is_video_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
 
-(* @returns (@true if bmp is a system bitmap object, or a sub-bitmap of one.) *)
+(* @returns(@true if bmp is a system bitmap object, or a sub-bitmap of one.) *)
   FUNCTION al_is_system_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
 
-(* @returns (@true if bmp is a sub-bitmap.) *)
+(* @returns(@true if bmp is a sub-bitmap.) *)
   FUNCTION al_is_sub_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
 
 (* Acquires the specified video bitmap prior to drawing onto it.  You never
@@ -251,8 +242,8 @@ VAR
    you a speed up if you know what you are doing.  Using it wrongly may cause
    slowdown, or even lock up your program.
 
-   @bold (Note:) You do never need to use @code (al_acquire_bitmap) on a memory
-   bitmap, i.e. a normal bitmap created with @link (al_create_bitmap).  It will
+   @bold(Note:) You do never need to use @code(al_acquire_bitmap) on a memory
+   bitmap, i.e. a normal bitmap created with @link(al_create_bitmap).  It will
    simply do nothing in that case.
 
    It still can be useful, because e.g. under the current DirectDraw driver of
@@ -263,20 +254,20 @@ VAR
    locked, and only release it when done.
 
    Multiple acquire calls may be nested, but you must make sure to match up the
-   acquire_bitmap and @link (al_release_bitmap) calls.  Be warned that DirectX
+   acquire_bitmap and @link(al_release_bitmap) calls.  Be warned that DirectX
    and X11 programs activate a mutex lock whenever a surface is locked, which
    prevents them from getting any input messages, so you must be sure to
    release all your bitmaps before using any timer, keyboard, or other
    non-graphics routines!
 
    Note that if you are using hardware accelerated VRAM->VRAM functions, you
-   should not call @code (al_acquire_bitmap).  Such functions need an unlocked
+   should not call @code(al_acquire_bitmap).  Such functions need an unlocked
    target bitmap under DirectX, so there is now just the opposite case from
-   before - if the bitmap is already locked with @code (al_acquire_bitmap), the
+   before - if the bitmap is already locked with @code(al_acquire_bitmap), the
    drawing operation has to unlock it.
 
-   @bold (Note:) For backwards compatibility, the unlocking behavior of such
-   functions is permanent.  That is, if you call @code (al_acquire_bitmap)
+   @bold(Note:) For backwards compatibility, the unlocking behavior of such
+   functions is permanent.  That is, if you call @code(al_acquire_bitmap)
    first, then call e.g. an accelerated blit, the DirectX bitmap will be
    unlocked internally (it won't affect the nesting counter of acquire/release
    calls).
@@ -284,24 +275,24 @@ VAR
    There is no clear cross-platform way in this Allegro version to know which
    drawing operations need a locked/unlocked state.  For example a normal
    rectfill most probably is accelerated under DirectX, and therefore needs the
-   screen unlocked, but an @code (XOR) rectfill, or one with blending
+   screen unlocked, but an @code(XOR) rectfill, or one with blending
    activated, most probably is not, and therefore locks the screen. And while
    the DirectX driver will do automatic unlocking, there is no such thing under
    X11, where the function is used to synchronize X11 calls from different
-   threads.  Your best bet is to never use @code (al-acquire_bitmap) - changes
+   threads.  Your best bet is to never use @code(al_acquire_bitmap) - changes
    are you are doing something in the wrong way if you think you need it.
 
-   @bold (Warning:) This function can be very dangerous to use, since the whole
+   @bold(Warning:) This function can be very dangerous to use, since the whole
    program may get locked while the bitmap is locked.  So the lock should only
    be held for a short time, and you should not call anything but drawing
    operations onto the locked video bitmap while a lock is in place.
-   Especially don't call things like @link (al_show_mouse) (or @link
-   (al_scare_mouse) which calls that) or @link (al_readkey), since it will most
-   likely deadlock your entire program. *)
+   Especially don't call things like @link(al_show_mouse) (or
+   @link(al_scare_mouse) which calls that) or @link(al_readkey), since it will
+   most likely deadlock your entire program. *)
   PROCEDURE al_acquire_bitmap (bmp: AL_BITMAPptr);
 
-(* Releases a bitmap that was previously locked by calling @link
-   (al_acquire_bitmap).  If the bitmap was locked multiple times, you must
+(* Releases a bitmap that was previously locked by calling
+   @link(al_acquire_bitmap).  If the bitmap was locked multiple times, you must
    release it the same number of times before it will truly be unlocked. *)
   PROCEDURE al_release_bitmap (bmp: AL_BITMAPptr);
 
@@ -310,12 +301,12 @@ VAR
 (* Generates a 256-color palette suitable for making a reduced color version of
    the specified truecolor image.
 
-   @param (rsvd points to a table indicating which colors it is allowed to
+   @param(rsvdcols points to a table indicating which colors it is allowed to
      modify:  zero for free colors which may be set to whatever the optimiser
      likes, negative values for reserved colors which cannot be used,
      and positive values for fixed palette entries that must not be changed,
      but can be used in the optimisation.)
-   @returns (the number of different colors recognised in the provided bitmap,
+   @returns(the number of different colors recognised in the provided bitmap,
      zero if the bitmap is not a truecolor image or there wasn't enough memory
      to perform the operation, and negative if there was any internal error in
      the color reduction code.) *)
@@ -325,24 +316,23 @@ VAR
 
 
 (* Loads a bitmap from a file.  The palette data will be stored in the second
-   parameter, which should be an @link (AL_PALETTE) structure.  At present this
+   parameter, which should be an @link(AL_PALETTE) structure.  At present this
    function supports BMP, LBM, PCX, and TGA files, determining the type from
    the file extension.
 
    If the file contains a truecolor image, you must set the video mode or call
-   @link (al_set_color_conversion) before loading it.  In this case, if the
+   @link(al_set_color_conversion) before loading it.  In this case, if the
    destination color depth is 8-bit, the palette will be generated by calling
-   @link (al_generate_optimized_palette) on the bitmap;  otherwise, the
-   returned palette will be generated by calling @link
-   (al_generate_332_palette).
+   @link(al_generate_optimized_palette) on the bitmap;  otherwise, the
+   returned palette will be generated by calling @link(al_generate_332_palette)
 
-   The @code (pal) argument may be @nil.  In this case, the palette data are
+   The @code(pal) argument may be @nil.  In this case, the palette data are
    simply not returned.  Additionally, if the file is a truecolor image and the
    destination color depth is 8-bit, the color conversion process will use the
    current palette instead of generating an optimized one.
 
    Example:
-@longcode (#
+@longcode(#
 VAR
   bmp: AL_BITMAPptr;
   palette: AL_PALETTE;
@@ -360,7 +350,7 @@ VAR
 
 
 (* Writes a bitmap into a file, using the specified palette, which should be an
-   @link (AL_PALETTE) structure.  The output format is determined from the
+   @link(AL_PALETTE) structure.  The output format is determined from the
    filename extension: at present this function supports BMP, PCX and TGA
    formats.
 
@@ -370,7 +360,7 @@ VAR
    you were expecting, because Allegro often creates virtual screens larger
    than the visible screen.  You can get around this by using a sub-bitmap to
    specify which part of the screen to save, eg:
-@longcode (#
+@longcode(#
 VAR
   bmp: AL_BITMAPptr;
   palette: AL_PALETTE;

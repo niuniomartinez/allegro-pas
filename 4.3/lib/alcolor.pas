@@ -7,7 +7,7 @@ UNIT alcolor;
     have an extra padding byte to align the data nicely).  The layout of these
     components can vary depending on your hardware, but will generally either
     be RGB or BGR.  Since the layout is not known until you select the video
-    mode you will be using, you must call @link (al_set_gfx_mode) before using
+    mode you will be using, you must call @link(al_set_gfx_mode) before using
     any of the following routines!  *)
 
 {$H+}
@@ -29,11 +29,11 @@ USES
 
 
 TYPE
-(* Pointer to @link (AL_RGB). *)
+(* Pointer to @link(AL_RGB). *)
   AL_RGBptr = ^AL_RGB;
 
 (* Palette entry.  It contains an additional field for the purpose of padding
-   but you should not usually care about it.  Read @code (alpalete) unit for a
+   but you should not usually care about it.  Read @code(alpalete) unit for a
    description on how to obtain/use this structure. *)
   AL_RGB = RECORD
     r	  : BYTE;
@@ -49,7 +49,7 @@ TYPE
    mode, calling the preceding 8, 15, 16, 24, or 32-bit makecol functions as
    appropriate.
 
-   @returns (the requested RGB triplet in the current color depth.) *)
+   @returns(the requested RGB triplet in the current color depth.) *)
   FUNCTION al_makecol (r, g, b: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'makecol';
 
@@ -58,7 +58,7 @@ TYPE
    involves searching the palette to find the closest match, which is quite
    slow unless you have set up an RGB mapping table.
 
-   @returns (the requested RGB triplet in the specified color depth.) *)
+   @returns(the requested RGB triplet in the specified color depth.) *)
   FUNCTION al_makecol8 (r, g, b: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'makecol8';
 
@@ -66,20 +66,20 @@ TYPE
    values ranging 0-255) to the pixel format required by the specified color
    depth.
 
-   @returns (the requested RGB triplet in the specified color depth.) *)
+   @returns(the requested RGB triplet in the specified color depth.) *)
   FUNCTION al_makecol_depth (color_depth, r, g, b: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'makecol_depth';
 
 (* Convert RGBA colors into display dependent pixel formats.  In anything less
-   than a 32-bit mode, these are the same as calling @link (al_makecol) or
-   @link (al_makecol_depth), but by using these routines it is possible to
+   than a 32-bit mode, these are the same as calling @link(al_makecol) or
+   @link(al_makecol_depth), but by using these routines it is possible to
    create 32-bit color values that contain a true 8 bit alpha channel along
    with the red, green, and blue components.  You should only use RGBA format
-   colors as the input to @link (al_draw_trans_sprite) or @link
-   (al_draw_trans_rle_sprite) after calling @link (al_set_alpha_blender),
+   colors as the input to @link(al_draw_trans_sprite) or
+   @link(al_draw_trans_rle_sprite) after calling @link(al_set_alpha_blender),
    rather than drawing them directly to the screen.
 
-   @returns (the requested RGBA quadruplet.) *)
+   @returns(the requested RGBA quadruplet.) *)
   FUNCTION al_makeacol (r, g, b, a: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'makeacol';
   FUNCTION al_makeacol_depth (color_depth, r, g, b, a: LONGINT): LONGINT; CDECL;

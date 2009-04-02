@@ -91,7 +91,7 @@ TYPE
     name : PCHAR; { description of this button. }
   END;
 
-(* Pointer to @link (AL_JOYSTICK_INFO. *)
+(* Pointer to @link (AL_JOYSTICK_INFO). *)
   AL_JOYSTICK_INFOptr = ^AL_JOYSTICK_INFO;
 (* information about an entire joystick.
 

@@ -38,7 +38,13 @@ Introduction
   Allegro.  Aniway, I'll fix it and complete it as I'm using it (or as other
   users do).  Any collaboration will be wellcomed.
 
-  This version is an SVN version.  It may be unusable.
+  This version is an SVN version.  It's only for testing and evaluation
+  purposes so you shouldn't use it in your actual projects.  May be you can
+  use the latest 4.2 release instead.
+
+  Right now Allegro.pas 4.3.0 need a lot of work to be finished.  If you want
+  to collaborate please join the main Allegro.pas mailing list
+  (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).
 
 
 
@@ -74,13 +80,41 @@ License
 Installation
 ============
 
+  Download and install Allegro 4.3.10 from http://alleg.sourceforge.net/.  Note
+  that this Allegro.pas version will not work with other Allegro than 4.3.10.
+
+  WARNING - Current state was tested on GNU/Linux only.  You might need to
+  change unit "albase" to make it work on your operating system.  If you do so
+  with success, please let me know through the main Allegro mailing list
+  (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).
+
+
+
 ==========
 How to use
 ==========
 
+  The units are in the subdirectory "lib".
+
+  See the examples in subdirectory "examples".  Compile them using the
+  "makefile" at root directori.  WARNING - Some examples just don't work.
+
+
+  You can create documentation using the pasdoc utility
+  (http://pasdoc.sipsolutions.net/).  There are a "makefile" at the docs
+  subdirectory.  Note that English isn't my first language so it may have
+  lots of errors and mistakes.  Also some links may be broken.
+
+
+
 ================
 Release programs
 ================
+
+  Current version isn't for final work so DO NOT RELEASE PROGRAMS USING IT
+  unless for evaluation and/or testing purposes.
+
+
 
 ===========
 Help needed
@@ -103,6 +137,7 @@ Contact info
   The project summary is http://sourceforge.net/projects/allegro-pas.
 
   There are forums and a mailing list there, so use it, please.
+  (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).
 
   Another nice forum is "Pascal Game Development"
   (http://www.pascalgamedevelopment.com/).

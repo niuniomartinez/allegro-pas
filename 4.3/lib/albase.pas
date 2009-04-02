@@ -55,25 +55,25 @@ TYPE
 (* This is used to define call-back parameter or pointers to call-back
    procedures.
 
-   A call-back procedure must be declared as @code (CDECL) since Allegro is
+   A call-back procedure must be declared as @code(CDECL) since Allegro is
    written in C. *)
   AL_SIMPLE_PROC = PROCEDURE; CDECL;
 (* This is used to define call-back parameter or pointers to call-back
    procedures.
 
-   A call-back procedure must be declared as @code (CDECL) since Allegro is
+   A call-back procedure must be declared as @code(CDECL) since Allegro is
    written in C. *)
   AL_PARAM_PROC  = PROCEDURE (x: POINTER); CDECL;
 (* This is used to define call-back parameter or pointers to call-back
    procedures.
 
-   A call-back procedure must be declared as @code (CDECL) since Allegro is
+   A call-back procedure must be declared as @code(CDECL) since Allegro is
    written in C. *)
   AL_INT_PROC	 = PROCEDURE (x: LONGINT); CDECL;
 (* This is used to define call-back parameter or pointers to call-back
    procedures.
 
-   A call-back procedure must be declared as @code (CDECL) since Allegro is
+   A call-back procedure must be declared as @code(CDECL) since Allegro is
    written in C. *)
   AL_SIMPLE_FUNC = FUNCTION: LONGINT; CDECL;
 

@@ -60,7 +60,7 @@ VAR
 
    The contents of this palette are 16 colors repeated 16 times.  Color entry
    zero is equal to color entry 16, which is equal to color entry 24, etc.
-@table (
+@table(
   @rowhead (@cell (Index) @cell(Color) @cell (RGB values) )
   @row (@cell ( 0) @cell (White       ) @cell (@code (63  63  63))
   @row (@cell ( 1) @cell (Red         ) @cell (@code (63   0   0))

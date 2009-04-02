@@ -1,14 +1,14 @@
 UNIT alfixed;
 (*< Allegro provides some routines for working with fixed point numbers, and
-    defines the type @link (AL_FIXED) to be a signed 32-bit integer.  The high
+    defines the type @link(AL_FIXED) to be a signed 32-bit integer.  The high
     word is used for the integer part and the low word for the fraction, giving
     a range of -32768 to 32767 and an accuracy of about four or five decimal
     places.  Fixed point numbers can be assigned, compared, added, subtracted,
     negated and shifted (for multiplying or dividing by powers of two) using
     the normal integer operators, but you should take care to use the
     appropriate conversion routines when mixing fixed point with integer or
-    floating point values. Writing @code (fixed_point_1 + fixed_point_2) is 0K,
-    but @code (fixed_point + integer) is not.
+    floating point values. Writing @code(fixed_point_1 + fixed_point_2) is 0K,
+    but @code(fixed_point + integer) is not.
 
     One of the advantage of fixed point math routines is that you don't require
     a floating point coprocessor to use them.  This was great in the time
@@ -40,7 +40,7 @@ UNIT alfixed;
     Angles are represented in a binary format with 256 equal to a full circle,
     64 being a right angle and so on.  This has the advantage that a simple
     bitwise AND can be used to keep the angle within the range zero to a full
-    circle, eliminating all those tiresome @code (IF angle >= 360) checks.
+    circle, eliminating all those tiresome @code(IF angle >= 360) checks.
 
     Fixed point math is considered "add-on" material and is kept only for
     backwards compatibility.  Whenever a future release of Allegro breaks
@@ -71,7 +71,7 @@ TYPE
 
 
 
-(* Converts an integer to fixed point.  This is the same thing as @code (x SHL
+(* Converts an integer to fixed point.  This is the same thing as @code(x SHL
    16).  Remember that overflows (trying to convert an integer greater than
    32767) and underflows (trying to convert an integer lesser than -32768) are
    not detected even in debug builds! The values simply "wrap around".  *)
@@ -81,9 +81,9 @@ TYPE
    integer. *)
   FUNCTION al_fixtoi (x: AL_FIXED): LONGINT;
 
-(* Converts a floating point value to fixed point.  Unlike @link (al_itofix),
+(* Converts a floating point value to fixed point.  Unlike @link(al_itofix),
    this function clamps values which could overflow the type conversion,
-   setting @link (al_errno) to non-zero in the process if this happens. *)
+   setting @link(al_errno) to non-zero in the process if this happens. *)
   FUNCTION al_ftofix (x: REAL): AL_FIXED;
 
 (* Converts fixed point to floating point. *)
@@ -96,7 +96,7 @@ TYPE
    Although fixed point numbers can be added with the normal '+' integer
    operator, that doesn't provide any protection against overflow.  If overflow
    is a problem, you should use this function instead.  It is slower than using
-   integer operators, but if an overflow occurs it will set @link (al_errno)
+   integer operators, but if an overflow occurs it will set @link(al_errno)
    and clamp the result, rather than just letting it wrap.*)
   FUNCTION al_fixadd (x, y: AL_FIXED): AL_FIXED;
 
@@ -105,7 +105,7 @@ TYPE
    Although fixed point numbers can be substracted with the normal 'x' integer
    operator, that doesn't provide any protection against overflow.  If overflow
    is a problem, you should use this function instead.  It is slower than using
-   integer operators, but if an overflow occurs it will set @link (al_errno)
+   integer operators, but if an overflow occurs it will set @link(al_errno)
    and clamp the result, rather than just letting it wrap.*)
   FUNCTION al_fixsub (x, y: AL_FIXED): AL_FIXED;
 
@@ -113,24 +113,24 @@ TYPE
    normal `*' and `/' operators.  To multiply two fixed point values, though,
    you must use this function.
 
-   If an overflow occurs, @link (al_errno) will be set and the maximum possible
-   value will be returned, but @code (al_errno) is not cleared if the operation
+   If an overflow occurs, @link(al_errno) will be set and the maximum possible
+   value will be returned, but @code(al_errno) is not cleared if the operation
    is successful.  This means that if you are going to test for overflow you
-   should set @code (al_errno := 0) before calling @code (al_fixmul). *)
+   should set @code(al_errno := 0) before calling @code(al_fixmul). *)
   FUNCTION al_fixmul (x, y: AL_FIXED): AL_FIXED;
 
 (* A fixed point value can be divided by an integer with the normal `/' and
-   @code (DIV) operators.  To divide two fixed point values, though, you must
+   @code(DIV) operators.  To divide two fixed point values, though, you must
    use this function.
 
-   If an overflow occurs, @link (al_errno) will be set and the maximum possible
-   value will be returned, but @code (al_errno) is not cleared if the operation
+   If an overflow occurs, @link(al_errno) will be set and the maximum possible
+   value will be returned, but @code(al_errno) is not cleared if the operation
    is successful.  This means that if you are going to test for overflow you
-   should set @code (al_errno := 0) before calling @code (al_fixdiv). *)
+   should set @code(al_errno := 0) before calling @code(al_fixdiv). *)
   FUNCTION al_fixdiv (x, y: AL_FIXED): AL_FIXED;
 
 (* This finds out the non negative square root of `x'.  If `x' is negative,
-   @link (al_errno) is set to @code (EDOM) and the function returns zero. *)
+   @link(al_errno) is set to @code(EDOM) and the function returns zero. *)
   FUNCTION al_fixsqrt (x: AL_FIXED): AL_FIXED;
 
 
