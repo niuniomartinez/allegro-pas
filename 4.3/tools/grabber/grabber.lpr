@@ -9,7 +9,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, Dialogs, alsystem
+  Forms, Dialogs, algraph, alsystem
   { you can add units after this }, UnitMainWindow, LResources,
   UnitProgressWindow;
 
@@ -19,8 +19,8 @@ begin
 { Installs Allegro library without window. }
   IF al_install (AL_SYSTEM_NONE) THEN
   TRY
-  { TODO: Initialize sound and time subsystems. }
-  { TODO: Set color conversion mode to "Don't change anything". }
+  { Set color conversion mode to "Don't change anything". }
+    al_set_color_conversion (AL_COLORCONV_NONE);
   { Runs the application. }
     Application.Title := 'Grabber [<unnamed>]';
     {$I grabber.lrs}

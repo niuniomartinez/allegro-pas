@@ -51,6 +51,10 @@ PROCEDURE TProgressWindow.AddOne (aText: STRING);
 BEGIN
   StatusLabel.Caption := aText;
   ProgressBar.StepIt;
+{ This method would be called a lot of times, mostly inside loops.  To process
+  messages will prevent freeze the application and will free some CPU pressure
+  too if we forget (or can't) to process messages on the loop itself. }
+  Application.ProcessMessages;
 END;
 
 

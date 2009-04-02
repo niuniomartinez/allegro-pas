@@ -5,20 +5,19 @@ object MainWindow: TMainWindow
   Width = 400
   ActiveControl = DatafileContent
   Caption = 'Grabber [<unnamed>]'
-  ClientHeight = 272
+  ClientHeight = 275
   ClientWidth = 400
   Menu = MainMenu
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  ParentFont = False
   Position = poDefault
-  LCLVersion = '0.9.26'
+  LCLVersion = '0.9.26.2'
   object DatafileContent: TTreeView
-    Height = 248
+    Height = 256
     Width = 400
     Align = alClient
     AutoExpand = True
-    DefaultItemHeight = 18
+    DefaultItemHeight = 17
     ExpandSignType = tvestArrow
     HideSelection = False
     Images = DatafileImageList
@@ -30,8 +29,8 @@ object MainWindow: TMainWindow
     }
   end
   object StatusBar: TStatusBar
-    Height = 24
-    Top = 248
+    Height = 19
+    Top = 256
     Width = 400
     Panels = <    
       item

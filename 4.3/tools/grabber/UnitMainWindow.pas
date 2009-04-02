@@ -79,7 +79,7 @@ BEGIN
   IF LoadingDatafile THEN
     TitleDatafile := 'Loading '+ExtractFileName (MainWindow.DataFileName)+'...'
   ELSE
-    TitleDatafile := 'Savng '+ExtractFileName (MainWindow.DataFileName)+'...';
+    TitleDatafile := 'Saving '+ExtractFileName (MainWindow.DataFileName)+'...';
   ProgressWindow.Init (TitleDatafile, TitleDatafile, NumItems);
   ProgressWindow.Show;
   Application.ProcessMessages;
@@ -88,7 +88,6 @@ END;
 PROCEDURE AdvanceProgress;
 BEGIN
   ProgressWindow.AddOne (TitleDatafile);
-  Application.ProcessMessages;
 END;
 
 
@@ -214,9 +213,7 @@ PROCEDURE TMainWindow.UpdateDatafileContent;
 
   FUNCTION GetImageIndex (ObjectType: LONGINT): LONGINT;
   BEGIN
-    IF ObjectType = AL_DAT_DATA THEN
-      RESULT := NDX_BINARY
-    ELSE IF ObjectType = AL_DAT_FLI THEN
+    IF ObjectType = AL_DAT_FLI THEN
       RESULT := NDX_FLIC
     ELSE IF ObjectType = AL_DAT_BITMAP THEN
       RESULT := NDX_BITMAP
@@ -258,6 +255,10 @@ BEGIN
         SelectedIndex := Ndx;
         StateIndex := Ndx;
       END;
+    { There would be a lot of items and some of them may be CPU expensive, so
+      we process messages here to prevent freeze the application and free some
+      CPU pressure. }
+      IF Cnt MOD 10 = 0 THEN Application.ProcessMessages;
     END;
 END;
 
