@@ -470,9 +470,16 @@ CONST
      description of the problem in @link(al_error).) *)
   FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: LONGINT): BOOLEAN;
 
-(* Screen bitmap. *)
+(* @returns(@true if @code(bmp) is the screen bitmap, or a sub-bitmap of the
+     screen.) *)
   FUNCTION al_is_screen_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+
+(* Shortcut version of @code(al_acquire_bitmap @(screen@);)
+   @seealso(al_acquire_bitmap) *)
   PROCEDURE al_acquire_screen;
+
+(* Shortcut version of @code(al_release_bitmap @(screen@);)
+   @seealso(al_release_bitmap) *)
   PROCEDURE al_release_screen;
 
 (* Attempts to page flip the hardware screen to display the specified video
@@ -486,7 +493,7 @@ CONST
    @code(al_vsync) by default.  This can be adjusted with the "disable_vsync"
    config key in the @code([graphics]) section of allegro.cfg.
 
-   @returns (zero on success and non-zero on failure.) *)
+   @returns(zero on success and non-zero on failure.) *)
   FUNCTION al_show_video_bitmap (bmp: AL_BITMAPptr): LONGINT;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'show_video_bitmap';
 

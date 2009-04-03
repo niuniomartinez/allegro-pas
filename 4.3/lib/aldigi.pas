@@ -53,7 +53,7 @@ TYPE
     loop_start : DWORD;	 {< loop start position  }
     loop_end : DWORD;	 {< loop finish position  }
     param : DWORD;	 {< @exclude  }
-    data : AL_PTR;	 {< sample data  }
+    data : POINTER;	 {< sample data  }
   END;
 
 (* Used by @link(al_register_sample_file_type). *)

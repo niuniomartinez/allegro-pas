@@ -1,6 +1,5 @@
 PROGRAM exsprite;
-(*
-  ______   ___    ___
+(*______   ___    ___
  /\  _  \ /\_ \  /\_ \
  \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
   \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
@@ -51,6 +50,7 @@ PROGRAM exsprite;
 {$H+}
 
 USES
+  sysutils,
 { It needs some Allegro.pas units. }
   albitmap, { Bitmap manipulation. }
   albltspr, { Image blitting and sprite drawing. }
@@ -73,7 +73,7 @@ USES
 { The grabber produces a header, which contains defines for the names of all
   the objects in the datafile (FRAME_01, PALETTE_001, etc).  You can convert
   that header into Pascal code using the h2pas utility. }
-{$I running.pp}
+{$I running.inc}
 
 
 
@@ -126,10 +126,7 @@ VAR
     al_clear_bitmap (sprite_buffer);
 
   { If key pressed set a next flag. }
-    IF al_keypressed <> 0 THEN
-      next := TRUE
-    ELSE
-      next := FALSE;
+    next := al_keypressed;
 
     IF frame_number = 0 THEN
       al_play_sample (running_data^[SOUND_01].dat, 128, 128, 1000, 0);
@@ -158,15 +155,18 @@ BEGIN { The program starts here. }
   next := FALSE;
   angle := 0;
 
-  IF al_init <> 0 THEN
+  IF NOT al_init THEN
+  BEGIN
+    WriteLn ('Can''t initialize Allegro!');
     EXIT;
+  END;
   al_install_keyboard;
-  al_install_sound (AL_DIGI_AUTODETECT, AL_MIDI_NONE, NIL);
+  al_install_sound (AL_DIGI_AUTODETECT, AL_MIDI_NONE);
   al_install_timer;
-  al_install_int_ex (@ticker, AL_BPS_TO_TIMER (30));
+  al_install_int_ex (ticker, AL_BPS_TO_TIMER (30));
 
-  IF (al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) <> 0) THEN
-    IF (al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) <> 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Shows an error message. }
@@ -177,7 +177,7 @@ BEGIN { The program starts here. }
     END;
 
 { Loads datafile and sets user palette saved in datafile. }
-  al_replace_filename (datafile_name, argv^, 'running.dat', 256);
+  datafile_name := ExtractFilePath (ParamStr (0)) + 'running.dat';
   running_data := al_load_datafile (datafile_name);
   IF running_data = NIL THEN
   BEGIN
@@ -200,14 +200,14 @@ BEGIN { The program starts here. }
   x := (sprite_buffer^.w - 82) DIV 2;
   y := (sprite_buffer^.h - 82) DIV 2;
   color := al_makecol (0, 80, 0);
-  text_y := AL_SCREEN_H - 10 - al_text_height (al_font^);
+  text_y := AL_SCREEN_H - 10 - al_text_height (al_font);
 
   frame := ticks;
 
 { Write current sprite drawing method. }
-  al_textout_centre_ex (al_screen, al_font^, 'Press a key for next part...',
+  al_textout_centre_ex (al_screen, al_font, 'Press a key for next part...',
 			AL_SCREEN_W DIV 2, 10, 1, -1);
-  al_textout_centre_ex (al_screen, al_font^, 'Using al_draw_sprite',
+  al_textout_centre_ex (al_screen, al_font, 'Using al_draw_sprite',
 			AL_SCREEN_W DIV 2, text_y, 15, -1);
 
   REPEAT
@@ -218,7 +218,7 @@ BEGIN { The program starts here. }
 
   al_clear_keybuf;
   al_rectfill (al_screen, 0, text_y, AL_SCREEN_W, AL_SCREEN_H, 0);
-  al_textout_centre_ex (al_screen, al_font^, 'Using al_draw_sprite_h_flip',
+  al_textout_centre_ex (al_screen, al_font, 'Using al_draw_sprite_h_flip',
 			AL_SCREEN_W DIV 2, text_y, 15, -1);
 
   REPEAT
@@ -229,7 +229,7 @@ BEGIN { The program starts here. }
 
   al_clear_keybuf;
   al_rectfill (al_screen, 0, text_y, AL_SCREEN_W, AL_SCREEN_H, 0);
-  al_textout_centre_ex (al_screen, al_font^, 'Using al_draw_sprite_v_flip',
+  al_textout_centre_ex (al_screen, al_font, 'Using al_draw_sprite_v_flip',
 			AL_SCREEN_W DIV 2, text_y, 15, -1);
 
   REPEAT
@@ -240,7 +240,7 @@ BEGIN { The program starts here. }
 
   al_clear_keybuf;
   al_rectfill (al_screen, 0, text_y, AL_SCREEN_W, AL_SCREEN_H, 0);
-  al_textout_centre_ex (al_screen, al_font^, 'Using al_draw_sprite_vh_flip',
+  al_textout_centre_ex (al_screen, al_font, 'Using al_draw_sprite_vh_flip',
 			AL_SCREEN_W DIV 2, text_y, 15, -1);
 
   REPEAT
@@ -251,23 +251,23 @@ BEGIN { The program starts here. }
 
   al_clear_keybuf;
   al_rectfill (al_screen, 0, text_y, AL_SCREEN_W, AL_SCREEN_H, 0);
-  al_textout_centre_ex (al_screen, al_font^, 'Now with rotating - pivot sprite',
+  al_textout_centre_ex (al_screen, al_font, 'Now with rotating - pivot sprite',
 			AL_SCREEN_W DIV 2, text_y, 15, -1);
 
   REPEAT
 { The last argument to al_pivot_sprite() is a fixed point type,
   so I had to use al_itofix() routine (integer to fixed). }
     al_circle (sprite_buffer, x + 41, y + 41, 47, color);
-    al_pivot_sprite (sprite_buffer, running_data^[frame_number].dat,
-		     sprite_buffer^.w DIV 2, sprite_buffer^.h DIV 2,
-		     41, 41, al_itofix (angle));
+//    al_pivot_sprite (sprite_buffer, running_data^[frame_number].dat,
+//		     sprite_buffer^.w DIV 2, sprite_buffer^.h DIV 2,
+//		     41, 41, al_itofix (angle));
     animate();
     angle := angle - 4;
   UNTIL next;
 
   al_clear_keybuf;
   al_rectfill (al_screen, 0, text_y, AL_SCREEN_W, AL_SCREEN_H, 0);
-  al_textout_centre_ex (al_screen, al_font^, 'Now using pivot_sprite_v_flip',
+  al_textout_centre_ex (al_screen, al_font, 'Now using pivot_sprite_v_flip',
 			AL_SCREEN_W DIV 2, text_y, 15, -1);
 
   REPEAT

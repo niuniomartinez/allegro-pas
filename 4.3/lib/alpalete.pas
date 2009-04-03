@@ -10,7 +10,6 @@ UNIT alpalete;
     red, green and blue intensities in the VGA hardware format, ranging from
     0-63. *)
 
-{$H+}
 {$IFDEF FPC}
 { Free Pascal. }
  {$MODE FPC}
@@ -19,6 +18,7 @@ UNIT alpalete;
 { Assumes Codegear Delphi/Turbo. }
  {$A-}
 {$ENDIF}
+{$H+}
 
 
 

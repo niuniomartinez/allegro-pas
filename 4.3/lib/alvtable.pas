@@ -36,11 +36,11 @@ TYPE
 (* The bitmap virtual table. *)
   AL_GFX_VTABLEptr = ^AL_GFX_VTABLE;
   AL_GFX_VTABLE = RECORD
+  { Note that you would use these methods directly but it isn't recommendable.
+    Use the Allegro.pas Drawing Primitives instead. }
     color_depth: LONGINT;
     mask_color: LONGINT;
     unwrite_bank: POINTER;  (* C function on some machines, asm on i386 *)
-  { Note that you would use these methods directly but it isn't recommendable.
-    Use the Allegro.pas Drawing Primitives instead. }
     set_clip: _BMP_METHOD_;
     acquire: _BMP_METHOD_;
     release: _BMP_METHOD_;

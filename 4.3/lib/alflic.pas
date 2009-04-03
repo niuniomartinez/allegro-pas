@@ -29,7 +29,6 @@ UNIT alflic;
    animation, or to play it back at a different speed.  You could do both of
    these with the lower level functions described below. *)
 
-{$H+}
 {$IFDEF FPC}
 { Free Pascal. }
  {$MODE FPC}
@@ -38,6 +37,7 @@ UNIT alflic;
 { Assumes Codegear Delphi/Turbo. }
  {$A-}
 {$ENDIF}
+{$H+}
 
 
 
