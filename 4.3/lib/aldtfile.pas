@@ -1,51 +1,50 @@
 UNIT aldtfile;
-(*> Datafiles are created by the grabber utility (see grabber.txt for more
-    information), and have a @code(.dat) extension.  They can contain bitmaps,
-    palettes, fonts, samples, MIDI music, FLI/FLC animations, and any other
-    binary data that you import.  You could distribute your bitmaps and samples
-    in a myriad of separate files, but packing them in a few @code(.dat)
-    binaries has a few advantages:
-    @unorderedlist(
-      @item(On some platforms loading a single big datafile at once is faster
+(*<Datafiles are created by the grabber utility (see grabber.txt for more
+   information), and have a @code(.dat) extension.  They can contain bitmaps,
+   palettes, fonts, samples, MIDI music, FLI/FLC animations, and any other
+   binary data that you import.  You could distribute your bitmaps and samples
+   in a myriad of separate files, but packing them in a few @code(.dat)
+   binaries has a few advantages:
+   @unorderedlist(
+     @item(On some platforms loading a single big datafile at once is faster
 	than loading individual resources one by one.)
-      @item(Instead of several loops for your resources, you can write a
+     @item(Instead of several loops for your resources, you can write a
 	single line of code with just a single point of failure to take care
 	of.)
-      @item(You can potentially reduce the size of your data by enabling
+     @item(You can potentially reduce the size of your data by enabling
 	compression on your datafiles.  Less download time for your end users,
 	less wait during loading screens!)
-      @item(If you don't need to load the whole datafile at once, you can
+     @item(If you don't need to load the whole datafile at once, you can
 	still enable individual file compression.  It is slightly worse than
 	global compression, but it is very fast with loading times because
 	Allegro can easily seek inside the datafile to find a specific object.)
-      @item(Even without encryption, most end users of your application won't
+     @item(Even without encryption, most end users of your application won't
 	be able to look at or modify the resources for your game.  A missing
 	sound file or a modified bitmap could potentially crash the game if you
 	haven't considered this in your loading code!)
-      @item(It looks much more professional and convenient to distribute
+     @item(It looks much more professional and convenient to distribute
 	levels!  For example, if you found a bug in a level of your game, just
 	distribute your new @code(level4.dat) and tell users to overwrite
 	their old version. )
-    )
-    Allegro allows you to load datafiles once and forget about them.  But if
-    you have many levels it can be wise to load only the resources required for
-    the current level.  You can accomplish the later by separating levels in
-    different datafiles, or using functions like @link(al_load_datafile_object)
-    to avoid loading everything at once.  You can even read directly from a
-    specific datafile object with the @link(al_pack_fopen) function.
+   )
+   Allegro allows you to load datafiles once and forget about them.  But if
+   you have many levels it can be wise to load only the resources required for
+   the current level.  You can accomplish the later by separating levels in
+   different datafiles, or using functions like @link(al_load_datafile_object)
+   to avoid loading everything at once.  You can even read directly from a
+   specific datafile object with the @link(al_pack_fopen) function.
 
-    Remember that with Allegro truecolor images can only be loaded after you
-    have set a graphics mode.  This is true for datafiles too.  Load all your
-    data after you have set the graphics mode, otherwise the pixel format (RGB
-    or BGR) will not be known and the datafile may be converted wrongly.
+   Remember that with Allegro truecolor images can only be loaded after you
+   have set a graphics mode.  This is true for datafiles too.  Load all your
+   data after you have set the graphics mode, otherwise the pixel format (RGB
+   or BGR) will not be known and the datafile may be converted wrongly.
 
-    @bold(Note:)  even though Allegro datafiles provide encryption, you should
-    consider it weak, so don't plan on hiding there the plans for a Death Star
-    or something.  Determinate knowledgeable users will be able to rip your
-    resources no matter how hard you try to hide them!  Use the encryption only
-    as a slight deterrent towards unwanted tampering of your data.  How to
-    crack an encrypted datafile is left as an exercise to the reader, though. *)
-
+   @bold(Note:)  even though Allegro datafiles provide encryption, you should
+   consider it weak, so don't plan on hiding there the plans for a Death Star
+   or something.  Determinate knowledgeable users will be able to rip your
+   resources no matter how hard you try to hide them!  Use the encryption only
+   as a slight deterrent towards unwanted tampering of your data.  How to
+   crack an encrypted datafile is left as an exercise to the reader, though. *)
 
 {$IFDEF FPC}
 { Free Pascal. }

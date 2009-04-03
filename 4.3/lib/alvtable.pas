@@ -1,5 +1,5 @@
 UNIT alvtable;
-(*< @ignore
+(*< @exclude
  *
  *      Virtual table to be used by AL_BITMAP.  FOR INTERNAL USE ONLY.
  *)

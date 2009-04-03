@@ -1,4 +1,4 @@
-(* @ignore
+(* @exclude
  * Defines methods and stuff for system initialization and management.
  * This is used internally by Allegro.  Only the parts used by Allegro.pas are
  * correctly defined.

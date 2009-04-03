@@ -28,14 +28,14 @@ USES
 
 
 
-(* Give the number of seconds between each tick to @link (al_install_int_ex). *)
+(* Give the number of seconds between each tick to @link(al_install_int_ex). *)
   FUNCTION AL_SECS_TO_TIMER (x: LONGINT): LONGINT;
-(* Give the number of milliseconds between each tick to @link
-   (al_install_int_ex). *)
+(* Give the number of milliseconds between each tick to
+   @link(al_install_int_ex). *)
   FUNCTION AL_MSEC_TO_TIMER (x: LONGINT): LONGINT;
-(* Give the number of ticks each second to @link (al_install_int_ex). *)
+(* Give the number of ticks each second to @link(al_install_int_ex). *)
   FUNCTION AL_BPS_TO_TIMER  (x: LONGINT): LONGINT;
-(* Give the number of ticks each minute to @link (al_install_int_ex). *)
+(* Give the number of ticks each minute to @link(al_install_int_ex). *)
   FUNCTION AL_BPM_TO_TIMER  (x: LONGINT): LONGINT;
 
 
@@ -44,12 +44,12 @@ USES
    installing any user timer routines, and also before displaying a mouse
    pointer and playing FLI animations or MIDI music.
 
-   @returns (@true on success, or @false on failure @(but you may decide not to
+   @returns(@true on success, or @false on failure @(but you may decide not to
      check the return value as this function is very unlikely to fail@).)  *)
   FUNCTION al_install_timer: BOOLEAN;
 
 (* Removes the Allegro timer handler.  You don't normally need to bother
-   calling this, because @link (al_exit) will do it for you. *)
+   calling this, because @link(al_exit) will do it for you. *)
   PROCEDURE al_remove_timer; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_timer';
 
@@ -57,19 +57,19 @@ USES
    installed, retroactively adjusts its speed (i.e makes as though the speed
    change occurred precisely at the last tick).  The speed is given in hardware
    clock ticks, of which there are 1193181 a second. You can convert from other
-   time formats to hardware clock ticks with the functions @link
-   (AL_SECS_TO_TIMER), @link (AL_MSEC_TO_TIMER), @link (AL_BPS_TO_TIMER) and
-   @link (AL_BPM_TO_TIMER).
+   time formats to hardware clock ticks with the functions
+   @link(AL_SECS_TO_TIMER), @link(AL_MSEC_TO_TIMER), @link(AL_BPS_TO_TIMER) and
+   @link(AL_BPM_TO_TIMER).
 
    There can only be sixteen timers in use at a time, and some other parts of
-   Allegro (the mouse pointer display routines, @link (al_rest), the FLI
+   Allegro (the mouse pointer display routines, @link(al_rest), the FLI
    player, and the MIDI player) need to install handlers of their own, so you
    should avoid using too many at the same time.  If you call this routine
-   without having first installed the timer module, @link (al_install_timer)
+   without having first installed the timer module, @link(al_install_timer)
    will be called automatically.
 
    Your function will be called by the Allegro interrupt handler and not
-   directly by the processor, so it can be a normal @code (CDECL) function.
+   directly by the processor, so it can be a normal @code(CDECL) function.
    You should be aware, however, that it will be called in an interrupt
    context, which imposes a lot of restrictions on what you can do in it.  It
    should not use large amounts of stack, it must not make any calls to the
@@ -78,37 +78,37 @@ USES
    of complicated code in a timer handler:  as a general rule you should just
    set some flags and respond to these later in your main control loop.
 
-   @returns (@true on success, or @false if there is no room to add a new user
+   @returns(@true on success, or @false if there is no room to add a new user
      timer.) *)
   FUNCTION al_install_int_ex (proc: AL_SIMPLE_PROC; speed: LONGINT): BOOLEAN;
 
 (* Installs a user timer handler, with the speed given as the number of
-   milliseconds between ticks.  This is the same thing as @code
-   (al_install_int_ex @(@@proc, AL_MSEC_TO_TIMER @(speed@)@).  If you call this
-   routine without having first installed the timer module, @link
-   (al_install_timer) will be called automatically.  Calling again this routine
-   with the same timer handler as parameter allows you to adjust its speed.
+   milliseconds between ticks.  This is the same thing as
+   @code(al_install_int_ex @(@@proc, AL_MSEC_TO_TIMER @(speed@)@)).  If you call
+   this routine without having first installed the timer module,
+   @link(al_install_timer) will be called automatically.  Calling again this
+   routine with the same timer handler as parameter allows you to adjust its speed.
 
-   @returns (@true on success, or @false if there is no room to add a new user
+   @returns(@true on success, or @false if there is no room to add a new user
      timer.) *)
   FUNCTION al_install_int (proc: AL_SIMPLE_PROC; speed: LONGINT): BOOLEAN;
 
 (* Removes a function from the list of user interrupt routines.
-   @link (al_exit) does this automatically. *)
+   @link(al_exit) does this automatically. *)
   PROCEDURE al_remove_int (proc: AL_SIMPLE_PROC); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_int';
 
-(* Like @link (al_install_int_ex), but the callback routine will be passed a
+(* Like @link(al_install_int_ex), but the callback routine will be passed a
    copy of the specified void pointer parameter.  To disable the handler, use
-   @link (al_remove_param_int) instead of @link (al_remove_int). *)
+   @link(al_remove_param_int) instead of @link(al_remove_int). *)
   FUNCTION al_install_param_int_ex (proc: AL_PARAM_PROC; speed: LONGINT): BOOLEAN;
 
-(* Like @link (al_install_int), but the callback routine will be passed a copy
+(* Like @link(al_install_int), but the callback routine will be passed a copy
    of the specified void pointer parameter.  To disable the handler, use
-   @link (al_remove_param_int) instead of @link (al_remove_int). *)
+   @link(al_remove_param_int) instead of @link(al_remove_int). *)
   FUNCTION al_install_param_int (proc: AL_PARAM_PROC; speed: LONGINT): BOOLEAN;
 
-(* Like @link (al_remove_int), but for use with timer callbacks that have
+(* Like @link(al_remove_int), but for use with timer callbacks that have
    parameter values.  If there is more than one copy of the same callback
    active at a time, it identifies which one to remove by checking the
    parameter value (so you can't have more than one copy of a handler using an
@@ -119,7 +119,7 @@ USES
 (* This function waits for the specified number of milliseconds.
 
     Passing 0 as parameter will not wait, but just yield.  This can be useful
-    in order to @italic ("play nice") with other processes.  Other values will
+    in order to @italic("play nice") with other processes.  Other values will
     cause CPU time to be dropped on most platforms.  This will look better to
     users, and also does things like saving battery power and making fans less
     noisy.
@@ -132,10 +132,10 @@ USES
   PROCEDURE al_rest (time: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rest';
 
-(* Like @link (al_rest), but for non-zero values continually calls the
+(* Like @link(al_rest), but for non-zero values continually calls the
    specified function while it is waiting for the required time to elapse.  If
    the provided `callback' parameter is @nil, this function does exactly the
-   same thing as calling @code (al_rest). *)
+   same thing as calling @code(al_rest). *)
   PROCEDURE al_rest_callback (time: LONGINT; callback: AL_PARAM_PROC); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rest_callback';
 

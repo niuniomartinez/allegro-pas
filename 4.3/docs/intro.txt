@@ -1,0 +1,36 @@
+@shorttitle(Introduction)
+@title(Allegro.pas)
+
+@section(1 intro Introduction)
+
+  Allegro.pas is a wrapper to allow Pascal compilers (such as Free Pascal or
+  Delphi) to use the Allegro library.
+
+  This version is a SVN version.  It has a lot of things that just dosesn't
+  work.  Please see @link(objectives section "Objectives") for a brief
+  description of the goals.
+
+  If you want to collaborate please join the main Allegro.pas mailing list
+  (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).
+
+
+@section(1 objectives Objectives of version 4.3.0)
+
+  @unorderedList(
+    @item(@bold(Make it run on Linux).  Previous versions work only on
+      MS-Windows system.  @bold(This goal is complete).  It would be great to
+      introduce other systems as MacOS X and others @(and should be easy as
+      basis is complete@) but I haven't another system.)
+    @item(@bold(Define a new API more Pascal-like).  Previous versions have a
+      C-like one with lots of pointers and other ugly issues.)
+    @item(Add a lot of new functionality as @bold(UNICODE support).)
+    @item(@bold(Implement a Grabber utility) to create and manage
+      @link(aldtfile data files).)
+    @item(@bold(Add support for OpenGL hardware accelerated graphics) via
+      AllegroGL add-on.)
+  )
+
+@section(1 contact Contact)
+
+  If you want to contact me, please use the Allegro.pas main mail-list
+  (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).

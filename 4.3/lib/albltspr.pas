@@ -131,9 +131,9 @@ CONST
    Unlike most of the graphics routines, @code(al_blit) allows the source and
    destination bitmaps to be of different color depths, so it can be used to
    convert images from one pixel format to another.  In this case, the behavior
-   is affected by the @link(AL_COLORCONV_KEEP_TRANS) and
-   @code(AL_COLORCONV_DITHER* ) flags of the current color conversion mode: see
-   @link(al_set_color_conversion) for more information. *)
+   is affected by the @code(AL_COLORCONV_KEEP_TRANS)
+   and @code(AL_COLORCONV_DITHER* ) flags of the current color conversion mode.
+   @seealso(al_set_color_conversion) *)
   PROCEDURE al_blit (source, dest: AL_BITMAPptr; source_x, source_y, dest_x, dest_y, width, height: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'blit';
 

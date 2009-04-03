@@ -27,7 +27,7 @@ USES
 
 
 CONST
-(* To be used at @link (al_install_joystick). *)
+(* To be used at @link(al_install_joystick). *)
   AL_JOY_TYPE_AUTODETECT = -(1);
   AL_JOY_TYPE_NONE = 0;
 
@@ -37,7 +37,7 @@ CONST
   AL_MAX_JOYSTICK_STICKS = 5;
   AL_MAX_JOYSTICK_BUTTONS = 32;
 
-(* joystick status flags. @seealso (AL_JOYSTICK_INFO) *)
+(* joystick status flags. @seealso(AL_JOYSTICK_INFO) *)
   AL_JOYFLAG_DIGITAL = 1;
   AL_JOYFLAG_ANALOGUE = 2;
   AL_JOYFLAG_CALIB_DIGITAL = 4;
@@ -52,17 +52,17 @@ CONST
 
 
 TYPE
-(* This provides both analogue input in the @code (pos) field (ranging from
+(* This provides both analogue input in the @code(pos) field (ranging from
    -128 to 128 or from 0 to 255, depending on the type of the control), and
-   digital values in the @code (d1) and @code (d2) fields.  For example, when
-   describing the X-axis position, the @code (pos) field will hold the
-   horizontal position of the joystick, @code (d1) will be set if it is moved
-   left, and @code (d2) will be set if it is moved right.  Allegro will fill in
+   digital values in the @code(d1) and @code(d2) fields.  For example, when
+   describing the X-axis position, the @code(pos) field will hold the
+   horizontal position of the joystick, @code(d1) will be set if it is moved
+   left, and @code(d2) will be set if it is moved right.  Allegro will fill in
    all these values regardless of whether it is using a digital or analogue
    joystick, emulating the pos field for digital inputs by snapping it to the
-   min, middle, and maximum positions, and emulating the @code (d1) and @code
-   (d2) values for an analogue stick by comparing the current position with the
-   centre point. *)
+   min, middle, and maximum positions, and emulating the @code(d1) and
+   @code(d2) values for an analogue stick by comparing the current position
+   with the centre point. *)
   AL_JOYSTICK_AXIS_INFO = RECORD
     pos : LONGINT; {< analogue axis position. }
   { digital axis position. }
@@ -75,7 +75,7 @@ TYPE
   AL_JOYSTICK_STICK_INFO = RECORD
     flags : LONGINT;{< status flags for this input. }
     num_axis : LONGINT; {< how many axes do we have? (note de misspelling). }
-  { axis state information. @seealso (AL_JOYSTICK_AXIS_INFO) }
+  { axis state information. @seealso(AL_JOYSTICK_AXIS_INFO) }
     axis : ARRAY [0..(AL_MAX_JOYSTICK_AXIS)-1] OF AL_JOYSTICK_AXIS_INFO;
     name : PCHAR; {< description of this input. }
   END;
@@ -91,7 +91,7 @@ TYPE
     name : PCHAR; { description of this button. }
   END;
 
-(* Pointer to @link (AL_JOYSTICK_INFO). *)
+(* Pointer to @link(AL_JOYSTICK_INFO). *)
   AL_JOYSTICK_INFOptr = ^AL_JOYSTICK_INFO;
 (* information about an entire joystick.
 
@@ -106,43 +106,43 @@ TYPE
    controllers.
 
    The joystick flags field may contain any combination of the bit flags:
-   @definitionList (
-     @itemLabel (AL_JOYFLAG_DIGITAL)
-     @item (This control is currently providing digital input.)
+   @definitionList(
+     @itemLabel(AL_JOYFLAG_DIGITAL)
+     @item(This control is currently providing digital input.)
 
-     @itemLabel (AL_JOYFLAG_ANALOGUE)
-     @item (This control is currently providing analogue input.)
+     @itemLabel(AL_JOYFLAG_ANALOGUE)
+     @item(This control is currently providing analogue input.)
 
-     @itemLabel (AL_JOYFLAG_CALIB_DIGITAL)
-     @item (This control will be capable of providing digital input once it has
+     @itemLabel(AL_JOYFLAG_CALIB_DIGITAL)
+     @item(This control will be capable of providing digital input once it has
        been calibrated, but is not doing this at the moment.)
 
-     @itemLabel (AL_JOYFLAG_CALIB_ANALOGUE)
-     @item (This control will be capable of providing analogue input once it
+     @itemLabel(AL_JOYFLAG_CALIB_ANALOGUE)
+     @item(This control will be capable of providing analogue input once it
        has been calibrated, but is not doing this at the moment.)
 
-     @itemLabel (AL_JOYFLAG_CALIBRATE)
-     @item (Indicates that this control needs to be calibrated. Many devices
-       require multiple calibration steps, so you should call the @link
-       (al_calibrate_joystick) function from a loop until this flag is
+     @itemLabel(AL_JOYFLAG_CALIBRATE)
+     @item(Indicates that this control needs to be calibrated. Many devices
+       require multiple calibration steps, so you should call the
+       @link(al_calibrate_joystick) function from a loop until this flag is
        cleared.)
 
-     @itemLabel (AL_JOYFLAG_SIGNED)
-     @item (Indicates that the analogue axis position is in signed format,
+     @itemLabel(AL_JOYFLAG_SIGNED)
+     @item(Indicates that the analogue axis position is in signed format,
        ranging from -128 to 128. This is the case for all 2d directional
        controls.)
 
-     @itemLabel (AL_JOYFLAG_UNSIGNED)
-     @item (Indicates that the analogue axis position is in unsigned format,
+     @itemLabel(AL_JOYFLAG_UNSIGNED)
+     @item(Indicates that the analogue axis position is in unsigned format,
        ranging from 0 to 255. This is the case for all 1d throttle controls.)
    ) *)
   AL_JOYSTICK_INFO = RECORD
     flags : LONGINT; {< status flags for this joystick. }
     num_sticks : LONGINT; {<  how many stick inputs? }
     num_buttons : LONGINT; {< how many buttons? }
-  { stick state information. @seealso (AL_JOYSTICK_STICK_INFO) }
+  { stick state information. @seealso(AL_JOYSTICK_STICK_INFO) }
     stick : ARRAY [0..(AL_MAX_JOYSTICK_STICKS)-1] OF AL_JOYSTICK_STICK_INFO;
-  { button state information. @seealso (AL_JOYSTICK_BUTTON_INFO). }
+  { button state information. @seealso(AL_JOYSTICK_BUTTON_INFO). }
     button : ARRAY [0..(AL_MAX_JOYSTICK_BUTTONS)-1] OF AL_JOYSTICK_BUTTON_INFO;
   END;
 
@@ -152,22 +152,22 @@ TYPE
 
 
 VAR
-(* Global array of joystick state information, which is updated by the @link
-   (al_poll_joystick) function.  Only the first @link (al_num_joysticks)
+(* Global array of joystick state information, which is updated by the
+   @link(al_poll_joystick) function.  Only the first @link(al_num_joysticks)
    elements will contain meaningful information.
 
-   @seealso (AL_JOYSTICK_INFO)
+   @seealso(AL_JOYSTICK_INFO)
 
    A single joystick may provide several different stick inputs, but you can
    safely assume that the first element in the stick array will always be the
    main directional controller.
 
-   Information about each of the stick axis is stored in the @link
-   (AL_JOYSTICK_AXIS_INFO) substructure.
+   Information about each of the stick axis is stored in the
+   @link(AL_JOYSTICK_AXIS_INFO) substructure.
 
    Note for people who spell funny: in case you don't like having to type
    @italic (analogue), there are some aliases in this unit that will allow you
-   to write @italic (analog) instead.  *)
+   to write @italic(analog) instead.  *)
   al_joy: AL_JOYSTICK_INFO_LIST; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'joy';
 
 (* Global variable containing the number of active joystick devices.  The
@@ -176,12 +176,12 @@ VAR
 
 
 (* Installs Allegro's joystick handler, and calibrates the centre position
-   values.  The type parameter should usually be @code
-   (AL_JOY_TYPE_AUTODETECT), or see the platform specific documentation for a
-   list of the available drivers.  You must call this routine before using any
-   other joystick functions, and you should make sure that all joysticks are in
-   the middle position at the time.  Example:
-   @longcode (#
+   values.  The type parameter should usually be @code(AL_JOY_TYPE_AUTODETECT),
+   or see the platform specific documentation for a list of the available
+   drivers.  You must call this routine before using any other joystick
+   functions, and you should make sure that all joysticks are in the middle
+   position at the time.  Example:
+   @longcode(#
 al_textout_centre_ex (al_screen, al_font,
 		      'Center the joystick and press a key.',
 		      AL_SCREEN_W DIV 2, SCREEN_H DIV 2, red_color, -1);
@@ -189,33 +189,33 @@ al_readkey;
 IF NOT al_install_joystick (AL_JOY_TYPE_AUTODETECT) THEN
   abort_on_error ('Error initialising joystick!');
    #);
-   @returns (@true on success.  As soon as you have installed the joystick
+   @returns(@true on success.  As soon as you have installed the joystick
      module, you will be able to read the button state and digital @(on/off
      toggle@) direction information, which may be enough for some games.  If
-     you want to get full analogue input, though, you need to use the @link
-     (al_calibrate_joystick) functions to measure the exact range of the
+     you want to get full analogue input, though, you need to use the
+     @link(al_calibrate_joystick) functions to measure the exact range of the
      inputs.) *)
   FUNCTION al_install_joystick (atype: LONGINT): BOOLEAN;
 
 (* Removes the joystick handler. You don't normally need to bother calling
-   this, because @link (al_exit) will do it for you. *)
+   this, because @link(al_exit) will do it for you. *)
   PROCEDURE al_remove_joystick; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_joystick';
 
 (* Pass the number of the joystick you want to calibrate as the parameter.
 
-    @returns (a text description for the next type of calibration that will
+    @returns(a text description for the next type of calibration that will
       be done on the specified joystick, or empty string if no more calibration
-      is required. *)
+      is required.) *)
   FUNCTION al_calibrate_joystick_name (n: LONGINT): STRING;
 
 (* Most joysticks need to be calibrated before they can provide full analogue
    input.  This function performs the next operation in the calibration series
    for the specified stick, assuming that the joystick has been positioned in
-   the manner described by a previous call to @link
-   (al_calibrate_joystick_name), returning @true on success.  For example, a
-   simple routine to fully calibrate all the joysticks might look like:
-   @longcode (#
+   the manner described by a previous call to
+   @link(al_calibrate_joystick_name), returning @true on success.  For example,
+   a simple routine to fully calibrate all the joysticks might look like:
+   @longcode(#
 FUNCTION CalibrateJoysticks: BOOLEAN
 VAR
   Cnt: INTEGER;
@@ -239,34 +239,34 @@ BEGIN
 END;
    #)
 
-   @returns (@true on success, @false if the calibration could not be performed
+   @returns(@true on success, @false if the calibration could not be performed
      successfully.) *)
   FUNCTION al_calibrate_joystick (n: LONGINT): BOOLEAN;
 
 (* After all the headache of calibrating the joystick, you may not want to make
    your poor users repeat the process every time they run your program.  Call
    this function to save the joystick calibration data into the specified
-   configuration file, from which it can later be read by @link
-   (al_load_joystick_data).  Pass a @nil filename to write the data to the
+   configuration file, from which it can later be read by
+   @link(al_load_joystick_data).  Pass a @nil filename to write the data to the
    currently selected configuration file.
 
-   @returns (@true on success, @false if the data could not be saved.) *)
+   @returns(@true on success, @false if the data could not be saved.) *)
   FUNCTION al_save_joystick_data (filename: STRING): BOOLEAN;
 
-(* Restores calibration data previously stored by @link (al_save_joystick_data)
+(* Restores calibration data previously stored by @link(al_save_joystick_data)
    or the setup utility.  This sets up all aspects of the joystick code:  you
-   don't even need to @link (al_call install_joystick) if you are using this
+   don't even need to call @link(al_install_joystick) if you are using this
    function.  Pass an empty filename to read the data from the currently
    selected configuration file.
 
-   @returns (@true on success:  if it fails the joystick state is undefined and
+   @returns(@true on success:  if it fails the joystick state is undefined and
      you must reinitialise it from scratch.) *)
   FUNCTION al_load_joystick_data (filename: STRING): BOOLEAN;
 
 (* The joystick handler is not interrupt driven, so you need to call this
    function every now and again to update the global position values.
 
-   @returns (zero on success or a negative number on failure @(usually because
+   @returns(zero on success or a negative number on failure @(usually because
      no joystick driver was installed@).) *)
   FUNCTION al_poll_joystick: LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'poll_joystick';

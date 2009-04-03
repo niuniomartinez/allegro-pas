@@ -20,15 +20,15 @@ USES
 
 
 CONST
-(* Tells to @link (al_install) that must autodetect the system driver. *)
+(* Tells to @link(al_install) that must autodetect the system driver. *)
   AL_SYSTEM_AUTODETECT	= 0;
-(* Tells to @link (al_install) that must install a stripped down version of
+(* Tells to @link(al_install) that must install a stripped down version of
    Allegro that won't even try to touch the hardware or do anything platform
    specific:  this can be useful for situations where you only want to
    manipulate memory bitmaps, such as the text mode datafile tools or the
    Windows GDI interfacing functions.
 
-   Is equivalent to @code (AL_ID @('NONE'@);). *)
+   Is equivalent to @code(AL_ID @('NONE'@);). *)
   AL_SYSTEM_NONE	= $4E4F4E45;
 (* Defined to the major version of Allegro.  From a version number like 4.1.16,
    this would be defined to the integer 4. *)
@@ -51,7 +51,7 @@ CONST
 VAR
 (* Stores the last error number. *)
   al_errno: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_errno';
-(* Text string used by @link (al_set_gfx_mode), @link (al_install_sound) and
+(* Text string used by @link(al_set_gfx_mode), @link(al_install_sound) and
    other functions to report error messages.  If they fail and you want to tell
    the user why, this is the place to look for a description of the problem. *)
   al_error: STRING; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_error';
@@ -65,7 +65,7 @@ VAR
      characters, on both 32 and 64 bit machines.  These can be used for various
      things, like custom datafile objects or system IDs. Example:
 
-@longcode (#
+@longcode(#
 VAR
   OSTYPE_LINUX: LONGINT;
 BEGIN
@@ -79,24 +79,24 @@ END;
 (* Initialises the Allegro library.  You must call either this or al_init
    before doing anything other.  The functions that can be called before this
    one will be marked explicitly in the documentation, like
-   @link (al_set_config_file).
+   @link(al_set_config_file).
 
    The available system ID codes will vary from one platform to another, but
-   you will almost always want to pass @link (AL_SYSTEM_AUTODETECT).
-   Alternatively, @link (AL_SYSTEM_NONE) installs a stripped down version of
+   you will almost always want to pass @link(AL_SYSTEM_AUTODETECT).
+   Alternatively, @link(AL_SYSTEM_NONE) installs a stripped down version of
    Allegro that won't even try to touch your hardware or do anything platform
    specific:  this can be useful for situations where you only want to
    manipulate memory bitmaps, such as the text mode datafile tools or the
    Windows GDI interfacing functions.
 
-   @returns (@true on success or @false on failure @(e.g. no system driver
+   @returns(@true on success or @false on failure @(e.g. no system driver
      could be used@).) *)
   FUNCTION al_install (system_id: LONGINT): BOOLEAN;
 
 (* Function which initialises the Allegro library.  This is the same thing as
-   calling @code (al_install @(AL_SYSTEM_AUTODETECT@)).
+   calling @code(al_install @(AL_SYSTEM_AUTODETECT@)).
 
-   @returns (@true on success or @false on failure @(e.g. no system driver
+   @returns(@true on success or @false on failure @(e.g. no system driver
      could be used@).) *)
   FUNCTION al_init: BOOLEAN;
 
@@ -114,18 +114,18 @@ END;
 (* Outputs a message.  Usually you want to use this to report messages to the
    user in an OS independant way when some Allegro subsystem cannot be
    initialised.  But you must not use this function if you are in a graphic
-   mode, only before calling @link (al_set_gfx_mode), or after a @code
-   (al_set_gfx_mode @(AL_GFX_TEXT@).  Also, this function depends on a system
-   driver being installed, which means that it won't display the message at all
-   on some platforms if Allegro has not been initialised correctly.
+   mode, only before calling @link(al_set_gfx_mode), or after a
+   @code(al_set_gfx_mode @(AL_GFX_TEXT@)).  Also, this function depends on a
+   system driver being installed, which means that it won't display the message
+   at all on some platforms if Allegro has not been initialised correctly.
 
    On platforms featuring a windowing system, it will bring up a blocking GUI
    message box.  If there is no windowing system, it will try to print the
    string to a text console, attempting to work around codepage differences by
    reducing any accented characters to 7-bit ASCII approximations. Example:
 
-@longcode (#
-  IF al_init <> 0 THEN
+@longcode(#
+  IF NOT al_init THEN
     EXIT (1);
   IF NOT init_my_data THEN
   BEGIN
@@ -153,7 +153,7 @@ END;
 
    Example:
 
-@longcode (#
+@longcode(#
 VAR
   CloseButtonPressed: BOOLEAN = FALSE;
 
@@ -173,7 +173,7 @@ END;
     DoStuff;
 
   #)
-   @returns (@true on success or @false on failure @(e.g. the feature is not
+   @returns(@true on success or @false on failure @(e.g. the feature is not
      supported by the platform@).) *)
   FUNCTION al_set_close_button_callback (proc: AL_SIMPLE_PROC): BOOLEAN;
 
@@ -189,7 +189,7 @@ END;
    before setting any graphics mode in order to retrieve the real desktop color
    depth. Example:
 
-@longcode (#
+@longcode(#
 allegro_init;
    ...
 depth := al_desktop_color_depth;
@@ -197,7 +197,7 @@ IF depth <> 0 THEN
   al_set_color_depth (depth);
   #)
 
-   @returns (the color depth or zero on platforms where this information is not
+   @returns(the color depth or zero on platforms where this information is not
    available or does not apply.) *)
   FUNCTION al_desktop_color_depth: LONGINT;
 
@@ -214,7 +214,7 @@ IF depth <> 0 THEN
    before setting any graphics mode in order to retrieve the real desktop
    resolution. Example:
 
-@longcode (#
+@longcode(#
 VAR
   Width, Height: LONGINT;
 BEGIN
@@ -229,7 +229,7 @@ BEGIN
 END.
   #)
 
-  @returns (zero on success, or @false if this information is not available or
+  @returns(zero on success, or @false if this information is not available or
   does not apply, in which case the values stored in the variables you provided
   for `width' and `height' are undefined.) *)
   FUNCTION al_get_desktop_resolution (VAR w, h: LONGINT): BOOLEAN;
@@ -239,7 +239,7 @@ END.
    for your Allegro program.  Note that Allegro cannot set the window title
    when running in a DOS box under Windows. Example:
 
-@longcode (#
+@longcode(#
 al_set_window_title ('Allegro.pas rules!');
   #) *)
   PROCEDURE al_set_window_title (CONST title: STRING);
