@@ -162,7 +162,16 @@ CONST
   AL_GFX_CAN_SCROLL			= $00000001;
 { @exclude }
   AL_GFX_CAN_TRIPLE_BUFFER		= $00000002;
-{ @exclude }
+(* Indicates that a hardware mouse cursor is in use. When this flag is set, it
+   is safe to draw onto the screen without hiding the mouse pointer first.
+   Note that not every cursor graphic can be implemented in hardware:  in
+   particular VBE/AF only supports 2-color images up to 32x32 in size, where
+   the second color is an exact inverse of the first.  This means that Allegro
+   may need to switch between hardware and software cursors at any point during
+   the execution of your program, so you should not assume that this flag will
+   remain constant for long periods of time.  It only tells you whether a
+   hardware cursor is in use at the current time, and may change whenever you
+   hide/redisplay the pointer. *)
   AL_GFX_HW_CURSOR			= $00000004;
 (* Indicates that the normal opaque version of the @link(al_hline) function is
    implemented using a hardware accelerator.  This will improve the performance
@@ -250,7 +259,8 @@ CONST
    flag will only be set if system bitmaps have further acceleration above and
    beyond what is provided by @link(AL_GFX_HW_MEM_BLIT_MASKED). *)
   AL_GFX_HW_SYS_TO_VRAM_BLIT_MASKED	= $00200000;
-{ @exclude }
+(* Indicates that the mouse cursor is the default system cursor, not Allegro's
+   custom cursor. *)
   AL_GFX_SYSTEM_CURSOR			= $00400000;
 
 

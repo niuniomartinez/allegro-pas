@@ -74,7 +74,7 @@ USES
    use this function when accessing the @link(al_key) array and
    @link(al_key_shifts) variable.
 
-   @returns(@true on success or @false on failure @(ie. no keyboard driver
+   @returns(zero on success or a negative on failure @(ie. no keyboard driver
      installed@).) *)
   FUNCTION al_poll_keyboard: LONGINT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'poll_keyboard';

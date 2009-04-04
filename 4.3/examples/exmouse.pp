@@ -1,6 +1,5 @@
 PROGRAM exmouse;
-(*
-  ______   ___    ___
+(*______   ___    ___
  /\  _  \ /\_ \  /\_ \
  \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
   \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
@@ -19,7 +18,7 @@ PROGRAM exmouse;
  *	concentric colored circles.  They are not joined together,
  *	so you can still see bits of what's behind when you move the
  *	cursor over the printed text message.
- +
+ *
  *	by Ñuño Martínez <>
  *	from an example of Allegro Game Library by Shawn Hargreaves.
  *
@@ -46,32 +45,33 @@ USES
 
   (* MyPrintf:
    *   Helper function. *)
-  PROCEDURE MyPrintf (x, y: INTEGER; Fmt: PCHAR; Value: INTEGER);
+  PROCEDURE MyPrintf (x, y: INTEGER; Fmt: STRING; Value: INTEGER);
   VAR
-    text_buff: PCHAR;
+    text_buff: STRING;
   BEGIN
-    text_buff := StrAlloc (50);
-    StrFmt (text_buff, Fmt, [Value]);
-    al_textout_ex (al_screen, al_font^, text_buff, x, y, al_makecol(0, 0, 0),
+    FmtStr (text_buff, Fmt, [Value]);
+    al_textout_ex (al_screen, al_font, text_buff, x, y, al_makecol(0, 0, 0),
 		   al_makecol (255, 255, 255));
-    StrDispose (text_buff);
   END;
 
 
 
 VAR
-  mickeyx, mickeyy: INTEGER;
+  mickeyx, mickeyy: LONGINT;
   custom_cursor: AL_BITMAPptr;
   c: INTEGER;
 BEGIN { The program starts here. }
 
-  IF al_init <> 0 THEN
+  IF NOT al_init THEN
+  BEGIN
+    WriteLn ('Can''t initialize Allegro!');
     EXIT;
+  END;
   al_install_keyboard;
   al_install_timer;
 
-  IF (al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) <> 0) THEN
-    IF (al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) <> 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
@@ -81,13 +81,13 @@ BEGIN { The program starts here. }
       EXIT;
     END;
 
-  al_set_palette (al_desktop_palette^);
+  al_set_palette (al_desktop_palette);
   al_clear_to_color (al_screen, al_makecol (255, 255, 255));
 
 { Detect mouse presence } 
-  IF (al_install_mouse < 0) THEN
+  IF al_install_mouse < 0 THEN
   BEGIN
-    al_textout_centre_ex (al_screen, al_font^,
+    al_textout_centre_ex (al_screen, al_font,
 			  'No mouse detected, but you need one!',
 			  AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
 			  al_makecol (0, 0, 0),	al_makecol (255, 255, 255));
@@ -99,7 +99,7 @@ BEGIN { The program starts here. }
 
   c := 0;
 
-  WHILE al_keypressed = 0 DO
+  WHILE NOT al_keypressed DO
   BEGIN
   { On most platforms (eg. DOS) things will still work correctly
     without this call, but it is a good idea to include it in any
@@ -110,8 +110,8 @@ BEGIN { The program starts here. }
     al_acquire_screen;
 
   { The mouse position is stored in the variables mouse_x and mouse_y. }
-    MyPrintf (16, 48, 'mouse_x = %-5d', al_mouse_x^);
-    MyPrintf (16, 64, 'mouse_y = %-5d', al_mouse_y^);
+    MyPrintf (16, 48, 'mouse_x = %-5d', al_mouse_x);
+    MyPrintf (16, 64, 'mouse_y = %-5d', al_mouse_y);
 
   { Or you can use this function to measure the speed of movement.
     Note that we only call it every fourth time round the loop:
@@ -119,35 +119,35 @@ BEGIN { The program starts here. }
     a bit so that you will have time to read them... }
     INC (c);
     IF (c AND 3) = 0 THEN
-      al_get_mouse_mickeys (@mickeyx, @mickeyy);
+      al_get_mouse_mickeys (mickeyx, mickeyy);
 
     MyPrintf (16,  88, 'mickey_x = %-7d', mickeyx);
     MyPrintf (16, 104, 'mickey_y = %-7d', mickeyy);
 
   { The mouse button state is stored in the variable al_mouse_b. }
-    IF al_mouse_b^ AND 1 <> 0 THEN
-      al_textout_ex (al_screen, al_font^, 'left button is pressed ', 16, 128,
+    IF (al_mouse_b AND 1) <> 0 THEN
+      al_textout_ex (al_screen, al_font, 'left button is pressed ', 16, 128,
 		     al_makecol (0, 0, 0), al_makecol (255, 255, 255))
     ELSE
-      al_textout_ex (al_screen, al_font^, 'left button not pressed ', 16, 128,
+      al_textout_ex (al_screen, al_font, 'left button not pressed ', 16, 128,
 		     al_makecol (0, 0, 0), al_makecol (255, 255, 255));
 
-    IF al_mouse_b^ AND 2 <> 0 THEN
-      al_textout_ex (al_screen, al_font^, 'right button is pressed ', 16, 144,
+    IF (al_mouse_b AND 2) <> 0 THEN
+      al_textout_ex (al_screen, al_font, 'right button is pressed ', 16, 144,
 		     al_makecol (0, 0, 0), al_makecol (255, 255, 255))
     ELSE
-      al_textout_ex (al_screen, al_font^, 'right button not pressed ', 16, 144,
+      al_textout_ex (al_screen, al_font, 'right button not pressed ', 16, 144,
 		     al_makecol (0, 0, 0), al_makecol (255, 255, 255));
 
-    IF al_mouse_b^ AND 4 <> 0 THEN
-      al_textout_ex (al_screen, al_font^, 'middle button is pressed ', 16, 160,
+    IF (al_mouse_b AND 4) <> 0 THEN
+      al_textout_ex (al_screen, al_font, 'middle button is pressed ', 16, 160,
 		     al_makecol (0, 0, 0), al_makecol (255, 255, 255))
     ELSE
-      al_textout_ex (al_screen, al_font^, 'middle button not pressed ', 16, 160,
+      al_textout_ex (al_screen, al_font, 'middle button not pressed ', 16, 160,
 		     al_makecol (0, 0, 0), al_makecol (255, 255, 255));
 
   { The wheel position is stored in the variable al_mouse_z. }
-    MyPrintf (16, 184, 'mouse_z = %-5d', al_mouse_z^);
+    MyPrintf (16, 184, 'mouse_z = %-5d', al_mouse_z);
 
     al_release_screen;
 
@@ -165,7 +165,7 @@ BEGIN { The program starts here. }
   the mouse off with al_show_mouse(NIL), and turn it back on again when
   you are done. }
   al_clear_to_color (al_screen, al_makecol (255, 255, 255));
-  al_textout_centre_ex (al_screen, al_font^, 'Press a key to change cursor',
+  al_textout_centre_ex (al_screen, al_font, 'Press a key to change cursor',
 			AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
 			al_makecol (0, 0, 0),
 			al_makecol (255, 255, 255));
@@ -184,7 +184,7 @@ BEGIN { The program starts here. }
   al_set_mouse_sprite_focus (16, 16);
 
   al_clear_to_color (al_screen, al_makecol (255, 255, 255));
-  al_textout_centre_ex (al_screen, al_font^, 'Press a key to quit',
+  al_textout_centre_ex (al_screen, al_font, 'Press a key to quit',
 			AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
 			al_makecol (0, 0, 0),
 			al_makecol (255, 255, 255));

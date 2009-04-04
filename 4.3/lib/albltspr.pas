@@ -12,24 +12,26 @@ UNIT albltspr;
    In wider (non-Allegro) terms, the two words can mean quite different things.
    Generally you can say that sprites are a subset of bitmaps, but even that
    isn't true in 100% of cases.
-
-   @bold(BITMAP:) a widely accepted term that will be understood by anyone
-   even remotely connected with computer graphics.  It simply means an image
-   built up from a grid of pixels, ie. just about any picture that you are
-   likely to come across on a computer (vector graphics formats are the
-   exception, but those must be rendered into a bitmap format before they can
-   be displayed by most hardware).  A more accurate term but slightly rarer
-   term with the same meaning is "pixmap" (pixel-map).
-
-   @bold (SPRITE:) a particular usage of bitmapped images, restricted to video
-   games (other types of programmer probably won't be familiar with this term).
-   Originally on machines like the C64, sprites were a hardware feature that
-   allowed a number of small bitmap images to be loaded into special registers,
-   and they could then be superimposed over the main graphics display and moved
-   around just by modifying the position register.  They were used for the
-   moving objects (player and enemy characters), and enabled the C64 to do much
-   more impressive things than would have been possible if all the drawing had
-   to be done directly by the puny CPU.
+   @definitionList(
+     @itemlabel(BITMAP)@item(a widely accepted term that will be understood by
+       anyone even remotely connected with computer graphics.  It simply means
+       an image built up from a grid of pixels, ie. just about any picture that
+       you are likely to come across on a computer @(vector graphics formats
+       are the exception, but those must be rendered into a bitmap format
+       before they can be displayed by most hardware@).  A more accurate term
+       but slightly rarer term with the same meaning is "pixmap"
+       @(pixel-map@).)
+     @itemlabel(SPRITE)@item(a particular usage of bitmapped images, restricted
+       to video games @(other types of programmer probably won't be familiar
+       with this term@).  Originally on machines like the C64, sprites were a
+       hardware feature that allowed a number of small bitmap images to be
+       loaded into special registers, and they could then be superimposed over
+       the main graphics display and moved around just by modifying the
+       position register.  They were used for the moving objects @(player and
+       enemy characters@), and enabled the C64 to do much more impressive
+       things than would have been possible if all the drawing had to be done
+       directly by the puny CPU.)
+   )
 
    Later on, a lot of old C64 programmers upgraded to machines like the Atari
    ST, which didn't have any special sprite hardware, but they carried on
