@@ -6,8 +6,7 @@ UNIT alsprrle;
   though, you will find yourself storing images that are only ever copied to
   the screen, rather than being drawn onto or used as filling patterns, etc.
   If this is the case you may be better off storing your images in
-  @link(AL_RLE_SPRITE) or @link (AL_COMPILED_SPRITE) structures rather than
-  regular bitmaps.
+  @link(AL_RLE_SPRITE) structure rather than regular bitmaps.
 
   RLE sprites store the image in a simple run-length encoded format, where
   repeated zero pixels are replaced by a single length count, and strings of

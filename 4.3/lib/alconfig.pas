@@ -1,40 +1,40 @@
 UNIT alconfig;
-(*< Various parts of Allegro, such as the sound routines and the
-    @link(al_load_joystick_data) function, require some configuration
-    information.  This data is stored in text files as a collection of
-    @code(variable=value) lines, along with comments that begin with a @code(#)
-    character and continue to the end of the line.  The configuration file may
-    optionally be divided into sections, which begin with a
-    @code([sectionname]) line.  Each section has a unique namespace, to prevent
-    variable name conflicts, but any variables that aren't in a section are
-    considered to belong to all the sections simultaneously.
+(*<Configuration routines.
 
-    Note that variable and section names cannot contain spaces.
+  Various parts of Allegro, such as the sound routines and the
+  @link(al_load_joystick_data) function, require some configuration
+  information.  This data is stored in text files as a collection of
+  @code(variable=value) lines, along with comments that begin with a @code(#)
+  character and continue to the end of the line.  The configuration file may
+  optionally be divided into sections, which begin with a @code([sectionname])
+  line.  Each section has a unique namespace, to prevent variable name
+  conflicts, but any variables that aren't in a section are considered to
+  belong to all the sections simultaneously.
 
-    By default the configuration data is read from a file called
-    @code(allegro.cfg), which can be located either in the same directory as
-    the program executable, or the directory pointed to by the @code(ALLEGRO)
-    environment variable.  Under Unix, it also checks for @code(~/allegro.cfg),
-    @code(~/.allegrorc), @code(/etc/allegro.cfg), and @code(/etc/allegrorc),
-    in that order;  under BeOS only the last two are also checked.  MacOS X
-    also checks in the Contents/Resources directory of the application bundle,
-    if any, before doing the checks above.
+  Note that variable and section names cannot contain spaces.
 
-    If you don't like this approach, you can specify any filename you like, or
-    use a block of binary configuration data provided by your program (which
-    could for example be loaded from a datafile).  You can also extend the
-    paths searched for allegro resources with
-    @link(al_set_allegro_resource_path).
+  By default the configuration data is read from a file called
+  @code(allegro.cfg), which can be located either in the same directory as the
+  program executable, or the directory pointed to by the @code(ALLEGRO)
+  environment variable.  Under Unix, it also checks for @code(~/allegro.cfg),
+  @code(~/.allegrorc), @code(/etc/allegro.cfg), and @code(/etc/allegrorc), in
+  that order;  under BeOS only the last two are also checked.  MacOS X also
+  checks in the Contents/Resources directory of the application bundle, if any,
+  before doing the checks above.
 
-    You can store whatever custom information you like in the config file,
-    along with the standard variables that are used by Allegro (see below).
-    Allegro comes with a setup directory where you can find configuration
-    programs.  The standalone setup program is likely to be of interest to
-    final users.  It allows any user to create an @code(allegro.cfg) file
-    without the need to touch a text editor and enter values by hand.  It also
-    provides a few basic tests like sound playing for sound card testing. You
-    are welcome to include the setup program with your game, either as is or
-    with modified graphics to fit better your game.  *)
+  If you don't like this approach, you can specify any filename you like, or
+  use a block of binary configuration data provided by your program (which
+  could for example be loaded from a datafile).
+
+  You can store whatever custom information you like in the config file, along
+  with the standard variables that are used by Allegro (see below).  Allegro
+  comes with a setup directory where you can find configuration programs.  The
+  standalone setup program is likely to be of interest to final users.  It
+  allows any user to create an @code(allegro.cfg) file without the need to
+  touch a text editor and enter values by hand.  It also provides a few basic
+  tests like sound playing for sound card testing.  You are welcome to include
+  the setup program with your game, either as is or with modified graphics to
+  fit better your game.  *)
 
 {$H+}
 {$IFDEF FPC}
