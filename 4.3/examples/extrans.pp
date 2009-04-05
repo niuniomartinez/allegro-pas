@@ -1,6 +1,5 @@
 PROGRAM extrans;
-(*
-  ______   ___    ___
+(*______   ___    ___
  /\  _  \ /\_ \  /\_ \
  \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
   \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
@@ -31,6 +30,7 @@ PROGRAM extrans;
 {$H+}
 
 USES
+  sysutils,
 { It needs some Allegro.pas units. }
   al256tra, { 8 bit transparency and lighting. }
   albitmap, { Bitmap manipulation. }
@@ -69,14 +69,17 @@ VAR
 
 BEGIN { The program starts here. }
 
-  IF al_init <> 0 THEN
+  IF NOT al_init THEN
+  BEGIN
+    WriteLn ('Can''t initialize Allegro!');
     EXIT;
+  END;
   al_install_keyboard;
   al_install_timer;
   al_install_mouse;
 
-  IF (al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) <> 0) THEN
-    IF (al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) <> 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
@@ -87,8 +90,7 @@ BEGIN { The program starts here. }
     END;
 
 { Load the main screen image. }
-  al_get_executable_name (buf, 255);
-  al_replace_filename (filename, buf, 'allegro.pcx', 255);
+  filename := ExtractFilePath (ParamStr (0)) + 'allegro.pcx';
 
   background := al_load_bitmap (filename, @pal);
   IF background = NIL THEN
@@ -103,7 +105,7 @@ BEGIN { The program starts here. }
 
 { This isn't needed, but it speeds up the color table calculations. }
   al_create_rgb_table (@rgb_table, pal, NIL);
-  al_set_rgb_map (@rgb_table);
+  al_rgb_table := @rgb_table;
 
 { Build a color lookup table for lighting effects. }
   al_create_light_table (@light_table, pal, 0, 0, 0, NIL);
@@ -123,14 +125,14 @@ BEGIN { The program starts here. }
     al_circlefill (spotlight, 64, 64, 64 - i DIV 4, i);
 
 { Select the lighting table. }
-  al_set_color_map (@light_table);
+    al_color_table := @light_table;
 
 { Display a spotlight effect. }
   REPEAT
     al_poll_mouse;
 
-    x := al_mouse_x^ - AL_SCREEN_W DIV 2 - 64 + 160;
-    y := al_mouse_y^ - AL_SCREEN_H DIV 2 - 64 + 100;
+    x := al_mouse_x - AL_SCREEN_W DIV 2 - 64 + 160;
+    y := al_mouse_y - AL_SCREEN_H DIV 2 - 64 + 100;
 
     al_clear_bitmap (s);
 
@@ -163,7 +165,7 @@ BEGIN { The program starts here. }
   { Reduce CPU usage. }
     al_rest (20);
 
-  UNTIL al_keypressed <> 0;
+  UNTIL al_keypressed;
 
   al_clear_keybuf;
 
@@ -178,7 +180,7 @@ BEGIN { The program starts here. }
   al_stretch_blit (background, spotlight, 0, 0, 320, 200, 0, 0, 128, 128);
 
 { Select the translucency table. }
-  al_set_color_map (@trans_table);
+  al_color_table := @trans_table;
 
 { Select translucency blender. }
   al_set_trans_blender (0, 0, 0, 128);
@@ -187,8 +189,8 @@ BEGIN { The program starts here. }
   REPEAT
     al_poll_mouse;
 
-    x := al_mouse_x^ - AL_SCREEN_W DIV 2 - 64 + 160;
-    y := al_mouse_y^ - AL_SCREEN_H DIV 2 - 64 + 100;
+    x := al_mouse_x - AL_SCREEN_W DIV 2 - 64 + 160;
+    y := al_mouse_y - AL_SCREEN_H DIV 2 - 64 + 100;
 
     al_blit (background, s, 0, 0, 0, 0, 320, 200);
     al_draw_trans_sprite (s, spotlight, x, y);
@@ -199,7 +201,7 @@ BEGIN { The program starts here. }
   { Reduce CPU usage. }
     al_rest (20);
 
-  UNTIL al_keypressed <> 0;
+  UNTIL al_keypressed;
 
   al_clear_keybuf;
 

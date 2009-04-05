@@ -1,5 +1,7 @@
 UNIT alsound;
-(*<Allegro allows you to use the sound hardware in two ways:  automatic, or
+(*<Sound initialization and configuration.
+
+   Allegro allows you to use the sound hardware in two ways:  automatic, or
    manual.  Usually you should try the automatic version first.  This means
    calling @link(al_install_sound) with the autodetection parameters and using
    the rest of the sound functions to play samples or music.  In this

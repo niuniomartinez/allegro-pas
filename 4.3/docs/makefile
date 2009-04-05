@@ -11,7 +11,7 @@ endif
 all: HTML
 
 HTML:
-	pasdoc -T Allegro.pas -O html --cache-dir cache -E html --introduction intro.txt $(SOURCES)
+	pasdoc -T Allegro.pas -O html --cache-dir cache -E html --auto-abstract --sort=structures,constants,functions,types,variables --introduction intro.txt $(SOURCES)
 
 latex:
-	pasdoc -T Allegro.pas -O latex --cache-dir cache -E latex --introduction intro.txt $(SOURCES)
+	pasdoc -T Allegro.pas -O latex --cache-dir cache -E latex --auto-abstract --sort=structures,constants,functions,types,variables --introduction intro.txt $(SOURCES)

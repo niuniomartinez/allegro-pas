@@ -8,24 +8,24 @@ UNIT almouse;
    pixels the cursor moved since the last time this information was read.
 
    Allegro offers three ways to display the mouse cursor:
-   @unorderedList(
-     @item(@bold(Standard Allegro cursor)  Allegro is responsible for drawing
+   @definitionList(
+     @itemLabel(Standard Allegro cursor)@item(Allegro is responsible for drawing
        the mouse cursor from a timer.  Use @link(al_set_mouse_sprite) and
        @link(al_show_mouse) to define your own cursor and display it on the
        screen.  You need to call @link(al_scare_mouse)/@link(al_unscare_mouse)
        to hide the mouse cursor whenever you draw to the screen.)
-     @item(@bold(Custom operating system cursor @(hardware cursor@))  Allegro
-       will let the operating system draw the mouse cursor.  Use
+     @itemLabel(Custom operating system cursor @(hardware cursor@))
+       @item(Allegro will let the operating system draw the mouse cursor.  Use
        @code(al_set_mouse_sprite) and @code(al_show_mouse) @(or
-       @link(al_show_os_cursor)@) to define your own cursor and display it on the
-       screen.  Not all graphics drivers are capable of this and some may only
-       be able to display cursors up to a certain size.  Allegro will fall back
-       on its own cursor drawing if it cannot let the OS handle this.  On some
-       platforms, the hardware cursor is incompatible with
+       @link(al_show_os_cursor)@) to define your own cursor and display it on
+       the screen.  Not all graphics drivers are capable of this and some may
+       only be able to display cursors up to a certain size.  Allegro will fall
+       back on its own cursor drawing if it cannot let the OS handle this.  On
+       some platforms, the hardware cursor is incompatible with
        @link(al_get_mouse_mickeys) and it is therefor disabled by default.  In
        such cases you need to call @link(al_enable_hardware_cursor) to enable
        it explicitly.)
-     @item(@bold(Default operating system cursor)  Allegro will not draw its
+     @itemLabel(Default operating system cursor)@item(Allegro will not draw its
        own cursor, but use the operating system default cursor.  You can use
        the @link(al_select_mouse_cursor) function to select the cursor shape to
        display.  As with custom operating system cursors, you need to call

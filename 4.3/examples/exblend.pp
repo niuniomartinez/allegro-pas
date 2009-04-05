@@ -1,6 +1,5 @@
 PROGRAM exblend;
-(*
-  ______   ___    ___
+(*______   ___    ___
  /\  _  \ /\_ \  /\_ \
  \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
   \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
@@ -23,6 +22,7 @@ PROGRAM exblend;
  *)
 
 {$H+}
+{$MODE FPC}
 
 USES
   sysutils,
@@ -74,15 +74,18 @@ VAR
   prevx1, prevy1, prevx2, prevy2: LONGINT;
   timer: LONGINT;
   bpp: INTEGER;
-  ret: INTEGER;
+  ret: BOOLEAN;
   color_depths: ARRAY [0..4] OF INTEGER = ( 15, 16, 32, 24, 0 );
 
 BEGIN { The program starts here. }
   bpp := -1;
-  ret := -1;
+  ret := TRUE;
 
-  IF al_init <> 0 THEN
+  IF NOT al_init THEN
+  BEGIN
+    WriteLn ('Can''t initialize Allegro!');
     EXIT;
+  END;
   al_install_keyboard;
   al_install_timer;
 
@@ -106,7 +109,7 @@ BEGIN { The program starts here. }
   BEGIN
   { Set a user-requested color depth. }
     al_set_color_depth (bpp);
-    ret := al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0);
+    ret := al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0);
   END
   ELSE BEGIN
   { Autodetect what color depths are available. }
@@ -114,14 +117,14 @@ BEGIN { The program starts here. }
     REPEAT
       bpp := color_depths[a];
       al_set_color_depth (bpp);
-      ret := al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0);
-      IF ret = 0 THEN BREAK;
+      ret := al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0);
+      IF ret THEN BREAK;
       INC (a);
     UNTIL color_depths[a] < 1;
   END;
 
 { Did the video mode set properly? }
-  IF ret <> 0 THEN
+  IF NOT ret THEN
   BEGIN
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
   { Show an error message. }
@@ -135,10 +138,10 @@ BEGIN { The program starts here. }
   al_set_color_conversion (AL_COLORCONV_TOTAL);
 
 { Get the path of the executable. }
-  al_get_executable_name (buf, 256);
+  buf := ExtractFilePath (ParamStr (0));
 
 { Load the first picture. }
-  al_replace_filename(filename, buf, 'allegro.pcx', 256);
+  filename := buf + 'allegro.pcx';
   image1 := al_load_bitmap (filename, @pal);
   IF image1 = NIL THEN
   BEGIN
@@ -150,7 +153,7 @@ BEGIN { The program starts here. }
   END;
 
 { Load the second picture. }
-  al_replace_filename(filename, buf, 'mysha.pcx', 256);
+  filename := buf + 'mysha.pcx';
   image2 := al_load_bitmap (filename, @pal);
   IF image2 = NIL THEN
   BEGIN
@@ -171,11 +174,11 @@ BEGIN { The program starts here. }
 
   prevx1 := 0; prevy1 := 0; prevx2 := 0; prevy2 := 0;
 
-  al_textout_ex (al_screen, al_font^, INTTOSTR (bpp) + ' bpp', 0, AL_SCREEN_H - 8, al_makecol(255, 255, 255), al_makecol (0, 0, 0));
+  al_textout_ex (al_screen, al_font, INTTOSTR (bpp) + ' bpp', 0, AL_SCREEN_H - 8, al_makecol(255, 255, 255), al_makecol (0, 0, 0));
 
-  WHILE al_keypressed = 0 DO
+  WHILE NOT al_keypressed DO
   BEGIN
-    timer := al_retrace_count^;
+    timer := al_retrace_count;
     al_clear_bitmap (buffer);
   { The first image moves in a slow circle while being tinted to
     different colors... }
@@ -187,8 +190,8 @@ BEGIN { The program starts here. }
     a  := 127 - al_fixtoi (al_fixcos (al_itofix (timer) DIV  9) * 127);
     al_set_trans_blender (r, g, b, 0);
     al_draw_lit_sprite (buffer, image1, x1, y1, a);
-    al_textout_ex (al_screen, al_font^, 'light: ' + INTTOSTR (a) + ' ', 0, 0, al_makecol (r, g, b), al_makecol (0, 0, 0));
-      
+    al_textout_ex (al_screen, al_font, 'light: ' + INTTOSTR (a) + ' ', 0, 0, al_makecol (r, g, b), al_makecol (0, 0, 0));
+
   { The second image moves in a faster circle while the alpha value
     fades in and out... }
     x2 := 160 + al_fixtoi (al_fixsin (al_itofix(timer) DIV 10) * 160);
@@ -197,7 +200,7 @@ BEGIN { The program starts here. }
 
     al_set_trans_blender (0, 0, 0, a);
     al_draw_trans_sprite (buffer, image2, x2, y2);
-    al_textout_ex (al_screen, al_font^, 'alpha: ' + INTTOSTR (a) + ' ', 0, 8, al_makecol(a, a, a), al_makecol(0, 0, 0));
+    al_textout_ex (al_screen, al_font, 'alpha: ' + INTTOSTR (a) + ' ', 0, 8, al_makecol(a, a, a), al_makecol(0, 0, 0));
 
   { Copy the double buffer across to the screen. }
     al_vsync;

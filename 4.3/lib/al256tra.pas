@@ -1,17 +1,18 @@
 UNIT al256tra;
-(*< In paletted video modes, translucency and lighting are implemented with a
-    64k lookup table, which contains the result of combining any two colors c1
-    and c2.  You must set up this table before you use any of the translucency
-    or lighting routines.  Depending on how you construct the table, a range of
-    different effects are possible.  For example, translucency can be
-    implemented by using a color halfway between c1 and c2 as the result of the
-    combination.  Lighting is achieved by treating one of the colors as a light
-    level (0-255) rather than a color, and setting up the table appropriately.
-    A range of specialised effects are possible, for instance replacing any
-    color with any other color and making individual source or destination
-    colors completely solid or invisible.  Color mapping tables can be
-    precalculated with the colormap utility, or generated at runtime.
- *)
+(*<256-color transparency.
+
+  In paletted video modes, translucency and lighting are implemented with a 64k
+  lookup table, which contains the result of combining any two colors c1 and
+  c2.  You must set up this table before you use any of the translucency or
+  lighting routines.  Depending on how you construct the table, a range of
+  different effects are possible.  For example, translucency can be implemented
+  by using a color halfway between c1 and c2 as the result of the combination.
+  Lighting is achieved by treating one of the colors as a light level (0-255)
+  rather than a color, and setting up the table appropriately.  A range of
+  specialised effects are possible, for instance replacing any color with any
+  other color and making individual source or destination colors completely
+  solid or invisible.  Color mapping tables can be precalculated with the
+  colormap utility, or generated at runtime. *)
 
 {$IFDEF FPC}
 { Free Pascal. }
@@ -37,11 +38,12 @@ TYPE
   AL_COLOR_MAPptr = ^AL_COLOR_MAP;
 (* Clolor map. *)
   AL_COLOR_MAP = ARRAY [0..AL_PAL_SIZE-1, 0..AL_PAL_SIZE-1] OF BYTE;
-(* A procedure with the form:
-@longcode(#
-PROCEDURE blend (pal: AL_PALETTE; x, y: LONGINT; rgb: AL_RGB_PTR); CDECL;
-#)
-  Read @link(al_create_color_table) for more information. *)
+(* Call-back procedure to be ussed to create color tables using
+   @link(al_create_color_table).
+   This procedure must have the form:
+   @longcode(#
+     PROCEDURE (pal: AL_PALETTE; x, y: LONGINT; rgb: AL_RGBptr); CDECL;
+   #) *)
   AL_256_BLEND_PROC = POINTER;
 
 

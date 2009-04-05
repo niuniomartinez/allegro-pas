@@ -175,7 +175,15 @@ USES
   alsystem; { For al_errno. }
 
 
+(* IMPORTANT:
 
+   For some reason, FPC looses the trygonometry tables.  This has a side
+   effect on Allegro's rotate routines for bitmaps and sprites.
+
+   This hack allows to use the tables by Allegro.pas but doesn't fix the
+   problem with rotate routines.
+
+   That's the original code.
 TYPE
   TBLptr = ^AL_FIXED;
 
@@ -185,6 +193,14 @@ VAR
   _cos_tbl: TBLptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
   _tan_tbl: TBLptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
   _acos_tbl: TBLptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+
+   And now, the hack. *)
+TYPE
+  TBL    = ARRAY [0..511] OF AL_FIXED;
+
+VAR
+  _cos_tbl, _tan_tbl, _acos_tbl: TBL;
 
 
 
@@ -302,26 +318,31 @@ END;
 
 
 
+{ Hack invalidates this.
+
   function tabla(Base: TBLptr; Offset: Integer): AL_FIXED;
   begin
     inc(Base,Offset);
     tabla := Base^;
-  end;
+  end; }
 
 
 FUNCTION al_fixsin (x: AL_FIXED): AL_FIXED;
 BEGIN
-  al_fixsin := tabla (_cos_tbl, ((x - $400000 + $4000) SHR 15) AND $1FF);
+//  al_fixsin := tabla (_cos_tbl, ((x - $400000 + $4000) SHR 15) AND $1FF);
+  al_fixsin := _cos_tbl[((x - $400000 + $4000) SHR 15) AND $1FF];
 END;
 
 FUNCTION al_fixcos (x: AL_FIXED): AL_FIXED;
 BEGIN
-  al_fixcos := tabla (_cos_tbl, ((x + $4000) SHR 15) AND $1FF);
+//  al_fixcos := tabla (_cos_tbl, ((x + $4000) SHR 15) AND $1FF);
+  al_fixcos := _cos_tbl [((x + $4000) SHR 15) AND $1FF];
 END;
 
 FUNCTION al_fixtan (x: AL_FIXED): AL_FIXED;
 BEGIN
-  al_fixtan := tabla (_tan_tbl, ((x + $4000) SHR 15) AND $FF);
+//  al_fixtan := tabla (_tan_tbl, ((x + $4000) SHR 15) AND $FF);
+  al_fixtan := _tan_tbl [((x + $4000) SHR 15) AND $FF];
 END;
 
 FUNCTION al_fixasin (x: AL_FIXED): AL_FIXED; 
@@ -329,7 +350,8 @@ BEGIN
   IF (-65536 > x) OR (x > 65536) THEN
     al_fixasin := 0
   ELSE
-    al_fixasin := $00400000 - tabla (_acos_tbl, (x + 65536 + 127) SHR 8);
+//    al_fixasin := $00400000 - tabla (_acos_tbl, (x + 65536 + 127) SHR 8);
+    al_fixasin := $00400000 - _acos_tbl [(x + 65536 + 127) SHR 8];
 END;
 
 FUNCTION al_fixacos (x: AL_FIXED): AL_FIXED;
@@ -337,9 +359,22 @@ BEGIN
   IF (-65536 > x) OR (x > 65536) THEN
     al_fixacos := 0
   ELSE
-    al_fixacos := tabla (_acos_tbl, (x + 65536 + 127) SHR 8);
+//    al_fixacos := tabla (_acos_tbl, (x + 65536 + 127) SHR 8);
+    al_fixacos := _acos_tbl [(x + 65536 + 127) SHR 8];
 END;
 
 
 
+VAR
+  Cnt: INTEGER;
+  Tmp: DOUBLE;
+INITIALIZATION
+{ Creates trigonometry tables. }
+  FOR Cnt := 0 TO 511 DO
+  BEGIN
+    Tmp := DOUBLE (Cnt) / 2;
+    _cos_tbl[Cnt] := al_ftofix (Cos(Tmp * al_fixtof (al_fixtorad)));
+  END;
+  FOR Cnt := 0 TO 511 DO
+    _tan_tbl[Cnt] := al_fixdiv (_cos_tbl[Cnt - 128], _cos_tbl[Cnt]);
 END.

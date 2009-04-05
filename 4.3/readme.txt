@@ -83,6 +83,8 @@ Installation
   Download and install Allegro 4.3.10 from http://alleg.sourceforge.net/.  Note
   that this Allegro.pas version will not work with other Allegro than 4.3.10.
 
+  Then use the "fix" script and the "makefile" at root directory.
+
   WARNING - Current state was tested on GNU/Linux only.  You might need to
   change unit "albase" to make it work on your operating system.  If you do so
   with success, please let me know through the main Allegro mailing list
@@ -97,8 +99,8 @@ How to use
   The units are in the subdirectory "lib".
 
   See the examples in subdirectory "examples".  Compile them using the
-  "makefile" at root directori.  WARNING - Some examples just don't work.
-
+  "makefile" at root directory (use the "fix" scripts to create the "target.os"
+  file).  WARNING - Some examples just don't work.
 
   You can create documentation using the pasdoc utility
   (http://pasdoc.sipsolutions.net/).  There are a "makefile" at the docs
@@ -112,7 +114,7 @@ Release programs
 ================
 
   Current version isn't for final work so DO NOT RELEASE PROGRAMS USING IT
-  unless for evaluation and/or testing purposes.
+  except for evaluation and/or testing purposes.
 
 
 

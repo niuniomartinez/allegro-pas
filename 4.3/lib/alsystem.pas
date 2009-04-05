@@ -88,7 +88,7 @@ END;
    specific:  this can be useful for situations where you only want to
    manipulate memory bitmaps, such as the text mode datafile tools or the
    Windows GDI interfacing functions.
-
+   @param(system_id Identification of the system.)
    @returns(@true on success or @false on failure @(e.g. no system driver
      could be used@).) *)
   FUNCTION al_install (system_id: LONGINT): BOOLEAN;
@@ -163,15 +163,11 @@ BEGIN
 END;
 
     ...
-
   al_init;
   al_set_close_button_callback (@CloseButtonHandler);
-
     ...
-
   WHILE NOT ClosePuttonPressed DO
     DoStuff;
-
   #)
    @returns(@true on success or @false on failure @(e.g. the feature is not
      supported by the platform@).) *)
@@ -187,16 +183,7 @@ END;
    Under some OSes, switching to a full screen graphics mode may automatically
    change the desktop color depth.  You have, therefore, to call this function
    before setting any graphics mode in order to retrieve the real desktop color
-   depth. Example:
-
-@longcode(#
-allegro_init;
-   ...
-depth := al_desktop_color_depth;
-IF depth <> 0 THEN
-  al_set_color_depth (depth);
-  #)
-
+   depth.
    @returns(the color depth or zero on platforms where this information is not
    available or does not apply.) *)
   FUNCTION al_desktop_color_depth: LONGINT;
@@ -212,36 +199,17 @@ IF depth <> 0 THEN
    Under some OSes, switching to a full screen graphics mode may automatically
    change the desktop resolution.  You have, therefore, to call this function
    before setting any graphics mode in order to retrieve the real desktop
-   resolution. Example:
-
-@longcode(#
-VAR
-  Width, Height: LONGINT;
-BEGIN
-  al_init;
-     ...
-  IF al_get_desktop_resolution (width, height) THEN
-  BEGIN
-    SetGraphicMode (width, height);
-  END;
-     ...
-  al_exit;
-END.
-  #)
-
-  @returns(zero on success, or @false if this information is not available or
-  does not apply, in which case the values stored in the variables you provided
-  for `width' and `height' are undefined.) *)
+   resolution.
+   @param(w Width desktop resolution.) @param(h Height desktop resolution.)
+   @returns(zero on success, or @false if this information is not available or
+   does not apply, in which case the values stored in the variables you
+   provided for `width' and `height' are undefined.) *)
   FUNCTION al_get_desktop_resolution (VAR w, h: LONGINT): BOOLEAN;
 
 
 (* On platforms that are capable of it, this routine alters the window title
-   for your Allegro program.  Note that Allegro cannot set the window title
-   when running in a DOS box under Windows. Example:
-
-@longcode(#
-al_set_window_title ('Allegro.pas rules!');
-  #) *)
+   for your Allegro program.
+   @param(title Title string.) *)
   PROCEDURE al_set_window_title (CONST title: STRING);
 
 
