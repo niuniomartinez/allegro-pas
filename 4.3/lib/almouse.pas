@@ -399,7 +399,7 @@ IMPLEMENTATION
 
   FUNCTION al_mouse_needs_poll: BOOLEAN;
   BEGIN
-    al_mouse_needs_poll := mouse_needs_poll = 0;
+    al_mouse_needs_poll := mouse_needs_poll <> 0;
   END;
 
 

@@ -1,11 +1,13 @@
 UNIT aljstick;
-(*< Unlike keyboard or mouse input, which are usually read through hardware
-    interrupts by Allegro, joystick input functions have to be polled because
-    there are no hardware interrupts for them on most platforms.  This doesn't
-    mean that you have to poll the joysticks on each line of code you want to
-    read their values, but you should make sure to poll them at least once per
-    frame in your game loop.  Otherwise you face the possibility of reading
-    stale incorrect data.  *)
+(*<Joystick routines.
+
+  Unlike keyboard or mouse input, which are usually read through hardware
+  interrupts by Allegro, joystick input functions have to be polled because
+  there are no hardware interrupts for them on most platforms.  This doesn't
+  mean that you have to poll the joysticks on each line of code you want to
+  read their values, but you should make sure to poll them at least once per
+  frame in your game loop.  Otherwise you face the possibility of reading stale
+  incorrect data.  *)
 
 {$IFDEF FPC}
 { Free Pascal. }
@@ -275,6 +277,9 @@ END;
 
 IMPLEMENTATION
 
+  FUNCTION install_joystick (atype: LONGINT): LONGINT;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
   FUNCTION al_install_joystick (atype: LONGINT): BOOLEAN;
   BEGIN
     al_install_joystick := install_joystick (atype) = 0;
@@ -299,7 +304,7 @@ IMPLEMENTATION
 
 
   FUNCTION calibrate_joystick (n: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_calibrate_joystick (n: LONGINT): BOOLEAN;
   BEGIN

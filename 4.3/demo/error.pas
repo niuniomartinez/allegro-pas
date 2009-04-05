@@ -36,11 +36,11 @@ PROCEDURE ErrorMessage (Message: STRING);
   PROCEDURE DrawText (y: INTEGER; aText: STRING);
   BEGIN
   { Draw the text. }
-    al_textout_centre_ex (al_screen, al_font^, aText,
+    al_textout_centre_ex (al_screen, al_font, aText,
 			  AL_SCREEN_W DIV 2, y,
 			  al_makecol (255, 255, 255), -1);
   END;
-  
+
 CONST
   PressKey = 'Press <Esc> key to continue';
 BEGIN

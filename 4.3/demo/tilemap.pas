@@ -96,11 +96,11 @@ BEGIN
   LoadBoard := FALSE;
 { Build the file name.
   First, get the path where the execubable is. }
-  al_get_executable_name (Path, 256);
+  Path :=  ExtractFilePath (PARAMSTR (0));
 { Create the file name. }
   Filename :=  'board' + IntToStr (N) + '.brd';
 { Build the final name with path. }
-  al_replace_filename (FileName, Path, Filename, 255);
+  FileName := Path + Filename;
 { Open the file. }
   {$I-} { To save file errors in IOResult. }
   Assign (F, FileName); Reset (F);

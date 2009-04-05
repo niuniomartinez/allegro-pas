@@ -50,8 +50,7 @@ END;
 FUNCTION InstallFrameRate: BOOLEAN;
 BEGIN
 { Install the frame controller. }
-  InstallFrameRate := al_install_int_ex (@TickProcedure, AL_BPS_TO_TIMER (FPS))
-    >= 0;
+  InstallFrameRate := al_install_int_ex (@TickProcedure, AL_BPS_TO_TIMER (FPS));
 END;
 
 

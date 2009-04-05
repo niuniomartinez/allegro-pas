@@ -1,18 +1,20 @@
 UNIT alkeybrd;
-(*< The Allegro keyboard handler provides both buffered input and a set of
-    flags storing the current state of each key.  Note that it is not possible
-    to correctly detect every combination of keys, due to the design of the PC
-    keyboard.  Up to two or three keys at a time will work fine, but if you
-    press more than that the extras are likely to be ignored (exactly which
-    combinations are possible seems to vary from one keyboard to another).
+(*<Keyboard routines.
 
-    Allegro comes with a prepackaged `keyboard.dat' file which you can put
-    along with your binary.  If this file is present, Allegro will be able to
-    extract the keyboard mapping information stored there.  However, the end
-    user still needs to select which keyboard mapping to use.  This can be
-    accomplished through the keyboard variable of the system section in a
-    standard `allegro.cfg' configuration file.  Read unit @code(alconfig) for
-    more information about this. *)
+  The Allegro keyboard handler provides both buffered input and a set of flags
+  storing the current state of each key.  Note that it is not possible to
+  correctly detect every combination of keys, due to the design of the PC
+  keyboard.  Up to two or three keys at a time will work fine, but if you press
+  more than that the extras are likely to be ignored (exactly which
+  combinations are possible seems to vary from one keyboard to another).
+
+  Allegro comes with a prepackaged `keyboard.dat' file which you can put along
+  with your binary.  If this file is present, Allegro will be able to extract
+  the keyboard mapping information stored there.  However, the end user still
+  needs to select which keyboard mapping to use.  This can be accomplished
+  through the keyboard variable of the system section in a standard
+  `allegro.cfg' configuration file.  Read unit @link(alconfig) for more
+  information about this. *)
 
 {$IFDEF FPC}
 { Free Pascal. }
@@ -262,7 +264,7 @@ IF  al_key[AL_KEY_SPACE] <> 0 THEN
    pressed, not when it is released.  For this reason, Allegro pretends the
    pause key is a @italic(`state') key, which is the only way to make it
    usable. *)
-  al_key: AL_KEY_LISTptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'key';
+  al_key: AL_KEY_LIST; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'key';
 
 (* Bitmask containing the current state of @code(shift/ctrl/alt), the special
    Windows keys, and the accent escape characters.  Wherever possible this

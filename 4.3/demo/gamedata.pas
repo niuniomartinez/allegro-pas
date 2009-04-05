@@ -43,6 +43,7 @@ PROCEDURE ReleaseData;
 IMPLEMENTATION
 
 USES
+  sysutils,
   alfile;   { File functions. }
 
 
@@ -55,7 +56,7 @@ VAR
   buf: ANSISTRING;
 BEGIN
 { Load the datafile into memory. }
-  al_replace_filename (buf, PARAMSTR (0), 'demo.dat', 256);
+  buf :=  ExtractFilePath (PARAMSTR (0)) + 'demo.dat';
   Data := al_load_datafile (buf);
 { Check if it was loaded. }
   LoadData := (Data <> NIL);

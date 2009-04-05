@@ -36,14 +36,15 @@ UNIT alconfig;
   the setup program with your game, either as is or with modified graphics to
   fit better your game.  *)
 
-{$H+}
 {$IFDEF FPC}
 { Free Pascal. }
  {$PACKRECORDS C}
+ {$MODE FPC}
 {$ELSE}
 { Assumes Codegear Delphi/Turbo. }
  {$A-}
 {$ENDIF}
+{$H+}
 
 
 

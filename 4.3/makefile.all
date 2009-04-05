@@ -15,7 +15,7 @@ examples: $(EXMFILES)
 demo: $(DEMO)
 
 # Tools.
-tools: $(TOOLDIR)charfont($BINSUF)
+tools:
 
 # Executables.
 $(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
@@ -45,6 +45,7 @@ status: adbanner
 # Cleans everything.
 veryclean: clean
 	$(DELETE) $(EXMFILES)
+	$(DELETE) $(DEMO)
 
 
 # Clean temporary files.
@@ -53,6 +54,8 @@ clean:
 	$(DELETE) $(EXMDIR)*$(OBJSUF)
 	$(DELETE) $(LIBDIR)*$(OBJSUF)
 	$(DELETE) $(LIBDIR)*.ppu
+	$(DELETE) $(DEMODIR)*$(OBJSUF)
+	$(DELETE) $(DEMODIR)*.ppu
 
 # Strip symbols and compress with upx packer (http://upx.sf.net/)
 upx:

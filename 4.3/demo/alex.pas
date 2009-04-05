@@ -161,22 +161,22 @@ BEGIN
       ELSE
 	AlexSpr^.Index := BMP_MAIN_R0;
     { Check keyboard. }
-      IF (al_key^[AL_KEY_LEFT] <> #0) OR (al_key^[AL_KEY_RIGHT] <> #0)
-      OR (al_joy^[0].stick[0].axis[0].d1 <> 0)
-      OR (al_joy^[0].stick[0].axis[0].d2 <> 0) THEN
+      IF (al_key[AL_KEY_LEFT] <> 0) OR (al_key[AL_KEY_RIGHT] <> 0)
+      OR (al_joy[0].stick[0].axis[0].d1 <> 0)
+      OR (al_joy[0].stick[0].axis[0].d2 <> 0) THEN
 	AlexState := WALKING;
-      IF (al_key^[AL_KEY_SPACE] <> #0) OR (al_joy^[0].button[0].b <> 0) THEN
+      IF (al_key[AL_KEY_SPACE] <> 0) OR (al_joy[0].button[0].b <> 0) THEN
 	StartJump;
     END;
   WALKING:
     IF CheckGround THEN
     BEGIN
     { Check if Alex wants to jump. }
-      IF (al_key^[AL_KEY_SPACE] <> #0) OR (al_joy^[0].button[0].b <> 0) THEN
+      IF (al_key[AL_KEY_SPACE] <> 0) OR (al_joy[0].button[0].b <> 0) THEN
 	StartJump
       ELSE
     { Check walking left. }
-      IF ((al_key^[AL_KEY_LEFT]<>#0) OR (al_joy^[0].stick[0].axis[0].d1<>0))
+      IF ((al_key[AL_KEY_LEFT]<>0) OR (al_joy[0].stick[0].axis[0].d1<>0))
       AND NOT CheckLeftCollision (ALEX_SPR) THEN
       BEGIN
       { Move Alex. }
@@ -195,7 +195,7 @@ BEGIN
       END
       ELSE
     { Check Walking right. }
-      IF ((al_key^[AL_KEY_RIGHT] <> #0) OR (al_joy^[0].stick[0].axis[0].d2<>0))
+      IF ((al_key[AL_KEY_RIGHT] <> 0) OR (al_joy[0].stick[0].axis[0].d2<>0))
       AND NOT CheckRightCollision (ALEX_SPR) THEN
       BEGIN
       { Move Alex. }
@@ -227,13 +227,13 @@ BEGIN
 	IF AlexCount > 24 THEN
 	  INC (AlexSpr^.y);
       { Can move while jumping. }
-	IF ((al_key^[AL_KEY_LEFT]<>#0) OR (al_joy^[0].stick[0].axis[0].d1<>0))
+	IF ((al_key[AL_KEY_LEFT]<>0) OR (al_joy[0].stick[0].axis[0].d1<>0))
 	AND NOT CheckLeftCollision (ALEX_SPR) THEN
 	BEGIN
 	  AlexSpr^.Index := BMP_MAIN_LJ;
           DEC (AlexSpr^.x);
 	END;
-	IF ((al_key^[AL_KEY_RIGHT]<>#0) OR (al_joy^[0].stick[0].axis[0].d2<>0))
+	IF ((al_key[AL_KEY_RIGHT]<>0) OR (al_joy[0].stick[0].axis[0].d2<>0))
        	AND NOT CheckRightCollision (ALEX_SPR) THEN
 	BEGIN
 	  AlexSpr^.Index := BMP_MAIN_RJ;
@@ -248,13 +248,13 @@ BEGIN
     BEGIN
       INC (AlexSpr^.y, 2);
     { Can move while falling. }
-      IF ((al_key^[AL_KEY_LEFT] <> #0) OR (al_joy^[0].stick[0].axis[0].d1<>0))
+      IF ((al_key[AL_KEY_LEFT] <> 0) OR (al_joy[0].stick[0].axis[0].d1<>0))
       AND NOT CheckLeftCollision (ALEX_SPR) THEN
       BEGIN
 	AlexSpr^.Index := BMP_MAIN_LJ;
 	DEC (AlexSpr^.x);
       END;
-      IF ((al_key^[AL_KEY_RIGHT] <> #0) OR (al_joy^[0].stick[0].axis[0].d2<>0))
+      IF ((al_key[AL_KEY_RIGHT] <> 0) OR (al_joy[0].stick[0].axis[0].d2<>0))
       AND NOT CheckRightCollision (ALEX_SPR) THEN
       BEGIN
 	AlexSpr^.Index := BMP_MAIN_RJ;

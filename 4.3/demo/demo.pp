@@ -34,13 +34,18 @@ USES
   BEGIN
     InitProgram := FALSE;
   { Install Allegro. }
-    IF al_init <> 0 THEN EXIT;
+    IF NOT al_init THEN
+    BEGIN
+      WriteLn ('Can''t initialize Allegro!');
+      EXIT;
+    END;
   { Get the configuration. }
     GetConfiguration;
   { Install Allegro modules.  Do it after set the configuracion file because
     Allegro will use it too. }
     al_install_keyboard;
-    al_install_sound (AL_DIGI_AUTODETECT, AL_MIDI_AUTODETECT, NIL);
+    IF NOT al_install_sound (AL_DIGI_AUTODETECT, AL_MIDI_AUTODETECT) THEN
+      al_install_sound (AL_DIGI_AUTODETECT, AL_MIDI_NONE);
     al_install_joystick (AL_JOY_TYPE_AUTODETECT);
     al_install_timer;
   { Set the graphic mode.  }
@@ -58,10 +63,10 @@ USES
     { Calculate the screen scale factor.  See the play loop. }
       ScaleSc := 2;
     END;
-    IF (al_set_gfx_mode (GDriver, Sw, Sh, 0, 0) <> 0) THEN
+    IF  NOT al_set_gfx_mode (GDriver, Sw, Sh, 0, 0) THEN
     BEGIN
-      IF (al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) <> 0) THEN
-	IF (al_set_gfx_mode (AL_GFX_SAFE, 640, 480, 0, 0) <> 0) THEN
+      IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
+	IF NOT al_set_gfx_mode (AL_GFX_SAFE, 640, 480, 0, 0) THEN
 	BEGIN
 	  al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0); { Be sure it's closed. }
 	{ Show an error message.
@@ -117,7 +122,7 @@ USES
 				AL_SCREEN_H DIV 2 - 100,
 				320, 200);
   { Show the animation. }
-    al_play_memory_fli (Data^[INTRO_ANIM].dat, Bmp, 0, NIL);
+    al_play_memory_fli (Data^[INTRO_ANIM].dat, Bmp, FALSE, NIL);
   { Destroy the bitmap, because we don't need it anymore. }
     al_destroy_bitmap (Bmp);
   { Wait a moment and fade out. }

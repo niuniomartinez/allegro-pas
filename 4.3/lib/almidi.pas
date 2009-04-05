@@ -1,27 +1,29 @@
 UNIT almidi;
-(*<Allegro allows you to play MIDI files.  MIDI files basically contain notes
-   and the type of instrument that is meant to play them, so they are usually
-   very small in size.  However, it's up to the sound card of the end user to
-   play the notes, and sound cards have been historically known to have poor
-   MIDI performance (at least those oriented to the consumer market).  Few
-   consumer cards feature decent MIDI playback.  Still, as a game creator you
-   can never be sure if the music of your game will be played as you meant it,
-   because it totally depends on the hardware of the user.
+(*<MIDI music routines.
 
-   For this reason Allegro also provides a @link(AL_MIDI_DIGMID) driver.  This
-   is a software implementation of the so called Wavetable synthesis.  Sound
-   cards featuring this store digital samples of real instruments at different
-   pitches, interpolating those that are not recorded, thus achieving a high
-   sound quality.  Implementing this in software makes you sure that the
-   quality you hear on your computer is that which will be heard by end users
-   using the same driver.
+  Allegro allows you to play MIDI files.  MIDI files basically contain notes
+  and the type of instrument that is meant to play them, so they are usually
+  very small in size.  However, it's up to the sound card of the end user to
+  play the notes, and sound cards have been historically known to have poor
+  MIDI performance (at least those oriented to the consumer market).  Few
+  consumer cards feature decent MIDI playback.  Still, as a game creator you
+  can never be sure if the music of your game will be played as you meant it,
+  because it totally depends on the hardware of the user.
 
-   The disadvantage of the @code(AL_MIDI_DIGMID) driver is that it uses more CPU
-   than simple MIDI playback, and it steals some hardware voices from the sound
-   card, which might be more critical for the end user experience than the
-   background music . At the Allegro homepage (http://alleg.sourceforge.net/)
-   you can find more information about @code(AL_MIDI_DIGMID) and where to download
-   digital samples for your MIDI files.  *)
+  For this reason Allegro also provides a @link(AL_MIDI_DIGMID) driver.  This
+  is a software implementation of the so called Wavetable synthesis.  Sound
+  cards featuring this store digital samples of real instruments at different
+  pitches, interpolating those that are not recorded, thus achieving a high
+  sound quality.  Implementing this in software makes you sure that the quality
+  you hear on your computer is that which will be heard by end users using the
+  same driver.
+
+  The disadvantage of the @code(AL_MIDI_DIGMID) driver is that it uses more CPU
+  than simple MIDI playback, and it steals some hardware voices from the sound
+  card, which might be more critical for the end user experience than the
+  background music . At the Allegro homepage (http://alleg.sourceforge.net/)
+  you can find more information about @code(AL_MIDI_DIGMID) and where to
+  download digital samples for your MIDI files.  *)
 
 {$IFDEF FPC}
 { Free Pascal. }
@@ -58,8 +60,8 @@ TYPE
   AL_MIDI = RECORD
     divisions : LONGINT;		{< number of ticks per quarter note  }
     track : ARRAY[0..(AL_MIDI_TRACKS)-1] OF RECORD
-      data : AL_UCHARptr;	{< MIDI message stream  }
-      len : LONGINT;		{< length of the track data  }
+      data : PBYTE;	{< MIDI message stream  }
+      len : LONGINT;	{< length of the track data  }
     END;
   END;
 

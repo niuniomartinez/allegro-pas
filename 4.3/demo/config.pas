@@ -16,7 +16,7 @@ VAR
 (* Variables containing the configuration. *)
   DoIntro: BOOLEAN; { Shows the intro animation? }
   ScaleSc: DOUBLE; { Scale factor of the game screen. }
-  Cheat: BOOLEAN = FALSE;  { If true, the game is too much easy. }
+  Cheat: BOOLEAN;  { If true, the game is too much easy. }
   FullScreen: BOOLEAN; { If false, windowed. }
 
 
@@ -30,6 +30,7 @@ PROCEDURE GetConfiguration;
 IMPLEMENTATION
 
 USES
+  sysutils,
   alconfig, { Use of configuration files (INI style). }
   alfile;  { File manipulation. }
 
@@ -42,16 +43,17 @@ VAR
   Path: STRING;
   Cnt: INTEGER;
 BEGIN
+  Cheat := FALSE;
 { Set an additional config data file which is in the current directory.  So,
   get the executable path (returned by PARAMSTR (0)) and replace the filename
   with the configuration's one. }
-  al_replace_filename (Path, PARAMSTR (0), 'demo.cfg', 256);
+  Path :=  ExtractFilePath (PARAMSTR (0)) + 'demo.cfg';
 { Now we can override the file. }
   al_override_config_file (Path);
 { Load the configuration values.  Note: Allegro gets some values from the
   configuration file for internal purposes.  Read the documentation. }
   DoIntro := (al_get_config_int ('', 'jumpstart', 0) = 0);
-  FullScreen := (al_get_config_int ('graphics', 'fullscreen', 1) <> 0);
+  FullScreen := (al_get_config_int ('graphics', 'fullscreen', 0) <> 0);
 { Check the command line parameters. }
   FOR Cnt := 1 TO PARAMCOUNT DO
   BEGIN

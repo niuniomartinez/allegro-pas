@@ -77,7 +77,7 @@ DEMODIR = demo/
 EXMDIR = examples/
 LIBDIR = lib/
 
-FLAGS = -g -O- -pg -Mtp
+FLAGS = -g -O- -pg
 #FLAGS = -02 -Mtp -Sh
 
 # -- Source files list --

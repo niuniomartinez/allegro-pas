@@ -1,33 +1,34 @@
 UNIT alflic;
-(*<There are two high level functions for playing FLI/FLC animations:
-   @link(al_play_fli), which reads the data directly from disk, and
-   @link(al_play_memory_fli), which uses data that has already been loaded into
-   RAM.  Apart from the different sources of the data, these two functions
-   behave identically.  They draw the animation onto the specified bitmap,
-   which should normally be the screen.  Frames will be aligned with the top
-   left corner of the bitmap:  if you want to position them somewhere else you
-   will need to create a sub-bitmap for the FLI player to draw onto.
+(*<FLIC movie routines.
 
-   If the callback function is not @nil it will be called once for each frame,
-   allowing you to perform background tasks of your own.  This callback should
-   normally return zero:  if it returns non-zero the player will terminate
-   (this is the only way to stop an animation that is playing in looped mode).
+  There are two high level functions for playing FLI/FLC animations:
+  @link(al_play_fli), which reads the data directly from disk, and
+  @link(al_play_memory_fli), which uses data that has already been loaded into
+  RAM.  Apart from the different sources of the data, these two functions
+  behave identically.  They draw the animation onto the specified bitmap, which
+  should normally be the screen.  Frames will be aligned with the top left
+  corner of the bitmap:  if you want to position them somewhere else you will
+  need to create a sub-bitmap for the FLI player to draw onto.
 
-   The FLI player returns @code(AL_FLI_OK) if it reached the end of the file,
-   @link(AL_FLI_ERROR) if something went wrong, and the value returned by the
-   callback function if that was what stopped it.  If you need to distinguish
-   between different return values, your callback should return positive
-   integers, since @code(AL_FLI_OK) is zero and @code(AL_FLI_ERROR) is
-   negative.
+  If the callback function is not @nil it will be called once for each frame,
+  allowing you to perform background tasks of your own.  This callback should
+  normally return zero:  if it returns non-zero the player will terminate (this
+  is the only way to stop an animation that is playing in looped mode).
 
-   Note that the FLI player will only work when the timer module is installed,
-   and that it will alter the palette according to whatever palette data is
-   present in the animation file.
+  The FLI player returns @code(AL_FLI_OK) if it reached the end of the file,
+  @link(AL_FLI_ERROR) if something went wrong, and the value returned by the
+  callback function if that was what stopped it.  If you need to distinguish
+  between different return values, your callback should return positive
+  integers, since @code(AL_FLI_OK) is zero and @code(AL_FLI_ERROR) is negative.
 
-   Occasionally you may need more detailed control over how an FLI is played,
-   for example if you want to superimpose a text scroller on top of the
-   animation, or to play it back at a different speed.  You could do both of
-   these with the lower level functions described below. *)
+  Note that the FLI player will only work when the timer module is installed,
+  and that it will alter the palette according to whatever palette data is
+  present in the animation file.
+
+  Occasionally you may need more detailed control over how an FLI is played,
+  for example if you want to superimpose a text scroller on top of the
+  animation, or to play it back at a different speed.  You could do both of
+  these with the lower level functions described below. *)
 
 {$IFDEF FPC}
 { Free Pascal. }
@@ -193,7 +194,7 @@ IMPLEMENTATION
     DoLoop: LONGINT;
   BEGIN
     IF loop THEN DoLoop := -1 ELSE DoLoop := 0;
-    al_play_memory_fli := play_memory_fli (PCHAR (filename), bmp, DoLoop, callback);
+    al_play_memory_fli := play_memory_fli (fli_data, bmp, DoLoop, callback);
   END;
 
 
@@ -217,7 +218,7 @@ IMPLEMENTATION
     DoLoop: LONGINT;
   BEGIN
     IF loop THEN DoLoop := -1 ELSE DoLoop := 0;
-    al_next_fli_frame := next_fli_frame (PCHAR (filename), bmp, DoLoop, callback);
+    al_next_fli_frame := next_fli_frame (DoLoop);
   END;
 
 END.
