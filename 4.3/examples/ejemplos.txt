@@ -1,14 +1,16 @@
-exblend.exe  - Cómo usar las funciones de transparencia en "true-color".
-excolmap.dpr - Crear efectos gráficos usando tablas de mapeo de color.
-exdata.dpr   - Acceder al contenido de los archivos de datos (datafiles).
-exdbuf.dpr   - Cómo usar doble página para eliminar parpadeos.
-exfixed.dpr  - Uso de matemáticas de punto flotante.
-exhello.dpr  - Sencillo "hello world".
-exhsvrgb.dpr - Transformación del espacio HSV a valores RGB.
-exmouse.dpr  - Obtener entradas desde el ratón.
-expal.dpr    - Efectos de paletas y rotación de colores.
-expat.dpr    - Usar plantillas y sub-bitmap.
-exsprite.dpr - Acceso a archivos de datos y animación de imágenes (sprites).
-extrans.dpr  - Efectos de luz y transparencia.
-extruec.dpr  - Conversión de colores en formato "true-color".
+exblend.pp  - Cómo usar las funciones de transparencia en "true-color".
+excolmap.pp - Crear efectos gráficos usando tablas de mapeo de color.
+exdata.pp   - Acceder al contenido de los archivos de datos (datafiles).
+exdbuf.pp   - Cómo usar doble página para eliminar parpadeos.
+exfixed.pp  - Uso de matemáticas de punto flotante.
+exhello.pp  - Sencillo "hello world".
+exhsvrgb.pp - Transformación del espacio HSV a valores RGB.
+exmouse.pp  - Obtener entradas desde el ratón.
+expal.pp    - Efectos de paletas y rotación de colores.
+expat.pp    - Usar plantillas y sub-bitmap.
+exsprite.pp - Acceso a archivos de datos y animación de imágenes (sprites).
+exsyscur.pp - Muestra cómo utilizar los cursores del sistema.
+extrans.pp  - Efectos de luz y transparencia.
+extruec.pp  - Conversión de colores en formato "true-color".
 
+agl/exmasked.pp - Cómo mostrar texturas con partes transparentes con OpenGL.

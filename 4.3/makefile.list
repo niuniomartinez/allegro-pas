@@ -18,6 +18,13 @@ $(error ERROR: No source code found at $(EXMDIR))
 endif
 EXMFILES = $(addprefix $(EXMDIR),$(addsuffix $(BINSUF), $(basename $(notdir $(TEM2) ) ) ) )
 
+TEM5 = $(wildcard $(EXMDIR)agl/*.pp)
+ifeq ($(strip $(TEM5)),)
+$(error ERROR: No source code found at $(EXMDIR)agl/)
+endif
+GLEXMFILES += $(addprefix $(EXMDIR)agl/,$(addsuffix $(BINSUF), $(basename $(notdir $(TEM5) ) ) ) )
+
+
 # For the demo game.
 TEM3 = $(wildcard $(DEMODIR)*.pas)
 ifeq ($(strip $(TEM3)),)

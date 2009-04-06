@@ -8,7 +8,7 @@ all: adbanner examples demo tools
 #	@echo "To create the HTML documentation, run 'make' from the docs directory"
 
 # Examples.
-examples: $(EXMFILES)
+examples: $(EXMFILES) $(GLEXMFILES)
 	@echo "Finished all examples"
 
 # Demo game.
@@ -20,6 +20,10 @@ tools:
 # Executables.
 $(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR) -FU$(LIBDIR) $< -o$@
+	@echo Example $@ ready!
+
+$(EXMDIR)agl/%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR)agl/ -FU$(LIBDIR) $< -o$@
 	@echo Example $@ ready!
 
 $(DEMODIR)%$(BINSUF): $(DEMOSRC) $(LIBFILES)
@@ -38,13 +42,14 @@ status: adbanner
 	@echo "-----------------"
 	@echo "  Project : $(PROJECT)"
 	@echo "  Platform : $(PLATFORM)"
-	@echo "  Platform : $(LIBFILES)"
-	@echo "  Examples : $(EXMFILES)"
+	@echo "  Units : $(LIBFILES)"
+	@echo "  Examples : $(EXMFILES) $(GLEXMFILES)"
 	@echo "  Demo game : $(DEMO)"
 
 # Cleans everything.
 veryclean: clean
 	$(DELETE) $(EXMFILES)
+	$(DELETE) $(GLEXMFILES)
 	$(DELETE) $(DEMO)
 
 
@@ -52,6 +57,7 @@ veryclean: clean
 clean:
 	$(DELETE) $(OBJDIR)*$(OBJSUF)
 	$(DELETE) $(EXMDIR)*$(OBJSUF)
+	$(DELETE) $(EXMDIR)agl/*$(OBJSUF)
 	$(DELETE) $(LIBDIR)*$(OBJSUF)
 	$(DELETE) $(LIBDIR)*.ppu
 	$(DELETE) $(DEMODIR)*$(OBJSUF)
