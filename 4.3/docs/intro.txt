@@ -6,9 +6,9 @@
   Allegro.pas is a wrapper to allow Pascal compilers (such as Free Pascal or
   Delphi) to use the Allegro library.
 
-  This version is a SVN version.  It has a lot of things that just dosesn't
-  work.  Please see @link(objectives section "Objectives") for a brief
-  description of the goals.
+  This version is a SVN version.  It has a lot of things that just don't work.
+  Please see @link(objectives section "Objectives") for a brief description of
+  the goals.
 
   If you want to collaborate please join the main Allegro.pas mailing list
   (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).

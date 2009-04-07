@@ -35,8 +35,8 @@ Introduction
   Delphi) to use the Allegro library.
 
   I wrote it to use it by myself, so I didn't included all functionality of
-  Allegro.  Aniway, I'll fix it and complete it as I'm using it (or as other
-  users do).  Any collaboration will be wellcomed.
+  Allegro.  Anyway, I'll fix it and complete it as I'm using it (or as other
+  users do).  Any collaboration will be welcomed.
 
   This version is an SVN version.  It's only for testing and evaluation
   purposes so you shouldn't use it in your actual projects.  May be you can
@@ -122,10 +122,10 @@ Release programs
 Help needed
 ===========
 
-  The curren version is unfinished.  You can help to finish it and add your
+  The current version is unfinished.  You can help to finish it and add your
   name to the author's list.  We need people to test the library, to complete
-  the documentation, to translate it to other languajes or to write more
-  wrapper functons, develop demos and examples.
+  the documentation, to translate it to other languages or to write more
+  wrapper functions, develop demos and examples.
 
   If you want to help, read the next section and contact me!
 

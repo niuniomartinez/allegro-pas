@@ -233,7 +233,6 @@ VAR
   Cnt: INTEGER;
 BEGIN
 { TODO: Password support. }
-  WriteLn ('Loading file ', FileName);
   IF NOT FileExists (FileName) THEN
     RAISE Exception.Create (FileName+' doesn''t exists.');
   DataFile := al_load_datafile (FileName);

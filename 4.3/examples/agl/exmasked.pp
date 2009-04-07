@@ -88,8 +88,6 @@ BEGIN
     EXIT
   END;
 
-//	allegro_gl_use_mipmapping(TRUE);
-
 { Convert running ball thingie }
   FOR j := 0 TO 9 DO
   BEGIN
@@ -107,7 +105,7 @@ BEGIN
     al_message ('Unable to load mysha.pcx');
     EXIT
   END;
-  Tex[10] := al_gl_make_texture (AL_GL_TEXTURE_MIPMAP, texture, -1);
+  Tex[10] := al_gl_make_texture (AL_GL_TEXTURE_MIPMAP, Texture, -1);
 
 { Now display everything }
 
@@ -196,6 +194,8 @@ BEGIN
 
   UNTIL al_keypressed;
 
-  al_unload_datafile (Dat);
+  al_destroy_bitmap (Texture); { misha.pcx }
+  al_unload_datafile (Dat);    { runner.dat }
+  al_gl_exit;
   al_exit;
 END.
