@@ -201,7 +201,7 @@ END;
    before setting any graphics mode in order to retrieve the real desktop
    resolution.
    @param(w Width desktop resolution.) @param(h Height desktop resolution.)
-   @returns(zero on success, or @false if this information is not available or
+   @returns(@true on success, or @false if this information is not available or
    does not apply, in which case the values stored in the variables you
    provided for `width' and `height' are undefined.) *)
   FUNCTION al_get_desktop_resolution (VAR w, h: LONGINT): BOOLEAN;

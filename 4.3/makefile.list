@@ -34,6 +34,9 @@ TEM4 = $(wildcard $(DEMODIR)*.pp)
 ifeq ($(strip $(TEM4)),)
 $(error ERROR: No source code found at $(DEMODIR))
 endif
-DEMOSRC = $(DEMODIR)/%.pp $(TEM3)
+DEMOSRC = $(DEMODIR)%.pp $(TEM3)
 DEMO = $(addprefix $(DEMODIR),$(addsuffix $(BINSUF), $(basename $(notdir $(TEM4) ) ) ) )
 
+
+# For the tools.
+TSETUPSRC = $(TOOLDIR)setup/setup.pp $(TOOLDIR)setup/DoSetup.pas $(TOOLDIR)setup/SimpleGUI.pas

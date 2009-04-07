@@ -149,6 +149,11 @@ VAR
 
 IMPLEMENTATION
 
+  USES
+    alsystem;
+
+
+
   FUNCTION ustrlen (s: PCHAR): LONGINT;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
@@ -161,9 +166,9 @@ IMPLEMENTATION
 
 INITIALIZATION
 { Create identifiers. }
-  AL_U_ASCII	:= AL_ID('ASC8')
-  AL_U_ASCII_CP	:= AL_ID('ASCP')
-  AL_U_UNICODE	:= AL_ID('UNIC')
-  AL_U_UTF8	:= AL_ID('UTF8')
-  AL_U_CURRENT	:= AL_ID('cur.')
+  AL_U_ASCII	:= AL_ID('ASC8');
+  AL_U_ASCII_CP	:= AL_ID('ASCP');
+  AL_U_UNICODE	:= AL_ID('UNIC');
+  AL_U_UTF8	:= AL_ID('UTF8');
+  AL_U_CURRENT	:= AL_ID('cur.');
 END.

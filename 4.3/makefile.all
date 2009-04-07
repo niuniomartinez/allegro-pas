@@ -15,7 +15,7 @@ examples: $(EXMFILES) $(GLEXMFILES)
 demo: $(DEMO)
 
 # Tools.
-tools:
+tools: $(TOOLDIR)setup/setup$(BINSUF)
 
 # Executables.
 $(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
@@ -30,8 +30,8 @@ $(DEMODIR)%$(BINSUF): $(DEMOSRC) $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(DEMODIR) $< -o$@
 	@echo Demo game ready!
 
-$(TOOLDIR)%$(BINSUF): $(TOOLDIR)%.pp $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(TOOLDIR) $< -o$@
+$(TOOLDIR)setup/setup$(BINSUF): $(TSETUPSRC) $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(TOOLDIR) -Mobjfpc $< -o$@
 	@echo $@ ready!
 
 
