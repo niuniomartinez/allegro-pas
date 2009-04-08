@@ -1,0 +1,163 @@
+Cambios entre las versiones 4.3.0 Alpha y 4.3.0 Alpha2
+======================================================
+
+  Novedades
+  ---------
+  - Añadido soporte a OpenGL en régimen de pruebas (posiblemente se reescriba
+    desde cero).
+
+  Errores corregidos
+  ------------------
+  - Muchísimas correcciones tanto de código como en la documentación.
+
+  Otros
+  -----
+  - Añadido esqueleto de nueva herramienta de configuración "Setup".
+
+
+
+Cambios entre las versiones 4.2.2 y 4.3.0 Alpha
+===============================================
+
+  Novedades
+  ---------
+  - Nuevo sistema de documentación basada en la herramienta "pasdoc".
+  - Añadidas nuevas funciones.
+  - Añadido soporte básico a UNICODE.
+  - Añadido soporte a "sprites RLE".
+
+  Cambios en el API
+  -----------------
+  - Nuevo API más al estilo Pascal, eliminando muchos punteros y utilizando
+    tipos de datos de Pascal.
+
+  Otros
+  -----
+  - Ya no es necesaria la biblioteca dinámia "alpas".
+  - Añadido esqueleto de nueva herramienta para archivo de datos "Grabber".
+
+
+
+Cambios entre las versiones 4.2.1 y 4.2.2
+=========================================
+
+  Novedades
+  ---------
+  - Añadidas unas cuantas funciones para crear, escribir y leer archivos de
+    disco, permitiendo la compresión de datos mediante el algoritmo LZSS.
+
+
+
+Cambios entre las versiones 4.2.1 BETA 4 y 4.2.1
+================================================
+
+  Novedades
+  ---------
+  - Añadido juego de demostración completo.  No es el mismo que el incluído
+    en Allegro.
+
+  Errores corregidos
+  ------------------
+  - Múltiples cambios internos para reducir el número de avisos y aumentar la
+    compatibilidad con Delphi.
+
+  Cambios en el API
+  -----------------
+  - Cambiado error ortográfico en AL_NO_FLI_OPEN por AL_NO_FLIC_OPEN.
+  - Movida el procedimiento "al_generate_optimized_palette" de "alpalete" a
+    "albitmap", ya que existía una referencia circular (?).
+  - Cambiados los tipos de algunos parámetros que eran AL_RGBptr por
+    AL_PALETTEptr.
+
+  Otros
+  -----
+  - Documentación finalizada.
+
+
+
+Cambios entre las versiones 4.2.1 BETA 3 y 4.2.1 BETA 4
+=======================================================
+
+  Novedades
+  ---------
+  - Añadida la función 'al_poll_joystick', olvidada anteriormente.
+
+  Errores corregidos
+  ------------------
+  - Solucionado fallo en 'alconfig.pas' que impedía compilar dicho módulo.
+  - Corregida confusión entre las variables LFLAGS y LDFLAGS en los makefiles.
+  - Corregidos errores varios en 'aljstick.pas'.
+
+  Otros
+  -----
+  - Al inicializar Allegro, pone los textos en modo ASCII.  Antes había que
+    utilizar UTF-8.
+
+
+Cambios entre las versiones 4.2.1 BETA 2 y 4.2.1 BETA 3
+=======================================================
+
+  Errores corregidos
+  ------------------
+  - Solucionado un fallo que impedía utilizar al_set_window_title.
+  - Corregida la confusión entre al_set_clip y al_set_clip_state.
+
+
+
+Cambios entre las versiones 4.2.1 BETA y 4.2.1 BETA 2
+=====================================================
+
+  Novedades
+  ---------
+  - Añadida la posibilidad de seleccionar la profundidad de color en el ejemplo
+    "exblend".
+  - Añadidas, en el makefile, opciones para optimizar.
+
+  Errores corregidos
+  ------------------
+  - Añadidos parches realizados por Seoane para que compile con Delphi.
+
+  Cambios en el API
+  -----------------
+  - Cambiadas algunas declaraciones de procedimientos añadiéndoles CDECL.
+  - Añadida la directiva {$H+} para utilizar ANSISTRING en lugar de PCHAR.
+  - Definición del símbolo MSWINDOWS para FreePascal en Windows.  Esto aumenta
+    la compatibilidad con Delphi.
+
+  Otros
+  -----
+  - Escrita y corregida parte de la documentación (ya queda menos...).
+
+
+
+Cambios entre las versiones 4.2.0 y 4.2.1 BETA
+==============================================
+
+  Novedades
+  ---------
+  - Creada la unidad "alfont" para manejo de fuentes de texto.
+  - Creada la unidad "albmfile" para la lectura y escritura de imágenes en
+    disco.
+  - Creada la unidad "alsprrle" con soporte para sprites RLE.
+  - Creadas las unidades "al256tra" y "altrutra" con soporte para
+    transparencias e iluminación en modos de 8, 15, 16, 24 y 32 bit.
+  - Añadidos los procedimientos al_desktop_color_depth,
+    al_get_desktop_resolution, al_set_window_title, al_draw_trans_sprite,
+    al_draw_lit_sprite.
+  - Añadidas constantes para la identificación de la versión.
+  - Añadidos modos de dibujo y transparencia.
+  - Añadido soporte para mapas RGB que aceleran la reducción de imágenes a
+    8bit.
+  - Añadidos nuevos ejemplos.
+
+  Errores corregidos
+  ------------------
+  - Corregido el error en el ejemplo "extruec".  Fallaba el tipo de dato.
+  - Corregido nombre "al_putixel" -> "al_putpixel".
+
+  Cambios en el API
+  -----------------
+  - Cambiado "AL_SYS_AUTODETECT" por "AL_SYSTEM_AUTODETECT".
+  - Movida la definición de "AL_FONTptr" a la nueva unidad "alfont".
+  - Movido el procedimiento "al_get_executable_name" a la unidad "alfile".
+
