@@ -38,16 +38,8 @@ UNIT alconfig;
 
 {$IFDEF FPC}
 { Free Pascal. }
- {$PACKRECORDS C}
- {$MODE FPC}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
+ {$LONGSTRINGS ON}
 {$ENDIF}
-{$H+}
-
-
-
 
 INTERFACE
 

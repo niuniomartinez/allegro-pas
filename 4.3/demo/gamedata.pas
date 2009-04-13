@@ -6,8 +6,11 @@ UNIT gamedata;
  * Author: Ñuño Martínez <niunio at users.sourceforge.net>
  *)
 
-{$H+}
- 
+{$IFDEF FPC}
+{ Free Pascal. }
+  {$LONGSTRINGS ON}
+{$ENDIF}
+
 INTERFACE
 
 USES
@@ -53,7 +56,7 @@ USES
  *   on success. *)
 FUNCTION LoadData: BOOLEAN;
 VAR
-  buf: ANSISTRING;
+  buf: STRING;
 BEGIN
 { Load the datafile into memory. }
   buf :=  ExtractFilePath (PARAMSTR (0)) + 'demo.dat';

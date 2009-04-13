@@ -87,24 +87,12 @@ UNIT algraph;
 
     The magic drivers you can use are:  @link(AL_GFX_AUTODETECT),
     @link(AL_GFX_AUTODETECT_FULLSCREEN), @link(AL_GFX_AUTODETECT_WINDOWED),
-    @link(AL_GFX_SAFE), @link(AL_GFX_TEXT).
+    @link(AL_GFX_SAFE), @link(AL_GFX_TEXT). *)
 
-
-
-
- *)
-
-{$H+}
 {$IFDEF FPC}
 { Free Pascal. }
  {$MODE FPC}
- {$PACKRECORDS C}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
 {$ENDIF}
-
-
 
 INTERFACE
 

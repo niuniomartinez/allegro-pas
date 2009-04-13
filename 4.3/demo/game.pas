@@ -4,8 +4,6 @@ UNIT game;
  * Author: Ñuño Martínez <niunio@users.sourceforge.net>
  *)
 
-{$H+}
-
 INTERFACE
 
 

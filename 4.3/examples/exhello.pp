@@ -3,7 +3,7 @@ PROGRAM exhello;
  /\  _  \ /\_ \  /\_ \
  \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
   \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
+   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\
     \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
      \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                     /\____/               \ \_\
@@ -15,9 +15,10 @@ PROGRAM exhello;
    by Ñuño Martínez <niunio(at)users.sourceforge.net>
    from an example of Allegro Game Library by Shawn Hargreaves. *)
 
-{$H+}
-
-
+{$IFDEF FPC}
+{ Free Pascal. }
+  {$LONGSTRINGS ON}
+{$ENDIF}
 
 USES
 { It needs some Allegro.pas units. }

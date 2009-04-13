@@ -7,30 +7,15 @@ UNIT alfile;
     files always begin with the 32-bit value @link(AL_F_PACK_MAGIC), and
     autodetect files with the value F_NOPACK_MAGIC. *)
 
-{$H+}
 {$IFDEF FPC}
 { Free Pascal. }
- {$PACKRECORDS C}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
+ {$LONGSTRINGS ON}
 {$ENDIF}
-
-
 
 INTERFACE
 
-{$IFNDEF FPC}
- {$IFDEF MSWINDOWS}
-{ Delphi needs the Windows unit. }
-USES
-  albase, { Needs some basic definitions. }
-  Windows;
- {$ENDIF}
-{$ELSE}
 USES
   albase; { Needs some basic definitions. }
-{$ENDIF}
 
 
 

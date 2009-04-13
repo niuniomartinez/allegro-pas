@@ -4,10 +4,7 @@ UNIT bombs;
  * Author: Ñuño Martínez <niunio@users.sourceforge.net>
  *)
 
-{$H+}
-
 INTERFACE
-
 
 (* InitBombs:
  *   Sets the initial state of the bombs. *)

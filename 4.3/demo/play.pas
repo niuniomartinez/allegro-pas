@@ -5,8 +5,6 @@ UNIT play;
  *	   Translated from a game by Ken Silverman <http://www.advsys.net/ken/>
  *)
 
-{$H+}
-
 INTERFACE
 
 CONST

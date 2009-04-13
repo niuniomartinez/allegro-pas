@@ -3,7 +3,7 @@ PROGRAM exsprite;
  /\  _  \ /\_ \  /\_ \
  \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
   \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
+   \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\
     \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
      \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                     /\____/               \ \_\
@@ -47,7 +47,10 @@ PROGRAM exsprite;
  *	this.
  *)
 
-{$H+}
+{$IFDEF FPC}
+{ Free Pascal. }
+  {$LONGSTRINGS ON}
+{$ENDIF}
 
 USES
   sysutils,
@@ -256,11 +259,11 @@ BEGIN { The program starts here. }
 
   REPEAT
 { The last argument to al_pivot_sprite() is a fixed point type,
-  so I had to use al_itofix() routine (integer to fixed). }
+  so I had to use al_itofix routine (integer to fixed). }
     al_circle (sprite_buffer, x + 41, y + 41, 47, color);
-//    al_pivot_sprite (sprite_buffer, running_data^[frame_number].dat,
-//		     sprite_buffer^.w DIV 2, sprite_buffer^.h DIV 2,
-//		     41, 41, al_itofix (angle));
+    al_pivot_sprite (sprite_buffer, running_data^[frame_number].dat,
+		     sprite_buffer^.w DIV 2, sprite_buffer^.h DIV 2,
+		     41, 41, al_itofix (angle));
     animate();
     angle := angle - 4;
   UNTIL next;
@@ -288,4 +291,3 @@ BEGIN { The program starts here. }
 
 { End of the program. }
 END.
-

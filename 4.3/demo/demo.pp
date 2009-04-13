@@ -4,8 +4,6 @@ PROGRAM demo;
  * Author: Ñuño Martínez <niunio@users.sourceforge.net>
  *)
 
-{$H+}
-
 USES
   albitmap, { Bitmap manipulation. }
   aldigi,   { Digital sound. }

@@ -48,16 +48,9 @@ UNIT aldtfile;
 
 {$IFDEF FPC}
 { Free Pascal. }
- {$MODE FPC}
  {$PACKRECORDS C}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
+ {$LONGSTRINGS ON}
 {$ENDIF}
-{$H+}
-
-
-
 
 INTERFACE
 

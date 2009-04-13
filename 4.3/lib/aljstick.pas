@@ -11,15 +11,10 @@ UNIT aljstick;
 
 {$IFDEF FPC}
 { Free Pascal. }
- {$MODE FPC}
  {$PACKRECORDS C}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
+ {$MODE FPC}
+ {$LONGSTRINGS ON}
 {$ENDIF}
-{$H+}
-
-
 
 INTERFACE
 

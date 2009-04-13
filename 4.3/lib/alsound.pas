@@ -21,18 +21,6 @@ UNIT alsound;
    @link(al_install_sound), since it directly affects how Allegro talks to the
    sound drivers.  *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$MODE FPC}
- {$PACKRECORDS C}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
-{$ENDIF}
-{$H+}
-
-
-
 INTERFACE
 
 USES

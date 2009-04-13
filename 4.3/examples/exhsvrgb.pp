@@ -17,7 +17,10 @@ PROGRAM exhsvrgb;
  *	See readme.txt for license and copyright information.
  *)
 
-{$H+}
+{$IFDEF FPC}
+{ Free Pascal. }
+  {$LONGSTRINGS ON}
+{$ENDIF}
 
 USES
   sysutils,

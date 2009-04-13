@@ -10,16 +10,10 @@ UNIT alcolor;
     mode you will be using, you must call @link(al_set_gfx_mode) before using
     any of the following routines!  *)
 
-{$H+}
 {$IFDEF FPC}
 { Free Pascal. }
  {$PACKRECORDS C}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
 {$ENDIF}
-
-
 
 INTERFACE
 

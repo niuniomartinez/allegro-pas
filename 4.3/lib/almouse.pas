@@ -36,15 +36,8 @@ UNIT almouse;
 
 {$IFDEF FPC}
 { Free Pascal. }
- {$PACKRECORDS C}
  {$MODE FPC}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
 {$ENDIF}
-{$H+}
-
-
 
 INTERFACE
 

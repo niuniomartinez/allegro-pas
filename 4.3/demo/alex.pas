@@ -4,8 +4,6 @@ UNIT alex;
  * Author: Ñuño Martínez <niunio@users.sourceforge.net>
  *)
 
-{$H+}
-
 INTERFACE
 
 

@@ -1,18 +1,11 @@
 UNIT aldigi;
 (*< Digital sample routines. *)
 
-{$H+}
 {$IFDEF FPC}
 { Free Pascal. }
  {$PACKRECORDS C}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
+ {$LONGSTRINGS ON}
 {$ENDIF}
-
-
-
-
 
 INTERFACE
 

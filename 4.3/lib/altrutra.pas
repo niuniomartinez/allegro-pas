@@ -34,18 +34,6 @@ UNIT altrutra;
   bit 5.6.5 pixels, and one for 24-bit 8.8.8 pixels (this can be shared between
   the 24 and 32-bit code since the bit packing is the same). *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$PACKRECORDS C}
- {$LONGSTRINGS ON}
-{$ELSE}
-{ Assumes Borland Delphi/Turbo. }
- {$A-}
- {$H+}
-{$ENDIF}
-
-
-
 INTERFACE
 
 USES

@@ -6,17 +6,6 @@ UNIT aldraw;
     all coordinates for drawing operations are inclusive, and they, as well as
     lengths, are specified in pixel units. *)
 
-{$H+}
-{$IFDEF FPC}
-{ Free Pascal. }
- {$PACKRECORDS C}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
-{$ENDIF}
-
-
-
 INTERFACE
 
 USES

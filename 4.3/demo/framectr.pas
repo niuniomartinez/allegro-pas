@@ -4,8 +4,6 @@ UNIT framectr;
  * Author: Ñuño Martínez <niunio@users.sourceforge.net>
  *)
 
-{$H+}
-
 INTERFACE
 
 VAR

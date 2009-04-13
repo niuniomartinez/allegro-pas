@@ -5,7 +5,10 @@ UNIT error;
  * Author: Ñuño Martínez <>
  *)
 
-{$H+}
+{$IFDEF FPC}
+{ Free Pascal. }
+  {$LONGSTRINGS ON}
+{$ENDIF}
 
 INTERFACE
 

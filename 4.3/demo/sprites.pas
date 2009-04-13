@@ -4,8 +4,6 @@ UNIT sprites;
  * Author: Ñuño Martínez <niunio@users.sourceforge.net>
  *)
 
-{$H+}
-
 INTERFACE
 
 USES

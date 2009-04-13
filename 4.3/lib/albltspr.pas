@@ -76,17 +76,6 @@ UNIT albltspr;
    Anyway, all the routines in this chapter are affected by the clipping
    rectangle of the destination bitmap. *)
 
-{$H+}
-{$IFDEF FPC}
-{ Free Pascal. }
- {$PACKRECORDS C}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
-{$ENDIF}
-
-
-
 INTERFACE
 
 USES

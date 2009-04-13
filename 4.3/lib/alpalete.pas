@@ -12,15 +12,9 @@ UNIT alpalete;
 
 {$IFDEF FPC}
 { Free Pascal. }
- {$MODE FPC}
  {$PACKRECORDS C}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
+ {$MODE FPC}
 {$ENDIF}
-{$H+}
-
-
 
 INTERFACE
 

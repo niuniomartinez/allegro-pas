@@ -6,7 +6,10 @@ PROGRAM mapedit;
  *	   Ñuño Martínez <niunio at users.sourceforge.net>
  *)
 
-{$H+}
+{$IFDEF FPC}
+{ Free Pascal. }
+  {$LONGSTRINGS ON}
+{$ENDIF}
 
 USES
   albase,   { For Allegro type data. }

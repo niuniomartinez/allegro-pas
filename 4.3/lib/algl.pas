@@ -9,17 +9,11 @@ UNIT algl;
   @bold(Note:) Some procedures are defined as variables because AllegroGL it's
   loaded at runtime. *)
 
-{$H+}
 {$IFDEF FPC}
 { Free Pascal. }
- {$PACKRECORDS C}
- {$MODE DELPHI}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
+ {$MODE DELPHI} { This is different than FPC mode for link procedures. }
+ {$LONGSTRINGS ON}
 {$ENDIF}
-
-
 
 INTERFACE
 

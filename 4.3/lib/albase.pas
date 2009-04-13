@@ -2,31 +2,16 @@ UNIT albase;
 (*< Base definitions to interface with Allegro and the Allegro.pas dynamic
  * modules. *)
 
-{$H+}
-{$IFDEF FPC}
-{ Free Pascal. }
- {$PACKRECORDS C}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
+{$IFNDEF FPC}
+{ At the moment only Free Pascal was tested.  Delphi support was broke. }
+ {$ERROR Can't compile with this compiler. Do you want to help? }
 {$ENDIF}
-
-
 
 INTERFACE
 
-{$IFNDEF FPC}
- {$IFDEF MSWINDOWS}
-{ Delphi needs the Windows unit. }
-USES
-  Windows;
- {$ENDIF}
-{$ENDIF}
-
-
-
 CONST
-{ @exclude }
+(* @exclude
+   Defines the name of the shared library in each supported system. *)
  {$IFDEF MSWINDOWS}
    ALLEGRO_SHARED_LIBRARY_NAME = 'alleg43.dll';
  {$ELSE}
@@ -45,8 +30,8 @@ CONST
 
 
 
-{ To be used as size of Zero-Sized arrays. }
-{ @exclude }
+(* @exclude 
+   To be used as size of Zero-Sized arrays.  Only useful for pointers. *)
   AL_UNKNOWN_SIZE = 1024;
 
 
@@ -82,4 +67,3 @@ TYPE
 IMPLEMENTATION
 
 END.
-

@@ -12,16 +12,10 @@ UNIT alfont;
     generate a bitmapped version of a TrueType font with tools like TTF2PCX
     (http://www.talula.demon.co.uk/ttf2pcx/index.html).  *)
 
-{$H+}
 {$IFDEF FPC}
 { Free Pascal. }
- {$PACKRECORDS C}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
+ {$LONGSTRINGS ON}
 {$ENDIF}
-
-
 
 INTERFACE
 

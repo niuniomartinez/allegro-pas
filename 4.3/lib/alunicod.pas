@@ -49,14 +49,8 @@ UNIT alunicod;
 
 {$IFDEF FPC}
 { Free Pascal. }
- {$PACKRECORDS C}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
+ {$LONGSTRINGS ON}
 {$ENDIF}
-{$H+}
-
-
 
 INTERFACE
 

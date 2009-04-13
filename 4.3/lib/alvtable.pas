@@ -4,18 +4,12 @@ UNIT alvtable;
  *      Virtual table to be used by AL_BITMAP.  FOR INTERNAL USE ONLY.
  *)
 
-INTERFACE
-
-{$H+}
 {$IFDEF FPC}
 { Free Pascal. }
  {$PACKRECORDS C}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
 {$ENDIF}
 
-
+INTERFACE
 
 USES
   albase, alfixed;

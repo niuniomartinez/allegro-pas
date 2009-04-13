@@ -56,26 +56,14 @@ UNIT albitmap;
 { Free Pascal. }
  {$PACKRECORDS C}
  {$MODE FPC}
-{$ELSE}
-{ Assumes Codegear Delphi/Turbo. }
- {$A-}
+ {$LONGSTRINGS ON}
 {$ENDIF}
-{$H+}
-
-
-
 
 INTERFACE
 
 USES
-  albase, alpalete, alvtable
-{$IFNDEF FPC}
- {$IFDEF MSWINDOWS}
-{ Delphi needs the Windows unit. }
-  , Windows
- {$ENDIF}
-{$ENDIF}
-  ;
+  albase, alpalete, alvtable;
+
 
 
 TYPE
@@ -477,4 +465,3 @@ END;
 
 
 END.
-
