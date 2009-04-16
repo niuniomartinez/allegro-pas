@@ -26,13 +26,13 @@ PROGRAM exdbuf;
 
 USES
 { It needs some Allegro.pas units. }
+  allegro,
   albitmap, { Bitmap manipulation. }
   albltspr, { Image blitting and sprite drawing. }
   alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
   alkeybrd, { Keyboard input. }
-  alsystem, { System initialization. }
   altext,   { Text drawing. }
   altimer;  { Time control. }
 

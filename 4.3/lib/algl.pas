@@ -360,7 +360,7 @@ VAR
 IMPLEMENTATION
 
 USES
-  dynlibs, alsystem;
+  dynlibs, allegro;
 
 
 

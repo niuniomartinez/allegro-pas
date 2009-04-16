@@ -5,6 +5,7 @@ PROGRAM demo;
  *)
 
 USES
+  allegro,
   albitmap, { Bitmap manipulation. }
   aldigi,   { Digital sound. }
   alflic,   { FLIC animations. }
@@ -13,7 +14,6 @@ USES
   alkeybrd, { Keyboard input. }
   alpalete, { Color palette manipulation. }
   alsound,  { Sound configuration. }
-  alsystem, { System initialization. }
   altimer,  { Time control. }
   config,   { Management of the game configuration. }
   error,    { To show nice error messages. }

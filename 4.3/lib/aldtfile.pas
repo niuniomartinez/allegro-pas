@@ -143,7 +143,7 @@ VAR
 IMPLEMENTATION
 
 USES
-  alsystem;
+  allegro;
 
 
 

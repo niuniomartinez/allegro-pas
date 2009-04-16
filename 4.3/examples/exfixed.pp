@@ -25,8 +25,8 @@ PROGRAM exfixed;
 USES
   sysutils,
 { It needs some Allegro.pas units. }
-  alfixed,  { Fixed point. }
-  alsystem; { System initialization. }
+  allegro,
+  alfixed;  { Fixed point. }
 
 
 

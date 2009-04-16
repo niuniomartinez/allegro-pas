@@ -1,5 +1,5 @@
-UNIT alsystem;
-(*< System level: initialization, cleanup, etc. *)
+UNIT allegro;
+(*<Allegro core. *)
 
 {$IFDEF FPC}
 { Free Pascal. }
@@ -13,6 +13,13 @@ USES
   albase;
 
 
+
+(***************
+ * Core system *
+ ***************
+ * Defines a collection of procedures, identificators and variables that allows
+ * to comunicate with the core system.  That is, error handling, initialization
+ * and configuration of the base system. *)
 
 CONST
 (* Tells to @link(al_install) that must autodetect the system driver. *)
@@ -211,7 +218,12 @@ END;
 
 IMPLEMENTATION
 
+(***************
+ * Core system *
+ ***************)
+
 TYPE
+(* Includes the system driver description. *)
 {$include alsysdrv.inc}
 
 

@@ -28,6 +28,7 @@ PROGRAM exdata;
 USES
   sysutils,
 { It needs some Allegro.pas units. }
+  allegro,
   albltspr, { Image blitting and sprite drawing. }
   alcolor,  { Color manipulation. }
   aldtfile, { Access to grabber data files. }
@@ -35,8 +36,7 @@ USES
   altext,   { Text drawing. }
   algraph,  { Graphic mode configuration. }
   alkeybrd, { Keyboard input. }
-  alpalete, { Color palette manipulation. }
-  alsystem; { System initialization. }
+  alpalete; { Color palette manipulation. }
 
 
 

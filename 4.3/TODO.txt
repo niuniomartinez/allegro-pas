@@ -1,0 +1,25 @@
+  New unit distibution:
+
+  * albase
+    Base definitions to interface with Allegro.
+
+  * aldrv
+    Low-level stuff to interface with Allegro core.  Useful for add-ons and
+    extensions.
+
+  * allegro
+    Core system.  Initialization, finalization, configuration, graphics modes,
+    bitmaps, sprites, drawing primitives, text and fonts, user input (keyboard,
+    mouse and joystick), sound, music, timer, animations and UNICODE support.
+
+  * alfile
+    File access, LZSS compression, data files.
+
+  * alblend
+    High and true color blending and transparency.
+
+  * alvga
+    Special effects for 8bit paletted modes: transparency, lighting, etc.
+
+  * algl
+    OpenGL support.

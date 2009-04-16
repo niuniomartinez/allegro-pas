@@ -16,7 +16,7 @@ INTERFACE
 USES
   albitmap; { Bitmap manipulation. }
 
-  
+
 
 CONST
   BoardHeight = 15;	{ Height of the board. }

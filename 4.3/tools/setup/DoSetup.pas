@@ -29,7 +29,8 @@ IMPLEMENTATION
 
   USES
     SimpleGUI,
-    albltspr, alcolor, algraph, alkeybrd, almouse, alsystem;
+    allegro,
+    albltspr, alcolor, algraph, alkeybrd, almouse;
 
 
 

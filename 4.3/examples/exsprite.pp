@@ -55,6 +55,7 @@ PROGRAM exsprite;
 USES
   sysutils,
 { It needs some Allegro.pas units. }
+  allegro,
   albitmap, { Bitmap manipulation. }
   albltspr, { Image blitting and sprite drawing. }
   alcolor,  { Color manipulation. }
@@ -67,7 +68,6 @@ USES
   alkeybrd, { Keyboard input. }
   alpalete, { Color palette manipulation. }
   alsound,  { Sound configuration. }
-  alsystem, { System initialization. }
   altext,   { Text drawing. }
   altimer;  { Time control. }
 

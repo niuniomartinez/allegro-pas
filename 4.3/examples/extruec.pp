@@ -29,12 +29,12 @@ PROGRAM extruec;
 USES
   sysutils,
 { It needs some Allegro.pas units. }
+  allegro,
   alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
   alkeybrd, { Keyboard input. }
   alpalete, { Color palette manipulation. }
-  alsystem, { System initialization. }
   altext;   { Text drawing. }
 
 

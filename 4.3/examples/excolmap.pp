@@ -32,7 +32,8 @@ PROGRAM excolmap;
 {$ENDIF}
 
 USES
-  al256tra, { 8 bit transparency and lighting. }
+  allegro,
+  alvga,    { 8 bit paletted mode special effects. }
   albitmap, { Bitmap manipulation. }
   albltspr, { Image blitting and sprite drawing. }
   alcolor,  { Color manipulation. }
@@ -40,7 +41,6 @@ USES
   algraph,  { Graphic mode configuration. }
   alkeybrd, { Keyboard input. }
   alpalete, { Color palette manipulation. }
-  alsystem, { System initialization. }
   altext;   { Text drawing. }
 
 

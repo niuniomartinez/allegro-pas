@@ -12,6 +12,7 @@ PROGRAM mapedit;
 {$ENDIF}
 
 USES
+  allegro,
   albase,   { For Allegro type data. }
   albitmap, { For allegro bitmap management. }
   albltspr, { To draw graphics. }
@@ -23,7 +24,6 @@ USES
   almouse,  { Mouse input. }
   alpalete, { Color palette manipulation. }
   alsprrle, { To draw RLE sprites. }
-  alsystem, { System initialization. }
   altext,   { Text drawing. }
   altimer,  { Time control. }
   error,    { To show nice error messages. }

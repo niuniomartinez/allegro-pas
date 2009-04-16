@@ -15,7 +15,7 @@ PROGRAM setup;
 
 USES
   DoSetup,
-  albitmap, algraph, alkeybrd, almouse, alpalete, alsystem, altimer, alunicod,
+  allegro, albitmap, algraph, alkeybrd, almouse, alpalete, altimer, alunicod,
   sysutils;
 
 

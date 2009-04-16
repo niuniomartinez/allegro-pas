@@ -167,7 +167,7 @@ IMPLEMENTATION
 
 USES
   albase,
-  alsystem; { For al_errno. }
+  allegro; { For al_errno. }
 
 
 (* IMPORTANT:

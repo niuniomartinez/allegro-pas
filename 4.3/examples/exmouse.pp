@@ -33,6 +33,7 @@ PROGRAM exmouse;
 USES
   sysutils,
 { It needs some Allegro.pas units. }
+  allegro,
   albitmap, { Bitmap manipulation. }
   alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
@@ -40,7 +41,6 @@ USES
   alkeybrd, { Keyboard input. }
   almouse,  { Mouse input. }
   alpalete, { Color palette manipulation. }
-  alsystem, { System initialization. }
   altext,   { Text drawing. }
   altimer;  { Time control.  Recommendable if using mouse. }
 

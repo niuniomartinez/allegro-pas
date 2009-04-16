@@ -1,5 +1,5 @@
-UNIT al256tra;
-(*<256-color transparency.
+UNIT alvga;
+(*<256-color special effects.
 
   In paletted video modes, translucency and lighting are implemented with a 64k
   lookup table, which contains the result of combining any two colors c1 and

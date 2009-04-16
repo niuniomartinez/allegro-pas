@@ -24,6 +24,7 @@ PROGRAM expal;
 
 USES
 { It needs some Allegro.pas units. }
+  allegro,
   albitmap, { Bitmap manipulation. }
   albltspr, { Image blitting and sprite drawing. }
   alcolor,  { Color manipulation. }
@@ -31,7 +32,6 @@ USES
   algraph,  { Graphic mode configuration. }
   alkeybrd, { Keyboard input. }
   alpalete, { Color palette manipulation. }
-  alsystem, { System initialization. }
   altext;   { Text drawing. }
 
 

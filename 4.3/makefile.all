@@ -51,6 +51,8 @@ veryclean: clean
 	$(DELETE) $(EXMFILES)
 	$(DELETE) $(GLEXMFILES)
 	$(DELETE) $(DEMO)
+	$(DELETE) docs/html/*.*
+	$(DELETE) docs/cache/*.*
 
 
 # Clean temporary files.

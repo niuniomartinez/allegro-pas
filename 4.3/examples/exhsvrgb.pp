@@ -25,13 +25,12 @@ PROGRAM exhsvrgb;
 USES
   sysutils,
 { It needs some Allegro.pas units. }
-  albase,   { Base definitions. }
+  allegro,
   alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
   alkeybrd, { Keyboard input. }
   alpalete, { Color palette manipulation. }
-  alsystem, { System initialization. }
   altext;   { Text drawing. }
 
 
