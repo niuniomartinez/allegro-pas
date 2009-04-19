@@ -39,7 +39,7 @@ UNIT alflic;
 INTERFACE
 
 USES
-  albase, albitmap, alpalete; { Needs some basic definitions. }
+  albase, allegro; { Needs some basic definitions. }
 
 
 

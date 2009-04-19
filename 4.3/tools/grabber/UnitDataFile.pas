@@ -7,7 +7,7 @@ INTERFACE
 
 USES
   sysutils, Classes,
-  aldtfile;
+  alfile;
 
 
 

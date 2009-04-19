@@ -53,6 +53,8 @@ veryclean: clean
 	$(DELETE) $(DEMO)
 	$(DELETE) docs/html/*.*
 	$(DELETE) docs/cache/*.*
+	$(DELETE) $(TOOLDIR)/setup/setup$(BINSUF)
+	$(DELETE) $(TOOLDIR)/grabber/grabber$(BINSUF)
 
 
 # Clean temporary files.
@@ -64,6 +66,11 @@ clean:
 	$(DELETE) $(LIBDIR)*.ppu
 	$(DELETE) $(DEMODIR)*$(OBJSUF)
 	$(DELETE) $(DEMODIR)*.ppu
+	$(DELETE) $(TOOLDIR)setup/*$(OBJSUF)
+	$(DELETE) $(TOOLDIR)setup/*.ppu
+	$(DELETE) $(TOOLDIR)grabber/*$(OBJSUF)
+	$(DELETE) $(TOOLDIR)grabber/*.ppu
+	$(DELETE) $(TOOLDIR)/grabber/*.compiled
 
 # Strip symbols and compress with upx packer (http://upx.sf.net/)
 upx:

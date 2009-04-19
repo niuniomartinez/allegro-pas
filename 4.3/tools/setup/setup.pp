@@ -15,7 +15,7 @@ PROGRAM setup;
 
 USES
   DoSetup,
-  allegro, albitmap, algraph, almouse, alpalete,
+  allegro, algraph, almouse,
   sysutils;
 
 

@@ -50,7 +50,7 @@ VAR
 IMPLEMENTATION
 
 USES
-aldtfile,
+  alfile,
   UnitProgressWindow;
 
 

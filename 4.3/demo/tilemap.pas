@@ -14,7 +14,7 @@ UNIT tilemap;
 INTERFACE
 
 USES
-  albitmap; { Bitmap manipulation. }
+  allegro; { Bitmap manipulation. }
 
 
 
@@ -78,7 +78,6 @@ IMPLEMENTATION
 
 USES
   albltspr, { Draw bitmaps and sprites. }
-  alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
   alsprrle, { Draw RLE sprites. }
   gamedata, { To acces to de game datafile. }

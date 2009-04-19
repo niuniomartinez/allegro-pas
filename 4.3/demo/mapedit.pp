@@ -14,13 +14,10 @@ PROGRAM mapedit;
 USES
   allegro,
   albase,   { For Allegro type data. }
-  albitmap, { For allegro bitmap management. }
   albltspr, { To draw graphics. }
-  alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
   almouse,  { Mouse input. }
-  alpalete, { Color palette manipulation. }
   alsprrle, { To draw RLE sprites. }
   altext,   { Text drawing. }
   error,    { To show nice error messages. }

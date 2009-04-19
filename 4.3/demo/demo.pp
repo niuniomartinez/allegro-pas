@@ -6,11 +6,9 @@ PROGRAM demo;
 
 USES
   allegro,
-  albitmap, { Bitmap manipulation. }
   aldigi,   { Digital sound. }
   alflic,   { FLIC animations. }
   algraph,  { Graphic mode configuration. }
-  alpalete, { Color palette manipulation. }
   alsound,  { Sound configuration. }
   config,   { Management of the game configuration. }
   error,    { To show nice error messages. }

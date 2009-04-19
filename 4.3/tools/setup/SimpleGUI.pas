@@ -16,7 +16,7 @@ UNIT SimpleGUI;
 INTERFACE
 
 USES
-  albitmap;
+  allegro;
 
 
 
@@ -85,7 +85,6 @@ TYPE
 IMPLEMENTATION
 
 USES
-  allegro,
   albltspr, aldraw, algraph, almouse, altext,
   sysutils;
 

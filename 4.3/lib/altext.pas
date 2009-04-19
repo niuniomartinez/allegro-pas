@@ -16,7 +16,7 @@ UNIT altext;
 INTERFACE
 
 USES
-  albase, albitmap, alfont; { Needs some basic definitions. }
+  albase, allegro, alfont; { Needs some basic definitions. }
 
 
 

@@ -56,13 +56,10 @@ USES
   sysutils,
 { It needs some Allegro.pas units. }
   allegro, alfile, alfixed,
-  albitmap, { Bitmap manipulation. }
   albltspr, { Image blitting and sprite drawing. }
-  alcolor,  { Color manipulation. }
   aldigi,   { Digital sound. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
-  alpalete, { Color palette manipulation. }
   alsound,  { Sound configuration. }
   altext;   { Text drawing. }
 

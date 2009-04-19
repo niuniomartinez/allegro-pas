@@ -34,12 +34,9 @@ PROGRAM excolmap;
 USES
   allegro,
   alvga,    { 8 bit paletted mode special effects. }
-  albitmap, { Bitmap manipulation. }
   albltspr, { Image blitting and sprite drawing. }
-  alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
-  alpalete, { Color palette manipulation. }
   altext;   { Text drawing. }
 
 

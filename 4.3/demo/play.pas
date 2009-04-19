@@ -24,14 +24,11 @@ IMPLEMENTATION
 
 USES
   allegro,
-  albitmap, { Bitmap manipulation. }
   albltspr, { Blitting and sprites. }
-  alcolor,  { Color manipulation. }
   aldigi,   { Digital sound. }
   aldraw,   { Drawing primitives. }
   alfont,   { Text font management. }
   algraph,  { Graphic mode configuration. }
-  alpalete, { Color palette manipulation. }
   altext,   { Draw text. }
   alex,     { Alex the Allegator. }
   config,   { Management of the game configuration. }

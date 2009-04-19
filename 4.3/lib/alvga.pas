@@ -22,7 +22,7 @@ UNIT alvga;
 INTERFACE
 
 USES
-  albase, alpalete;
+  albase, allegro;
 
 
 

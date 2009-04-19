@@ -31,10 +31,8 @@ USES
   allegro,
   alfile,
   albltspr, { Image blitting and sprite drawing. }
-  alcolor,  { Color manipulation. }
   altext,   { Text drawing. }
-  algraph,  { Graphic mode configuration. }
-  alpalete; { Color palette manipulation. }
+  algraph;  { Graphic mode configuration. }
 
 
 

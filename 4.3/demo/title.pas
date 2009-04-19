@@ -22,13 +22,11 @@ IMPLEMENTATION
 
 USES
   allegro,
-  albitmap, { Bitmap manipulation. }
   albltspr, { Blitting and sprites. }
   aldigi,   { Digital sound. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
   almidi,   { MIDI music. }
-  alpalete, { Color palette manipulation. }
   altext,   { Draw text. }
   config,   { Management of the game configuration. }
   framectr, { The frame speed controller. }

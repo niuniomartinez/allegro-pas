@@ -20,7 +20,7 @@ UNIT alfont;
 INTERFACE
 
 USES
-  albase, albitmap, alpalete; { Needs some basic definitions. }
+  albase, allegro; { Needs some basic definitions. }
 
 
 
@@ -125,9 +125,6 @@ TYPE
 
 
 IMPLEMENTATION
-
-  USES
-    alcolor;
 
 
 

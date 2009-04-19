@@ -36,7 +36,7 @@ UNIT alsprrle;
 INTERFACE
 
 USES
-  albase, albitmap;
+  albase, allegro;
 
 
 

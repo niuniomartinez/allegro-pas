@@ -37,13 +37,10 @@ USES
 { It needs some Allegro.pas units. }
   allegro,
   alvga,    { 8 bit paletted mode special effects. }
-  albitmap, { Bitmap manipulation. }
   albltspr, { Image blitting and sprite drawing. }
-  alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
   almouse,  { Mouse input. }
-  alpalete, { Color palette manipulation. }
   altext,   { Text drawing. }
   altrutra; { True color transparency and lighting. }
 

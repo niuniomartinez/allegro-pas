@@ -9,7 +9,7 @@ UNIT aldraw;
 INTERFACE
 
 USES
-  albase, albitmap; { Needs some basic definitions. }
+  albase, allegro; { Needs some basic definitions. }
 
 
 

@@ -79,7 +79,7 @@ UNIT albltspr;
 INTERFACE
 
 USES
-  albase, albitmap, alfixed; { Needs some basic definitions. }
+  albase, allegro, alfixed; { Needs some basic definitions. }
 
 
 

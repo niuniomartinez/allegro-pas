@@ -42,7 +42,7 @@ UNIT almouse;
 INTERFACE
 
 USES
-  albase, albitmap;
+  albase, allegro;
 
 
 

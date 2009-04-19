@@ -23,10 +23,8 @@ PROGRAM exhello;
 USES
 { It needs some Allegro.pas units. }
   allegro,
-  alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
-  alpalete, { Color palette manipulation. }
   altext;   { Text drawing. }
 
 

@@ -15,7 +15,7 @@ UNIT DoSetup;
 INTERFACE
 
   USES
-    albitmap;
+    allegro;
 
 
 
@@ -29,8 +29,7 @@ IMPLEMENTATION
 
   USES
     SimpleGUI,
-    allegro,
-    albltspr, alcolor, algraph, almouse;
+    albltspr, algraph, almouse;
 
 
 

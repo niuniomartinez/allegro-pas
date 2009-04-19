@@ -97,7 +97,7 @@ UNIT algraph;
 INTERFACE
 
 USES
-  albase, albitmap;
+  albase, allegro;
 
 
 

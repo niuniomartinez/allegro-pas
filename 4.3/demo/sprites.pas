@@ -7,7 +7,7 @@ UNIT sprites;
 INTERFACE
 
 USES
-  albitmap, { Bitmap manipulation. }
+  allegro,
   aldigi;   { Digital sound. }
 
 

@@ -49,6 +49,8 @@
     @item(@bold(@link(timer Timer routines)))
     @item(@bold(@link(keyboard Keyboard routines)))
     @item(@bold(@link(joystick Joystick support)))
+    @item(@bold(@link(color Color)))
+    @item(@bold(@link(bitmap Bitmaps)))
   )
 
 @section(2 init Initialization and finalization)
@@ -177,7 +179,8 @@
   information stored there.  However, the end user still needs to select which
   keyboard mapping to use.  This can be accomplished through the keyboard
   variable of the system section in a standard @code(allegro.cfg) configuration
-  file.  Read section about @link(configuration) for more information about this.
+  file.  Read section about @link(configuration) for more information about
+  this.
 
   @bold(See also) @link(al_install_keyboard)
 
@@ -187,11 +190,90 @@
   interrupts by Allegro, joystick input functions have to be polled because
   there are no hardware interrupts for them on most platforms.  This doesn't
   mean that you have to poll the joysticks on each line of code you want to
-  read their values, but you should make sure to poll them at least once per
+
   frame in your game loop.  Otherwise you face the possibility of reading stale
   incorrect data.
 
   @bold(See also) @link(al_install_joystick)
+
+@section(2 color Color)
+
+  All the Allegro drawing functions use integer parameters to represent colors.
+
+  In 256-color mode the color values are treated as indexes into the current
+  palette, which is a table listing the red, green and blue intensities for
+  each of the 256 possible colors.
+
+  Palette entries are stored in an @link(AL_RGB) structure, which contains red,
+  green and blue intensities in the VGA hardware format, ranging from 0-63.
+  The full palette is an @link(AL_PALETTE), a list of f256 @code(AL_RGB)
+  values.  You can set the palette using the @link(al_set_palette) procedure.
+
+  In a truecolor video mode the red, green, and blue components for each pixel
+  are packed directly into the color value, rather than using a palette lookup
+  table.  In a 15-bit mode there are 5 bits for each color, in 16-bit modes
+  there are 5 bits each of red and blue and six bits of green, and both 24 and
+  32-bit modes use 8 bits for each color (the 32-bit pixels simply have an
+  extra padding byte to align the data nicely).  The layout of these components
+  can vary depending on your hardware, but will generally either be RGB or BGR.
+  Since the layout is not known until you select the video mode you will be
+  using, you must call @link(al_set_gfx_mode) before using any of the color
+  routines!
+
+@section(2 bitmap Bitmaps)
+
+  Once you have selected a graphics mode, you can draw things onto the display
+  via the @link(al_screen) bitmap.  All the Allegro graphics routines draw onto
+  @link(AL_BITMAP) structures, which are areas of memory containing rectangular
+  images, stored as packed byte arrays (in 8-bit modes one byte per pixel, in
+  15- and 16-bit modes two bytes per pixel, in 24-bit modes 3 bytes per pixel
+  and in 32-bit modes 4 bytes per pixel).  You can create and manipulate
+  bitmaps in system RAM, or you can write to the special @code(al_screen)
+  bitmap which represents the video memory in your graphics card.
+
+  Allegro supports several different types of bitmaps:
+  @unorderedList(
+    @item(The @link(al_screen) bitmap, which represents the hardware video
+	memory.  Ultimately you have to draw onto this in order for your image
+	to be visible.  It is destroyed by any subsequent calls to
+	@link(al_set_gfx_mode), so you should never attempt to destroy it
+	yourself.)
+    @item(Memory bitmaps, which are located in system RAM and can be used to
+	store graphics or as temporary drawing spaces for double buffered
+	systems.  These can be obtained by calling @link(al_create_bitmap),
+	@link(al_load_bitmap), or by loading a grabber datafile.)
+    @item(Sub-bitmaps.  These share image memory with a parent bitmap (which
+	can be the screen, a video or system bitmap, a memory bitmap, or
+	another sub-bitmap), so drawing onto them will also change their
+	parent.  They can be of any size and located anywhere within the parent
+	bitmap, and can have their own clipping rectangles, so they are a
+	useful way of dividing a bitmap into several smaller units, eg.
+	splitting a large virtual screen into multiple sections.
+	@bold(Warning:) Make sure not to destroy a bitmap before all of its
+	sub-bitmaps, otherwise bad things will happen when you try to access
+	one of these sub-bitmaps.  Are created by the
+	@link(al_create_sub_bitmap) function.)
+    @item(Video memory bitmaps.  These are created by the
+	@link(al_create_video_bitmap) function, and are usually implemented as
+	sub-bitmaps of the screen object.  They must be destroyed by
+	@link(al_destroy_bitmap) before any subsequent calls to
+	@code(al_set_gfx_mode).)
+    @item(System bitmaps.  These are created by the
+	@link(al_create_system_bitmap) function, and are a sort of halfway
+	house between memory and video bitmaps.  They live in system memory,
+	so you aren't limited by the amount of video ram in your card, but they
+	are stored in a platform-specific format that may enable better
+	hardware acceleration than is possible with a normal memory bitmap (see
+	the @link(AL_GFX_HW_SYS_TO_VRAM_BLIT) and
+	@link(AL_GFX_HW_SYS_TO_VRAM_BLIT_MASKED) flags in
+	@link(al_gfx_capabilities)).  System bitmaps must be accessed in the
+	same way as video bitmaps, using the bank switch functions and
+	@code(bmp_write* ) macros.  Not every platform implements this type of
+	bitmap:  if they aren't available, @code(al_create_system_bitmap) will
+	function identically to @code(al_create_bitmap).  They must be
+	destroyed by @code(al_destroy_bitmap) before any subsequent calls to
+	@code(al_set_gfx_mode).)
+    )
 
 @section(1 contact Contact)
 

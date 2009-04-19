@@ -18,7 +18,7 @@ UNIT algl;
 INTERFACE
 
 USES
-  albitmap,
+  allegro,
   GL;
 
 
@@ -360,7 +360,7 @@ VAR
 IMPLEMENTATION
 
 USES
-  dynlibs, allegro;
+  dynlibs;
 
 
 

@@ -26,12 +26,9 @@ USES
   sysutils,
 { It needs some Allegro.pas units. }
   allegro,
-  albitmap, { Bitmap manipulation. }
-  alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
   almouse,  { Mouse input. }
-  alpalete, { Color palette manipulation. }
   altext;   { Text drawing. }
 
 
