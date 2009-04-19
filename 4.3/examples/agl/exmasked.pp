@@ -9,7 +9,6 @@ USES
   aldtfile, { Access to grabber data files. }
   algl,     { Allegro.pas+OpenGL basic interface. }
   algraph,  { Graphic mode configuration. }
-  alkeybrd, { Keyboard input. }
   almouse,  { Mouse input. }
   altimer;  { Time control.  Recommendable if using mouse. }
 

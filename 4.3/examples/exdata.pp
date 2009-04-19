@@ -35,7 +35,6 @@ USES
   alfile,   { File functions. }
   altext,   { Text drawing. }
   algraph,  { Graphic mode configuration. }
-  alkeybrd, { Keyboard input. }
   alpalete; { Color palette manipulation. }
 
 

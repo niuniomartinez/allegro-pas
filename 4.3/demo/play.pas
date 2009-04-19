@@ -23,6 +23,7 @@ PROCEDURE PlayGame;
 IMPLEMENTATION
 
 USES
+  allegro,
   albitmap, { Bitmap manipulation. }
   albltspr, { Blitting and sprites. }
   alcolor,  { Color manipulation. }
@@ -30,7 +31,6 @@ USES
   aldraw,   { Drawing primitives. }
   alfont,   { Text font management. }
   algraph,  { Graphic mode configuration. }
-  alkeybrd, { Keyboard input. }
   alpalete, { Color palette manipulation. }
   altext,   { Draw text. }
   altimer,  { Time control. }

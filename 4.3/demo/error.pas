@@ -21,10 +21,10 @@ PROCEDURE ErrorMessage (Message: STRING);
 IMPLEMENTATION
 
 USES
+  allegro,
   alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
-  alkeybrd, { Keyboard input. }
   altext,   { Text drawing. }
   altimer;  { Time control. }
 

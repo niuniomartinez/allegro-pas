@@ -11,7 +11,6 @@ USES
   alflic,   { FLIC animations. }
   algraph,  { Graphic mode configuration. }
   aljstick, { Joystick input. }
-  alkeybrd, { Keyboard input. }
   alpalete, { Color palette manipulation. }
   alsound,  { Sound configuration. }
   altimer,  { Time control. }

@@ -6,8 +6,6 @@ UNIT alex;
 
 INTERFACE
 
-
-
 CONST
 { The index of the spriteplane used by Alex. }
   ALEX_SPR = 9;
@@ -47,12 +45,12 @@ VAR
 IMPLEMENTATION
 
 USES
-  alkeybrd, { Keyboard input. }
   gamedata, { To acces to de game datafile. }
-  aljstick, { Joystick. }
   play,	    { To know the size of the output screen. }
   sprites,  { Sprites management. }
-  tilemap;  { Tilemap management. }
+  tilemap,  { Tilemap management. }
+  allegro,
+  aljstick; { Joystick. }
 
 
 

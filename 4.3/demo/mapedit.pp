@@ -20,7 +20,6 @@ USES
   aldraw,   { Drawing primitives. }
   alfile,   { For Allegro's file manipulation. }
   algraph,  { Graphic mode configuration. }
-  alkeybrd, { Keyboard input. }
   almouse,  { Mouse input. }
   alpalete, { Color palette manipulation. }
   alsprrle, { To draw RLE sprites. }

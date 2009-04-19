@@ -85,7 +85,8 @@ TYPE
 IMPLEMENTATION
 
 USES
-  albltspr, aldraw, algraph, alkeybrd, almouse, altext,
+  allegro,
+  albltspr, aldraw, algraph, almouse, altext,
   sysutils;
 
 

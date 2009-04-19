@@ -1,5 +1,10 @@
 UNIT allegro;
-(*<Allegro core. *)
+(*<Allegro core.
+
+  This is the main module of the Allegro library.  There are very different
+  stuff on this unit, but procedures, functions, types, variables and constants
+  are grouped to make it easer to find them. Read the @bold(Introduction)
+  section for a brief description of this unit. *)
 
 {$IFDEF FPC}
 { Free Pascal. }
@@ -216,6 +221,524 @@ END;
 
 
 
+
+(*******************
+ * UNICODE support *
+ *******************)
+
+VAR
+(* Fixed size, 8-bit ASCII characters. @seealso(al_set_uformat). *)
+  AL_U_ASCII: LONGINT;
+(* Alternative 8-bit codepage. @seealso(al_set_ucodepage)
+   @seealso(al_set_uformat). *)
+  AL_U_ASCII_CP: LONGINT;
+(* Fixed size, 16-bit Unicode characters. @seealso(al_set_uformat). *)
+  AL_U_UNICODE: LONGINT;
+(* Variable size, UTF-8 format Unicode characters. @seealso(al_set_uformat). *)
+  AL_U_UTF8: LONGINT;
+(* Current encoding. *)
+  AL_U_CURRENT: LONGINT;
+
+
+
+(* Sets the current text encoding format.  This will affect all parts of
+   Allegro, wherever you see a function that returns a string, or takes a
+   string as a parameter.
+
+   Although you can change the text format on the fly, this is not a good
+   idea.  Many strings, for example the names of your hardware drivers and any
+   language translations, are loaded when you call @link(al_init), so if you
+   change the encoding format after this, they will be in the wrong format, and
+   things will not work properly.  Generally you should only call
+   @code(al_set_uformat) once, before @code(al_init), and then leave it on the
+   same setting for the duration of your program.
+
+   @param(type Should be one of these values: @link(AL_U_ASCII),
+     @link(AL_U_ASCII_CP), @link(AL_U_UNICODE), @link(AL_U_UTF8).) *)
+  PROCEDURE al_set_uformat (aType: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_uformat';
+
+
+
+(* Finds out what text encoding format is currently selected.  This function is
+   probably useful only if you are writing an Allegro addon dealing with text
+   strings and you use a different codepath for each possible format.
+
+   @returns(The currently selected text encoding format.)
+   @seealso(al_set_uformat) *)
+  FUNCTION al_get_uformat: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_uformat';
+
+
+
+(* When you select the @link(AL_U_ASCII_CP) encoding mode, a set of tables are
+   used to convert between 8-bit characters and their Unicode equivalents.  You
+   can use this function to specify a custom set of mapping tables, which
+   allows you to support different 8-bit codepages.
+
+   Allegro will use the @code(table) parameter when it needs to convert an
+   ASCII string to an Unicode string.  But when Allegro converts an Unicode
+   string to ASCII, it will use both parameters.  First, it will loop through
+   the @code(table) parameter looking for an index position pointing at the
+   Unicode value it is trying to convert (ie. the @code(table) parameter is
+   also used for reverse matching).  If that fails, the @code(extras) list is
+   used.  If that fails too, Allegro will put the character @code(`^'), giving
+   up the conversion.
+
+   Note that Allegro comes with a default parameters set internally.  The
+   default @code(table) will convert 8-bit characters to @code(`^').  The
+   default @code(extras) list reduces Latin-1 and Extended-A characters to 7
+   bits in a sensible way (eg. an accented vowel will be reduced to the same
+   vowel without the accent).
+   @param(table Points to an array of 256 short integers, which contain the
+     Unicode value for each character in your codepage.)
+   @param(extras If not @nil, points to a list of mapping pairs, which will be
+     used when reducing Unicode data to your codepage.  Each pair consists of a
+     Unicode value, followed by the way it should be represented in your
+     codepage.  The list is terminated by a zero Unicode value.  This allows
+     you to create a many->one mapping, where many different Unicode characters
+     can be represented by a single codepage value @(eg. for reducing accented
+     vowels to 7-bit ASCII@).) *)
+  PROCEDURE al_set_ucodepage (CONST table, extras: PWORD); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_ucodepage';
+
+
+
+(* Returns the number of characters in the string.  Note that this doesn't have
+   to equal the string's size in bytes. *)
+  FUNCTION al_ustrlen (s: STRING): LONGINT;
+
+
+
+(**********************
+ * Configuration file *
+ **********************)
+
+(* Sets the configuration file to be used by all subsequent config functions.
+   (Allegro will not search for this file in other locations as it does with
+   allegro.cfg at the time of initialization.)
+
+   All pointers returned by previous calls to @link(al_get_config_string) and
+   other related functions are invalidated when you call this function!  You
+   can call this function before @link(al_install) to change the configuration
+   file, but after @link(al_set_uformat) if you want to use a text encoding
+   format other than the default. *)
+  PROCEDURE al_set_config_file (filename: STRING);
+
+(* Specifies a block of data to be used by all subsequent config functions,
+   which you have already loaded from disk (eg. as part of some more
+   complicated format of your own, or in a grabber datafile).  This routine
+   makes a copy of the information, so you can safely free the data after
+   calling it. *)
+  PROCEDURE al_set_config_data (data: POINTER; lng: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_data';
+
+(* Specifies a file containing config overrides.  These settings will be used
+   in addition to the parameters in the main config file, and where a variable
+   is present in both files this version will take priority.  This can be used
+   by application programmers to override some of the config settings from
+   their code, while still leaving the main config file free for the end user
+   to customise.  For example, you could specify a particular sample frequency
+   and IBK instrument file, but the user could still use an @code(allegro.cfg)
+   file to specify the port settings and irq numbers.
+
+   The override config file will not only take precedence when reading, but
+   will also be used for storing values.  When you are done with using the
+   override config file, you can call @code(al_override_config_file) with a
+   @nil parameter, so config data will be directly read from the current config
+   file again.
+
+   @bold(Note:) The override file is completely independent from the current
+   configuration.  You can e.g. call @link(al_set_config_file), and the
+   override file will still be active.  Also the @link(al_flush_config_file)
+   function will only affect the current config file (which can be changed with
+   @code(al_set_config_file)), never the overriding one specified with this
+   function.  The modified override config is written back to disk whenever you
+   call @code(al_override_config_file).
+
+    Note that this function and @link(al_override_config_data) are mutually
+    exclusive, i.e. calling one will cancel the effects of the other. *)
+  PROCEDURE al_override_config_file (filename: STRING);
+
+(* Version of @link(al_override_config_file) which uses a block of data that
+   has already been read into memory.  The length of the block has to be
+   specified in bytes.
+
+   Note that this function and @code(al_override_config_file) are mutually
+   exclusive, i.e. calling one will cancel the effects of the other. *)
+  PROCEDURE al_override_config_data (data: POINTER; lng: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'override_config_data';
+
+(* Writes the current config file to disk if the contents have changed since
+   it was loaded or since the latest call to the function. *)
+  PROCEDURE al_flush_config_file; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'flush_config_file';
+
+(* Pushes the current configuration state (filename, variable values, etc).
+   onto an internal stack, allowing you to select some other config source and
+   later restore the current settings by calling @link(al_pop_config_state).
+   This function is mostly intended for internal use by other library
+   functions, for example when you specify a config filename to the
+   @link(al_save_joystick_data) function, it pushes the config state before
+   switching to the file you specified. *)
+  PROCEDURE al_push_config_state; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'push_config_state';
+
+(* Pops a configuration state previously stored by @link(al_push_config_state),
+   replacing the current config source with it. *)
+  PROCEDURE al_pop_config_state; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pop_config_state';
+
+(* Retrieves a string variable from the current config file.  The section name
+   may be set to an empty string to read variables from the root of the file,
+   or used to control which set of parameters (eg. sound or joystick) you are
+   interested in reading. Example:
+@longcode(#
+VAR
+  Lang: STRING;
+  ...
+  Lang := al_get_config_string ('system', 'language', 'EN');
+  #)
+
+   @returns(the string to the constant string found in the configuration file.
+     If the named variable cannot be found, or its entry in the config file is
+     empty, the value of @code(def) is returned.) *)
+  FUNCTION al_get_config_string (section, name, def: STRING): STRING;
+
+(* Reads an integer variable from the current config file.  See the comments
+   about @link(al_get_config_string). *)
+  FUNCTION al_get_config_int (section, name: STRING; def: LONGINT): LONGINT;
+
+(* Reads an integer variable from the current config file, in hexadecimal.
+   See the comments about @link(al_get_config_string). *)
+  FUNCTION al_get_config_hex (section, name: STRING; def: LONGINT): LONGINT;
+
+(* Reads a floating point variable from the current config file.  See the
+   comments about @link(al_get_config_string). *)
+  FUNCTION al_get_config_float (section, name: STRING; def: DOUBLE): DOUBLE;
+
+(* Reads a 4-letter driver ID variable from the current config file.  See the
+   comments about @link(al_get_config_string). *)
+  FUNCTION al_get_config_id (section, name: STRING; def: LONGINT): LONGINT;
+
+(* AFAIK this doesn't work.
+  FUNCTION al_get_config_argv (section, name: STRING; argc: PLONGINT): PSTRING; *)
+
+(* Writes a string variable to the current config file, replacing any existing
+   value it may have, or removes the variable if @code(val) is empty.  The
+   section name may be set to a empty string to write the variable to the root
+   of the file, or used to control which section the variable is inserted into.
+   The altered file will be cached in memory, and not actually written to disk
+   until you call @link(al_exit).  Note that you can only write to files in
+   this way, so the function will have no effect if the current config source
+   was specified with @link(al_set_config_data) rather than
+   @link(al_set_config_file).
+
+   As a special case, variable or section names that begin with a '#' character
+   are treated specially and will not be read from or written to the disk.
+   Addon packages can use this to store version info or other status
+   information into the config module, from where it can be read with the
+   @link(al_get_config_string) function. *)
+  PROCEDURE al_set_config_string (section, name, val: STRING);
+
+(* Writes an integer variable to the current config file.  See the comments
+   about @link(al_set_config_string). *)
+  PROCEDURE al_set_config_int (section, name: STRING; val: LONGINT);
+
+(* Writes an integer variable to the current config file, in hexadecimal
+   format.  See the comments about @link(al_set_config_string). *)
+  PROCEDURE al_set_config_hex (section, name: STRING; val: LONGINT);
+
+(* Writes a floating point variable to the current config file.  See the
+   comments about @link(al_set_config_string). *)
+  PROCEDURE al_set_config_float (section, name:STRING; val: DOUBLE);
+
+(* Writes a 4-letter driver ID variable to the current config file.  See the
+   comments about @link(al_set_config_string). *)
+  PROCEDURE al_set_config_id (section, name: STRING; val: LONGINT);
+
+
+
+(******************
+ * Keyboard input *
+ ******************)
+
+(* Installs the Allegro keyboard interrupt handler.  You must call this before
+   using any of the keyboard input routines.  Once you have set up the Allegro
+   handler, you can no longer use operating system calls or the run-time
+   library functions to access the keyboard.
+
+   Note that on some platforms the keyboard won't work unless you have set a
+   graphics mode, even if this function returns a success value before calling
+   @link(al_set_gfx_mode).  This can happen in environments with graphic
+   windowed modes, since Allegro usually reads the keyboard through the
+   graphical window (which appears after the @code(al_set_gfx_mode) call).
+
+   @returns(@true on success, or @false on failure @(but you may decide not to
+     check the return value as this function is very unlikely to fail@).)  *)
+  FUNCTION al_install_keyboard: BOOLEAN;
+
+(* Removes the keyboard handler, returning control to the operating system.
+   You don't normally need to bother calling this, because @link(al_exit) will
+   do it for you.  However, you might want to call this during runtime if you
+   want to change the keyboard mapping on those platforms were keyboard
+   mappings are needed.  You would first modify the configuration variable
+   holding the keyboard mapping and then reinstall the keyboard handler. *)
+  PROCEDURE al_remove_keyboard;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_keyboard';
+
+(* Wherever possible, Allegro will read the keyboard input asynchronously (ie.
+   from inside an interrupt handler), but on some platforms that may not be
+   possible, in which case you must call this routine at regular intervals to
+   update the keyboard state variables.
+
+   To help you test your keyboard polling code even if you are programming on
+   a platform that doesn't require it, after the first time that you call this
+   function Allegro will switch into polling mode, so from that point onwards
+   you will have to call this routine in order to get any keyboard input at
+   all, regardless of whether the current driver actually needs to be polled or
+   not.
+
+   The @link(al_keypressed), @link(al_readkey), and @link(al_ureadkey)
+   functions call @code(al_poll_keyboard) automatically, so you only need to
+   use this function when accessing the @link(al_key) array and
+   @link(al_key_shifts) variable.
+
+   @returns(zero on success or a negative on failure @(ie. no keyboard driver
+     installed@).) *)
+  FUNCTION al_poll_keyboard: LONGINT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'poll_keyboard';
+
+(* Returns @true if the current keyboard driver is operating in polling mode. *)
+  FUNCTION al_keyboard_needs_poll: BOOLEAN;
+
+(* Returns @true if there are keypresses waiting in the input buffer.  You can
+   use this to see if the next call to @link(al_readkey) is going to block or
+   to simply wait for the user to press a key while you still update the screen
+   possibly drawing some animation.  Example:
+   @longcode(#
+  WHILE NOT al_keypressed DO
+    AnimateLogo (al_screen);
+   #) *)
+  FUNCTION al_keypressed: BOOLEAN;
+
+(* Returns the next character from the keyboard buffer, in ASCII format.  If
+   the buffer is empty, it waits until a key is pressed.  You can see if there
+   are queued keypresses with @link(al_keypressed).
+
+   The low byte of the return value contains the ASCII code of the key, and the
+   high byte the scancode.  The scancode remains the same whatever the state of
+   the shift, ctrl and alt keys, while the ASCII code is affected by shift and
+   ctrl in the normal way (shift changes case, ctrl+letter gives the position
+   of that letter in the alphabet, eg. ctrl+A = 1, ctrl+B = 2, etc).  Pressing
+   alt+key returns only the scancode, with a zero ASCII code in the low byte.
+   For example:
+   @longcode(#
+VAR
+  val: INTEGER;
+  ...
+  val := al_readkey;
+
+  IF (val AND $ff) = ORD ('d') THEN
+    al_message ('You pressed "d"');
+
+  IF (val RSH 8) = AL_KEY_SPACE THEN
+    al_message ('You pressed Space');
+
+  IF (val AND $ff) = 3 THEN
+    al_message ('You pressed Control+C');
+
+  IF val = (AL_KEY_X LSH 8) THEN
+    al_message ('You pressed Alt+X');
+   #)
+
+   This function cannot return character values greater than 255.  If you need
+   to read Unicode input, use @link(al_ureadkey) instead. *)
+  FUNCTION al_readkey: LONGINT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'readkey';
+
+(* Returns the next character from the keyboard buffer, in Unicode format.  If
+   the buffer is empty, it waits until a key is pressed.  You can see if there
+   are queued keypresses with @link(al_keypressed).  The return value contains
+   the Unicode value of the key, and the argument will be set to the scancode.
+   Unlike @link(al_readkey), this function is able to return character values
+   greater than 255.  Example:
+   @longcode(#
+VAR
+  val, scancode: INTEGER;
+  ...
+  val := al_ureadkey (scancode);
+  IF val = $00F1 THEN
+    al_message ('You pressed n with tilde');
+
+  IF val = $00DF THEN
+    al_message ('You pressed sharp s');
+   #)
+
+   You should be able to find Unicode character maps at
+   http://www.unicode.org/. *)
+  FUNCTION al_ureadkey (VAR scancode: LONGINT): LONGINT;
+
+(* Stuffs a key into the keyboard buffer, just as if the user had pressed it.
+   The parameter is in the same format returned by @link(al_readkey). *)
+  PROCEDURE al_simulate_keypress (keycode: LONGINT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'simulate_keypress';
+
+(* Stuffs a key into the keyboard buffer, just as if the user had pressed it.
+   The parameter is in the same format returned by @link(al_ureadkey). *)
+  PROCEDURE al_simulate_ukeypress (keycode, scancode: LONGINT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'simulate_ukeypress';
+
+(* Empties the keyboard buffer.  Usually you want to use this in your program
+   before reading keys to avoid previously buffered keys to be returned by
+   calls to @link(al_readkey) or @link(al_ureadkey). *)
+  PROCEDURE al_clear_keybuf;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clear_keybuf';
+
+(* Overrides the state of the keyboard LED indicators.  The parameter is a
+   bitmask containing any of the values @code(AL_KB_SCROLOCK_FLAG),
+   @code(AL_KB_NUMLOCK_FLAG), and @code(AL_KB_CAPSLOCK_FLAG), or -1 to restore
+   the default behavior.
+
+   Note that the led behaviour cannot be guaranteed on some platforms, some
+   leds might not react, or none at all.  Therefore you shouldn't rely only on
+   them to communicate information to the user, just in case it doesn't get
+   through. *)
+  PROCEDURE al_set_leds (leds: LONGINT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_leds';
+
+(* Sets the keyboard repeat rate.  Times are given in milliseconds.  Passing
+   zero times will disable the key repeat. *)
+  PROCEDURE al_set_keyboard_rate (key_delay, key_repeat: LONGINT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_keyboard_rate';
+
+(* Converts the given scancode to an ASCII character for that key (mangling
+   Unicode values), returning the unshifted uncapslocked result of pressing the
+   key, or zero if the key isn't a character-generating key or the lookup can't
+   be done.  The lookup cannot be done for keys like the F1-F12 keys or the
+   cursor keys, and some drivers will only return approximate values.
+   Generally, if you want to display the name of a key to the user, you should
+   use the @link(al_scancode_to_name) function. *)
+  FUNCTION al_scancode_to_ascii (scancode: LONGINT): LONGINT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scancode_to_ascii';
+
+(* This function returns a string pointer containing the name of they key with
+   the given scancode.  This is useful if you e.g. let the user choose a key
+   for some action, and want to display something more meaningful than just the
+   scancode. *)
+  FUNCTION al_scancode_to_name (scancode: LONGINT): STRING;
+
+
+
+(* Access to the Allegro's public variables. *)
+TYPE
+{ @exclude }
+  AL_KEY_LISTptr = ^AL_KEY_LIST;
+{ @exclude }
+  AL_KEY_LIST	 = ARRAY [0..126] OF BYTE;
+
+
+
+VAR
+(* Array of flags indicating the state of each key, ordered by scancode.
+   Wherever possible these values will be updated asynchronously, but if
+   @link(al_keyboard_needs_poll) returns @true, you must manually call
+   @link(al_poll_keyboard) to update them with the current input state.  The
+   scancodes are defined as a series of @code(AL_KEY_* ) constants (and are
+   also listed below). For example, you could write:
+   @longcode(#
+IF  al_key[AL_KEY_SPACE] <> 0 THEN
+  WriteLn ('Space is pressed');
+   #)
+
+   Note that the array is supposed to represent which keys are physically held
+   down and which keys are not, so it is semantically read-only.
+
+   These are the keyboard scancodes:
+   @longcode(#
+          KEY_A ... KEY_Z,
+          KEY_0 ... KEY_9,
+          KEY_0_PAD ... KEY_9_PAD,
+          KEY_F1 ... KEY_F12,
+
+          KEY_ESC, KEY_TILDE, KEY_MINUS, KEY_EQUALS,
+          KEY_BACKSPACE, KEY_TAB, KEY_OPENBRACE, KEY_CLOSEBRACE,
+          KEY_ENTER, KEY_COLON, KEY_QUOTE, KEY_BACKSLASH,
+          KEY_BACKSLASH2, KEY_COMMA, KEY_STOP, KEY_SLASH,
+          KEY_SPACE,
+
+          KEY_INSERT, KEY_DEL, KEY_HOME, KEY_END, KEY_PGUP,
+          KEY_PGDN, KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN,
+
+          KEY_SLASH_PAD, KEY_ASTERISK, KEY_MINUS_PAD,
+          KEY_PLUS_PAD, KEY_DEL_PAD, KEY_ENTER_PAD,
+
+          KEY_PRTSCR, KEY_PAUSE,
+
+          KEY_ABNT_C1, KEY_YEN, KEY_KANA, KEY_CONVERT, KEY_NOCONVERT,
+          KEY_AT, KEY_CIRCUMFLEX, KEY_COLON2, KEY_KANJI,
+
+          KEY_LSHIFT, KEY_RSHIFT,
+          KEY_LCONTROL, KEY_RCONTROL,
+          KEY_ALT, KEY_ALTGR,
+          KEY_LWIN, KEY_RWIN, KEY_MENU,
+          KEY_SCRLOCK, KEY_NUMLOCK, KEY_CAPSLOCK
+
+          KEY_EQUALS_PAD, KEY_BACKQUOTE, KEY_SEMICOLON, KEY_COMMAND
+   #)
+
+   Finally, you may notice an @italic(`odd') behaviour of the
+   @code(AL_KEY_PAUSE) key.  This key only generates an interrupt when it is
+   pressed, not when it is released.  For this reason, Allegro pretends the
+   pause key is a @italic(`state') key, which is the only way to make it
+   usable. *)
+  al_key: AL_KEY_LIST; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'key';
+
+(* Bitmask containing the current state of @code(shift/ctrl/alt), the special
+   Windows keys, and the accent escape characters.  Wherever possible this
+   value will be updated asynchronously, but if @link(al_keyboard_needs_poll)
+   returns @true, you must manually call @link(al_poll_keyboard) to update it
+   with the current input state.  This can contain any of the flags:
+   @longcode(#
+          KB_SHIFT_FLAG
+          KB_CTRL_FLAG
+          KB_ALT_FLAG
+          KB_LWIN_FLAG
+          KB_RWIN_FLAG
+          KB_MENU_FLAG
+          KB_COMMAND_FLAG
+          KB_SCROLOCK_FLAG
+          KB_NUMLOCK_FLAG
+          KB_CAPSLOCK_FLAG
+          KB_INALTSEQ_FLAG
+          KB_ACCENT1_FLAG
+          KB_ACCENT2_FLAG
+          KB_ACCENT3_FLAG
+          KB_ACCENT4_FLAG
+   #) *)
+  al_key_shifts: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'key_shifts';
+
+(* The DJGPP keyboard handler provides an 'emergency exit' sequence which you
+   can use to kill off your program.  If you are running under DOS this is the
+   three finger salute, ctrl+alt+del.  Most multitasking OS's will trap this
+   combination before it reaches the Allegro handler, in which case you can use
+   the alternative ctrl+alt+end.  If you want to disable this behaviour in
+   release versions of your program, set this flag to @code(NOT 0). *)
+  al_three_finger_flag: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'three_finger_flag';
+
+(* By default, the capslock, numlock, and scroll-lock keys toggle the keyboard
+   LED indicators when they are pressed.  If you are using these keys for input
+   in your game (eg. capslock to fire) this may not be desirable, so you can
+   set this flag to zero and prevent the LED's being updated. *)
+  al_key_led_flag: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'key_led_flag';
+
+
+
+(* Key scan-code and flag identifiers. *)
+  {$include alkeyid.inc}
+
+
+
 IMPLEMENTATION
 
 (***************
@@ -324,4 +847,216 @@ BEGIN
     system_driver^.set_window_title (PCHAR (title));
 END;
 
+
+
+(*******************
+ * UNICODE support *
+ *******************)
+
+  FUNCTION ustrlen (s: PCHAR): LONGINT;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_ustrlen (s: STRING): LONGINT;
+  BEGIN
+    al_ustrlen := ustrlen (PCHAR (s));
+  END;
+
+
+
+(**********************
+ * Configuration file *
+ **********************)
+
+  PROCEDURE set_config_file (filename: PCHAR); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_file';
+
+  PROCEDURE al_set_config_file (filename: STRING);
+  BEGIN
+    set_config_file (PCHAR (filename));
+  END;
+
+
+
+  PROCEDURE override_config_file (filename: PCHAR); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'override_config_file';
+
+  PROCEDURE al_override_config_file (filename: STRING);
+  BEGIN
+    override_config_file (PCHAR (filename));
+  END;
+
+
+
+  FUNCTION get_config_string (section, name, def: PCHAR): PCHAR; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_string';
+
+  FUNCTION al_get_config_string (section, name, def: STRING): STRING;
+  BEGIN
+    al_get_config_string := get_config_string (PCHAR (section), PCHAR (name), PCHAR (def));
+  END;
+
+
+
+  FUNCTION get_config_int (section, name: PCHAR; def: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_int';
+
+  FUNCTION al_get_config_int (section, name: STRING; def: LONGINT): LONGINT;
+  BEGIN
+    al_get_config_int := get_config_int (PCHAR (section), PCHAR (name), def);
+  END;
+
+
+
+  FUNCTION get_config_hex (section, name: PCHAR; def: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_hex';
+
+  FUNCTION al_get_config_hex (section, name:STRING; def: LONGINT): LONGINT;
+  BEGIN
+    al_get_config_hex := get_config_hex (PCHAR (section), PCHAR (name), def);
+  END;
+
+
+
+  FUNCTION get_config_float (section, name: PCHAR; def: DOUBLE): DOUBLE; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_float';
+
+  FUNCTION al_get_config_float (section, name: STRING; def: DOUBLE): DOUBLE;
+  BEGIN
+    al_get_config_float := get_config_float (PCHAR (section), PCHAR (name), def);
+  END;
+
+
+
+  FUNCTION get_config_id (section, name: PCHAR; def: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_id';
+
+  FUNCTION al_get_config_id (section, name: STRING; def: LONGINT): LONGINT;
+  BEGIN
+    al_get_config_id := get_config_id (PCHAR (section), PCHAR (name), def);
+  END;
+
+
+
+{  FUNCTION get_config_argv (section, name: PCHAR; argc: PLONGINT): PSTRING; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_argv';
+
+  FUNCTION al_get_config_argv (section, name: STRING; argc: PLONGINT): STRINGptr;
+  BEGIN
+    al_get_config_argv := get_config_argv (PCHAR (section), PCHAR (name), argc);
+  END;
+}
+
+
+
+  PROCEDURE set_config_string (section, name, val: PCHAR); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_string';
+
+  PROCEDURE al_set_config_string (section, name, val: STRING);
+  BEGIN
+    set_config_string (PCHAR (section), PCHAR (name), PCHAR (val));
+  END;
+
+
+
+  PROCEDURE set_config_int (section, name: PCHAR; val: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_int';
+
+  PROCEDURE al_set_config_int (section, name: STRING; val: LONGINT);
+  BEGIN
+    set_config_int (PCHAR (section), PCHAR (name), val);
+  END;
+
+
+
+  PROCEDURE set_config_hex (section, name: PCHAR; val: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_hex';
+
+  PROCEDURE al_set_config_hex (section, name: STRING; val: LONGINT);
+  BEGIN
+    set_config_hex (PCHAR (section), PCHAR (name), val);
+  END;
+
+
+
+  PROCEDURE set_config_float (section, name: PCHAR; val: DOUBLE); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_float';
+
+  PROCEDURE al_set_config_float (section, name: STRING; val: DOUBLE);
+  BEGIN
+    set_config_float (PCHAR (section), PCHAR (name), val);
+  END;
+
+
+
+  PROCEDURE set_config_id (section, name: PCHAR; val: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_id';
+
+  PROCEDURE al_set_config_id (section, name: STRING; val: LONGINT);
+  BEGIN
+    set_config_id (PCHAR (section), PCHAR (name), val);
+  END;
+
+
+
+(******************
+ * Keyboard input *
+ ******************)
+
+  FUNCTION install_keyboard: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_install_keyboard: BOOLEAN;
+  BEGIN
+    al_install_keyboard := install_keyboard = 0;
+  END;
+
+
+
+  FUNCTION keyboard_needs_poll: LONGINT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_keyboard_needs_poll: BOOLEAN;
+  BEGIN
+    al_keyboard_needs_poll := keyboard_needs_poll <> 0;
+  END;
+
+
+
+  FUNCTION keypressed: LONGINT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_keypressed: BOOLEAN;
+  BEGIN
+    al_keypressed := keypressed <> 0;
+  END;
+
+
+
+  FUNCTION ureadkey (scancode: PLONGINT): LONGINT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_ureadkey (VAR scancode: LONGINT): LONGINT;
+  BEGIN
+    al_ureadkey := ureadkey (@scancode);
+  END;
+
+
+
+  FUNCTION scancode_to_name (scancode: LONGINT): PCHAR;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scancode_to_name';
+
+  FUNCTION al_scancode_to_name (scancode: LONGINT): STRING;
+  BEGIN
+    al_scancode_to_name := scancode_to_name (scancode);
+  END;
+
+
+
+INITIALIZATION
+{ Create identifiers. }
+  AL_U_ASCII	:= AL_ID('ASC8');
+  AL_U_ASCII_CP	:= AL_ID('ASCP');
+  AL_U_UNICODE	:= AL_ID('UNIC');
+  AL_U_UTF8	:= AL_ID('UTF8');
+  AL_U_CURRENT	:= AL_ID('cur.');
 END.

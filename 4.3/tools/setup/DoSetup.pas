@@ -30,7 +30,7 @@ IMPLEMENTATION
   USES
     SimpleGUI,
     allegro,
-    albltspr, alcolor, algraph, alkeybrd, almouse;
+    albltspr, alcolor, algraph, almouse;
 
 
 

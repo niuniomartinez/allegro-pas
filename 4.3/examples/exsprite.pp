@@ -65,7 +65,6 @@ USES
   alfile,   { File functions. }
   alfixed,  { Fixed point. }
   algraph,  { Graphic mode configuration. }
-  alkeybrd, { Keyboard input. }
   alpalete, { Color palette manipulation. }
   alsound,  { Sound configuration. }
   altext,   { Text drawing. }

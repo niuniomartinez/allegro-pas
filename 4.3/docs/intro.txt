@@ -6,9 +6,12 @@
   Allegro.pas is a wrapper to allow Pascal compilers (such as Free Pascal or
   Delphi) to use the Allegro library.
 
-  This version is a SVN version.  It has a lot of things that just don't work.
-  Please see @link(objectives section "Objectives") for a brief description of
-  the goals.
+  This version is a SVN version.  It has a lot of things that just don't work
+  or that will change in the near future.  Please see
+  @link(objectives section "Objectives") for a brief description of the goals.
+
+  Read @link(use section "How to use Allegro.pas") for a description of the
+  main module of the library.
 
   If you want to collaborate please join the main Allegro.pas mailing list
   (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).
@@ -29,6 +32,136 @@
     @item(@bold(Add support for OpenGL hardware accelerated graphics) via
       AllegroGL add-on.)
   )
+
+@section(1 use How to use Allegro.pas)
+
+  The best way to start with Allegro.pas is to study the sources at examples
+  and look for detailed description of procedures and functions at the
+  documentation.  That examples are fully commented and should be easy to
+  understand.
+
+  Anyway, here you have a description of the main modules of the library:
+
+  @unorderedList(
+    @item(@bold(@link(init Initialization and finalization)))
+    @item(@bold(@link(unicode UNICODE routines)))
+    @item(@bold(@link(configuration Configuration routines)))
+    @item(@bold(@link(keyboard Keyboard routines)))
+  )
+
+@section(2 init Initialization and finalization)
+
+  You @bold(must) call either @link(al_install) or @link(al_init) before doing
+  anything other than using the @link(unicode UNICODE routines).
+
+  On the other hand, you @bold(must) call @link(al_exit) before to finish the
+  program.
+
+
+@section(2 unicode UNICODE routines)
+
+  Allegro can manipulate and display text using any character values from 0
+  right up to 2^32-1 (although the current implementation of the grabber can
+  only create fonts using characters up to 2^16-1).  You can choose between a
+  number of different text encoding formats, which controls how strings are
+  stored and how Allegro interprets strings that you pass to it, using the
+  @link(al_set_uformat) procedure.  This setting affects all aspects of the
+  system:  whenever you see a function that returns a @code(STRING) or
+  @code(PCHAR) type, or that takes the same as an argument, that text will be
+  in whatever format you have told Allegro to use.
+
+  By default, Allegro uses UTF-8 encoded text (@code(AL_U_UTF8)).  This is a
+  variable-width format, where characters can occupy anywhere from one to four
+  bytes.  The nice thing about it is that characters ranging from 0-127 are
+  encoded directly as themselves, so UTF-8 is upwardly compatible with 7-bit
+  ASCII (@code('Hello, World!') means the same thing regardless of whether you
+  interpret it as ASCII or UTF-8 data).  Any character values above 128, such
+  as accented vowels, the UK currency symbol, and Arabic or Chinese characters,
+  will be encoded as a sequence of two or more bytes, each in the range
+  128-255.  This means you will never get what looks like a 7-bit ASCII
+  character as part of the encoding of a different character value, which makes
+  it very easy to manipulate UTF-8 strings.
+
+  There are a few editing programs that understand UTF-8 format text files.
+  Alternatively, you can write your strings in plain ASCII or 16-bit Unicode
+  formats, and then use the Allegro textconv program to convert them into
+  UTF-8.
+
+  If you prefer to use some other text format, you can set Allegro to work with
+  normal 8-bit ASCII (@code(AL_U_ASCII)), or 16-bit Unicode (@code(U_UNICODE))
+  instead, or you can provide some handler functions to make it support
+  whatever other text encoding you like (for example it would be easy to add
+  support for 32 bit UCS-4 characters, or the Chinese GB-code format).
+
+  There is some limited support for alternative 8-bit codepages, via the
+  @code(AL_U_ASCII_CP) mode.  This is very slow, so you shouldn't use it for
+  serious work, but it can be handy as an easy way to convert text between
+  different codepages.  By default the @code(AL_U_ASCII_CP) mode is set up to
+  reduce text to a clean 7-bit ASCII format, trying to replace any accented
+  vowels with their simpler equivalents (this is used by the @link(al_message)
+  function when it needs to print an error report onto a text mode DOS screen).
+  If you want to work with other codepages, you can do this by passing a
+  character mapping table to the @link(al_set_ucodepage) function.
+
+  Note that you can use the Unicode routines before you call @link(al_install)
+  or @link(al_init).  If you want to work in a text mode other than UTF-8, it
+  is best to set it with @link(al_set_uformat) just before you call these.
+
+@section(2 configuration Configuration routines)
+
+  Various parts of Allegro, such as the sound routines and the
+  @link(al_load_joystick_data) function, require some configuration
+  information.  This data is stored in text files as a collection of
+  @code(variable=value) lines, along with comments that begin with a @code(#)
+  character and continue to the end of the line.  The configuration file may
+  optionally be divided into sections, which begin with a @code([sectionname])
+  line.  Each section has a unique namespace, to prevent variable name
+  conflicts, but any variables that aren't in a section are considered to
+  belong to all the sections simultaneously.
+
+  Note that variable and section names cannot contain spaces.
+
+  By default the configuration data is read from a file called
+  @code(allegro.cfg), which can be located either in the same directory as the
+  program executable, or the directory pointed to by the @code(ALLEGRO)
+  environment variable.  Under Unix, it also checks for @code(~/allegro.cfg),
+  @code(~/.allegrorc), @code(/etc/allegro.cfg), and @code(/etc/allegrorc), in
+  that order;  under BeOS only the last two are also checked.  MacOS X also
+  checks in the Contents/Resources directory of the application bundle, if any,
+  before doing the checks above.
+
+  If you don't like this approach, you can specify any filename you like with
+  using procedure @link(al_set_config_file), or use a block of binary
+  configuration data with @link(al_set_config_data) provided by your program
+  (which could for example be loaded from a @link(datafile)).
+
+  You can store whatever custom information you like in the config file, along
+  with the standard variables that are used by Allegro.  Allegro comes with a
+  @code(tools/setup) directory where you can find configuration programs.  The
+  standalone setup program is likely to be of interest to final users.  It
+  allows any user to create an @code(allegro.cfg) file without the need to
+  touch a text editor and enter values by hand.  It also provides a few basic
+  tests like sound playing for sound card testing.  You are welcome to include
+  the setup program with your game, either as is or with modified graphics to
+  fit better your game.
+
+@section(2 keyboard Keyboard routines)
+
+  The Allegro keyboard handler provides both buffered input (@link(al_readkey))
+  and a set of flags storing the current state of each key (@link(al_key)).
+  Note that it is not possible to correctly detect every combination of keys,
+  due to the design of the PC keyboard.  Up to two or three keys at a time will
+  work fine, but if you press more than that the extras are likely to be
+  ignored (exactly which combinations are possible seems to vary from one
+  keyboard to another).
+
+  Allegro comes with a prepackaged @code(keyboard.dat) file at the
+  @code(tools/setup) directory which you can put along with your binary.  If
+  this file is present, Allegro will be able to extract the keyboard mapping
+  information stored there.  However, the end user still needs to select which
+  keyboard mapping to use.  This can be accomplished through the keyboard
+  variable of the system section in a standard @code(allegro.cfg) configuration
+  file.  Read section about @link(configuration) for more information about this.
 
 @section(1 contact Contact)
 

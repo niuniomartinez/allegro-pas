@@ -34,7 +34,7 @@ IMPLEMENTATION
 
 USES
   sysutils,
-  alconfig, { Use of configuration files (INI style). }
+  allegro,
   alfile;  { File manipulation. }
 
 

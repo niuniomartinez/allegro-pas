@@ -30,7 +30,6 @@ USES
   alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
-  alkeybrd, { Keyboard input. }
   almouse,  { Mouse input. }
   alpalete, { Color palette manipulation. }
   altext,   { Text drawing. }

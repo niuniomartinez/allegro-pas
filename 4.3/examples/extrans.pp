@@ -43,7 +43,6 @@ USES
   aldraw,   { Drawing primitives. }
   alfile,   { File functions. }
   algraph,  { Graphic mode configuration. }
-  alkeybrd, { Keyboard input. }
   almouse,  { Mouse input. }
   alpalete, { Color palette manipulation. }
   altext,   { Text drawing. }
