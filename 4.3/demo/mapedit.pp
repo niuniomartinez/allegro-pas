@@ -18,13 +18,11 @@ USES
   albltspr, { To draw graphics. }
   alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
-  alfile,   { For Allegro's file manipulation. }
   algraph,  { Graphic mode configuration. }
   almouse,  { Mouse input. }
   alpalete, { Color palette manipulation. }
   alsprrle, { To draw RLE sprites. }
   altext,   { Text drawing. }
-  altimer,  { Time control. }
   error,    { To show nice error messages. }
   gamedata, { Management of the game data: graphics, sound, etc. }
   sysutils, { For string manipulation. }

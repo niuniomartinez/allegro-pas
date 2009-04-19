@@ -33,7 +33,6 @@ USES
   algraph,  { Graphic mode configuration. }
   alpalete, { Color palette manipulation. }
   altext,   { Draw text. }
-  altimer,  { Time control. }
   alex,     { Alex the Allegator. }
   config,   { Management of the game configuration. }
   bombs,    { Bombs. }

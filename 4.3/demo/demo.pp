@@ -10,10 +10,8 @@ USES
   aldigi,   { Digital sound. }
   alflic,   { FLIC animations. }
   algraph,  { Graphic mode configuration. }
-  aljstick, { Joystick input. }
   alpalete, { Color palette manipulation. }
   alsound,  { Sound configuration. }
-  altimer,  { Time control. }
   config,   { Management of the game configuration. }
   error,    { To show nice error messages. }
   framectr, { The frame speed controller. }

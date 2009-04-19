@@ -25,8 +25,7 @@ USES
   alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
-  altext,   { Text drawing. }
-  altimer;  { Time control. }
+  altext;   { Text drawing. }
 
 
 

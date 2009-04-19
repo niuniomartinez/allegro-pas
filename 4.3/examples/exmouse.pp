@@ -40,8 +40,7 @@ USES
   algraph,  { Graphic mode configuration. }
   almouse,  { Mouse input. }
   alpalete, { Color palette manipulation. }
-  altext,   { Text drawing. }
-  altimer;  { Time control.  Recommendable if using mouse. }
+  altext;   { Text drawing. }
 
 
 

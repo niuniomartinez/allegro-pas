@@ -135,6 +135,8 @@ BEGIN { The program starts here. }
     EXIT;
   END;
   al_install_keyboard;
+{ This activates the vsync signal if no one is provided by the system. }
+  al_install_timer;
 
   temp := al_create_bitmap (320, 200);
   background := al_create_bitmap (320, 200);

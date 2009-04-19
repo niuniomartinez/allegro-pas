@@ -3,11 +3,12 @@ UNIT allegro;
 
   This is the main module of the Allegro library.  There are very different
   stuff on this unit, but procedures, functions, types, variables and constants
-  are grouped to make it easer to find them. Read the @bold(Introduction)
+  are grouped to make it easer to find them.  Read the @bold(Introduction)
   section for a brief description of this unit. *)
 
 {$IFDEF FPC}
 { Free Pascal. }
+ {$PACKRECORDS C}
  {$MODE FPC}
  {$LONGSTRINGS ON}
 {$ENDIF}
@@ -460,6 +461,133 @@ VAR
 
 
 (******************
+ * Timer routines *
+ ******************)
+
+(* Give the number of seconds between each tick to @link(al_install_int_ex). *)
+  FUNCTION AL_SECS_TO_TIMER (x: LONGINT): LONGINT;
+(* Give the number of milliseconds between each tick to
+   @link(al_install_int_ex). *)
+  FUNCTION AL_MSEC_TO_TIMER (x: LONGINT): LONGINT;
+(* Give the number of ticks each second to @link(al_install_int_ex). *)
+  FUNCTION AL_BPS_TO_TIMER  (x: LONGINT): LONGINT;
+(* Give the number of ticks each minute to @link(al_install_int_ex). *)
+  FUNCTION AL_BPM_TO_TIMER  (x: LONGINT): LONGINT;
+
+
+
+(* Installs the Allegro timer interrupt handler.  You must do this before
+   installing any user timer routines, and also before displaying a mouse
+   pointer and playing FLI animations or MIDI music.
+
+   @returns(@true on success, or @false on failure @(but you may decide not to
+     check the return value as this function is very unlikely to fail@).)  *)
+  FUNCTION al_install_timer: BOOLEAN;
+
+(* Removes the Allegro timer handler.  You don't normally need to bother
+   calling this, because @link(al_exit) will do it for you. *)
+  PROCEDURE al_remove_timer; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_timer';
+
+(* Adds a function to the list of user timer handlers or, if it is already
+   installed, retroactively adjusts its speed (i.e makes as though the speed
+   change occurred precisely at the last tick).  The speed is given in hardware
+   clock ticks, of which there are 1193181 a second. You can convert from other
+   time formats to hardware clock ticks with the functions
+   @link(AL_SECS_TO_TIMER), @link(AL_MSEC_TO_TIMER), @link(AL_BPS_TO_TIMER) and
+   @link(AL_BPM_TO_TIMER).
+
+   There can only be sixteen timers in use at a time, and some other parts of
+   Allegro (the mouse pointer display routines, @link(al_rest), the FLI
+   player, and the MIDI player) need to install handlers of their own, so you
+   should avoid using too many at the same time.  If you call this routine
+   without having first installed the timer module, @link(al_install_timer)
+   will be called automatically.
+
+   Your function will be called by the Allegro interrupt handler and not
+   directly by the processor, so it can be a normal @code(CDECL) function.
+   You should be aware, however, that it will be called in an interrupt
+   context, which imposes a lot of restrictions on what you can do in it.  It
+   should not use large amounts of stack, it must not make any calls to the
+   operating system, use the run-time library functions, or contain any
+   floating point code, and it must execute very quickly.  Don't try to do lots
+   of complicated code in a timer handler:  as a general rule you should just
+   set some flags and respond to these later in your main control loop.
+
+   @returns(@true on success, or @false if there is no room to add a new user
+     timer.) *)
+  FUNCTION al_install_int_ex (proc: AL_SIMPLE_PROC; speed: LONGINT): BOOLEAN;
+
+(* Installs a user timer handler, with the speed given as the number of
+   milliseconds between ticks.  This is the same thing as
+   @code(al_install_int_ex @(@@proc, AL_MSEC_TO_TIMER @(speed@)@)).  If you call
+   this routine without having first installed the timer module,
+   @link(al_install_timer) will be called automatically.  Calling again this
+   routine with the same timer handler as parameter allows you to adjust its speed.
+
+   @returns(@true on success, or @false if there is no room to add a new user
+     timer.) *)
+  FUNCTION al_install_int (proc: AL_SIMPLE_PROC; speed: LONGINT): BOOLEAN;
+
+(* Removes a function from the list of user interrupt routines.
+   @link(al_exit) does this automatically. *)
+  PROCEDURE al_remove_int (proc: AL_SIMPLE_PROC); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_int';
+
+(* Like @link(al_install_int_ex), but the callback routine will be passed a
+   copy of the specified void pointer parameter.  To disable the handler, use
+   @link(al_remove_param_int) instead of @link(al_remove_int). *)
+  FUNCTION al_install_param_int_ex (proc: AL_PARAM_PROC; speed: LONGINT): BOOLEAN;
+
+(* Like @link(al_install_int), but the callback routine will be passed a copy
+   of the specified void pointer parameter.  To disable the handler, use
+   @link(al_remove_param_int) instead of @link(al_remove_int). *)
+  FUNCTION al_install_param_int (proc: AL_PARAM_PROC; speed: LONGINT): BOOLEAN;
+
+(* Like @link(al_remove_int), but for use with timer callbacks that have
+   parameter values.  If there is more than one copy of the same callback
+   active at a time, it identifies which one to remove by checking the
+   parameter value (so you can't have more than one copy of a handler using an
+   identical parameter).  *)
+  PROCEDURE al_remove_param_int (proc: AL_PARAM_PROC); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_param_int';
+
+(* This function waits for the specified number of milliseconds.
+
+    Passing 0 as parameter will not wait, but just yield.  This can be useful
+    in order to @italic("play nice") with other processes.  Other values will
+    cause CPU time to be dropped on most platforms.  This will look better to
+    users, and also does things like saving battery power and making fans less
+    noisy.
+
+    Note that calling this inside your active game loop is a bad idea, as you
+    never know when the OS will give you the CPU back, so you could end up
+    missing the vertical retrace and skipping frames.  On the other hand, on
+    multitasking operating systems it is good form to give up the CPU for a
+    while if you will not be using it. *)
+  PROCEDURE al_rest (time: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rest';
+
+(* Like @link(al_rest), but for non-zero values continually calls the
+   specified function while it is waiting for the required time to elapse.  If
+   the provided `callback' parameter is @nil, this function does exactly the
+   same thing as calling @code(al_rest). *)
+  PROCEDURE al_rest_callback (time: LONGINT; callback: AL_PARAM_PROC); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rest_callback';
+
+
+
+VAR
+(* If the retrace simulator is installed, this count is incremented on each
+   vertical retrace; otherwise, if the refresh rate is known, the count is
+   incremented at the same rate (ignoring retraces); otherwise, it is
+   incremented 70 times a second.  This provides a way of controlling the speed
+   of your program without installing user timer functions. *)
+  al_retrace_count: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'retrace_count';
+
+
+
+(******************
  * Keyboard input *
  ******************)
 
@@ -633,8 +761,6 @@ VAR
 (* Access to the Allegro's public variables. *)
 TYPE
 { @exclude }
-  AL_KEY_LISTptr = ^AL_KEY_LIST;
-{ @exclude }
   AL_KEY_LIST	 = ARRAY [0..126] OF BYTE;
 
 
@@ -739,6 +865,257 @@ IF  al_key[AL_KEY_SPACE] <> 0 THEN
 
 
 
+(********************
+ * Joystick support *
+ ********************)
+
+CONST
+(* To be used at @link(al_install_joystick). *)
+  AL_JOY_TYPE_AUTODETECT = -(1);
+  AL_JOY_TYPE_NONE = 0;
+
+(* Maximun number of elements. *)
+  AL_MAX_JOYSTICKS = 8;
+  AL_MAX_JOYSTICK_AXIS = 3;
+  AL_MAX_JOYSTICK_STICKS = 5;
+  AL_MAX_JOYSTICK_BUTTONS = 32;
+
+(* joystick status flags. @seealso(AL_JOYSTICK_INFO) *)
+  AL_JOYFLAG_DIGITAL = 1;
+  AL_JOYFLAG_ANALOGUE = 2;
+  AL_JOYFLAG_CALIB_DIGITAL = 4;
+  AL_JOYFLAG_CALIB_ANALOGUE = 8;
+  AL_JOYFLAG_CALIBRATE = 16;
+  AL_JOYFLAG_SIGNED = 32;
+  AL_JOYFLAG_UNSIGNED = 64;
+
+  AL_JOYFLAG_ANALOG = AL_JOYFLAG_ANALOGUE;
+  AL_JOYFLAG_CALIB_ANALOG = AL_JOYFLAG_CALIB_ANALOGUE;
+
+
+
+TYPE
+(* This provides both analogue input in the @code(pos) field (ranging from
+   -128 to 128 or from 0 to 255, depending on the type of the control), and
+   digital values in the @code(d1) and @code(d2) fields.  For example, when
+   describing the X-axis position, the @code(pos) field will hold the
+   horizontal position of the joystick, @code(d1) will be set if it is moved
+   left, and @code(d2) will be set if it is moved right.  Allegro will fill in
+   all these values regardless of whether it is using a digital or analogue
+   joystick, emulating the pos field for digital inputs by snapping it to the
+   min, middle, and maximum positions, and emulating the @code(d1) and
+   @code(d2) values for an analogue stick by comparing the current position
+   with the centre point. *)
+  AL_JOYSTICK_AXIS_INFO = RECORD
+    pos : LONGINT; {< analogue axis position. }
+  { digital axis position. }
+    d1 : LONGINT;
+    d2 : LONGINT;
+    name : PCHAR; {< description of this axis. }
+  END;
+
+(* information about one or more axis (a slider or directional control) *)
+  AL_JOYSTICK_STICK_INFO = RECORD
+    flags : LONGINT;{< status flags for this input. }
+    num_axis : LONGINT; {< how many axes do we have? (note de misspelling). }
+  { axis state information. @seealso(AL_JOYSTICK_AXIS_INFO) }
+    axis : ARRAY [0..(AL_MAX_JOYSTICK_AXIS)-1] OF AL_JOYSTICK_AXIS_INFO;
+    name : PCHAR; {< description of this input. }
+  END;
+
+(* information about a joystick button.
+
+   You may wish to display the button names as part of an input configuration
+   screen to let the user choose what game function will be performed by each
+   button, but in simpler situations you can safely assume that the first two
+   elements in the button array will always be the main trigger controls. *)
+  AL_JOYSTICK_BUTTON_INFO = RECORD
+    b : LONGINT; { 0 not pressed, (NOT 0) pressed. }
+    name : PCHAR; { description of this button. }
+  END;
+
+(* Pointer to @link(AL_JOYSTICK_INFO). *)
+  AL_JOYSTICK_INFOptr = ^AL_JOYSTICK_INFO;
+(* information about an entire joystick.
+
+   Each joystick will provide one or more stick inputs, of varying types.
+   These can be digital controls which snap to specific positions (eg. a
+   gamepad controller, the coolie hat on a Flightstick Pro or Wingman Extreme,
+   or a normal joystick which hasn't yet been calibrated), or they can be full
+   analogue inputs with a smooth range of motion.  Sticks may also have
+   different numbers of axes, for example a normal directional control has two,
+   but the Flightstick Pro throttle is only a single axis, and it is possible
+   that the system could be extended in the future to support full 3d
+   controllers.
+
+   The joystick flags field may contain any combination of the bit flags:
+   @definitionList(
+     @itemLabel(AL_JOYFLAG_DIGITAL)
+     @item(This control is currently providing digital input.)
+
+     @itemLabel(AL_JOYFLAG_ANALOGUE)
+     @item(This control is currently providing analogue input.)
+
+     @itemLabel(AL_JOYFLAG_CALIB_DIGITAL)
+     @item(This control will be capable of providing digital input once it has
+       been calibrated, but is not doing this at the moment.)
+
+     @itemLabel(AL_JOYFLAG_CALIB_ANALOGUE)
+     @item(This control will be capable of providing analogue input once it
+       has been calibrated, but is not doing this at the moment.)
+
+     @itemLabel(AL_JOYFLAG_CALIBRATE)
+     @item(Indicates that this control needs to be calibrated. Many devices
+       require multiple calibration steps, so you should call the
+       @link(al_calibrate_joystick) function from a loop until this flag is
+       cleared.)
+
+     @itemLabel(AL_JOYFLAG_SIGNED)
+     @item(Indicates that the analogue axis position is in signed format,
+       ranging from -128 to 128. This is the case for all 2d directional
+       controls.)
+
+     @itemLabel(AL_JOYFLAG_UNSIGNED)
+     @item(Indicates that the analogue axis position is in unsigned format,
+       ranging from 0 to 255. This is the case for all 1d throttle controls.)
+   ) *)
+  AL_JOYSTICK_INFO = RECORD
+    flags : LONGINT; {< status flags for this joystick. }
+    num_sticks : LONGINT; {<  how many stick inputs? }
+    num_buttons : LONGINT; {< how many buttons? }
+  { stick state information. @seealso(AL_JOYSTICK_STICK_INFO) }
+    stick : ARRAY [0..(AL_MAX_JOYSTICK_STICKS)-1] OF AL_JOYSTICK_STICK_INFO;
+  { button state information. @seealso(AL_JOYSTICK_BUTTON_INFO). }
+    button : ARRAY [0..(AL_MAX_JOYSTICK_BUTTONS)-1] OF AL_JOYSTICK_BUTTON_INFO;
+  END;
+
+{ @ignore }
+  AL_JOYSTICK_INFO_LIST = ARRAY [0..AL_UNKNOWN_SIZE] OF AL_JOYSTICK_INFO;
+
+
+
+VAR
+(* Global array of joystick state information, which is updated by the
+   @link(al_poll_joystick) function.  Only the first @link(al_num_joysticks)
+   elements will contain meaningful information.
+
+   @seealso(AL_JOYSTICK_INFO)
+
+   A single joystick may provide several different stick inputs, but you can
+   safely assume that the first element in the stick array will always be the
+   main directional controller.
+
+   Information about each of the stick axis is stored in the
+   @link(AL_JOYSTICK_AXIS_INFO) substructure.
+
+   Note for people who spell funny: in case you don't like having to type
+   @italic (analogue), there are some aliases in this unit that will allow you
+   to write @italic(analog) instead.  *)
+  al_joy: AL_JOYSTICK_INFO_LIST; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'joy';
+
+(* Global variable containing the number of active joystick devices.  The
+   current drivers support a maximum of eight controllers. *)
+  al_num_joysticks: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'num_joysticks';
+
+
+(* Installs Allegro's joystick handler, and calibrates the centre position
+   values.  The type parameter should usually be @code(AL_JOY_TYPE_AUTODETECT),
+   or see the platform specific documentation for a list of the available
+   drivers.  You must call this routine before using any other joystick
+   functions, and you should make sure that all joysticks are in the middle
+   position at the time.  Example:
+   @longcode(#
+al_textout_centre_ex (al_screen, al_font,
+		      'Center the joystick and press a key.',
+		      AL_SCREEN_W DIV 2, SCREEN_H DIV 2, red_color, -1);
+al_readkey;
+IF NOT al_install_joystick (AL_JOY_TYPE_AUTODETECT) THEN
+  abort_on_error ('Error initialising joystick!');
+   #);
+   @returns(@true on success.  As soon as you have installed the joystick
+     module, you will be able to read the button state and digital @(on/off
+     toggle@) direction information, which may be enough for some games.  If
+     you want to get full analogue input, though, you need to use the
+     @link(al_calibrate_joystick) functions to measure the exact range of the
+     inputs.) *)
+  FUNCTION al_install_joystick (atype: LONGINT): BOOLEAN;
+
+(* Removes the joystick handler. You don't normally need to bother calling
+   this, because @link(al_exit) will do it for you. *)
+  PROCEDURE al_remove_joystick; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_joystick';
+
+(* Pass the number of the joystick you want to calibrate as the parameter.
+
+    @returns(a text description for the next type of calibration that will
+      be done on the specified joystick, or empty string if no more calibration
+      is required.) *)
+  FUNCTION al_calibrate_joystick_name (n: LONGINT): STRING;
+
+(* Most joysticks need to be calibrated before they can provide full analogue
+   input.  This function performs the next operation in the calibration series
+   for the specified stick, assuming that the joystick has been positioned in
+   the manner described by a previous call to
+   @link(al_calibrate_joystick_name), returning @true on success.  For example,
+   a simple routine to fully calibrate all the joysticks might look like:
+   @longcode(#
+FUNCTION CalibrateJoysticks: BOOLEAN
+VAR
+  Cnt: INTEGER;
+BEGIN
+  FOR Cnt := 1 TO al_num_joysticks DO
+  BEGIN
+    WHILE (al_joy[Cnt - 1].flags AND AL_JOYFLAG_CALIBRATE) <> 0 DO
+    BEGIN
+      al_textout_ex (..., al_calibrate_joystick_name (Cnt - 1) + ', and press a key', ...);
+      al_readkey;
+      IF NOT al_calibrate_joystick (i - 1) THEN
+      BEGIN
+        al_textout_ex (..., 'oops!', ...);
+	al_readkey;
+	RESULT := FALSE;
+	EXIT;
+      END;
+    END;
+  END;
+  RESULT := TRUE;
+END;
+   #)
+
+   @returns(@true on success, @false if the calibration could not be performed
+     successfully.) *)
+  FUNCTION al_calibrate_joystick (n: LONGINT): BOOLEAN;
+
+(* After all the headache of calibrating the joystick, you may not want to make
+   your poor users repeat the process every time they run your program.  Call
+   this function to save the joystick calibration data into the specified
+   configuration file, from which it can later be read by
+   @link(al_load_joystick_data).  Pass a @nil filename to write the data to the
+   currently selected configuration file.
+
+   @returns(@true on success, @false if the data could not be saved.) *)
+  FUNCTION al_save_joystick_data (filename: STRING): BOOLEAN;
+
+(* Restores calibration data previously stored by @link(al_save_joystick_data)
+   or the setup utility.  This sets up all aspects of the joystick code:  you
+   don't even need to call @link(al_install_joystick) if you are using this
+   function.  Pass an empty filename to read the data from the currently
+   selected configuration file.
+
+   @returns(@true on success:  if it fails the joystick state is undefined and
+     you must reinitialise it from scratch.) *)
+  FUNCTION al_load_joystick_data (filename: STRING): BOOLEAN;
+
+(* The joystick handler is not interrupt driven, so you need to call this
+   function every now and again to update the global position values.
+
+   @returns(zero on success or a negative number on failure @(usually because
+     no joystick driver was installed@).) *)
+  FUNCTION al_poll_joystick: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'poll_joystick';
+
+
+
 IMPLEMENTATION
 
 (***************
@@ -774,78 +1151,78 @@ VAR
 
 
 (* Converts four 8 bit values to a packed 32 bit integer ID. *)
-FUNCTION AL_ID (str: SHORTSTRING): LONGINT;
-BEGIN
-  AL_ID := (ORD (str[1]) SHL 24) OR (ORD (str[2]) SHL 16)
-        OR (ORD (str[3]) SHL  8) OR  ORD (str[4]);
-END;
+  FUNCTION AL_ID (str: SHORTSTRING): LONGINT;
+  BEGIN
+    AL_ID := (ORD (str[1]) SHL 24) OR (ORD (str[2]) SHL 16)
+	     OR (ORD (str[3]) SHL  8) OR  ORD (str[4]);
+  END;
 
 
 
 (* Initialises the Allegro library. *)
-FUNCTION al_install (system_id: LONGINT): BOOLEAN;
-BEGIN
-  al_install := _install_allegro_version_check (system_id, @NumError, NIL,
-	(4 SHL 16) OR (3 SHL 8) OR 10) = 0;
-END;
+  FUNCTION al_install (system_id: LONGINT): BOOLEAN;
+  BEGIN
+    al_install := _install_allegro_version_check (system_id, @NumError, NIL,
+		  (4 SHL 16) OR (3 SHL 8) OR 10) = 0;
+  END;
 
 
 
 (* Initialises the Allegro library. *)
-FUNCTION al_init: BOOLEAN;
-BEGIN
-  al_init := _install_allegro_version_check (AL_SYSTEM_AUTODETECT, @NumError,
-	NIL, (4 SHL 16) OR (3 SHL 8) OR 10) = 0;
-END;
+  FUNCTION al_init: BOOLEAN;
+  BEGIN
+    al_init := _install_allegro_version_check (AL_SYSTEM_AUTODETECT, @NumError,
+	       NIL, (4 SHL 16) OR (3 SHL 8) OR 10) = 0;
+  END;
 
 
 
 (* Outputs a message. *)
-PROCEDURE al_message (CONST msg: STRING);
-BEGIN
-  _allegro_message (PCHAR (msg));
-END;
+  PROCEDURE al_message (CONST msg: STRING);
+  BEGIN
+    _allegro_message (PCHAR (msg));
+  END;
 
 
 
 (* On platforms that have a close button, this routine installs a callback
    function to handle the close event. *)
-FUNCTION al_set_close_button_callback (proc: AL_SIMPLE_PROC): BOOLEAN;
-BEGIN
-  al_set_close_button_callback := (_set_close_button_callback (proc) = 0);
-END;
+  FUNCTION al_set_close_button_callback (proc: AL_SIMPLE_PROC): BOOLEAN;
+  BEGIN
+    al_set_close_button_callback := (_set_close_button_callback (proc) = 0);
+  END;
 
 
 
 
 (* Finds out the currently selected desktop color depth. *)
-FUNCTION al_desktop_color_depth: LONGINT;
-BEGIN
-  IF system_driver^.desktop_color_depth <> NIL THEN
-    al_desktop_color_depth := (system_driver^.desktop_color_depth ())
-  ELSE
-    al_desktop_color_depth := 0;
-END;
+  FUNCTION al_desktop_color_depth: LONGINT;
+  BEGIN
+    IF system_driver^.desktop_color_depth <> NIL THEN
+      al_desktop_color_depth := (system_driver^.desktop_color_depth ())
+    ELSE
+      al_desktop_color_depth := 0;
+  END;
 
 
 
 (* Finds out the currently selected desktop resolution. *)
-FUNCTION al_get_desktop_resolution (VAR w, h: LONGINT): BOOLEAN;
-BEGIN
-  IF system_driver^.get_desktop_resolution <> NIL THEN
-    al_get_desktop_resolution := (system_driver^.get_desktop_resolution (@w, @h) = 0)
-  ELSE
-    al_get_desktop_resolution := FALSE;
-END;
+  FUNCTION al_get_desktop_resolution (VAR w, h: LONGINT): BOOLEAN;
+  BEGIN
+    IF system_driver^.get_desktop_resolution <> NIL THEN
+      al_get_desktop_resolution := (system_driver^.get_desktop_resolution (@w, @h) = 0)
+    ELSE
+      al_get_desktop_resolution := FALSE;
+  END;
 
 
 
 (* This routine alters the window title. *)
-PROCEDURE al_set_window_title (CONST title: STRING);
-BEGIN
-  IF system_driver^.set_window_title <> NIL THEN
-    system_driver^.set_window_title (PCHAR (title));
-END;
+  PROCEDURE al_set_window_title (CONST title: STRING);
+  BEGIN
+    IF system_driver^.set_window_title <> NIL THEN
+      system_driver^.set_window_title (PCHAR (title));
+  END;
 
 
 
@@ -999,6 +1376,94 @@ END;
 
 
 (******************
+ * Timer routines *
+ ******************)
+
+  FUNCTION install_timer: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_install_timer: BOOLEAN;
+  BEGIN
+    al_install_timer := install_timer = 0;
+  END;
+
+
+
+  FUNCTION install_int_ex (proc: AL_SIMPLE_PROC; speed: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_install_int_ex (proc: AL_SIMPLE_PROC; speed: LONGINT): BOOLEAN;
+  BEGIN
+    al_install_int_ex := install_int_ex (proc, speed) = 0;
+  END;
+
+
+
+  FUNCTION install_int (proc: AL_SIMPLE_PROC; speed: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_install_int (proc: AL_SIMPLE_PROC; speed: LONGINT): BOOLEAN;
+  BEGIN
+    al_install_int := install_int (proc, speed) = 0;
+  END;
+
+
+
+  FUNCTION install_param_int_ex (proc: AL_PARAM_PROC; speed: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_install_param_int_ex (proc: AL_PARAM_PROC; speed: LONGINT): BOOLEAN;
+  BEGIN
+    al_install_param_int_ex := install_param_int_ex (proc, speed) = 0;
+  END;
+
+
+
+  FUNCTION install_param_int (proc: AL_PARAM_PROC; speed: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_install_param_int (proc: AL_PARAM_PROC; speed: LONGINT): BOOLEAN;
+  BEGIN
+    al_install_param_int := install_param_int (proc, speed) = 0;
+  END;
+
+
+
+(* Utils for time calculations. *)
+CONST
+  AL_TIMERS_PER_SECOND = 1193181;
+
+
+
+  FUNCTION AL_SECS_TO_TIMER (x: LONGINT): LONGINT;
+  BEGIN
+    AL_SECS_TO_TIMER := x * AL_TIMERS_PER_SECOND;
+  END;
+
+
+
+  FUNCTION AL_MSEC_TO_TIMER (x: LONGINT): LONGINT;
+  BEGIN
+    AL_MSEC_TO_TIMER := x * (AL_TIMERS_PER_SECOND DIV 1000);
+  END;
+
+
+
+  FUNCTION AL_BPS_TO_TIMER  (x: LONGINT): LONGINT;
+  BEGIN
+    AL_BPS_TO_TIMER := AL_TIMERS_PER_SECOND DIV x;
+  END;
+
+
+
+  FUNCTION AL_BPM_TO_TIMER  (x: LONGINT): LONGINT;
+  BEGIN
+    AL_BPM_TO_TIMER := (60 * AL_TIMERS_PER_SECOND) DIV x;
+  END;
+
+
+
+(******************
  * Keyboard input *
  ******************)
 
@@ -1048,6 +1513,69 @@ END;
   FUNCTION al_scancode_to_name (scancode: LONGINT): STRING;
   BEGIN
     al_scancode_to_name := scancode_to_name (scancode);
+  END;
+
+
+
+(********************
+ * Joystick support *
+ ********************)
+
+  FUNCTION install_joystick (atype: LONGINT): LONGINT;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_install_joystick (atype: LONGINT): BOOLEAN;
+  BEGIN
+    al_install_joystick := install_joystick (atype) = 0;
+  END;
+
+
+
+  FUNCTION calibrate_joystick_name (n: LONGINT): PCHAR; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'calibrate_joystick_name';
+
+  FUNCTION al_calibrate_joystick_name (n: LONGINT): STRING;
+  VAR
+    Tmp: PCHAR;
+  BEGIN
+    Tmp := calibrate_joystick_name (n);
+    IF Tmp <> NIL THEN
+      al_calibrate_joystick_name := (Tmp)
+    ELSE
+      al_calibrate_joystick_name := '';
+  END;
+
+
+
+  FUNCTION calibrate_joystick (n: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_calibrate_joystick (n: LONGINT): BOOLEAN;
+  BEGIN
+    al_calibrate_joystick := calibrate_joystick (n) = 0;
+  END;
+
+
+
+  FUNCTION save_joystick_data (filename: PCHAR): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'save_joystick_data';
+
+  FUNCTION al_save_joystick_data (filename: STRING): BOOLEAN;
+  BEGIN
+    al_save_joystick_data := save_joystick_data (PCHAR (filename)) = 0;
+  END;
+
+
+
+  FUNCTION load_joystick_data (filename: PCHAR): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_joystick_data';
+
+  FUNCTION al_load_joystick_data (filename: STRING): BOOLEAN;
+  BEGIN
+    IF filename <> '' THEN
+      al_load_joystick_data := load_joystick_data (PCHAR (filename)) = 0
+    ELSE
+      al_load_joystick_data := load_joystick_data (NIL) = 0;
   END;
 
 

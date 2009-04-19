@@ -29,17 +29,14 @@ PROGRAM exblend;
 USES
   sysutils,
 { It needs some Allegro.pas units. }
-  allegro,
+  allegro, alfile, alfixed,
   albitmap, { Bitmap manipulation. }
   albltspr, { Image blitting and sprite drawing. }
   alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
-  alfile,   { File functions. }
-  alfixed,  { Fixed point. }
   algraph,  { Graphic mode configuration. }
   alpalete, { Color palette manipulation. }
   altext,   { Text drawing. }
-  altimer,  { Time control.  Recommendable if using mouse. }
   altrutra; { True color transparency and lighting. }
 
 

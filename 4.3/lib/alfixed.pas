@@ -1,56 +1,53 @@
 UNIT alfixed;
-(*< Allegro provides some routines for working with fixed point numbers, and
-    defines the type @link(AL_FIXED) to be a signed 32-bit integer.  The high
-    word is used for the integer part and the low word for the fraction, giving
-    a range of -32768 to 32767 and an accuracy of about four or five decimal
-    places.  Fixed point numbers can be assigned, compared, added, subtracted,
-    negated and shifted (for multiplying or dividing by powers of two) using
-    the normal integer operators, but you should take care to use the
-    appropriate conversion routines when mixing fixed point with integer or
-    floating point values. Writing @code(fixed_point_1 + fixed_point_2) is 0K,
-    but @code(fixed_point + integer) is not.
+(*<Fixed point math routines
 
-    One of the advantage of fixed point math routines is that you don't require
-    a floating point coprocessor to use them.  This was great in the time
-    period of i386 and i486 machines, but stopped being so useful with the
-    coming of the Pentium class of processors.  From Pentium onwards, CPUs have
-    increased their strength in floating point operations, equaling or even
-    surpassing integer math performance.  Other advantage is the use of fixed
-    point indexes to arrays, wich would be faster than floating point.
+  Allegro provides some routines for working with fixed point numbers, and
+  defines the type @link(AL_FIXED) to be a signed 32-bit integer.  The high
+  word is used for the integer part and the low word for the fraction, giving a
+  range of -32768 to 32767 and an accuracy of about four or five decimal
+  places.  Fixed point numbers can be assigned, compared, added, subtracted,
+  negated and shifted (for multiplying or dividing by powers of two) using the
+  normal integer operators, but you should take care to use the appropriate
+  conversion routines when mixing fixed point with integer or floating point
+  values. Writing @code(fixed_point_1 + fixed_point_2) is 0K, but
+  @code(fixed_point + integer) is not.
 
-    Depending on the type of operations your program may need, using floating
-    point types may be faster than fixed types if you are targeting a specific
-    machine class.  Allegro comes with a test program in the `allegro/tests'
-    directory.  Its `Misc' menu contains a basic profile test which can give
-    you an idea of the speed difference between fixed and float types for a few
-    basic operations on your machine.  However, don't forget to profile your
-    program in real life conditions, tight loop benchmarks are after all
-    artificial.
+  One of the advantage of fixed point math routines is that you don't require a
+  floating point coprocessor to use them.  This was great in the time period of
+  i386 and i486 machines, but stopped being so useful with the coming of the
+  Pentium class of processors.  From Pentium onwards, CPUs have increased their
+  strength in floating point operations, equaling or even surpassing integer
+  math performance.  Other advantage is the use of fixed point indexes to
+  arrays, wich would be faster than floating point.
 
-    The fixed point square root, sin, cos, tan, inverse sin, and inverse cos
-    functions are implemented using lookup tables, which are very fast but not
-    particularly accurate.  At the moment the inverse tan uses an iterative
-    search on the tan table, so it is a lot slower than the others.  Note that
-    on machines with very good floating point processors using these functions
-    could be slower in real life code due to cache misses:  it may be faster to
-    wait a few extra cicles for a floating point sine result rather than wait
-    for the CPU to fetch the precalculated table from main memory.  Always
-    profile your code.
+  Depending on the type of operations your program may need, using floating
+  point types may be faster than fixed types if you are targeting a specific
+  machine class.  Allegro comes with a test program in the `allegro/tests'
+  directory.  Its `Misc' menu contains a basic profile test which can give you
+  an idea of the speed difference between fixed and float types for a few basic
+  operations on your machine.  However, don't forget to profile your program in
+  real life conditions, tight loop benchmarks are after all artificial.
 
-    Angles are represented in a binary format with 256 equal to a full circle,
-    64 being a right angle and so on.  This has the advantage that a simple
-    bitwise AND can be used to keep the angle within the range zero to a full
-    circle, eliminating all those tiresome @code(IF angle >= 360) checks.
+  The fixed point square root, sin, cos, tan, inverse sin, and inverse cos
+  functions are implemented using lookup tables, which are very fast but not
+  particularly accurate.  At the moment the inverse tan uses an iterative
+  search on the tan table, so it is a lot slower than the others.  Note that on
+  machines with very good floating point processors using these functions could
+  be slower in real life code due to cache misses:  it may be faster to wait a
+  few extra cicles for a floating point sine result rather than wait for the
+  CPU to fetch the precalculated table from main memory.  Always profile your
+  code.
 
-    Fixed point math is considered "add-on" material and is kept only for
-    backwards compatibility.  Whenever a future release of Allegro breaks
-    backwards compatibility, fixed point math will likely be moved to a
-    separate add-on package for the very few users who still find it convenient
-    and useful, and Allegro functions using fixed point math will use other
-    types.. *)
+  Angles are represented in a binary format with 256 equal to a full circle, 64
+  being a right angle and so on.  This has the advantage that a simple bitwise
+  @code(AND) can be used to keep the angle within the range zero to a full
+  circle, eliminating all those tiresome @code(IF angle >= 360) checks.
 
-(* TODO: Doesn't check overflows. *)
-
+  Fixed point math is considered "add-on" material and is kept only for
+  backwards compatibility.  Whenever a future release of Allegro breaks
+  backwards compatibility, fixed point math will likely be moved to a separate
+  add-on package for the very few users who still find it convenient and
+  useful, and Allegro functions using fixed point math will use other types. *)
 
 {$IFDEF FPC}
 { Free Pascal. }

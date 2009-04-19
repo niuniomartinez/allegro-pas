@@ -14,7 +14,7 @@ UNIT gamedata;
 INTERFACE
 
 USES
-  aldtfile; { Access to grabber data files. }
+  allegro, alfile;
 
 
 
@@ -46,8 +46,7 @@ PROCEDURE ReleaseData;
 IMPLEMENTATION
 
 USES
-  sysutils,
-  alfile;   { File functions. }
+  sysutils;
 
 
 

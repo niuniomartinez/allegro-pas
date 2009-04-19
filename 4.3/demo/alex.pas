@@ -49,8 +49,7 @@ USES
   play,	    { To know the size of the output screen. }
   sprites,  { Sprites management. }
   tilemap,  { Tilemap management. }
-  allegro,
-  aljstick; { Joystick. }
+  allegro;
 
 
 

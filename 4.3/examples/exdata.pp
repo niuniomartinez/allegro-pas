@@ -29,10 +29,9 @@ USES
   sysutils,
 { It needs some Allegro.pas units. }
   allegro,
+  alfile,
   albltspr, { Image blitting and sprite drawing. }
   alcolor,  { Color manipulation. }
-  aldtfile, { Access to grabber data files. }
-  alfile,   { File functions. }
   altext,   { Text drawing. }
   algraph,  { Graphic mode configuration. }
   alpalete; { Color palette manipulation. }

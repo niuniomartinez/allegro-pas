@@ -27,11 +27,9 @@ USES
   aldigi,   { Digital sound. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
-  aljstick, { Joystick. }
   almidi,   { MIDI music. }
   alpalete, { Color palette manipulation. }
   altext,   { Draw text. }
-  altimer,  { Time control. }
   config,   { Management of the game configuration. }
   framectr, { The frame speed controller. }
   gamedata; { Management of the game data: graphics, sound, etc. }

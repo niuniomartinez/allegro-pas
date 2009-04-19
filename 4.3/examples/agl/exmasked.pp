@@ -4,13 +4,11 @@ PROGRAM exmasked;
 USES
   Gl, { OpenGL support. }
   sysutils,
-  allegro,
+  allegro, alfile,
   albitmap, { Bitmap manipulation. }
-  aldtfile, { Access to grabber data files. }
   algl,     { Allegro.pas+OpenGL basic interface. }
   algraph,  { Graphic mode configuration. }
-  almouse,  { Mouse input. }
-  altimer;  { Time control.  Recommendable if using mouse. }
+  almouse;  { Mouse input. }
 
 
 

@@ -41,12 +41,10 @@ USES
   albltspr, { Image blitting and sprite drawing. }
   alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
-  alfile,   { File functions. }
   algraph,  { Graphic mode configuration. }
   almouse,  { Mouse input. }
   alpalete, { Color palette manipulation. }
   altext,   { Text drawing. }
-  altimer,  { Time control.  Recommendable if using mouse. }
   altrutra; { True color transparency and lighting. }
 
 

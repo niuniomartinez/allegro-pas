@@ -34,8 +34,7 @@ IMPLEMENTATION
 
 USES
   sysutils,
-  allegro,
-  alfile;  { File manipulation. }
+  allegro;
 
 
 

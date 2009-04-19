@@ -80,7 +80,6 @@ USES
   albltspr, { Draw bitmaps and sprites. }
   alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
-  alfile,   { For Allegro's file manipulation. }
   alsprrle, { Draw RLE sprites. }
   gamedata, { To acces to de game datafile. }
   sysutils; { For string manipulation. }

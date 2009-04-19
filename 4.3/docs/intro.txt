@@ -46,7 +46,9 @@
     @item(@bold(@link(init Initialization and finalization)))
     @item(@bold(@link(unicode UNICODE routines)))
     @item(@bold(@link(configuration Configuration routines)))
+    @item(@bold(@link(timer Timer routines)))
     @item(@bold(@link(keyboard Keyboard routines)))
+    @item(@bold(@link(joystick Joystick support)))
   )
 
 @section(2 init Initialization and finalization)
@@ -145,6 +147,20 @@
   the setup program with your game, either as is or with modified graphics to
   fit better your game.
 
+@section(2 timer Timer routines)
+
+  Allegro can set up several virtual timer functions, all going at different
+  speeds.
+
+  They are usually implemented using threads, which run parallel to the main
+  thread.  Therefore timer callbacks on such platforms will not block the main
+  thread when called, so you may need to use appropriate synchronisation
+  devices (eg. mutexes, semaphores, etc.) when accessing data that is shared by
+  a callback and the main thread.  (Currently Allegro does not provide such
+  devices.)
+
+  @bold(See also) @link(al_install_int)
+
 @section(2 keyboard Keyboard routines)
 
   The Allegro keyboard handler provides both buffered input (@link(al_readkey))
@@ -162,6 +178,20 @@
   keyboard mapping to use.  This can be accomplished through the keyboard
   variable of the system section in a standard @code(allegro.cfg) configuration
   file.  Read section about @link(configuration) for more information about this.
+
+  @bold(See also) @link(al_install_keyboard)
+
+@section(2 joystick Joystick support)
+
+  Unlike keyboard or mouse input, which are usually read through hardware
+  interrupts by Allegro, joystick input functions have to be polled because
+  there are no hardware interrupts for them on most platforms.  This doesn't
+  mean that you have to poll the joysticks on each line of code you want to
+  read their values, but you should make sure to poll them at least once per
+  frame in your game loop.  Otherwise you face the possibility of reading stale
+  incorrect data.
+
+  @bold(See also) @link(al_install_joystick)
 
 @section(1 contact Contact)
 

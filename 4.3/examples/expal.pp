@@ -46,6 +46,9 @@ BEGIN { The program starts here. }
     EXIT;
   END;
   al_install_keyboard;
+{ This activates the vsync signal if no one is provided by the system. }
+  al_install_timer;
+
   IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
     BEGIN
@@ -100,7 +103,6 @@ BEGIN { The program starts here. }
     temp := palette[255];
     FOR c := 255 DOWNTO 1 DO
     BEGIN
-      al_vsync; { It goes too fast so... }
       palette[c] := palette[c-1];
     END;
     palette[0] := temp;

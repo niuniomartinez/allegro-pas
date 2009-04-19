@@ -23,7 +23,7 @@ FUNCTION InstallFrameRate: BOOLEAN;
 IMPLEMENTATION
 
 USES
-  altimer;  { Time control. }
+  allegro;
 
 
 

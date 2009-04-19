@@ -32,8 +32,7 @@ USES
   alcolor,  { Color manipulation. }
   aldraw,   { Drawing primitives. }
   algraph,  { Graphic mode configuration. }
-  altext,   { Text drawing. }
-  altimer;  { Time control. }
+  altext;   { Text drawing. }
 
 
 
@@ -43,8 +42,14 @@ VAR
 
 BEGIN { The program starts here. }
   IF NOT al_init THEN
+  BEGIN
+    WriteLn ('Can''t initialize Allegro!');
     EXIT;
+  END;
+{ This activates the vsync signal if no one is provided by the system. }
   al_install_timer;
+
+
   al_install_keyboard;
 
   IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
