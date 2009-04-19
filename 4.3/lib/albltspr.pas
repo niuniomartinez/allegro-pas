@@ -401,7 +401,7 @@ BEGIN
 END;
 
 
-  
+
 PROCEDURE al_rotate_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
 BEGIN
   bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * $10000) DIV 2,
