@@ -21,10 +21,7 @@ PROCEDURE ErrorMessage (Message: STRING);
 IMPLEMENTATION
 
 USES
-  allegro,
-  aldraw,   { Drawing primitives. }
-  algraph,  { Graphic mode configuration. }
-  altext;   { Text drawing. }
+  allegro;
 
 
 

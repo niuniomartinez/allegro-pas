@@ -24,12 +24,6 @@ IMPLEMENTATION
 
 USES
   allegro,
-  albltspr, { Blitting and sprites. }
-  aldigi,   { Digital sound. }
-  aldraw,   { Drawing primitives. }
-  alfont,   { Text font management. }
-  algraph,  { Graphic mode configuration. }
-  altext,   { Draw text. }
   alex,     { Alex the Allegator. }
   config,   { Management of the game configuration. }
   bombs,    { Bombs. }

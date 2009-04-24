@@ -22,12 +22,6 @@ IMPLEMENTATION
 
 USES
   allegro,
-  albltspr, { Blitting and sprites. }
-  aldigi,   { Digital sound. }
-  aldraw,   { Drawing primitives. }
-  algraph,  { Graphic mode configuration. }
-  almidi,   { MIDI music. }
-  altext,   { Draw text. }
   config,   { Management of the game configuration. }
   framectr, { The frame speed controller. }
   gamedata; { Management of the game data: graphics, sound, etc. }

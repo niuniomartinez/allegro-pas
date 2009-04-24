@@ -28,8 +28,7 @@ INTERFACE
 IMPLEMENTATION
 
   USES
-    SimpleGUI,
-    albltspr, algraph, almouse;
+    SimpleGUI;
 
 
 

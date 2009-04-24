@@ -16,7 +16,7 @@ UNIT allegro;
 INTERFACE
 
 USES
-  albase, alvtable;
+  albase, alfixed, alvtable;
 
 
 
@@ -1742,12 +1742,1879 @@ VAR
 
 
 
+(******************
+ * Mouse routines *
+ ******************)
+
+CONST
+(* Indicates that the mouse cursor is the default system cursor, not Allegro's
+   custom cursor. @seealso(al_select_mouse_cursor) *)
+  AL_MOUSE_CURSOR_NONE		= 0;
+(* Selects the custom Allegro cursor, i.e. the one that you set with
+   @link(al_set_mouse_sprite). @seealso(al_select_mouse_cursor) *)
+  AL_MOUSE_CURSOR_ALLEGRO	= 1;
+(* The operating system default arrow cursor.
+ @seealso(al_select_mouse_cursor) *)
+  AL_MOUSE_CURSOR_ARROW		= 2;
+(* The operating system default `busy' cursor (hourglass).
+   @seealso(al_select_mouse_cursor) *)
+  AL_MOUSE_CURSOR_BUSY		= 3;
+(* The operating system default `question' cursor (arrow with question mark).
+   @seealso(al_select_mouse_cursor) *)
+  AL_MOUSE_CURSOR_QUESTION	= 4;
+(* The operating system default `edit' cursor (vertical bar).
+   @seealso(al_select_mouse_cursor) *)
+  AL_MOUSE_CURSOR_EDIT		= 5;
+(* @exclude *)
+  AL_NUM_MOUSE_CURSORS		= 6;
+
+
+
+VAR
+(* Global variable containing the current mouse horizontal position.  Wherever
+   possible these values will be updated asynchronously, but if
+   @link(al_mouse_needs_poll) returns @true, you must manually call
+   @link(al_poll_mouse) to update them with the current input state.
+
+   The position is integer ranging from zero to the right side of the
+   screen. *)
+  al_mouse_x: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_x';
+(* Global variable containing the current mouse vertical position.  Wherever
+   possible these values will be updated asynchronously, but if
+   @link(al_mouse_needs_poll) returns @true, you must manually call
+   @link(al_poll_mouse) to update them with the current input state.
+
+   The position is integer ranging from zero to the bottom side of the
+   screen. *)
+  al_mouse_y: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_y';
+(* Global variable containing the current mouse position.  Wherever possible
+   these values will be updated asynchronously, but if
+   @link(al_mouse_needs_poll) returns @true, you must manually call
+   @link(al_poll_mouse) to update them with the current input state.
+
+   It holds the current vertical wheel position, when using an input driver
+   that supports wheel mice. *)
+  al_mouse_z: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_z';
+(* Global variable containing the current mouse position.  Wherever possible
+   these values will be updated asynchronously, but if
+   @link(al_mouse_needs_poll) returns @true, you must manually call
+   @link(al_poll_mouse) to update them with the current input state.
+
+   It holds the current horizontal wheel position, when using an input driver
+   that supports wheel mice. *)
+  al_mouse_w: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_x';
+(* Global variable containing the current mouse button state.  Wherever
+   possible these values will be updated asynchronously, but if
+   @link(al_mouse_needs_poll) returns @true, you must manually call
+   @link(al_poll_mouse) to update them with the current input state.
+
+   It is a bitfield indicating the state of each button:  bit 0 is the left
+   button, bit 1 the right, and bit 2 the middle button.  Additional non
+   standard mouse buttons might be available as higher bits in this variable.
+   Usage example:
+   @longcode(
+IF (al_mouse_b AND 1) <> 0 THEN
+   WriteLn ('Left button is pressed');
+IF (al_mouse_b AND 2) = 0 THEN
+   WriteLn ('Right button is not pressed');
+   #)
+*)
+  al_mouse_b: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_b';
+(* Global variable containing the current mouse position.  Wherever possible
+   these values will be updated asynchronously, but if
+   @link(al_mouse_needs_poll) returns @true, you must manually call
+   @link(al_poll_mouse) to update them with the current input state.
+
+   It has the current X coordinate in the upper 16 bits and the Y in the lower
+   16 bits.  This may be useful in tight polling loops where a mouse interrupt
+   could occur between your reading of the two separate variables, since you
+   can copy this value into a local variable with a single instruction and then
+   split it up at your leisure. Example:
+   @longcode(#
+VAR
+  mpos, mx, my: LONGINT;
+  ...
+  mpos := al_mouse_pos;
+  mx := mpos RSH 16;
+  my := mpos AND $0000ffff;
+  #)*)
+  al_mouse_pos: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_pos';
+
+
+
+(* Global variable containing the current mouse sprite. This is read-only, and
+   only to be modified using the @link(al_set_mouse_sprite) procedure. *)
+  al_mouse_sprite: AL_BITMAPptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_sprite';
+(* Global variable containing the current mouse focus point. This is read-only,
+   and only to be modified using the @link(al_set_mouse_sprite_focus)
+   procedure. *)
+  al_mouse_x_focus: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_x_focus';
+(* Global variable containing the current mouse focus point. This is read-only,
+   and only to be modified using the @link(al_set_mouse_sprite_focus)
+   procedure. *)
+  al_mouse_y_focus: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_y_focus';
+
+
+
+(* Installs the Allegro mouse handler.  You must do this before using any other
+   mouse functions.
+
+   @returns(-1 on failure, zero if the mouse handler is already installed @(in
+     which case this function does nothing@) or the number of buttons on the
+     mouse if the mouse handler has successfully been installed @(ie. this is
+     the first time a handler is installed or you have removed the previous
+     one@).
+
+     Note that the number of mouse buttons returned by this function is more an
+     indication than a physical reality.  With most devices there is no way of
+     telling how many buttons there are, and any user can override the number
+     of mouse buttons returned by this function with a custom configuration
+     file and the variable @code(num_buttons).  Even if this value is
+     overridden by the user, the global mouse variables will still report
+     whatever the hardware is sending.) *)
+  FUNCTION al_install_mouse: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'install_mouse';
+
+(* Removes the mouse handler. You don't normally need to bother calling this,
+   because @link(al_exit) will do it for you. *)
+  PROCEDURE al_remove_mouse; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_mouse';
+
+
+
+(* Wherever possible, Allegro will read the mouse input asynchronously (ie.
+   from inside an interrupt handler), but on some platforms that may not be
+   possible, in which case you must call this routine at regular intervals to
+   update the mouse state variables.  To help you test your mouse polling code
+   even if you are programming on a platform that doesn't require it, after the
+   first time that you call this function Allegro will switch into polling
+   mode, so from that point onwards you will have to call this routine in order
+   to get any mouse input at all, regardless of whether the current driver
+   actually needs to be polled or not.
+   @returns(zero on success, or a negative number on failure @(ie. no mouse
+     driver installed@).) *)
+  FUNCTION al_poll_mouse: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'poll_mouse';
+
+(* Returns @true if the current mouse driver is operating in polling mode. *)
+  FUNCTION al_mouse_needs_poll: BOOLEAN;
+
+
+
+(* After calling this function, Allegro will let the operating system draw the
+   mouse cursor instead of doing it itself.  This is not possible with all
+   graphics drivers though:  you'll need to check the
+   @link(al_gfx_capabilities) flags after calling @link(al_show_mouse) to see
+   if this works.  On some platforms, enabling the hardware cursor causes
+   @link(al_get_mouse_mickeys) to return only a limited range of values, so you
+   should not call this function if you need mouse mickeys. *)
+  PROCEDURE al_enable_hardware_cursor; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'enable_hardware_cursor';
+
+(* After calling this function, Allegro will be responsible for drawing the
+   mouse cursor rather than the operating system.  On some platforms calling
+   @link(al_enable_hardware_cursor) makes the return values of
+   @link(al_get_mouse_mickeys) unreliable.  After calling this function,
+   @code(al_get_mouse_mickeys) returns reliable results again. *)
+  PROCEDURE al_disable_hardware_cursor; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'disable_hardware_cursor';
+
+(* This function allows you to use the operating system's native mouse cursors
+   rather than some custom cursor.  You will need to enable this functionality
+   by calling @link(al_enable_hardware_cursor) beforehand.  If the operating
+   system does not support this functionality, or if it has not been enabled,
+   then Allegro will substitute its own cursor images.  You can change these
+   substitute images using @link(al_set_mouse_cursor_bitmap).
+
+   Note that the effects of this function are not apparent until
+   @link(al_show_mouse) is called.
+
+   To know whether the operating system's native cursor is being used, or if
+   Allegro has made a substitution, you can check the
+   @LINK(AL_GFX_SYSTEM_CURSOR) flag in @link(al_gfx_capabilities) after calling
+   @link(al_show_mouse).
+
+   The cursor argument selects the type of cursor to be displayed:
+   @link(AL_MOUSE_CURSOR_NONE), @link(AL_MOUSE_CURSOR_ALLEGRO),
+   @link(AL_MOUSE_CURSOR_ARROW), @link(AL_MOUSE_CURSOR_BUSY),
+   @link(AL_MOUSE_CURSOR_QUESTION), @link(AL_MOUSE_CURSOR_EDIT) *)
+  PROCEDURE al_select_mouse_cursor (cursor: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'select_mouse_cursor';
+
+(* This function changes the cursor image Allegro uses if
+   @link(al_select_mouse_cursor) is called but no native operating system
+   cursor can be used, e.g. because you did not call
+   @link(al_enable_hardware_cursor).
+
+   The effect of this function will not be apparent until @link(al_show_mouse)
+   is called.
+
+   @param(cursor one of: @link(AL_MOUSE_CURSOR_ALLEGRO),
+     @link(AL_MOUSE_CURSOR_ARROW), @link(AL_MOUSE_CURSOR_BUSY),
+     @link(AL_MOUSE_CURSOR_QUESTION), @link(AL_MOUSE_CURSOR_EDIT) but not
+     @link(AL_MOUSE_CURSOR_NONE).)
+   @param(bmp can either point to a valid bitmap or it can be @nil.  Passing a
+     bitmap makes Allegro use that image in place of its own default
+     substitution @(should the operating system's native cursor be
+     unavailable@).  The bitmap must remain available for the duration in which
+     it could be used.  Passing @nil lets Allegro revert to its default
+     substitutions.) *)
+  PROCEDURE al_set_mouse_cursor_bitmap (cursor: LONGINT; bmp: AL_BITMAPptr); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_mouse_cursor_bitmap';
+
+
+
+(* Tells Allegro to display a mouse pointer on the screen.  This will only work
+   if the timer module has been installed.  The mouse pointer will be drawn
+   onto the specified bitmap, which should normally be @link(al_screen) (see
+   later for information about bitmaps).  To hide the mouse pointer, call
+   @code(al_show_mouse @(@nil@)).
+
+   @bold(Warning:) if you draw anything onto the screen while the pointer is
+   visible, a mouse movement interrupt could occur in the middle of your
+   drawing operation.  If this happens the mouse buffering and graphics drawing
+   code will get confused and will leave @italic('mouse droppings') all over
+   the screen.  To prevent this, you must make sure you turn off the mouse
+   pointer whenever you draw onto the screen.  This is not needed if you are
+   using a hardware cursor.
+
+   Note: you must not be showing a mouse pointer on a bitmap at the time that
+   the bitmap is destroyed with @link(al_destroy_bitmap), e.g. call
+   @code(al_show_mouse @(@nil@);) before destroying the bitmap.  This does not
+   apply to @code(al_screen) since you never destroy @code(al_screen) with
+   @code(al_destroy_bitmap). *)
+  PROCEDURE al_show_mouse (bmp: AL_BITMAPptr); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'show_mouse';
+
+(* You don't like Allegro's mouse pointer?  No problem.  Use this function to
+   supply an alternative of your own.  If you change the pointer and then want
+   to get Allegro's lovely arrow back again, call @code(al_set_mouse_sprite
+   @(@nil@)).
+
+   As a bonus, @code(al_set_mouse_sprite @(@nil@)) uses the current palette in
+   choosing colors for the arrow.  So if your arrow mouse sprite looks ugly
+   after changing the palette, call @code(al_set_mouse_sprite @(@nil@)). *)
+  PROCEDURE al_set_mouse_sprite (sprite: AL_BITMAPptr); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_mouse_sprite';
+
+(* The mouse focus is the bit of the pointer that represents the actual mouse
+   position, ie. the (@link(al_mouse_x), @link(al_mouse_y)) position.  By
+   default this is the top left corner of the arrow, but if you are using a
+   different mouse pointer you might need to alter it. *)
+  PROCEDURE al_set_mouse_sprite_focus (x, y: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_mouse_sprite_focus';
+
+
+
+(* Moves the mouse to the specified screen position.  It is safe to call even
+   when a mouse pointer is being displayed. *)
+  PROCEDURE al_position_mouse (x, y: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'position_mouse';
+
+(* Sets the mouse wheel position variable to the specified value. *)
+  PROCEDURE al_position_mouse_z (z: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'position_mouse_z';
+
+(* Sets the horizontal mouse wheel position variable to the specified value. *)
+  PROCEDURE al_position_mouse_w (w: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'position_mouse_w';
+
+(* Measures how far the mouse has moved since the last call to this function.
+   The values of @code(mickeyx) and @code(mickeyy) will become negative if the
+   mouse is moved left or up, respectively.  The mouse will continue to
+   generate movement mickeys even when it reaches the edge of the screen, so
+   this form of input can be useful for games that require an infinite range of
+   mouse movement.
+
+   Note that the infinite movement may not work in windowed mode, since under
+   some platforms the mouse would leave the window, and may not work at all if
+   the hardware cursor is in use. *)
+  PROCEDURE al_get_mouse_mickeys (VAR mickeyx, mickeyy: LONGINT);
+
+
+
+(* Helper for hiding the mouse pointer prior to a drawing operation.  This will
+   temporarily get rid of the pointer, but only if that is really required (ie.
+   the mouse is visible, and is displayed on the physical screen rather than
+   some other memory surface, and it is not a hardware or OS cursor).  The
+   previous mouse state is stored for subsequent calls to
+   @link(al_unscare_mouse). *)
+  PROCEDURE al_scare_mouse; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scare_mouse';
+
+(* Like @link(al_scare_mouse), but will only hide the cursor if it is inside
+   the specified rectangle.  Otherwise the cursor will simply be frozen
+   in place until you call @link(al_unscare_mouse), so it cannot interfere with
+   your drawing. *)
+  PROCEDURE al_scare_mouse_area (x, y, w, h: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scare_mouse_area';
+
+(* Undoes the effect of a previous call to @link(al_scare_mouse) or
+   @link(al_scare_mouse_area), restoring the original pointer state. *)
+  PROCEDURE al_unscare_mouse; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'unscare_mouse';
+
+
+(* In case you do not need Allegro's mouse cursor API, which automatically
+   emulates a cursor in software if no other cursor is available, you can use
+   this low level function to try to display or hide the system cursor
+   directly.  The cursor parameter takes the same values as
+   @link(al_select_mouse_cursor).  This function is very similar to calling
+   @link(al_enable_hardware_cursor), @link(al_select_mouse_cursor) and
+   @link(al_show_mouse), but will not try to do anything if no system cursor
+   is available.
+
+   The most common use for this function is to just call it once at the
+   beginning of the program to tell it to display the system cursor inside the
+   Allegro window.  The return value can be used to see if this succeeded or
+   not.  On some systems (e.g. DirectX fullscreen) this is not supported and
+   the function will always fail, and in other cases only some of the cursors
+   will work, or in the case of @link(AL_MOUSE_CURSOR_ALLEGRO), only certain
+   bitmap sizes may be supported.
+
+   You never should use @code(al_show_os_cursor) together with the function
+   @code(al_show_mouse) and other functions affecting it
+   (@code(al_select_mouse_cursor), @code(al_enable_hardware_cursor),
+   @code(al_disable_hardware_cursor), @code(al_scare_mouse),
+   @code(al_unscare_mouse)).  They implement the standard high level mouse API,
+   and don't work together with this low level function.
+
+   @returns(@true if a system cursor is being displayed after the function
+     returns, or @false otherwise.) *)
+  FUNCTION al_show_os_cursor (cursor: LONGINT): BOOLEAN;
+
+
+
+(****************
+ * Graphic mode *
+ ****************)
+
+CONST
+(* Closes any previously opened graphics mode, making you unable to use the
+   global variable @link(al_screen), and in those environments that have
+   text modes, sets one previously used or the closest match to that (usually
+   80x25).  With this driver the size parameters of @link(al_set_gfx_mode)
+   don't mean anything, so you can leave them all to zero or any other number
+   you prefer. *)
+  AL_GFX_TEXT			= -1;
+(* Allegro will try to set the specified resolution with the current color
+   depth in fullscreen mode.  Failing that, it will try to repeat the same
+   operation in windowed mode.  If the call to @link(al_set_gfx_mode)
+   succeeds, you are guaranteed to have set the specified resolution in the
+   current color depth, but you don't know if the program is running fullscreen
+   or windowed. *)
+  AL_GFX_AUTODETECT		=  0;
+(* Allegro will try to set the specified resolution with the current color
+   depth in fullscreen mode.  If that is not possible, @link(al_set_gfx_mode)
+   will fail. *)
+  AL_GFX_AUTODETECT_FULLSCREEN	=  1;
+(* Allegro will try to set the specified resolution with the current color
+   depth in a windowed mode.  If that is not possible, @link(al_set_gfx_mode)
+   will fail.  When it comes to windowed modes, the `specified resolution'
+   actually means the graphic area your program can draw on, without including
+   window decorations (if any).  Note that in windowed modes running with a
+   color depth other than the desktop may result in non optimal performance due
+   to internal color conversions in the graphic driver. Use
+   @link(al_desktop_color_depth) to your advantage in these situations. *)
+  AL_GFX_AUTODETECT_WINDOWED	=  2;
+(* Using this driver Allegro guarantees that a graphic mode will always be set
+   correctly.  It will try to select the resolution that you request, and if
+   that fails, it will fall back upon whatever mode is known to be reliable on
+   the current platform (this is 640x480 resolution under Windows, the actual
+   framebuffer's resolution under Linux if it's supported, etc).  If it
+   absolutely cannot set any graphics mode at all, it will return negative as
+   usual, meaning that there's no possible video output on the machine, and
+   that you should abort your program immediately, possibly after notifying
+   this to the user with @link(al_message).  This fake driver is useful for
+   situations where you just want to get into some kind of workable display
+   mode, and can't be bothered with trying multiple different resolutions and
+   doing all the error checking yourself.  Note however, that after a
+   successful call to @link(al_set_gfx_mode) with this driver, you cannot make
+   any assumptions about the width, height or color depth of the screen:  your
+   code will have to deal with this little detail. *)
+  AL_GFX_SAFE			= $53414645; { AL_ID('S','A','F','E') }
+
+(* @exclude Graphic capabilities *)
+  AL_GFX_CAN_SCROLL			= $00000001;
+{ @exclude }
+  AL_GFX_CAN_TRIPLE_BUFFER		= $00000002;
+(* Indicates that a hardware mouse cursor is in use. When this flag is set, it
+   is safe to draw onto the screen without hiding the mouse pointer first.
+   Note that not every cursor graphic can be implemented in hardware:  in
+   particular VBE/AF only supports 2-color images up to 32x32 in size, where
+   the second color is an exact inverse of the first.  This means that Allegro
+   may need to switch between hardware and software cursors at any point during
+   the execution of your program, so you should not assume that this flag will
+   remain constant for long periods of time.  It only tells you whether a
+   hardware cursor is in use at the current time, and may change whenever you
+   hide/redisplay the pointer. *)
+  AL_GFX_HW_CURSOR			= $00000004;
+(* Indicates that the normal opaque version of the @link(al_hline) function is
+   implemented using a hardware accelerator.  This will improve the performance
+   not only of @code(al_hline) itself, but also of many other functions that
+   use it as a workhorse, for example @link(al_circlefill) and
+   @link(al_floodfill). *)
+  AL_GFX_HW_HLINE			= $00000008;
+(* Indicates that the XOR version of the @link(al_hline) function, and any
+   other functions that use it as a workhorse, are implemented using a
+   hardware accelerator (see @link(AL_GFX_HW_HLINE)). *)
+  AL_GFX_HW_HLINE_XOR			= $00000010;
+(* Indicates that the solid and masked pattern modes of the @link(al_hline)
+   function, and any other functions that use it as a workhorse, are
+   implemented using a hardware accelerator (see @link(AL_GFX_HW_HLINE)). *)
+  AL_GFX_HW_HLINE_SOLID_PATTERN		= $00000020;
+(* Indicates that the copy pattern modes of the @link(al_hline) function, and
+   any other functions that use it as a workhorse, are implemented using a
+   hardware accelerator (see @link(AL_GFX_HW_HLINE)). *)
+  AL_GFX_HW_HLINE_COPY_PATTERN		= $00000040;
+(* Indicates that the opaque version of the @link(al_rectfill) function, the
+   @link(al_clear_bitmap) routine, and @link(al_clear_to_color), are
+   implemented using a hardware accelerator. *)
+  AL_GFX_HW_FILL			= $00000080;
+(* Indicates that the XOR version of the @link(al_rectfill) function is
+   implemented using a hardware accelerator  (see @link(AL_GFX_HW_FILL)). *)
+  AL_GFX_HW_FILL_XOR			= $00000100;
+(* Indicates that the solid and masked pattern modes of the @link(al_rectfill)
+   function is implemented using a hardware accelerator  (see
+   @link(AL_GFX_HW_FILL)). *)
+  AL_GFX_HW_FILL_SOLID_PATTERN		= $00000200;
+(* Indicates that the copy pattern mode of the @link(al_rectfill) function
+   is implemented using a hardware accelerator  (see @link(AL_GFX_HW_FILL)). *)
+  AL_GFX_HW_FILL_COPY_PATTERN		= $00000400;
+(* Indicates that the opaque mode @link(al_line) and @link(al_vline)
+   functions are implemented using a hardware accelerator. *)
+  AL_GFX_HW_LINE			= $00000800;
+(* Indicates that the XOR version of the @link(al_line) and @link(al_vline)
+   functions are implemented using a hardware accelerator. *)
+  AL_GFX_HW_LINE_XOR			= $00001000;
+{ @exclude }
+  AL_GFX_HW_TRIANGLE			= $00002000;
+{ @exclude }
+  AL_GFX_HW_TRIANGLE_XOR		= $00004000;
+(* Indicates that monochrome character expansion (for text drawing) is
+   implemented using a hardware accelerator. *)
+  AL_GFX_HW_GLYPH			= $00008000;
+(* Indicates that blitting from one part of the screen to another is
+   implemented using a hardware accelerator.  If this flag is set, blitting
+   within the video memory will almost certainly be the fastest possible way to
+   display an image, so it may be worth storing some of your more frequently
+   used graphics in an offscreen portion of the video memory. *)
+  AL_GFX_HW_VRAM_BLIT			= $00010000;
+(* Indicates that the @link(al_masked_blit) routine is capable of a hardware
+   accelerated copy from one part of video memory to another, and that
+   @link(al_draw_sprite) will use a hardware copy when given a sub-bitmap of
+   the screen or a video memory bitmap as the source image.  If this flag is
+   set, copying within the video memory will almost certainly be the fastest
+   possible way to display an image, so it may be worth storing some of your
+   more frequently used sprites in an offscreen portion of the video memory.
+
+   @bold(Warning:)  if this flag is not set, @code(al_masked_blit) and
+   @code(al_draw_sprite) will not work correctly when used with a video memory
+   source image!  You must only try to use these functions to copy within the
+   video memory if they are supported in hardware. *)
+  AL_GFX_HW_VRAM_BLIT_MASKED		= $00020000;
+(* Indicates that blitting from a memory bitmap onto the screen is being
+   accelerated in hardware. *)
+  AL_GFX_HW_MEM_BLIT			= $00040000;
+(* Indicates that the @link(al_masked_blit) and @link(al_draw_sprite)
+   functions are being accelerated in hardware when the source image is a
+   memory bitmap and the destination is the physical screen. *)
+  AL_GFX_HW_MEM_BLIT_MASKED		= $00080000;
+(* Indicates that blitting from a system bitmap onto the screen is being
+   accelerated in hardware.  Note that some acceleration may be present even
+   if this flag is not set, because system bitmaps can benefit from normal
+   memory to screen blitting as well.  This flag will only be set if system
+   bitmaps have further acceleration above and beyond what is provided by
+   @link(AL_GFX_HW_MEM_BLIT). *)
+  AL_GFX_HW_SYS_TO_VRAM_BLIT		= $00100000;
+(* Indicates that the @link(al_masked_blit) and @link(al_draw_sprite)
+   functions are being accelerated in hardware when the source image is a
+   system bitmap and the destination is the physical screen.  Note that some
+   acceleration may be present even if this flag is not set, because system
+   bitmaps can benefit from normal memory to screen blitting as well.  This
+   flag will only be set if system bitmaps have further acceleration above and
+   beyond what is provided by @link(AL_GFX_HW_MEM_BLIT_MASKED). *)
+  AL_GFX_HW_SYS_TO_VRAM_BLIT_MASKED	= $00200000;
+(* Indicates that the mouse cursor is the default system cursor, not Allegro's
+   custom cursor. *)
+  AL_GFX_SYSTEM_CURSOR			= $00400000;
+
+
+
+VAR
+(* Bitfield describing the capabilities of the current graphics driver and
+   video hardware.  This may contain combination any of the @code(AL_GFX_* )
+   flags. *)
+  al_gfx_capabilities: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gfx_capabilities';
+
+(* Screen bitmap *)
+  al_screen: AL_BITMAPptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'screen';
+(* Screen size. *)
+  AL_SCREEN_W, AL_SCREEN_H, AL_VIRTUAL_W, AL_VIRTUAL_H: LONGINT;
+
+
+
+CONST
+(* @exclude Define color conversion modes. *)
+  AL_COLORCONV_NONE	= 0;
+
+  AL_COLORCONV_8_TO_15	= 1; {< @exclude }
+  AL_COLORCONV_8_TO_16	= 2; {< @exclude }
+  AL_COLORCONV_8_TO_24	= 4; {< @exclude }
+  AL_COLORCONV_8_TO_32	= 8; {< @exclude }
+
+  AL_COLORCONV_15_TO_8	= $10; {< @exclude }
+  AL_COLORCONV_15_TO_16	= $20; {< @exclude }
+  AL_COLORCONV_15_TO_24	= $40; {< @exclude }
+  AL_COLORCONV_15_TO_32	= $80; {< @exclude }
+
+  AL_COLORCONV_16_TO_8	= $100; {< @exclude }
+  AL_COLORCONV_16_TO_15	= $200; {< @exclude }
+  AL_COLORCONV_16_TO_24	= $400; {< @exclude }
+  AL_COLORCONV_16_TO_32	= $800; {< @exclude }
+
+  AL_COLORCONV_24_TO_8	= $1000; {< @exclude }
+  AL_COLORCONV_24_TO_15	= $2000; {< @exclude }
+  AL_COLORCONV_24_TO_16	= $4000; {< @exclude }
+  AL_COLORCONV_24_TO_32	= $8000; {< @exclude }
+
+  AL_COLORCONV_32_TO_8	= $10000; {< @exclude }
+  AL_COLORCONV_32_TO_15	= $20000; {< @exclude }
+  AL_COLORCONV_32_TO_16	= $40000; {< @exclude }
+  AL_COLORCONV_32_TO_24	= $80000; {< @exclude }
+
+  AL_COLORCONV_32A_TO_8		= $100000; {< @exclude }
+  AL_COLORCONV_32A_TO_15	= $200000; {< @exclude }
+  AL_COLORCONV_32A_TO_16	= $400000; {< @exclude }
+  AL_COLORCONV_32A_TO_24	= $800000; {< @exclude }
+
+  AL_COLORCONV_DITHER_PAL	= $1000000; {< @exclude }
+  AL_COLORCONV_DITHER_HI	= $2000000; {< @exclude }
+  AL_COLORCONV_KEEP_TRANS	= $4000000; {< @exclude }
+
+  AL_COLORCONV_DITHER	= AL_COLORCONV_DITHER_PAL OR AL_COLORCONV_DITHER_HI; {< @exclude }
+
+  AL_COLORCONV_EXPAND_256	= AL_COLORCONV_8_TO_15 OR AL_COLORCONV_8_TO_16 OR AL_COLORCONV_8_TO_24 OR AL_COLORCONV_8_TO_32; {< @exclude }
+
+  AL_COLORCONV_REDUCE_TO_256	= AL_COLORCONV_15_TO_8 OR AL_COLORCONV_16_TO_8 OR AL_COLORCONV_24_TO_8 OR AL_COLORCONV_32_TO_8 OR AL_COLORCONV_32A_TO_8; {< @exclude }
+
+  AL_COLORCONV_EXPAND_15_TO_16	= AL_COLORCONV_15_TO_16; {< @exclude }
+
+  AL_COLORCONV_REDUCE_16_TO_15	= AL_COLORCONV_16_TO_15; {< @exclude }
+
+  AL_COLORCONV_EXPAND_HI_TO_TRUE = AL_COLORCONV_15_TO_24 OR AL_COLORCONV_15_TO_32 OR AL_COLORCONV_16_TO_24 OR AL_COLORCONV_16_TO_32; {< @exclude }
+
+  AL_COLORCONV_REDUCE_TRUE_TO_HI = AL_COLORCONV_24_TO_15 OR AL_COLORCONV_24_TO_16 OR AL_COLORCONV_32_TO_15 OR AL_COLORCONV_32_TO_16; {< @exclude }
+
+  AL_COLORCONV_24_EQUALS_32	= AL_COLORCONV_24_TO_32 OR AL_COLORCONV_32_TO_24; {< @exclude }
+
+  AL_COLORCONV_TOTAL	= AL_COLORCONV_EXPAND_256 OR AL_COLORCONV_REDUCE_TO_256 OR AL_COLORCONV_EXPAND_15_TO_16 OR AL_COLORCONV_REDUCE_16_TO_15 OR AL_COLORCONV_EXPAND_HI_TO_TRUE OR AL_COLORCONV_REDUCE_TRUE_TO_HI OR AL_COLORCONV_24_EQUALS_32 OR AL_COLORCONV_32A_TO_15 OR AL_COLORCONV_32A_TO_16 OR AL_COLORCONV_32A_TO_24; {< @exclude }
+
+  AL_COLORCONV_PARTIAL	= AL_COLORCONV_EXPAND_15_TO_16 OR AL_COLORCONV_REDUCE_16_TO_15 OR AL_COLORCONV_24_EQUALS_32; {< @exclude }
+
+  AL_COLORCONV_MOST	= AL_COLORCONV_EXPAND_15_TO_16  OR AL_COLORCONV_REDUCE_16_TO_15 OR AL_COLORCONV_EXPAND_HI_TO_TRUE OR AL_COLORCONV_REDUCE_TRUE_TO_HI OR AL_COLORCONV_24_EQUALS_32; {< @exclude }
+
+  AL_COLORCONV_KEEP_ALPHA	= AL_COLORCONV_TOTAL AND NOT (AL_COLORCONV_32A_TO_8 OR AL_COLORCONV_32A_TO_15 OR AL_COLORCONV_32A_TO_16 OR AL_COLORCONV_32A_TO_24); {< @exclude }
+
+
+
+(* Sets the pixel format to be used by subsequent calls to
+   @link(al_set_gfx_mode) and @link(al_create_bitmap).  Valid depths are 8 (the
+   default), 15, 16, 24, and 32 bits.
+
+   Note that the screen color depth won't change until the next successful
+   call to @code(al_set_gfx_mode). *)
+  PROCEDURE al_set_color_depth (depth: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_color_depth';
+
+(* Returns the current pixel format.  This can be very useful to know in order
+   to write generic functions which select a different code path internally
+   depending on the color depth being used.
+
+   Note that the function returns whatever value you may have set previously
+   with @link(al_set_color_depth), which can be different from the current
+   color depth of the @link(al_screen) global variable.  If you really need to
+   know the color depth of the screen, use @link(al_bitmap_color_depth). *)
+  FUNCTION al_get_color_depth: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_color_depth';
+
+(* Specifies how to convert images between the various color depths when reading
+   graphics from external bitmap files or datafiles.  The mode is a bitmask
+   specifying which types of conversion are allowed.  If the appropriate bit is
+   set, data will be converted into the current pixel format (selected by
+   calling the @link(al_set_color_depth) function), otherwise it will be left
+   in the same format as the disk file, leaving you to convert it manually
+   before the graphic can be displayed.  The default mode is total conversion,
+   so that all images will be loaded in the appropriate format for the current
+   video mode. Valid bit flags are:
+   @longcode(#
+          AL_COLORCONV_NONE                // disable all format
+                                           // conversions
+          AL_COLORCONV_8_TO_15             // expand 8-bit to 15-bit
+          AL_COLORCONV_8_TO_16             // expand 8-bit to 16-bit
+          AL_COLORCONV_8_TO_24             // expand 8-bit to 24-bit
+          AL_COLORCONV_8_TO_32             // expand 8-bit to 32-bit
+          AL_COLORCONV_15_TO_8             // reduce 15-bit to 8-bit
+          AL_COLORCONV_15_TO_16            // expand 15-bit to 16-bit
+          AL_COLORCONV_15_TO_24            // expand 15-bit to 24-bit
+          AL_COLORCONV_15_TO_32            // expand 15-bit to 32-bit
+          AL_COLORCONV_16_TO_8             // reduce 16-bit to 8-bit
+          AL_COLORCONV_16_TO_15            // reduce 16-bit to 15-bit
+          AL_COLORCONV_16_TO_24            // expand 16-bit to 24-bit
+          AL_COLORCONV_16_TO_32            // expand 16-bit to 32-bit
+          AL_COLORCONV_24_TO_8             // reduce 24-bit to 8-bit
+          AL_COLORCONV_24_TO_15            // reduce 24-bit to 15-bit
+          AL_COLORCONV_24_TO_16            // reduce 24-bit to 16-bit
+          AL_COLORCONV_24_TO_32            // expand 24-bit to 32-bit
+          AL_COLORCONV_32_TO_8             // reduce 32-bit RGB to 8-bit
+          AL_COLORCONV_32_TO_15            // reduce 32-bit RGB to 15-bit
+          AL_COLORCONV_32_TO_16            // reduce 32-bit RGB to 16-bit
+          AL_COLORCONV_32_TO_24            // reduce 32-bit RGB to 24-bit
+          AL_COLORCONV_32A_TO_8            // reduce 32-bit RGBA to 8-bit
+          AL_COLORCONV_32A_TO_15           // reduce 32-bit RGBA to 15-bit
+          AL_COLORCONV_32A_TO_16           // reduce 32-bit RGBA to 16-bit
+          AL_COLORCONV_32A_TO_24           // reduce 32-bit RGBA to 24-bit
+          AL_COLORCONV_DITHER_PAL          // dither when reducing to 8-bit
+          AL_COLORCONV_DITHER_HI           // dither when reducing to
+                                           // hicolor
+          AL_COLORCONV_KEEP_TRANS          // keep original transparency
+   #)
+   For convenience, the following macros can be used to select common
+   combinations of these flags:
+   @longcode(#
+          AL_COLORCONV_EXPAND_256          // expand 256-color to hi/truecolor
+          AL_COLORCONV_REDUCE_TO_256       // reduce hi/truecolor to 256-color
+          AL_COLORCONV_EXPAND_15_TO_16     // expand 15-bit hicolor to 16-bit
+          AL_COLORCONV_REDUCE_16_TO_15     // reduce 16-bit hicolor to 15-bit
+          AL_COLORCONV_EXPAND_HI_TO_TRUE   // expand 15/16-bit to 24/32-bit
+          AL_COLORCONV_REDUCE_TRUE_TO_HI   // reduce 24/32-bit to 15/16-bit
+          AL_COLORCONV_24_EQUALS_32        // convert between 24- and 32-bit
+          AL_COLORCONV_TOTAL               // everything to current format
+          AL_COLORCONV_PARTIAL             // convert 15 <-> 16-bit and
+                                           // 24 <-> 32-bit
+          AL_COLORCONV_MOST                // all but hi/truecolor <-> 256
+          AL_COLORCONV_DITHER              // dither during all color reductions
+          AL_COLORCONV_KEEP_ALPHA          // convert everything to current format
+                                           // unless it would lose alpha information
+   #)
+   If you enable the @code(AL_COLORCONV_DITHER) flag, dithering will be
+   performed whenever truecolor graphics are converted into a hicolor or
+   paletted format, including by the @link(al_blit) function, and any
+   automatic conversions that take place while reading graphics from disk.
+   This can produce much better looking results, but is obviously slower than a
+   direct conversion.
+
+   If you intend using converted bitmaps with functions like
+   @link(al_masked_blit) or @link(al_draw_sprite), you should specify the
+   @code(AL_COLORCONV_KEEP_TRANS) flag.  It will ensure that the masked areas
+   in the bitmap before and after the conversion stay exactly the same, by
+   mapping transparent colors to each other and adjusting colors which would be
+   converted to the transparent color otherwise.  It affects every
+   @code(al_blit) operation between distinct pixel formats and every automatic
+   conversion. *)
+  PROCEDURE al_set_color_conversion (mode: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_color_conversion';
+
+(* Returns the current color conversion mode. *)
+  FUNCTION al_get_color_conversion: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_color_conversion';
+
+(* Switches into graphics mode.  The card parameter should usually be one of
+   the Allegro magic drivers (read introduction of this unit) or see the
+   platform specific documentation for a list of the available drivers.  The
+   @code(w) and @code(h) parameters specify what screen resolution you want.
+   The color depth of the graphic mode has to be specified before calling this
+   function with @link(al_set_color_depth).
+
+   The @code(v_w) and @code(v_h) parameters specify the minimum virtual
+   screen size, in case you need a large virtual screen for hardware scrolling
+   or page flipping.  You should set them to zero if you don't care about the
+   virtual screen size.
+
+   When you call @code(al_set_gfx_mode), the @code(v_w) and @code(v_h)
+   parameters represent the minimum size of virtual screen that is acceptable
+   for your program.  The range of possible sizes is usually very restricted,
+   and Allegro may end up creating a virtual screen much larger than the one
+   you request.  Allowed sizes are driver dependent and some drivers do not
+   allow virtual screens that are larger than the visible screen at all:  don't
+   assume that whatever you pass will always work.
+
+   Currently, using a big virtual screen for page flipping is considered bad
+   practice.  There are platforms which don't support virtual screens bigger
+   than the physical screen but can create different video pages to flip back
+   and forth.  This means that, if you want page flipping and aren't going to
+   use hardware scrolling, you should call @code(al_set_gfx_mode) with (0,0)
+   as the virtual screen size and later create the different video pages with
+   @link(al_create_video_bitmap).  Otherwise your program will be limited to
+   the platforms supporting hardware scrolling.
+
+   After you select a graphics mode, the physical and virtual screen sizes can
+   be checked with the variables @link(AL_SCREEN_W), @link(AL_SCREEN_H),
+   @link(AL_VIRTUAL_W), and @link(AL_VIRTUAL_H).
+
+   @returns(@true on success.  On failure returns @false and stores a
+     description of the problem in @link(al_error).) *)
+  FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: LONGINT): BOOLEAN;
+
+(* Shortcut version of @code(al_acquire_bitmap @(screen@);)
+   @seealso(al_acquire_bitmap) *)
+  PROCEDURE al_acquire_screen;
+
+(* Shortcut version of @code(al_release_bitmap @(screen@);)
+   @seealso(al_release_bitmap) *)
+  PROCEDURE al_release_screen;
+
+(* Attempts to page flip the hardware screen to display the specified video
+   bitmap object, which must be the same size as the physical screen, and
+   should have been obtained by calling the @link(al_create_video_bitmap)
+   function.
+
+   Allegro will handle any necessary vertical retrace synchronisation when page
+   flipping, so you don't need to call @link(al_vsync) before it.  This means
+   that @code(al_show_video_bitmap) has the same time delay effects as
+   @code(al_vsync) by default.  This can be adjusted with the "disable_vsync"
+   config key in the @code([graphics]) section of allegro.cfg.
+
+   @returns(zero on success and non-zero on failure.) *)
+  FUNCTION al_show_video_bitmap (bmp: AL_BITMAPptr): LONGINT;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'show_video_bitmap';
+
+(* Waits for a vertical retrace to begin.  The retrace happens when the
+   electron beam in your monitor has reached the bottom of the screen and is
+   moving back to the top ready for another scan.  During this short period the
+   graphics card isn't sending any data to the monitor, so you can do things to
+   it that aren't possible at other times, such as altering the palette without
+   causing flickering (snow).  Allegro will automatically wait for a retrace
+   before altering the palette or doing any hardware scrolling, though, so you
+   don't normally need to bother with this function. *)
+  PROCEDURE al_vsync; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'vsync';
+
+
+(**********************
+ * Drawing primitives *
+ **********************)
+
+(* Each bitmap has an associated clipping rectangle, which is the area of the
+   image that it is OK to draw onto.  Nothing will be drawn to positions
+   outside this space.  This function sets the clipping rectangle for the
+   specified bitmap.  Pass the coordinates of the top-left and bottom-right
+   corners of the clipping rectangle in this order;  these are both inclusive,
+   i.e. @code(al_set_clip_rect @(bitmap, 16, 16, 32, 32@)) will allow drawing
+   to (16, 16) and (32, 32), but not to (15, 15) and (33, 33).
+
+   Drawing operations will be performed (at least partially) on the bitmap as
+   long as the first coordinates of its clipping rectangle are not greater than
+   the second coordinates and its intersection with the actual image is
+   non-empty.  If either condition is not fulfilled, drawing will be turned off
+   for the bitmap, e.g.: @code(al_set_clip_rect @(bmp, 0, 0, -1, -1@)) will
+   disable drawing on @code(bmp).
+
+   Note that passing "out-of-bitmap" coordinates is allowed, but they are
+   likely to be altered (and so the coordinates returned by
+   @link(al_get_clip_rect) will be different).  However, such modifications are
+   guaranteed to preserve the external effect of the clipping rectangle, that
+   is not to modify the actual area of the image that it is OK to draw onto. *)
+  PROCEDURE al_set_clip_rect (bmp: AL_BITMAPptr; x1, y1, x2, y2: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_clip_rect';
+
+(* Sets the clipping rectangle of the specified bitmap as the intersection of
+   its current clipping rectangle and the rectangle described by the four
+   coordinates. *)
+  PROCEDURE al_add_clip_rect (bmp: AL_BITMAPptr; x1, y1, x2, y2: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'add_clip_rect';
+
+(* Returns the clipping rectangle for the specified bitmap.  *)
+  PROCEDURE al_get_clip_rect (bmp: AL_BITMAPptr; VAR x1, y1, x2, y2: LONGINT);
+
+(* Turns on (if state is @true) or off (if state is @false) clipping for the
+   specified bitmap.  Turning clipping off may slightly speed up some drawing
+   operations (usually a negligible difference, although every little helps)
+   but will result in your program dying a horrible death if you try to draw
+   beyond the edges of the bitmap. *)
+  PROCEDURE al_set_clip_state (bmp: AL_BITMAPptr; state: BOOLEAN);
+
+
+
+(* Drawing modes. *)
+CONST
+(* Flag for @link(al_drawing_mode).
+
+   The pixels of the bitmap being drawn onto are simply replaced by those
+   produced by the drawing function. *)
+  AL_DRAW_MODE_SOLID		= 0;
+(* Flag for @link(al_drawing_mode).
+
+   Pixels are written to the bitmap with an exclusive-or operation rather than
+   a simple copy, so drawing the same shape twice will erase it.  Because it
+   involves reading as well as writing the bitmap memory, xor drawing is a lot
+   slower than the normal replace mode. *)
+  AL_DRAW_MODE_XOR		= 1;
+(* Flag for @link(al_drawing_mode).
+
+   Pixels are simply copied from the pattern bitmap onto the destination
+   bitmap.  This allows the use of multicolored patterns, and means that the
+   color you pass to the drawing routine is ignored.  This is the fastest of
+   the patterned modes. *)
+  AL_DRAW_MODE_COPY_PATTERN	= 2;
+(* Flag for @link(al_drawing_mode).
+
+   Each pixel in the pattern bitmap is compared with the mask color, which is
+   zero in 256-color modes or bright pink for truecolor data (maximum red and
+   blue, zero green).  If the pattern pixel is solid, a pixel of the color you
+   passed to the drawing routine is written to the destination bitmap,
+   otherwise a zero is written.  The pattern is thus treated as a monochrome
+   bitmask, which lets you use the same pattern to draw different shapes in
+   different colors, but prevents the use of multicolored patterns. *)
+  AL_DRAW_MODE_SOLID_PATTERN	= 3;
+(* Flag for @link(al_drawing_mode).
+
+   It is almost the same as @link(AL_DRAW_MODE_SOLID_PATTERN), but the masked
+   pixels are skipped rather than being written as zeros, so the background
+   shows through the gaps. *)
+  AL_DRAW_MODE_MASKED_PATTERN	= 4;
+(* Flag for @link(al_drawing_mode).
+
+   The global @link(al_color_map) table or truecolor blender functions are
+   used to overlay pixels on top of the existing image.  This must only be used
+   after you have set up the color mapping table (for 256 color modes) or
+   blender functions (for truecolor modes).  Because it involves reading as
+   well as writing the bitmap memory, translucent drawing is very slow if you
+   draw directly to video RAM, so wherever possible you should use a memory
+   bitmap instead. *)
+  AL_DRAW_MODE_TRANS		= 5;
+
+
+
+(* Sets the graphics drawing mode.  This only affects the geometric routines
+   like @link(al_putpixel), lines, rectangles, circles, polygons, floodfill,
+   etc, not the text output, blitting, or sprite drawing functions.  The mode
+   should be one of the following constants:
+@unorderedList(
+  @item(@link(AL_DRAW_MODE_SOLID))
+  @item(@link(AL_DRAW_MODE_XOR))
+  @item(@link(AL_DRAW_MODE_COPY_PATTERN))
+  @item(@link(AL_DRAW_MODE_SOLID_PATTERN))
+  @item(@link(AL_DRAW_MODE_MASKED_PATTERN))
+  @item(@link(AL_DRAW_MODE_TRANS))
+)
+   With the patterned modes, you provide a pattern bitmap which is tiled across
+   the surface of the shape.  Allegro stores a pointer to this bitmap rather
+   than copying it, so you must not destroy the bitmap while it is still
+   selected as the pattern.  The width and height of the pattern must be powers
+   of two, but they can be different, eg. a 64x16 pattern is fine, but a 17x3
+   one is not.  The pattern is tiled in a grid starting at point
+   @code(@(x_anchor, y_anchor@)).  Normally you should just pass zero for these
+   values, which lets you draw several adjacent shapes and have the patterns
+   meet up exactly along the shared edges.  Zero alignment may look peculiar if
+   you are moving a patterned shape around the screen, however, because the
+   shape will move but the pattern alignment will not, so in some situations
+   you may wish to alter the anchor position. *)
+  PROCEDURE al_drawing_mode (mode: LONGINT; pattern: AL_BITMAPptr;
+			     x_anchor, y_anchor: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'drawing_mode';
+
+(* This is a shortcut for toggling xor drawing mode on and off.  Calling
+   @code(al_xor_mode @(1@)) is equivalent to @link(al_drawing_mode)
+   @code(@(AL_DRAW_MODE_XOR, NIL, 0, 0@)).  Calling @code(al_xor_mode @(0@)) is
+   equivalent to @code(al_drawing_mode @(A_DRAW_MODE_SOLID, NIL, 0, 0@)). *)
+  PROCEDURE al_xor_mode (aOn: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'xor_mode';
+
+(* This is a shortcut for selecting solid drawing mode.  It is equivalent to
+   calling @link(al_drawing_mode) @code(@(AL_DRAW_MODE_XOR, NIL, 0, 0@)). *)
+  PROCEDURE al_solid_mode; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'solid_mode';
+
+
+
+(* Clears the bitmap to color 0. *)
+  PROCEDURE al_clear_bitmap (bitmap: AL_BITMAPptr); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clear_bitmap';
+
+(* Clears the bitmap to the specified color. *)
+  PROCEDURE al_clear_to_color (bitmap: AL_BITMAPptr; color: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clear_to_color';
+
+(* Reads a pixel from point (x, y) in the bitmap.
+
+   @returns(-1 if the point lies outside the bitmap @(ignoring the clipping
+     rectangle@), otherwise the value of the pixel in the color format of the
+     bitmap.
+
+     @bold(Warning:) -1 is also a valid value for pixels contained in 32-bit
+     bitmaps with alpha channel @(when R,G,B,A are all equal to 255@) so you
+     can't use the test against -1 as a predicate for such bitmaps.  In this
+     cases, the only reliable predicate is check if it is inside the bitmap.
+
+     To extract the individual color components, use the getr() / getg() / getb() / geta() family of functions) *)
+  FUNCTION  al_getpixel	   (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+
+(* Writes a pixel to the specified position in the bitmap, using the current
+   drawing mode and the bitmap's clipping rectangle. *)
+  PROCEDURE al_putpixel	   (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+
+(* Draws a vertical line onto the bitmap, from point (x, y1) to (x, y2). *)
+  PROCEDURE al_vline	   (bmp: AL_BITMAPptr; x, y1, y2, color: LONGINT);
+
+(* Draws a horizontal line onto the bitmap, from point (x1, y) to (x2, y). *)
+  PROCEDURE al_hline	   (bmp: AL_BITMAPptr; x1, y, x2, color: LONGINT);
+
+(* Draws a line onto the bitmap, from point (x1, y1) to (x2, y2). *)
+  PROCEDURE al_line	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+
+(* Faster version of the previous function.  Note that pixel correctness is not
+   guaranteed for this function. *)
+  PROCEDURE al_fastline	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+
+(* Draws an outline rectangle with the two points as its opposite corners. *)
+  PROCEDURE al_rect	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+
+(* Draws a solid, filled rectangle with the two points as its opposite
+   corners. *)
+  PROCEDURE al_rectfill	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+
+(* Draws a circle with the specified centre and radius. *)
+  PROCEDURE al_circle	   (bmp: AL_BITMAPptr; x, y, r, color: LONGINT);
+
+(* Draws a filled circle with the specified centre and radius. *)
+  PROCEDURE al_circlefill  (bmp: AL_BITMAPptr; x, y, r, color: LONGINT);
+
+(* Draws an ellipse with the specified centre and radius. *)
+  PROCEDURE al_ellipse	   (bmp: AL_BITMAPptr; x, y, rx, ry, color: LONGINT);
+
+(* Draws a filled ellipse with the specified centre and radius. *)
+  PROCEDURE al_ellipsefill (bmp: AL_BITMAPptr; x, y, rx, ry, color: LONGINT);
+
+(* Floodfills an enclosed area, starting at point (x, y), with the specified
+   color. *)
+  PROCEDURE al_floodfill   (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+
+(* Draws a filled polygon with an arbitrary number of corners.  Pass the number
+   of vertices and an array containing a series of x, y points (a total of
+   vertices*2 values). *)
+  PROCEDURE al_polygon     (bmp: AL_BITMAPptr; vertices: LONGINT; points: ARRAY OF LONGINT; color: LONGINT);
+
+
+
+(*************
+ * Text font *
+ *************)
+
+TYPE
+(* A pointer to a structure holding an Allegro font, usually created beforehand
+   with the grabber tool or Allegro's default font.  Read introduction of
+   @code(alfont) unit for a description on how to load/destroy fonts, and unit
+   @code(altext) for a description on how to show text. *)
+  AL_FONTptr = POINTER;
+
+
+
+(* Loads a font from a file.  At present, this supports loading fonts from a
+   GRX format .fnt file, a 8x8 or 8x16 BIOS format .fnt file, a datafile or any
+   bitmap format that can be loaded by @link(al_load_bitmap).
+
+   If the font contains palette information, then the palette is returned in
+   the second parameter, which should be an array of 256 @link(AL_RGB)
+   structures (a @link(AL_PALETTE)).  The @code(pal) argument may be @nil.
+   In this case, the palette data, if present, is simply not returned.
+
+   Note that another way of loading fonts is embedding them into a datafile and
+   using the datafile related functions.
+
+   @returns(a pointer to the font or @nil on error.  Remember that you are
+     responsible for destroying the font when you are finished with it to avoid
+     memory leaks.) *)
+  FUNCTION al_load_font (filename: STRING; palette: AL_PALETTEptr; p: POINTER)
+	: AL_FONTptr;
+
+(* Tries to grab a font from a bitmap.  The bitmap can be in any format that
+   @link(al_load_bitmap) understands.
+
+   The size of each character is determined by the layout of the image, which
+   should be a rectangular grid containing all the ASCII characters from space
+   (32) up to the tilde (126).  The way the characters are separated depends on
+   the color depth of the image file:
+   @unorderedList(
+     @item(paletted @(8 bit@) image file Use color 0 for the transparent
+       portions of the characters and fill the spaces between each letter with
+       color 255.)
+     @item(High @(15/16 bit@) and true @(24/32 bit@) color image file use
+       bright pink @(maximum red and blue, zero green@) for the transparent
+       portions of the characters and fill the spaces between each letter with
+       bright yellow @(maximum red and green, zero blue@).)
+   )
+   Note that in each horizontal row the bounding boxes around the characters
+   should align and have the same height.
+
+   Probably the easiest way to get to grips with how this works is to load up
+   the `demo.dat' file and export the TITLE_FONT into a PCX file.  Have a look
+   at the resulting picture in your paint program:  that is the format a font
+   should be in.
+
+   Take care with high and true color fonts:  Allegro will convert these to the
+   current color depth when you load the font.  If you try to use a font on a
+   bitmap with a different color depth Allegro will do color conversions on the
+   fly, which will be rather slow.  For optimal performance you should set the
+   color depth to the color depth you want to use before loading any fonts.
+
+   @returns(a pointer to the font or @nil on error.  Remember that you are
+     responsible for destroying the font when you are finished with it to avoid
+     memory leaks.) *)
+  FUNCTION al_load_bitmap_font (filename: STRING; palette: AL_PALETTEptr;
+    p: POINTER): POINTER;
+
+(* This function is the work-horse of @link(al_load_bitmap_font), and can be
+   used to grab a font from a bitmap in memory.  You can use this if you want
+   to generate or modify a font at runtime.  The bitmap should follow the
+   layout described for @link(al_load_bitmap_font).
+
+   @returns(a pointer to the font or @nil on error.  Remember that you are
+     responsible for destroying the font when you are finished with it to avoid
+     memory leaks.) *)
+  FUNCTION al_grab_font_from_bitmap (bmp: AL_BITMAPptr): AL_FONTptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'grab_font_from_bitmap';
+
+(* This function checks if the given font is a color font, as opposed to a
+   monochrome font.
+   @returns(@true if the font is a color font, @false if it is not.) *)
+  FUNCTION al_is_color_font (f: AL_FONTptr): BOOLEAN;
+
+(* This function checks if the given font is a mono font, as opposed to a
+   color font.
+   @returns(@true if the font is a monochrome font, @false if it is not.) *)
+  FUNCTION al_is_mono_font (f: AL_FONTptr): BOOLEAN;
+
+(* This function compares the two fonts, which you can use to find out if
+   Allegro is capable of merging them.
+
+   @returns(@true if the two fonts are of the same general type @(both are
+     color fonts or both are monochrome fonts, for instance@).) *)
+  FUNCTION al_is_compatible_font (f1, f2: AL_FONTptr): BOOLEAN;
+
+(* Frees the memory being used by a font structure.  Don't use this on the
+   default global Allegro font or any text routines using it could crash.  You
+   should use this only on fonts you have loaded manually after you are done
+   with them, to prevent memory leaks in your program. *)
+  PROCEDURE al_destroy_font (f: AL_FONTptr); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_font';
+
+
+
+(****************
+ * Text drawing *
+ ****************)
+
+VAR
+(* A simple 8x8 fixed size font (the mode 13h BIOS default).  This font
+   contains the standard ASCII (U+20 to U+7F), Latin-1 (U+A1 to U+FF), and
+   Latin Extended-A (U+0100 to U+017F) character ranges. *)
+  al_font: AL_FONTptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'font';
+(* When Allegro cannot find a glyph it needs in a font, it will instead output
+   the character given in this variable.  By default, this is set to the caret
+   symbol, @code(^), but you can change this global to use any other character
+   instead.*)
+  al_404_char: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_404_char';
+
+
+
+(* Writes the string onto the bitmap at given position, using the specified
+   font, foreground color and background color.  If the background color is -1,
+   then the text is written transparently.  If the foreground color is -1 and a
+   color font is in use, it will be drawn using the colors from the original
+   font bitmap (the one you imported into the grabber program), which allows
+   multicolored text output.  For high and true color fonts, the foreground
+   color is ignored and always treated as -1.
+   @param(bmp The output bitmap.)
+   @param(f The font to render.)
+   @param(x Horizontal position.) @param(y Vertical position.)
+   @param(color Foreground color.  Set to -1 to use multicolor fonts.)
+   @param(bg Background color.  Set to -1 to use transparent background.)
+   @seealso(al_textout_centre_ex) @seealso(al_textout_right_ex) @seealso(al_textout_justify_ex)*)
+  PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+(* Like @link(al_textout_ex), but interprets the @code(x) coordinate as the
+   centre rather than the left edge of the string.
+   @seealso(al_textout_ex) @seealso(al_textout_right_ex) @seealso(al_textout_justify_ex)*)
+  PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+(* Like @link(al_textout_ex), but interprets the @code(x) coordinate as the
+   right rather than the left edge of the string.
+   @seealso(al_textout_ex) @seealso(al_textout_centre_ex) @seealso(al_textout_justify_ex)*)
+  PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+(* Draws justified text within the region @code(x1-x2).  If the amount of spare
+   space is greater than the @code(diff) value, it will give up and draw
+   regular left justified text instead.
+   @seealso(al_textout_ex) @seealso(al_textout_centre_ex) @seealso(al_textout_right_ex)*)
+  PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x1, x2, y, diff, color, bg: LONGINT);
+
+
+
+(* Returns the length (in pixels) of a string in the specified font. *)
+  FUNCTION al_text_length (f: AL_FONTptr; str: STRING): LONGINT;
+(* Returns the height (in pixels) of the specified font. *)
+  FUNCTION al_text_height (f: AL_FONTptr): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'text_height';
+
+
+
+(*******************************
+ * Blitting and sprite drawing *
+ *******************************)
+
+CONST
+(* Drawing modes for al_draw_sprite_ex. *)
+  AL_DRAW_SPRITE_NORMAL_MODE = 0; {< @exclude }
+  AL_DRAW_SPRITE_LIT_MODE    = 1; {< @exclude }
+  AL_DRAW_SPRITE_TRANS_MODE  = 2; {< @exclude }
+
+
+(* Flipping modes for al_draw_sprite_ex. *)
+  AL_DRAW_SPRITE_NO_FLIP_MODE = 0; {< @exclude }
+  AL_DRAW_SPRITE_H_FLIP_MODE  = 1; {< @exclude }
+  AL_DRAW_SPRITE_V_FLIP_MODE  = 2; {< @exclude }
+  AL_DRAW_SPRITE_VH_FLIP_MODE = 3; {< @exclude }
+
+
+
+(* Copies a rectangular area of the source bitmap to the destination bitmap.
+   The @code(source_x) and @code(source_y) parameters are the top left corner
+   of the area to copy from the source bitmap, and @code(dest_x) and
+   @code(dest_y) are the corresponding position in the destination bitmap. This
+   routine respects the destination clipping rectangle, and it will also clip
+   if you try to blit from areas outside the source bitmap.
+
+   You can blit between any parts of any two bitmaps, even if the two memory
+   areas overlap (ie. source and dest are the same, or one is sub-bitmap of the
+   other).  You should be aware, however, that a lot of SVGA cards don't
+   provide separate read and write banks, which means that blitting from one
+   part of the screen to another requires the use of a temporary bitmap in
+   memory, and is therefore extremely slow.  As a general rule you should avoid
+   blitting from the screen onto itself in SVGA modes.
+
+   If the @link(AL_GFX_HW_VRAM_BLIT) bit in the @link(al_gfx_capabilities)
+   flag is set, the current driver supports hardware accelerated blits from one
+   part of the screen onto another.  This is extremely fast, so when this flag
+   is set it may be worth storing some of your more frequently used graphics in
+   an offscreen portion of the video memory.
+
+   Unlike most of the graphics routines, @code(al_blit) allows the source and
+   destination bitmaps to be of different color depths, so it can be used to
+   convert images from one pixel format to another.  In this case, the behavior
+   is affected by the @code(AL_COLORCONV_KEEP_TRANS)
+   and @code(AL_COLORCONV_DITHER* ) flags of the current color conversion mode.
+   @seealso(al_set_color_conversion) *)
+  PROCEDURE al_blit (source, dest: AL_BITMAPptr; source_x, source_y, dest_x, dest_y, width, height: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'blit';
+
+(* Like @link(al_blit), except it can scale images (so the source and
+   destination rectangles don't need to be the same size) and requires the
+   source and destination bitmaps to be of the same color depth.  This routine
+   doesn't do as much safety checking as the regular @code(al_blit):  in
+   particular you must take care not to copy from areas outside the source
+   bitmap, and you cannot blit between overlapping regions, ie. you must use
+   different bitmaps for the source and the destination.  Moreover, the source
+   must be a memory bitmap. *)
+  PROCEDURE al_stretch_blit (source, dest: AL_BITMAPptr; source_x, source_y, source_width, source_height, dest_x, dest_y, dest_width, dest_height: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stretch_blit';
+
+(* Like @link(al_blit), but skips transparent pixels, which are marked by a
+   zero in 256-color modes or bright pink for truecolor data (maximum red and
+   blue, zero green), and requires the source and destination bitmaps to be of
+   the same color depth.  The source and destination regions must not overlap.
+
+   If the @link(AL_GFX_HW_VRAM_BLIT_MASKED) bit in the
+   @link(al_gfx_capabilities) flag is set, the current driver supports hardware
+   accelerated masked blits from one part of the screen onto another.  This is
+   extremely fast, so when this flag is set it may be worth storing some of
+   your more frequently used sprites in an offscreen portion of the video
+   memory.
+
+   @bold(Warning:)  if the hardware acceleration flag is not set,
+   @code(masked_blit) will not work correctly when used with a source image in
+   system or video memory so the latter must be a memory bitmap. *)
+  PROCEDURE al_masked_blit (source, dest: AL_BITMAPptr; source_x, source_y, dest_x, dest_y, width, height: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'masked_blit';
+
+(* Like @link(al_masked_blit), except it can scale images (so the source and
+   destination rectangles don't need to be the same size).  This routine
+   doesn't do as much safety checking as the regular @code(al_masked_blit):
+   in particular you must take care not to copy from areas outside the source
+   bitmap.  Moreover, the source must be a memory bitmap. *)
+  PROCEDURE al_masked_stretch_blit (source, dest: AL_BITMAPptr; source_x, source_y, source_width, source_height, dest_x, dest_y, dest_width, dest_height: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'masked_stretch_blit';
+
+
+
+(* Draws a copy of the sprite bitmap onto the destination bitmap at the
+   specified position.  This is almost the same as @link(al_blit)
+   @code(@(sprite, bmp, 0, 0, x, y, sprite^.w, sprite^.h@)), but it uses a
+   masked drawing mode where transparent pixels are skipped, so the background
+   image will show through the masked parts of the sprite.  Transparent pixels
+   are marked by a zero in 256-color modes or bright pink for truecolor data
+   (maximum red and blue, zero green). Example:
+@longcode(#
+VAR
+  SpaceShip: AL_BITMAPptr;
+
+          ...
+  al_draw_sprite (al_screen, SpaceShip, x, y);
+  #)
+
+  If the @link(AL_GFX_HW_VRAM_BLIT_MASKED) bit in the
+  @link(al_gfx_capabilities) flag is set, the current driver supports hardware
+  accelerated sprite drawing when the source image is a video memory bitmap or
+  a sub-bitmap of the screen.  This is extremely fast, so when this flag is set
+  it may be worth storing some of your more frequently used sprites in an
+  offscreen portion of the video memory.
+
+  @bold(Warning:)  if the hardware acceleration flag is not set,
+  @code(al_draw_sprite) will not work correctly when used with a sprite image
+  in system or video memory so the latter must be a memory bitmap.
+
+  Although generally not supporting graphics of mixed color depths, as a
+  special case this function can be used to draw 256-color source images onto
+  truecolor destination bitmaps, so you can use palette effects on specific
+  sprites within a truecolor program. . *)
+  PROCEDURE al_draw_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+
+(* Like @link(al_draw_sprite), except it can stretch the sprite image to the
+   specified width and height and requires the sprite image and destination
+   bitmap to be of the same color depth.  Moreover, the sprite image must be a
+   memory bitmap. *)
+  PROCEDURE al_stretch_sprite (bmp, sprite: AL_BITMAPptr; x, y, w, h: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stretch_sprite';
+
+(* Draws the sprite image onto the destination bitmap using the specified
+   @code(mode) argument, optionally flipping the sprite in the orientation
+   specified by @code(flip) argument.
+
+   @param(mode defines how is sprite going to be drawn on the destination
+     bitmap:
+@unorderedList(
+  @item(@code(AL_DRAW_SPRITE_NORMAL) draws a masked sprite, like
+    @link(al_draw_sprite).)
+  @item(@code (AL_DRAW_SPRITE_LIT) draws a tinted sprite, like
+    @link(al_draw_lit_sprite).)
+  @item(@code (AL_DRAW_SPRITE_TRANS) draws a blended sprite, like
+    @link(al_draw_trans_sprite). )
+)
+   )
+   @param(flip defines the flipping orientation:
+@unorderedList(
+  @item(@code(AL_DRAW_SPRITE_NO_FLIP) do not perform flipping.)
+  @item(@code(AL_DRAW_SPRITE_H_FLIP) flip horizontally.)
+  @item(@code(AL_DRAW_SPRITE_V_FLIP) flip vertically.)
+  @item(@code(AL_DRAW_SPRITE_VH_FLIP) flip both vertically and horizontally-)
+)
+   ) *)
+  PROCEDURE al_draw_sprite_ex (bmp, sprite: AL_BITMAPptr; x, y, mode, flip: LONGINT);
+
+(* This is like @link(al_draw_sprite), but it additionally flip the image
+   horizontally.  Flipping horizontally means that the x-axis is reversed,
+   between the source and the destination.  This produces exact mirror images,
+   which is not the same as rotating the sprite (and it is a lot faster than
+   the rotation routine).  The sprite must be a memory bitmap. *)
+  PROCEDURE al_draw_sprite_h_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+
+(* This is like @link(al_draw_sprite), but it additionally flip the image
+   vertically.  Flipping vertically means that the y-axis is reversed,
+   between the source and the destination.  This produces exact mirror images,
+   which is not the same as rotating the sprite (and it is a lot faster than
+   the rotation routine).  The sprite must be a memory bitmap. *)
+  PROCEDURE al_draw_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+
+(* This is like @link(al_draw_sprite), but it additionally flip the image
+   vertically and horizontally.  Flipping vertically means that the y-axis is
+   reversed, while flipping horizontally means that de x-axis is reversed,
+   between the source and the destination.  This produces exact mirror images,
+   which is not the same as rotating the sprite (and it is a lot faster than
+   the rotation routine).  The sprite must be a memory bitmap. *)
+  PROCEDURE al_draw_sprite_vh_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+
+(* Uses the global @link(al_color_map) table or truecolor blender functions
+   to overlay the sprite on top of the existing image.  This must only be used
+   after you have set up the color mapping table (for 256-color modes) or
+   blender functions (for truecolor modes).  Because it involves reading as
+   well as writing the bitmap memory, translucent drawing is very slow if you
+   draw directly to video RAM, so wherever possible you should use a memory
+   bitmap instead. Example:
+@longcode(#
+VAR
+  global_trans_table: AL_COLOR_MAP;
+
+          ...
+   al_create_trans_table (@global_trans_table, my_palette,
+                             128, 128, 128, NIL);
+          ...
+   IF al_get_color_depth = 8
+     al_color_map := @global_trans_table
+   ELSE
+     al_set_trans_blender (128, 128, 128, 128);
+   al_draw_trans_sprite (buffer, ghost_sprite, x, y);
+#)
+
+   The bitmap and sprite must normally be in the same color depth, but as a
+   special case you can draw 32 bit RGBA format sprites onto any hicolor or
+   truecolor bitmap, as long as you call @link(al_set_alpha_blender) first,
+   and you can draw 8-bit alpha images onto a 32-bit RGBA destination, as long
+   as you call @link(al_set_write_alpha_blender) first.  As
+   @link(al_draw_sprite) this function skips transparent pixels, except if the
+   source sprite is an 8-bit image;  if this is the case, you should pay
+   attention to properly set up your color map table for index 0. *)
+  PROCEDURE al_draw_trans_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+
+(* In 256-color modes, uses the global @link(al_color_map) table to tint the
+   sprite image to the specified color or to light it to the level specified by
+   'color', depending on the function which was used to build the table
+   (@link(al_create_trans_table) or @link(al_create_light_table)), and draws
+   the resulting image to the destination bitmap.  In truecolor modes, uses the
+   blender functions to light the sprite image using the alpha level specified
+   by 'color' (the alpha level which was passed to the blender functions is
+   ignored) and draws the resulting image to the destination bitmap.
+
+   @param(c must be in the range [0..255] whatever its actual meaning is.
+     This must only be used after you have set up the color mapping table @(for
+     256-color modes@) or blender functions @(for truecolor modes@).) *)
+  PROCEDURE al_draw_lit_sprite (bmp, sprite: AL_BITMAPptr; x, y, c: LONGINT);
+
+(* Draws the sprite image onto the bitmap.  It is placed with its top left
+   corner at the specified position, then rotated by the specified angle around
+   its centre.  The angle is a fixed point 16.16 number in the same format used
+   by the fixed point trig routines, with 256 equal to a full circle, 64 a
+   right angle, etc.  All rotation functions can draw between any two bitmaps,
+   even screen bitmaps or bitmaps of different color depth.
+
+   Positive increments of the angle will make the sprite rotate clockwise. *)
+  PROCEDURE al_rotate_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
+
+(* Like @link(al_rotate_sprite), but flips the image vertically before
+   rotating it.  To flip horizontally, use this routine but add
+   @code(al_itofix @(128@)) to the angle.  To flip in both directions, use
+   @code(al_rotate_sprite) and add @code(al_itofix @(128@)) to its angle. *)
+  PROCEDURE al_rotate_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
+
+(* Like @link(al_rotate_sprite), but stretches or shrinks the image at the
+   same time as rotating it. *)
+  PROCEDURE al_rotate_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED);
+
+(* Draws the sprite, similar to @link(al_rotate_scaled_sprite) except that it
+  flips the sprite vertically first. *)
+  PROCEDURE al_rotate_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED);
+
+(* Like @link(al_rotate_sprite), but aligns the point in the sprite given by
+   @code(cx, cy) to @code(x, y) in the bitmap, then rotates around this
+   point. *)
+  PROCEDURE al_pivot_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
+
+(* Like @link(al_rotate_sprite_v_flip), but aligns the point in the sprite
+   given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates around
+   this point. *)
+  PROCEDURE al_pivot_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
+
+(* Like @link(al_rotate_scaled_sprite), but aligns the point in the sprite
+   given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates around
+   this point. *)
+  PROCEDURE al_pivot_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED);
+
+(* Like @link(al_rotate_scaled_sprite_v_flip), but aligns the point in the
+   sprite given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates
+   and scales around this point. *)
+  PROCEDURE al_pivot_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED);
+
+
+
+(********************************
+ * Run-lenth compressed sprites *
+ ********************************)
+
+TYPE
+(* Ponter to @link(AL_RLE_SPRITE). *)
+  AL_RLE_SPRITEptr = ^AL_RLE_SPRITE;
+(* An RLE compressed sprite. @seealso(al_get_rle_sprite) *)
+  AL_RLE_SPRITE = RECORD
+    w, h: LONGINT;	 (*< width and height in pixels *)
+    color_depth: LONGINT; (*< color depth of the image *)
+    size: LONGINT;	 (*< size of sprite data in bytes *)
+    dat: POINTER;
+  END;
+
+
+
+(* Creates an RLE sprite based on the specified bitmap (which must be a memory
+   bitmap).  Remember to free this RLE sprite later to avoid memory leaks.
+   @param(bitmap Pointer to the @link(albitmap bitmap) used to create the
+     sprite.)
+   @returns(A pointer to the created RLE sprite, or @nil if it could not be
+     created.  Remember to free this RLE sprite later to avoid memory
+     leaks.)
+   @seealso(al_destroy_rle_sprite) @seealso(al_draw_rle_sprite) *)
+  FUNCTION al_get_rle_sprite (bitmap: AL_BITMAPptr): AL_RLE_SPRITEptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_rle_sprite';
+
+(* Destroys an RLE sprite structure previously returned by
+   @link(al_get_rle_sprite).  If you pass a @nil pointer this function won't do
+   anything.  Use this once you are done with an RLE sprite to avoid memory
+   leaks in your program. 
+   @param(sprite The RLE sprite to destroy.) *)
+  PROCEDURE al_destroy_rle_sprite (sprite: AL_RLE_SPRITEptr); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_rle_sprite';
+
+(* Draws an RLE sprite onto a bitmap at the specified position.
+   @param(bmp Bitmap where the sprite will be draw.)
+   @param(spr Sprite to draw.)
+   @param(x Horizontal coordinate.) @param(y Vertical coordinate.)
+   @seealso(al_draw_sprite) *)
+  PROCEDURE al_draw_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
+				x, y: LONGINT);
+
+(* Translucent version of @link(al_draw_rle_sprite).  This must only be used
+   after you have set up the color mapping table (for 256-color modes) or
+   blender functions (for truecolor modes).  The bitmap and sprite must
+   normally be in the same color depth, but as a special case you can draw
+   32-bit RGBA format sprites onto any hicolor or truecolor bitmap, as long as
+   you call @link(al_set_alpha_blender) first.
+   @param(bmp Bitmap where the sprite will be draw.)
+   @param(spr Sprite to draw.)
+   @param(x Horizontal coordinate.) @param(y Vertical coordinate.)
+   @seealso(al_draw_rle_sprite) @seealso(al_color_map)
+   @seealso(al_set_trans_blender) *)
+  PROCEDURE al_draw_trans_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
+					x, y: LONGINT);
+
+(* Tinted version of @link(al_draw_rle_sprite).  This must only be used after
+   you have set up the color mapping table (for 256-color modes) or blender
+   functions (for truecolor modes).
+   @param(bmp Bitmap where the sprite will be draw.)
+   @param(spr Sprite to draw.)
+   @param(x Horizontal coordinate.) @param(y Vertical coordinate.)
+   @param(color Tint color.)
+   @seealso(al_draw_rle_sprite) @seealso(al_color_map) *)
+  PROCEDURE al_draw_lit_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
+					x, y, color: LONGINT);
+
+
+
+(******************************************
+ * Sound initialization and configuration *
+ ******************************************)
+
+CONST
+(* Identifier to pass to @link(al_install_sound). *)
+  AL_DIGI_AUTODETECT	= -1;
+(* Identifier to pass to @link(al_install_sound). *)
+  AL_DIGI_NONE		= 0;
+(* Identifier to pass to @link(al_install_sound). *)
+  AL_MIDI_AUTODETECT	= -1;
+(* Identifier to pass to @link(al_install_sound). *)
+  AL_MIDI_NONE		=  0;
+(* Identifier to pass to @link(al_install_sound). *)
+  AL_MIDI_DIGMID	= $44494749; { AL_ID ('DIGI'); }
+
+
+
+(* Call this function to specify the number of voices that are to be used by
+   the digital and MIDI sound drivers respectively.  This must be done
+   @bold(before) calling @link(al_install_sound).  If you reserve too many
+   voices, subsequent calls to @code(al_install_sound) will fail.  How many
+   voices are available depends on the driver, and in some cases you will
+   actually get more than you reserve (eg. the FM synth drivers will always
+   provide 9 voices on an OPL2 and 18 on an OPL3, and the SB digital driver
+   will round the number of voices up to the nearest power of two).  Pass
+   negative values to restore the default settings.  You should be aware that
+   the sound quality is usually inversely related to how many voices you use,
+   so don't reserve any more than you really need. *)
+  PROCEDURE al_reserve_voices (digi_voices, midi_voidces: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'reserve_voices';
+
+(* By default, Allegro will play a centered sample at half volume on both the
+   left and right channel.  A sample panned to the far right or left will be
+   played at maximum volume on that channel only.  This is done so you can play
+   a single panned sample without distortion.  If you play multiple samples at
+   full volume, the mixing process can result in clipping, a noticeable form of
+   distortion.  The more samples, the more likely clipping is to occur, and the
+   more clipping, the worse the output will sound.
+
+   If clipping is a problem - or if the output is too quiet - this function can
+   be used to adjust the volume of each voice.  You should first check that
+   your speakers are at a reasonable volume, Allegro's global volume is at
+   maximum (see @link(al_set_volume)), and any other mixers such as the Volume
+   Control are set reasonably.  Once you are sure that Allegro's output level
+   is unsuitable for your application, use this function to adjust it.
+
+   Each time you increase the parameter by one, the volume of each voice will
+   halve.  For example, if you pass 4, you can play up to 16 centred samples at
+   maximum volume without distortion.
+
+   If you pass 0 to this function, each centred sample will play at the maximum
+   volume possible without distortion, as will all samples played through a
+   mono driver.  Samples at the extreme left and right will distort if played
+   at full volume.  If you wish to play panned samples at full volume without
+   distortion, you should pass 1 to this function.
+
+   Of course this function does not override the volume you specify with
+   @link(al_play_sample) or @link(al_set_volume).  It simply alters the
+   overall output of the program.  If you play samples at lower volumes, or if
+   they are not normalised, then you can play more of them without distortion.
+
+   It is recommended that you hard-code the parameter into your program, rather
+   than offering it to the user.  The user can alter the volume with the
+   configuration file instead, or you can provide for this with
+   @link(al_set_volume). *)
+  PROCEDURE al_set_volume_per_voice (scale: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_volume_per_voice';
+
+(* Initialises the sound module.  You should normally pass
+   @code(AL_DIGI_AUTODETECT) and @code(AL_MIDI_AUTODETECT) as the driver
+   parameters to this function, in which case Allegro will read hardware
+   settings from the current configuration file.  This allows the user to
+   select different values with the setup utility:  see the @link(alconfig
+   config unit) for details.
+
+   @returns (@true if the sound is successfully installed, and @false on
+     failure.  If it fails it will store a description of the problem in
+     @link(al_error).) *)
+  FUNCTION al_install_sound (digi, midi: LONGINT): BOOLEAN;
+
+(* Cleans up after you are finished with the sound routines.  You don't
+   normally need to call this, because @link(al_exit) will do it for you. *)
+  PROCEDURE al_remove_sound; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_sound';
+
+
+
+(* Alters the global sound output volume.  Specify volumes for both digital
+   samples and MIDI playback, as integers from 0 to 255, or pass a negative
+   value to leave one of the settings unchanged.  Values bigger than 255 will
+   be reduced to 255.  This routine will not alter the volume of the hardware
+   mixer if it exists (i.e. only your application will be affected). *)
+  PROCEDURE al_set_volume (digi, midi: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_volume';
+
+(* Alters the hardware sound output volume.  Specify volumes for both digital
+   samples and MIDI playback, as integers from 0 to 255, or pass a negative
+   value to leave one of the settings unchanged.  Values bigger than 255 will
+   be reduced to 255.  This routine will use the hardware mixer to control the
+   volume if it exists (i.e. the volume of all the applications on your machine
+   will be affected), otherwise do nothing. *)
+  PROCEDURE al_set_hardware_volume (digi, midi: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_hardware_volume';
+
+(* Retrieves the global sound output volume, both for digital samples and MIDI
+   playback, as integers from 0 to 255. *)
+  PROCEDURE al_get_volume (VAR digi, midi: LONGINT);
+
+(* Retrieves the hardware sound output volume, both for digital samples and
+   MIDI playback, as integers from 0 to 255, or -1 if the information is not
+   available. *)
+  PROCEDURE al_get_hardware_volume (VAR digi, midi: LONGINT);
+
+
+
+(* Sets the resampling quality of the mixer.  Valid values are the same as the
+  @code(quality) config variable.  Please read chapter "Standard config
+  variables" for details.  You can call this function at any point in your
+  program, even before @link(al_init). *)
+  PROCEDURE al_set_mixer_quality (quality: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_mixer_quality';
+
+(* Returns the current mixing quality, as specified by the @code(quality)
+   config variable, or a previous call to @link(al_set_mixer_quality). *)
+  FUNCTION al_get_mixer_quality: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_quality';
+
+(* Returns the mixer frequency, in Hz. *)
+  FUNCTION al_get_mixer_frequency: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_frequency';
+
+(* Returns the mixer bit depth (8 or 16). *)
+  FUNCTION al_get_mixer_bits: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_bits';
+
+(* Returns the number of output channels. 2 for stereo, 1 for mono, 0 if the
+   mixer isn't active. *)
+  FUNCTION al_get_mixer_channels: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_channels';
+
+(* Returns the number of voices allocated to the mixer. *)
+  FUNCTION al_get_mixer_voices: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_voices';
+
+(* Returns the number of samples per channel in the mixer buffer. *)
+  FUNCTION al_get_mixer_buffer_length: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_buffer_length';
+
+
+(********
+ * MIDI *
+ ********)
+
+CONST
+(* Max number of MIDI voices. *)
+  AL_MIDI_VOICES = 64;
+(* Max number of MIDI tracks. *)
+  AL_MIDI_TRACKS = 32;
+
+
+
+TYPE
+(* Pointer to @link(AL_MIDI). *)
+  AL_MIDIptr = ^AL_MIDI;
+(* A structure holding MIDI data.
+   @seealso(al_load_midi) @seealso(al_play_midi) @seealso(al_destroy_midi) *)
+  AL_MIDI = RECORD
+    divisions : LONGINT;		{< number of ticks per quarter note  }
+    track : ARRAY[0..(AL_MIDI_TRACKS)-1] OF RECORD
+      data : PBYTE;	{< MIDI message stream  }
+      len : LONGINT;	{< length of the track data  }
+    END;
+  END;
+
+
+
+VAR
+(* Stores the current position (beat number) in the MIDI file, or contains a
+   negative number if no music is currently playing.  Useful for synchronising
+   animations with the music, and for checking whether a MIDI file has finished
+   playing. *)
+  al_midi_pos: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_pos';
+(* Contains the position in seconds in the currently playing midi.  This is
+   useful if you want to display the current song position in seconds, not as
+   beat number. *)
+  al_midi_time: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_time';
+(* The loop start and end points, set by the @link(al_play_looped_midi)
+   function.  These may safely be altered while the music is playing, but you
+   should be sure they are always set to sensible values (start < end).  If you
+   are changing them both at the same time, make sure to alter them in the
+   right order in case a MIDI interrupt happens to occur in between your two
+   writes!  Setting these values to -1 represents the start and end of the file
+   respectively. *)
+  al_midi_loop_start: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_loop_start';
+  al_midi_loop_end  : LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_loop_end';
+
+
+
+(* Loads a MIDI file (handles both format 0 and format 1).
+   @returns(a pointer to a @link(AL_MIDI) structure, or @nil on error.
+     Remember to free this MIDI file later to avoid memory leaks.) *)
+  FUNCTION al_load_midi (filename: STRING): AL_MIDIptr;
+
+(* Destroys a @link(AL_MIDI) structure when you are done with it.  It is safe
+   to call this even when the MIDI file might be playing, because it checks and
+   will kill it off if it is active.  Use this to avoid memory leaks in your
+   program. *)
+  PROCEDURE al_destroy_midi (midi: AL_MIDIptr); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_midi';
+
+(* Starts playing the specified @link(AL_MIDI) file, first stopping whatever
+   music was previously playing.  If the @code(loop) flag is set to @true,
+   the data will be repeated until replaced with something else, otherwise it
+   will stop at the end of the file.  Passing a @nil pointer will stop whatever
+   music is currently playing.
+
+   @returns(@false if an error occurs @(this may happen if a patch-caching
+     wavetable driver is unable to load the required samples, or at least it
+     might in the future when somebody writes some patch-caching wavetable
+     drivers :-@)) *)
+  FUNCTION al_play_midi (midi: AL_MIDIptr; loop: BOOLEAN): BOOLEAN;
+
+(* Starts playing a MIDI file with a user-defined loop position.  When the
+   player reaches the @code(loop_end) position or the end of the file
+   (@code(loop_end) may be -1 to only loop at EOF), it will wind back to the
+   @code(loop_start) point.  Both positions are specified in the same beat
+   number format as the @link(al_midi_pos) variable.
+
+   @returns(@false if an error occurs, @true otherwise.) *)
+  FUNCTION al_play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: LONGINT): BOOLEAN;
+
+(* Stops whatever music is currently playing. This is the same thing as calling
+   @code(al_play_midi @(@nil, @false@)).
+   @seealso(al_play_midi)*)
+  PROCEDURE al_stop_midi; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stop_midi';
+
+(* Pauses the MIDI player. @seealso(al_midi_resume) @seealso(al_play_midi) *)
+  PROCEDURE al_midi_pause; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_pause';
+
+(* Resumes playback of a paused MIDI file. @seealso(al_midi_pause) *)
+  PROCEDURE al_midi_resume; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_resume';
+
+(* Seeks to the given @link(al_midi_pos) in the current MIDI file.  If the
+   target is earlier in the file than the current @code(al_midi_pos) it seeks
+   from the beginning; otherwise it seeks from the current position.
+
+   @returns(zero if it could successfully seek to the requested position.
+     Otherwise, a return value of 1 means it stopped playing, and
+     @code(al_midi_pos) is set to the negative length of the MIDI file @(so you
+     can use this function to determine the length of a MIDI file@).  A return
+   value of 2 means the MIDI file looped back to the start.) *)
+  FUNCTION al_midi_seek(target: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_seek';
+
+(* Streams a block of MIDI commands into the player in real-time, allowing you
+   to trigger notes, jingles, etc, over the top of whatever MIDI file is
+   currently playing. *)
+  PROCEDURE al_midi_out (data: POINTER; length: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_out';
+
+(* Forces the MIDI driver to load the entire set of patches ready for use.  You
+   will not normally need to call this, because Allegro automatically loads
+   whatever data is required for the current MIDI file, but you must call it
+   before sending any program change messages via the @link(al_midi_out)
+   command.
+
+   @returns(@false if an error occurred.) *)
+  FUNCTION al_load_midi_patches: BOOLEAN;
+
+
+
+(*******************
+ * Digital samples *
+ *******************)
+
+TYPE
+(* Pointer to @link(AL_SAMPLE). *)
+  AL_SAMPLEptr = ^AL_SAMPLE;
+
+(* A sample structure, which holds sound data, used by the digital sample
+   routines.  You can consider all of these fields as read only except
+   @code(priority), @code(loop_start) and @code(loop_end), which you can
+   change them for example after loading a sample from disk.
+
+   The variables @code(loop_start) and @code(loop_end) specify the loop
+   position in sample units, and are set by default to the start and end of the
+   sample.
+
+   If you are creating your own samples on the fly, you might also want to
+   modify the raw data of the sample pointed by the @code(data) field.  The
+   sample data are always in unsigned format.  This means that if you are
+   loading a PCM encoded sound file with signed 16-bit samples, you would have
+   to XOR every two bytes (i.e. every sample value) with 0x8000 to change the
+   signedness. *)
+  AL_SAMPLE = RECORD
+    bits : LONGINT;	 {< 8 or 16  }
+    stereo : LONGINT;	 {< sample type flag  }
+    freq : LONGINT;	 {< sample frequency  }
+  (* It is a value from 0 to 255 (by default set to 128) and controls how
+     hardware voices on the sound card are allocated if you attempt to play
+     more than the driver can handle.  This may be used to ensure that the less
+     important sounds are cut off while the important ones are preserved. *)
+    priority : LONGINT;
+    len : DWORD;	 {< length (in samples)  }
+    loop_start : DWORD;	 {< loop start position  }
+    loop_end : DWORD;	 {< loop finish position  }
+    param : DWORD;	 {< @exclude  }
+    data : POINTER;	 {< sample data  }
+  END;
+
+(* Used by @link(al_register_sample_file_type). *)
+  AL_SAMPLE_LOAD_FUNC = FUNCTION (filename: PCHAR): AL_SAMPLEptr; CDECL;
+  AL_SAMPLE_SAVE_FUNC = FUNCTION (filename: PCHAR; spl: AL_SAMPLEptr): LONGINT; CDECL;
+
+
+
+(* Loads a sample from a file, supporting both mono and stereo WAV and mono VOC
+   files, in 8 or 16-bit formats, as well as formats handled by functions
+   registered using @link(al_register_sample_file_type).
+
+   Remember to free this sample later to avoid memory leaks.
+
+   @returns(a pointer to the @link(AL_SAMPLE) or @nil on error.) *)
+  FUNCTION al_load_sample (filename: STRING): AL_SAMPLEptr;
+
+(* Loads a sample from a RIFF WAV file.
+
+   Remember to free this sample later to avoid memory leaks.
+
+   @returns(a pointer to the @link(AL_SAMPLE) or @nil on error.) *)
+  FUNCTION al_load_wav (filename: STRING): AL_SAMPLEptr;
+
+(* Loads a sample from a Creative Labs VOC file.
+
+  Remember to free this sample later to avoid memory leaks.
+
+   @returns(a pointer to the @link(AL_SAMPLE) or @nil on error.) *)
+  FUNCTION al_load_voc (filename: STRING): AL_SAMPLEptr;
+
+(* Constructs a new sample structure of the specified type.
+
+   Remember to free this sample later to avoid memory leaks. 
+   @param(bits can be 8 or 16.)
+   @param(stereo can be zero for mono samples and non-zero for stereo samples)
+   @param(freq is the frequency in hertz)
+   @param(len is the number of samples you want to allocate for the full sound
+     buffer.)
+   @returns(a pointer to the created sample, or @nil if the sample could not
+     be created.) *)
+  FUNCTION al_create_sample (bits, stereo, freq, len: LONGINT): AL_SAMPLEptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_sample';
+
+(* Writes a sample into a file.  The output format is determined from the
+   @code(filename) extension.  At present Allegro does not natively support
+   the writing of any sample formats, so you must register a custom saver
+   routine with @link(al_register_sample_file_type).
+
+   @returns(@true on success, @false otherwise.) *)
+  FUNCTION al_save_sample (filename: STRING; spl: AL_SAMPLEptr): BOOLEAN;
+
+(* Destroys a sample structure when you are done with it.  It is safe to call
+   this even when the sample might be playing, because it checks and will kill
+   it off if it is active.  Use this to avoid memory leaks in your program. *)
+  PROCEDURE al_destroy_sample (spl: AL_SAMPLEptr); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_sample';
+
+
+
+(* Triggers a sample at the specified volume, pan position, and frequency.  The
+   parameters @code(vol) and @code(pan) range from 0 (min/left) to 255
+   (max/right).  Frequency is relative rather than absolute:  1000 represents
+   the frequency that the sample was recorded at, 2000 is twice this, etc.  If
+   @code(loop) is not zero, the sample will repeat until you call
+   @link(al_stop_sample), and can be manipulated while it is playing by calling
+   @link(al_adjust_sample).
+
+   @returns(the voice number that was allocated for the sample or negative if
+     no voices were available.) *)
+  FUNCTION al_play_sample (spl: AL_SAMPLEptr; vol, pan, freq, loop: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'play_sample';
+
+(* Alters the parameters of a sample while it is playing (useful for
+   manipulating looped sounds).  You can alter the volume, pan, and frequency,
+   and can also clear the loop flag, which will stop the sample when it next
+   reaches the end of its loop.  The values of the parameters are just like
+   those of @link(al_play_sample).  If there are several copies of the same
+   sample playing, this will adjust the first one it comes across.  If the
+   sample is not playing it has no effect. *)
+  PROCEDURE al_adjust_sample (spl: AL_SAMPLEptr; vol, pan, freq, loop: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'adjust_sample';
+
+(* Stop a sample from playing, which is required if you have set a sample going
+   in looped mode.  If there are several copies of the sample playing, it will
+   stop them all. You must still destroy the sample using
+   @link(al_destroy_sample). *)
+  PROCEDURE al_stop_sample (spl: AL_SAMPLEptr); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stop_sample';
+
+
+
+(* Informs the @link(al_load_sample) and the @link(al_save_sample) functions
+   of a new sample file type, providing routines to read and write samples in
+   this format (either function may be @nil).  Example:
+   @longcode(#
+   FUNCTION LoadMP3 (filename: PCHAR): AL_SAMPLEptr; CDECL;
+   BEGIN
+     ...
+   END;
+
+   ...
+
+   al_register_sample_file_type ('mp3', LoadMPT, NIL);
+   #) *)
+  PROCEDURE al_register_sample_file_type (ext: STRING; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC);
+
+
+
 IMPLEMENTATION
-
-USES
-  algraph;
-
-
 
 (***************
  * Core system *
@@ -2401,6 +4268,589 @@ CONST
   BEGIN
     IF bmp <> NIL THEN
       bmp^.vtable^.release (bmp);
+  END;
+
+
+
+(******************
+ * Mouse routines *
+ ******************)
+
+  FUNCTION mouse_needs_poll: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_mouse_needs_poll: BOOLEAN;
+  BEGIN
+    al_mouse_needs_poll := mouse_needs_poll <> 0;
+  END;
+
+
+
+  FUNCTION show_os_cursor (cursor: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_show_os_cursor (cursor: LONGINT): BOOLEAN;
+  BEGIn
+    al_show_os_cursor := show_os_cursor (cursor) = 0;
+  END;
+
+
+
+  PROCEDURE get_mouse_mickeys (mickeyx, mickeyy: PLONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  PROCEDURE al_get_mouse_mickeys (VAR mickeyx, mickeyy: LONGINT);
+  BEGIN
+    get_mouse_mickeys (@mickeyx, @mickeyy);
+  END;
+
+
+
+(****************
+ * Graphic mode *
+ ****************)
+
+  FUNCTION set_gfx_mode (card, w, h, v_w, v_h: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: LONGINT): BOOLEAN;
+  VAR
+    R: BOOLEAN;
+  BEGIN
+    R := set_gfx_mode (card, w, h, v_w, v_h) = 0;
+    IF R THEN
+    BEGIN
+      IF al_screen <> NIL THEN
+      BEGIN
+        AL_SCREEN_W := w;
+        AL_SCREEN_H := h;
+        AL_VIRTUAL_W := al_screen^.w;
+        AL_VIRTUAL_H := al_screen^.h;
+      END;
+    END;
+    al_set_gfx_mode := R;
+  END;
+
+
+
+  PROCEDURE al_acquire_screen;
+  BEGIN
+    IF al_screen <> NIL THEN
+      al_screen^.vtable^.acquire (al_screen);
+  END;
+
+
+
+  PROCEDURE al_release_screen;
+  BEGIN
+    IF al_screen <> NIL THEN
+      al_screen^.vtable^.release (al_screen);
+  END;
+
+
+
+(**********************
+ * Drawing primitives *
+ **********************)
+
+(* Clipping. *)
+  PROCEDURE al_get_clip_rect (bmp: AL_BITMAPptr; VAR x1, y1, x2, y2: LONGINT);
+  BEGIN
+    x1 := bmp^.cl;
+    y1 := bmp^.ct;
+    x2 := bmp^.cl-1;
+    y2 := bmp^.cb-1;
+  END;
+
+
+
+  PROCEDURE al_set_clip_state (bmp: AL_BITMAPptr; state: BOOLEAN);
+  BEGIN
+    IF state THEN
+      bmp^.clip := -1
+    ELSE
+      bmp^.clip := 0;
+  END;
+
+
+
+(* Drawing primitives. *)
+  FUNCTION al_getpixel (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  BEGIN
+    al_getpixel := bmp^.vtable^.getpixel (bmp, x, y);
+  END;
+
+  PROCEDURE al_putpixel (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.putpixel (bmp, x, y, color);
+  END;
+
+  PROCEDURE al_vline (bmp: AL_BITMAPptr; x, y1, y2, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.vline (bmp, x, y1, y2, color);
+  END;
+
+  PROCEDURE al_hline (bmp: AL_BITMAPptr; x1, y, x2, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.hline (bmp, x1, y, x2, color);
+  END;
+
+  PROCEDURE al_line (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.line (bmp, x1, y1, x2, y2, color);
+  END;
+
+  PROCEDURE al_fastline (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.fastline (bmp, x1, y1, x2, y2, color);
+  END;
+
+  PROCEDURE al_rect (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.rect (bmp, x1, y1, x2, y2, color);
+  END;
+
+  PROCEDURE al_rectfill (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.rectfill (bmp, x1, y1, x2, y2, color);
+  END;
+
+  PROCEDURE al_circle (bmp: AL_BITMAPptr; x, y, r, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.circle (bmp, x, y, r, color);
+  END;
+
+  PROCEDURE al_circlefill (bmp: AL_BITMAPptr; x, y, r, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.circlefill (bmp, x, y, r, color);
+  END;
+
+  PROCEDURE al_ellipse (bmp: AL_BITMAPptr; x, y, rx, ry, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.ellipse (bmp, x, y, rx, ry, color);
+  END;
+
+  PROCEDURE al_ellipsefill (bmp: AL_BITMAPptr; x, y, rx, ry, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.ellipsefill (bmp, x, y, rx, ry, color);
+  END;
+
+  PROCEDURE al_floodfill (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.floodfill (bmp, x, y, color);
+  END;
+
+  PROCEDURE al_polygon (bmp: AL_BITMAPptr; vertices: LONGINT; points: ARRAY OF LONGINT; color: LONGINT);
+  BEGIN
+    bmp^.vtable^.polygon (bmp, vertices, @points[0], color);
+  END;
+
+
+
+(*************
+ * Text font *
+ *************)
+
+  FUNCTION load_font (filename: PCHAR; palette: AL_PALETTEptr; p: POINTER)
+	   : AL_FONTptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_load_font (filename: STRING; palette: AL_PALETTEptr; p: POINTER)
+	: AL_FONTptr;
+  BEGIN
+    al_load_font := load_font (PCHAR (filename), palette, p);
+  END;
+
+
+
+  FUNCTION load_bitmap_font (filename: PCHAR; palette: AL_PALETTEptr;
+	p: POINTER): POINTER; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_load_bitmap_font (filename: STRING; palette: AL_PALETTEptr;
+    p: POINTER): POINTER;
+  BEGIN
+    al_load_bitmap_font := load_bitmap_font (PCHAR (filename), palette, p);
+  END;
+
+
+
+  FUNCTION is_color_font (f: AL_FONTptr): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_is_color_font (f: AL_FONTptr): BOOLEAN;
+  BEGIN
+    al_is_color_font := is_color_font (f) <> 0;
+  END;
+
+
+
+  FUNCTION is_mono_font (f: AL_FONTptr): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_is_mono_font (f: AL_FONTptr): BOOLEAN;
+  BEGIN
+    al_is_mono_font := is_mono_font (f) <> 0;
+  END;
+
+
+
+  FUNCTION is_compatible_font (f1, f2: AL_FONTptr): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_is_compatible_font (f1, f2: AL_FONTptr): BOOLEAN;
+  BEGIN
+    al_is_compatible_font := is_compatible_font (f1, f2) <> 0;
+  END;
+
+
+
+(****************
+ * Text drawing *
+ ****************)
+
+  PROCEDURE textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_ex';
+
+  PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+  BEGIN
+    textout_ex (bmp, f, PCHAR (str), x, y, color, bg);
+  END;
+
+
+
+  PROCEDURE textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_centre_ex';
+
+  PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+  BEGIN
+    textout_centre_ex (bmp, f, PCHAR (str), x, y, color, bg);
+  END;
+
+
+  PROCEDURE textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_right_ex';
+
+  PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+  BEGIN
+    textout_right_ex (bmp, f, PCHAR (str), x, y, color, bg);
+  END;
+
+
+
+  PROCEDURE textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x1, x2, y, diff, color, bg: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_justify_ex';
+
+  PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x1, x2, y, diff, color, bg: LONGINT);
+  BEGIN
+    textout_justify_ex (bmp, f, PCHAR (str), x1, x2, y, diff, color, bg);
+  END;
+
+
+
+  FUNCTION text_length (f: AL_FONTptr; str: PCHAR): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'text_length';
+
+  FUNCTION al_text_length (f: AL_FONTptr; str: STRING): LONGINT;
+  BEGIN
+    al_text_length := text_length (f, PCHAR (str));
+  END;
+
+
+
+(*******************************
+ * Blitting and sprite drawing *
+ *******************************)
+
+(* Sprites. *)
+PROCEDURE al_draw_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+BEGIN
+  IF sprite^.vtable^.color_depth = 8 THEN
+    bmp^.vtable^.draw_256_sprite (bmp, sprite, x, y)
+  ELSE
+    bmp^.vtable^.draw_sprite (bmp, sprite, x, y);
+END;
+
+
+
+PROCEDURE al_draw_sprite_ex (bmp, sprite: AL_BITMAPptr;
+			     x, y, mode, flip: LONGINT);
+BEGIN
+  bmp^.vtable^.draw_sprite_ex (bmp, sprite, x, y, mode, flip);
+END;
+
+
+
+PROCEDURE al_draw_sprite_h_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+BEGIN
+  bmp^.vtable^.draw_sprite_h_flip (bmp, sprite, x, y);
+END;
+
+
+
+PROCEDURE al_draw_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+BEGIN
+  bmp^.vtable^.draw_sprite_v_flip (bmp, sprite, x, y);
+END;
+
+PROCEDURE al_draw_sprite_vh_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+BEGIN
+  bmp^.vtable^.draw_sprite_vh_flip (bmp, sprite, x, y);
+END;
+
+
+
+PROCEDURE al_draw_trans_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+BEGIN
+  IF sprite^.vtable^.color_depth = 32 THEN
+    bmp^.vtable^.draw_trans_rgba_sprite (bmp, sprite, x, y)
+  ELSE
+    bmp^.vtable^.draw_trans_sprite (bmp, sprite, x, y);
+END;
+
+
+
+PROCEDURE al_draw_lit_sprite (bmp, sprite: AL_BITMAPptr; x, y, c: LONGINT);
+BEGIN
+  bmp^.vtable^.draw_lit_sprite (bmp, sprite, x, y, c);
+END;
+
+
+
+PROCEDURE al_rotate_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
+BEGIN
+  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * $10000) DIV 2,
+						      (y SHL 16) + (sprite^.h * $10000) DIV 2,
+						      sprite^.w SHL 15, sprite^.h SHL 15,
+						      angle, $10000, 0);
+END;
+
+
+
+PROCEDURE al_rotate_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
+BEGIN
+  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * $10000) DIV 2,
+						      (y SHL 16) + (sprite^.h * $10000) DIV 2,
+						      sprite^.w SHL 15, sprite^.h SHL 15,
+						      angle, $10000, NOT 0);
+END;
+
+
+
+PROCEDURE al_rotate_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED);
+BEGIN
+  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * scale) DIV 2,
+						      (y SHL 16) + (sprite^.h * scale) DIV 2,
+						      sprite^.w SHL 15, sprite^.h SHL 15,
+						      angle, scale, 0);
+END;
+
+
+
+PROCEDURE al_rotate_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED);
+BEGIN
+  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * scale) DIV 2,
+						      (y SHL 16) + (sprite^.h * scale) DIV 2,
+						      sprite^.w SHL 15, sprite^.h SHL 15,
+						      angle, scale, NOT 0);
+END;
+
+
+
+PROCEDURE al_pivot_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
+BEGIN
+  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
+						      cx SHL 16, cy SHL 16,
+						      angle, $10000, 0);
+END;
+
+
+
+PROCEDURE al_pivot_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
+BEGIN
+  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
+						      cx SHL 16, cy SHL 16,
+						      angle, $10000, NOT 0);
+END;
+
+
+
+PROCEDURE al_pivot_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED);
+BEGIN
+  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
+						      cx SHL 16, cy SHL 16,
+						      angle, scale, 0);
+END;
+
+
+
+PROCEDURE al_pivot_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED);
+BEGIN
+  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
+						      cx SHL 16, cy SHL 16,
+						      angle, scale, NOT 0);
+END;
+
+
+
+(********************************
+ * Run-lenth compressed sprites *
+ ********************************)
+
+  PROCEDURE al_draw_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
+				x, y: LONGINT);
+  BEGIN
+    bmp^.vtable^.draw_rle_sprite (bmp, spr, x, y);
+  END;
+
+  PROCEDURE al_draw_trans_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
+					x, y: LONGINT);
+  BEGIN
+    IF spr^.color_depth = 32 THEN
+      bmp^.vtable^.draw_trans_rgba_rle_sprite (bmp, spr, x, y)
+    ELSE
+      bmp^.vtable^.draw_trans_rle_sprite (bmp, spr, x, y)
+  END;
+
+  PROCEDURE al_draw_lit_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
+					x, y, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.draw_lit_rle_sprite (bmp, spr, x, y, color);
+  END;
+
+
+
+(******************************************
+ * Sound initialization and configuration *
+ ******************************************)
+
+  FUNCTION install_sound (digi, midi: LONGINT; c: POINTER): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_install_sound (digi, midi: LONGINT): BOOLEAN;
+  BEGIN
+    al_install_sound := install_sound (digi, midi, NIL) = 0;
+  END;
+
+
+
+  PROCEDURE get_volume (digi, midi: PLONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  PROCEDURE al_get_volume (VAR digi, midi: LONGINT);
+  BEGIN
+    get_volume (@digi, @midi);
+  END;
+
+
+
+  PROCEDURE get_hardware_volume (digi, midi: PLONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  PROCEDURE al_get_hardware_volume (VAR digi, midi: LONGINT);
+  BEGIN
+    get_hardware_volume (@digi, @midi);
+  END;
+
+
+
+(********
+ * MIDI *
+ ********)
+
+  FUNCTION load_midi (filename: PCHAR): AL_MIDIptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_midi';
+
+  FUNCTION al_load_midi (filename: STRING): AL_MIDIptr;
+  BEGIN
+    al_load_midi := load_midi (PCHAR (filename));
+  END;
+
+
+
+  FUNCTION play_midi (midi: AL_MIDIptr; loop: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_play_midi (midi: AL_MIDIptr; loop: BOOLEAN): BOOLEAN;
+  BEGIN
+    IF loop THEN
+      al_play_midi := play_midi (midi, -1) = 0
+    ELSE
+      al_play_midi := play_midi (midi, 0) = 0;
+  END;
+
+
+
+  FUNCTION play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: LONGINT): BOOLEAN;
+  BEGIN
+    al_play_looped_midi := play_looped_midi (midi, loop_start, loop_end) = 0
+  END;
+
+
+
+  FUNCTION load_midi_patches: LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_load_midi_patches: BOOLEAN;
+  BEGIN
+    al_load_midi_patches := load_midi_patches = 0;
+  END;
+
+
+
+(*******************
+ * Digital samples *
+ *******************)
+
+  FUNCTION load_sample (filename: PCHAR): AL_SAMPLEptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_sample';
+
+  FUNCTION al_load_sample (filename: STRING): AL_SAMPLEptr;
+  BEGIN
+    al_load_sample := load_sample (PCHAR (filename));
+  END;
+
+
+
+  FUNCTION load_wav (filename: PCHAR): AL_SAMPLEptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_wav';
+
+  FUNCTION al_load_wav (filename: STRING): AL_SAMPLEptr;
+  BEGIN
+    al_load_wav := load_wav (PCHAR (filename));
+  END;
+
+
+
+  FUNCTION load_voc (filename: PCHAR): AL_SAMPLEptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_voc';
+
+  FUNCTION al_load_voc (filename: STRING): AL_SAMPLEptr;
+  BEGIN
+    al_load_voc := load_voc (PCHAR (filename));
+  END;
+
+
+
+  FUNCTION save_sample (filename: PCHAR; spl: AL_SAMPLEptr): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'save_sample';
+
+  FUNCTION al_save_sample (filename: STRING; spl: AL_SAMPLEptr): BOOLEAN;
+  BEGIN
+    al_save_sample := (save_sample (PCHAR (filename), spl) = 0);
+  END;
+
+
+
+  PROCEDURE register_sample_file_type (ext: PCHAR; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'register_sample_file_type';
+
+  PROCEDURE al_register_sample_file_type (ext: STRING; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC);
+  BEGIN
+    register_sample_file_type (PCHAR (ext), load, save);
   END;
 
 

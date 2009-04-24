@@ -25,12 +25,7 @@ PROGRAM exdbuf;
 {$ENDIF}
 
 USES
-{ It needs some Allegro.pas units. }
-  allegro,
-  albltspr, { Image blitting and sprite drawing. }
-  aldraw,   { Drawing primitives. }
-  algraph,  { Graphic mode configuration. }
-  altext;   { Text drawing. }
+  allegro;
 
 
 

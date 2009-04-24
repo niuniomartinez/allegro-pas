@@ -13,14 +13,17 @@ object MainWindow: TMainWindow
   Position = poDefault
   LCLVersion = '0.9.26.2'
   object DatafileContent: TTreeView
-    Height = 256
+    Height = 281
     Width = 400
     Align = alClient
     AutoExpand = True
-    DefaultItemHeight = 17
+    DefaultItemHeight = 22
     ExpandSignType = tvestArrow
+    Font.Height = -16
+    Font.Name = 'Monospace'
     HideSelection = False
     Images = DatafileImageList
+    ParentFont = False
     TabOrder = 0
     Options = [tvoAutoExpand, tvoAutoItemHeight, tvoKeepCollapsedNodes, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips]
     Items.Data = {
@@ -30,7 +33,7 @@ object MainWindow: TMainWindow
   end
   object StatusBar: TStatusBar
     Height = 19
-    Top = 256
+    Top = 281
     Width = 400
     Panels = <    
       item

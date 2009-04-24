@@ -5,9 +5,7 @@ USES
   Gl, { OpenGL support. }
   sysutils,
   allegro, alfile,
-  algl,     { Allegro.pas+OpenGL basic interface. }
-  algraph,  { Graphic mode configuration. }
-  almouse;  { Mouse input. }
+  algl;     { Allegro.pas+OpenGL basic interface. }
 
 
 

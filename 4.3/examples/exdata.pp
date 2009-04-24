@@ -28,11 +28,7 @@ PROGRAM exdata;
 USES
   sysutils,
 { It needs some Allegro.pas units. }
-  allegro,
-  alfile,
-  albltspr, { Image blitting and sprite drawing. }
-  altext,   { Text drawing. }
-  algraph;  { Graphic mode configuration. }
+  allegro, alfile;
 
 
 

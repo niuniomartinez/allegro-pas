@@ -36,13 +36,8 @@ USES
   sysutils,
 { It needs some Allegro.pas units. }
   allegro,
-  alvga,    { 8 bit paletted mode special effects. }
-  albltspr, { Image blitting and sprite drawing. }
-  aldraw,   { Drawing primitives. }
-  algraph,  { Graphic mode configuration. }
-  almouse,  { Mouse input. }
-  altext,   { Text drawing. }
-  altrutra; { True color transparency and lighting. }
+  alblend, { True color transparency and lighting. }
+  alvga;   { 8 bit paletted mode special effects. }
 
 
 

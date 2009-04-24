@@ -7,8 +7,7 @@ UNIT sprites;
 INTERFACE
 
 USES
-  allegro,
-  aldigi;   { Digital sound. }
+  allegro;
 
 
 
@@ -56,7 +55,7 @@ VAR
   (* CheckCelinCollision:
    *   Checks if there's a ceil tile above the sprite. *)
   FUNCTION CheckCeilCollision (CONST SprNdx: INTEGER): BOOLEAN;
-  
+
 
 
   (* CheckLeftCollision:
@@ -102,7 +101,6 @@ VAR
 IMPLEMENTATION
 
 USES
-  alsprrle, { Draw RLE sprites. }
   gamedata, { To acces to de game datafile. }
   tilemap;  { Tilemap management. }
 

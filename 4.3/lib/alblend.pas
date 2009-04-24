@@ -1,4 +1,4 @@
-UNIT altrutra;
+UNIT alblend;
 (*<Truecolor transparency.
 
   In truecolor video modes, translucency and lighting are implemented by a

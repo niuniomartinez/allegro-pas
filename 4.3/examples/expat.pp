@@ -23,12 +23,7 @@ PROGRAM expal;
 {$ENDIF}
 
 USES
-{ It needs some Allegro.pas units. }
-  allegro,
-  albltspr, { Image blitting and sprite drawing. }
-  aldraw,   { Drawing primitives. }
-  algraph,  { Graphic mode configuration. }
-  altext;   { Text drawing. }
+  allegro;
 
 
   PROCEDURE DrawPattern (bitmap: AL_BITMAPptr; message: ANSISTRING; color: LONGINT);

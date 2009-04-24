@@ -21,7 +21,6 @@ INTERFACE
 IMPLEMENTATION
 
 USES
-  aldigi,   { Digital sound. }
   alex,     { Alex the Allegator. }
   gamedata, { To acces to de game datafile. }
   play,	    { To know the size of the output screen. }

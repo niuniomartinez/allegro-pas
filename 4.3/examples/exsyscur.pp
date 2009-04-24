@@ -24,12 +24,7 @@ PROGRAM exsyscur;
 
 USES
   sysutils,
-{ It needs some Allegro.pas units. }
-  allegro,
-  aldraw,   { Drawing primitives. }
-  algraph,  { Graphic mode configuration. }
-  almouse,  { Mouse input. }
-  altext;   { Text drawing. }
+  allegro;
 
 
 

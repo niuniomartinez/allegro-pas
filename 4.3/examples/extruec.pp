@@ -28,11 +28,7 @@ PROGRAM extruec;
 
 USES
   sysutils,
-{ It needs some Allegro.pas units. }
-  allegro,
-  aldraw,   { Drawing primitives. }
-  algraph,  { Graphic mode configuration. }
-  altext;   { Text drawing. }
+  allegro;
 
 
 

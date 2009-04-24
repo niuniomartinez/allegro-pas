@@ -6,10 +6,7 @@ PROGRAM demo;
 
 USES
   allegro,
-  aldigi,   { Digital sound. }
   alflic,   { FLIC animations. }
-  algraph,  { Graphic mode configuration. }
-  alsound,  { Sound configuration. }
   config,   { Management of the game configuration. }
   error,    { To show nice error messages. }
   framectr, { The frame speed controller. }

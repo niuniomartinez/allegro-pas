@@ -24,11 +24,7 @@ PROGRAM exhsvrgb;
 
 USES
   sysutils,
-{ It needs some Allegro.pas units. }
-  allegro,
-  aldraw,
-  algraph,  { Graphic mode configuration. }
-  altext;   { Text drawing. }
+  allegro;
 
 
 

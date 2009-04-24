@@ -77,9 +77,6 @@ CONST
 IMPLEMENTATION
 
 USES
-  albltspr, { Draw bitmaps and sprites. }
-  aldraw,   { Drawing primitives. }
-  alsprrle, { Draw RLE sprites. }
   gamedata, { To acces to de game datafile. }
   sysutils; { For string manipulation. }
 

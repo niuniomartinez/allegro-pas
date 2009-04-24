@@ -55,13 +55,7 @@ PROGRAM exsprite;
 USES
   sysutils,
 { It needs some Allegro.pas units. }
-  allegro, alfile, alfixed,
-  albltspr, { Image blitting and sprite drawing. }
-  aldigi,   { Digital sound. }
-  aldraw,   { Drawing primitives. }
-  algraph,  { Graphic mode configuration. }
-  alsound,  { Sound configuration. }
-  altext;   { Text drawing. }
+  allegro, alfile, alfixed;
 
 
 
