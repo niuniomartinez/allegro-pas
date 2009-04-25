@@ -272,6 +272,8 @@ CONST
 { @exclude }
   AL_KB_MENU_FLAG        = $0020;
 { @exclude }
+  AL_KB_COMMAND_FLAG     = $0040;
+{ @exclude }
   AL_KB_SCROLOCK_FLAG    = $0100;
 { @exclude }
   AL_KB_NUMLOCK_FLAG     = $0200;

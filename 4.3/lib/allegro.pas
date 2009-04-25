@@ -859,6 +859,15 @@ IF  al_key[AL_KEY_SPACE] <> 0 THEN
   al_key_led_flag: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'key_led_flag';
 
 
+(* If set, this function is called by the keyboard handler in response to every
+   keyboard event, both presses (including keyboard repeat rate) and releases.
+   It will be passed a raw keyboard scancode byte (scancodes are 7 bits long),
+   with the top bit (8th bit) clear if the key has been pressed or set if it
+   was released.  This routine executes in an interrupt context, so it must be
+   used carefully and only if needed. *)
+  al_keyboard_lowlevel_callback: AL_INT_PROC; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'keyboard_lowlevel_callback';
+
+
 
 (* Key scan-code and flag identifiers. *)
   {$include alkeyid.inc}
