@@ -42,7 +42,7 @@ USES
 
 
 TYPE
-(* @link(altrutra) @link(al_set_blender_mode) @link(al_set_blender_mode_ex) *)
+(* @link(alblend) @link(al_set_blender_mode) @link(al_set_blender_mode_ex) *)
   AL_BLENDER_FUNC = FUNCTION (x, y, n: DWORD): DWORD; CDECL;
 
 

@@ -28,7 +28,7 @@
       C-like one with lots of pointers and other ugly issues.)
     @item(Add a lot of new functionality as @bold(UNICODE support).)
     @item(@bold(Implement a Grabber utility) to create and manage
-      @link(aldtfile data files).)
+      @link(alfile data files).)
     @item(@bold(Add support for OpenGL hardware accelerated graphics) via
       AllegroGL add-on.)
   )
@@ -144,7 +144,7 @@
   If you don't like this approach, you can specify any filename you like with
   using procedure @link(al_set_config_file), or use a block of binary
   configuration data with @link(al_set_config_data) provided by your program
-  (which could for example be loaded from a @link(datafile)).
+  (which could for example be loaded from a @link(al_load_datafile datafile)).
 
   You can store whatever custom information you like in the config file, along
   with the standard variables that are used by Allegro.  Allegro comes with a

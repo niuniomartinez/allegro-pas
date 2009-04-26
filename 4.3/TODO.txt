@@ -1,3 +1,7 @@
+  Finish Grabber.
+
+  Finish Setup.
+
   New unit distibution:
 
   * albase
@@ -23,3 +27,6 @@
 
   * algl
     OpenGL support.
+
+  * algui
+    GEM style GUI.

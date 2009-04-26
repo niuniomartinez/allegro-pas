@@ -998,7 +998,7 @@ TYPE
     button : ARRAY [0..(AL_MAX_JOYSTICK_BUTTONS)-1] OF AL_JOYSTICK_BUTTON_INFO;
   END;
 
-{ @ignore }
+{ @exclude }
   AL_JOYSTICK_INFO_LIST = ARRAY [0..AL_UNKNOWN_SIZE] OF AL_JOYSTICK_INFO;
 
 
@@ -3150,7 +3150,7 @@ TYPE
 
 (* Creates an RLE sprite based on the specified bitmap (which must be a memory
    bitmap).  Remember to free this RLE sprite later to avoid memory leaks.
-   @param(bitmap Pointer to the @link(albitmap bitmap) used to create the
+   @param(bitmap Pointer to the @link(bitmap) used to create the
      sprite.)
    @returns(A pointer to the created RLE sprite, or @nil if it could not be
      created.  Remember to free this RLE sprite later to avoid memory
@@ -3275,8 +3275,8 @@ CONST
    @code(AL_DIGI_AUTODETECT) and @code(AL_MIDI_AUTODETECT) as the driver
    parameters to this function, in which case Allegro will read hardware
    settings from the current configuration file.  This allows the user to
-   select different values with the setup utility:  see the @link(alconfig
-   config unit) for details.
+   select different values with the setup utility:  see the @link(configuration
+   configuration section) for details.
 
    @returns (@true if the sound is successfully installed, and @false on
      failure.  If it fails it will store a description of the problem in

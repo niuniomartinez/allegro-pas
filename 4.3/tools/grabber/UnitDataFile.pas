@@ -12,7 +12,7 @@ USES
 
 
 TYPE
-(* Encapsulates and expands  Allegro's AL_DATAFILE_OBJECT helping edition. *)
+(* Encapsulates and expands Allegro's AL_DATAFILE_OBJECT helping edition. *)
   TDataFileItem = CLASS
   PRIVATE
   (* List of properties. *)
@@ -34,6 +34,8 @@ TYPE
     PROCEDURE SetProperty (Name, Value: STRING);
   (* Returns the datatype name. *)
     FUNCTION ObjectTypeName: STRING;
+  (* Returns the object name. *)
+    FUNCTION Name: STRING;
 
   (* Returns the data type identifier.  It's a 32 integer value returned by
      AL_ID function. *)
@@ -93,18 +95,44 @@ TYPE
 
 IMPLEMENTATION
 
+(* Helper function that gets an Allegro identificator and returns the
+ * STRING name. *)
+FUNCTION IdToName (Id: LONGINT): STRING;
+VAR
+  Cnt: INTEGER;
+  Tmp: STRING[4];
+BEGIN
+  Tmp := '    ';
+  FOR Cnt := 1 TO 4 DO
+  BEGIN
+    Tmp[5 - Cnt] := Chr (Id AND $000000FF);
+    Id := Id SHR 8;
+  END;
+  IdToName := Tmp;
+END;
+
+
 
 
 (*****************
  * TDataFileItem *
  *****************)
+
 (* Constructor. *)
 CONSTRUCTOR TDataFileItem.Create (aObject: AL_DATAFILE_OBJECTptr);
+VAR
+  Cnt: LONGINT;
 BEGIN
   fProperties := TStringList.Create;
   fObjectType := aObject^.ftype;
 { TODO: Get data. }
 { TODO: Get properties. }
+  Cnt := 0;
+  WHILE aObject^.prop^[Cnt].ftype <> AL_DAT_END DO
+  BEGIN
+    fProperties.Values[IdToName (aObject^.prop^[Cnt].ftype)] := aObject^.prop^[Cnt].dat;
+    INC (Cnt);
+  END;
 END;
 
 
@@ -152,28 +180,16 @@ END;
 (* Returns data type name. *)
 FUNCTION TDataFileItem.ObjectTypeName: STRING;
 BEGIN
-  IF fObjectType = AL_DAT_DATA THEN
-    RESULT := 'BIN'
-  ELSE IF ObjectType = AL_DAT_FLI THEN
-    RESULT := 'FLIC'
-  ELSE IF ObjectType = AL_DAT_BITMAP THEN
-    RESULT := 'BMP'
-  ELSE IF ObjectType = AL_DAT_FONT THEN
-    RESULT := 'FONT'
-  ELSE IF ObjectType = AL_DAT_MIDI THEN
-    RESULT := 'MIDI'
-  ELSE IF ObjectType = AL_DAT_PALETTE THEN
-    RESULT := 'PAL'
-  ELSE IF ObjectType = AL_DAT_SAMPLE THEN
-    RESULT := 'SAMP'
-  ELSE IF ObjectType = AL_DAT_RLE_SPRITE THEN
-    Result := 'RLE'
-  ELSE IF ObjectType = AL_DAT_C_SPRITE THEN
-    RESULT := 'CSPR'
-  ELSE IF ObjectType = AL_DAT_XC_SPRITE THEN
-    RESULT := 'XSPR'
-  ELSE
-    RESULT := '<Unknown>';
+  ObjectTypeName := IdToName (fObjectType);
+END;
+
+
+
+
+(* Returns the object name. *)
+FUNCTION TDataFileItem.Name: STRING;
+BEGIN
+  Name := GetProperty('NAME');
 END;
 
 

@@ -9,7 +9,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, Dialogs, algraph, allegro
+  Forms, Dialogs, allegro
   { you can add units after this }, UnitMainWindow, LResources,
   UnitProgressWindow;
 

@@ -8,7 +8,7 @@ INTERFACE
 
 USES
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  UnitDataFile, Menus, ComCtrls;
+  UnitDataFile, Menus, ComCtrls, ExtCtrls;
 
 TYPE
 
@@ -16,6 +16,7 @@ TYPE
 
   TMainWindow = CLASS(TForm)
     DatafileImageList: TImageList;
+    NameEdit: TLabeledEdit;
     MainMenu: TMainMenu;
     MenuItem_File__1: TMenuItem;
     MenuItem_File_New: TMenuItem;
@@ -25,8 +26,10 @@ TYPE
     MenuItem_File: TMenuItem;
     OpenDialog: TOpenDialog;
     DatafileContent: TTreeView;
+    ObjectPanel: TPanel;
     SaveDialog: TSaveDialog;
     StatusBar: TStatusBar;
+    procedure DatafileContentSelectionChanged(Sender: TObject);
     PROCEDURE FormCreate(Sender: TObject);
     PROCEDURE FormDestroy(Sender: TObject);
     PROCEDURE MenuItem_File_LoadClick(Sender: TObject);
@@ -56,7 +59,7 @@ USES
 
 
 CONST
-(* Mnemonics for images. *)
+(* Mnemonics for icons. *)
   NDX_DATAFILE   = 0;
   NDX_BINARY     = 1; { Raw binary data. }
   NDX_BITMAP     = 2;
@@ -85,6 +88,8 @@ BEGIN
   Application.ProcessMessages;
 END;
 
+
+
 PROCEDURE AdvanceProgress;
 BEGIN
   ProgressWindow.AddOne (TitleDatafile);
@@ -101,6 +106,26 @@ BEGIN
   DataFile.LoadCallback := @AdvanceProgress;
   DataFile.PreSaveCallback := @PrepareProgress;
   DataFile.SaveCallback := @AdvanceProgress;
+END;
+
+
+
+PROCEDURE TMainWindow.DatafileContentSelectionChanged(Sender: TObject);
+VAR
+  Node: TDataFileItem;
+BEGIN
+  IF LoadingDatafile THEN
+    EXIT;
+  Node := TDataFileItem ((Sender AS TTreeView).Selected.Data);
+  IF Node <> NIL THEN
+  BEGIN
+    NameEdit.Text := Node.Name;
+    NameEdit.Enabled := TRUE;
+  END
+  ELSE BEGIN
+    NameEdit.Enabled := FALSE;
+    NameEdit.Text := '<none>';
+  END;
 END;
 
 
@@ -130,7 +155,10 @@ BEGIN
   ProgressWindow.Hide;
   SELF.UpdateCaption;
   SELF.UpdateDatafileContent;
+  LoadingDatafile := FALSE;
 END;
+
+
 
 PROCEDURE TMainWindow.MenuItem_File_NewClick(Sender: TObject);
 VAR
@@ -152,6 +180,8 @@ BEGIN
   SELF.UpdateDatafileContent;
 END;
 
+
+
 PROCEDURE TMainWindow.MenuItem_File_SaveClick(Sender: TObject);
 BEGIN
   TRY
@@ -169,6 +199,8 @@ BEGIN
   ProgressWindow.Hide;
   SELF.UpdateCaption;
 END;
+
+
 
 PROCEDURE TMainWindow.MenuItem_File_Save_asClick(Sender: TObject);
 BEGIN
@@ -234,7 +266,7 @@ PROCEDURE TMainWindow.UpdateDatafileContent;
   END;
 
 VAR
-  Root, SubNode: TTreeNode;
+  Root: TTreeNode;
   aName: STRING;
   Cnt, Ndx: INTEGER;
 BEGIN
@@ -247,7 +279,7 @@ BEGIN
   IF DataFile.Count > 0 THEN
     FOR Cnt := 0 TO (DataFile.Count - 2) DO
     BEGIN
-      aName := DataFile.Item[Cnt].ObjectTypeName;
+      aName := DataFile.Item[Cnt].Name;
       Ndx := GetImageIndex (DataFile.Item[Cnt].ObjectType);
       WITH DatafileContent.Items.AddChildObject (Root, aName, DataFile.Item[Cnt]) DO
       BEGIn
