@@ -123,16 +123,22 @@ CONSTRUCTOR TDataFileItem.Create (aObject: AL_DATAFILE_OBJECTptr);
 VAR
   Cnt: LONGINT;
 BEGIN
-  fProperties := TStringList.Create;
   fObjectType := aObject^.ftype;
-{ TODO: Get data. }
-{ TODO: Get properties. }
+{ Get properties. }
+  fProperties := TStringList.Create;
   Cnt := 0;
+  IF aObject^.prop <> NIL THEN
   WHILE aObject^.prop^[Cnt].ftype <> AL_DAT_END DO
   BEGIN
     fProperties.Values[IdToName (aObject^.prop^[Cnt].ftype)] := aObject^.prop^[Cnt].dat;
     INC (Cnt);
   END;
+{ TODO: Get data. }
+  fSize := aObject^.size;
+  GetMem (fData, fSize);
+  WriteLn (fSize);
+  IF fSize < 900000 THEN
+  Move (aObject^.dat^, fData^, fSize);
 END;
 
 
@@ -142,6 +148,8 @@ DESTRUCTOR TDataFileItem.Destroy;
 BEGIN
   IF fProperties <> NIL THEN
     fProperties.Free;
+  IF fData <> NIL THEN
+    Freemem (fData);
   INHERITED;
 END;
 
@@ -189,7 +197,11 @@ END;
 (* Returns the object name. *)
 FUNCTION TDataFileItem.Name: STRING;
 BEGIN
-  Name := GetProperty('NAME');
+  TRY
+    Name := GetProperty('NAME');
+  EXCEPT
+    Name := ObjectTypeName;
+  END;
 END;
 
 

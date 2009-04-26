@@ -2584,7 +2584,7 @@ CONST
   AL_DRAW_MODE_MASKED_PATTERN	= 4;
 (* Flag for @link(al_drawing_mode).
 
-   The global @link(al_color_map) table or truecolor blender functions are
+   The global @link(al_color_table) table or truecolor blender functions are
    used to overlay pixels on top of the existing image.  This must only be used
    after you have set up the color mapping table (for 256 color modes) or
    blender functions (for truecolor modes).  Because it involves reading as
@@ -3039,7 +3039,7 @@ VAR
    the rotation routine).  The sprite must be a memory bitmap. *)
   PROCEDURE al_draw_sprite_vh_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
 
-(* Uses the global @link(al_color_map) table or truecolor blender functions
+(* Uses the global @link(al_color_table) table or truecolor blender functions
    to overlay the sprite on top of the existing image.  This must only be used
    after you have set up the color mapping table (for 256-color modes) or
    blender functions (for truecolor modes).  Because it involves reading as
@@ -3055,7 +3055,7 @@ VAR
                              128, 128, 128, NIL);
           ...
    IF al_get_color_depth = 8
-     al_color_map := @global_trans_table
+     al_color_table := @global_trans_table
    ELSE
      al_set_trans_blender (128, 128, 128, 128);
    al_draw_trans_sprite (buffer, ghost_sprite, x, y);
@@ -3071,7 +3071,7 @@ VAR
    attention to properly set up your color map table for index 0. *)
   PROCEDURE al_draw_trans_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
 
-(* In 256-color modes, uses the global @link(al_color_map) table to tint the
+(* In 256-color modes, uses the global @link(al_color_table) table to tint the
    sprite image to the specified color or to light it to the level specified by
    'color', depending on the function which was used to build the table
    (@link(al_create_trans_table) or @link(al_create_light_table)), and draws
@@ -3184,7 +3184,7 @@ TYPE
    @param(bmp Bitmap where the sprite will be draw.)
    @param(spr Sprite to draw.)
    @param(x Horizontal coordinate.) @param(y Vertical coordinate.)
-   @seealso(al_draw_rle_sprite) @seealso(al_color_map)
+   @seealso(al_draw_rle_sprite) @seealso(al_color_table)
    @seealso(al_set_trans_blender) *)
   PROCEDURE al_draw_trans_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
 					x, y: LONGINT);
@@ -3196,7 +3196,7 @@ TYPE
    @param(spr Sprite to draw.)
    @param(x Horizontal coordinate.) @param(y Vertical coordinate.)
    @param(color Tint color.)
-   @seealso(al_draw_rle_sprite) @seealso(al_color_map) *)
+   @seealso(al_draw_rle_sprite) @seealso(al_color_table) *)
   PROCEDURE al_draw_lit_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
 					x, y, color: LONGINT);
 

@@ -107,8 +107,8 @@ TYPE
 VAR
 (* Pointer to the color mapping table.  You must allocate your own
    @link(AL_COLOR_MAP) either statically or dynamically and set
-   @code(al_color_table) to it before using any translucent or lit drawing functions
-   in a 256-color video mode! *)
+   @code(al_color_table) to it before using any translucent or lit drawing
+   functions in a 256-color video mode! *)
   al_color_table: AL_COLOR_MAPptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'color_map';
 
 IMPLEMENTATION
