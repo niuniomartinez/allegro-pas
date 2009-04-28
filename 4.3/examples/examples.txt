@@ -5,6 +5,7 @@ exdbuf.pp:	How to use double buffering to avoid flicker.
 exfixed.pp:	Using fixed point maths.
 exhello.pp:	Simple graphical "hello world" program.
 exhsvrgb.pp:	Translating HSV space -> RGB values.
+exkeys.pp:	Demonstrates how to access the keyboard.
 exmouse.pp:	Getting input from the mouse.
 expal.pp:	Palette effects and color cycling.
 expat.pp:	Using patterned drawing modes and sub-bitmaps.
