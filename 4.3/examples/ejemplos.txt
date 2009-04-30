@@ -3,6 +3,7 @@ excolmap.pp - Crear efectos gráficos usando tablas de mapeo de color.
 exdata.pp   - Acceder al contenido de los archivos de datos (datafiles).
 exdbuf.pp   - Cómo usar doble página para eliminar parpadeos.
 exfixed.pp  - Uso de matemáticas de punto flotante.
+exgui.pp    - Uso de los objetos de menú y diálogo.
 exhello.pp  - Sencillo "hello world".
 exhsvrgb.pp - Transformación del espacio HSV a valores RGB.
 exkeys.pp   - Muestra diferentes formas de acceder al teclado.

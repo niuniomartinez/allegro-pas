@@ -3,6 +3,7 @@ excolmap.pp:	Creating graphical effects with color mapping tables.
 exdata.pp:	Appending datafiles onto your executable.
 exdbuf.pp:	How to use double buffering to avoid flicker.
 exfixed.pp:	Using fixed point maths.
+exgui.pp:	Using menu and dialog objects.
 exhello.pp:	Simple graphical "hello world" program.
 exhsvrgb.pp:	Translating HSV space -> RGB values.
 exkeys.pp:	Demonstrates how to access the keyboard.

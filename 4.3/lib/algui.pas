@@ -223,7 +223,7 @@ TYPE
 (* Structure used to hold an entry of a menu.
    @seealso(al_do_menu) *)
   AL_MENU = RECORD
-    text: PCHAR; (*<The text to display for the menu item. *)
+    txt: PCHAR; (*<The text to display for the menu item. *)
     proc: AL_SIMPLE_FUNC; (*<Called when menu item is clicked. *)
     child: AL_MENUptr; (*<Nested child menu. *)
     flags: LONGINT; (*<Disabled or checked state. *)
@@ -329,7 +329,7 @@ CONST
    draw the text in something other than the default font, set the @code(dp2)
    field to point to your custom font data. *)
   FUNCTION al_d_text_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_text_box_proc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_text_proc';
 (* Draws centered text onto the screen.  The @code(dp) field should point to
    the string to display.  Any @code('&') characters in the string will be
    replaced with lines underneath the following character, for displaying
@@ -337,7 +337,7 @@ CONST
    @code('&&').  To draw the text in something other than the default font, set
    the @code(dp2) field to point to your custom font data. *)
   FUNCTION al_d_ctext_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_ctext_box_proc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_ctext_proc';
 (* Draws text right aligned onto the screen.  The @code(dp) field should point
    to the string to display.  Any @code('&') characters in the string will be
    replaced with lines underneath the following character, for displaying
@@ -345,7 +345,7 @@ CONST
    @code('&&').  To draw the text in something other than the default font, set
    the @code(dp2) field to point to your custom font data. *)
   FUNCTION al_d_rtext_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_rtext_box_proc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_rtext_proc';
 (* A button object (the @code(dp) field points to the text string).  This
    object can be selected by clicking on it with the mouse or by pressing its
    keyboard shortcut.  If the @link(AL_D_EXIT) flag is set, selecting it will
@@ -353,7 +353,7 @@ CONST
    @link(al_d_text_proc), ampersands can be used to display the keyboard
    shortcut of the button. *)
   FUNCTION al_d_button_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_button_box_proc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_button_proc';
 (* This is an example of how you can derive objects from other objects.  Most
    of the functionality comes from @link(al_d_button_proc), but it displays
    itself as a check box.  If the @code(d1) field is non-zero, the text will be
@@ -362,14 +362,14 @@ CONST
    @bold(Note:)  the object width should allow space for the text as well as
    the check box (which is square, with sides equal to the object height). *)
   FUNCTION al_d_check_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_check_box_proc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_check_proc';
 (* A radio button object.  A dialog can contain any number of radio button
    groups:  selecting a radio button causes other buttons within the same group
    to be deselected.  The @code(dp) field points to the text string, @code(d1)
    specifies the group number, and @code(d2) is the button style (0=circle,
    1=square). *)
   FUNCTION al_d_radio_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_radio_box_proc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_radio_proc';
 (* A bitmap button.  The @code(fg) color is used for the dotted line showing
    focus, and the @code(bg) color for the shadow used to fill in the top and
    left sides of the button when @italic("pressed").  @code(d1) is the
@@ -380,7 +380,7 @@ CONST
    for the icon, while @code(dp2) and @code(dp3) are the selected and disabled
    images respectively (optional, may be @nil). *)
   FUNCTION al_d_icon_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_icon_box_proc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_icon_proc';
 (* This is an invisible object for implementing keyboard shortcuts.  You can
    put an ASCII code in the key field of the dialog object (a character such as
   'a' to respond to a simple keypress, or a number 1-26 to respond to a control
@@ -390,7 +390,7 @@ CONST
   will be passed back to the dialog manager, so it can return @link(AL_D_O_K),
   @link(AL_D_REDRAW), @link(AL_D_CLOSE), etc. *)
   FUNCTION al_d_keyboard_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_keyboard:box_proc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_keyboard_proc';
 (* An editable text object (the @code(dp) field points to the space to store
    the string).  When it has the input focus (obtained by clicking on it with
    the mouse), text can be typed into this object.  The @code(d1) field
@@ -400,9 +400,10 @@ CONST
    @bold(Note:) @code(dp) must point to a buffer at least @code(@(d1 + 1@) *
    4) bytes long because, depending on the encoding format in use, a single
    character can occupy up to 4 bytes and room must be reserved for the
-   terminating null character. *)
+   terminating null character.  @bold(Be sure it finishes with a null
+     character or it will fail!)*)
   FUNCTION al_d_edit_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_edit_box_proc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_edit_proc';
 (* A list box object.  This will allow the user to scroll through a list of
    items and to select one by clicking or with the arrow keys.  If the
    @link(AL_D_EXIT) flag is set, double clicking on a list item will close the
@@ -423,12 +424,12 @@ FUNCTION foobar(index: LONGINT; list_size: PLONGINT): PCHAR; CDECL;
    selected entries).  This table must be at least as big as the number of
    objects in the list! *)
   FUNCTION al_d_list_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_list_box_proc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_list_proc';
 (* Like @link(al_d_list_proc), but allows the user to type in the first few
    characters of a listbox entry in order to select it.  Uses @code(dp3)
    internally, so you mustn't store anything important there yourself. *)
   FUNCTION al_d_text_list_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_text_list_box_proc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_text_list_proc';
 (* A text box object.  The @code(dp) field points to the text which is to be
    displayed in the box.  If the text is long, there will be a vertical
    scrollbar on the right hand side of the object which can be used to scroll
@@ -438,7 +439,7 @@ FUNCTION foobar(index: LONGINT; list_size: PLONGINT): PCHAR; CDECL;
    number of lines of text, and @code(d2) is used to store how far it has
    scrolled through the text. *)
   FUNCTION al_d_textbox_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_textbox_box_proc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_textbox_proc';
 (* A slider control object.  This object holds a value in @code(d2), in the
    range from 0 to @code(d1).  It will display as a vertical slider if height
    is greater than or equal to width, otherwise it will display as a horizontal
@@ -451,7 +452,7 @@ FUNCTION foo (dp3: POINTER; d2: LONTING): LONGINT; CDECL;
    #)
    The @code(al_d_slider_proc) object will return the value of the callback function.  *)
   FUNCTION al_d_slider_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_slider_box_proc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_slider_proc';
 (* This object is a menu bar which will drop down child menus when it is
    clicked or if an alt+key corresponding to one of the shortcuts in the menu
    is pressed.  It ignores a lot of the fields in the dialog structure, in
@@ -466,7 +467,7 @@ FUNCTION foo (dp3: POINTER; d2: LONTING): LONGINT; CDECL;
    passed back to the dialog manager, so your callbacks should return
    @link(AL_D_O_K), @link(AL_D_REDRAW), or @link(AL_D_CLOSE). *)
   FUNCTION al_d_menu_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_menu_box_proc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_menu_proc';
 
 (* This function can be used to change the bitmap surface the GUI routines draw
    to.  This can be useful if you are using a double buffering or page flipping
@@ -480,6 +481,13 @@ FUNCTION foo (dp3: POINTER; d2: LONTING): LONGINT; CDECL;
    return @nil. *)
   FUNCTION al_gui_get_screen: AL_BITMAPptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_get_screen';
+
+(* Defines a dialog item.
+   @param(dialog The dialog) @param(item Index to the dialog item)
+   @seealso(AL_DIALOG) *)
+ PROCEDURE al_set_dialog_item (VAR dialog: ARRAY OF AL_DIALOG; index: INTEGER;
+   proc: AL_DIALOG_PROC; x, y, w, h, fg, bg, key, flags, d1, d2: LONGINT;
+   dp, dp2, dp3: POINTER);
 
 (* Moves an array of dialog objects to the specified screen position (specified
    as the top left corner of the dialog). @seealso(al_centre_dialog) *)
@@ -560,6 +568,14 @@ al_object_message (@(dialog[1]), AL_MSG_DRAW, 0);
 (* Helper function for use by the GUI routines. @returns(The length of a string
    in pixels, ignoring @code('&') characters.) *)
   FUNCTION al_gui_strlen (s: STRING): LONGINT;
+
+
+(* Defines a menu item.
+   @param(menu The menu) @param(item Index to the dialog item)
+   @seealso(AL_MENU) *)
+  PROCEDURE al_set_menu_item (VAR menu: ARRAY OF AL_MENU; index: INTEGER;
+    txt: STRING; proc: AL_SIMPLE_FUNC; child: AL_MENUptr; flags: LONGINT;
+    dp: POINTER);
 
 (* Displays and animates a popup menu at the specified screen coordinates
    (these will be adjusted if the menu does not entirely fit on the screen).
@@ -661,7 +677,7 @@ VAR
 (* If set to a non-zero value, adjusts the keyboard shortcut underscores to
    account for the height of the descenders in your font. *)
   al_gui_font_baseline: LONGINT;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_font_color';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_font_baseline';
 
 (* Hook function, used by the GUI routines whenever they need to access the
    mouse state.  By default it just returns a copie of the @link(al_mouse_x)
@@ -825,26 +841,26 @@ TYPE
 IMPLEMENTATION
 
 (* Links to Allegro's functions. *)
-FUNCTION gui_textout_ex (bmp: AL_BITMAPptr; s: PCHAR; x, y, color, bg, centre: LONGINT): LONGINT;
+FUNCTION gui_textout_ex (bmp: AL_BITMAPptr; s: PCHAR; x, y, color, bg, centre: LONGINT): LONGINT; CDECL;
   EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION gui_strlen (s: PCHAR): LONGINT;
+FUNCTION gui_strlen (s: PCHAR): LONGINT; CDECL;
   EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION update_dialog (player: AL_DIALOG_PLAYERptr): LONGINT;
+FUNCTION update_dialog (player: AL_DIALOG_PLAYERptr): LONGINT; CDECL;
   EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION update_menu (player: AL_MENU_PLAYERptr): LONGINT;
+FUNCTION update_menu (player: AL_MENU_PLAYERptr): LONGINT; CDECL;
   EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
 
-FUNCTION alert (s1, s2, s3, b1, b2: PCHAR; c1, c2: LONGINT): LONGINT;
+FUNCTION alert (s1, s2, s3, b1, b2: PCHAR; c1, c2: LONGINT): LONGINT; CDECL;
   EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION alert3 (s1, s2, s3, b1, b2, b3: PCHAR; c1, c2, c3: LONGINT): LONGINT;
+FUNCTION alert3 (s1, s2, s3, b1, b2, b3: PCHAR; c1, c2, c3: LONGINT): LONGINT; CDECL;
   EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION file_select_ex (CONST message: PCHAR; path: PCHAR; CONST ext: PCHAR; size, w, h: LONGINT): LONGINT;
+FUNCTION file_select_ex (CONST message: PCHAR; path: PCHAR; CONST ext: PCHAR; size, w, h: LONGINT): LONGINT; CDECL;
   EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION gfx_mode_select (card, w, h: PLONGINT): LONGINT;
+FUNCTION gfx_mode_select (card, w, h: PLONGINT): LONGINT; CDECL;
   EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION gfx_mode_select_ex (card, w, h, color_depth: PLONGINT): LONGINT;
+FUNCTION gfx_mode_select_ex (card, w, h, color_depth: PLONGINT): LONGINT; CDECL;
   EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION gfx_mode_select_filter (card, w, h, color_depth: PLONGINT; filter: POINTER): LONGINT;
+FUNCTION gfx_mode_select_filter (card, w, h, color_depth: PLONGINT; filter: POINTER): LONGINT; CDECL;
   EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
 
 
@@ -880,6 +896,41 @@ FUNCTION al_update_menu (player: AL_MENU_PLAYERptr): BOOLEAN;
 BEGIN
   al_update_menu := update_menu (player) <> 0;
 END;
+
+
+
+  PROCEDURE al_set_dialog_item (VAR dialog: ARRAY OF AL_DIALOG; index: INTEGER;
+    proc: AL_DIALOG_PROC; x, y, w, h, fg, bg, key, flags, d1, d2: LONGINT;
+    dp, dp2, dp3: POINTER);
+  BEGIN
+    dialog[index].proc := proc;
+    dialog[index].x   := x;
+    dialog[index].y   := y;
+    dialog[index].w   := w;
+    dialog[index].h   := h;
+    dialog[index].fg  := fg;
+    dialog[index].bg  := bg;
+    dialog[index].key := key;
+    dialog[index].flags := flags;
+    dialog[index].d1  := d1;
+    dialog[index].d2  := d2;
+    dialog[index].dp  := dp;
+    dialog[index].dp2 := dp2;
+    dialog[index].dp3 := dp3;
+  END;
+
+
+
+  PROCEDURE al_set_menu_item (VAR menu: ARRAY OF AL_MENU; index: INTEGER;
+    txt: STRING; proc: AL_SIMPLE_FUNC; child: AL_MENUptr; flags: LONGINT;
+    dp: POINTER);
+  BEGIN
+    menu[index].txt   := PCHAR (txt);
+    menu[index].proc  := proc;
+    menu[index].child := child;
+    menu[index].flags := flags;
+    menu[index].dp    := dp;
+  END;
 
 
 
