@@ -56,6 +56,11 @@ UNIT alfixed;
 
 INTERFACE
 
+USES
+  albase;
+
+
+
 TYPE
 (* This is a fixed point integer which can replace float with similar results
    and is faster than float on low end machines. *)
@@ -123,7 +128,8 @@ TYPE
 
 (* This finds out the non negative square root of `x'.  If `x' is negative,
    @link(al_errno) is set to @code(EDOM) and the function returns zero. *)
-  FUNCTION al_fixsqrt (x: AL_FIXED): AL_FIXED;
+  FUNCTION al_fixsqrt (x: AL_FIXED): AL_FIXED; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fixsqrt';
 
 
 
@@ -151,19 +157,25 @@ CONST
 (* This function finds the inverse cosine of a value using a lookup table. *)
   FUNCTION al_fixacos (x: AL_FIXED): AL_FIXED;
 
-VAR
+(* Fixed point hypotenuse (returns the square root of `x*x + y*y').  This
+   should be better than calculating the formula yourself manually, since the
+   error is much smaller. *)
+  FUNCTION al_fixhypot (x, y: AL_FIXED): AL_FIXED; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fixhypot';
+
 (* This function finds the inverse tangent of a value using a lookup table. *)
-  al_fixatan: FUNCTION (x: AL_FIXED): AL_FIXED; CDECL;
+  FUNCTION al_fixatan (x: AL_FIXED): AL_FIXED; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fixatan';
 
 (* This is a fixed point version of the libc atan2 () routine. *)
-  al_fixatan2: FUNCTION (x, y: AL_FIXED): AL_FIXED; CDECL;
+  FUNCTION al_fixatan2 (x, y: AL_FIXED): AL_FIXED; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fixatan2';
 
 
 
 IMPLEMENTATION
 
 USES
-  albase,
   allegro; { For al_errno. }
 
 
@@ -262,7 +274,7 @@ FUNCTION al_fixmul (x, y: AL_FIXED): AL_FIXED;
 BEGIN
   al_fixmul := al_ftofix (al_fixtof (x) * al_fixtof (y));
 END;
- 
+
 FUNCTION al_fixdiv (x, y: AL_FIXED): AL_FIXED;
 BEGIN
   IF y = 0 THEN
@@ -275,14 +287,6 @@ BEGIN
   END
   ELSE
     al_fixdiv := al_ftofix (al_fixtof (x) / al_fixtof (y));
-END;
-
-FUNCTION al_fixsqrt (x: AL_FIXED): AL_FIXED;
-BEGIN
-  IF x > 0 THEN
-    al_fixsqrt := al_ftofix (SQRT (al_fixtof (x)))
-  ELSE
-    al_fixsqrt := 0;
 END;
 
 
