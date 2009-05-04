@@ -15,7 +15,11 @@ examples: $(EXMFILES) $(GLEXMFILES)
 demo: $(DEMO)
 
 # Tools.
-tools: $(TOOLDIR)setup/setup$(BINSUF)
+tools: setup grabber
+
+setup: $(TOOLDIR)setup/setup$(BINSUF)
+
+grabber: $(TOOLDIR)grabber/grabber$(BINSUF)
 
 # Executables.
 $(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
@@ -31,9 +35,12 @@ $(DEMODIR)%$(BINSUF): $(DEMOSRC) $(LIBFILES)
 	@echo Demo game ready!
 
 $(TOOLDIR)setup/setup$(BINSUF): $(TSETUPSRC) $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(TOOLDIR) -Mobjfpc $< -o$@
+	fpc $(FLAGS) -Fu$(LIBDIR) -Mobjfpc $< -o$@
 	@echo $@ ready!
 
+$(TOOLDIR)grabber/grabber$(BINSUF): $(TGRABBSRC) $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -Mobjfpc $< -o$@
+	@echo $@ ready!
 
 # Returns some variables.
 status: adbanner

@@ -40,3 +40,4 @@ DEMO = $(addprefix $(DEMODIR),$(addsuffix $(BINSUF), $(basename $(notdir $(TEM4)
 
 # For the tools.
 TSETUPSRC = $(TOOLDIR)setup/setup.pp $(TOOLDIR)setup/DoSetup.pas $(TOOLDIR)setup/SimpleGUI.pas
+TGRABBSRC = $(TOOLDIR)grabber/grabber.pp $(TOOLDIR)grabber/main.pas
