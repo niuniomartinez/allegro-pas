@@ -16,13 +16,6 @@ SHELL = /bin/sh
 # Project name
 PROJECT = Allegro.pas
 
-# Source extension.
-SRCSUF = .c
-
-# Source file for a test program (test if Allegro is installed).
-# (Should be in the root directory) :(
-# It'll use the SRCSUF sufix.
-TESTFILE = test
 # ===============================================
 
 
@@ -31,11 +24,11 @@ TESTFILE = test
 # --------------------------------------
 
 # ------------------
-# MinGW32/Win32
+# Win32
 # ------------------
-ifeq ($(TARGET),MINGW32)
+ifeq ($(TARGET),WIN32)
 	# Platform name
-	PLATFORM=Win32/MinGW32
+	PLATFORM=Winindows
 	# Binary sufix
 	BINSUF = .exe
 	LIBSUF = .dll

@@ -401,7 +401,7 @@ USES
 
   FUNCTION al_pack_feof (f: AL_PACKFILEptr): BOOLEAN;
   BEGIN
-    al_pack_feof := (pack_feof (f) = 0)
+    al_pack_feof := (pack_feof (f) <> 0)
   END;
 
   FUNCTION al_pack_fgets (max: LONGINT; f: AL_PACKFILEptr): STRING;
