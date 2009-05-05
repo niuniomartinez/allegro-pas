@@ -15,4 +15,6 @@ exsyscur.pp:	How to use system cursors.
 extrans.pp:	Lighting and translucency effects.
 extruec.pp:	Truecolor pixel format conversions.
 
+lazarus/	How to use Allegro.pas inside Lazarus applications.
+
 agl/exmasked.pp: How to use masked textures with OpenGL.

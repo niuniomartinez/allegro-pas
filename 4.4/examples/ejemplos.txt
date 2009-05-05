@@ -15,4 +15,6 @@ exsyscur.pp - Muestra cómo utilizar los cursores del sistema.
 extrans.pp  - Efectos de luz y transparencia.
 extruec.pp  - Conversión de colores en formato "true-color".
 
+lazarus/    - Un ejemplo de cómo utilizar Allegro.pas en programas Lazarus.
+
 agl/exmasked.pp - Cómo mostrar texturas con partes transparentes con OpenGL.

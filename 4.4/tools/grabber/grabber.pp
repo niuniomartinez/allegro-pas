@@ -64,6 +64,10 @@ USES
       al_show_mouse (al_screen);
     END;
   { I know, we aren't set up sound. }
+  { Setup dialogs. }
+    al_gui_fg_color := al_makecol (0, 0, 0);
+    al_gui_mg_color := al_makecol ($80, $80, $80);
+    al_gui_bg_color := al_makecol ($FF, $FF, $FF);
   { Everything is Ok. }
     Initialize := TRUE;
   END;

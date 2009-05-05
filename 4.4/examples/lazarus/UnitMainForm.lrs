@@ -1,0 +1,15 @@
+{ Este es un archivo de recurso de Lazarus generado automáticamente }
+
+LazarusResources.Add('TMainForm','FORMDATA',[
+  'TPF0'#9'TMainForm'#8'MainForm'#4'Left'#3'G'#1#6'Height'#3','#1#3'Top'#3#213#0
+  +#5'Width'#3#144#1#7'Caption'#6#19'Allegro.pas example'#12'ClientHeight'#3#19
+  +#1#11'ClientWidth'#3#144#1#4'Menu'#7#8'MainMenu'#8'OnCreate'#7#10'FormCreate'
+  +#9'OnDestroy'#7#11'FormDestroy'#10'LCLVersion'#6#8'0.9.26.2'#0#9'TPaintBox'#8
+  +'PaintBox'#6'Height'#3#19#1#5'Width'#3#144#1#5'Align'#7#8'alClient'#0#0#9'TM'
+  +'ainMenu'#8'MainMenu'#0#9'TMenuItem'#15'MenuItem_Bitmap'#7'Caption'#6#6'Bitm'
+  +'ap'#0#9'TMenuItem'#13'MenuItem_Load'#7'Caption'#6#7'Load...'#7'OnClick'#7#18
+  +'MenuItem_LoadClick'#0#0#9'TMenuItem'#15'MenuItem_Create'#7'Caption'#6#6'Cre'
+  +'ate'#0#0#0#9'TMenuItem'#14'MenuItem_About'#7'Caption'#6#8'About...'#0#0#0#11
+  +'TOpenDialog'#10'OpenDialog'#6'Filter'#6#30'Images|*.bmp;*.pcx;*.lbm;*.tga'#4
+  +'left'#2' '#0#0#0
+]);

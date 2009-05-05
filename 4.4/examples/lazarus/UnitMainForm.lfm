@@ -1,0 +1,37 @@
+object MainForm: TMainForm
+  Left = 327
+  Height = 300
+  Top = 213
+  Width = 400
+  Caption = 'Allegro.pas example'
+  ClientHeight = 275
+  ClientWidth = 400
+  Menu = MainMenu
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '0.9.26.2'
+  object PaintBox: TPaintBox
+    Height = 275
+    Width = 400
+    Align = alClient
+  end
+  object MainMenu: TMainMenu
+    object MenuItem_Bitmap: TMenuItem
+      Caption = 'Bitmap'
+      object MenuItem_Load: TMenuItem
+        Caption = 'Load...'
+        OnClick = MenuItem_LoadClick
+      end
+      object MenuItem_Create: TMenuItem
+        Caption = 'Create'
+      end
+    end
+    object MenuItem_About: TMenuItem
+      Caption = 'About...'
+    end
+  end
+  object OpenDialog: TOpenDialog
+    Filter = 'Images|*.bmp;*.pcx;*.lbm;*.tga'
+    left = 32
+  end
+end

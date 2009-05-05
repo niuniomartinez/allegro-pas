@@ -28,7 +28,7 @@ PROJECT = Allegro.pas
 # ------------------
 ifeq ($(TARGET),WIN32)
 	# Platform name
-	PLATFORM=Winindows
+	PLATFORM=Windows
 	# Binary sufix
 	BINSUF = .exe
 	LIBSUF = .dll
