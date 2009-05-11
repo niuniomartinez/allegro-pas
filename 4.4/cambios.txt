@@ -1,3 +1,21 @@
+Cambios entre las versiones 4.3.0 Alpha2 y 4.4.0 Alpha
+======================================================
+
+  Novedades
+  ---------
+  - Añadida la unidad algui, que permite utilizar el motor GUI de Allegro y
+    crear entornos gráficos.  NO TIENE RELACIÓN CON LAZARUS.
+  - Añadidos nuevos ejemplos.
+
+
+
+  Otros
+  -----
+  - Nueva distribución de unidades, más compacta.
+  - Muchas correcciones menores, tanto en el código fuente como en la
+    documentación y el sistema de compilado.
+
+
 Cambios entre las versiones 4.3.0 Alpha y 4.3.0 Alpha2
 ======================================================
 

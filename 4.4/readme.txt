@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 4.3.0 SVN             \_/__/                 \/_/
+     Version 4.4.0 Alpha           \_/__/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Ñuño Martínez, March 2, 2008.
+  by Ñuño Martínez, May 11, 2009.
 
 
 
@@ -18,6 +18,7 @@ Contents
 ========
 
  - Introduction
+ - Features
  - License
  - Installation
  - How to use
@@ -38,15 +39,38 @@ Introduction
   Allegro.  Anyway, I'll fix it and complete it as I'm using it (or as other
   users do).  Any collaboration will be welcomed.
 
-  This version is an SVN version.  It's only for testing and evaluation
+  This version is an Alpha version.  It's only for testing and evaluation
   purposes so you shouldn't use it in your actual projects.  May be you can
   use the latest 4.2 release instead.
 
-  Right now Allegro.pas 4.3.0 need a lot of work to be finished.  If you want
-  to collaborate please join the main Allegro.pas mailing list
-  (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).
 
 
+========
+Features
+========
+
+  Cross-platform support for Windows and GNU/Linux.  Should be easy to use on
+  POSIX systems as MacOS and BSD but this wasn't tested yet.  If you do it
+  please tell us your experience.
+
+  Drawing functions including putpixel, line, rectangles, sprites, etc.
+  Supports clipping, translucency/lighting and can draw directly to the
+  screen or to memory bitmaps.
+
+  Full-screen or windowed modes and 8, 15, 16, 24 and 32 bits per pixel.
+
+  FLI/FLC animation player.
+
+  Plays background MIDI music and up to 64 simultaneous sound effects.  Samples
+  can be looped (forwards, backwards, or bidirectionally), and the volume, pan,
+  pitch, etc, can be adjusted while they are playing.
+
+  Easy access to the mouse, keyboard, joystick, and high resolution timer
+  interrupts.
+
+  Routines for reading and writing LZSS compressed files.
+
+  GUI dialog manager and file selector.
 
 =======
 License
@@ -80,15 +104,30 @@ License
 Installation
 ============
 
-  Download and install Allegro 4.3.10 from http://alleg.sourceforge.net/.  Note
-  that this Allegro.pas version will not work with other Allegro than 4.3.10.
+  Be sure your have Free Pascal compiler installed and configured on your
+  system.  If you have Lazarus IDE then it should be enough.  Visit Free
+  Pascal's web site for more information (http://www.freepascal.org/).
 
-  Then use the "fix" script and the "makefile" at root directory.
+  Install Allegro 4.4.0.  You can download it from
+  http://sourceforge.net/project/showfiles.php?group_id=5665 .  May be you can
+  install the "enduser" version.
 
-  WARNING - Current state was tested on GNU/Linux only.  You might need to
-  change unit "albase" to make it work on your operating system.  If you do so
-  with success, please let me know through the main Allegro mailing list
-  (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).
+  NOTE:  Allegro.pas 4.4.0 will work ONLY with Allegro 4.4.0 (and its RC
+  releases).  It will not work with newer versions at the moment.
+
+  Open a console and go to the Allegro.pas directory.  In most cases just
+  use "cd allegro.pas".
+
+  Execute "fix.bat" on Windows or "./fix.sh" on GNU/Linux and follow the
+  on screen instructions.
+
+  Execute the "make" command.  This should create the examples and the
+  demonstration game.  If there's an error then be sure you have Allegro
+  and Free Pascal correctly installed and configured.  If you have problems
+  gread the "Contact info" section.
+
+  There's HTML documentation at "docs" subdirectory.  You can rebuild that
+  using "pasdoc" (http://pasdoc.sipsolutions.net/).
 
 
 
@@ -96,16 +135,11 @@ Installation
 How to use
 ==========
 
-  The units are in the subdirectory "lib".
+  To use Allegro.pas in your programs just copy files with extension ".pas"
+  and ".inc" from directory "lib" to your program sources directory.  Also you
+  can copy those files to your compiler's unit directory.
 
-  See the examples in subdirectory "examples".  Compile them using the
-  "makefile" at root directory (use the "fix" scripts to create the "target.os"
-  file).  WARNING - Some examples just don't work.
-
-  You can create documentation using the pasdoc utility
-  (http://pasdoc.sipsolutions.net/).  There are a "makefile" at the docs
-  subdirectory.  Note that English isn't my first language so it may have
-  lots of errors and mistakes.  Also some links may be broken.
+  ATM no special configuration needed.
 
 
 
@@ -113,8 +147,8 @@ How to use
 Release programs
 ================
 
-  Current version isn't for final work so DO NOT RELEASE PROGRAMS USING IT
-  except for evaluation and/or testing purposes.
+  Refer to Allegro's documentation to know which files your need to distribute
+  with your program.
 
 
 
@@ -127,7 +161,7 @@ Help needed
   the documentation, to translate it to other languages or to write more
   wrapper functions, develop demos and examples.
 
-  If you want to help, read the next section and contact me!
+  If you want to help, read the next section and contact us!
 
 
 
@@ -135,12 +169,8 @@ Help needed
 Contact info
 ============
 
-  I've reserved space in sourceforge.net: http://allegro-pas.sourceforge.net.
-  The project summary is http://sourceforge.net/projects/allegro-pas.
-
-  There are forums and a mailing list there, so use it, please.
-  (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).
+  You'll find more information at http://allegro-pas.sourceforge.net.  There
+  are forums and a mailing-list in that site.
 
   Another nice forum is "Pascal Game Development"
   (http://www.pascalgamedevelopment.com/).
-

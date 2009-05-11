@@ -1,34 +1,37 @@
-  Finish Grabber.
+* Unit algl:
 
-  Finish Setup.
+  I've find that most people dislikes Allegro.pas just because it hasn't 3D
+  stuff, so unit algl (it means "Allegro OpenGL") is my current priority.
+  Current algl unit doesn't work properly and may be there's a conflict loading
+  the libraries (FPC loads OpenGL library in run-time) so I'll rewrite it using
+  AllegroGL as reference.
 
-  New installation system via fpmake.
+  I'll implement the most basic functions and procedures just to initialize the
+  OpenGL context, including double buffer and z-buffer, and allowing to use
+  some of the Allegro's drawing primitives (line, rectfill and few more) to
+  draw in plane f(x, y, 0).  Then I'll add more functionality if nobody else
+  does it (upload an AL_BITMAP object as texture, set an orthogonal-per-pixel
+  mode to draw primitives on the screen AKA "Allegro drawing mode", use
+  al_textout_ex to draw text, etc.).
 
-  New unit distibution:
+* Tools
 
-  * albase
-    Base definitions to interface with Allegro.
+  + GUI creator:  Simple drag'n'drop editor using Allegro's GUI.  Save GUIs
+    as text files (may be XML?) and as Pascal unit.
+  + Grabber:  Create and manage datafiles (AL_DATAFILE).
+  + Setup:  Simple setup for common values: sound, locals and joystick.
 
-  * aldrv
-    Low-level stuff to interface with Allegro core.  Useful for add-ons and
-    extensions.
+* Rotate sprite/bitmap
 
-  * allegro
-    Core system.  Initialization, finalization, configuration, graphics modes,
-    bitmaps, sprites, drawing primitives, text and fonts, user input (keyboard,
-    mouse and joystick), sound, music, timer, animations and UNICODE support.
+  This
 
-  * alfile
-    File access, LZSS compression, data files.
+* Examples & documentation
 
-  * alblend
-    High and true color blending and transparency.
+  The idea is to complete the documentation specially adding more "See also"
+  sections and some code snipets in some parts.
 
-  * alvga
-    Special effects for 8bit paletted modes: transparency, lighting, etc.
+  Also more examples, specially one or two to show how to integrate Allegro.pas
+  in Lazarus projects and may be others.
 
-  * algl
-    OpenGL support.
 
-  * algui
-    GEM style GUI.
+* New installation system via fpmake and/or fpcmake.

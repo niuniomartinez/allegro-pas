@@ -4,3 +4,7 @@
 Colaborators
 
   Seoane <http://delphi.jmrds.com>
+  - Helped with Delphi compatibility in version 4.2.
+
+  Martin Kalbfuﬂ
+  - Helped testing and fixing the lasts versions.

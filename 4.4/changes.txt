@@ -1,3 +1,18 @@
+Changes between versions 4.3.0 Alpha2 and 4.4.0 Alpha
+=====================================================
+
+  News
+  ----
+  - New algui unit, to create simple GUI dialogs.  NOT LAZARUS RELATED.
+  - Added new examples.
+
+  Other
+  -----
+  - New unit distribution more compact.
+  - A lot of changes on sources, API and documentation.
+
+
+
 Changes between versions 4.3.0 Alpha y 4.3.0 Alpha2
 ===================================================
 

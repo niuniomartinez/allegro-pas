@@ -52,7 +52,7 @@ CONST
   AL_PAS_IS_BETA = TRUE;
 (* Defined to a text string containing all version numbers and maybe some
    additional text. *)
-  AL_PAS_VERSION_STR = '4.4.0 SVN';
+  AL_PAS_VERSION_STR = '4.4.0 Alpha';
 
 
 
@@ -1685,7 +1685,7 @@ END.
      zero if the bitmap is not a truecolor image or there wasn't enough memory
      to perform the operation, and negative if there was any internal error in
      the color reduction code.) *)
-  FUNCTION  al_generate_optimized_palette (image: AL_BITMAPptr; pal: AL_PALETTEptr; rsvdcols: ARRAY OF CHAR): LONGINT; CDECL;
+  FUNCTION  al_generate_optimized_palette (image: AL_BITMAPptr; pal: AL_PALETTEptr; rsvdcols: ARRAY OF BYTE): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'generate_optimized_palette';
 
 
