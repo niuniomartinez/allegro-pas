@@ -23,7 +23,12 @@
 
 * Rotate sprite/bitmap
 
-  This
+  Just make it run, even if it's "ugly".
+
+* UNICODE
+
+  Actually supported but there's some problems with it.  Should find a way to
+  integrate it with FPC/Lazarus UNICODE support (i.e. utf8string, etc.)
 
 * Examples & documentation
 

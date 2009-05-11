@@ -17,7 +17,7 @@
   (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).
 
 
-@section(1 objectives Objectives of version 4.3.0)
+@section(1 objectives Objectives of version 4.4.0)
 
   @unorderedList(
     @item(@bold(Make it run on Linux).  Previous versions work only on
@@ -29,8 +29,7 @@
     @item(Add a lot of new functionality as @bold(UNICODE support).)
     @item(@bold(Implement a Grabber utility) to create and manage
       @link(alfile data files).)
-    @item(@bold(Add support for OpenGL hardware accelerated graphics) via
-      AllegroGL add-on.)
+    @item(@bold(Add support for OpenGL hardware accelerated graphics).)
   )
 
 @section(1 use How to use Allegro.pas)
@@ -117,6 +116,12 @@
   Note that you can use the Unicode routines before you call @link(al_install)
   or @link(al_init).  If you want to work in a text mode other than UTF-8, it
   is best to set it with @link(al_set_uformat) just before you call these.
+
+  @bold(Note:)  While UNICODE is almost supported by Free Pascal an Lazarus,
+  you might have bad results using it with Allegro.pas.  See the TODO.txt file
+  for more information.
+
+
 
 @section(2 configuration Configuration routines)
 
