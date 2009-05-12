@@ -10,7 +10,6 @@ UNIT algl;
 
 {$IFDEF FPC}
 { Free Pascal. }
- {$MODE DELPHI} { This is different than FPC mode for link procedures. }
  {$LONGSTRINGS ON}
 {$ENDIF}
 
@@ -274,18 +273,32 @@ VAR
 IMPLEMENTATION
 
 USES
+{ Includes platform dependent code. }
+{$IFDEF MSWINDOWS}
+  algl_w32,
+{$ELSE}
+  {$IFDEF UNIX}
+    {$IFDEF DARWIN}
+      {$ERROR Sorry but your platform isn't support by the OpenGL add-on. }
+    {$ELSE}
+      algl_x,
+    {$ENDIF}
+  {$ELSE}
+    {$ERROR Sorry but your platform isn't support by the OpenGL add-on. }
+  {$ENDIF}
+{$ENDIF}
+{ Other used units. }
   aldrv;
 
+
+
+(* Prototype for default GFX mode initialization. *)
 FUNCTION DefaultGFXInit (w, h, vw, vh, bpp: LONGINT): AL_BITMAPptr; CDECL;
-FORWARD;
-FUNCTION FullscreenGFXInit (w, h, vw, vh, bpp: LONGINT): AL_BITMAPptr; CDECL;
-FORWARD;
-FUNCTION WindowedGFXInit (w, h, vw, vh, bpp: LONGINT): AL_BITMAPptr; CDECL;
-FORWARD;
+  FORWARD;
 
 
 
-(* The configuration system.  This is common to all platforms. *)
+(* The configuration system. *)
 VAR
   SuggestedSettings, RequiredSettings: LONGINT;
 
@@ -306,16 +319,16 @@ VAR
       AL_GL_REQUIRE:
       BEGIN
 	SuggestedSettings := SuggestedSettings AND (NOT value);
-	RequiredSettings  := SuggestedSettings OR value;
+	RequiredSettings  := RequiredSettings OR value;
       END;
       AL_GL_SUGGEST:
       BEGIN
-	RequiredSettings  := SuggestedSettings AND (NOT value);
+	RequiredSettings  := RequiredSettings AND (NOT value);
 	SuggestedSettings := SuggestedSettings OR value;
       END;
       AL_GL_DONTCARE:
       BEGIN
-	RequiredSettings  := SuggestedSettings AND (NOT value);
+	RequiredSettings  := RequiredSettings AND (NOT value);
 	SuggestedSettings := SuggestedSettings AND (NOT value);
       END;
     { Set configuration. }
@@ -349,7 +362,8 @@ VAR
 
 (* System core. *)
 VAR
-(* Driver information. *)
+(* Driver information.  Has space for default, windowed and full screen, plus
+   a null one. *)
   OpenGLDriverList: ARRAY [0..3] OF __AL_DRIVER_INFO__;
 (* To save the default drivers and restore them. *)
   DefaultAllegroGFXDrivers: __AL_GFX_DRIVER__ptr;
@@ -360,14 +374,20 @@ VAR
 
 
 
+(* Funtion to tell whick graphics drivers are available. *)
+  FUNCTION GetOpenGLDrivers: __AL_DRIVER_INFO__ptr; CDECL;
+  BEGIN
+    GetOpenGLDrivers := @OpenGLDriverList[0]
+  END;
+
+
+
 (* Default OpenGL graphics driver. *)
   FUNCTION al_gl_init: BOOLEAN;
   BEGIN
+    al_gl_init := FALSE;
     IF al_system_driver = NIL THEN
-    BEGIN
-      al_gl_init := FALSE;
       EXIT;
-    END;
   { Set drivers information. }
     WITH DefaultOpenGLGraphicDriver DO
     BEGIN
@@ -384,6 +404,7 @@ VAR
       name := ''; desc := '';
       ascii_name := 'OpenGL Windowed Driver';
       init := @WindowedGFXInit;
+      exit := @CloseGFX;
       windowed := -1;
     { Any other values is set to NIL or 0 by default. }
     END;
@@ -392,30 +413,33 @@ VAR
       id := AL_GFX_OPENGL_FULLSCREEN;
       name := ''; desc := '';
       ascii_name := 'OpenGL Full Screen Driver';
-      init := @OpenGLFullScreenDriver;
+      init := @FullscreenGFXInit;
+      exit := @CloseGFX;
       windowed := 0;
     { Any other values is set to NIL or 0 by default. }
     END;
 
     OpenGLDriverList[0].id := AL_GFX_OPENGL;
     OpenGLDriverList[0].driver := @DefaultOpenGLGraphicDriver;
-    OpenGLDriverList[0].driver := 0;
+    OpenGLDriverList[0].autodetect := 0;
 
     OpenGLDriverList[1].id := AL_GFX_OPENGL_WINDOWED;
     OpenGLDriverList[1].driver := @OpenGLWindowedDriver;
-    OpenGLDriverList[1].driver := 0;
+    OpenGLDriverList[1].autodetect := 0;
 
     OpenGLDriverList[2].id := AL_GFX_OPENGL_FULLSCREEN;
     OpenGLDriverList[2].driver := @OpenGLFullScreenDriver;
-    OpenGLDriverList[2].driver := 0;
+    OpenGLDriverList[2].autodetect := 0;
 
     OpenGLDriverList[3].id := 0;
     OpenGLDriverList[3].driver := NIL;
-    OpenGLDriverList[3].driver := 0;
+    OpenGLDriverList[3].autodetect := 0;
 
   { Save Allegro GFX drivers and set the new ones. }
     DefaultAllegroGFXDrivers := al_system_driver^.gfx_drivers;
-    al_system_driver^.gfx_drivers := @OpenGLDriverList[0];
+    IF al_system_driver^.gfx_drivers = NIL THEN
+      EXIT;
+    al_system_driver^.gfx_drivers := @GetOpenGLDrivers;
   { Initial configuration. }
     al_gl_clear_settings;
     al_gl_init := TRUE
@@ -436,19 +460,6 @@ VAR
 
 (* Graphics interface. *)
 
-{ Includes platform dependent code. }
-{$IFDEF UNIX}
-  {$IFDEF DARWIN}
-    {$ERROR Sorry but your platform isn't support by the OpenGL add-on. }
-  {$ELSE}
-    {$INCLUDE algl_x.inc}
-  {$ENDIF}
-{$ELSE}
-  {$ERROR Sorry but your platform isn't support by the OpenGL add-on. }
-{$ENDIF}
-
-
-
 (* Implements a graphics initialization for AL_GFX_OPENGL. *)
   FUNCTION DefaultGFXInit (w, h, vw, vh, bpp: LONGINT): AL_BITMAPptr; CDECL;
   VAR
@@ -466,6 +477,7 @@ VAR
   { Then try windowed mode. }
     al_gfx_driver := @OpenGLWindowedDriver;
     DefaultGFXInit := OpenGLWindowedDriver.init (w, h, vw, vh, bpp);
+    DefaultGFXInit := Bmp;
   END;
 
 

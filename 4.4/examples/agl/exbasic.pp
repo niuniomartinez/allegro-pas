@@ -36,6 +36,7 @@ BEGIN
     al_message ('Can''t initialize Allegro''s OpenGL interface!');
     EXIT;
   END;
+WriteLn ('Allegro inicializado');
   al_install_keyboard;
   IF al_install_mouse < 0 THEN
   BEGIN
@@ -51,12 +52,14 @@ BEGIN
   al_gl_set (AL_GL_SUGGEST, AL_GL_COLOR_DEPTH OR AL_GL_DOUBLEBUFFER OR
              AL_GL_RENDERMETHOD OR AL_GL_Z_DEPTH);
 
+WriteLn ('OpenGL configurado');
   IF NOT al_set_gfx_mode (AL_GFX_OPENGL_WINDOWED, 640, 480, 0, 0) THEN
-    IF NOT al_set_gfx_mode (AL_GFX_OPENGL_FULLSCREEN, 640, 480, 0, 0) THEN
+//    IF NOT al_set_gfx_mode (AL_GFX_OPENGL_FULLSCREEN, 640, 480, 0, 0) THEN
     BEGIN
       al_message ('Error setting OpenGL graphics mode.');
       EXIT
     END;
+WriteLn ('Modo gráfico establecido');
 
   al_install_timer;
 
@@ -75,11 +78,13 @@ BEGIN
 
   al_clear_keybuf;
 
+WriteLn ('Bucle...');
   REPEAT
     WHILE (NOT al_keypressed) DO
       al_rest (2);
   UNTIL al_keypressed;
 
+WriteLn ('Nos vamos');
   al_gl_exit;
   al_exit;
 END.

@@ -1,6 +1,12 @@
 UNIT aldrv;
 (*<Defines structs and variables used internally by Allegro and the add-ons. *)
 
+{$IFDEF FPC}
+{ Free Pascal. }
+ {$PACKRECORDS C}
+ {$MODE FPC}
+{$ENDIF}
+
 INTERFACE
 
 USES
@@ -77,7 +83,7 @@ TYPE
     name, desc, ascii_name: PCHAR;
     init: FUNCTION (w, h, v_w, v_h, color_depth: LONGINT): AL_BITMAPptr; CDECL;
     exit: PROCEDURE (b: AL_BITMAPptr); CDECL;
-    screll: FUNCTION (x, y: LONGINT): LONGINT; CDECL;
+    scroll: FUNCTION (x, y: LONGINT): LONGINT; CDECL;
     vsync: PROCEDURE; CDECL;
     set_palette: PROCEDURE (CONST p: AL_RGBptr; from, _to, retracesync: LONGINT); CDECL;
     request_scroll: FUNCTION (x, y: LONGINT): LONGINT; CDECL;
@@ -111,11 +117,20 @@ TYPE
 
 VAR
 (* Pointer to the system driver. *)
-  al_system_driver: __AL_SYSTEM_DRIVER__PTR
+  al_system_driver: __AL_SYSTEM_DRIVER__PTR;
 	EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'system_driver';
 (* Pointer to the active graphics driver. *)
   al_gfx_driver: __AL_GFX_DRIVER__PTR;
 	EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gfx_driver';
+(* Pointer to the active keyboard driver. *)
+  al_keyboard_driver: POINTER;
+	EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'keyboard_driver';
+(* Pointer to the active mouse driver. *)
+  al_mouse_driver: POINTER;
+	EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_driver';
+
+
+
 IMPLEMENTATION
 
 END.
