@@ -3629,9 +3629,9 @@ IMPLEMENTATION
  * Core system *
  ***************)
 
-TYPE
+USES
 (* Includes the system driver description. *)
-{$include alsysdrv.inc}
+  aldrv;
 
 
 
@@ -3639,7 +3639,7 @@ VAR
 (* To be used as "errnum". *)
   NumError: LONGINT;
 (* To access to stytem drivers. *)
-  system_driver: __SYSTEM_DRIVER__PTR; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  system_driver: __AL_SYSTEM_DRIVER__PTR; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
 (* Function for internal use. *)
   FUNCTION _install_allegro_version_check (

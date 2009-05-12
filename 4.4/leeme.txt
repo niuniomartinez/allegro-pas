@@ -2,11 +2,11 @@
 /\  _  \ /\_ \  /\_ \
 \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
  \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\    /'__`\ /\__`\  /'___/
-  \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\ 
+  \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \__/\ \L\ \\/ __ \/\____`\
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Versión 4.4.0 Alpha           \_/__/                 \/_/ 
+     Versión 4.4.0 Alpha           \_/__/                 \/_/
 
   Una envolvente para utilizar la biblioteca Allegro en Pascal
   por Ñuño Martínez, 11 de Mayo de 2009.
@@ -63,7 +63,7 @@ Características
   Ejecución en pantalla completa o en ventanas de distintos tamaños y con
   profundidad de color de 8, 15, 16, 24 y 32 bits por pixel.
 
-  Animación de arhcivos FLIC.
+  Animación de archivos FLIC.
 
   Ejecución de música MIDI y hasta 64 efectos sonoros imultáneos, permitiendo
   bucles, sonido estéreo, modificación de volumen, velocidad, etc.
