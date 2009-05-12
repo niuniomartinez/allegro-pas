@@ -1,5 +1,7 @@
 UNIT algl_w32;
-(*<Platform dependent implementation for Win32 systems of the OpenGL add-on.
+(*< @exclude
+
+   Platform dependent implementation for Win32 systems of the OpenGL add-on.
    It's included in the implementation section of unit "algl". *)
 
 INTERFACE
