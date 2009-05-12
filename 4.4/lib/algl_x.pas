@@ -1,5 +1,7 @@
 UNIT algl_x;
-(*<Platform dependent implementation for X Window systems of the OpenGL
+(*< @exclude
+
+   Platform dependent implementation for X Window systems of the OpenGL
    add-on.  It's included in the implementation section of unit "algl".
 
    Parts of this unit were ported from AllegroGL project. *)
