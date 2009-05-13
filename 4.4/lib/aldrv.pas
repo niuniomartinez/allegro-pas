@@ -1,5 +1,8 @@
 UNIT aldrv;
-(*<Defines structs and variables used internally by Allegro and the add-ons. *)
+(*<Defines structs and variables used internally by Allegro and the add-ons. 
+
+  Note that some parts of this unit are platform-dependent so they aren't
+  available in all platforms. *)
 
 {$IFDEF FPC}
 { Free Pascal. }
@@ -130,6 +133,37 @@ VAR
 	EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_driver';
 
 
+
+(* Windows dependent *)
+{$IFDEF MSWINDOWS}
+TYPE
+  __AL_WIN_CREATE_PROC__ = FUNCTION (p: WNDPROC): HWND; CDECL;
+  __AL_WIN_MESSAGE_PROC__ = FUNCTION (w: HWND; m: UINT; wp: WPARAM; lp: LPARAM; p: PLONGINT): LONGINT; CDECL;
+
+(* Returns the window handler. *)
+  FUNCTION al_win_get_window: HWND; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_get_window';
+
+(* Sets the window handler. *)
+  PROCEDURE al_win_set_window (wnd: HWND); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_set_window';
+
+(* Set the window creation procedure. *)
+  PROCEDURE al_win_set_wnd_create_proc (proc: __AL_WIN_CREATE_PROC__); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_set_wnd_create_proc';
+
+  PROCEDURE al_win_set_msg_pre_proc (proc: __AL_WIN_MESSAGE_PROC__); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_set_msg_pre_proc';
+{$ENDIF}
+
+
+
+(* X dependent *)
+{$IFDEF UNIX}
+  {$IFDEF DARWIN}
+  {$ELSE}
+  {$ENDIF}
+{$ENDIF}
 
 IMPLEMENTATION
 
