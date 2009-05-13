@@ -87,8 +87,8 @@ TYPE
     arc: POINTER;
     spline: POINTER;
     floodfill: PROCEDURE (bmp: AL_BITMAPptr; x, y, c: LONGINT); CDECL;
-    polygon3d: PROCEDURE (bmp: AL_BITMAPptr; _type: LONGINT; texture: AL_BITMAPptr; vc: LONGINT; vtx: ARRAY OF POINTER); CDECL;
-    polygon3d_f: PROCEDURE (bmp: AL_BITMAPptr; _type: LONGINT; texture: AL_BITMAPptr; vc: LONGINT; vtx: ARRAY OF POINTER); CDECL;
+    polygon3d: PROCEDURE (bmp: AL_BITMAPptr; _type: LONGINT; texture: AL_BITMAPptr; vc: LONGINT; vtx: POINTER); CDECL;
+    polygon3d_f: PROCEDURE (bmp: AL_BITMAPptr; _type: LONGINT; texture: AL_BITMAPptr; vc: LONGINT; vtx: POINTER); CDECL;
     triangle3d: POINTER;
     triangle3d_f: POINTER;
     quad3d: POINTER;
