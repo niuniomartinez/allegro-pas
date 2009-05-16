@@ -122,7 +122,7 @@ UNIT al3d;
     @item(Unlike the normal @link(AL_POLYTYPE_FLAT) renderers, the Z-buffered
       ones don't use the @link(al_hline) routine.  Therefore
       @link(AL_DRAW_MODE) has no effect.)
-    @item(The @code(*LIT* ) routines work the traditional way - through the set
+    @item(The @code( *LIT* ) routines work the traditional way - through the set
       of blender routines)
     @item(All the Z-buffered routines are much slower than their normal
       counterparts (they all use the FPU to interpolate and test 1/z values).)
@@ -172,7 +172,7 @@ UNIT al3d;
   @unorderedList(
     @item(Unlike @code(al_polygon3d), @code(al_scene_polygon3d) requires valid
       z coordinates for all vertices, regardless of rendering style @(unlike
-      @code(al_polygon3d), which only uses z coordinate for @code (*PTEX* ).@))
+      @code(al_polygon3d), which only uses z coordinate for @code ( *PTEX* ).@))
     @item(All polygons passed to @code(al_scene_polygon3d) have to be
       @code(al_persp_project)'ed.)
     @item(After @link(al_render_scene) the mode is reset to @link(AL_SOLID.))
@@ -194,20 +194,155 @@ UNIT al3d;
 
 {$IFDEF FPC}
 { Free Pascal. }
+ {$MODE FPC}
  {$PACKRECORDS C}
 {$ENDIF}
 
 INTERFACE
 
 USES
-  albase, allegro, alfixed, alvtable;
+  albase, allegro, alfixed;
+
+
+
+TYPE
+(* Pointer to @link(AL_MATRIX). *)
+  AL_MATRIXptr = ^AL_MATRIX;
+(* Fixed point matrix structure.
+  @seealso(al3d) @seealso(AL_MATRIX_F) *)
+  AL_MATRIX = RECORD
+    v: ARRAY [0..2, 0..2] OF AL_FIXED; (*<Scaling and rotation. *)
+    t: ARRAY [0..2] OF AL_FIXED; (*<Translation. *)
+  END;
+
+(* Pointer to @link(AL_MATRIX_F).
+   @seealso(al3d) @seealso(AL_MATRIX) *)
+  AL_MATRIX_Fptr = ^AL_MATRIX_F;
+(* Floating point matrix structure. *)
+  AL_MATRIX_F = RECORD
+    v: ARRAY [0..2, 0..2] OF DOUBLE; (*<Scaling and rotation. *)
+    t: ARRAY [0..2] OF DOUBLE; (*<Translation. *)
+  END;
+
+VAR
+  al_identity_matrix: AL_MATRIX;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'identity_matrix';
+  al_identity_matrix_f: AL_MATRIX;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'identity_matrix_f';
+
+  PROCEDURE al_get_translation_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_translation_matrix';
+  PROCEDURE al_get_translation_matrix_f (m: AL_MATRIX_Fptr; x, y, z: DOUBLE);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_translation_matrix_f';
+
+  PROCEDURE al_get_scaling_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_scaling_matrix';
+  PROCEDURE al_get_scaling_matrix_f (m: AL_MATRIX_Fptr; x, y, z: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_scaling_matrix_f';
+
+  PROCEDURE al_get_x_rotate_matrix (m: AL_MATRIXptr; r: AL_FIXED); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_x_rotate_matrix';
+  PROCEDURE al_get_x_rotate_matrix_f (m: AL_MATRIX_Fptr; r: DOUBLE); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_x_rotate_matrix_f';
+
+  PROCEDURE al_get_y_rotate_matrix (m: AL_MATRIXptr; r: AL_FIXED); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_y_rotate_matrix';
+  PROCEDURE al_get_y_rotate_matrix_f (m: AL_MATRIX_Fptr; r: DOUBLE); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_y_rotate_matrix_f';
+
+  PROCEDURE al_get_z_rotate_matrix (m: AL_MATRIXptr; r: AL_FIXED); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_z_rotate_matrix';
+  PROCEDURE al_get_z_rotate_matrix_f (m: AL_MATRIX_Fptr; r: DOUBLE); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_z_rotate_matrix_f';
+
+  PROCEDURE al_get_rotation_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_rotation_matrix';
+  PROCEDURE al_get_rotation_matrix_f (m: AL_MATRIX_Fptr; x, y, z: DOUBLE);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_rotation_matrix_f';
+
+  PROCEDURE al_get_align_matrix (m: AL_MATRIXptr; xfront, yfront, zfront,
+				 xup, yup, zup: AL_FIXED); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_align_matrix';
+  PROCEDURE al_get_align_matrix_f (m: AL_MATRIX_Fptr; xfront, yfront, zfront,
+				 xup, yup, zup: DOUBLE); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_align_matrix_f';
+
+  PROCEDURE al_get_vector_rotation_matrix (m: AL_MATRIXptr; x,y,z,a: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME
+    'get_vector_rotation_matrix';
+  PROCEDURE al_get_vector_rotation_matrix_f (m: AL_MATRIX_Fptr; x,y,z,a: DOUBLE);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME
+    'get_vector_rotation_matrix_f';
+
+  PROCEDURE al_get_transformation_matrix (m:AL_MATRIXptr;
+			scale, xr, yr, zr, x, y, z: AL_FIXED); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_transformation_matrix';
+  PROCEDURE al_get_transformation_matrix_f (m:AL_MATRIX_Fptr;
+			scale, xr, yr, zr, x, y, z: DOUBLE); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_transformation_matrix_f';
+
+  PROCEDURE al_get_camera_matrix (m: AL_MATRIXptr; x, y, z,
+		xfront, yfront, zfront, xup, yup, zup, fov, aspect: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_camera_matrix';
+  PROCEDURE al_get_camera_matrix_f (m: AL_MATRIX_Fptr; x, y, z,
+		xfront, yfront, zfront, xup, yup, zup, fov, aspect: DOUBLE);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_camera_matrix_f';
+
+  PROCEDURE al_qtranslate_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_qtranslate_matrix';
+  PROCEDURE al_qtranslate_matrix_f (m: AL_MATRIX_Fptr; x, y, z: DOUBLE);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_qtranslate_matrix_f';
+
+  PROCEDURE al_qscale_matrix (m: AL_MATRIXptr; scale: AL_FIXED); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'qscale_matrix';
+  PROCEDURE al_qscale_matrix_f (m: AL_MATRIX_Fptr; scale: DOUBLE); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'qscale_matrix_f';
+
+  PROCEDURE al_matrix_mul (m1, m2, out: AL_MATRIXptr); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'matrix_mul';
+  PROCEDURE al_matrix_mul_f (m1, m2, out: AL_MATRIX_Fptr); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'matrix_mul_f';
+
+  PROCEDURE al_apply_matrix (m: AL_MATRIXptr;
+		x, y, z: AL_FIXED; xout, yout, zout: AL_FIXEDptr);
+  PROCEDURE al_apply_matrix_f (m: AL_MATRIX_Fptr;
+		x, y, z: DOUBLE; xout, yout, zout: PDOUBLE); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'apply_matrix_f';
+
+
+  FUNCTION al_vector_length (x, y, z: AL_FIXED): AL_FIXED; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'vector_length';
+  FUNCTION al_vector_length_f (x, y, z: DOUBLE): AL_FIXED; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'vector_length_f';
+
+  PROCEDURE al_normalize_vector (x, y, z: AL_FIXEDptr); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'normalize_vector';
+  PROCEDURE al_normalize_vector_f (x, y, z: DOUBLE); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'normalize_vector_f';
+
+  PROCEDURE al_cross_product (x1, y1, z1, x2, y2, z2: AL_FIXED;
+			      xout, yout, zout: AL_FIXEDptr); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'cross_product';
+  PROCEDURE al_cross_product_f (x1, y1, z1, x2, y2, z2: DOUBLE;
+			      xout, yout, zout: PDOUBLE); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'cross_product_f';
+
+  FUNCTION al_dot_product (x1, y1, z1, x2, y2, z2: AL_FIXED): AL_FIXED;
+  FUNCTION al_dot_product_f (x1, y1, z1, x2, y2, z2: DOUBLE): DOUBLE;
+
+  PROCEDURE al_set_projection_viewport (x, y, w, h: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_projection_viewport';
+
+  PROCEDURE al_persp_project (x, y, z: AL_FIXED; VAR xout, yout: AL_FIXED);
+  PROCEDURE al_persp_project_f (x, y, z: DOUBLE; VAR xout, yout: DOUBLE);
+
 
 
 TYPE
 (* Pointer to @link(AL_V3D). *)
   AL_V3Dptr = ^AL_V3D;
-(* A 3D point (fixed point version).
-   @seealso(AL_V3D_F) @seealso(al_polygon3d) *)
+(* A vertex structure used by @link(al_polygon3d) and other polygon rendering
+   functions. @seealso(AL_V3D_F) @seealso(alfixed) *)
   AL_V3D = RECORD
   (* Position. *)
     x, y, z: AL_FIXED;
@@ -216,11 +351,13 @@ TYPE
   (* Color. *)
     c: LONGINT;
   END;
+(* @ignore *)
+  AL_V3D_LIST = ARRAY OF AL_V3Dptr;
 
 (* Pointer to @link(AL_V3D_F). *)
   AL_V3D_Fptr = ^AL_V3D_F;
-(* A 3D point (floating point version).
-   @seealso(AL_V3D_F) @seealso(al_polygon3d_f) *)
+(*Like @link(AL_V3D) but using float values instead of fixed ones.
+  @seealso(al_polygon3d_f) *)
   AL_V3D_F = RECORD
   (* Position. *)
     x, y, z: DOUBLE;
@@ -229,12 +366,46 @@ TYPE
   (* Color. *)
     c: LONGINT;
   END;
+(* @ignore *)
+  AL_V3D_LIST_F = ARRAY OF AL_V3D_Fptr;
+
+
+
+  FUNCTION al_clip3d (_type: LONGINT; min_z, max_z: AL_FIXED; vc: LONGINT;
+    vtx, vout, vtmp: AL_V3D_LIST; out: ARRAY OF LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clip3d';
+  FUNCTION al_clip3d_f (_type: LONGINT; min_z, max_z: DOUBLE; vc: LONGINT;
+    vtx, vout, vtmp: AL_V3D_LIST_F; out: ARRAY OF LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clip3d_f';
+
+  FUNCTION al_polygon_z_normal (v1, v2, v3: AL_V3Dptr): AL_FIXED; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal';
+  FUNCTION al_polygon_z_normal_f (v1, v2, v3: AL_V3D_Fptr): DOUBLE; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal_f';
 
 
 
 CONST
+(* A simple flat shaded polygon, taking the color from the `c' value of the
+   first vertex.  This polygon type is affected by the @link(al_drawing_mode)
+   function, so it can be used to render @code(XOR) or translucent polygons.
+   @seealso(al_polygon3d) *)
   AL_POLYTYPE_FLAT            =  0;
+(* A single-color gouraud shaded polygon.  The colors for each vertex are taken
+   from the `c' value, and interpolated across the polygon.  This is very fast,
+   but will only work in 256-color modes if your palette contains a smooth
+   gradient between the colors.  In truecolor modes it interprets the color as
+   a packed, display-format value as produced by the @link(al_makecol)
+  function.
+   @seealso(al_polygon3d) *)
   AL_POLYTYPE_GCOL            =  1;
+(* A gouraud shaded polygon which interpolates RGB triplets rather than a
+   single color.  In 256-color modes this uses the global @link(al_rgb_map)
+   table to convert the result to an 8-bit paletted color, so it must only be
+   used after you have set up the RGB mapping table!  The colors for each
+   vertex are taken from the `c' value, which is interpreted as a 24-bit RGB
+   triplet ($FF0000 is red, $00FF00 is green, and $0000FF is blue).
+   @seealso(al_polygon3d) *)
   AL_POLYTYPE_GRGB            =  2;
   AL_POLYTYPE_ATEX            =  3;
   AL_POLYTYPE_PTEX            =  4;
@@ -260,7 +431,15 @@ CONST
 			    texture: AL_BITMAPptr; vc: LONGINT;
 			    vtx: ARRAY OF AL_V3D_Fptr);
 
+  PROCEDURE al_triangle3d (bmp: AL_BITMAPptr; _type: LONGINT;
+			   texture: AL_BITMAPptr; v1, v2, v3: AL_V3Dptr);
+  PROCEDURE al_triangle3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
+			   texture: AL_BITMAPptr; v1, v2, v3: AL_V3D_Fptr);
 
+  PROCEDURE al_quad3d (bmp: AL_BITMAPptr; _type: LONGINT;
+			texture: AL_BITMAPptr; v1, v2, v3, v4: AL_V3Dptr);
+  PROCEDURE al_quad3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
+			texture: AL_BITMAPptr; v1, v2, v3, v4: AL_V3D_Fptr);
 
 VAR
 (* This number (default value = 100.0) controls the behaviour of the z-sorting
@@ -350,7 +529,6 @@ TYPE
 
    Arguments are the same as for @link(al_polygon3d), except the bitmap is
    missing.  The one passed to @code(al_clear_scene) will be used.
- 
 
    Unlike @link(al_polygon3d), the polygon may be concave or self-intersecting.
    Shapes that penetrate one another may look OK, but they are not really
@@ -378,7 +556,7 @@ TYPE
 
 (* Floating point version of @link(al_scene_polygon3d). *)
   FUNCTION al_scene_polygon3d_f (_type: LONGINT; texture: AL_BITMAPptr;
-			         vtx: ARRAY OF AL_V3_FDptr): LONGINT; CDECL;
+			         vtx: ARRAY OF AL_V3D_Fptr): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scene_polygon3d';
 
 (* Renders all the specified @link(al_scene_polygon3d)'s on the bitmap passed
@@ -398,11 +576,74 @@ TYPE
 
 IMPLEMENTATION
 
+
+
+
+  PROCEDURE al_apply_matrix (m: AL_MATRIXptr;
+		x, y, z: AL_FIXED;  xout, yout, zout: AL_FIXEDptr);
+  BEGIN
+    xout^ := al_fixmul (x, m^.v[0, 0]) +
+	     al_fixmul (y, m^.v[0, 1]) +
+	     al_fixmul (z, m^.v[0, 2]) +
+	     m^.t[0];
+    yout^ := al_fixmul (x, m^.v[1, 0]) +
+	     al_fixmul (y, m^.v[1, 1]) +
+	     al_fixmul (z, m^.v[1, 2]) +
+	     m^.t[1];
+    zout^ := al_fixmul (x, m^.v[2, 0]) +
+	     al_fixmul (y, m^.v[2, 1]) +
+	     al_fixmul (z, m^.v[2, 2]) +
+	     m^.t[2];
+  END;
+
+
+
+VAR
+  _persp_xscale: AL_FIXED; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  _persp_yscale: AL_FIXED; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  _persp_xoffset: AL_FIXED; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  _persp_yoffset: AL_FIXED; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  PROCEDURE al_persp_project (x, y, z: AL_FIXED; VAR xout, yout: AL_FIXED);
+  BEGIN
+    xout := al_fixmul (al_fixdiv (x, z), _persp_xscale) + _persp_xoffset;
+    yout := al_fixmul (al_fixdiv (y, z), _persp_yscale) + _persp_yoffset;
+  END;
+
+VAR
+  _persp_xscale_f: DOUBLE; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  _persp_yscale_f: DOUBLE; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  _persp_xoffset_f: DOUBLE; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  _persp_yoffset_f: DOUBLE; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  PROCEDURE al_persp_project_f (x, y, z: DOUBLE; VAR xout, yout: DOUBLE);
+  VAR
+    z1: DOUBLE;
+  BEGIN
+    z1 := 1.0 / z;
+    xout := ((x * z1) * _persp_xscale_f) + _persp_xoffset_f;
+    yout := ((y * z1) * _persp_yscale_f) + _persp_yoffset_f;
+  END;
+
+
+
+  FUNCTION al_dot_product (x1, y1, z1, x2, y2, z2: AL_FIXED): AL_FIXED;
+  BEGIN
+    al_dot_product := al_fixmul(x1,x2) + al_fixmul(y1,y2) + al_fixmul(z1,z2);
+  END;
+
+  FUNCTION al_dot_product_f (x1, y1, z1, x2, y2, z2: DOUBLE): DOUBLE;
+  BEGIN
+    al_dot_product_f := (x1 * x2) + (y1 * y2) + (z1 * z2);
+  END;
+
+
+
   PROCEDURE al_polygon3d (bmp: AL_BITMAPptr; _type: LONGINT;
 			  texture: AL_BITMAPptr; vc: LONGINT;
 			  vtx: ARRAY OF AL_V3Dptr);
   BEGIN
-    bmp^.vtable^.polygon3d (bmp, _type, texture, vc, vtx);
+    bmp^.vtable^.polygon3d (bmp, _type, texture, vc, @(vtx[0]));
   END;
 
 
@@ -411,7 +652,32 @@ IMPLEMENTATION
 			  texture: AL_BITMAPptr; vc: LONGINT;
 			  vtx: ARRAY OF AL_V3D_Fptr);
   BEGIN
-    bmp^.vtable^.polygon3d_f (bmp, _type, texture, vc, vtx);
+    bmp^.vtable^.polygon3d (bmp, _type, texture, vc, @(vtx[0]));
+  END;
+
+
+  PROCEDURE al_triangle3d (bmp: AL_BITMAPptr; _type: LONGINT;
+			   texture: AL_BITMAPptr; v1, v2, v3: AL_V3Dptr);
+  BEGIN
+    bmp^.vtable^.triangle3d (bmp, _type, texture, v1, v2, v3);
+  END;
+
+  PROCEDURE al_triangle3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
+			   texture: AL_BITMAPptr; v1, v2, v3: AL_V3D_Fptr);
+  BEGIN
+    bmp^.vtable^.triangle3d_f (bmp, _type, texture, v1, v2, v3);
+  END;
+
+  PROCEDURE al_quad3d (bmp: AL_BITMAPptr; _type: LONGINT;
+			texture: AL_BITMAPptr; v1, v2, v3, v4: AL_V3Dptr);
+  BEGIN
+    bmp^.vtable^.quad3d (bmp, _type, texture, v1, v2, v3, v4);
+  END;
+
+  PROCEDURE al_quad3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
+			texture: AL_BITMAPptr; v1, v2, v3, v4: AL_V3D_Fptr);
+  BEGIN
+    bmp^.vtable^.quad3d_f (bmp, _type, texture, v1, v2, v3, v4);
   END;
 
 

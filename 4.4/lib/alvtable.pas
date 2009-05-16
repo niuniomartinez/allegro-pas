@@ -89,10 +89,10 @@ TYPE
     floodfill: PROCEDURE (bmp: AL_BITMAPptr; x, y, c: LONGINT); CDECL;
     polygon3d: PROCEDURE (bmp: AL_BITMAPptr; _type: LONGINT; texture: AL_BITMAPptr; vc: LONGINT; vtx: POINTER); CDECL;
     polygon3d_f: PROCEDURE (bmp: AL_BITMAPptr; _type: LONGINT; texture: AL_BITMAPptr; vc: LONGINT; vtx: POINTER); CDECL;
-    triangle3d: POINTER;
-    triangle3d_f: POINTER;
-    quad3d: POINTER;
-    quad3d_f: POINTER;
+    triangle3d: PROCEDURE (bmp: AL_BITMAPptr; _type: LONGINT; texture: AL_BITMAPptr; v1, v2, v3: POINTER); CDECL;
+    triangle3d_f: PROCEDURE (bmp: AL_BITMAPptr; _type: LONGINT; texture: AL_BITMAPptr; v1, v2, v3: POINTER); CDECL;
+    quad3d: PROCEDURE (bmp: AL_BITMAPptr; _type: LONGINT; texture: AL_BITMAPptr; v1, v2, v3, v4: POINTER); CDECL;
+    quad3d_f: PROCEDURE (bmp: AL_BITMAPptr; _type: LONGINT; texture: AL_BITMAPptr; v1, v2, v3, v4: POINTER); CDECL;
 
     draw_sprite_ex: PROCEDURE (bmp, sprite: AL_BITMAPptr; x, y, mode, flip:
       LONGINT);

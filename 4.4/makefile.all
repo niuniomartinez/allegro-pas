@@ -8,7 +8,10 @@ all: adbanner examples demo tools
 #	@echo "To create the HTML documentation, run 'make' from the docs directory"
 
 # Examples.
-examples: $(EXMFILES) $(GLEXMFILES)
+examples: $(EXMFILES)
+	@echo "Finished all examples"
+
+examplesgl: $(GLEXMFILES)
 	@echo "Finished all examples"
 
 # Demo game.
@@ -22,12 +25,12 @@ setup: $(TOOLDIR)setup/setup$(BINSUF)
 grabber: $(TOOLDIR)grabber/grabber$(BINSUF)
 
 # Executables.
-$(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR) -FU$(LIBDIR) $< -o$@
+$(EXMDIR)agl/%$(BINSUF): $(EXMDIR)agl/%.pp $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR)agl/ -FU$(LIBDIR) -k-lglx $< -o$@
 	@echo Example $@ ready!
 
-$(EXMDIR)agl/%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR)agl/ -FU$(LIBDIR) $< -o$@
+$(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR) -FU$(LIBDIR) $< -o$@
 	@echo Example $@ ready!
 
 $(DEMODIR)%$(BINSUF): $(DEMOSRC) $(LIBFILES)
