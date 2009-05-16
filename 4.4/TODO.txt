@@ -1,3 +1,11 @@
+* Unit al3d:
+
+  Software-based renderer and 3D maths.
+
+* MIDI:
+
+  Add messages.
+
 * Unit algl:
 
   I've find that most people dislikes Allegro.pas just because it hasn't 3D

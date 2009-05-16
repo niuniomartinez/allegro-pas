@@ -24,7 +24,7 @@ EXMFILES = $(addprefix $(EXMDIR),$(addsuffix $(BINSUF), $(basename $(notdir $(TE
 #endif
 #GLEXMFILES += $(addprefix $(EXMDIR)agl/,$(addsuffix $(BINSUF), $(basename $(notdir $(TEM5) ) ) ) )
 
-GLEXMFILES += $(EXMDIR)agl/exbasic$(BINSUF)
+GLEXMFILES = $(EXMDIR)agl/exbasic$(BINSUF)
 
 # For the demo game.
 TEM3 = $(wildcard $(DEMODIR)*.pas)

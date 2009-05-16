@@ -62,6 +62,8 @@ USES
 
 
 TYPE
+(* Pointer to @link(AL_FIXED). *)
+  AL_FIXEDptr = ^AL_FIXED;
 (* This is a fixed point integer which can replace float with similar results
    and is faster than float on low end machines. *)
   AL_FIXED	= LONGINT;

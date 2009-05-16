@@ -1224,6 +1224,17 @@ TYPE
   PROCEDURE al_rgb_to_hsv (r, g, b: LONGINT; VAR h, s, v: DOUBLE);
 
 
+VAR
+(* Table mapping palette index colors (0-255) into whatever pixel format is
+   being used by the current display mode.  In a 256-color mode this just maps
+   onto the array index.  In truecolor modes it looks up the specified entry in
+   the current palette, and converts that RGB value into the appropriate packed
+   pixel format.
+   @seealso(al_set_palette) @seealso(al_makecol) @seealso(al_set_color_depth) *)
+  al_palette_color: ARRAY [0..255] OF LONGINT;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'palette_color';
+
+
 
 CONST
 (* To know thet palette size. *)
@@ -1239,7 +1250,7 @@ TYPE
   AL_PALETTE = ARRAY [0..AL_PAL_SIZE-1] OF AL_RGB;
 (* Pointer to a @link(AL_RGB_MAP). *)
   AL_RGB_MAPptr = ^AL_RGB_MAP;
-(* Speed up reducing RGB values to 8-bit paletted colors. *)
+(* Stores an rgb map to accelerate conversions. @seealso(al_create_rgb_table) *)
   AL_RGB_MAP = RECORD
     data: ARRAY [0..31, 0..31, 0..31] OF BYTE;
   END;
