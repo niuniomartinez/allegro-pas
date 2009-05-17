@@ -1,4 +1,4 @@
-PROGRAM ex3d2;
+PROGRAM ex3d;
 (*______   ___    ___
  /\  _  \ /\_ \  /\_ \
  \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
@@ -16,12 +16,14 @@ PROGRAM ex3d2;
 
 {$IFDEF FPC}
 { Free Pascal. }
+  {$MODE OBJFPC}
   {$LONGSTRINGS ON}
 {$ENDIF}
 
 USES
   cube,
-  allegro, algui, al3d;
+  allegro, algui, al3d, alfixed,
+  sysutils;
 
 
 
@@ -31,6 +33,11 @@ VAR
   Buffer: AL_BITMAPptr;
 (* Input. *)
   Key: LONGINT;
+(* The cube. *)
+  TheCube: TCube;
+  Palette: AL_PALETTE;
+  Texture: AL_BITMAPptr;
+  Filename: STRING;
 BEGIN { The program starts here. }
 
 { You should always do this at the start of Allegro programs. }
@@ -82,11 +89,30 @@ BEGIN { The program starts here. }
 { Set up the viewport for the perspective projection }
   al_set_projection_viewport (0, 0, AL_SCREEN_W, AL_SCREEN_H);
 
+{ Load the cube texture. }
+  Filename := ExtractFilePath (ParamStr (0)) + 'allegro.pcx';
+
+  Texture := al_load_bitmap (Filename, @Palette);
+  IF Texture = NIL THEN
+  BEGIN
+    al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
+  { Show an error message. }
+    al_message ('Error reading mysha.pcx');
+  { Shutdown Allegro. }
+    al_exit;
+    EXIT;
+  END;
+  al_set_palette (Palette);
+
 { Initialise the cube. }
+  TheCube := TCube.Create (0, 0, al_itofix (-10), al_itofix (1), Texture);
 
   REPEAT
   { Draw. }
     al_clear_bitmap (Buffer);
+    TheCube.Ang.y := al_fixadd (TheCube.Ang.y, al_itofix (1  ));
+    TheCube.Ang.z := al_fixadd (TheCube.Ang.z, al_ftofix (0.5));
+    TheCube.Draw (Buffer, @al_identity_matrix);
     al_vsync;
     al_blit (Buffer, al_screen, 0, 0, 0, 0, AL_SCREEN_W, AL_SCREEN_H);
 
@@ -99,8 +125,11 @@ BEGIN { The program starts here. }
   { Wait until a key is pressed. }
   UNTIL Key = AL_KEY_ESC;
 
-{ Shutdown Allegro.  You should do it because it isn't automatic. }
+{ Release resources. }
+  TheCube.Free;
   al_destroy_bitmap (Buffer);
+
+{ Shutdown Allegro.  You should do it because it isn't automatic. }
   al_exit;
 
 { End of the program. }
