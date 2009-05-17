@@ -298,8 +298,18 @@ VAR
   PROCEDURE al_qscale_matrix_f (m: AL_MATRIX_Fptr; scale: DOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'qscale_matrix_f';
 
+(* Multiplies two matrices, storing the result in @code(out) (this may be a
+   duplicate of one of the input matrices, but it is faster when the inputs and
+   output are all different).  The resulting matrix will have the same effect
+   as the combination of @code(m1) and @code(m2), ie. when applied to a point
+   p, @code(@(p * out@) = @(@(p * m1@) * m2@)).  Any number of transformations
+   can be concatenated in this way.  Note that matrix multiplication is not
+   commutative, ie. @code(al_matrix_mul @(m1, m2@) <> al_matrix_mul @(m2,
+   m1@)).
+   @seealso(al_apply_matrix) @seealso(al_matrix_mul_f) *)
   PROCEDURE al_matrix_mul (m1, m2, out: AL_MATRIXptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'matrix_mul';
+(* Same as @link(al_matrix_mul) but using floats instead than fixed. *)
   PROCEDURE al_matrix_mul_f (m1, m2, out: AL_MATRIX_Fptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'matrix_mul_f';
 
