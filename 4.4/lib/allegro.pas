@@ -670,7 +670,7 @@ VAR
   IF (val AND $ff) = ORD ('d') THEN
     al_message ('You pressed "d"');
 
-  IF (val RSH 8) = AL_KEY_SPACE THEN
+  IF (val SHR 8) = AL_KEY_SPACE THEN
     al_message ('You pressed Space');
 
   IF (val AND $ff) = 3 THEN
@@ -1855,7 +1855,7 @@ VAR
   mpos, mx, my: LONGINT;
   ...
   mpos := al_mouse_pos;
-  mx := mpos RSH 16;
+  mx := mpos SHR 16;
   my := mpos AND $0000ffff;
   #)*)
   al_mouse_pos: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_pos';
