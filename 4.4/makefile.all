@@ -26,7 +26,7 @@ grabber: $(TOOLDIR)grabber/grabber$(BINSUF)
 
 # Executables.
 $(EXMDIR)agl/%$(BINSUF): $(EXMDIR)agl/%.pp $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR)agl/ -FU$(LIBDIR) -k-lglx $< -o$@
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR)agl/ -FU$(LIBDIR) $< -o$@
 	@echo Example $@ ready!
 
 $(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)

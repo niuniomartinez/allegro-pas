@@ -105,13 +105,14 @@ BEGIN { The program starts here. }
   al_set_palette (Palette);
 
 { Initialise the cube. }
-  TheCube := TCube.Create (0, 0, al_itofix (-10), al_itofix (1), Texture);
+  TheCube := TCube.Create (0, 0, al_itofix (-5), al_itofix (1), Texture);
 
   REPEAT
   { Draw. }
-    al_clear_bitmap (Buffer);
-    TheCube.Ang.y := al_fixadd (TheCube.Ang.y, al_itofix (1  ));
-    TheCube.Ang.z := al_fixadd (TheCube.Ang.z, al_ftofix (0.5));
+    al_stretch_blit (Texture, Buffer, 0, 0, Texture^.w, Texture^.h,
+				      0, 0, AL_SCREEN_W, AL_SCREEN_H);
+    TheCube.Ang.y := al_fixadd (TheCube.Ang.y, al_itofix (1));
+    TheCube.Ang.z := al_fixadd (TheCube.Ang.z, al_ftofix (1));
     TheCube.Draw (Buffer, @al_identity_matrix);
     al_vsync;
     al_blit (Buffer, al_screen, 0, 0, 0, 0, AL_SCREEN_W, AL_SCREEN_H);
