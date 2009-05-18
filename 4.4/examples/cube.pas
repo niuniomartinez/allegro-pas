@@ -11,12 +11,18 @@ UNIT cube;
 
    Defines a simple 3D cube used by 3D examples.
 
-   by Ñuño Martínez <niunio(at)users.sourceforge.net> *)
+   It isn't a very efficient piece of code, but it does show the stuff in
+   action.  It is left to the reader as an exercise to design a proper model
+   structure and rendering pipeline:  after all, the best way to do that sort
+   of stuff varies hugely from one game to another.
+
+   by Ñuño Martínez <niunio(at)users.sourceforge.net>
+   Some parts are inspired or ported from an example of the Allegro library
+   by Shawn Hargreaves. *)
 
 {$IFDEF FPC}
 { Free Pascal. }
   {$MODE OBJFPC}
-  {$LONGSTRINGS ON}
 {$ENDIF}
 
 INTERFACE
@@ -73,8 +79,6 @@ TYPE
 
 IMPLEMENTATION
 
-
-
 (***********
  * TVector *
  ***********)
@@ -104,11 +108,21 @@ VAR
     3, 7, 4, 0,
     5, 6, 2, 1
   );
+(* Precalculated color for vertex. *)
+  VertexColor, GrayColor: ARRAY [0..7] OF LONGINT;
 
 
 
 (* Constructor. *)
   CONSTRUCTOR TCube.Create (px, py, pz, aSize: AL_FIXED; aTexture: AL_BITMAPptr);
+
+    FUNCTION RandomValue: BYTE;
+    BEGIN
+      RandomValue := (Random (16) * 16) - 1;
+    END;
+
+  VAR
+    Cnt, Color: LONGINT;
   BEGIN
     fPosition := TVector.Create (px, py, pz);
     fAngle := TVector.Create (0, 0, 0);
@@ -122,6 +136,14 @@ VAR
     END
     ELSE
       fDrawmode := AL_POLYTYPE_FLAT;
+  { Pre-calculate colors.  It does this here to be sure the correct color depth
+    was selected. }
+    FOR Cnt := 0 TO 7 DO
+    BEGIN
+      VertexColor[Cnt] := al_makecol (RandomValue, RandomValue, RandomValue);
+      Color := 127 + (128 DIV (Cnt + 1));
+      GrayColor[Cnt] := al_makecol (Color, Color, Color);
+    END;
   END;
 
 
@@ -135,20 +157,14 @@ VAR
   END;
 
 
-(* Draws the cube. *)
+
+(* Draws the cube.
+
+   This is quite inefficient and doesn't draw the masked and transparent modes
+   in the right order. *)
   PROCEDURE TCube.Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIXptr);
-
-  (* Helper function to get the mid value. *)
-    FUNCTION MID (x, y, z: INTEGER): INTEGER; INLINE;
-    VAR
-      Tmp: INTEGER;
-    BEGIN
-      IF y <   z THEN Tmp := y ELSE Tmp := z;
-      IF x > Tmp THEN MID := x ELSE MID := Tmp;
-    END;
-
   VAR
-    Cnt, Color, v1, v2, v3, v4: LONGINT;
+    Cnt, v1, v2, v3, v4: LONGINT;
     Matrix: AL_MATRIX;
     Vertex: ARRAY [0..7] OF AL_V3D;
   BEGIN
@@ -159,11 +175,19 @@ VAR
   { vertices of the cube }
     FOR Cnt := 0 TO 7 DO
     BEGIN
+    { "Move" and project each vertex. }
       al_apply_matrix (@Matrix,
 	PointCoordinates[Cnt].x, PointCoordinates[Cnt].y, PointCoordinates[Cnt].z,
 	@Vertex[Cnt].x, @Vertex[Cnt].y, @Vertex[Cnt].z);
       al_persp_project (Vertex[Cnt].x, Vertex[Cnt].y, Vertex[Cnt].z,
 			Vertex[Cnt].x, Vertex[Cnt].y);
+    { Calculate the color. }
+      IF (fDrawmode < AL_POLYTYPE_ATEX)
+      AND (fDrawmode <> AL_POLYTYPE_GCOL)
+      THEN
+	Vertex[Cnt].c := VertexColor[Cnt]
+      ELSE
+	Vertex[Cnt].c := GrayColor[Cnt];
     END;
   { faces of the cube. }
     FOR Cnt := 0 TO 5 DO
@@ -173,21 +197,18 @@ VAR
       v3 := VertexIndex[v1 + 2];
       v4 := VertexIndex[v1 + 3];
       v1 := VertexIndex[v1];
-      IF al_polygon_z_normal (@Vertex[v1], @Vertex[v2], @Vertex[v3]) < 0 THEN
+    { If faces aren't transparente, then avoid faces behind the cube. }
+      IF (fDrawmode < AL_POLYTYPE_ATEX_TRANS)
+      AND (al_polygon_z_normal (@Vertex[v1], @Vertex[v2], @Vertex[v3]) < 0)
+      THEN
 	CONTINUE;
-    { Calculate the color. }
-      Color := MID (128, 255 - (((Vertex[v1].z + Vertex[v2].z) DIV 16) SHR 16), 255);
-      Vertex[v1].c := al_makecol (Color, Color, Color);
-      Vertex[v2].c := Vertex[v1].c;
-      Vertex[v3].c := Vertex[v1].c;
-      Vertex[v4].c := Vertex[v1].c;
     { Texturization. }
       IF (fDrawmode >= AL_POLYTYPE_ATEX) AND (fTexture <> NIL) THEN
       BEGIN
-        Vertex[v1].u :=         0; Vertex[v1].v :=          0;
-        Vertex[v2].u := fTexHeight; Vertex[v2].v :=          0;
-        Vertex[v3].u := fTexHeight; Vertex[v3].v := fTexWidth;
-        Vertex[v4].u :=         0; Vertex[v4].v := fTexWidth;
+        Vertex[v1].u :=         0; Vertex[v3].v :=          0;
+        Vertex[v2].u :=         0; Vertex[v4].v := fTexHeight;
+        Vertex[v3].u := fTexWidth; Vertex[v1].v := fTexHeight;
+        Vertex[v4].u := fTexWidth; Vertex[v2].v :=          0;
       END;
     { Draw it. }
       al_quad3d (aBitmap, fDrawmode, fTexture,
