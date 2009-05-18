@@ -22,8 +22,18 @@ PROGRAM ex3d;
 
 USES
   cube,
-  allegro, algui, al3d, alfixed,
+  allegro, algui, al3d, alfixed, alvga, alblend,
   sysutils;
+
+
+
+(* Frame control. *)
+  VAR
+    Tick: LONGINT;
+  PROCEDURE Timer; CDECL;
+  BEGIN
+    INC (Tick);
+  END;
 
 
 
@@ -36,8 +46,30 @@ VAR
 (* The cube. *)
   TheCube: TCube;
   Palette: AL_PALETTE;
-  Texture: AL_BITMAPptr;
+  Bitmap, Texture: AL_BITMAPptr;
   Filename: STRING;
+(* Color management. *)
+  RGBTable: AL_RGB_MAP;
+  LightTable, TransTable: AL_COLOR_MAP;
+(* Name of modes. *)
+  DrawModeName: ARRAY[0..15] OF STRING = (
+   'Wireframe',
+   'Flat shaded',
+   'Single color Gouraud shaded',
+   'Gouraud shaded',
+   'Texture mapped',
+   'Perspective correct texture mapped',
+   'Masked texture mapped',
+   'Masked persp. correct texture mapped',
+   'Lit texture map',
+   'Lit persp. correct texture map',
+   'Masked lit texture map',
+   'Masked lit persp. correct texture map',
+   'Transparent texture mapped',
+   'Transparent perspective correct texture mapped',
+   'Transparent masked texture mapped',
+   'Transparent masked persp. correct texture mapped'
+  );
 BEGIN { The program starts here. }
 
 { You should always do this at the start of Allegro programs. }
@@ -51,6 +83,7 @@ BEGIN { The program starts here. }
   al_install_keyboard;
   al_install_mouse;
   al_install_timer;
+  al_install_int_ex (@Timer, AL_BPS_TO_TIMER (50));
 
 { Set a graphics mode. }
   IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
@@ -90,10 +123,10 @@ BEGIN { The program starts here. }
   al_set_projection_viewport (0, 0, AL_SCREEN_W, AL_SCREEN_H);
 
 { Load the cube texture. }
-  Filename := ExtractFilePath (ParamStr (0)) + 'allegro.pcx';
+  Filename := ExtractFilePath (ParamStr (0)) + 'mysha.pcx';
 
-  Texture := al_load_bitmap (Filename, @Palette);
-  IF Texture = NIL THEN
+  Bitmap := al_load_bitmap (Filename, @Palette);
+  IF Bitmap = NIL THEN
   BEGIN
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
   { Show an error message. }
@@ -103,25 +136,71 @@ BEGIN { The program starts here. }
     EXIT;
   END;
   al_set_palette (Palette);
+{ Better if texture is power of two. }
+  Texture := al_create_bitmap (128, 128);
+  al_stretch_blit (Bitmap, Texture,
+		   0, 0, Bitmap^.w, Bitmap^.h,
+		   0, 0, Texture^.w, Texture^.h);
+
+{ Make bitmap same size than screen.  This way draw the background is faster. }
+  al_stretch_blit (Bitmap, al_screen, 0, 0, Bitmap^.w, Bitmap^.h,
+				      0, 0, AL_SCREEN_W, AL_SCREEN_H);
+  al_destroy_bitmap (Bitmap);
+  Bitmap := al_create_bitmap (AL_SCREEN_W, AL_SCREEN_H);
+  al_blit (al_screen, Bitmap, 0, 0, 0, 0, AL_SCREEN_W, AL_SCREEN_H);
+
+{ Build a rgb_map table. }
+  al_create_rgb_table (@RGBTable, Palette, NIL);
+  al_rgb_table := @RGBTable;
+
+{ Build a lighting table. }
+  al_create_light_table (@LightTable, Palette, 0, 0, 0, NIL);
+  al_color_table := @LightTable;
+
+{ Build a transparency table (25% transparent). }
+  al_create_trans_table (@TransTable, Palette, 192, 192, 192, NIL);
+
+{ Set up truecolor blending function (25% transparent). }
+  al_set_trans_blender (0, 0, 0, 192);
 
 { Initialise the cube. }
+  Randomize;
   TheCube := TCube.Create (0, 0, al_itofix (-5), al_itofix (1), Texture);
+  TheCube.DrawMode := AL_POLYTYPE_FLAT;
 
+  Tick := 1;
   REPEAT
+  { Update. }
+    WHILE Tick > 0 DO
+    BEGIN
+      TheCube.Ang.y := al_fixadd (TheCube.Ang.y, al_itofix (1));
+      TheCube.Ang.z := al_fixadd (TheCube.Ang.z, al_itofix (1));
+    { User input. }
+      IF al_keypressed THEN
+      BEGIN
+	Key := al_readkey SHR 8;
+	IF Key <> AL_KEY_ESC THEN
+	BEGIN
+	  INC (TheCube.DrawMode);
+	  IF TheCube.DrawMode >= AL_POLYTYPE_MAX THEN
+	  BEGIN
+	    TheCube.DrawMode := AL_POLYTYPE_FLAT;
+	    al_color_table := @LightTable;
+	  END;
+	  IF TheCube.DrawMode >= AL_POLYTYPE_ATEX_TRANS THEN
+	    al_color_table := @TransTable;
+	END;
+      END;
+    { Next tick. }
+      DEC (Tick);
+    END;
   { Draw. }
-    al_stretch_blit (Texture, Buffer, 0, 0, Texture^.w, Texture^.h,
-				      0, 0, AL_SCREEN_W, AL_SCREEN_H);
-    TheCube.Ang.y := al_fixadd (TheCube.Ang.y, al_itofix (1));
-    TheCube.Ang.z := al_fixadd (TheCube.Ang.z, al_ftofix (1));
+    al_blit (Bitmap, Buffer, 0, 0, 0, 0, AL_SCREEN_W, AL_SCREEN_H);
     TheCube.Draw (Buffer, @al_identity_matrix);
+    al_textout_ex (Buffer, al_font, 'Poly type: '+DrawModeName[TheCube.DrawMode + 1],
+		   1, 1, -1, -1);
     al_vsync;
     al_blit (Buffer, al_screen, 0, 0, 0, 0, AL_SCREEN_W, AL_SCREEN_H);
-
-  { User input. }
-    IF al_keypressed THEN
-    BEGIN
-      Key := al_readkey SHR 8;
-    END;
 
   { Wait until a key is pressed. }
   UNTIL Key = AL_KEY_ESC;
@@ -129,6 +208,7 @@ BEGIN { The program starts here. }
 { Release resources. }
   TheCube.Free;
   al_destroy_bitmap (Buffer);
+  al_destroy_bitmap (Texture);
 
 { Shutdown Allegro.  You should do it because it isn't automatic. }
   al_exit;
