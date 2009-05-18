@@ -6,17 +6,27 @@ UNIT algl;
   cross-platform portability, loading data, and drawing your textures.  So this
   library fills the same hole that things like glut do.
 
-  Parts of this code are based on AllegroGL add-on. *)
+  @bold(Note:) Some procedures are defined as variables because AllegroGL it's
+  loaded at runtime. *)
 
 {$IFDEF FPC}
 { Free Pascal. }
+ {$MODE DELPHI} { This is different than FPC mode for link procedures. }
  {$LONGSTRINGS ON}
 {$ENDIF}
 
 INTERFACE
 
 USES
-  allegro;
+  allegro,
+  GL;
+
+
+
+(* @exclude FOR INTERNAL USE ONLY.
+   Since the FPC's OpenGL unit loads the library dynamicly, we whould do the
+   same with AllegroGL. *)
+  FUNCTION _get_allegro_gl_procedure_address_ (aProcName: STRING): POINTER;
 
 
 
@@ -131,6 +141,12 @@ CONST
    software renderer.  The video card driver is free to drop back to software
    mode if it deems it necessary.  This setting has no effect in X. *)
   AL_GL_RENDERMETHOD   = $00020000;
+(* Set if you'd like a full screen mode.  Full screen may or may not be
+   available on the current platform. *)
+  AL_GL_FULLSCREEN     = $00040000;
+(* Set if you'd like a windowed mode. Windowed modes may or may not be
+   available on the current platform. *)
+  AL_GL_WINDOWED       = $00080000;
 (* Define AllegroGL's policy relative to video memory usage.  Sometimes
    AllegroGL needs to create an internal 256x256 texture in order to perform
    graphics operations like masked_blit, draw_sprite and so on.  This parameter
@@ -175,7 +191,10 @@ CONST
 (* Floating-point Depth buffer. *)
   AL_GL_FLOAT_Z       = $01000000;
 (* @exclude DO NOT USE *)
-  AL_GL_CONFIG_RESERVED= $A000000;
+  AL_GL_CONFIG_RESRVED= $A000000;
+
+  AL_GL_KEEP    = 1; (*< Keep internal texture in video memory. *)
+  AL_GL_RELEASE = 2; (*< Release video memory occupied by internal texture. *)
 
 
 
@@ -233,6 +252,73 @@ CONST
 
 
 
+CONST
+(* AllegroGL will generate mipmaps for this texture.
+   @seealso(al_gl_make_texture) *)
+  AL_GL_TEXTURE_MIPMAP     = $01;
+(* Tell AllegroGL that the bitmap had an alpha channel, so it should be
+ *  preserved when generating the texture.
+   @seealso(al_gl_make_texture) *)
+  AL_GL_TEXTURE_HAS_ALPHA  = $02;
+(* Flip the texture on the x-axis. OpenGL uses the bottom-left corner of
+ *  the texture as (0,0), so if you need your texture to be flipped to make
+ *  (0,0) the top-left corner, you need to use this flag.
+   @seealso(al_gl_make_texture) *)
+  AL_GL_TEXTURE_FLIP       = $04;
+(* Generate an alpha channel for this texture, based on the Allegro mask color.
+ *  Make sure the target format supports an alpha channel.
+   @seealso(al_gl_make_texture) *)
+  AL_GL_TEXTURE_MASKED     = $08;
+(* Tell AllegroGL to allow rescaling of the bitmap. By default, AllegroGL
+ *  will not rescale the bitmap to fit into a texture. You can override this
+ *  behavior by using this flag.
+   @seealso(al_gl_make_texture) *)
+  AL_GL_TEXTURE_RESCALE    = $10;
+(* Tell AllegroGL that the specified BITMAP is an 8-bpp alpha-only BITMAP.
+   @seealso(al_gl_make_texture) *)
+  AL_GL_TEXTURE_ALPHA_ONLY = $20;
+
+
+
+(* Uploads an Allegro @link(AL_BITMAP) to the GL driver as a texture.
+
+  The bitmap must be a memory bitmap (note that it can be a subbitmap).
+
+  Each bitmap will be converted to a single texture object, with all its size
+  limitations imposed by the video driver and hardware.
+
+  The bitmap should conform to the size limitations imposed by the video
+  driver.  That is, if @code(ARB_texture_non_power_of_two) is not supported,
+  then the bitmap must be power-of-two sized.  Otherwise, AllegroGL will pick
+  the best format for the bitmap.
+
+  The original bitmap will @bold(not) be modified.
+
+  AllegroGL will create a texture with the specified texel format.  The texel
+  format should be any of the valid formats that can be specified to
+  @code(glTexImage2D).  No validity checks will be performed by AllegroGL.  If
+  you want AllegroGL to automatically determine the format to use based on the
+  bitmap, use -1 as the format specifier.
+
+  A valid GL Rendering Context must have been established, which means you
+  cannot use this function before having called @link(al_set_gfx_mode) with a
+  valid OpenGL mode.
+
+  @bold(Important note:)  on 32 bit bitmap in RGBA mode, the alpha channel
+  created by Allegro is set to all 0 by default.  This will cause the texture
+  to not show up in 32bpp modes if alpha is set.  You will need to fill in the
+  alpha channel manually if you need an alpha channel.
+  @param(bmp The bitmap to be converted to a texture.)
+  @param(flags Controls how the texture is generated.  It can be a logical
+    @code(OR) of any of the following:  @link(AL_GL_TEXTURE_MIPMAP),
+    @link(AL_GL_TEXTURE_HAS_ALPHA), @link(AL_GL_TEXTURE_FLIP),
+    @link(AL_GL_TEXTURE_MASKED), @link(AL_GL_TEXTURE_RESCALE).)
+  @param(internal_format The texture format to convert to.)
+  @returns(The texture handle, or 0 on failure.) *)
+  FUNCTION al_gl_make_texture (flags: LONGINT; bmp: AL_BITMAPptr; internal_format: GLint): GLuint;
+
+
+
 VAR
 (* OpenGL graphics driver for Allegro.
 
@@ -249,6 +335,7 @@ VAR
 
 
 
+VAR
 (* Flips the front and back framebuffers.
 
   If you chose, or were given, a double buffered OpenGL mode, you have access
@@ -266,232 +353,120 @@ VAR
   currently sees on his monitor.  It is recommended that you rebuild the screen
   every frame, then flip, then draw again.
   @seealso(al_gl_set) @seealso(AL_GL_DOUBLEBUFFER) *)
-  PROCEDURE al_gl_flip;
+  al_gl_flip: PROCEDURE; CDECL;
 
 
 
 IMPLEMENTATION
 
 USES
-{ Includes platform dependent code. }
-{$IFDEF MSWINDOWS}
-  algl_w32,
-{$ELSE}
-  {$IFDEF UNIX}
-    {$IFDEF DARWIN}
-      {$ERROR Sorry but your platform isn't support by the OpenGL add-on. }
-    {$ELSE}
-      algl_x,
-    {$ENDIF}
-  {$ELSE}
-    {$ERROR Sorry but your platform isn't support by the OpenGL add-on. }
-  {$ENDIF}
-{$ENDIF}
-{ Other used units. }
-  aldrv;
+  GLU, GLX,
+  dynlibs;
 
 
 
-(* Prototype for default GFX mode initialization. *)
-FUNCTION DefaultGFXInit (w, h, vw, vh, bpp: LONGINT): AL_BITMAPptr; CDECL;
-  FORWARD;
-
-
-
-(* The configuration system. *)
 VAR
-  SuggestedSettings, RequiredSettings: LONGINT;
+  _ALLEGRO_GL_DYNLIB_: TLibHandle;
+  install_allegro_gl: FUNCTION: LONGINT; CDECL;
+  remove_allegro_gl: PROCEDURE; CDECL;
+
+  allegro_gl_clear_settings: PROCEDURE; CDECL;
+  allegro_gl_set: PROCEDURE (option, value: LONGINT); CDECL;
+  allegro_gl_get: FUNCTION (option: LONGINT): LONGINT; CDECL;
+
+  allegro_gl_make_texture_ex: FUNCTION (flags: LONGINT; bmp: AL_BITMAPptr; internal_format: GLint): GLuint; CDECL;
+
+
+  FUNCTION _get_allegro_gl_procedure_address_ (aProcName: STRING): POINTER;
+  BEGIN
+    _get_allegro_gl_procedure_address_ := GetProcedureAddress (_ALLEGRO_GL_DYNLIB_, aProcName);
+  END;
+
+
+
+  FUNCTION al_gl_init: BOOLEAN;
+  BEGIN
+    al_gl_init := (install_allegro_gl = 0);
+  END;
+
+  PROCEDURE al_gl_exit;
+  BEGIN
+    remove_allegro_gl;
+  END;
 
 
 
   PROCEDURE al_gl_clear_settings;
   BEGIN
-    SuggestedSettings := 0;
-    RequiredSettings := 0;
+    allegro_gl_clear_settings;
   END;
-
-
 
   PROCEDURE al_gl_set (option, value: LONGINT);
   BEGIN
-    CASE option OF
-    { Set importance of options. }
-      AL_GL_REQUIRE:
-      BEGIN
-	SuggestedSettings := SuggestedSettings AND (NOT value);
-	RequiredSettings  := RequiredSettings OR value;
-      END;
-      AL_GL_SUGGEST:
-      BEGIN
-	RequiredSettings  := RequiredSettings AND (NOT value);
-	SuggestedSettings := SuggestedSettings OR value;
-      END;
-      AL_GL_DONTCARE:
-      BEGIN
-	RequiredSettings  := RequiredSettings AND (NOT value);
-	SuggestedSettings := SuggestedSettings AND (NOT value);
-      END;
-    { Set configuration. }
-    END;
+    allegro_gl_set (option, value);
   END;
-
-
 
   PROCEDURE al_gl_set_boolean (option: LONGINT; value: BOOLEAN);
   BEGIN
     IF value THEN
-      al_gl_set (option, -1)
+      allegro_gl_set (option, NOT 0)
     ELSE
-      al_gl_set (option, 0);
+      allegro_gl_set (option, 0);
   END;
-
-
 
   FUNCTION al_gl_get (option: LONGINT): LONGINT;
   BEGIN
-    al_gl_get := 0;
-    CASE option OF
-      AL_GL_REQUIRE:
-	al_gl_get := RequiredSettings;
-      AL_GL_SUGGEST:
-	al_gl_get := SuggestedSettings;
-    END;
+    al_gl_get := allegro_gl_get (option);
   END;
 
 
 
-(* System core. *)
-VAR
-(* Driver information.  Has space for default, windowed and full screen, plus
-   a null one. *)
-  OpenGLDriverList: ARRAY [0..3] OF __AL_DRIVER_INFO__;
-(* To save the default drivers and restore them. *)
-  DefaultAllegroGFXDrivers: __AL_GFX_DRIVER__ptr;
-
-  DefaultOpenGLGraphicDriver,
-  OpenGLWindowedDriver,
-  OpenGLFullScreenDriver: __AL_GFX_DRIVER__;
-
-
-
-(* Funtion to tell whick graphics drivers are available. *)
-  FUNCTION GetOpenGLDrivers: __AL_DRIVER_INFO__ptr; CDECL;
+  FUNCTION al_gl_make_texture (flags: LONGINT; bmp: AL_BITMAPptr; internal_format: GLint): GLuint;
   BEGIN
-    GetOpenGLDrivers := @OpenGLDriverList[0]
+    al_gl_make_texture := allegro_gl_make_texture_ex (flags, bmp, internal_format);
   END;
 
 
 
-(* Default OpenGL graphics driver. *)
-  FUNCTION al_gl_init: BOOLEAN;
-  BEGIN
-    al_gl_init := FALSE;
-    IF al_system_driver = NIL THEN
-      EXIT;
-  { Set drivers information. }
-    WITH DefaultOpenGLGraphicDriver DO
-    BEGIN
-      id := AL_GFX_OPENGL;
-      name := ''; desc := '';
-      ascii_name := 'OpenGL Default Driver';
-      init := @DefaultGFXInit;
-      windowed := 0;
-    { Any other values is set to NIL or 0 by default. }
-    END;
-    WITH OpenGLWindowedDriver DO
-    BEGIN
-      id := AL_GFX_OPENGL_WINDOWED;
-      name := ''; desc := '';
-      ascii_name := 'OpenGL Windowed Driver';
-      init := @WindowedGFXInit;
-      exit := @CloseGFX;
-      windowed := -1;
-    { Any other values is set to NIL or 0 by default. }
-    END;
-    WITH OpenGLFullScreenDriver DO
-    BEGIN
-      id := AL_GFX_OPENGL_FULLSCREEN;
-      name := ''; desc := '';
-      ascii_name := 'OpenGL Full Screen Driver';
-      init := @FullscreenGFXInit;
-      exit := @CloseGFX;
-      windowed := 0;
-    { Any other values is set to NIL or 0 by default. }
-    END;
-
-    OpenGLDriverList[0].id := AL_GFX_OPENGL;
-    OpenGLDriverList[0].driver := @DefaultOpenGLGraphicDriver;
-    OpenGLDriverList[0].autodetect := 0;
-
-    OpenGLDriverList[1].id := AL_GFX_OPENGL_WINDOWED;
-    OpenGLDriverList[1].driver := @OpenGLWindowedDriver;
-    OpenGLDriverList[1].autodetect := 0;
-
-    OpenGLDriverList[2].id := AL_GFX_OPENGL_FULLSCREEN;
-    OpenGLDriverList[2].driver := @OpenGLFullScreenDriver;
-    OpenGLDriverList[2].autodetect := 0;
-
-    OpenGLDriverList[3].id := 0;
-    OpenGLDriverList[3].driver := NIL;
-    OpenGLDriverList[3].autodetect := 0;
-
-  { Save Allegro GFX drivers and set the new ones. }
-    DefaultAllegroGFXDrivers := al_system_driver^.gfx_drivers;
-    IF al_system_driver^.gfx_drivers = NIL THEN
-      EXIT;
-    al_system_driver^.gfx_drivers := @GetOpenGLDrivers;
-  { Initial configuration. }
-    al_gl_clear_settings;
-    al_gl_init := TRUE
-  END;
-
-
-
-  PROCEDURE al_gl_exit;
-  BEGIN
-  { Recuperar los controladores de Allegro. }
-    IF al_system_driver = NIL THEN EXIT;
-    IF DefaultAllegroGFXDrivers = NIL THEN EXIT;
-    al_system_driver^.gfx_drivers := DefaultAllegroGFXDrivers;
-    DefaultAllegroGFXDrivers := NIL;
-  END;
-
-
-
-(* Graphics interface. *)
-
-(* Implements a graphics initialization for AL_GFX_OPENGL. *)
-  FUNCTION DefaultGFXInit (w, h, vw, vh, bpp: LONGINT): AL_BITMAPptr; CDECL;
-  VAR
-    Bmp: AL_BITMAPptr;
-  BEGIN
-    Bmp := NIL;
-  { First try full-screen. }
-    al_gfx_driver := @OpenGLFullScreenDriver;
-    Bmp := OpenGLFullScreenDriver.init (w, h, vw, vh, bpp);
-    IF Bmp <> NIL THEN
-    BEGIN
-      DefaultGFXInit := Bmp;
-      EXIT
-    END;
-  { Then try windowed mode. }
-    al_gfx_driver := @OpenGLWindowedDriver;
-    DefaultGFXInit := OpenGLWindowedDriver.init (w, h, vw, vh, bpp);
-    DefaultGFXInit := Bmp;
-  END;
-
-
-
-  PROCEDURE al_gl_flip;
-  BEGIN
-    ;
-  END;
-
-
-
+CONST
+{ @exclude }
+ {$IFDEF MSWINDOWS}
+   ALLEGRO_GL_SHARED_LIBRARY_NAME = 'agl.dll';
+ {$ELSE}
+   {$IFDEF UNIX}
+     {$IFDEF DARWIN}
+       {$ERROR Can't compile on MacOS X. }
+     {$ELSE}
+{ @exclude }
+       ALLEGRO_GL_SHARED_LIBRARY_NAME = 'libagl.so';
+       GLX_SHARED_LIBRARY_NAME = 'libglx.so';
+     {$ENDIF}
+   {$ELSE}
+     {$ERROR Can't compile this platform. }
+  (* TODO: Add support for MacOS X dynamic libraries. *)
+   {$ENDIF}
+ {$ENDIF}
 INITIALIZATION
-{ Set identifiers. }
+{ Loads the library. }
+  _ALLEGRO_GL_DYNLIB_ := LoadLibrary (ALLEGRO_GL_SHARED_LIBRARY_NAME);
+{ Gets procedure addresses. }
+  @install_allegro_gl := _get_allegro_gl_procedure_address_ ('install_allegro_gl');
+  @remove_allegro_gl := _get_allegro_gl_procedure_address_ ('remove_allegro_gl');
+
+  @allegro_gl_clear_settings := _get_allegro_gl_procedure_address_ ('allegro_gl_clear_settings');
+  @allegro_gl_set := _get_allegro_gl_procedure_address_ ('allegro_gl_set');
+  @allegro_gl_get := _get_allegro_gl_procedure_address_ ('allegro_gl_get');
+
+  @allegro_gl_make_texture_ex := _get_allegro_gl_procedure_address_ ('allegro_gl_make_texture_ex');
+
+  @al_gl_flip := _get_allegro_gl_procedure_address_ ('allegro_gl_flip');
+
+{ Other values. }
   AL_GFX_OPENGL := AL_ID ('OGLD');
-  AL_GFX_OPENGL_WINDOWED := AL_ID ('OGLW');
-  AL_GFX_OPENGL_FULLSCREEN := AL_ID ('OGLF');
+  AL_GFX_OPENGL_FULLSCREEN := AL_ID ('OGLW');
+  AL_GFX_OPENGL_WINDOWED := AL_ID ('OGLF');
+
+FINALIZATION
+  UnloadLibrary (_ALLEGRO_GL_DYNLIB_);
 END.
+

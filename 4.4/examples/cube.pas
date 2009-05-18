@@ -95,14 +95,14 @@ VAR
 (* Coordinates for each vertex of the cube. *)
   PointCoordinates: ARRAY [0..7] OF TVector;
 (* Dictionary to know the vertex for each face. *)
-  VertexIndex: ARRAY [1..24] OF INTEGER = (
+  VertexIndex: ARRAY [0..23] OF INTEGER = (
   { Each line is a face. }
-    0, 3, 2, 1,
-    4, 5, 6, 7,
-    0, 1, 5, 4,
-    2, 3, 7, 6,
-    0, 4, 7, 3,
-    1, 2, 6, 5
+    1, 2, 3, 0,
+    7, 6, 5, 4,
+    4, 5, 1, 0,
+    6, 7, 3, 2,
+    3, 7, 4, 0,
+    5, 6, 2, 1
   );
 
 
@@ -139,7 +139,7 @@ VAR
   PROCEDURE TCube.Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIXptr);
 
   (* Helper function to get the mid value. *)
-    FUNCTION MID (x, y, z: INTEGER): INTEGER;
+    FUNCTION MID (x, y, z: INTEGER): INTEGER; INLINE;
     VAR
       Tmp: INTEGER;
     BEGIN
@@ -173,7 +173,8 @@ VAR
       v3 := VertexIndex[v1 + 2];
       v4 := VertexIndex[v1 + 3];
       v1 := VertexIndex[v1];
-WriteLn (v1, ', ', v2, ', ', v3, ', ', v4);
+      IF al_polygon_z_normal (@Vertex[v1], @Vertex[v2], @Vertex[v3]) < 0 THEN
+	CONTINUE;
     { Calculate the color. }
       Color := MID (128, 255 - (((Vertex[v1].z + Vertex[v2].z) DIV 16) SHR 16), 255);
       Vertex[v1].c := al_makecol (Color, Color, Color);
@@ -183,10 +184,10 @@ WriteLn (v1, ', ', v2, ', ', v3, ', ', v4);
     { Texturization. }
       IF (fDrawmode >= AL_POLYTYPE_ATEX) AND (fTexture <> NIL) THEN
       BEGIN
-        Vertex[v1].u :=         0; Vertex[v1].c :=          0;
-        Vertex[v2].u := fTexWidth; Vertex[v2].c :=          0;
-        Vertex[v3].u := fTexWidth; Vertex[v3].c := fTexHeight;
-        Vertex[v4].u :=         0; Vertex[v4].c := fTexHeight;
+        Vertex[v1].u :=         0; Vertex[v1].v :=          0;
+        Vertex[v2].u := fTexHeight; Vertex[v2].v :=          0;
+        Vertex[v3].u := fTexHeight; Vertex[v3].v := fTexWidth;
+        Vertex[v4].u :=         0; Vertex[v4].v := fTexWidth;
       END;
     { Draw it. }
       al_quad3d (aBitmap, fDrawmode, fTexture,
