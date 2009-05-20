@@ -180,7 +180,7 @@ UNIT al3d;
 
   Using a lot of @code( *MASK* ) polygons drastically reduces performance,
   because when a MASKed polygon is the first in line of sight, the polygons
-  underneath have to be drawn too.  The same applies to @code(AL_FLAT) polygons
+  underneath have to be drawn too.  The same applies to @code(AL_POLYTYPE_FLAT) polygons
   drawn with @link(AL_DRAW_MODE_TRANS).
 
   Z-buffered rendering works also within the scene renderer.  It may be helpful
@@ -225,23 +225,45 @@ TYPE
   END;
 
 VAR
+(* Global variable containing the @italic(do nothing) identity matrix.
+   Multiplying by the identity matrix has no effect. *)
   al_identity_matrix: AL_MATRIX;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'identity_matrix';
+(* Global variable containing the @italic(do nothing) identity matrix.
+   Multiplying by the identity matrix has no effect. *)
   al_identity_matrix_f: AL_MATRIX;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'identity_matrix_f';
 
+(* Constructs a translation matrix, storing it in @code(m).  When applied to
+   the point @code(@(px, py, pz@)), this matrix will produce the point
+   @code(@(px+x, py+y, pz+z@)).  In other words, it moves things sideways.
+   @seealso(al_apply_matrix) @seealso(al_get_transformation_matrix)
+   @seealso(al_qtranslate_matrix) *)
   PROCEDURE al_get_translation_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_translation_matrix';
+(* Same as @link(al_get_translation_matrix) but in floating point. *)
   PROCEDURE al_get_translation_matrix_f (m: AL_MATRIX_Fptr; x, y, z: DOUBLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_translation_matrix_f';
 
+(* Constructs a scaling matrix, storing it in m.  When applied to the point
+   (px, py, pz), this matrix will produce the point (px*x, py*y, pz*z).  In
+   other words, it stretches or shrinks things.
+   @seealso(al_apply_matrix) @seealso(al_get_transformation_matrix)
+   @seealso(al_qtranslate_matrix) *)
   PROCEDURE al_get_scaling_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_scaling_matrix';
+(* Same as @link(al_get_scaling_matrix) but in floating point. *)
   PROCEDURE al_get_scaling_matrix_f (m: AL_MATRIX_Fptr; x, y, z: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_scaling_matrix_f';
 
+(* Construct X axis rotation matrices, storing them in m.  When applied to a
+   point, these matrices will rotate it about the X axis by the specified
+   angle (given in binary, 256 degrees to a circle format).
+   @seealso(al_apply_matrix) @seealso(al_get_rotation_matrix)
+   *)
   PROCEDURE al_get_x_rotate_matrix (m: AL_MATRIXptr; r: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_x_rotate_matrix';
+(* Same as @link(al_get_x_rotate_matrix) but in floating point. *)
   PROCEDURE al_get_x_rotate_matrix_f (m: AL_MATRIX_Fptr; r: DOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_x_rotate_matrix_f';
 
@@ -313,8 +335,11 @@ VAR
   PROCEDURE al_matrix_mul_f (m1, m2, out: AL_MATRIX_Fptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'matrix_mul_f';
 
+(* Multiplies the point (x, y, z) by the transformation matrix m, storing the
+   result in (xout, yout, zout). @seealso(al_matrix_mul) *)
   PROCEDURE al_apply_matrix (m: AL_MATRIXptr;
 		x, y, z: AL_FIXED; xout, yout, zout: AL_FIXEDptr);
+(* Same as @link(al_apply_matrix) but using floats instead than fixed. *)
   PROCEDURE al_apply_matrix_f (m: AL_MATRIX_Fptr;
 		x, y, z: DOUBLE; xout, yout, zout: PDOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'apply_matrix_f';
@@ -330,16 +355,38 @@ VAR
   PROCEDURE al_normalize_vector_f (x, y, z: DOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'normalize_vector_f';
 
+(* Calculates the cross product (x1, y1, z1) x (x2, y2, z2), storing the result
+   in ( *xout, *yout, *zout).  The cross product is perpendicular to both of the
+   input vectors, so it can be used to generate polygon normals.
+   @seealso(al_dot_product) @seealso(al_polygon_z_normal) @seealso(al_normalize_vector)
+   *)
   PROCEDURE al_cross_product (x1, y1, z1, x2, y2, z2: AL_FIXED;
 			      xout, yout, zout: AL_FIXEDptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'cross_product';
+(* Same as @link(al_cross_product) but using floats instead than fixed. *)
   PROCEDURE al_cross_product_f (x1, y1, z1, x2, y2, z2: DOUBLE;
 			      xout, yout, zout: PDOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'cross_product_f';
 
+(* Calculates the dot product (x1, y1, z1) . (x2, y2, z2), returning the
+   result.
+   @seealso(al_cross_product) @seealso(al_normalize_vector) *)
   FUNCTION al_dot_product (x1, y1, z1, x2, y2, z2: AL_FIXED): AL_FIXED;
+(* Same as @link(al_dot_product) but using floats instead than fixed. *)
   FUNCTION al_dot_product_f (x1, y1, z1, x2, y2, z2: DOUBLE): DOUBLE;
 
+(* Sets the viewport used to scale the output of the @link(al_persp_project)
+   function.  Pass the dimensions of the screen area you want to draw onto,
+   which will typically be 0, 0, @link(AL_SCREEN_W), and @link(AL_SCREEN_H).
+   Also don't forget to pass an appropriate aspect ratio to
+   @link(al_get_camera_matrix) later.  The width and height you specify here
+   will determine how big your viewport is in 3d space.  So if an object in
+   your 3D space is w units wide, it will fill the complete screen when you run
+   into it (i.e., if it has a distance of 1.0 after the camera matrix was
+   applied.  The fov and aspect-ratio parameters to @code(al_get_camera_matrix)
+   also apply some scaling though, so this isn't always completely true).  If
+   you pass -1/-1/2/2 as parameters, no extra scaling will be performed by the
+   projection. *)
   PROCEDURE al_set_projection_viewport (x, y, w, h: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_projection_viewport';
 
@@ -388,8 +435,28 @@ TYPE
     vtx, vout, vtmp: AL_V3D_LIST_F; out: ARRAY OF LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clip3d_f';
 
+(* Finds the Z component of the normal vector to the specified three vertices
+   (which must be part of a convex polygon).  This is used mainly in back-face
+   culling.  The back-faces of closed polyhedra are never visible to the
+   viewer, therefore they never need to be drawn.  This can cull on average
+   half the polygons from a scene.  If the normal is negative the polygon can
+   safely be culled.  If it is zero, the polygon is perpendicular to the screen.
+
+   However, this method of culling back-faces must only be used once the X and
+   Y coordinates have been projected into screen space using
+   @link(al_persp_project) (or if an orthographic (isometric) projection is
+   being used).  Note that this function will fail if the three vertices are
+   co-linear (they lie on the same line) in 3D space.
+
+   @bold(Warning:) there's a bug on the polygon renderer that fails trying to
+   draw some nearly perpendicular polygons.  Actually it fails only with
+   correct texture, so you can ignore this bug in any other case.  See the
+   TCube class defined in the examples to see a work-arround this bug.
+
+   @seealso(al_cross_product) *)
   FUNCTION al_polygon_z_normal (v1, v2, v3: AL_V3Dptr): AL_FIXED; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal';
+(* Same as @link(al_polygon_z_normal) but using floats instead than fixed. *)
   FUNCTION al_polygon_z_normal_f (v1, v2, v3: AL_V3D_Fptr): DOUBLE; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal_f';
 
@@ -508,7 +575,7 @@ TYPE
   PROCEDURE al_set_zbuffer (zbuf: AL_ZBUFFERptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_zbuffer';
 
-  PROCEDURE al_clear_zbuffer (zbuf: AL_ZBUFFERptr); CDECL;
+  PROCEDURE al_clear_zbuffer (zbuf: AL_ZBUFFERptr; z: DOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clear_zbuffer';
 
   PROCEDURE al_destroy_zbuffer (bmp: AL_BITMAPptr); CDECL;
@@ -547,8 +614,8 @@ TYPE
    Note that the texture is stored as a pointer only, and you should keep the
    actual bitmap around until @code(al_render_scene), where it is used.
 
-   Since the @link(AL_FLAT) style is implemented with the low-level
-   @link(al_hline) funtion, the @code(AL_FLAT) style is subject to
+   Since the @link(AL_POLYTYPE_FLAT) style is implemented with the low-level
+   @link(al_hline) funtion, the @code(AL_POLYTYPE_FLAT) style is subject to
    DRAW_MODEs.  All these modes are valid.  Along with the polygon, this mode
    will be stored for the rendering moment, and also all the other related
    variables (color_map pointer, pattern pointer, anchor, blender values).

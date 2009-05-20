@@ -48,6 +48,7 @@ VAR
   Palette: AL_PALETTE;
   Bitmap, Texture: AL_BITMAPptr;
   Filename: STRING;
+  Rotate: TVector;
 (* Color management. *)
   RGBTable: AL_RGB_MAP;
   LightTable, TransTable: AL_COLOR_MAP;
@@ -78,8 +79,6 @@ BEGIN { The program starts here. }
     WriteLn ('Can''t initialize Allegro!');
     EXIT;
   END;
-
-{ Set up the keyboard handler. }
   al_install_keyboard;
   al_install_mouse;
   al_install_timer;
@@ -123,7 +122,7 @@ BEGIN { The program starts here. }
   al_set_projection_viewport (0, 0, AL_SCREEN_W, AL_SCREEN_H);
 
 { Load the cube texture. }
-  Filename := ExtractFilePath (ParamStr (0)) + 'mysha.pcx';
+  Filename := ExtractFilePath (ParamStr (0)) + 'allegro.pcx';
 
   Bitmap := al_load_bitmap (Filename, @Palette);
   IF Bitmap = NIL THEN
@@ -149,7 +148,7 @@ BEGIN { The program starts here. }
   Bitmap := al_create_bitmap (AL_SCREEN_W, AL_SCREEN_H);
   al_blit (al_screen, Bitmap, 0, 0, 0, 0, AL_SCREEN_W, AL_SCREEN_H);
 
-{ Build a rgb_map table. }
+{ Build a rgb_map table.  Not needed, but speeds things up. }
   al_create_rgb_table (@RGBTable, Palette, NIL);
   al_rgb_table := @RGBTable;
 
@@ -157,24 +156,26 @@ BEGIN { The program starts here. }
   al_create_light_table (@LightTable, Palette, 0, 0, 0, NIL);
   al_color_table := @LightTable;
 
-{ Build a transparency table (25% transparent). }
-  al_create_trans_table (@TransTable, Palette, 192, 192, 192, NIL);
+{ Build a transparency table (50% transparent). }
+  al_create_trans_table (@TransTable, Palette, 128, 128, 128, NIL);
 
-{ Set up truecolor blending function (25% transparent). }
-  al_set_trans_blender (0, 0, 0, 192);
+{ Set up truecolor blending function (50% transparent). }
+  al_set_trans_blender (0, 0, 0, 128);
 
 { Initialise the cube. }
   Randomize;
   TheCube := TCube.Create (0, 0, al_itofix (-5), al_itofix (1), Texture);
-  TheCube.DrawMode := AL_POLYTYPE_FLAT;
+  TheCube.DrawMode := POLYTYPE_WIRED;
+  Rotate := TVector.Create (al_ftofix ((Random (32) - 16) / 8),
+			   al_ftofix ((Random (32) - 16) / 8),
+			   al_ftofix ((Random (32) - 16) / 8));
 
   Tick := 1;
   REPEAT
   { Update. }
     WHILE Tick > 0 DO
     BEGIN
-      TheCube.Ang.y := al_fixadd (TheCube.Ang.y, al_itofix (1));
-      TheCube.Ang.z := al_fixadd (TheCube.Ang.z, al_itofix (1));
+      TheCube.Ang.Add (Rotate);
     { User input. }
       IF al_keypressed THEN
       BEGIN
@@ -184,7 +185,7 @@ BEGIN { The program starts here. }
 	  INC (TheCube.DrawMode);
 	  IF TheCube.DrawMode >= AL_POLYTYPE_MAX THEN
 	  BEGIN
-	    TheCube.DrawMode := AL_POLYTYPE_FLAT;
+	    TheCube.DrawMode := POLYTYPE_WIRED;
 	    al_color_table := @LightTable;
 	  END;
 	  IF TheCube.DrawMode >= AL_POLYTYPE_ATEX_TRANS THEN

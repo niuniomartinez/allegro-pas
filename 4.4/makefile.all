@@ -3,9 +3,9 @@
 .PHONY: all
 
 # Main objective: the whole project
-all: adbanner examples demo tools
+all: adbanner examples demo
 	@echo "Finished $(PROJECT)"
-#	@echo "To create the HTML documentation, run 'make' from the docs directory"
+	@echo "To create the documentation, run 'make' from the docs directory"
 
 # Examples.
 examples: $(EXMFILES)
@@ -17,16 +17,9 @@ examplesgl: $(GLEXMFILES)
 # Demo game.
 demo: $(DEMO)
 
-# Tools.
-tools: setup grabber
-
-setup: $(TOOLDIR)setup/setup$(BINSUF)
-
-grabber: $(TOOLDIR)grabber/grabber$(BINSUF)
-
 # Executables.
 $(EXMDIR)agl/%$(BINSUF): $(EXMDIR)agl/%.pp $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR)agl/ -FU$(LIBDIR) $< -o$@
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR)agl/ -FU$(LIBDIR) -k-lglx $< -o$@
 	@echo Example $@ ready!
 
 $(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
@@ -36,14 +29,6 @@ $(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
 $(DEMODIR)%$(BINSUF): $(DEMOSRC) $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(DEMODIR) $< -o$@
 	@echo Demo game ready!
-
-$(TOOLDIR)setup/setup$(BINSUF): $(TSETUPSRC) $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -Mobjfpc $< -o$@
-	@echo $@ ready!
-
-$(TOOLDIR)grabber/grabber$(BINSUF): $(TGRABBSRC) $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -Mobjfpc $< -o$@
-	@echo $@ ready!
 
 # Returns some variables.
 status: adbanner
@@ -63,9 +48,6 @@ veryclean: clean
 	$(DELETE) $(DEMO)
 	$(DELETE) docs/html/*.*
 	$(DELETE) docs/cache/*.*
-	$(DELETE) $(TOOLDIR)/setup/setup$(BINSUF)
-	$(DELETE) $(TOOLDIR)/grabber/grabber$(BINSUF)
-
 
 # Clean temporary files.
 clean:
@@ -76,11 +58,6 @@ clean:
 	$(DELETE) $(LIBDIR)*.ppu
 	$(DELETE) $(DEMODIR)*$(OBJSUF)
 	$(DELETE) $(DEMODIR)*.ppu
-	$(DELETE) $(TOOLDIR)setup/*$(OBJSUF)
-	$(DELETE) $(TOOLDIR)setup/*.ppu
-	$(DELETE) $(TOOLDIR)grabber/*$(OBJSUF)
-	$(DELETE) $(TOOLDIR)grabber/*.ppu
-	$(DELETE) $(TOOLDIR)/grabber/*.compiled
 
 # Strip symbols and compress with upx packer (http://upx.sf.net/)
 upx:
@@ -90,18 +67,6 @@ upx:
 install:
 	@echo "Sorry, the install feature is not done yet."
 
-# Check if system can be compiled.
-# El "test.run" es para ver si make funciona con DJGPP (ugly hack)
-# parece que DOS no cambia errorlevel si falla al ejecutar un programa
-test:
-	$(GCC) $(TESTFILE)$(SRCSUF) -o $(TESTFILE)$(BINSUF) $(CFLAGS) $(LFLAGS) $(LIBS)
-	echo "don't edit me" > test.run
-
-# Clean the test file.
-cleantest:
-	$(DELETE) $(TESTFILE)$(BINSUF)
-	$(DELETE) test.run
-
 # Show all options.
 help: adbanner
 	@echo "--------"
@@ -109,12 +74,10 @@ help: adbanner
 	@echo "--------"
 	@echo "make all            } Builds the whole project."
 	@echo "make examples       } Builds the examples only."
-	@echo "make tools          } Builds the tools only."
 	@echo "make demo           } Builds the demo game."
 	@echo "make clean          } Deletes temporary files."
 	@echo "make veryclean      } Deletes all builded files."
 	@echo "make status         } Shows some configuration variables."
-	@echo "make test           } Check program."
 	@echo "make help           } Shows this help."
 
 # Some info.
