@@ -26,8 +26,6 @@
 
   + GUI creator:  Simple drag'n'drop editor using Allegro's GUI.  Save GUIs
     as text files (may be XML?) and as Pascal unit.
-  + Grabber:  Create and manage datafiles (AL_DATAFILE).
-  + Setup:  Simple setup for common values: sound, locals and joystick.
 
 * Rotate sprite/bitmap
 

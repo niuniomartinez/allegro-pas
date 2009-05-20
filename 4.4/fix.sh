@@ -12,10 +12,6 @@ proc_help()
    echo
    echo "Where platform is one of: win32 or linux. "
    echo
-   echo "NOTICE:"
-   echo "You can also call: fix test"
-   echo "to check if your system can compile this project."
-   echo
    echo
 }
 
@@ -34,7 +30,7 @@ proc_fix()
 
 case "$1" in
    "win32"   ) proc_fix "Windows (FPC)" "WIN2";;
-   "linux"   ) proc_fix "Linux (FPC)"       "LINUX";;
+   "linux"   ) proc_fix "Linux (FPC)"   "LINUX";;
    "help"    ) proc_help;;
    *         ) proc_help;;
 esac

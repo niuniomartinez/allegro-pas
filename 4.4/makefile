@@ -65,7 +65,6 @@ endif
 # --------------------------
 
 OBJDIR = obj/
-TOOLDIR = tools/
 DEMODIR = demo/
 EXMDIR = examples/
 LIBDIR = lib/
