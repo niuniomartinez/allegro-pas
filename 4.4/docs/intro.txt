@@ -1,6 +1,15 @@
 @shorttitle(Introduction)
 @title(Allegro.pas)
 
+@section(1 indice Contents)
+
+  @unorderedList(
+    @item(@bold(@link(intro Introduction)))
+    @item(@bold(@link(use How to use Allegro.pas)))
+    @item(@bold(@link(contact Contact info)))
+  )
+
+
 @section(1 intro Introduction)
 
   Allegro.pas is a wrapper to allow Pascal compilers (such as Free Pascal or
@@ -27,8 +36,6 @@
     @item(@bold(Define a new API more Pascal-like).  Previous versions have a
       C-like one with lots of pointers and other ugly issues.)
     @item(Add a lot of new functionality as @bold(UNICODE support).)
-    @item(@bold(Implement a Grabber utility) to create and manage
-      @link(alfile data files).)
     @item(@bold(Add support for OpenGL hardware accelerated graphics).)
   )
 
@@ -71,7 +78,7 @@
 @section(2 unicode UNICODE routines)
 
   Allegro can manipulate and display text using any character values from 0
-  right up to 2^32-1 (although the current implementation of the grabber can
+  right up to 2^32-1 (although the current implementation of the @link(grabber) can
   only create fonts using characters up to 2^16-1).  You can choose between a
   number of different text encoding formats, which controls how strings are
   stored and how Allegro interprets strings that you pass to it, using the
@@ -253,7 +260,7 @@
     @item(Memory bitmaps, which are located in system RAM and can be used to
 	store graphics or as temporary drawing spaces for double buffered
 	systems.  These can be obtained by calling @link(al_create_bitmap),
-	@link(al_load_bitmap), or by loading a grabber datafile.)
+	@link(al_load_bitmap), or by loading a @link(grabber) datafile.)
     @item(Sub-bitmaps.  These share image memory with a parent bitmap (which
 	can be the screen, a video or system bitmap, a memory bitmap, or
 	another sub-bitmap), so drawing onto them will also change their
@@ -432,7 +439,7 @@
 
 
 
-@section(2 text text drawing)))
+@section(2 text text drawing)
 
   Allegro provides routines for loading fonts directly from GRX format .fnt
   files, 8x8 or 8x16 BIOS format .fnt files, from bitmap images, from datafiles
@@ -448,9 +455,8 @@
 
   Allegro provides text output routines that work with both monochrome and
   color fonts, which can contain any number of Unicode character ranges.  The
-  grabber program can create fonts from sets of characters drawn in a bitmap
-  file (see grabber.txt for more information), and can also import GRX or BIOS
-  format font files.
+  @link(grabber) program can create fonts from sets of characters drawn in a
+  bitmap file, and can also import GRX or BIOS format font files.
 
   @bold(See also) @link(al_load_font) @link(al_textout_ex)
 
@@ -563,8 +569,8 @@
   to blast them onto a bitmap with the @link(al_draw_rle_sprite) function,
   which is equivalent to using @link(al_draw_sprite) with a regular bitmap.
   You can convert bitmaps into RLE sprites at runtime, or you can create RLE
-  sprite structures in grabber datafiles by making a new object of type 'RLE
-  sprite'.
+  sprite structures in @link(grabber) datafiles by making a new object of type
+  'RLE sprite'.
 
 
 
@@ -620,7 +626,7 @@
 
 
 
-  @section(1 contact Contact)
+@section(1 contact Contact)
 
   If you want to contact me, please use the Allegro.pas main mail-list
   (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).

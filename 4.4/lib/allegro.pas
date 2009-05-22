@@ -3488,6 +3488,22 @@ VAR
 
 
 
+TYPE
+(* Used by @link(al_midi_msg_callback). *)
+  AL_MIDI_MSG_CALLBACK_PROC = PROCEDURE (msg, b1, b2: LONGINT); CDECL;
+VAR
+(* Hook function allowing you to intercept MIDI player events.  If set to
+   anything other than @nil, this routine will be called for each MIDI message.
+   It will execute in an interrupt handler context, so all the code and data
+   they use should be locked, and they must not call any operating system
+   functions.  In general you just use these routines to set some flags and
+   respond to them later in your mainline code.
+   @seealso(al_play_midi) *)
+  al_midi_msg_callback: AL_MIDI_MSG_CALLBACK_PROC;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_msg_callback';
+
+
+
 (*******************
  * Digital samples *
  *******************)
