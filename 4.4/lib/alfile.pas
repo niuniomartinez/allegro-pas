@@ -1,12 +1,11 @@
 UNIT alfile;
 (*<Data files and low-level packed file.
 
- Datafiles are created by the grabber utility (see grabber.txt for more
- information), and have a @code(.dat) extension.  They can contain bitmaps,
- palettes, fonts, samples, MIDI music, FLI/FLC animations, and any other binary
- data that you import.  You could distribute your bitmaps and samples in a
- myriad of separate files, but packing them in a few @code(.dat) binaries has a
- few advantages:
+ Datafiles are created by the @link(grabber) utility, and have a @code(.dat)
+ extension.  They can contain bitmaps, palettes, fonts, samples, MIDI music,
+ FLI/FLC animations, and any other binary data that you import.  You could
+ distribute your bitmaps and samples in a myriad of separate files, but packing
+ them in a few @code(.dat) binaries has a few advantages:
  @unorderedlist(
    @item(On some platforms loading a single big datafile at once is faster than
 	loading individual resources one by one.)
@@ -135,7 +134,7 @@ TYPE
   Allegro-specific format, but the @code(`#') marker file syntax reads the
   objects as raw binary chunks.  This means that if, for example, you want
   to use @link(al_load_bitmap) to read an image from a datafile, you should
-  import it as a binary block rather than as an @italic(BITMAP) object.
+  import it as a binary block rather than as an @link(AL_BITMAP) object.
 
   @returns(on success, a pointer of type @link(AL_PACKFILEptr), and on error
     a @nil and stores an error code in @link(al_errno).  An attempt to read a
@@ -331,7 +330,8 @@ VAR
    before loading it.
 
    Remember to free this datafile to avoid memory leaks.
-   @returns(a pointer to the @link(AL_DATAFILE), or @nil on error.) *)
+   @returns(a pointer to the @link(AL_DATAFILE), or @nil on error.)
+   @seealso(grabber) *)
   FUNCTION al_load_datafile (filename: STRING): AL_DATAFILEptr;
 
 (* Frees all the objects in a datafile.  Use this to avoid memory leaks in your
@@ -356,7 +356,8 @@ VAR
    correct unloading function!
    @returns(a pointer to a single @link(AL_DATAFILE_OBJECT) element whose
      @code(dat) member points to the object, or @nil if there was an error or
-     there was no object with the requested name.) *)
+     there was no object with the requested name.)
+   @seealso(grabber) *)
   FUNCTION al_load_datafile_object (filename, objectname: STRING): AL_DATAFILE_OBJECTptr;
 
 (* Frees an object previously loaded by @link(al_load_datafile_object).  Use

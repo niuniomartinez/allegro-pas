@@ -121,7 +121,7 @@ UNIT al3d;
   @unorderedList(
     @item(Unlike the normal @link(AL_POLYTYPE_FLAT) renderers, the Z-buffered
       ones don't use the @link(al_hline) routine.  Therefore
-      @link(AL_DRAW_MODE) has no effect.)
+      @link(al_drawing_mode) has no effect.)
     @item(The @code( *LIT* ) routines work the traditional way - through the set
       of blender routines)
     @item(All the Z-buffered routines are much slower than their normal
@@ -175,7 +175,8 @@ UNIT al3d;
       @code(al_polygon3d), which only uses z coordinate for @code ( *PTEX* ).@))
     @item(All polygons passed to @code(al_scene_polygon3d) have to be
       @code(al_persp_project)'ed.)
-    @item(After @link(al_render_scene) the mode is reset to @link(AL_SOLID.))
+    @item(After @link(al_render_scene) the mode is reset to
+      @link(AL_DRAW_MODE_SOLID.))
   )
 
   Using a lot of @code( *MASK* ) polygons drastically reduces performance,
@@ -408,7 +409,7 @@ TYPE
   (* Color. *)
     c: LONGINT;
   END;
-(* @ignore *)
+(* List of pointers to @link(AL_V3D). *)
   AL_V3D_LIST = ARRAY OF AL_V3Dptr;
 
 (* Pointer to @link(AL_V3D_F). *)
@@ -423,7 +424,7 @@ TYPE
   (* Color. *)
     c: LONGINT;
   END;
-(* @ignore *)
+(* List of pointers to @link(AL_V3D_F). *)
   AL_V3D_LIST_F = ARRAY OF AL_V3D_Fptr;
 
 
