@@ -176,7 +176,7 @@ UNIT al3d;
     @item(All polygons passed to @code(al_scene_polygon3d) have to be
       @code(al_persp_project)'ed.)
     @item(After @link(al_render_scene) the mode is reset to
-      @link(AL_DRAW_MODE_SOLID.))
+      @link(AL_DRAW_MODE_SOLID)).
   )
 
   Using a lot of @code( *MASK* ) polygons drastically reduces performance,
