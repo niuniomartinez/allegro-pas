@@ -5,6 +5,7 @@ Cambios entre las versiones 4.4.0 Alpha y 4.4.0 Beta?
   ---------
   - Añadida la unidad al3d, que permite generar gráficos 3D.
     NO TIENE RELACIÓN CON OpenGL.
+  - Añadido gancho (hook) al_midi_msg_callback para interceptar mensajes MIDI.
 
   Otros
   -----

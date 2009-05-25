@@ -87,6 +87,14 @@ CONST
 
 IMPLEMENTATION
 
+VAR
+(* Due to a bug, the renderer fails when drawing some textured poligons when
+   they are near to the "perpendicular".  This value allows a workaround.
+   See the Draw method and the documentation of unit al3d. *)
+  MAX_NORMAL: AL_FIXED;
+
+
+
 (***********
  * TVector *
  ***********)
@@ -140,7 +148,7 @@ VAR
     END;
 
   VAR
-    Cnt, Color: LONGINT;
+    Cnt, Color, r, g, b: LONGINT;
   BEGIN
     fPosition := TVector.Create (px, py, pz);
     fAngle := TVector.Create (0, 0, 0);
@@ -158,11 +166,19 @@ VAR
     was selected. }
     FOR Cnt := 0 TO 7 DO
     BEGIN
-      VertexColor[Cnt] := al_makecol (RandomValue, RandomValue, RandomValue);
-      RGBColor[Cnt] := al_makecol_depth (32, RandomValue, RandomValue, RandomValue);
+      r := RandomValue; g := RandomValue; b := RandomValue;
+      VertexColor[Cnt] := al_makecol (r, g, b);
+      RGBColor[Cnt] := al_makecol_depth (32, r, g, b);
       Color := 127 + (128 DIV (Cnt + 1));
       GrayColor[Cnt] := al_makecol (Color, Color, Color);
     END;
+  { The "bad normal" value depends on the size of the polygon and this depends
+    on the screen definition.  The values proposed here where found by
+    try-and-error process. }
+    IF AL_SCREEN_W < 800 THEN
+      MAX_NORMAL := al_itofix (200)
+    ELSE
+      MAX_NORMAL := al_itofix (500)
   END;
 
 
@@ -187,8 +203,6 @@ VAR
     Matrix: AL_MATRIX;
     Vertex: ARRAY [0..7] OF AL_V3D;
     Normal: LONGINT;
-  CONST
-    MAX_NORMAL = 500 SHL 16;
   BEGIN
   { Create the transformation matrix. }
     al_get_transformation_matrix (@Matrix, fSize, fAngle.x, fAngle.y, fAngle.z,
@@ -232,7 +246,7 @@ VAR
       BEGIN
       { Transparent faces should be drawn allways, because we can see through
 	them, but due a weird bug some faces near to the "perpendicular" fails
-	when draw. }
+	when draw.  See the MAS_NORMAL comment abobe. }
 	IF (MAX_NORMAL >= Normal) AND (Normal >= (-MAX_NORMAL)) THEN
 	  CONTINUE;
       END
