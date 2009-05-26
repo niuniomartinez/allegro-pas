@@ -49,21 +49,32 @@ TYPE
 
 
 
+(* A face. *)
+  TFace = RECORD
+    Point: ARRAY [1..4] OF AL_V3D;
+  END;
+
+
+
 (* A simple cube. *)
   TCube = CLASS
   PRIVATE
     fPosition, fAngle: TVector;
     fSize: AL_FIXED;
+  PROTECTED
     fDrawmode: LONGINT;
     fTexture: AL_BITMAPptr;
     fTexWidth, fTexHeight: AL_FIXED;
+    fFaces: ARRAY [1..6] OF TFace;
+    fVisibleFaces: INTEGER; (* Number of faces to draw. *)
   PUBLIC
   (* Creates the cube. *)
     CONSTRUCTOR Create (px, py, pz, aSize: AL_FIXED; aTexture: AL_BITMAPptr);
+	VIRTUAL;
   (* Destroys the cube. *)
     DESTRUCTOR Destroy; OVERRIDE;
   (* Draws the cube. *)
-    PROCEDURE Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIXptr);
+    PROCEDURE Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIXptr); VIRTUAL;
 
   (* Cube position. *)
     PROPERTY Pos: TVector READ fPosition WRITE fPosition;
@@ -75,6 +86,9 @@ TYPE
     PROPERTY DrawMode: LONGINT READ fDrawmode WRITE fDrawmode;
   (* Cube texture.  Note it isn't destroyed by the cube. *)
     PROPERTY Texture: AL_BITMAPptr READ fTexture WRITE fTexture;
+  PRIVATE
+  (* Draws the faces. *)
+    PROCEDURE DrawFaces (aBitmap: AL_BITMAPptr);
   END;
 
 
@@ -134,8 +148,6 @@ VAR
     3, 7, 4, 0,
     5, 6, 2, 1
   );
-(* Precalculated color for vertex. *)
-  VertexColor, RGBColor, GrayColor: ARRAY [0..7] OF LONGINT;
 
 
 
@@ -147,8 +159,6 @@ VAR
       RandomValue := (Random (16) * 16) - 1;
     END;
 
-  VAR
-    Cnt, Color, r, g, b: LONGINT;
   BEGIN
     fPosition := TVector.Create (px, py, pz);
     fAngle := TVector.Create (0, 0, 0);
@@ -162,16 +172,6 @@ VAR
     END
     ELSE
       fDrawmode := AL_POLYTYPE_FLAT;
-  { Pre-calculate colors.  It does this here to be sure the correct color depth
-    was selected. }
-    FOR Cnt := 0 TO 7 DO
-    BEGIN
-      r := RandomValue; g := RandomValue; b := RandomValue;
-      VertexColor[Cnt] := al_makecol (r, g, b);
-      RGBColor[Cnt] := al_makecol_depth (32, r, g, b);
-      Color := 127 + (128 DIV (Cnt + 1));
-      GrayColor[Cnt] := al_makecol (Color, Color, Color);
-    END;
   { The "bad normal" value depends on the size of the polygon and this depends
     on the screen definition.  The values proposed here where found by
     try-and-error process. }
@@ -199,10 +199,57 @@ VAR
    in the right order. *)
   PROCEDURE TCube.Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIXptr);
   VAR
-    Cnt, v1, v2, v3, v4: LONGINT;
+    Cnt, v1, v2, v3, v4, Face: LONGINT;
+    z1, z2: AL_FIXED;
     Matrix: AL_MATRIX;
     Vertex: ARRAY [0..7] OF AL_V3D;
     Normal: LONGINT;
+
+  (* Helper procedure to define a face. *)
+    PROCEDURE SetFace (Ndx: INTEGER); INLINE;
+    BEGIN
+      WITH fFaces[Ndx] DO
+      BEGIN
+      { Vertices. }
+	Point[1] := Vertex[v1];
+	Point[2] := Vertex[v2];
+	Point[3] := Vertex[v3];
+	Point[4] := Vertex[v4];
+      { Texturization. }
+	IF (fDrawmode >= AL_POLYTYPE_ATEX) AND (fTexture <> NIL) THEN
+	BEGIN
+	  Point[1].u :=         0; Point[1].v := fTexHeight;
+	  Point[2].u :=         0; Point[2].v :=          0;
+	  Point[3].u := fTexWidth; Point[3].v :=          0;
+	  Point[4].u := fTexWidth; Point[4].v := fTexHeight;
+	END;
+	CASE fDrawmode OF
+	AL_POLYTYPE_FLAT:
+	  Point[1].c := al_palette_color^[Cnt+1];
+	AL_POLYTYPE_GCOL:
+	  BEGIN
+	    Point[1].c := al_palette_color^[$D0];
+	    Point[2].c := al_palette_color^[$80];
+	    Point[3].c := al_palette_color^[$B0];
+	    Point[4].c := al_palette_color^[$FF];
+	  END;
+	AL_POLYTYPE_GRGB:
+	  BEGIN
+	    Point[1].c := $000000;
+	    Point[2].c := $7F0000;
+	    Point[3].c := $FF0000;
+	    Point[4].c := $7F0000;
+	  END;
+	  ELSE BEGIN
+	    Point[1].c := al_palette_color^[$D0];
+	    Point[2].c := al_palette_color^[$80];
+	    Point[3].c := al_palette_color^[$B0];
+	    Point[4].c := al_palette_color^[$FF];
+	  END;
+	END;
+      END;
+    END;
+
   BEGIN
   { Create the transformation matrix. }
     al_get_transformation_matrix (@Matrix, fSize, fAngle.x, fAngle.y, fAngle.z,
@@ -217,21 +264,9 @@ VAR
 	@Vertex[Cnt].x, @Vertex[Cnt].y, @Vertex[Cnt].z);
       al_persp_project (Vertex[Cnt].x, Vertex[Cnt].y, Vertex[Cnt].z,
 			Vertex[Cnt].x, Vertex[Cnt].y);
-    { Calculate the color. }
-      CASE fDrawmode OF
-	POLYTYPE_WIRED:
-	  Vertex[Cnt].c := VertexColor[Cnt];
-	AL_POLYTYPE_FLAT:
-	  Vertex[Cnt].c := VertexColor[Cnt];
-	AL_POLYTYPE_GCOL:
-	  Vertex[Cnt].c := GrayColor[Cnt];
-	AL_POLYTYPE_GRGB:
-	  Vertex[Cnt].c := RGBColor[Cnt];
-	ELSE
-	  Vertex[Cnt].c := GrayColor[Cnt];
-      END;
     END;
   { faces of the cube. }
+    fVisibleFaces := 0;
     FOR Cnt := 0 TO 5 DO
     BEGIN
       v1 := Cnt * 4;
@@ -242,44 +277,84 @@ VAR
     { Calculate the z normal to know if face should be drawn.
       Read documentation of al_polygon_z_normal for more info. }
       Normal := al_polygon_z_normal (@Vertex[v1], @Vertex[v2], @Vertex[v3]);
-      IF fDrawmode >= AL_POLYTYPE_ATEX_TRANS THEN
-      BEGIN
-      { Transparent faces should be drawn allways, because we can see through
-	them, but due a weird bug some faces near to the "perpendicular" fails
-	when draw.  See the MAS_NORMAL comment abobe. }
-	IF (MAX_NORMAL >= Normal) AND (Normal >= (-MAX_NORMAL)) THEN
+      IF ((AL_POLYTYPE_FLAT <= fDrawmode) AND (fDrawmode <= AL_POLYTYPE_PTEX))
+      OR (fDrawmode = AL_POLYTYPE_ATEX_LIT)
+      OR (fDrawmode = AL_POLYTYPE_PTEX_LIT)
+      THEN BEGIN
+      { Only faces with positive normals are visible. }
+	IF (Normal <= MAX_NORMAL) THEN
 	  CONTINUE;
       END
-      ELSE IF (fDrawmode >= AL_POLYTYPE_FLAT) AND (Normal <= MAX_NORMAL) THEN
-      { Only faces with positive normals are visible. }
-	CONTINUE;
-    { Texturization. }
-      IF (fDrawmode >= AL_POLYTYPE_ATEX) AND (fTexture <> NIL) THEN
+      ELSE
+      { Transparent and masked faces should be drawn allways, because we can
+	see through them, but due a weird bug some faces near to the
+	"perpendicular" fails when draw.  See the MAS_NORMAL comment abobe. }
+	IF (MAX_NORMAL >= Normal) AND (Normal >= (-MAX_NORMAL)) THEN
+	  CONTINUE;
+    { Insert the face in the face list ordered by Z. }
+      INC (fVisibleFaces);
+    { If list is empty. }
+      IF fVisibleFaces = 1 THEN
+	SetFace (1)
+      ELSE IF fVisibleFaces = 2 THEN
       BEGIN
-        Vertex[v1].u :=         0; Vertex[v1].v := fTexHeight;
-        Vertex[v2].u :=         0; Vertex[v2].v :=          0;
-        Vertex[v3].u := fTexWidth; Vertex[v3].v :=          0;
-        Vertex[v4].u := fTexWidth; Vertex[v4].v := fTexHeight;
-      END;
-    { Draw it. }
-      IF fDrawmode <> POLYTYPE_WIRED THEN
-      BEGIN
-	al_quad3d (aBitmap, fDrawmode, fTexture,
-		   @Vertex[v1], @Vertex[v2], @Vertex[v3], @Vertex[v4])
+	z1 := Vertex[v1].z + Vertex[v2].z + Vertex[v3].z + Vertex[v4].z;
+	WITH fFaces[1] DO
+	  z2 := Point[1].z + Point[2].z + Point[3].z + Point[4].z;
+	IF z1 < z2 THEN
+	BEGIN
+	  fFaces[2] := fFaces[1];
+	  SetFace (1);
+	END
+	ELSE
+	  SetFace (2);
       END
       ELSE BEGIN
-	al_line (aBitmap, Vertex[v1].x SHR 16, Vertex[v1].y SHR 16,
-			  Vertex[v2].x SHR 16, Vertex[V2].y SHR 16,
-			  Vertex[v1].c);
-	al_line (aBitmap, Vertex[v2].x SHR 16, Vertex[v2].y SHR 16,
-			  Vertex[v3].x SHR 16, Vertex[V3].y SHR 16,
-			  Vertex[v1].c);
-	al_line (aBitmap, Vertex[v3].x SHR 16, Vertex[v3].y SHR 16,
-			  Vertex[v4].x SHR 16, Vertex[V4].y SHR 16,
-			  Vertex[v1].c);
-	al_line (aBitmap, Vertex[v4].x SHR 16, Vertex[v4].y SHR 16,
-			  Vertex[v1].x SHR 16, Vertex[V1].y SHR 16,
-			  Vertex[v1].c);
+	z1 := Vertex[v1].z + Vertex[v2].z + Vertex[v3].z + Vertex[v4].z;
+	Face := fVisibleFaces - 1;
+	REPEAT
+	  WITH fFaces[Face] DO
+	    z2 := Point[1].z + Point[2].z + Point[3].z + Point[4].z;
+	  IF z1 < z2 THEN
+	    fFaces[Face + 1] := fFaces[Face]
+	  ELSE
+	    BREAK;
+	  DEC (FACE);
+	UNTIL (Face = 0);
+	SetFace (Face + 1);
+      END;
+    END;
+  { Draw it. }
+    SELF.DrawFaces (aBitmap);
+  END;
+
+
+
+(* Draws a simple face.  It's virtual so it can be changed. *)
+  PROCEDURE TCube.DrawFaces (aBitmap: AL_BITMAPptr);
+  VAR
+    Cnt: INTEGER;
+  BEGIN
+    FOR Cnt := 1 TO fVisibleFaces DO
+    WITH SELF.fFaces[Cnt] DO
+    BEGIN
+      IF fDrawmode <> POLYTYPE_WIRED THEN
+      BEGIN
+	al_quad3d (aBitmap, fDrawmode, fTexture, @Point[1], @Point[2], @Point[3], @Point[4])
+      END
+      ELSE BEGIN
+	al_line (aBitmap, Point[1].x SHR 16, Point[1].y SHR 16,
+			Point[2].x SHR 16, Point[2].y SHR 16,
+			al_palette_color^[255]);
+	al_line (aBitmap, Point[2].x SHR 16, Point[2].y SHR 16,
+			Point[3].x SHR 16, Point[3].y SHR 16,
+			al_palette_color^[255]);
+	al_line (aBitmap, Point[3].x SHR 16, Point[3].y SHR 16,
+			Point[4].x SHR 16, Point[4].y SHR 16,
+			al_palette_color^[255]);
+	al_line (aBitmap, Point[4].x SHR 16, Point[4].y SHR 16,
+			Point[1].x SHR 16, Point[1].y SHR 16,
+			al_palette_color^[255]);
       END;
     END;
   END;

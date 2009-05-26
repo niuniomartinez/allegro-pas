@@ -176,7 +176,7 @@ UNIT al3d;
     @item(All polygons passed to @code(al_scene_polygon3d) have to be
       @code(al_persp_project)'ed.)
     @item(After @link(al_render_scene) the mode is reset to
-      @link(AL_DRAW_MODE_SOLID)).
+      @link(AL_DRAW_MODE_SOLID).)
   )
 
   Using a lot of @code( *MASK* ) polygons drastically reduces performance,
@@ -260,64 +260,137 @@ VAR
 (* Construct X axis rotation matrices, storing them in m.  When applied to a
    point, these matrices will rotate it about the X axis by the specified
    angle (given in binary, 256 degrees to a circle format).
-   @seealso(al_apply_matrix) @seealso(al_get_rotation_matrix)
-   *)
+   @seealso(al_apply_matrix) @seealso(al_get_rotation_matrix) *)
   PROCEDURE al_get_x_rotate_matrix (m: AL_MATRIXptr; r: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_x_rotate_matrix';
 (* Same as @link(al_get_x_rotate_matrix) but in floating point. *)
   PROCEDURE al_get_x_rotate_matrix_f (m: AL_MATRIX_Fptr; r: DOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_x_rotate_matrix_f';
 
+(* Construct Y axis rotation matrices, storing them in m.  When applied to a
+   point, these matrices will rotate it about the Y axis by the specified
+   angle (given in binary, 256 degrees to a circle format).
+   @seealso(al_apply_matrix) @seealso(al_get_rotation_matrix) *)
   PROCEDURE al_get_y_rotate_matrix (m: AL_MATRIXptr; r: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_y_rotate_matrix';
+(* Same as @link(al_get_y_rotate_matrix) but in floating point. *)
   PROCEDURE al_get_y_rotate_matrix_f (m: AL_MATRIX_Fptr; r: DOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_y_rotate_matrix_f';
 
+(* Construct Z axis rotation matrices, storing them in m.  When applied to a
+   point, these matrices will rotate it about the Z axis by the specified
+   angle (given in binary, 256 degrees to a circle format).
+   @seealso(al_apply_matrix) @seealso(al_get_rotation_matrix) *)
   PROCEDURE al_get_z_rotate_matrix (m: AL_MATRIXptr; r: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_z_rotate_matrix';
+(* Same as @link(al_get_y_rotate_matrix) but in floating point. *)
   PROCEDURE al_get_z_rotate_matrix_f (m: AL_MATRIX_Fptr; r: DOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_z_rotate_matrix_f';
-
+(* Constructs a transformation matrix which will rotate points around all three
+   axes by the specified amounts (given in binary, 256 degrees to a circle
+   format).  The direction of rotation can simply be found out with the
+   right-hand rule:  Point the dumb of your right hand towards the origin along
+   the axis of rotation, and the fingers will curl in the positive direction of
+   rotation.  E.g. if you rotate around the y axis, and look at the scene from
+   above, a positive angle will rotate in clockwise direction.
+   @seealso(al_get_rotation_matrix_f) @seealso(al_apply_matrix)
+   @seealso(al_get_transformation_matrix) @seealso(al_get_x_rotate_matrix)
+   @seealso(al_get_y_rotate_matrix) @seealso(al_get_z_rotate_matrix)
+   @seealso(al_get_align_matrix) *)
   PROCEDURE al_get_rotation_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_rotation_matrix';
+(* Same as @link(al_get_rotation_matrix) but in floating point. *)
   PROCEDURE al_get_rotation_matrix_f (m: AL_MATRIX_Fptr; x, y, z: DOUBLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_rotation_matrix_f';
 
+(* Rotates a matrix so that it is aligned along the specified coordinate
+   vectors (they need not be normalized or perpendicular, but the up and front
+   must not be equal).  A front vector of 0,0,-1 and up vector of 0,1,0 will
+   return the identity matrix.
+   @seealso(al_get_align_matrix_f) @seealso(al_apply_matrix)
+   @seealso(al_get_camera_matrix) *)
   PROCEDURE al_get_align_matrix (m: AL_MATRIXptr; xfront, yfront, zfront,
 				 xup, yup, zup: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_align_matrix';
+(* Same as @link(al_get_align_matrix) but in floating point. *)
   PROCEDURE al_get_align_matrix_f (m: AL_MATRIX_Fptr; xfront, yfront, zfront,
 				 xup, yup, zup: DOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_align_matrix_f';
 
+(* Constructs a transformation matrix which will rotate points around the
+   specified x,y,z vector by the specified angle (given in binary, 256 degrees
+   to a circle format).
+   @seealso(al_get_vector_rotation_matrix_f) @seealso(al_apply_matrix)
+   @seealso(al_get_rotation_matrix) @link(al_get_align_matrix) *)
   PROCEDURE al_get_vector_rotation_matrix (m: AL_MATRIXptr; x,y,z,a: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME
     'get_vector_rotation_matrix';
+(* Same as @link(al_get_vector_rotation_matrix) but in floating point. *)
   PROCEDURE al_get_vector_rotation_matrix_f (m: AL_MATRIX_Fptr; x,y,z,a: DOUBLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME
     'get_vector_rotation_matrix_f';
 
+(* Constructs a transformation matrix which will rotate points around all three
+   axes by the specified amounts (given in binary, 256 degrees to a circle
+   format), scale the result by the specified amount (pass 1 for no change of
+   scale), and then translate to the requested x, y, z position.
+   @seealso(al_get_transformation_matrix_f) @seealso(al_get_rotation_matrix)
+   @seealso(al_get_scaling_matrix) @seealso(al_get_translation_matrix) *)
   PROCEDURE al_get_transformation_matrix (m:AL_MATRIXptr;
 			scale, xr, yr, zr, x, y, z: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_transformation_matrix';
+(* Same as @link(al_get_transformation_matrix) but in floating point. *)
   PROCEDURE al_get_transformation_matrix_f (m:AL_MATRIX_Fptr;
 			scale, xr, yr, zr, x, y, z: DOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_transformation_matrix_f';
 
+(* Constructs a camera matrix for translating world-space objects into a
+   normalised view space, ready for the perspective projection.
+   @param(x,y,z specify the camera position)
+   @param(xfront,yfront,zfront are the 'in front' vector specifying which way
+     the camera is facing @(this can be any length: normalisation is not
+     required@).)
+   @param(xup,yup,zup are the 'up' direction vector.)
+   @param(fov specifies the field of view @(ie. width of the camera focus@) in
+     binary, 256 degrees to the circle format.  For typical projections, a
+     field of view in the region 32-48 will work well.  64 @(90°@) applies no
+     extra scaling - so something which is one unit away from the viewer will
+     be directly scaled to the viewport.  A bigger FOV moves you closer to the
+     viewing plane, so more objects will appear.  A smaller FOV moves you away
+     from the viewing plane, which means you see a smaller part of the world.)
+   @param(aspect is used to scale the Y dimensions of the image relative to the
+     X axis, so you can use it to adjust the proportions of the output image
+     @(set it to 1 for no scaling - but keep in mind that the projection also
+     performs scaling according to the viewport size@).  Typically, you will
+     pass @code(w/h), where w and h are the parameters you passed to
+     @link(al_set_projection_viewport).)
+   @seealso(al_apply_matrix) @seealso(al_set_projection_viewport)
+   @seealso(al_persp_project) *)
   PROCEDURE al_get_camera_matrix (m: AL_MATRIXptr; x, y, z,
 		xfront, yfront, zfront, xup, yup, zup, fov, aspect: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_camera_matrix';
+(* Same as @link(al_get_camera_matrix) but in floating point. *)
   PROCEDURE al_get_camera_matrix_f (m: AL_MATRIX_Fptr; x, y, z,
 		xfront, yfront, zfront, xup, yup, zup, fov, aspect: DOUBLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_camera_matrix_f';
 
+(* Optimised routine for translating an already generated matrix:  this simply
+   adds in the translation offset, so there is no need to build two temporary
+   matrices and then multiply them together.
+   @seealso(al_qtranslate_matrix_f) @seealso(al_get_translation_matrix) *)
   PROCEDURE al_qtranslate_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_qtranslate_matrix';
+(* Same as @link(al_qtranslate_matrix) but in floating point. *)
   PROCEDURE al_qtranslate_matrix_f (m: AL_MATRIX_Fptr; x, y, z: DOUBLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_qtranslate_matrix_f';
 
+(* Optimised routine for scaling an already generated matrix: this simply adds
+   in the scale factor, so there is no need to build two temporary matrices and
+   then multiply them together.
+   @seealso(al_qscale_matrix_f) @seealso(al_get_scaling_matrix) *)
   PROCEDURE al_qscale_matrix (m: AL_MATRIXptr; scale: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'qscale_matrix';
+(* Same as @link(al_qscale_matrix) but in floating point. *)
   PROCEDURE al_qscale_matrix_f (m: AL_MATRIX_Fptr; scale: DOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'qscale_matrix_f';
 
@@ -345,14 +418,21 @@ VAR
 		x, y, z: DOUBLE; xout, yout, zout: PDOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'apply_matrix_f';
 
-
+(* Calculates the length of the vector (x, y, z), using that good 'ole
+   Pythagoras theorem.
+   @seealso(al_vector_length_f) @seealso(al_normalize_vector) *)
   FUNCTION al_vector_length (x, y, z: AL_FIXED): AL_FIXED; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'vector_length';
+(* Same as @link(al_vector_length) but using floats instead than fixed. *)
   FUNCTION al_vector_length_f (x, y, z: DOUBLE): AL_FIXED; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'vector_length_f';
 
+(* Converts the vector (*x, *y, *z) to a unit vector.  This points in the same
+   direction as the original vector, but has a length of one.
+   @seealso(al_normalize_vector_f) @seealso(al_vector_length) *)
   PROCEDURE al_normalize_vector (x, y, z: AL_FIXEDptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'normalize_vector';
+(* Same as @link(al_normalize_vector) but using floats instead than fixed. *)
   PROCEDURE al_normalize_vector_f (x, y, z: DOUBLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'normalize_vector_f';
 
@@ -387,11 +467,27 @@ VAR
    applied.  The fov and aspect-ratio parameters to @code(al_get_camera_matrix)
    also apply some scaling though, so this isn't always completely true).  If
    you pass -1/-1/2/2 as parameters, no extra scaling will be performed by the
-   projection. *)
+   projection.
+   @seealso(al_persp_project) @seealso(al_get_camera_matrix) *)
   PROCEDURE al_set_projection_viewport (x, y, w, h: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_projection_viewport';
 
+(* Projects the 3d point (x, y, z) into 2d screen space, storing the result in
+   (xout, yout) and using the scaling parameters previously set by calling
+   @link(al_set_projection_viewport).  This function projects from the
+   normalized viewing pyramid, which has a camera at the origin and facing
+   along the positive z axis.  The x axis runs left/right, y runs up/down, and
+   z increases with depth into the screen.  The camera has a 90 degree field of
+   view, ie. points on the planes x=z and -x=z will map onto the left and right
+   edges of the screen, and the planes y=z and -y=z map to the top and bottom
+   of the screen.  If you want a different field of view or camera location,
+   you should transform all your objects with an appropriate viewing matrix,
+   eg. to get the effect of panning the camera 10 degrees to the left, rotate
+   all your objects 10 degrees to the right.
+   @seealso(al_persp_project_f) @seealso(al_set_projection_viewport)
+   @seealso(al_get_camera_matrix) *)
   PROCEDURE al_persp_project (x, y, z: AL_FIXED; VAR xout, yout: AL_FIXED);
+(* Same as @link(al_persp_project_f) but using floats instead than fixed. *)
   PROCEDURE al_persp_project_f (x, y, z: DOUBLE; VAR xout, yout: DOUBLE);
 
 
