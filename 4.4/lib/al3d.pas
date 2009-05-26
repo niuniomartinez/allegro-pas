@@ -427,7 +427,7 @@ VAR
   FUNCTION al_vector_length_f (x, y, z: DOUBLE): AL_FIXED; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'vector_length_f';
 
-(* Converts the vector (*x, *y, *z) to a unit vector.  This points in the same
+(* Converts the vector ( *x, *y, *z) to a unit vector.  This points in the same
    direction as the original vector, but has a length of one.
    @seealso(al_normalize_vector_f) @seealso(al_vector_length) *)
   PROCEDURE al_normalize_vector (x, y, z: AL_FIXEDptr); CDECL;
