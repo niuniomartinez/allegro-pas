@@ -1224,6 +1224,12 @@ TYPE
   PROCEDURE al_rgb_to_hsv (r, g, b: LONGINT; VAR h, s, v: DOUBLE);
 
 
+
+TYPE
+(* Pointer to @link(AL_PALETTE_DICT). *)
+  AL_PALETTE_DICTptr = ^AL_PALETTE_DICT;
+(* To be used by @link(al_palette_color). *)
+  AL_PALETTE_DICT = ARRAY [0..255] OF LONGINT;
 VAR
 (* Table mapping palette index colors (0-255) into whatever pixel format is
    being used by the current display mode.  In a 256-color mode this just maps
@@ -1231,7 +1237,7 @@ VAR
    the current palette, and converts that RGB value into the appropriate packed
    pixel format.
    @seealso(al_set_palette) @seealso(al_makecol) @seealso(al_set_color_depth) *)
-  al_palette_color: ARRAY [0..255] OF LONGINT;
+  al_palette_color: AL_PALETTE_DICTptr;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'palette_color';
 
 
