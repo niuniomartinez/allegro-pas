@@ -506,7 +506,7 @@ TYPE
     c: LONGINT;
   END;
 (* List of pointers to @link(AL_V3D). *)
-  AL_V3D_LIST = ARRAY OF AL_V3Dptr;
+  AL_V3D_LIST = ^AL_V3Dptr;
 
 (* Pointer to @link(AL_V3D_F). *)
   AL_V3D_Fptr = ^AL_V3D_F;
@@ -521,15 +521,15 @@ TYPE
     c: LONGINT;
   END;
 (* List of pointers to @link(AL_V3D_F). *)
-  AL_V3D_LIST_F = ARRAY OF AL_V3D_Fptr;
+  AL_V3D_LIST_F = ^AL_V3D_Fptr;
 
 
 
   FUNCTION al_clip3d (_type: LONGINT; min_z, max_z: AL_FIXED; vc: LONGINT;
-    vtx, vout, vtmp: AL_V3D_LIST; out: ARRAY OF LONGINT): LONGINT; CDECL;
+    vtx, vout, vtmp: AL_V3D_LIST; out: PLONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clip3d';
   FUNCTION al_clip3d_f (_type: LONGINT; min_z, max_z: DOUBLE; vc: LONGINT;
-    vtx, vout, vtmp: AL_V3D_LIST_F; out: ARRAY OF LONGINT): LONGINT; CDECL;
+    vtx, vout, vtmp: AL_V3D_LIST_F; out: PLONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clip3d_f';
 
 (* Finds the Z component of the normal vector to the specified three vertices
@@ -599,11 +599,11 @@ CONST
 
   PROCEDURE al_polygon3d (bmp: AL_BITMAPptr; _type: LONGINT;
 			  texture: AL_BITMAPptr; vc: LONGINT;
-			  vtx: ARRAY OF AL_V3Dptr);
+			  vtx: AL_V3D_LIST);
 
   PROCEDURE al_polygon3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
 			    texture: AL_BITMAPptr; vc: LONGINT;
-			    vtx: ARRAY OF AL_V3D_Fptr);
+			    vtx: AL_V3D_LIST_F);
 
   PROCEDURE al_triangle3d (bmp: AL_BITMAPptr; _type: LONGINT;
 			   texture: AL_BITMAPptr; v1, v2, v3: AL_V3Dptr);
@@ -725,12 +725,12 @@ TYPE
    @seealso(al_create_scene) @seealso(al_clear_scene) @seealso(al_render_scene)
    @seealso(al_polygon3d) *)
   FUNCTION al_scene_polygon3d (_type: LONGINT; texture: AL_BITMAPptr;
-			       vtx: ARRAY OF AL_V3Dptr): LONGINT; CDECL;
+				vx: LONGINT; vtx: AL_V3D_LIST): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scene_polygon3d';
 
 (* Floating point version of @link(al_scene_polygon3d). *)
   FUNCTION al_scene_polygon3d_f (_type: LONGINT; texture: AL_BITMAPptr;
-			         vtx: ARRAY OF AL_V3D_Fptr): LONGINT; CDECL;
+			vx: LONGINT; vtx: AL_V3D_LIST_F): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scene_polygon3d';
 
 (* Renders all the specified @link(al_scene_polygon3d)'s on the bitmap passed
@@ -815,18 +815,18 @@ VAR
 
   PROCEDURE al_polygon3d (bmp: AL_BITMAPptr; _type: LONGINT;
 			  texture: AL_BITMAPptr; vc: LONGINT;
-			  vtx: ARRAY OF AL_V3Dptr);
+			  vtx: AL_V3D_LIST);
   BEGIN
-    bmp^.vtable^.polygon3d (bmp, _type, texture, vc, @(vtx[0]));
+    bmp^.vtable^.polygon3d (bmp, _type, texture, vc, vtx);
   END;
 
 
 
   PROCEDURE al_polygon3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
 			  texture: AL_BITMAPptr; vc: LONGINT;
-			  vtx: ARRAY OF AL_V3D_Fptr);
+			  vtx: AL_V3D_LIST_F);
   BEGIN
-    bmp^.vtable^.polygon3d (bmp, _type, texture, vc, @(vtx[0]));
+    bmp^.vtable^.polygon3d (bmp, _type, texture, vc, vtx);
   END;
 
 

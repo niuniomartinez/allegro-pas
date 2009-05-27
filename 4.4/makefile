@@ -69,8 +69,8 @@ DEMODIR = demo/
 EXMDIR = examples/
 LIBDIR = lib/
 
-#FLAGS = -g -O- -pg -Sh
-FLAGS = -02 -Sh
+FLAGS = -g -O- -pg -Sh
+#FLAGS = -02 -Sh
 
 # -- Source files list --
 include makefile.list
