@@ -275,7 +275,6 @@ BEGIN (* The program starts here. *)
 		   1, 9, -1, -1);
     al_vsync;
     al_blit (Buffer, al_screen, 0, 0, 0, 0, AL_SCREEN_W, AL_SCREEN_H);
-{ al_save_bitmap ('s.pcx', Buffer, @Palette); }
 
   { Wait until a key is pressed. }
   UNTIL Key = AL_KEY_ESC;
