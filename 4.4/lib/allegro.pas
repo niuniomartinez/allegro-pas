@@ -681,7 +681,8 @@ VAR
    #)
 
    This function cannot return character values greater than 255.  If you need
-   to read Unicode input, use @link(al_ureadkey) instead. *)
+   to read Unicode input, use @link(al_ureadkey) instead.
+   @seealso(al_install_keyboard) @seealso(al_key) *)
   FUNCTION al_readkey: LONGINT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'readkey';
 

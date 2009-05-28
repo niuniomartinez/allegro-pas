@@ -509,10 +509,10 @@ TYPE
   AL_V3D_LIST = ^AL_V3Dptr;
 
 (* Pointer to @link(AL_V3D_F). *)
-  AL_V3D_Fptr = ^AL_V3D_F;
+  AL_V3D_fptr = ^AL_V3D_f;
 (*Like @link(AL_V3D) but using float values instead of fixed ones.
   @seealso(al_polygon3d_f) *)
-  AL_V3D_F = RECORD
+  AL_V3D_f = RECORD
   (* Position. *)
     x, y, z: DOUBLE;
   (* Texture map coordinates. *)
@@ -521,13 +521,37 @@ TYPE
     c: LONGINT;
   END;
 (* List of pointers to @link(AL_V3D_F). *)
-  AL_V3D_LIST_F = ^AL_V3D_Fptr;
+  AL_V3D_LIST_f = ^AL_V3D_fptr;
 
 
 
+(* Fixed point version of @link(al_clip3d_f).  This function should be used
+   with caution, due to the limited precision of fixed point arithmetic and
+   high chance of rounding errors:  the floating point code is better for most
+   situations. @returns(the number of vertices after clipping is done.)
+   @seealso(al_clip3d_f) @seealso(al_polygon3d) *)
   FUNCTION al_clip3d (_type: LONGINT; min_z, max_z: AL_FIXED; vc: LONGINT;
     vtx, vout, vtmp: AL_V3D_LIST; out: PLONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clip3d';
+(* Clips the polygon given in @code(vtx).  The number of vertices is @code(vc),
+   the result goes in @code(vout), and @code(vtmp) and @code(out) are needed
+   for internal purposes.  The pointers in @code(vtx), @code(vout) and
+   @code(vtmp) must point to valid @link(AL_V3D_f) structures.
+
+   As additional vertices may appear in the process of clipping, so the size
+   of @code(vout), @code(vtmp) and @code(out) should be at least @code(vc *
+   POW @(1.5, n@)), where @code(n) is the number of clipping planes (5 or 6).
+
+   The frustum (viewing volume) is defined by @code(-z<x<z, -z<y<z,
+   0<min_z<z<max_z). If @code(max_z<=min_z), the @code(z<max_z) clipping is not
+   done.  As you can see, clipping is done in the camera space, with
+   perspective in mind, so this routine should be called after you apply the
+   camera matrix, but before the perspective projection.  The routine will
+   correctly interpolate @code(u), @code(v), and @code(c) in the vertex
+   structure.  However, no provision is made for high/truecolor
+   @link(AL_POLYTYPE_GCOL).
+   @returns(the number of vertices after clipping is done.)
+   @seealso(al_clip3d) @seealso(al_polygon3d_f) *)
   FUNCTION al_clip3d_f (_type: LONGINT; min_z, max_z: DOUBLE; vc: LONGINT;
     vtx, vout, vtmp: AL_V3D_LIST_F; out: PLONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clip3d_f';
@@ -570,37 +594,154 @@ CONST
    but will only work in 256-color modes if your palette contains a smooth
    gradient between the colors.  In truecolor modes it interprets the color as
    a packed, display-format value as produced by the @link(al_makecol)
-  function.
-   @seealso(al_polygon3d) *)
+   function.
+   @seealso(al_polygon3d) @seealso(al_drawing_mode) *)
   AL_POLYTYPE_GCOL            =  1;
 (* A gouraud shaded polygon which interpolates RGB triplets rather than a
-   single color.  In 256-color modes this uses the global @link(al_rgb_map)
+   single color.  In 256-color modes this uses the global @link(al_rgb_table)
    table to convert the result to an 8-bit paletted color, so it must only be
    used after you have set up the RGB mapping table!  The colors for each
    vertex are taken from the `c' value, which is interpreted as a 24-bit RGB
    triplet ($FF0000 is red, $00FF00 is green, and $0000FF is blue).
-   @seealso(al_polygon3d) *)
+   @seealso(al_polygon3d) @seealso(al_drawing_mode) *)
   AL_POLYTYPE_GRGB            =  2;
+(* An affine texture mapped polygon.  This stretches the texture across the
+  polygon with a simple 2D linear interpolation, which is fast but not
+  mathematically correct.  It can look OK if the polygon is fairly small or
+  flat-on to the camera, but because it doesn't deal with perspective
+  foreshortening, it can produce strange warping artifacts.  To see what this
+  means, run Allegro's ex3d example program and see what happens to the
+  @link(al_polygon3d) procedure when you zoom in very close to the cube. *)
   AL_POLYTYPE_ATEX            =  3;
+(* A perspective-correct texture mapped polygon.  This uses the `z' value from
+  the vertex structure as well as the u/v coordinates, so textures are
+  displayed correctly regardless of the angle they are viewed from.  Because it
+  involves division calculations in the inner texture mapping loop, this mode
+  is a lot slower than @link(AL_POLYTYPE_ATEX), and it uses floating point so
+  it will be very slow on anything less than a Pentium (even with an FPU, a 486
+  can't overlap floating point division with other integer operations like the
+  Pentium can).
+  @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX            =  4;
+(* Like @link(AL_POLYTYPE_ATEX), but @link(al_bitmap_mask_color) texture map
+  pixels are skipped, allowing parts of the texture map to be transparent.
+  @seealso(al_polygon3d) *)
   AL_POLYTYPE_ATEX_MASK       =  5;
+(* Like @link(AL_POLYTYPE_PTEX), but @link(al_bitmap_mask_color) texture map
+  pixels are skipped, allowing parts of the texture map to be transparent.
+  @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_MASK       =  6;
+(* Like @link(AL_POLYTYPE_ATEX), but the global @link(al_color_table) (for
+  256-color modes) or @link(alblend blender) function (for non-MMX truecolor
+  modes) is used to blend the texture with a light level taken from the `c'
+  value in the vertex structure.  This must only be used after you have set up
+  the color mapping table or blender functions!
+  @seealso(al_polygon3d) *)
   AL_POLYTYPE_ATEX_LIT        =  7;
+(* Like @link(AL_POLYTYPE_PTEX), but the global @link(al_color_table) (for
+  256-color modes) or @link(alblend blender) function (for non-MMX truecolor
+  modes) is used to blend the texture with a light level taken from the `c'
+  value in the vertex structure.  This must only be used after you have set up
+  the color mapping table or blender functions!
+  @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_LIT        =  8;
+(* Like @link(AL_POLYTYPE_ATEX_LIT), but @link(al_bitmap_mask_color) texture
+  map pixels are skipped, allowing parts of the texture map to be transparent.
+  @seealso(al_polygon3d) *)
   AL_POLYTYPE_ATEX_MASK_LIT   =  9;
+(* Like @link(AL_POLYTYPE_PTEX_LIT), but @link(al_bitmap_mask_color) texture
+  map pixels are skipped, allowing parts of the texture map to be transparent.
+  @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_MASK_LIT   = 10;
+(* Render translucent textures.  All the general rules for drawing translucent
+  things apply.  However, these modes have a major limitation:  they only work
+  with memory bitmaps or linear frame buffers (not with banked frame buffers).
+  Don't even try, they do not check and your program will die horribly (or at
+  least draw wrong things).
+  @seealso(al_polygon3d) @seealso(AL_POLYTYPE_ATEX)
+  @seealso(al_create_trans_table) @seealso(al_set_trans_blender) *)
   AL_POLYTYPE_ATEX_TRANS      = 11;
+(* Render translucent textures.  All the general rules for drawing translucent
+  things apply.  However, these modes have a major limitation:  they only work
+  with memory bitmaps or linear frame buffers (not with banked frame buffers).
+  Don't even try, they do not check and your program will die horribly (or at
+  least draw wrong things).
+  @seealso(al_polygon3d) @seealso(AL_POLYTYPE_PTEX)
+  @seealso(al_create_trans_table) @seealso(al_set_trans_blender) *)
   AL_POLYTYPE_PTEX_TRANS      = 12;
+(* Like @link(AL_POLYTYPE_ATEX_TRANS), but @link(al_bitmap_mask_color) texture
+  map pixels are skipped, allowing parts of the texture map to be transparent.
+  @seealso(al_polygon3d) *)
   AL_POLYTYPE_ATEX_MASK_TRANS = 13;
+(* Like @link(AL_POLYTYPE_PTEX_TRANS), but @link(al_bitmap_mask_color) texture
+  map pixels are skipped, allowing parts of the texture map to be transparent.
+  @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_MASK_TRANS = 14;
+(* *)
   AL_POLYTYPE_MAX             = 15;
+(* Used for z-buffered mode. @seealso(al_create_zbuffer) *)
   AL_POLYTYPE_ZBUF            = 16;
 
 
+
+(* Draw 3d polygons onto the specified bitmap, using the specified rendering
+  mode.  This routine don't support concave or self-intersecting shapes, and
+  it can't draw onto mode-X screen bitmaps (if you want to write 3d code in
+  mode-X, draw onto a memory bitmap and then @link(al_blit) to the
+  @link(al_screen)).  The width and height of the texture bitmap must be powers
+  of two, but can be different, eg. a 64x16 texture is fine, but a 17x3 one is
+  not.  The vertex count parameter (@code(vc)) should be followed by an array
+  containing the appropriate number of pointers to @link(AL_V3D) structures.
+
+  How the vertex data is used depends on the rendering mode:
+
+  The @code(x) and @code(y) values specify the position of the vertex in 2D
+  screen coordinates.
+
+  The @code(z) value is only required when doing perspective correct texture
+  mapping, and specifies the depth of the point in 3D world coordinates.
+
+  The @code(u) and @code(v) coordinates are only required when doing texture
+  mapping, and specify a point on the texture plane to be mapped on to this
+  vertex.  The texture plane is an infinite plane with the texture bitmap
+  tiled across it.  Each vertex in the polygon has a corresponding vertex on
+  the texture plane, and the image of the resulting polygon in the texture
+  plane will be mapped on to the polygon on the screen.
+
+  We refer to pixels in the texture plane as @italic(texels).  Each texel is a
+  block, not just a point, and whole numbers for @code(u) and @code(v) refer to
+  the top-left corner of a texel.  This has a few implications.  If you want to
+  draw a rectangular polygon and map a texture sized 32x32 on to it, you would
+  use the texture coordinates (0,0), (0,32), (32,32) and (32,0), assuming the
+  vertices are specified in anticlockwise order.  The texture will then be
+  mapped perfectly on to the polygon.  However, note that when we set u=32, the
+  last column of texels seen on the screen is the one at u=31, and the same
+  goes for v.  This is because the coordinates refer to the top-left corner of
+  the texels.  In effect, texture coordinates at the right and bottom on the
+  texture plane are exclusive.
+
+  There is another interesting point here.  If you have two polygons side by
+  side sharing two vertices (like the two parts of folded piece of cardboard),
+  and you want to map a texture across them seamlessly, the values of u and v
+  on the vertices at the join will be the same for both polygons.  For example,
+  if they are both rectangular, one polygon may use (0,0), (0,32), (32,32) and
+  (32,0), and the other may use (32,0), (32,32), (64,32), (64,0).  This would
+  create a seamless join.
+
+  Of course you can specify fractional numbers for u and v to indicate a point
+  part-way across a texel.  In addition, since the texture plane is infinite,
+  you can specify larger values than the size of the texture.  This can be used
+  to tile the texture several times across the polygon.
+
+  The @code(c) value specifies the vertex color, and is interpreted differently
+  by various rendering modes. Read the description of the @code(AL_POLYTYPE_* )
+  constants for details.
+  @seealso(al_polygon3d_f) @seealso(al_triangle3d) @seealso(al_quad3d)
+  @seealso(al_gfx_capabilities). *)
   PROCEDURE al_polygon3d (bmp: AL_BITMAPptr; _type: LONGINT;
 			  texture: AL_BITMAPptr; vc: LONGINT;
 			  vtx: AL_V3D_LIST);
-
+(* Same as @link(al_polygon3d) but using floats instead than fixed. *)
   PROCEDURE al_polygon3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
 			    texture: AL_BITMAPptr; vc: LONGINT;
 			    vtx: AL_V3D_LIST_F);
@@ -826,7 +967,7 @@ VAR
 			  texture: AL_BITMAPptr; vc: LONGINT;
 			  vtx: AL_V3D_LIST_F);
   BEGIN
-    bmp^.vtable^.polygon3d (bmp, _type, texture, vc, vtx);
+    bmp^.vtable^.polygon3d_f (bmp, _type, texture, vc, vtx);
   END;
 
 
