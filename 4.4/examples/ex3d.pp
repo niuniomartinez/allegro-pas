@@ -253,14 +253,20 @@ BEGIN (* The program starts here. *)
 	Key := al_readkey SHR 8;
 	IF Key <> AL_KEY_ESC THEN
 	BEGIN
-	  INC (TheCube.DrawMode);
-	  IF TheCube.DrawMode >= AL_POLYTYPE_MAX THEN
-	  BEGIN
-	    TheCube.DrawMode := POLYTYPE_WIRED;
-	    al_color_table := @LightTable;
+	  IF Key = AL_KEY_PGDN THEN
+	    INC (TheCube.Pos.z, 1 SHL 14)
+	  ELSE IF Key = AL_KEY_PGUP THEN
+	    DEC (TheCube.Pos.z, 1 SHL 14)
+	  ELSE BEGIN
+	    INC (TheCube.DrawMode);
+	    IF TheCube.DrawMode >= AL_POLYTYPE_MAX THEN
+	    BEGIN
+	      TheCube.DrawMode := POLYTYPE_WIRED;
+	      al_color_table := @LightTable;
+	    END;
+	    IF TheCube.DrawMode >= AL_POLYTYPE_ATEX_TRANS THEN
+	      al_color_table := @TransTable;
 	  END;
-	  IF TheCube.DrawMode >= AL_POLYTYPE_ATEX_TRANS THEN
-	    al_color_table := @TransTable;
 	END;
       END;
     { Next tick. }
