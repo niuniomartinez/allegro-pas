@@ -24,7 +24,7 @@ PROGRAM exscn3d;
 {$ENDIF}
 
 USES
-  allegro, algui, al3d,
+  allegro, algui, al3d, alfixed,
   sysutils;
 
 
@@ -40,15 +40,15 @@ TYPE
 
 
 VAR
-  Vertex: ARRAY [1..8] OF AL_V3D_f = (
-    (x: -10; y: -10; z: -10; u: 0; v: 0; c: 72),
-    (x: -10; y: -10; z: -10; u: 0; v: 0; c: 80),
-    (x: -10; y: -10; z: -10; u: 0; v: 0; c: 95),
-    (x: -10; y: -10; z: -10; u: 0; v: 0; c: 88),
-    (x: -10; y: -10; z: -10; u: 0; v: 0; c: 72),
-    (x: -10; y: -10; z: -10; u: 0; v: 0; c: 80),
-    (x: -10; y: -10; z: -10; u: 0; v: 0; c: 95),
-    (x: -10; y: -10; z: -10; u: 0; v: 0; c: 88)
+  Vertex: ARRAY [1..8] OF AL_V3D = (
+    (x: -10 SHL 16; y: -10 SHL 16; z: -10 SHL 16; u: 0; v: 0; c: 72),
+    (x: -10 SHL 16; y:  10 SHL 16; z: -10 SHL 16; u: 0; v: 0; c: 80),
+    (x:  10 SHL 16; y:  10 SHL 16; z: -10 SHL 16; u: 0; v: 0; c: 95),
+    (x:  10 SHL 16; y: -10 SHL 16; z: -10 SHL 16; u: 0; v: 0; c: 88),
+    (x: -10 SHL 16; y: -10 SHL 16; z:  10 SHL 16; u: 0; v: 0; c: 72),
+    (x: -10 SHL 16; y:  10 SHL 16; z:  10 SHL 16; u: 0; v: 0; c: 80),
+    (x:  10 SHL 16; y:  10 SHL 16; z:  10 SHL 16; u: 0; v: 0; c: 95),
+    (x:  10 SHL 16; y: -10 SHL 16; z:  10 SHL 16; u: 0; v: 0; c: 88)
   );
   Cube: ARRAY [1..6] OF QUAD = (
     (v: (3, 2, 1, 4)),
@@ -58,10 +58,10 @@ VAR
     (v: (5, 8, 4, 1)),
     (v: (2, 3, 7, 6))
   );
-  V: ARRAY [1..4] OF AL_V3D_f;
-  Vout, Vtmp: ARRAY [1..12] OF AL_V3D_f;
-  pV: ARRAY [1..4] OF AL_V3D_fptr;
-  pVout, pVtmp: ARRAY [1..12] OF AL_V3D_fptr;
+  V: ARRAY [1..4] OF AL_V3D;
+  Vout, Vtmp: ARRAY [1..12] OF AL_V3D;
+  pV: ARRAY [1..4] OF AL_V3Dptr;
+  pVout, pVtmp: ARRAY [1..12] OF AL_V3Dptr;
 
 
 
@@ -76,8 +76,30 @@ VAR
 
 
 VAR
+  Texture: AL_BITMAPptr;
   Palette: AL_PALETTE;
   RGBTable: AL_RGB_MAP;
+
+
+
+  FUNCTION LoadTexture: BOOLEAN;
+  VAR
+    Filename: STRING;
+    Pic: AL_BITMAPptr;
+  BEGIN
+    filename := ExtractFilePath (ParamStr (0)) + 'allegro.pcx';
+
+    Pic := al_load_bitmap (filename, @Palette);
+    IF Pic = NIL THEN
+    BEGIN
+      al_message ('Can''t load allegro.pcx.');
+      RESULT := FALSE;
+      EXIT;
+    END;
+    Texture := al_create_bitmap (128, 128);
+    al_stretch_blit (Pic, Texture, 0, 0, Pic^.w, Pic^.h, 0, 0, 128, 128);
+    al_destroy_bitmap (Pic);
+  END;
 
 
 
@@ -141,6 +163,15 @@ VAR
       EXIT;
     END;
 
+    IF NOT LoadTexture THEN
+    BEGIN
+      al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
+    { Show an error message. }
+      RESULT := FALSE;
+      EXIT;
+    END;
+    al_set_palette (Palette);
+
   { Build a rgb_map table.  Not needed, but speeds things up. }
     al_create_rgb_table (@RGBTable, Palette, NIL);
     al_rgb_table := @RGBTable;
@@ -149,8 +180,22 @@ VAR
 
 
 
+(* Returns true if facet is facing the camera.  Vertices should be in Visual
+   Coordinate System. *)
+  FUNCTION FacetIsVisible (P1, P2, P3: AL_V3D): BOOLEAN;
+  VAR
+    S1, S2, S3: DOUBLE;
+  BEGIN
+    S1 := al_fixtof (P1.x) * ((al_fixtof (P2.y) * al_fixtof (P3.z)) - (al_fixtof (P3.y) * al_fixtof (P2.z)));
+    S2 := al_fixtof (P2.x) * ((al_fixtof (P3.y) * al_fixtof (P1.z)) - (al_fixtof (P1.y) * al_fixtof (P3.z)));
+    S3 := al_fixtof (P3.x) * ((al_fixtof (P1.y) * al_fixtof (P2.z)) - (al_fixtof (P2.y) * al_fixtof (P1.z)));
+    RESULT := ((-S1 - S2 - S3) <= 0);
+  END;
+
+
+
 (*  Translates, rotates, clips, projects, culls backfaces and draws a cube. *)
-  PROCEDURE DrawCube (Matrix: AL_MATRIX_fptr; NumPolys: INTEGER);
+  PROCEDURE DrawCube (Matrix: AL_MATRIXptr; NumPolys: INTEGER);
   VAR
     i, j, nv: LONGINT;
     Out: ARRAY [0..12] OF LONGINT;
@@ -160,22 +205,24 @@ VAR
       FOR J := 1 TO 4 DO
       BEGIN
 	v[j] := Vertex[Cube[i].v[j]];
-{	al_apply_matrix_f (Matrix, v[j].x, v[j].y, v[j].z,
-			   @v[j].x, @v[j].y, @v[j].z); }
+	al_apply_matrix (Matrix, v[j].x, v[j].y, v[j].z,
+				 v[j].x, v[j].y, v[j].z);
       END;
-
+      v[1].u := 128 SHL 16; v[1].v := 128 SHL 16;
+      v[2].u :=   0       ; v[2].v := 128 SHL 16;
+      v[3].u :=   0       ; v[3].v :=   0       ;
+      v[4].u := 128 SHL 16; v[4].v :=   0       ;
     (* nv: number of vertices after clipping is done. *)
-{      nv := al_clip3d_f (AL_POLYTYPE_GCOL, 0.1, 1000, 4, @pV[1], @pVout[1],
-			 @pVtmp[1], @Out[0]); }
-{      IF nv > 0 THEN
-      BEGIN
-	FOR J := 1 TO nv DO
-	  al_persp_project_f (Vout[j].x, Vout[j].y, Vout[j].z,
+      nv := al_clip3d (AL_POLYTYPE_ATEX, 1 SHL 14, 1000 SHL 16, 4, @pV[1], @pVout[1],
+			@pVtmp[1], @Out[0]);
+      IF nv > 0 THEN
+	IF FacetIsVisible (vout[1], vout[2], vout[3]) THEN
+	BEGIN
+	  FOR J := 1 TO nv DO
+	    al_persp_project (Vout[j].x, Vout[j].y, Vout[j].z,
 			      Vout[j].x, Vout[j].y);
-      END; }
-
-{      IF al_polygon_z_normal_f (@vout[1], @vout[2], @vout[3]) > 500 THEN
-	al_scene_polygon3d_f (AL_POLYTYPE_GCOL, NIL, nv, @pVout[1]); }
+	  al_scene_polygon3d (AL_POLYTYPE_ATEX, Texture, nv, @pVout[1]);
+	END;
     END;
   END;
 
@@ -183,14 +230,15 @@ VAR
 
 VAR
   Buffer: AL_BITMAPptr;
-  Matrix, Matrix1, Matrix2, Matrix3: AL_MATRIX_f;
-  rx, ry, tz, rot, incr, i, j, k: LONGINT;
+  Matrix, Matrix1, Matrix2, Matrix3: AL_MATRIX;
+  rx, ry, rot, incr: AL_FIXED;
+  tz, i, j, k: LONGINT;
   Frame: LONGINT;
   FPS: DOUBLE;
 BEGIN (* The program starts here. *)
 
   rx := 0; ry := 0; tz := 40;
-  rot := 0; incr := 1;
+  rot := 0; incr := 1 SHL 16;
 
   Frame := 0; FPS := 0;
 
@@ -237,22 +285,22 @@ BEGIN (* The program starts here. *)
     al_clear_scene  (Buffer);
 
   { Matrix2: rotates cube }
-    al_get_rotation_matrix_f (@matrix2, rx, ry, 0);
+    al_get_rotation_matrix (@matrix2, rx, ry, 0);
   { Matrix3: turns head right/left }
-    al_get_rotation_matrix_f (@matrix3, 0, rot, 0);
+    al_get_rotation_matrix (@matrix3, 0, rot, 0);
 
     FOR K := (CUBE_CUBES - 1) DOWNTO 0 DO
       FOR J := 0 TO (CUBE_CUBES - 1) DO
         FOR I := 0 TO (CUBE_CUBES - 1) DO
 	BEGIN
 	{ Matrix1: locates cubes }
-	  al_get_translation_matrix_f (@matrix1, j * 40 - CUBE_CUBES * 20 + 20,
-					i * 40 - CUBE_CUBES * 20 + 20, tz + k * 40);
+	  al_get_translation_matrix (@matrix1, (j * 40 - CUBE_CUBES * 20 + 20) SHL 16,
+					(i * 40 - CUBE_CUBES * 20 + 20) SHL 16, (tz + k * 40) SHL 16);
 
 	{ Matrix: rotates cube THEN locates cube THEN turns
 	  head right/left }
-	  al_matrix_mul_f (@matrix2, @matrix1, @matrix);
-	  al_matrix_mul_f (@matrix,  @matrix3, @matrix);
+	  al_matrix_mul (@matrix2, @matrix1, @matrix);
+	  al_matrix_mul (@matrix,  @matrix3, @matrix);
 
 	{ Cubes are just added to the scene.
 	  No sorting is done at this stage. }
@@ -268,21 +316,21 @@ BEGIN (* The program starts here. *)
   { Manage cubes movement }
     DEC (tz, 2);
     IF tz = 0 THEN tz := 40;
-    INC (rx, 4);
-    INC (ry, 4);
+    INC (rx, 4 SHL 16);
+    INC (ry, 4 SHL 16);
     INC (rot, incr);
-    IF (rot >= 25) OR (rot <= -25) THEN incr := -incr;
+    IF (rot >= (25 SHL 16)) OR (rot <= (-25 SHL 16)) THEN incr := -incr;
 
   { Computes fps }
     IF Tick > 100 THEN
     BEGIN
-WriteLn (Frame, ' ', Tick);
       FPS := (100.0 * Frame) / Tick;
       tick := 0;
       Frame := 0;
     END;
   END;
 { Release resources. }
+  al_destroy_bitmap (Texture);
   al_destroy_bitmap (Buffer);
   al_destroy_scene;
 

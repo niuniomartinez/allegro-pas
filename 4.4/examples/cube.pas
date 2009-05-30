@@ -261,7 +261,7 @@ VAR
     { "Move" and project each vertex. }
       al_apply_matrix (@Matrix,
 	PointCoordinates[Cnt].x, PointCoordinates[Cnt].y, PointCoordinates[Cnt].z,
-	@Vertex[Cnt].x, @Vertex[Cnt].y, @Vertex[Cnt].z);
+	Vertex[Cnt].x, Vertex[Cnt].y, Vertex[Cnt].z);
       al_persp_project (Vertex[Cnt].x, Vertex[Cnt].y, Vertex[Cnt].z,
 			Vertex[Cnt].x, Vertex[Cnt].y);
     END;

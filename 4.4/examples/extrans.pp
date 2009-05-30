@@ -89,7 +89,7 @@ BEGIN { The program starts here. }
   BEGIN
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
   { Show an error message. }
-    al_message ('Error reading mysha.pcx');
+    al_message ('Error reading allegro.pcx');
   { Shutdown Allegro. }
     al_exit;
     EXIT;

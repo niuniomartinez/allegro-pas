@@ -412,11 +412,10 @@ VAR
 (* Multiplies the point (x, y, z) by the transformation matrix m, storing the
    result in (xout, yout, zout). @seealso(al_matrix_mul) *)
   PROCEDURE al_apply_matrix (m: AL_MATRIXptr;
-		x, y, z: AL_FIXED; xout, yout, zout: AL_FIXEDptr);
+		x, y, z: AL_FIXED; VAR xout, yout, zout: AL_FIXED);
 (* Same as @link(al_apply_matrix) but using floats instead than fixed. *)
   PROCEDURE al_apply_matrix_f (m: AL_MATRIX_Fptr;
-		x, y, z: DOUBLE; xout, yout, zout: PDOUBLE); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'apply_matrix_f';
+		x, y, z: DOUBLE; VAR xout, yout, zout: DOUBLE);
 
 (* Calculates the length of the vector (x, y, z), using that good 'ole
    Pythagoras theorem.
@@ -872,7 +871,7 @@ TYPE
 (* Floating point version of @link(al_scene_polygon3d). *)
   FUNCTION al_scene_polygon3d_f (_type: LONGINT; texture: AL_BITMAPptr;
 			vx: LONGINT; vtx: AL_V3D_LIST_F): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scene_polygon3d';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scene_polygon3d_f';
 
 (* Renders all the specified @link(al_scene_polygon3d)'s on the bitmap passed
    to @link(al_clear_scene).  Rendering is done one scanline at a time, with no
@@ -891,24 +890,40 @@ TYPE
 
 IMPLEMENTATION
 
-
-
-
   PROCEDURE al_apply_matrix (m: AL_MATRIXptr;
-		x, y, z: AL_FIXED;  xout, yout, zout: AL_FIXEDptr);
+		x, y, z: AL_FIXED; VAR xout, yout, zout: AL_FIXED);
   BEGIN
-    xout^ := al_fixmul (x, m^.v[0, 0]) +
-	     al_fixmul (y, m^.v[0, 1]) +
-	     al_fixmul (z, m^.v[0, 2]) +
-	     m^.t[0];
-    yout^ := al_fixmul (x, m^.v[1, 0]) +
-	     al_fixmul (y, m^.v[1, 1]) +
-	     al_fixmul (z, m^.v[1, 2]) +
+    xout := al_fixmul (x, m^.v[0, 0]) +
+	    al_fixmul (y, m^.v[0, 1]) +
+	    al_fixmul (z, m^.v[0, 2]) +
+	    m^.t[0];
+    yout := al_fixmul (x, m^.v[1, 0]) +
+	    al_fixmul (y, m^.v[1, 1]) +
+	    al_fixmul (z, m^.v[1, 2]) +
+	    m^.t[1];
+    zout := al_fixmul (x, m^.v[2, 0]) +
+	    al_fixmul (y, m^.v[2, 1]) +
+	    al_fixmul (z, m^.v[2, 2]) +
+	    m^.t[2];
+  END;
+
+
+
+  PROCEDURE al_apply_matrix_f (m: AL_MATRIX_fptr;
+		x, y, z: DOUBLE; VAR xout, yout, zout: DOUBLE);
+  BEGIN
+    xout := (x * m^.v[0, 0]) +
+	    (y * m^.v[0, 1]) +
+	    (z * m^.v[0, 2]) +
+	    m^.t[0];
+    yout := (x * m^.v[1, 0]) +
+	    (y * m^.v[1, 1]) +
+	    (z * m^.v[1, 2]) +
 	     m^.t[1];
-    zout^ := al_fixmul (x, m^.v[2, 0]) +
-	     al_fixmul (y, m^.v[2, 1]) +
-	     al_fixmul (z, m^.v[2, 2]) +
-	     m^.t[2];
+    zout := (x * m^.v[2, 0]) +
+	    (y * m^.v[2, 1]) +
+	    (z * m^.v[2, 2]) +
+	    m^.t[2];
   END;
 
 
