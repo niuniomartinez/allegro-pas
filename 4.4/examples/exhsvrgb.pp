@@ -34,7 +34,7 @@ USES
   VAR
     pal: AL_PALETTE;
     x, y: INTEGER;
-    h, s, v: DOUBLE; { Hue, saturation, value. }
+    h, s, v: SINGLE; { Hue, saturation, value. }
     r, g, b: LONGINT;   { Red, green, blue. }
   BEGIN
   { Set the screen mode }

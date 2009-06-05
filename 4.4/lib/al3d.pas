@@ -221,8 +221,8 @@ TYPE
   AL_MATRIX_Fptr = ^AL_MATRIX_F;
 (* Floating point matrix structure. *)
   AL_MATRIX_F = RECORD
-    v: ARRAY [0..2, 0..2] OF DOUBLE; (*<Scaling and rotation. *)
-    t: ARRAY [0..2] OF DOUBLE; (*<Translation. *)
+    v: ARRAY [0..2, 0..2] OF SINGLE; (*<Scaling and rotation. *)
+    t: ARRAY [0..2] OF SINGLE; (*<Translation. *)
   END;
 
 VAR
@@ -243,7 +243,7 @@ VAR
   PROCEDURE al_get_translation_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_translation_matrix';
 (* Same as @link(al_get_translation_matrix) but in floating point. *)
-  PROCEDURE al_get_translation_matrix_f (m: AL_MATRIX_Fptr; x, y, z: DOUBLE);
+  PROCEDURE al_get_translation_matrix_f (m: AL_MATRIX_Fptr; x, y, z: SINGLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_translation_matrix_f';
 
 (* Constructs a scaling matrix, storing it in m.  When applied to the point
@@ -264,7 +264,7 @@ VAR
   PROCEDURE al_get_x_rotate_matrix (m: AL_MATRIXptr; r: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_x_rotate_matrix';
 (* Same as @link(al_get_x_rotate_matrix) but in floating point. *)
-  PROCEDURE al_get_x_rotate_matrix_f (m: AL_MATRIX_Fptr; r: DOUBLE); CDECL;
+  PROCEDURE al_get_x_rotate_matrix_f (m: AL_MATRIX_Fptr; r: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_x_rotate_matrix_f';
 
 (* Construct Y axis rotation matrices, storing them in m.  When applied to a
@@ -274,7 +274,7 @@ VAR
   PROCEDURE al_get_y_rotate_matrix (m: AL_MATRIXptr; r: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_y_rotate_matrix';
 (* Same as @link(al_get_y_rotate_matrix) but in floating point. *)
-  PROCEDURE al_get_y_rotate_matrix_f (m: AL_MATRIX_Fptr; r: DOUBLE); CDECL;
+  PROCEDURE al_get_y_rotate_matrix_f (m: AL_MATRIX_Fptr; r: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_y_rotate_matrix_f';
 
 (* Construct Z axis rotation matrices, storing them in m.  When applied to a
@@ -284,7 +284,7 @@ VAR
   PROCEDURE al_get_z_rotate_matrix (m: AL_MATRIXptr; r: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_z_rotate_matrix';
 (* Same as @link(al_get_y_rotate_matrix) but in floating point. *)
-  PROCEDURE al_get_z_rotate_matrix_f (m: AL_MATRIX_Fptr; r: DOUBLE); CDECL;
+  PROCEDURE al_get_z_rotate_matrix_f (m: AL_MATRIX_Fptr; r: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_z_rotate_matrix_f';
 (* Constructs a transformation matrix which will rotate points around all three
    axes by the specified amounts (given in binary, 256 degrees to a circle
@@ -300,7 +300,7 @@ VAR
   PROCEDURE al_get_rotation_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_rotation_matrix';
 (* Same as @link(al_get_rotation_matrix) but in floating point. *)
-  PROCEDURE al_get_rotation_matrix_f (m: AL_MATRIX_Fptr; x, y, z: DOUBLE);
+  PROCEDURE al_get_rotation_matrix_f (m: AL_MATRIX_Fptr; x, y, z: SINGLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_rotation_matrix_f';
 
 (* Rotates a matrix so that it is aligned along the specified coordinate
@@ -314,7 +314,7 @@ VAR
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_align_matrix';
 (* Same as @link(al_get_align_matrix) but in floating point. *)
   PROCEDURE al_get_align_matrix_f (m: AL_MATRIX_Fptr; xfront, yfront, zfront,
-				 xup, yup, zup: DOUBLE); CDECL;
+				 xup, yup, zup: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_align_matrix_f';
 
 (* Constructs a transformation matrix which will rotate points around the
@@ -326,7 +326,7 @@ VAR
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME
     'get_vector_rotation_matrix';
 (* Same as @link(al_get_vector_rotation_matrix) but in floating point. *)
-  PROCEDURE al_get_vector_rotation_matrix_f (m: AL_MATRIX_Fptr; x,y,z,a: DOUBLE);
+  PROCEDURE al_get_vector_rotation_matrix_f (m: AL_MATRIX_Fptr; x,y,z,a: SINGLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME
     'get_vector_rotation_matrix_f';
 
@@ -341,7 +341,7 @@ VAR
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_transformation_matrix';
 (* Same as @link(al_get_transformation_matrix) but in floating point. *)
   PROCEDURE al_get_transformation_matrix_f (m:AL_MATRIX_Fptr;
-			scale, xr, yr, zr, x, y, z: DOUBLE); CDECL;
+			scale, xr, yr, zr, x, y, z: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_transformation_matrix_f';
 
 (* Constructs a camera matrix for translating world-space objects into a
@@ -371,7 +371,7 @@ VAR
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_camera_matrix';
 (* Same as @link(al_get_camera_matrix) but in floating point. *)
   PROCEDURE al_get_camera_matrix_f (m: AL_MATRIX_Fptr; x, y, z,
-		xfront, yfront, zfront, xup, yup, zup, fov, aspect: DOUBLE);
+		xfront, yfront, zfront, xup, yup, zup, fov, aspect: SINGLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_camera_matrix_f';
 
 (* Optimised routine for translating an already generated matrix:  this simply
@@ -381,7 +381,7 @@ VAR
   PROCEDURE al_qtranslate_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_qtranslate_matrix';
 (* Same as @link(al_qtranslate_matrix) but in floating point. *)
-  PROCEDURE al_qtranslate_matrix_f (m: AL_MATRIX_Fptr; x, y, z: DOUBLE);
+  PROCEDURE al_qtranslate_matrix_f (m: AL_MATRIX_Fptr; x, y, z: SINGLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_qtranslate_matrix_f';
 
 (* Optimised routine for scaling an already generated matrix: this simply adds
@@ -391,7 +391,7 @@ VAR
   PROCEDURE al_qscale_matrix (m: AL_MATRIXptr; scale: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'qscale_matrix';
 (* Same as @link(al_qscale_matrix) but in floating point. *)
-  PROCEDURE al_qscale_matrix_f (m: AL_MATRIX_Fptr; scale: DOUBLE); CDECL;
+  PROCEDURE al_qscale_matrix_f (m: AL_MATRIX_Fptr; scale: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'qscale_matrix_f';
 
 (* Multiplies two matrices, storing the result in @code(out) (this may be a
@@ -415,7 +415,7 @@ VAR
 		x, y, z: AL_FIXED; VAR xout, yout, zout: AL_FIXED);
 (* Same as @link(al_apply_matrix) but using floats instead than fixed. *)
   PROCEDURE al_apply_matrix_f (m: AL_MATRIX_Fptr;
-		x, y, z: DOUBLE; VAR xout, yout, zout: DOUBLE);
+		x, y, z: SINGLE; VAR xout, yout, zout: SINGLE);
 
 (* Calculates the length of the vector (x, y, z), using that good 'ole
    Pythagoras theorem.
@@ -423,7 +423,7 @@ VAR
   FUNCTION al_vector_length (x, y, z: AL_FIXED): AL_FIXED; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'vector_length';
 (* Same as @link(al_vector_length) but using floats instead than fixed. *)
-  FUNCTION al_vector_length_f (x, y, z: DOUBLE): AL_FIXED; CDECL;
+  FUNCTION al_vector_length_f (x, y, z: SINGLE): AL_FIXED; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'vector_length_f';
 
 (* Converts the vector ( *x, *y, *z) to a unit vector.  This points in the same
@@ -432,7 +432,7 @@ VAR
   PROCEDURE al_normalize_vector (x, y, z: AL_FIXEDptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'normalize_vector';
 (* Same as @link(al_normalize_vector) but using floats instead than fixed. *)
-  PROCEDURE al_normalize_vector_f (x, y, z: DOUBLE); CDECL;
+  PROCEDURE al_normalize_vector_f (x, y, z: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'normalize_vector_f';
 
 (* Calculates the cross product (x1, y1, z1) x (x2, y2, z2), storing the result
@@ -444,8 +444,8 @@ VAR
 			      xout, yout, zout: AL_FIXEDptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'cross_product';
 (* Same as @link(al_cross_product) but using floats instead than fixed. *)
-  PROCEDURE al_cross_product_f (x1, y1, z1, x2, y2, z2: DOUBLE;
-			      xout, yout, zout: PDOUBLE); CDECL;
+  PROCEDURE al_cross_product_f (x1, y1, z1, x2, y2, z2: SINGLE;
+			      xout, yout, zout: PSINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'cross_product_f';
 
 (* Calculates the dot product (x1, y1, z1) . (x2, y2, z2), returning the
@@ -453,7 +453,7 @@ VAR
    @seealso(al_cross_product) @seealso(al_normalize_vector) *)
   FUNCTION al_dot_product (x1, y1, z1, x2, y2, z2: AL_FIXED): AL_FIXED;
 (* Same as @link(al_dot_product) but using floats instead than fixed. *)
-  FUNCTION al_dot_product_f (x1, y1, z1, x2, y2, z2: DOUBLE): DOUBLE;
+  FUNCTION al_dot_product_f (x1, y1, z1, x2, y2, z2: SINGLE): SINGLE;
 
 (* Sets the viewport used to scale the output of the @link(al_persp_project)
    function.  Pass the dimensions of the screen area you want to draw onto,
@@ -487,7 +487,7 @@ VAR
    @seealso(al_get_camera_matrix) *)
   PROCEDURE al_persp_project (x, y, z: AL_FIXED; VAR xout, yout: AL_FIXED);
 (* Same as @link(al_persp_project_f) but using floats instead than fixed. *)
-  PROCEDURE al_persp_project_f (x, y, z: DOUBLE; VAR xout, yout: DOUBLE);
+  PROCEDURE al_persp_project_f (x, y, z: SINGLE; VAR xout, yout: SINGLE);
 
 
 
@@ -513,9 +513,9 @@ TYPE
   @seealso(al_polygon3d_f) *)
   AL_V3D_f = RECORD
   (* Position. *)
-    x, y, z: DOUBLE;
+    x, y, z: SINGLE;
   (* Texture map coordinates. *)
-    u, v: DOUBLE;
+    u, v: SINGLE;
   (* Color. *)
     c: LONGINT;
   END;
@@ -551,7 +551,7 @@ TYPE
    @link(AL_POLYTYPE_GCOL).
    @returns(the number of vertices after clipping is done.)
    @seealso(al_clip3d) @seealso(al_polygon3d_f) *)
-  FUNCTION al_clip3d_f (_type: LONGINT; min_z, max_z: DOUBLE; vc: LONGINT;
+  FUNCTION al_clip3d_f (_type: LONGINT; min_z, max_z: SINGLE; vc: LONGINT;
     vtx, vout, vtmp: AL_V3D_LIST_F; out: PLONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clip3d_f';
 
@@ -577,7 +577,7 @@ TYPE
   FUNCTION al_polygon_z_normal (v1, v2, v3: AL_V3Dptr): AL_FIXED; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal';
 (* Same as @link(al_polygon_z_normal) but using floats instead than fixed. *)
-  FUNCTION al_polygon_z_normal_f (v1, v2, v3: AL_V3D_Fptr): DOUBLE; CDECL;
+  FUNCTION al_polygon_z_normal_f (v1, v2, v3: AL_V3D_Fptr): SINGLE; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal_f';
 
 
@@ -776,7 +776,7 @@ VAR
 
    @seealso(al_create_scene) @seealso(al_clear_scene)
    @seealso(al_scene_polygon3d) *)
-  al_scene_gap: DOUBLE;
+  al_scene_gap: SINGLE;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scene_gap';
 
 
@@ -812,7 +812,7 @@ TYPE
   PROCEDURE al_set_zbuffer (zbuf: AL_ZBUFFERptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_zbuffer';
 
-  PROCEDURE al_clear_zbuffer (zbuf: AL_ZBUFFERptr; z: DOUBLE); CDECL;
+  PROCEDURE al_clear_zbuffer (zbuf: AL_ZBUFFERptr; z: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clear_zbuffer';
 
   PROCEDURE al_destroy_zbuffer (bmp: AL_BITMAPptr); CDECL;
@@ -910,7 +910,7 @@ IMPLEMENTATION
 
 
   PROCEDURE al_apply_matrix_f (m: AL_MATRIX_fptr;
-		x, y, z: DOUBLE; VAR xout, yout, zout: DOUBLE);
+		x, y, z: SINGLE; VAR xout, yout, zout: SINGLE);
   BEGIN
     xout := (x * m^.v[0, 0]) +
 	    (y * m^.v[0, 1]) +
@@ -941,14 +941,14 @@ VAR
   END;
 
 VAR
-  _persp_xscale_f: DOUBLE; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-  _persp_yscale_f: DOUBLE; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-  _persp_xoffset_f: DOUBLE; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-  _persp_yoffset_f: DOUBLE; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  _persp_xscale_f: SINGLE; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  _persp_yscale_f: SINGLE; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  _persp_xoffset_f: SINGLE; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  _persp_yoffset_f: SINGLE; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  PROCEDURE al_persp_project_f (x, y, z: DOUBLE; VAR xout, yout: DOUBLE);
+  PROCEDURE al_persp_project_f (x, y, z: SINGLE; VAR xout, yout: SINGLE);
   VAR
-    z1: DOUBLE;
+    z1: SINGLE;
   BEGIN
     z1 := 1.0 / z;
     xout := ((x * z1) * _persp_xscale_f) + _persp_xoffset_f;
@@ -962,7 +962,7 @@ VAR
     al_dot_product := al_fixmul(x1,x2) + al_fixmul(y1,y2) + al_fixmul(z1,z2);
   END;
 
-  FUNCTION al_dot_product_f (x1, y1, z1, x2, y2, z2: DOUBLE): DOUBLE;
+  FUNCTION al_dot_product_f (x1, y1, z1, x2, y2, z2: SINGLE): SINGLE;
   BEGIN
     al_dot_product_f := (x1 * x2) + (y1 * y2) + (z1 * z2);
   END;
