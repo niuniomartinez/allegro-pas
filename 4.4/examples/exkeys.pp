@@ -136,8 +136,8 @@ BEGIN
   al_clear_to_color (al_screen, al_makecol (255, 255, 255));
 
 { Draw the initial keys grid by simulating release of every key. }
-  FOR k := 0 TO AL_KEY_MAX DO
-    KeypressHandler (k + $80);
+  FOR k := 1 TO AL_KEY_MAX DO
+    KeypressHandler (k + $80 - 1);
 
   al_keyboard_lowlevel_callback := @KeypressHandler;
 

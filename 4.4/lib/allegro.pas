@@ -416,7 +416,7 @@ VAR
 
 (* Reads a floating point variable from the current config file.  See the
    comments about @link(al_get_config_string). *)
-  FUNCTION al_get_config_float (section, name: STRING; def: DOUBLE): DOUBLE;
+  FUNCTION al_get_config_float (section, name: STRING; def: SINGLE): SINGLE;
 
 (* Reads a 4-letter driver ID variable from the current config file.  See the
    comments about @link(al_get_config_string). *)
@@ -452,7 +452,7 @@ VAR
 
 (* Writes a floating point variable to the current config file.  See the
    comments about @link(al_set_config_string). *)
-  PROCEDURE al_set_config_float (section, name:STRING; val: DOUBLE);
+  PROCEDURE al_set_config_float (section, name:STRING; val: SINGLE);
 
 (* Writes a 4-letter driver ID variable to the current config file.  See the
    comments about @link(al_set_config_string). *)
@@ -1221,8 +1221,8 @@ TYPE
 (* Convert color values between the HSV and RGB color spaces.  The RGB values
    range from 0 to 255, hue is from 0 to 360, and saturation and value are from
    0 to 1. *)
-  PROCEDURE al_hsv_to_rgb (h, s, v: DOUBLE; VAR r, g, b: LONGINT);
-  PROCEDURE al_rgb_to_hsv (r, g, b: LONGINT; VAR h, s, v: DOUBLE);
+  PROCEDURE al_hsv_to_rgb (h, s, v: SINGLE; VAR r, g, b: LONGINT);
+  PROCEDURE al_rgb_to_hsv (r, g, b: LONGINT; VAR h, s, v: SINGLE);
 
 
 
@@ -3835,10 +3835,10 @@ VAR
 
 
 
-  FUNCTION get_config_float (section, name: PCHAR; def: DOUBLE): DOUBLE; CDECL;
+  FUNCTION get_config_float (section, name: PCHAR; def: SINGLE): SINGLE; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_float';
 
-  FUNCTION al_get_config_float (section, name: STRING; def: DOUBLE): DOUBLE;
+  FUNCTION al_get_config_float (section, name: STRING; def: SINGLE): SINGLE;
   BEGIN
     al_get_config_float := get_config_float (PCHAR (section), PCHAR (name), def);
   END;
@@ -3896,10 +3896,10 @@ VAR
 
 
 
-  PROCEDURE set_config_float (section, name: PCHAR; val: DOUBLE); CDECL;
+  PROCEDURE set_config_float (section, name: PCHAR; val: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_float';
 
-  PROCEDURE al_set_config_float (section, name: STRING; val: DOUBLE);
+  PROCEDURE al_set_config_float (section, name: STRING; val: SINGLE);
   BEGIN
     set_config_float (PCHAR (section), PCHAR (name), val);
   END;
@@ -4132,7 +4132,7 @@ CONST
   CDECL;
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'hsv_to_rgb'; }
 
-  PROCEDURE _rgb_to_hsv (r, g, b: LONGINT; h, s, v: PDOUBLE); CDECL;
+  PROCEDURE _rgb_to_hsv (r, g, b: LONGINT; h, s, v: PSINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rgb_to_hsv';
 
 
@@ -4140,9 +4140,9 @@ CONST
 (* al_hsv_to_rgb:
  *   Converts from HSV colorspace to RGB values.  Translated from the original
  *   C code writen by Dave Thomson. *)
-  PROCEDURE al_hsv_to_rgb (h, s, v: DOUBLE; VAR r, g, b: LONGINT);
+  PROCEDURE al_hsv_to_rgb (h, s, v: SINGLE; VAR r, g, b: LONGINT);
   VAR
-    f, x, y, z: DOUBLE;
+    f, x, y, z: SINGLE;
     i: LONGINT;
   BEGIN
     v := v * 255.0;
@@ -4208,7 +4208,7 @@ CONST
 
 
 
-  PROCEDURE al_rgb_to_hsv (r, g, b: LONGINT; VAR h, s, v: DOUBLE);
+  PROCEDURE al_rgb_to_hsv (r, g, b: LONGINT; VAR h, s, v: SINGLE);
   BEGIN
     _rgb_to_hsv (r, g, b, @h, @s, @v);
   END;
