@@ -20,8 +20,7 @@ CONST
        {$ERROR Can't compile on MacOS X. }
      {$ELSE}
 { @exclude }
-//       ALLEGRO_SHARED_LIBRARY_NAME = 'liballeg-4.4.0.so';
-       ALLEGRO_SHARED_LIBRARY_NAME = 'liballd-4.4.0.so';
+       ALLEGRO_SHARED_LIBRARY_NAME = 'liballeg-4.4.0.so';
      {$ENDIF}
    {$ELSE}
      {$ERROR Can't compile this platform. }
