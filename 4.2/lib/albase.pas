@@ -73,7 +73,7 @@ TYPE { Define some useful data types. }
   AL_INT	= LONGINT;
   AL_LONG	= LONGINT;
   AL_ULONG	= DWORD;
-  AL_FLOAT	= DOUBLE;
+  AL_FLOAT	= SINGLE;
   AL_STRING	= STRING;
 
   AL_SIMPLE_PROC = PROCEDURE; CDECL;
