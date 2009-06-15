@@ -209,9 +209,9 @@ VAR
 				 v[j].x, v[j].y, v[j].z);
       END;
       v[1].u := 128; v[1].v := 128;
-      v[2].u :=   0       ; v[2].v := 128;
-      v[3].u :=   0       ; v[3].v :=   0       ;
-      v[4].u := 128; v[4].v :=   0       ;
+      v[2].u :=   0; v[2].v := 128;
+      v[3].u :=   0; v[3].v :=   0;
+      v[4].u := 128; v[4].v :=   0;
     (* nv: number of vertices after clipping is done. *)
       nv := al_clip3d_f (AL_POLYTYPE_PTEX, 0.24, 1000, 4, @pV[1], @pVout[1],
 			@pVtmp[1], @Out[0]);

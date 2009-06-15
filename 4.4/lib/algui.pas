@@ -767,8 +767,8 @@ VAR
 (* Displays a popup alert box, containing three lines of text (s1-s3), and with
    either one or two buttons.  The text for these buttons is passed in
    @code(b1) and @code(b2) (@code(b2) may be empty), and the keyboard shortcuts
-   in @code(c1) and @code(c2) as ASCII value.  Example:
-   2returns(1 or 2 depending on which button was clicked.  If the alert is
+   in @code(c1) and @code(c2) as ASCII value.
+   @returns(1 or 2 depending on which button was clicked.  If the alert is
      dismissed by pressing ESC when ESC is not one of the keyboard shortcuts,
      it treats it as a click on the second button @(this is consistent with the
      common @italic("Ok"), @italic("Cancel") alert@).) *)
@@ -778,11 +778,10 @@ VAR
 (* Displays the Allegro file selector, with the message as caption.  The path
    parameter contains the initial filename to display (this can be used to set
    the starting directory, or to provide a default filename for a save-as
-   operation).  The user selection is returned by altering the path buffer,
-   whose maximum capacity in bytes is specified by the size parameter.  Note
-   that it should have room for at least 80 characters (not bytes), so you
-   should reserve 6x that amount, just to be sure.  The list of files is
-   filtered according to the file extensions in the ext parameter.  Passing
+   operation).  The user selection is returned by altering the path string,
+   whose maximum length is specified by the length parameter.  Note that it
+   should have room for at least 80 characters (not bytes).  The list of files
+   is filtered according to the file extensions in the ext parameter.  Passing
    empty string includes all files; @italic("PCX;BMP") includes only files with
    .PCX or .BMP extensions.  If you wish to control files by their attributes,
    one of the fields in the extension list can begin with a slash, followed by
@@ -803,7 +802,7 @@ VAR
    either the width or height argument is set to zero, it is stretched to the
    corresponding screen dimension. @returns(@false if it was closed with the
      @code(Cancel) button or @true if it was @code(OK)'d.) *)
-  FUNCTION al_file_select_ex (message: STRING; VAR path: STRING; ext: STRING; size, w, h: LONGINT): BOOLEAN;
+  FUNCTION al_file_select_ex (message: STRING; VAR path: STRING; ext: STRING; length, w, h: LONGINT): BOOLEAN;
 
 (* Displays the Allegro graphics mode selection dialog, which allows the user
    to select a screen mode and graphics card.  Stores the selection in the
@@ -839,6 +838,11 @@ TYPE
 
 
 IMPLEMENTATION
+
+USES
+  sysutils;
+
+
 
 (* Links to Allegro's functions. *)
 FUNCTION gui_textout_ex (bmp: AL_BITMAPptr; s: PCHAR; x, y, color, bg, centre: LONGINT): LONGINT; CDECL;
@@ -958,9 +962,15 @@ BEGIN
 END;
 
 
-FUNCTION al_file_select_ex (message: STRING; VAR path: STRING; ext: STRING; size, w, h: LONGINT): BOOLEAN;
+FUNCTION al_file_select_ex (message: STRING; VAR path: STRING; ext: STRING; length, w, h: LONGINT): BOOLEAN;
+VAR
+  Buffer: PCHAR;
 BEGIN
-  al_file_select_ex := file_select_ex (PCHAR (message), PCHAR (path), PCHAR (ext), size, w, h) <> 0;
+  Buffer := StrAlloc (length + 1);
+  StrPCopy (Buffer, path);
+  al_file_select_ex := file_select_ex (PCHAR (message), Buffer, PCHAR (ext), length, w, h) <> 0;
+  Path := StrPas (Buffer);
+  StrDispose (Buffer);
 END;
 
 

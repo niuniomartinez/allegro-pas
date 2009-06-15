@@ -570,7 +570,7 @@ TYPE
 
    @bold(Warning:) there's a bug on the polygon renderer that fails trying to
    draw some nearly perpendicular polygons.  Actually it fails only with
-   correct texture, so you can ignore this bug in any other case.  See the
+   correct texture (PTEX), so you can ignore this bug in any other case.  See the
    TCube class defined in the examples to see a work-arround this bug.
 
    @seealso(al_cross_product) *)
@@ -620,7 +620,9 @@ CONST
   it will be very slow on anything less than a Pentium (even with an FPU, a 486
   can't overlap floating point division with other integer operations like the
   Pentium can).
-  @seealso(al_polygon3d) *)
+
+  @bold(Note:)  This type has a bug wich causes a @italic(division by zero) in
+  some cases. @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX            =  4;
 (* Like @link(AL_POLYTYPE_ATEX), but @link(al_bitmap_mask_color) texture map
   pixels are skipped, allowing parts of the texture map to be transparent.
@@ -628,7 +630,9 @@ CONST
   AL_POLYTYPE_ATEX_MASK       =  5;
 (* Like @link(AL_POLYTYPE_PTEX), but @link(al_bitmap_mask_color) texture map
   pixels are skipped, allowing parts of the texture map to be transparent.
-  @seealso(al_polygon3d) *)
+
+  @bold(Note:)  This type has a bug wich causes a @italic(division by zero) in
+  some cases. @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_MASK       =  6;
 (* Like @link(AL_POLYTYPE_ATEX), but the global @link(al_color_table) (for
   256-color modes) or @link(alblend blender) function (for non-MMX truecolor
@@ -642,7 +646,9 @@ CONST
   modes) is used to blend the texture with a light level taken from the `c'
   value in the vertex structure.  This must only be used after you have set up
   the color mapping table or blender functions!
-  @seealso(al_polygon3d) *)
+
+  @bold(Note:)  This type has a bug wich causes a @italic(division by zero) in
+  some cases. @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_LIT        =  8;
 (* Like @link(AL_POLYTYPE_ATEX_LIT), but @link(al_bitmap_mask_color) texture
   map pixels are skipped, allowing parts of the texture map to be transparent.
@@ -650,7 +656,9 @@ CONST
   AL_POLYTYPE_ATEX_MASK_LIT   =  9;
 (* Like @link(AL_POLYTYPE_PTEX_LIT), but @link(al_bitmap_mask_color) texture
   map pixels are skipped, allowing parts of the texture map to be transparent.
-  @seealso(al_polygon3d) *)
+
+  @bold(Note:)  This type has a bug wich causes a @italic(division by zero) in
+  some cases. @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_MASK_LIT   = 10;
 (* Render translucent textures.  All the general rules for drawing translucent
   things apply.  However, these modes have a major limitation:  they only work
@@ -665,7 +673,9 @@ CONST
   with memory bitmaps or linear frame buffers (not with banked frame buffers).
   Don't even try, they do not check and your program will die horribly (or at
   least draw wrong things).
-  @seealso(al_polygon3d) @seealso(AL_POLYTYPE_PTEX)
+
+  @bold(Note:)  This type has a bug wich causes a @italic(division by zero) in
+  some cases. @seealso(al_polygon3d) @seealso(AL_POLYTYPE_PTEX)
   @seealso(al_create_trans_table) @seealso(al_set_trans_blender) *)
   AL_POLYTYPE_PTEX_TRANS      = 12;
 (* Like @link(AL_POLYTYPE_ATEX_TRANS), but @link(al_bitmap_mask_color) texture
@@ -674,6 +684,9 @@ CONST
   AL_POLYTYPE_ATEX_MASK_TRANS = 13;
 (* Like @link(AL_POLYTYPE_PTEX_TRANS), but @link(al_bitmap_mask_color) texture
   map pixels are skipped, allowing parts of the texture map to be transparent.
+
+  @bold(Note:)  This type has a bug wich causes a @italic(division by zero) in
+  some cases.
   @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_MASK_TRANS = 14;
 (* *)
@@ -745,13 +758,25 @@ CONST
 			    texture: AL_BITMAPptr; vc: LONGINT;
 			    vtx: AL_V3D_LIST_F);
 
+(* Draw 3D triangles, using fixed point vertex structures.  Unlike
+  @link(al_quad3d), this procedure is not a wrapper of @link(al_polygon3d).
+  The @code(al_triangle3d) procedure uses their own routines taking into
+  account the constantness of the gradients.  Therefore @code(al_triangle3d
+  @(bmp, type, tex, v1, v2, v3@)) is faster than @code (al_polygon3d @(bmp,
+  type, tex, 3, v@)).
+  @seealso(al_triangle3d_f) *)
   PROCEDURE al_triangle3d (bmp: AL_BITMAPptr; _type: LONGINT;
 			   texture: AL_BITMAPptr; v1, v2, v3: AL_V3Dptr);
+(* Same as @link(al_triangle3d) but using floats instead than fixed. *)
   PROCEDURE al_triangle3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
 			   texture: AL_BITMAPptr; v1, v2, v3: AL_V3D_Fptr);
 
+(* Draw 3D quads, using fixed point vertex structures.  This is equivalent to
+   calling @link(al_polygon3d)@code(@(bmp, type, tex, 4, v@)).
+   @seealso(al_triangle3d) @seealso(al_quad3d_f) *)
   PROCEDURE al_quad3d (bmp: AL_BITMAPptr; _type: LONGINT;
 			texture: AL_BITMAPptr; v1, v2, v3, v4: AL_V3Dptr);
+(* Same as @link(al_quad3d) but using floats instead than fixed. *)
   PROCEDURE al_quad3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
 			texture: AL_BITMAPptr; v1, v2, v3, v4: AL_V3D_Fptr);
 
@@ -805,16 +830,45 @@ TYPE
   FUNCTION al_create_zbuffer (bmp: AL_BITMAPptr): AL_ZBUFFERptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_zbuffer';
 
+(* Creates a sub-z-buffer, ie. a z-buffer sharing drawing memory with a
+  pre-existing z-buffer, but possibly with a different size.  The same rules as
+  for sub-bitmaps apply:  the sub-z-buffer width and height can extend beyond
+  the right and bottom edges of the parent (they will be clipped), but the
+  origin point must lie within the parent region.
+
+  When drawing z-buffered to a bitmap, the top left corner of the bitmap is
+  always mapped to the top left corner of the current z-buffer.  So this
+  function is primarily useful if you want to draw to a sub-bitmap and use the
+  corresponding sub-area of the z-buffer.  In other cases, eg. if you just want
+  to draw to a sub-bitmap of screen (and not to other parts of screen), then
+  you would usually want to create a normal z-buffer (not sub-z-buffer) the
+  size of the visible screen.  You don't need to first create a z-buffer the
+  size of the virtual screen and then a sub-z-buffer of that.
+  @returns(The pointer to the sub @link(AL_ZBUFFER) or @nil if there was an
+  error.  Remember to destroy the z-buffer once you are done with it, to avoid
+  having memory leaks.
+  @seealso(al_create_zbuffer) *)
   FUNCTION al_create_sub_zbuffer (parent: AL_ZBUFFERptr;
 	x, y, width, height: LONGINT): AL_ZBUFFERptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_sub_zbuffer';
 
+(* Makes the given Z-buffer be the active one.  This should have been
+  previously created with @link(al_create_zbuffer). *)
   PROCEDURE al_set_zbuffer (zbuf: AL_ZBUFFERptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_zbuffer';
 
+(* Writes z into the given Z-buffer (0 means far away).  This function should
+  be used to initialize the Z-buffer before each frame.  Actually, low-level
+  routines compare depth of the current pixel with 1/z:  for example, if you
+  want to clip polygons farther than 10, you must call
+  @code(al_clear_zbuffer |(zbuf, 0.1|)).
+  @seealso(al_create_zbuffer) *)
   PROCEDURE al_clear_zbuffer (zbuf: AL_ZBUFFERptr; z: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clear_zbuffer';
 
+(* Destroys the Z-buffer when you are finished with it.  Use this to avoid
+  memory leaks in your program.
+  @seealso(al_create_zbuffer) *)
   PROCEDURE al_destroy_zbuffer (bmp: AL_BITMAPptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_sub_zbuffer';
 
@@ -831,9 +885,12 @@ TYPE
   @seealso(al_create_zbuffer) *)
   FUNCTION al_create_scene (nedge, npoly: LONGINT): BOOLEAN;
 
+(* Initializes a scene. The bitmap is the bitmap you will eventually render
+  on. @seealso(al_create_scene) *)
   PROCEDURE al_clear_scene (bmp: AL_BITMAPptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clear_scene';
-
+(* Deallocate memory previously allocated by create_scene. Use this to avoid
+  memory leaks in your program. @seealso(al_create_scene) *)
   PROCEDURE al_destroy_scene; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_scene';
 
