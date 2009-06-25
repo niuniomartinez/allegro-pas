@@ -1,7 +1,3 @@
-* Unit al3d:
-
-  Software-based renderer and 3D maths.
-
 * MIDI:
 
   Add messages.
@@ -43,6 +39,5 @@
 
   Also more examples, specially one or two to show how to integrate Allegro.pas
   in Lazarus projects and may be others.
-
 
 * New installation system via fpmake and/or fpcmake.

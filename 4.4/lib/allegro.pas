@@ -3249,7 +3249,7 @@ CONST
    negative values to restore the default settings.  You should be aware that
    the sound quality is usually inversely related to how many voices you use,
    so don't reserve any more than you really need. *)
-  PROCEDURE al_reserve_voices (digi_voices, midi_voidces: LONGINT); CDECL;
+  PROCEDURE al_reserve_voices (digi_voices, midi_voices: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'reserve_voices';
 
 (* By default, Allegro will play a centered sample at half volume on both the

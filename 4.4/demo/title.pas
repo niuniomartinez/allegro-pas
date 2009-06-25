@@ -35,7 +35,7 @@ VAR
 	  'This game is a demonstration of the Allegro.pas library.  Its goal is to create a good piece of code to show how to write your games using Allegro.pas.  See the sources and read the documentation. ',
 	  'Now, the credits... ',
 	  'Original game concept: Ken Silverman (http://www.advsys.net/ken/) ',
-	  'Programming and graphics: '#176'u'#208'o Mart'#204'nez (http://pagina.de/niunio/) ',
+	  'Programming and graphics: '#176'u'#208'o Mart'#204'nez (http://www.burdjia.com/) ',
 	  'Alex the Allegator character courtesy from:  Johan Peitz (http://www.freelunch.com/) ',
 	  'Title music (provisional):  Garret Thomsom (g@sirsonic.com) (ripped from the original Allegro demo game) ',
 	  'Game music:  Partners In Rhyme (http://www.partnersinrhyme.com/) ',
