@@ -36,7 +36,6 @@
     @item(@bold(Define a new API more Pascal-like).  Previous versions have a
       C-like one with lots of pointers and other ugly issues.)
     @item(Add a lot of new functionality as @bold(UNICODE support).)
-    @item(@bold(Add support for OpenGL hardware accelerated graphics).)
   )
 
 @section(1 use How to use Allegro.pas)
@@ -46,7 +45,7 @@
   documentation.  That examples are fully commented and should be easy to
   understand.
 
-  Anyway, here you have a description of the main modules of the library:
+  Anyway, here you have a description of the @link(allegro) unit:
 
   @unorderedList(
     @item(@bold(@link(init Initialization and finalization)))
@@ -78,9 +77,9 @@
 @section(2 unicode UNICODE routines)
 
   Allegro can manipulate and display text using any character values from 0
-  right up to 2^32-1 (although the current implementation of the @link(grabber) can
-  only create fonts using characters up to 2^16-1).  You can choose between a
-  number of different text encoding formats, which controls how strings are
+  right up to 2^32-1 (although the current implementation of the @link(grabber)
+  can only create fonts using characters up to 2^16-1).  You can choose between
+  a number of different text encoding formats, which controls how strings are
   stored and how Allegro interprets strings that you pass to it, using the
   @link(al_set_uformat) procedure.  This setting affects all aspects of the
   system:  whenever you see a function that returns a @code(STRING) or
@@ -101,8 +100,9 @@
 
   There are a few editing programs that understand UTF-8 format text files.
   Alternatively, you can write your strings in plain ASCII or 16-bit Unicode
-  formats, and then use the Allegro textconv program to convert them into
-  UTF-8.
+  formats, and then use the Allegro @code(textconv) program to convert them
+  into UTF-8.  The textconv program is included with the original Allegro
+  release.
 
   If you prefer to use some other text format, you can set Allegro to work with
   normal 8-bit ASCII (@code(AL_U_ASCII)), or 16-bit Unicode (@code(U_UNICODE))
@@ -422,7 +422,7 @@
 
   The magic drivers you can use are:  @link(AL_GFX_AUTODETECT),
   @link(AL_GFX_AUTODETECT_FULLSCREEN), @link(AL_GFX_AUTODETECT_WINDOWED),
-  @link(AL_GFX_SAFE), @link(AL_GFX_TEXT). *)
+  @link(AL_GFX_SAFE), @link(AL_GFX_TEXT).
 
   @bold(See also) @link(al_set_gfx_mode)
 

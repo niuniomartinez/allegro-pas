@@ -846,7 +846,7 @@ TYPE
   size of the virtual screen and then a sub-z-buffer of that.
   @returns(The pointer to the sub @link(AL_ZBUFFER) or @nil if there was an
   error.  Remember to destroy the z-buffer once you are done with it, to avoid
-  having memory leaks.
+  having memory leaks.)
   @seealso(al_create_zbuffer) *)
   FUNCTION al_create_sub_zbuffer (parent: AL_ZBUFFERptr;
 	x, y, width, height: LONGINT): AL_ZBUFFERptr; CDECL;

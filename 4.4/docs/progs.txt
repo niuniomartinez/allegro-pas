@@ -7,6 +7,7 @@
     @item(@bold(@link(examples Examples)))
     @item(@bold(@link(tools Tools)))
     @item(@bold(@link(demo Demonstration game)))
+    @item(@bold(@link(authors Authors)))
   )
 
 @section(1 examples Examples)
@@ -215,11 +216,56 @@
 
   How to use Allegro.pas inside Lazarus applications.
 
-
-
 @section(1 tools Tools)
 
 @section(2 grabber Grabber)
 
+  The grabber utility allows to create data files to be loaded by
+  @link(al_load_datafile).  It is included in the original Allegro release at
+  http://alleg.sourceforge.net/.  You can download it also from
+  http://www.allegro.cc/depot/Grabber/.  The user manual is included with the
+  applicacion.
+
 @section(1 demo Demonstration game)
 
+  This game is a demonstration of the Allegro.pas library.  Its goal is to
+  create a good piece of code to show how to write your games using
+  Allegro.pas.  See the sources and read the documentation.
+
+  Help Alex the Allegator to get the coins and find the exit of the level.  Use
+  left and right cursor keys or the joystick to move Alex.  Use the space bar
+  or the joystick ''A'' button to jump.  Press ''jump'' to play or [Esc] to
+  exit.
+
+  @bold(Original game concept:) Ken Silverman (http://www.advsys.net/ken/)
+
+  @bold(Programming and graphics:) Guillermo Martinez (http://www.burdjia.com/)
+
+  @bold(Alex the Allegator character courtesy from:) Johan Peitz
+  (http://www.freelunch.com/)
+
+  @bold(Title music) (provisional):  Garret Thomsom (g@@sirsonic.com) (ripped
+  from the original Allegro demo game)
+
+  @bold(Game music:)  Partners In Rhyme (http://www.partnersinrhyme.com/)
+
+  @bold(Sound FX) ripped from games by Shawn Hargreaves and Johan Peitz
+
+
+@section(1 authors Authors)
+
+  Allegro originally created by Shawn Hargreaves (http://talula.demon.co.uk/)
+  and currently mantained by the Allegro Development Team
+  (http://alleg.sourceforge.net/)
+
+  Main developer and project administrator: Guillermo Martínez
+
+  @bold(Additional developers:)
+
+  Seoane (http://delphi.jmrds.com): Helped with Delphi compatibility in version
+  4.2.
+
+  Martin Kalbfuss: Helped testing and fixing the lasts versions.
+
+  Thanks to the Spanish Delphi community (http://www.clubdelphi.net/) and the
+  Allegro community (http://www.allegro.cc/)
