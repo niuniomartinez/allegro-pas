@@ -1,7 +1,3 @@
-* MIDI:
-
-  Add messages.
-
 * Unit algl:
 
   I've find that most people dislikes Allegro.pas just because it hasn't 3D

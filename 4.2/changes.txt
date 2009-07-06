@@ -1,4 +1,16 @@
-Changes between version 4.2.1 and 4.2.1
+Changes between version 4.2.2 and 4.2.3 Beta
+============================================
+
+  Bugfixing
+  ---------
+  - Changed AL_FLOAT definition for the correct one (SINGLE).
+
+  Other
+  -----
+  - New faster implementation for al_fixmul suggested by Martin Kalbfuß.
+
+
+Changes between version 4.2.1 and 4.2.2
 =======================================
 
   News

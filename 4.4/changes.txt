@@ -1,3 +1,24 @@
+Changes between versions 4.4.0 Alpha and 4.4.0 Alpha 2
+======================================================
+
+  Bugfixing
+  ---------
+  - Changed some declarations from DOUBLE to SINGLE because Allegro espects
+    floating point values 4 bytes long.
+
+  News
+  ----
+  - Added al3d unit to allow software based 3D graphics.  NOT OPENGL RELATED.
+  - Added hoot al_midi_msg_callback for MIDI messages.
+
+  Other
+  -----
+  - "test" removed.
+  - Tools deleted because they're located in the original Allegro release.
+  - New faster al_fixmul implementation suggested by Martin Kalbfuss.
+
+
+
 Changes between versions 4.3.0 Alpha2 and 4.4.0 Alpha
 =====================================================
 

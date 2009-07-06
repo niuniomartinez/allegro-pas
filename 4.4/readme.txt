@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 4.4.0 Alpha           \_/__/                 \/_/
+     Version 4.4.0 Alpha 2         \_/__/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Ñuño Martínez, May 11, 2009.
+  by Ñuño Martínez, July 6, 2009.
 
 
 
@@ -71,6 +71,8 @@ Features
   Routines for reading and writing LZSS compressed files.
 
   GUI dialog manager and file selector.
+
+
 
 =======
 License

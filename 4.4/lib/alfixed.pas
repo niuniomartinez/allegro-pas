@@ -274,7 +274,7 @@ END;
 
 FUNCTION al_fixmul (x, y: AL_FIXED): AL_FIXED;
 BEGIN
-  al_fixmul := al_ftofix (al_fixtof (x) * al_fixtof (y));
+  al_fixmul := ( int64( x ) * y ) shr 16;
 END;
 
 FUNCTION al_fixdiv (x, y: AL_FIXED): AL_FIXED;

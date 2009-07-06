@@ -7,4 +7,4 @@ Colaborators
   - Helped with Delphi compatibility in version 4.2.
 
   Martin Kalbfuﬂ
-  - Helped testing and fixing the lasts versions.
+  - Helped testing and fixing the last versions.
