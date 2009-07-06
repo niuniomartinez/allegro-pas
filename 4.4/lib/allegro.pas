@@ -52,7 +52,7 @@ CONST
   AL_PAS_IS_BETA = TRUE;
 (* Defined to a text string containing all version numbers and maybe some
    additional text. *)
-  AL_PAS_VERSION_STR = '4.4.0 Alpha';
+  AL_PAS_VERSION_STR = '4.4.0 Alpha 2';
 
 
 

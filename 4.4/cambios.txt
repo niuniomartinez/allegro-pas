@@ -1,5 +1,10 @@
-Cambios entre las versiones 4.4.0 Alpha y 4.4.0 Beta?
-=====================================================
+Cambios entre las versiones 4.4.0 Alpha y 4.4.0 Alpha 2
+=======================================================
+
+  Errores corregidos
+  ------------------
+  - Cambiadas varias declaraciones de variables y parámetros DOUBLE a SINGLE,
+    ya que Allegro espera que los valores en punto flotante sean de 4 octetos.
 
   Novedades
   ---------
@@ -11,6 +16,10 @@ Cambios entre las versiones 4.4.0 Alpha y 4.4.0 Beta?
   -----
   - Eliminado "test"
   - Eliminadas las herramientas, ya que están incluídas en el Allegro original.
+  - Nueva implementación de al_fixmul sugerida por Martin Kalbfuß, más rápida
+    que la anterior.
+
+
 
 Cambios entre las versiones 4.3.0 Alpha2 y 4.4.0 Alpha
 ======================================================

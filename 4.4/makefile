@@ -44,7 +44,6 @@ endif
 # ------------------
 # Linux
 # ------------------
-# Actually unsupported, but it will :)
 ifeq ($(TARGET),LINUX)
 	# Platform name
 	PLATFORM=GNU/Linux

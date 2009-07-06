@@ -1,3 +1,17 @@
+Cambios entre las versiones 4.2.2 y 4.2.3 Beta
+==============================================
+
+  Errores corregidos
+  ------------------
+  - Se ha cambiado la definición del tipo AL_FLOAT por SINGLE, ya que DOUBLE
+    era de 8 octetos, mientras que la biblioteca esperaba que fuera de 4.
+
+  Otros
+  -----
+  - Nueva implementación de al_fixmul sugerida por Martin Kalbfuß, más rápida
+    que la anterior.
+
+
 Cambios entre las versiones 4.2.1 4.2.2
 =======================================
 

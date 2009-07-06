@@ -254,7 +254,7 @@ VAR
   PROCEDURE al_get_scaling_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_scaling_matrix';
 (* Same as @link(al_get_scaling_matrix) but in floating point. *)
-  PROCEDURE al_get_scaling_matrix_f (m: AL_MATRIX_Fptr; x, y, z: AL_FIXED);
+  PROCEDURE al_get_scaling_matrix_f (m: AL_MATRIX_Fptr; x, y, z: SINGLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_scaling_matrix_f';
 
 (* Construct X axis rotation matrices, storing them in m.  When applied to a
@@ -423,7 +423,7 @@ VAR
   FUNCTION al_vector_length (x, y, z: AL_FIXED): AL_FIXED; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'vector_length';
 (* Same as @link(al_vector_length) but using floats instead than fixed. *)
-  FUNCTION al_vector_length_f (x, y, z: SINGLE): AL_FIXED; CDECL;
+  FUNCTION al_vector_length_f (x, y, z: SINGLE): SINGLE; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'vector_length_f';
 
 (* Converts the vector ( *x, *y, *z) to a unit vector.  This points in the same
@@ -432,7 +432,7 @@ VAR
   PROCEDURE al_normalize_vector (x, y, z: AL_FIXEDptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'normalize_vector';
 (* Same as @link(al_normalize_vector) but using floats instead than fixed. *)
-  PROCEDURE al_normalize_vector_f (x, y, z: SINGLE); CDECL;
+  PROCEDURE al_normalize_vector_f (x, y, z: PSINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'normalize_vector_f';
 
 (* Calculates the cross product (x1, y1, z1) x (x2, y2, z2), storing the result

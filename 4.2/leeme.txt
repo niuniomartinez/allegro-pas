@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Versión 4.2.2                 \_/__/                 \/_/ 
+     Versión 4.2.3 Beta            \_/__/                 \/_/ 
 
   Una envolvente para utilizar la biblioteca Allegro en Pascal
-  por Ñuño Martínez, 23 de Junio de 2008.
+  por Ñuño Martínez, 6 de julio de 2009.
 
 
 
