@@ -69,15 +69,15 @@ VAR
 
 
 
-  (* This function can be used to create a packed 32 bit integer from 8 bit
-     characters, on both 32 and 64 bit machines.  These can be used for various
-     things, like custom datafile objects or system IDs. Example:
+(* This function can be used to create a packed 32 bit integer from 8 bit
+   characters, on both 32 and 64 bit machines.  These can be used for various
+   things, like custom datafile objects or system IDs. Example:
 
 @longcode(#
 VAR
   OSTYPE_LINUX: LONGINT;
 BEGIN
-  OSTYPE_LINUX := AL_ID('TUX '));
+  OSTYPE_LINUX := AL_ID('TUX ');
 END;
   #) *)
   FUNCTION AL_ID (str: SHORTSTRING): LONGINT;
