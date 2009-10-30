@@ -419,10 +419,10 @@ FUNCTION foobar(index: LONGINT; list_size: PLONGINT): PCHAR; CDECL;
    @code(index) is negative, it should return @nil and @code(list_size) should
    be set to the number of items in the list.
 
-   To create a multiple selection listbox, set the @code(dp2) field to an array
-   of byte flags indicating the selection state of each list item (non-zero for
-   selected entries).  This table must be at least as big as the number of
-   objects in the list! *)
+   To create a multiple selection listbox, set the @code(dp2) field to the
+   first element of an @code(ARRAY OF BYTE) flags indicating the selection
+   state of each list item (non-zero for selected entries).  This table must be
+   at least as big as the number of objects in the list! *)
   FUNCTION al_d_list_proc (msg: LONGINT; d: AL_DIALOGptr; c: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_list_proc';
 (* Like @link(al_d_list_proc), but allows the user to type in the first few

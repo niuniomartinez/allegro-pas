@@ -1,7 +1,3 @@
-* al_d_list_proc documentation
-  ("array of byte" to "first element of an ARRAY OF BYTE")
-* Move AL_DAT_END to a variable as other AL_DAT_* ones.
-
 * Tools
 
   + GUI creator:  Simple drag'n'drop editor using Allegro's GUI.  Save GUIs
