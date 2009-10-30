@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 4.4.0 Alpha 2         \_/__/                 \/_/
+     Version 4.4.0 Beta            \_/__/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Ñuño Martínez, July 6, 2009.
+  by Ñuño Martínez, October 30, 2009.
 
 
 
@@ -39,9 +39,9 @@ Introduction
   Allegro.  Anyway, I'll fix it and complete it as I'm using it (or as other
   users do).  Any collaboration will be welcomed.
 
-  This version is an Alpha version.  It's only for testing and evaluation
-  purposes so you shouldn't use it in your actual projects.  May be you can
-  use the latest 4.2 release instead.
+  This version is a Beta version because there are some parts that doesn't
+  works properly.  Anyway you can use it to create almost any game you can
+  imagine.
 
 
 
@@ -71,6 +71,8 @@ Features
   Routines for reading and writing LZSS compressed files.
 
   GUI dialog manager and file selector.
+
+  3D textured polygons with and without transparences.
 
 
 
@@ -124,9 +126,9 @@ Installation
   on screen instructions.
 
   Execute the "make" command.  This should create the examples and the
-  demonstration game.  If there's an error then be sure you have Allegro
-  and Free Pascal correctly installed and configured.  If you have problems
-  gread the "Contact info" section.
+  demonstration game.  If there's an error then be sure you have Allegro,
+  Free Pascal and any additional library correctly installed and configured.
+  If you have problems read the "Contact info" section.
 
   There's HTML documentation at "docs" subdirectory.  You can rebuild that
   using "pasdoc" (http://pasdoc.sipsolutions.net/).
@@ -158,10 +160,10 @@ Release programs
 Help needed
 ===========
 
-  The current version is unfinished.  You can help to finish it and add your
-  name to the author's list.  We need people to test the library, to complete
-  the documentation, to translate it to other languages or to write more
-  wrapper functions, develop demos and examples.
+  You can help to finish Allegro.pas and add your name to the author's list.
+  We need people to test the library, to complete the documentation, to
+  translate it to other languages or to write more wrapper functions, develop
+  demos and examples.
 
   If you want to help, read the next section and contact us!
 

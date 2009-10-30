@@ -24,6 +24,7 @@ USES
   BEGIN
     InitProgram := FALSE;
   { Install Allegro. }
+    al_set_uformat (AL_U_ASCII);
     IF NOT al_init THEN
     BEGIN
       WriteLn ('Can''t initialize Allegro!');

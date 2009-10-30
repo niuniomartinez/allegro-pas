@@ -36,7 +36,7 @@ VAR
 	  'Now, the credits... ',
 	  'Original game concept: Ken Silverman (http://www.advsys.net/ken/) ',
 	  'Programming and graphics: '#176'u'#208'o Mart'#204'nez (http://www.burdjia.com/) ',
-	  'Alex the Allegator character courtesy from:  Johan Peitz (http://www.freelunch.com/) ',
+	  'Alex the Allegator character courtesy from:  Johan Peitz (http://www.freelunchdesign.com/) ',
 	  'Title music (provisional):  Garret Thomsom (g@sirsonic.com) (ripped from the original Allegro demo game) ',
 	  'Game music:  Partners In Rhyme (http://www.partnersinrhyme.com/) ',
 	  'Sound FX ripped from games by Shawn Hargreaves and Johan Peitz ',
@@ -48,9 +48,8 @@ VAR
 
 
 
-(* RunTitle:
- *   Shows the title sequence.  Returns TRUE if player wants to play or FALSE
- *   if he/she wants to exit. *)
+(* Shows the title sequence.  Returns TRUE if player wants to play or FALSE
+ * if he/she wants to exit. *)
 FUNCTION RunTitle: BOOLEAN;
 VAR
   Palette: AL_PALETTEptr;

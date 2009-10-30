@@ -1,3 +1,13 @@
+Changes between versions 4.4.0 Alpha2 and 4.4.0 Beta
+====================================================
+
+  Bugfixing
+  ---------
+  - Fixed al_gui_mouse_y, al_gui_mouse_z and al_gui_mouse_b.
+  - Some changes on documentation.
+
+
+
 Changes between versions 4.4.0 Alpha and 4.4.0 Alpha 2
 ======================================================
 
@@ -9,7 +19,7 @@ Changes between versions 4.4.0 Alpha and 4.4.0 Alpha 2
   News
   ----
   - Added al3d unit to allow software based 3D graphics.  NOT OPENGL RELATED.
-  - Added hoot al_midi_msg_callback for MIDI messages.
+  - Added hook al_midi_msg_callback for MIDI messages.
 
   Other
   -----
@@ -130,7 +140,6 @@ Changes between versions 4.2.1 BETA 2 and 4.2.1 BETA 3
 
   Bugfixing
   ---------
-
   - al_set_window_title fixed.
   - mistake with al_set_clip and al_set_clip_state fixed.
 
