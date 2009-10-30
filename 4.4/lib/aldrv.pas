@@ -1,8 +1,8 @@
-UNIT aldrv;
-(*<Defines structs and variables used internally by Allegro and the add-ons. 
+(*Defines structs and variables used internally by Allegro and the add-ons. 
 
   Note that some parts of this unit are platform-dependent so they aren't
   available in all platforms. *)
+UNIT aldrv;
 
 {$IFDEF FPC}
 { Free Pascal. }
@@ -30,7 +30,7 @@ TYPE
 (* Defines methods and stuff for system initialization and management.
    This is used internally by Allegro and Allegro add-ons.
 
-   Note that these methods aren't called directly. *)
+   Note that these methods shouldn't be called directly. *)
   __AL_SYSTEM_DRIVER__ = RECORD
     id: LONGINT;
     name, desc, ascii_name: PCHAR;
@@ -80,7 +80,7 @@ TYPE
 (* Defines methods and stuff for graphics initialization and management.
    This is used internally by Allegro and Allegro add-ons.
 
-   Note that these methods aren't called directly. *)
+   Note that these methods shouldn't be called directly. *)
   __AL_GFX_DRIVER__ = RECORD
     id: LONGINT;
     name, desc, ascii_name: PCHAR;
@@ -107,13 +107,13 @@ TYPE
     restore_video_state: PROCEDURE; CDECL;
     set_blender_mode: PROCEDURE (mode, r, g, b, a: LONGINT); CDECL;
     fetch_mode_list: FUNCTION: __AL_GFX_MODE_LIST__ptr; CDECL;
-    w, h: LONGINT;                     (*<physical (not virtual!) screen size *)
-    linear: LONGINT;                   (*<@code(NOT 0) if video memory is linear *)
-    bank_size: LONGINT;                (*<bank size, in bytes *)
-    bank_gran: LONGINT;                (* bank granularity, in bytes *)
-    vid_mem: LONGINT;                  (* video memory size, in bytes *)
-    vid_phys_base: LONGINT;            (* physical address of video memory *)
-    windowed: LONGINT;                 (*<@code(NOT 0) if driver runs windowed *)
+    w, h: LONGINT;          (*<physical (not virtual!) screen size *)
+    linear: LONGINT;        (*<@code(NOT 0) if video memory is linear *)
+    bank_size: LONGINT;     (*<bank size, in bytes *)
+    bank_gran: LONGINT;     (* bank granularity, in bytes *)
+    vid_mem: LONGINT;       (* video memory size, in bytes *)
+    vid_phys_base: LONGINT; (* physical address of video memory *)
+    windowed: LONGINT;      (*<@code(NOT 0) if driver runs windowed *)
   END;
 
 

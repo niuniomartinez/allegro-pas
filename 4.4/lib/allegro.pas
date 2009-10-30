@@ -1,10 +1,10 @@
-UNIT allegro;
-(*<Allegro core.
+(*Allegro core.
 
   This is the main module of the Allegro library.  There are very different
   stuff on this unit, but procedures, functions, types, variables and constants
   are grouped to make it easer to find them.  Read the @bold(Introduction)
   section for a brief description of this unit. *)
+UNIT allegro;
 
 {$IFDEF FPC}
 { Free Pascal. }
@@ -52,7 +52,7 @@ CONST
   AL_PAS_IS_BETA = TRUE;
 (* Defined to a text string containing all version numbers and maybe some
    additional text. *)
-  AL_PAS_VERSION_STR = '4.4.0 Alpha 2';
+  AL_PAS_VERSION_STR = '4.4.0 beta';
 
 
 
@@ -4136,9 +4136,6 @@ CONST
 
 
 
-(* al_hsv_to_rgb:
- *   Converts from HSV colorspace to RGB values.  Translated from the original
- *   C code writen by Dave Thomson. *)
   PROCEDURE al_hsv_to_rgb (h, s, v: SINGLE; VAR r, g, b: LONGINT);
   BEGIN
     _hsv_to_rgb_ (h, s, v, @r, @g, @b);

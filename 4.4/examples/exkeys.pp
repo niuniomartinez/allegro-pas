@@ -81,8 +81,8 @@ VAR
 
 
 
-(* Keyboard callback.  Keyboard callback.  We are very evil and draw to the
- * screen from within the callback.  Don't do this in your own programs. *)
+(* Keyboard callback.  We are very evil and draw to the screen from within the
+   callback.  Don't do this in your own programs. *)
 PROCEDURE KeypressHandler (Scancode: LONGINT); CDECL;
 VAR
   i, x, y, Color: INTEGER;
