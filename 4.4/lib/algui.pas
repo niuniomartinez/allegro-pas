@@ -696,7 +696,7 @@ VAR
    variable, but it could be used to offset or scale the mouse position, or
    read input from a different source entirely. *)
   al_gui_mouse_z: AL_SIMPLE_FUNC;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mouse_x';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mouse_z';
 (* Hook function, used by the GUI routines whenever they need to access the
    mouse state.  By default it just returns a copie of the @link(al_mouse_b)
    variable, but it could be used to offset or scale the mouse position, or
