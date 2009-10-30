@@ -2,14 +2,14 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="/"/>
-    <Version Value="7"/>
+    <Version Value="6"/>
     <General>
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
+      <IconPath Value="./"/>
       <TargetFileExt Value=""/>
-      <Icon Value="0"/>
       <UseXPManifest Value="True"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -47,9 +47,10 @@
         <ComponentName Value="MainForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <ResourceFilename Value="UnitMainForm.lrs"/>
         <UnitName Value="UnitMainForm"/>
         <CursorPos X="18" Y="47"/>
-        <TopLine Value="35"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
