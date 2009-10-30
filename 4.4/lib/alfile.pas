@@ -312,16 +312,13 @@ TYPE
 
 
 
-CONST
-(* Mnemonics for data object types. *)
-  AL_DAT_END = -1; (*< End of data file. *)
 VAR
 (* Mnemonics for data object types.  You must assume this as constants.
    They're variables for technical reasons. *)
   AL_DAT_MAGIC, AL_DAT_FILE, AL_DAT_DATA, AL_DAT_FONT, AL_DAT_SAMPLE,
   AL_DAT_MIDI, AL_DAT_PATCH, AL_DAT_FLI, AL_DAT_BITMAP, AL_DAT_RLE_SPRITE,
   AL_DAT_C_SPRITE, AL_DAT_XC_SPRITE, AL_DAT_PALETTE, AL_DAT_PROPERTY,
-  AL_DAT_NAME: LONGINT;
+  AL_DAT_NAME, AL_DAT_END: LONGINT;
 
 
 
@@ -462,5 +459,6 @@ INITIALIZATION
   AL_DAT_PALETTE	:= AL_ID ('PAL ');
   AL_DAT_PROPERTY	:= AL_ID ('prop');
   AL_DAT_NAME		:= AL_ID ('NAME');
+  AL_DAT_END		:= -1;
 END.
 
