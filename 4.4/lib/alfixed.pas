@@ -274,6 +274,7 @@ END;
 
 FUNCTION al_fixmul (x, y: AL_FIXED): AL_FIXED;
 BEGIN
+{ Martin Kalbfuss suggested this. }
   al_fixmul := ( int64( x ) * y ) shr 16;
 END;
 

@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Versión 4.4.0 Alpha 2         \_/__/                 \/_/
+     Versión 4.4.0 Beta            \_/__/                 \/_/
 
   Una envolvente para utilizar la biblioteca Allegro en Pascal
-  por Ñuño Martínez, 6 de Julio de 2009.
+  por Ñuño Martínez, 30 de Octubre de 2009.
 
 
 
@@ -40,10 +40,8 @@ Introducción
   ampliándo según vaya necesitándose.  También administraré las modificaciones
   o añadidos que lleguen a mis manos para que estén disponibles para todos.
 
-  Esta es una versión "Alpha", que quiere decir que aún está en desarrollo.
-  Aun así puede utilizarla para comprobar qué puede hacerse con ella y
-  comprobar si se adapta a sus necesidades o preferencias, ayudando a su
-  desarrollo con sus sugerencias o aportaciones.
+  Esta es una versión "beta" ya que hay cosas que todavía no funcionan bien.
+  Aun así puede crear una gran variedad de juegos sin problemas.
 
 
 
@@ -76,13 +74,15 @@ Características
   Objetos, procedimientos y funciones para la creación de diálogos y menús
   de forma simple.
 
+  Dibujo de polígonos 3D con texturas y transparencias.
+
 
 
 ========
 Licencia
 ========
 
-  Allegro y Allegro.pas son un regalo (gift-ware).  Fueron creado por un grupo
+  Allegro y Allegro.pas son un regalo (gift-ware).  Fueron creados por un grupo
   de personas en cooperación, y le es entregado a usted libremente como regalo.
   Puede usarla, modificarla, distribuirla y, en definitiva, hackearla de
   cualquier forma que desee y no tiene que entregarnos nada a cambio.  Sin
@@ -129,14 +129,14 @@ Instrucciones de instalación
   Abra una consola de comandos y sitúese en el directorio de Allegro.pas,
   normalmente ejecutando el comando "cd allegro.pas".
 
-  Ejecute el guión "fix.bat", si utiliza Windows, ó "./fix.sh" si utiliza
+  Ejecute el guión "fix.bat", si utiliza Windows, o "./fix.sh" si utiliza
   GNU/Linux o similar y siga las instrucciones de la pantalla.
 
   Ejecute el comando "make".  Esto debería compilar los ejemplos y el juego
   de demostración.  Si se produce algún error, asegúrese que tanto el
-  compilador como la biblioteca Allegro están correctamente instalados y
-  configurados.  Si aun así tiene problemas, lea la sección "Información de
-  contacto" para recibir más información.
+  compilador como la biblioteca Allegro y cualquier otra biblioteca adicional
+  están correctamente instalados y configurados.  Si aun así tiene problemas,
+  lea la sección "Información de contacto" para recibir más información.
 
   Ejecute los programas de ejemplo y el juego de demostración para comprobar
   su buen funcionamiento.
@@ -176,11 +176,11 @@ Distribuir programas que usan Alegro.pas
 Se busca colaboración
 =====================
 
-  Como ya se ha dicho, esta versión está incompleta.  Si quiere, puede
-  colaborar en su finalización y añadir su nombre a la lista de autores.
-  Necesitamos desde simples probadores hasta personas que ayuden a completar el
-  manual de programación, que lo traduzcan a otros idiomas o que escriban las
-  envolventes que faltan, demostraciones y ejemplos de uso.
+  Si quiere, puede colaborar en la mejora y desarrollo de Allegro.pas y añadir
+  su nombre a la lista de autores.  Necesitamos desde simples probadores hasta
+  personas que ayuden a completar el manual de programación, que lo traduzcan a
+  otros idiomas o que escriban las envolventes que faltan, demostraciones y
+  ejemplos de uso.
 
   Si desea colaborar, lea la siguiente sección y póngase en contacto *antes* de
   empezar a trabajar.
@@ -192,8 +192,7 @@ Información de contacto
 =======================
 
   Encontrará la información referente a Allegro.pas y podrá encontrar las
-  últimas versiones publicadas en http://allegro-pas.sourceforge.net.  El sitio
-  del proyecto está en http://sourceforge.net/projects/allegro-pas/.
+  últimas versiones publicadas en http://allegro-pas.sourceforge.net.
   Allí encontrará una lista de correo y un foro público donde podrá exponer sus
   dudas y hacer sugerencias.
 

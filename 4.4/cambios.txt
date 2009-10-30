@@ -3,7 +3,8 @@ Cambios entre las versiones 4.4.0 Alpha2 y 4.4.0 Beta
 
   Errores corregidos
   ------------------
-  - Corregida definición errónea en función al_gui_mouse_y y al_gui_mouse_b.
+  - Corregida definición errónea en función al_gui_mouse_y, al_gui_mouse_z y
+    al_gui_mouse_b.
   - Algún arreglo en la documentación.
 
 

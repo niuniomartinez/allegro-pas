@@ -15,8 +15,8 @@
   Allegro.pas is a wrapper to allow Pascal compilers (such as Free Pascal or
   Delphi) to use the Allegro library.
 
-  This version is a SVN version.  It has a lot of things that just don't work
-  or that will change in the near future.  Please see
+  This version is a BETA version.  It has some things that just don't work or
+  that will change in the near future.  Please see
   @link(objectives section "Objectives") for a brief description of the goals.
 
   Read @link(use section "How to use Allegro.pas") for a description of the
@@ -33,9 +33,15 @@
       MS-Windows system.  @bold(This goal is complete).  It would be great to
       introduce other systems as MacOS X and others @(and should be easy as
       basis is complete@) but I haven't another system.)
-    @item(@bold(Define a new API more Pascal-like).  Previous versions have a
-      C-like one with lots of pointers and other ugly issues.)
-    @item(Add a lot of new functionality as @bold(UNICODE support).)
+    @item(@bold(Fix sprite rotation).  @link(al_rotate_sprite) and similar
+      procedures fails with a runtime error.  May be the only way to fix this
+      is rewrite them in Pascal.)
+    @item(@bold(Fix special cases for 3D polygon renderer).  Some special
+      cases of 3D polygon makes @link(al_polygon3d) fails with a runtime
+      error.  I think it's related with the sprite rotation error, wich
+      suggest the problem isn't my code. May be Allegro itself has something
+      that must be done before/after call @link(al_init) or whoknows.  I'm
+      out of ideas and nobody at FPC or Allegro.cc forums can help.)
   )
 
 @section(1 use How to use Allegro.pas)
@@ -45,7 +51,7 @@
   documentation.  That examples are fully commented and should be easy to
   understand.
 
-  Anyway, here you have a description of the @link(allegro) unit:
+  Anyway, here you have a brief description of the @link(allegro) unit:
 
   @unorderedList(
     @item(@bold(@link(init Initialization and finalization)))
@@ -105,10 +111,11 @@
   release.
 
   If you prefer to use some other text format, you can set Allegro to work with
-  normal 8-bit ASCII (@code(AL_U_ASCII)), or 16-bit Unicode (@code(U_UNICODE))
-  instead, or you can provide some handler functions to make it support
-  whatever other text encoding you like (for example it would be easy to add
-  support for 32 bit UCS-4 characters, or the Chinese GB-code format).
+  normal 8-bit ASCII (@code(AL_U_ASCII)), or 16-bit Unicode
+  (@code(AL_U_UNICODE)) instead, or you can provide some handler functions to
+  make it support whatever other text encoding you like (for example it would
+  be easy to add support for 32 bit UCS-4 characters, or the Chinese GB-code
+  format).
 
   There is some limited support for alternative 8-bit codepages, via the
   @code(AL_U_ASCII_CP) mode.  This is very slow, so you shouldn't use it for
@@ -627,6 +634,9 @@
 
 
 @section(1 contact Contact)
+
+  I'm updating the Allegro.pas website to install an interactive forum so
+  stay tuned at htt://allegro-pas.sourceforge.net/.
 
   If you want to contact me, please use the Allegro.pas main mail-list
   (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).
