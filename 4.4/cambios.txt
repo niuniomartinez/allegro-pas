@@ -1,3 +1,21 @@
+Cambios entre las versiones 4.4.0 Beta y 4.4.0 Beta2
+====================================================
+
+  Errores corregidos
+  ------------------
+  + Añadida la unidad "windows" al módulo aldrv, de forma que ahora sí compila
+    y funciona.
+  + Añadida llamada a vsync en el ejemplo expal, de forma que limita la
+    velocidad incluso en los modos gráficos y sistemas más rápidos.
+
+  Otros
+  -----
+  * Modificado el ejemplo exsprite, puesto que las funciones de giro de
+    "sprites" sí funconan en Windows.
+  * Alguna corrección en la documentación.
+
+
+
 Cambios entre las versiones 4.4.0 Alpha2 y 4.4.0 Beta
 =====================================================
 
@@ -40,8 +58,6 @@ Cambios entre las versiones 4.3.0 Alpha2 y 4.4.0 Alpha
   - Añadida la unidad algui, que permite utilizar el motor GUI de Allegro y
     crear entornos gráficos.  NO TIENE RELACIÓN CON LAZARUS.
   - Añadidos nuevos ejemplos.
-
-
 
   Otros
   -----

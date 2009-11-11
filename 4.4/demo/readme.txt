@@ -25,7 +25,7 @@ Credits
     Ñuño Martínez (http://pagina.de/niunio/)
 
   Alex the Allegator character courtesy from:
-    Johan Peitz (http://www.freelunch.com/)
+    Johan Peitz (http://www.freelunchdesign.com/)
 
   Title music (provisional):
     Garret Thomsom (g@sirsonic.com)(ripped from the original Allegro demo game)

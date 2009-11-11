@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Versión 4.4.0 Beta            \_/__/                 \/_/
+     Versión 4.4.0 Beta 2          \_/__/                 \/_/
 
   Una envolvente para utilizar la biblioteca Allegro en Pascal
-  por Ñuño Martínez, 30 de Octubre de 2009.
+  por Ñuño Martínez, 11 de Noviembre de 2009.
 
 
 
@@ -116,10 +116,15 @@ Instrucciones de instalación
   entonces ya tiene instalado dicho compilador.  Visite la página de Free
   Pascal para más información (http://www.freepascal.org/).
 
-  Instale en su sistema la biblioteca Allegro versión 4.4.0, que podrá
-  encontrar en la página
+  Si utiliza GNU/Linux, instale en su sistema la biblioteca Allegro versión
+  4.4.0, que podrá encontrar en la página
   http://sourceforge.net/project/showfiles.php?group_id=5665 .  Es posible que
   sólo necesite la versión de usuario (normalmente etiquetada como "enduser").
+
+  En el caso de utilizar Windows tiene dos opciones, instalar la Allegro tal
+  como indica el párrafo anterior para obtener el archivo "alleg44.dll" o
+  descargarse la versión "binaria" de Allegro.pas, la cual contiene dicho
+  archivo y las herramientas.
 
   IMPORTANTE:  Tenga en cuenta que, en principio, Allegro.pas 4.4.0 funcionará
   únicamente con la versión 4.4.0 de Allegro (incluyendo versiones RC) pero

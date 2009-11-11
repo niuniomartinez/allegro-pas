@@ -34,8 +34,8 @@
       introduce other systems as MacOS X and others @(and should be easy as
       basis is complete@) but I haven't another system.)
     @item(@bold(Fix sprite rotation).  @link(al_rotate_sprite) and similar
-      procedures fails with a runtime error.  May be the only way to fix this
-      is rewrite them in Pascal.)
+      procedures fails with a runtime error on GNU/Linux but work on Windows.
+      May be the only way to fix this is rewrite them in Pascal.)
     @item(@bold(Fix special cases for 3D polygon renderer).  Some special
       cases of 3D polygon makes @link(al_polygon3d) fails with a runtime
       error.  I think it's related with the sprite rotation error, wich
@@ -635,8 +635,6 @@
 
 @section(1 contact Contact)
 
-  I'm updating the Allegro.pas website to install an interactive forum so
-  stay tuned at htt://allegro-pas.sourceforge.net/.
-
-  If you want to contact me, please use the Allegro.pas main mail-list
-  (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).
+  You can ask, comment or make suggestions about Allegro.pas just visiting
+  http://allegro-pas.sourceforge.net/.  It includes mailing-list and
+  interactive forums.

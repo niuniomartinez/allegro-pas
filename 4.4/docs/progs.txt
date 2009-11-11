@@ -215,10 +215,6 @@
   @bold(See also:) @link(al_enable_hardware_cursor) @link(al_gfx_capabilities)
   @link(al_select_mouse_cursor)
 
-  @section(2 lazarus/)
-
-  How to use Allegro.pas inside Lazarus applications.
-
 @section(1 tools Tools)
 
 @section(2 grabber Grabber)

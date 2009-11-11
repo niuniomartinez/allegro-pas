@@ -1,3 +1,19 @@
+Changes between versions 4.4.0 Beta and 4.4.0 Beta2
+===================================================
+
+  Bugfixing
+  ---------
+  + Added unit "windows" in unit aldrv, so now compile and runs allways.
+  + Added a call to vsync in "expal" example, so fastest systems are slower
+    now.
+
+  Other
+  -----
+  * exsprite modified because pivot sprite functions work on Windows.
+  * Few fix on documentation.
+
+
+
 Changes between versions 4.4.0 Alpha2 and 4.4.0 Beta
 ====================================================
 

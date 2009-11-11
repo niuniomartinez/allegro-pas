@@ -102,6 +102,7 @@ BEGIN { The program starts here. }
     END;
     palette[0] := temp;
     al_set_palette (palette);
+    al_vsync;
   END;
 
 { Shutdown Allegro. }
