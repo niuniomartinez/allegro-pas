@@ -238,21 +238,15 @@ BEGIN { The program starts here. }
     animate();
   UNTIL next;
 
-  al_message (
-    'Unfortunatelly, there''s a bug somewhere and rotation and pivot routines'
-    +#10
-    +'doesn''t work at all.  You would try but it will not work right now. :(');
-(*
+{$IFDEF MSWINDOWS}
   al_clear_keybuf;
   al_rectfill (al_screen, 0, text_y, AL_SCREEN_W, AL_SCREEN_H, 0);
   al_textout_centre_ex (al_screen, al_font, 'Now with rotating - pivot sprite',
 			AL_SCREEN_W DIV 2, text_y, 15, -1);
 
   REPEAT
-  *)
 { The last argument to al_pivot_sprite() is a fixed point type,
   so I had to use al_itofix routine (integer to fixed). }
-(*
     al_circle (sprite_buffer, x + 41, y + 41, 47, color);
     al_pivot_sprite (sprite_buffer, running_data^[frame_number].dat,
 		     sprite_buffer^.w DIV 2, sprite_buffer^.h DIV 2,
@@ -267,10 +261,8 @@ BEGIN { The program starts here. }
 			AL_SCREEN_W DIV 2, text_y, 15, -1);
 
   REPEAT
-  *)
 { The last argument to al_pivot_sprite() is a fixed point type,
   so I had to use al_itofix() routine (integer to fixed). }
-(*
     al_circle (sprite_buffer, x + 41, y + 41, 47, color);
     al_pivot_sprite_v_flip (sprite_buffer, running_data^[frame_number].dat,
 			    sprite_buffer^.w DIV 2, sprite_buffer^.h DIV 2,
@@ -278,7 +270,13 @@ BEGIN { The program starts here. }
     animate();
     angle := angle - 4;
   UNTIL next;
-*)
+{$ELSE}
+{ Unfortunatelly, rotation procedures only works on Windows. :( }
+  al_message (
+    'Unfortunatelly, there''s a bug somewhere and rotation and pivot routines'
+    +#10
+    +'doesn''t work on Linux.  You would try but it will not work right now. :(');
+{$ENDIF}
 { Shutdown Allegro. }
   al_unload_datafile (running_data);
   al_destroy_bitmap (sprite_buffer);

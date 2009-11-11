@@ -13,6 +13,9 @@ UNIT aldrv;
 INTERFACE
 
 USES
+{$IFDEF MSWINDOWS}
+  windows,
+{$ENDIF}
   albase, allegro;
 
 TYPE

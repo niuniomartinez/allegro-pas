@@ -112,9 +112,13 @@ Installation
   system.  If you have Lazarus IDE then it should be enough.  Visit Free
   Pascal's web site for more information (http://www.freepascal.org/).
 
-  Install Allegro 4.4.0.  You can download it from
-  http://sourceforge.net/project/showfiles.php?group_id=5665 .  May be you can
-  install the "enduser" version.
+  If you're using GNU/Linux then install Allegro 4.4.0.  You can download it
+  from http://sourceforge.net/project/showfiles.php?group_id=5665 .  May be you
+  can install the "enduser" version.
+
+  If you're using Windows then you have two ways:  Install Allegro as said in
+  the previous paragraph to obtain the file "alleg44.dll" or download the
+  "bin" version of Allegro.pas wich include such file and precompiled tools.
 
   NOTE:  Allegro.pas 4.4.0 will work ONLY with Allegro 4.4.0 (and its RC
   releases).  It will not work with newer versions at the moment.
