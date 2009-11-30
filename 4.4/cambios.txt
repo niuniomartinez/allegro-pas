@@ -1,3 +1,19 @@
+Cambios entre las versiones 4.4.0 Beta2 y 4.4.0
+===============================================
+
+  Errores corregidos
+  ------------------
+  * Corregidos parámetros de al_getr_depth, al_getb_depth, al_getb_depth y
+    al_geta_depth, así como el enlace a las funciones correspondientes.
+
+ Otros
+ -----
+ - Eliminado el aviso de error en el ejemplo exsprite, ya que la nueva versión
+   de Allegro no falla.
+ - Añadido ejemplo de integración con Lazarus.
+
+
+
 Cambios entre las versiones 4.4.0 Beta y 4.4.0 Beta2
 ====================================================
 

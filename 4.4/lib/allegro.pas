@@ -1198,7 +1198,7 @@ TYPE
   FUNCTION al_getg (c: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getg';
   FUNCTION al_getb (c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getn';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getb';
   FUNCTION al_geta (c: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'geta';
 
@@ -1207,13 +1207,13 @@ TYPE
 (* Given a color in the format being used by the specified color depth, these
    functions extract one of the red, green, blue, or alpha components (ranging
    0-255). The alpha part is only meaningful for 32-bit pixels. *)
-  FUNCTION al_getr_depth (c: LONGINT): LONGINT; CDECL;
+  FUNCTION al_getr_depth (color_depth, c: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getr_depth';
-  FUNCTION al_getg_depth (c: LONGINT): LONGINT; CDECL;
+  FUNCTION al_getg_depth (color_depth, c: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getg_depth';
-  FUNCTION al_getb_depth (c: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getn_depth';
-  FUNCTION al_geta_depth (c: LONGINT): LONGINT; CDECL;
+  FUNCTION al_getb_depth (color_depth, c: LONGINT): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getb_depth';
+  FUNCTION al_geta_depth (color_depth, c: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'geta_depth';
 
 
