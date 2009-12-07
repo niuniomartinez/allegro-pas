@@ -64,7 +64,7 @@ BEGIN
             'The example will continue anyway', 'Warning', MB_ICONEXCLAMATION)
         ELSE
           Application.MessageBox ('No complete support for sound.' +#10+
-            'The example will continue anyway', 'Warning', MB_ICONEXCLAMATION)
+            'The example will continue anyway', 'Warning', MB_ICONEXCLAMATION);
       Application.CreateForm(TForm1, Form1);
       Application.Run;
     FINALLY

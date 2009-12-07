@@ -221,7 +221,7 @@ VAR
 	  FOR J := 1 TO nv DO
 	    al_persp_project_f (Vout[j].x, Vout[j].y, Vout[j].z,
 			      Vout[j].x, Vout[j].y);
-	  al_scene_polygon3d_f (AL_POLYTYPE_ATEX, Texture, nv, @pVout[1]);
+	  al_scene_polygon3d_f (AL_POLYTYPE_PTEX, Texture, nv, @pVout[1]);
 	END;
     END;
   END;

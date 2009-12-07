@@ -30,7 +30,7 @@ CONST
 
 
 
-(* @exclude 
+(* @exclude
    To be used as size of Zero-Sized arrays.  Only useful for pointers. *)
   AL_UNKNOWN_SIZE = 1024;
 
