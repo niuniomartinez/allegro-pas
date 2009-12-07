@@ -238,7 +238,6 @@ BEGIN { The program starts here. }
     animate();
   UNTIL next;
 
-{$IFDEF MSWINDOWS}
   al_clear_keybuf;
   al_rectfill (al_screen, 0, text_y, AL_SCREEN_W, AL_SCREEN_H, 0);
   al_textout_centre_ex (al_screen, al_font, 'Now with rotating - pivot sprite',
@@ -270,13 +269,6 @@ BEGIN { The program starts here. }
     animate();
     angle := angle - 4;
   UNTIL next;
-{$ELSE}
-{ Unfortunatelly, rotation procedures only works on Windows. :( }
-  al_message (
-    'Unfortunatelly, there''s a bug somewhere and rotation and pivot routines'
-    +#10
-    +'doesn''t work on Linux.  You would try but it will not work right now. :(');
-{$ENDIF}
 { Shutdown Allegro. }
   al_unload_datafile (running_data);
   al_destroy_bitmap (sprite_buffer);

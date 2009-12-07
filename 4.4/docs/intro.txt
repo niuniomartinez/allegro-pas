@@ -29,19 +29,11 @@
 @section(1 objectives Objectives of version 4.4.0)
 
   @unorderedList(
-    @item(@bold(Make it run on Linux).  Previous versions work only on
-      MS-Windows system.  @bold(This goal is complete).  It would be great to
-      introduce other systems as MacOS X and others @(and should be easy as
-      basis is complete@) but I haven't another system.)
-    @item(@bold(Fix sprite rotation).  @link(al_rotate_sprite) and similar
-      procedures fails with a runtime error on GNU/Linux but work on Windows.
-      May be the only way to fix this is rewrite them in Pascal.)
     @item(@bold(Fix special cases for 3D polygon renderer).  Some special
       cases of 3D polygon makes @link(al_polygon3d) fails with a runtime
-      error.  I think it's related with the sprite rotation error, wich
-      suggest the problem isn't my code. May be Allegro itself has something
-      that must be done before/after call @link(al_init) or whoknows.  I'm
-      out of ideas and nobody at FPC or Allegro.cc forums can help.)
+      error.  May be Allegro itself has something that must be done
+      before/after call @link(al_init) or whoknows.  I'm out of ideas and
+      nobody at FPC or Allegro.cc forums can help.)
   )
 
 @section(1 use How to use Allegro.pas)
