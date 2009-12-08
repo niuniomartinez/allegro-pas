@@ -568,11 +568,6 @@ TYPE
    being used).  Note that this function will fail if the three vertices are
    co-linear (they lie on the same line) in 3D space.
 
-   @bold(Warning:) there's a bug on the polygon renderer that fails trying to
-   draw some nearly perpendicular polygons.  Actually it fails only with
-   correct texture (PTEX), so you can ignore this bug in any other case.  See the
-   TCube class defined in the examples to see a work-arround this bug.
-
    @seealso(al_cross_product) *)
   FUNCTION al_polygon_z_normal (v1, v2, v3: AL_V3Dptr): AL_FIXED; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal';
@@ -621,8 +616,7 @@ CONST
   can't overlap floating point division with other integer operations like the
   Pentium can).
 
-  @bold(Note:)  This type has a bug wich causes a @italic(division by zero) in
-  some cases. @seealso(al_polygon3d) *)
+  @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX            =  4;
 (* Like @link(AL_POLYTYPE_ATEX), but @link(al_bitmap_mask_color) texture map
   pixels are skipped, allowing parts of the texture map to be transparent.
@@ -631,8 +625,7 @@ CONST
 (* Like @link(AL_POLYTYPE_PTEX), but @link(al_bitmap_mask_color) texture map
   pixels are skipped, allowing parts of the texture map to be transparent.
 
-  @bold(Note:)  This type has a bug wich causes a @italic(division by zero) in
-  some cases. @seealso(al_polygon3d) *)
+  @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_MASK       =  6;
 (* Like @link(AL_POLYTYPE_ATEX), but the global @link(al_color_table) (for
   256-color modes) or @link(alblend blender) function (for non-MMX truecolor
@@ -647,8 +640,7 @@ CONST
   value in the vertex structure.  This must only be used after you have set up
   the color mapping table or blender functions!
 
-  @bold(Note:)  This type has a bug wich causes a @italic(division by zero) in
-  some cases. @seealso(al_polygon3d) *)
+  @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_LIT        =  8;
 (* Like @link(AL_POLYTYPE_ATEX_LIT), but @link(al_bitmap_mask_color) texture
   map pixels are skipped, allowing parts of the texture map to be transparent.
@@ -657,8 +649,7 @@ CONST
 (* Like @link(AL_POLYTYPE_PTEX_LIT), but @link(al_bitmap_mask_color) texture
   map pixels are skipped, allowing parts of the texture map to be transparent.
 
-  @bold(Note:)  This type has a bug wich causes a @italic(division by zero) in
-  some cases. @seealso(al_polygon3d) *)
+  @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_MASK_LIT   = 10;
 (* Render translucent textures.  All the general rules for drawing translucent
   things apply.  However, these modes have a major limitation:  they only work
@@ -674,8 +665,7 @@ CONST
   Don't even try, they do not check and your program will die horribly (or at
   least draw wrong things).
 
-  @bold(Note:)  This type has a bug wich causes a @italic(division by zero) in
-  some cases. @seealso(al_polygon3d) @seealso(AL_POLYTYPE_PTEX)
+  @seealso(al_polygon3d) @seealso(AL_POLYTYPE_PTEX)
   @seealso(al_create_trans_table) @seealso(al_set_trans_blender) *)
   AL_POLYTYPE_PTEX_TRANS      = 12;
 (* Like @link(AL_POLYTYPE_ATEX_TRANS), but @link(al_bitmap_mask_color) texture
@@ -685,8 +675,6 @@ CONST
 (* Like @link(AL_POLYTYPE_PTEX_TRANS), but @link(al_bitmap_mask_color) texture
   map pixels are skipped, allowing parts of the texture map to be transparent.
 
-  @bold(Note:)  This type has a bug wich causes a @italic(division by zero) in
-  some cases.
   @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_MASK_TRANS = 14;
 (* *)

@@ -101,12 +101,6 @@ CONST
 
 IMPLEMENTATION
 
-VAR
-(* Due to a bug, the renderer fails when drawing some textured poligons when
-   they are near to the "perpendicular".  This value allows a workaround.
-   See the Draw method and the documentation of unit al3d. *)
-  MAX_NORMAL: AL_FIXED;
-
 
 
 (***********
@@ -153,12 +147,6 @@ VAR
 
 (* Constructor. *)
   CONSTRUCTOR TCube.Create (px, py, pz, aSize: AL_FIXED; aTexture: AL_BITMAPptr);
-
-    FUNCTION RandomValue: BYTE;
-    BEGIN
-      RandomValue := (Random (16) * 16) - 1;
-    END;
-
   BEGIN
     fPosition := TVector.Create (px, py, pz);
     fAngle := TVector.Create (0, 0, 0);
@@ -172,13 +160,6 @@ VAR
     END
     ELSE
       fDrawmode := AL_POLYTYPE_FLAT;
-  { The "bad normal" value depends on the size of the polygon and this depends
-    on the screen definition.  The values proposed here where found by
-    try-and-error process. }
-    IF AL_SCREEN_W < 800 THEN
-      MAX_NORMAL := al_itofix (200)
-    ELSE
-      MAX_NORMAL := al_itofix (500)
   END;
 
 
@@ -195,7 +176,7 @@ VAR
 
 (* Draws the cube.
 
-   This is quite inefficient and doesn't draw the masked and transparent modes
+   This is very inefficient and doesn't draw the masked and transparent modes
    in the right order. *)
   PROCEDURE TCube.Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIXptr);
   VAR
@@ -226,13 +207,6 @@ VAR
 	CASE fDrawmode OF
 	AL_POLYTYPE_FLAT:
 	  Point[1].c := al_palette_color^[Cnt+1];
-	AL_POLYTYPE_GCOL:
-	  BEGIN
-	    Point[1].c := al_palette_color^[$D0];
-	    Point[2].c := al_palette_color^[$80];
-	    Point[3].c := al_palette_color^[$B0];
-	    Point[4].c := al_palette_color^[$FF];
-	  END;
 	AL_POLYTYPE_GRGB:
 	  BEGIN
 	    Point[1].c := $000000;
@@ -282,15 +256,9 @@ VAR
       OR (fDrawmode = AL_POLYTYPE_PTEX_LIT)
       THEN BEGIN
       { Only faces with positive normals are visible. }
-	IF (Normal <= MAX_NORMAL) THEN
+	IF (Normal < 0) THEN
 	  CONTINUE;
-      END
-      ELSE
-      { Transparent and masked faces should be drawn allways, because we can
-	see through them, but due a weird bug some faces near to the
-	"perpendicular" fails when draw.  See the MAS_NORMAL comment abobe. }
-	IF (MAX_NORMAL >= Normal) AND (Normal >= (-MAX_NORMAL)) THEN
-	  CONTINUE;
+      END;
     { Insert the face in the face list ordered by Z. }
       INC (fVisibleFaces);
     { If list is empty. }
