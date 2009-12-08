@@ -26,16 +26,6 @@
   (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).
 
 
-@section(1 objectives Objectives of version 4.4.0)
-
-  @unorderedList(
-    @item(@bold(Fix special cases for 3D polygon renderer).  Some special
-      cases of 3D polygon makes @link(al_polygon3d) fails with a runtime
-      error.  May be Allegro itself has something that must be done
-      before/after call @link(al_init) or whoknows.  I'm out of ideas and
-      nobody at FPC or Allegro.cc forums can help.)
-  )
-
 @section(1 use How to use Allegro.pas)
 
   The best way to start with Allegro.pas is to study the sources at examples
