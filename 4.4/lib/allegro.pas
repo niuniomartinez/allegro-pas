@@ -180,6 +180,7 @@ END;
    @returns(@true on success or @false on failure @(e.g. the feature is not
      supported by the platform@).) *)
   FUNCTION al_set_close_button_callback (proc: AL_SIMPLE_PROC): BOOLEAN;
+    INLINE;
 
 
 
@@ -195,6 +196,7 @@ END;
    @returns(the color depth or zero on platforms where this information is not
    available or does not apply.) *)
   FUNCTION al_desktop_color_depth: LONGINT;
+    INLINE;
 
 
 
@@ -213,12 +215,14 @@ END;
    does not apply, in which case the values stored in the variables you
    provided for `width' and `height' are undefined.) *)
   FUNCTION al_get_desktop_resolution (VAR w, h: LONGINT): BOOLEAN;
+    INLINE;
 
 
 (* On platforms that are capable of it, this routine alters the window title
    for your Allegro program.
    @param(title Title string.) *)
   PROCEDURE al_set_window_title (CONST title: STRING);
+    INLINE;
 
 
 
@@ -308,6 +312,7 @@ VAR
 (* Returns the number of characters in the string.  Note that this doesn't have
    to equal the string's size in bytes. *)
   FUNCTION al_ustrlen (s: STRING): LONGINT;
+    INLINE;
 
 
 
@@ -325,6 +330,7 @@ VAR
    file, but after @link(al_set_uformat) if you want to use a text encoding
    format other than the default. *)
   PROCEDURE al_set_config_file (filename: STRING);
+    INLINE;
 
 (* Specifies a block of data to be used by all subsequent config functions,
    which you have already loaded from disk (eg. as part of some more
@@ -360,6 +366,7 @@ VAR
     Note that this function and @link(al_override_config_data) are mutually
     exclusive, i.e. calling one will cancel the effects of the other. *)
   PROCEDURE al_override_config_file (filename: STRING);
+    INLINE;
 
 (* Version of @link(al_override_config_file) which uses a block of data that
    has already been read into memory.  The length of the block has to be
@@ -405,22 +412,27 @@ VAR
      If the named variable cannot be found, or its entry in the config file is
      empty, the value of @code(def) is returned.) *)
   FUNCTION al_get_config_string (section, name, def: STRING): STRING;
+    INLINE;
 
 (* Reads an integer variable from the current config file.  See the comments
    about @link(al_get_config_string). *)
   FUNCTION al_get_config_int (section, name: STRING; def: LONGINT): LONGINT;
+    INLINE;
 
 (* Reads an integer variable from the current config file, in hexadecimal.
    See the comments about @link(al_get_config_string). *)
   FUNCTION al_get_config_hex (section, name: STRING; def: LONGINT): LONGINT;
+    INLINE;
 
 (* Reads a floating point variable from the current config file.  See the
    comments about @link(al_get_config_string). *)
   FUNCTION al_get_config_float (section, name: STRING; def: SINGLE): SINGLE;
+    INLINE;
 
 (* Reads a 4-letter driver ID variable from the current config file.  See the
    comments about @link(al_get_config_string). *)
   FUNCTION al_get_config_id (section, name: STRING; def: LONGINT): LONGINT;
+    INLINE;
 
 (* AFAIK this doesn't work.
   FUNCTION al_get_config_argv (section, name: STRING; argc: PLONGINT): PSTRING; *)
@@ -441,22 +453,27 @@ VAR
    information into the config module, from where it can be read with the
    @link(al_get_config_string) function. *)
   PROCEDURE al_set_config_string (section, name, val: STRING);
+    INLINE;
 
 (* Writes an integer variable to the current config file.  See the comments
    about @link(al_set_config_string). *)
   PROCEDURE al_set_config_int (section, name: STRING; val: LONGINT);
+    INLINE;
 
 (* Writes an integer variable to the current config file, in hexadecimal
    format.  See the comments about @link(al_set_config_string). *)
   PROCEDURE al_set_config_hex (section, name: STRING; val: LONGINT);
+    INLINE;
 
 (* Writes a floating point variable to the current config file.  See the
    comments about @link(al_set_config_string). *)
   PROCEDURE al_set_config_float (section, name:STRING; val: SINGLE);
+    INLINE;
 
 (* Writes a 4-letter driver ID variable to the current config file.  See the
    comments about @link(al_set_config_string). *)
   PROCEDURE al_set_config_id (section, name: STRING; val: LONGINT);
+    INLINE;
 
 
 
@@ -465,14 +482,14 @@ VAR
  ******************)
 
 (* Give the number of seconds between each tick to @link(al_install_int_ex). *)
-  FUNCTION AL_SECS_TO_TIMER (x: LONGINT): LONGINT;
+  FUNCTION AL_SECS_TO_TIMER (x: LONGINT): LONGINT; INLINE;
 (* Give the number of milliseconds between each tick to
    @link(al_install_int_ex). *)
-  FUNCTION AL_MSEC_TO_TIMER (x: LONGINT): LONGINT;
+  FUNCTION AL_MSEC_TO_TIMER (x: LONGINT): LONGINT; INLINE;
 (* Give the number of ticks each second to @link(al_install_int_ex). *)
-  FUNCTION AL_BPS_TO_TIMER  (x: LONGINT): LONGINT;
+  FUNCTION AL_BPS_TO_TIMER  (x: LONGINT): LONGINT; INLINE;
 (* Give the number of ticks each minute to @link(al_install_int_ex). *)
-  FUNCTION AL_BPM_TO_TIMER  (x: LONGINT): LONGINT;
+  FUNCTION AL_BPM_TO_TIMER  (x: LONGINT): LONGINT; INLINE;
 
 
 
@@ -517,6 +534,7 @@ VAR
    @returns(@true on success, or @false if there is no room to add a new user
      timer.) *)
   FUNCTION al_install_int_ex (proc: AL_SIMPLE_PROC; speed: LONGINT): BOOLEAN;
+    INLINE;
 
 (* Installs a user timer handler, with the speed given as the number of
    milliseconds between ticks.  This is the same thing as
@@ -528,6 +546,7 @@ VAR
    @returns(@true on success, or @false if there is no room to add a new user
      timer.) *)
   FUNCTION al_install_int (proc: AL_SIMPLE_PROC; speed: LONGINT): BOOLEAN;
+    INLINE;
 
 (* Removes a function from the list of user interrupt routines.
    @link(al_exit) does this automatically. *)
@@ -538,11 +557,13 @@ VAR
    copy of the specified void pointer parameter.  To disable the handler, use
    @link(al_remove_param_int) instead of @link(al_remove_int). *)
   FUNCTION al_install_param_int_ex (proc: AL_PARAM_PROC; speed: LONGINT): BOOLEAN;
+    INLINE;
 
 (* Like @link(al_install_int), but the callback routine will be passed a copy
    of the specified void pointer parameter.  To disable the handler, use
    @link(al_remove_param_int) instead of @link(al_remove_int). *)
   FUNCTION al_install_param_int (proc: AL_PARAM_PROC; speed: LONGINT): BOOLEAN;
+    INLINE;
 
 (* Like @link(al_remove_int), but for use with timer callbacks that have
    parameter values.  If there is more than one copy of the same callback
@@ -639,6 +660,7 @@ VAR
 
 (* Returns @true if the current keyboard driver is operating in polling mode. *)
   FUNCTION al_keyboard_needs_poll: BOOLEAN;
+    INLINE;
 
 (* Returns @true if there are keypresses waiting in the input buffer.  You can
    use this to see if the next call to @link(al_readkey) is going to block or
@@ -649,6 +671,7 @@ VAR
     AnimateLogo (al_screen);
    #) *)
   FUNCTION al_keypressed: BOOLEAN;
+    INLINE;
 
 (* Returns the next character from the keyboard buffer, in ASCII format.  If
    the buffer is empty, it waits until a key is pressed.  You can see if there
@@ -707,6 +730,7 @@ VAR
    You should be able to find Unicode character maps at
    http://www.unicode.org/. *)
   FUNCTION al_ureadkey (VAR scancode: LONGINT): LONGINT;
+    INLINE;
 
 (* Stuffs a key into the keyboard buffer, just as if the user had pressed it.
    The parameter is in the same format returned by @link(al_readkey). *)
@@ -756,6 +780,7 @@ VAR
    for some action, and want to display something more meaningful than just the
    scancode. *)
   FUNCTION al_scancode_to_name (scancode: LONGINT): STRING;
+    INLINE;
 
 
 
@@ -1222,7 +1247,9 @@ TYPE
    range from 0 to 255, hue is from 0 to 360, and saturation and value are from
    0 to 1. *)
   PROCEDURE al_hsv_to_rgb (h, s, v: SINGLE; VAR r, g, b: LONGINT);
+    INLINE;
   PROCEDURE al_rgb_to_hsv (r, g, b: LONGINT; VAR h, s, v: SINGLE);
+    INLINE;
 
 
 
@@ -1598,6 +1625,7 @@ END.
 
 (* @returns(the color depth of the specified bitmap @(8, 15, 16, 24, or 32@).) *)
   FUNCTION al_bitmap_color_depth (bmp: AL_BITMAPptr): LONGINT;
+    INLINE;
 
 (* @returns(the mask color for the specified bitmap @(the value which is
     skipped when drawing sprites@).  For 256-color bitmaps this is zero, and
@@ -1606,29 +1634,36 @@ END.
     mask color so you can later use this bitmap with @link(al_draw_sprite)
     after drawing other stuff on it.) *)
   FUNCTION al_bitmap_mask_color (bmp: AL_BITMAPptr): LONGINT;
+    INLINE;
 
 (* @returns(@true if the two bitmaps describe the same drawing surface, ie.
     the pointers are equal, one is a sub-bitmap of the other, or they are both
     sub-bitmaps of a common parent.) *)
   FUNCTION al_is_same_bitmap (bmp1, bmp2: AL_BITMAPptr): BOOLEAN;
+    INLINE;
 
 (* @returns(@true if bmp is a memory bitmap, ie. it was created by calling
     @link(al_create_bitmap) or loaded from a grabber datafile or image file.) *)
   FUNCTION al_is_memory_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+    INLINE;
 
 (* @returns(@true if @code(bmp) is the screen bitmap, or a sub-bitmap of the
    screen.) *)
   FUNCTION al_is_screen_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+    INLINE;
 
 (* @returns(@true) if bmp is the screen bitmap, a video memory bitmap, or a
    sub-bitmap of either.) *) 
   FUNCTION al_is_video_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+    INLINE;
 
 (* @returns(@true if bmp is a system bitmap object, or a sub-bitmap of one.) *)
   FUNCTION al_is_system_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+    INLINE;
 
 (* @returns(@true if bmp is a sub-bitmap.) *)
   FUNCTION al_is_sub_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+    INLINE;
 
 (* Acquires the specified video bitmap prior to drawing onto it.  You never
    need to call the function explicitly as it is low level, and will only give
@@ -1683,11 +1718,13 @@ END.
    @link(al_scare_mouse) which calls that) or @link(al_readkey), since it will
    most likely deadlock your entire program. *)
   PROCEDURE al_acquire_bitmap (bmp: AL_BITMAPptr);
+    INLINE;
 
 (* Releases a bitmap that was previously locked by calling
    @link(al_acquire_bitmap).  If the bitmap was locked multiple times, you must
    release it the same number of times before it will truly be unlocked. *)
   PROCEDURE al_release_bitmap (bmp: AL_BITMAPptr);
+    INLINE;
 
 
 
@@ -1829,7 +1866,7 @@ VAR
 
    It holds the current horizontal wheel position, when using an input driver
    that supports wheel mice. *)
-  al_mouse_w: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_x';
+  al_mouse_w: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_w';
 (* Global variable containing the current mouse button state.  Wherever
    possible these values will be updated asynchronously, but if
    @link(al_mouse_needs_poll) returns @true, you must manually call
@@ -1925,6 +1962,7 @@ VAR
 
 (* Returns @true if the current mouse driver is operating in polling mode. *)
   FUNCTION al_mouse_needs_poll: BOOLEAN;
+    INLINE;
 
 
 
@@ -2057,6 +2095,7 @@ VAR
    some platforms the mouse would leave the window, and may not work at all if
    the hardware cursor is in use. *)
   PROCEDURE al_get_mouse_mickeys (VAR mickeyx, mickeyy: LONGINT);
+    INLINE;
 
 
 
@@ -2109,6 +2148,7 @@ VAR
    @returns(@true if a system cursor is being displayed after the function
      returns, or @false otherwise.) *)
   FUNCTION al_show_os_cursor (cursor: LONGINT): BOOLEAN;
+    INLINE;
 
 
 
@@ -2486,10 +2526,12 @@ CONST
 (* Shortcut version of @code(al_acquire_bitmap @(screen@);)
    @seealso(al_acquire_bitmap) *)
   PROCEDURE al_acquire_screen;
+    INLINE;
 
 (* Shortcut version of @code(al_release_bitmap @(screen@);)
    @seealso(al_release_bitmap) *)
   PROCEDURE al_release_screen;
+    INLINE;
 
 (* Attempts to page flip the hardware screen to display the specified video
    bitmap object, which must be the same size as the physical screen, and
@@ -2560,6 +2602,7 @@ CONST
    but will result in your program dying a horrible death if you try to draw
    beyond the edges of the bitmap. *)
   PROCEDURE al_set_clip_state (bmp: AL_BITMAPptr; state: BOOLEAN);
+    INLINE;
 
 
 
@@ -2676,51 +2719,65 @@ CONST
 
      To extract the individual color components, use the getr() / getg() / getb() / geta() family of functions) *)
   FUNCTION  al_getpixel	   (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+    INLINE;
 
 (* Writes a pixel to the specified position in the bitmap, using the current
    drawing mode and the bitmap's clipping rectangle. *)
   PROCEDURE al_putpixel	   (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+    INLINE;
 
 (* Draws a vertical line onto the bitmap, from point (x, y1) to (x, y2). *)
   PROCEDURE al_vline	   (bmp: AL_BITMAPptr; x, y1, y2, color: LONGINT);
+    INLINE;
 
 (* Draws a horizontal line onto the bitmap, from point (x1, y) to (x2, y). *)
   PROCEDURE al_hline	   (bmp: AL_BITMAPptr; x1, y, x2, color: LONGINT);
+    INLINE;
 
 (* Draws a line onto the bitmap, from point (x1, y1) to (x2, y2). *)
   PROCEDURE al_line	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+    INLINE;
 
 (* Faster version of the previous function.  Note that pixel correctness is not
    guaranteed for this function. *)
   PROCEDURE al_fastline	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+    INLINE;
 
 (* Draws an outline rectangle with the two points as its opposite corners. *)
   PROCEDURE al_rect	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+    INLINE;
 
 (* Draws a solid, filled rectangle with the two points as its opposite
    corners. *)
   PROCEDURE al_rectfill	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+    INLINE;
 
 (* Draws a circle with the specified centre and radius. *)
   PROCEDURE al_circle	   (bmp: AL_BITMAPptr; x, y, r, color: LONGINT);
+    INLINE;
 
 (* Draws a filled circle with the specified centre and radius. *)
   PROCEDURE al_circlefill  (bmp: AL_BITMAPptr; x, y, r, color: LONGINT);
+    INLINE;
 
 (* Draws an ellipse with the specified centre and radius. *)
   PROCEDURE al_ellipse	   (bmp: AL_BITMAPptr; x, y, rx, ry, color: LONGINT);
+    INLINE;
 
 (* Draws a filled ellipse with the specified centre and radius. *)
   PROCEDURE al_ellipsefill (bmp: AL_BITMAPptr; x, y, rx, ry, color: LONGINT);
+    INLINE;
 
 (* Floodfills an enclosed area, starting at point (x, y), with the specified
    color. *)
   PROCEDURE al_floodfill   (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+    INLINE;
 
 (* Draws a filled polygon with an arbitrary number of corners.  Pass the number
    of vertices and an array containing a series of x, y points (a total of
    vertices*2 values). *)
   PROCEDURE al_polygon     (bmp: AL_BITMAPptr; vertices: LONGINT; points: ARRAY OF LONGINT; color: LONGINT);
+    INLINE;
 
 
 
@@ -2806,11 +2863,13 @@ TYPE
    monochrome font.
    @returns(@true if the font is a color font, @false if it is not.) *)
   FUNCTION al_is_color_font (f: AL_FONTptr): BOOLEAN;
+    INLINE;
 
 (* This function checks if the given font is a mono font, as opposed to a
    color font.
    @returns(@true if the font is a monochrome font, @false if it is not.) *)
   FUNCTION al_is_mono_font (f: AL_FONTptr): BOOLEAN;
+    INLINE;
 
 (* This function compares the two fonts, which you can use to find out if
    Allegro is capable of merging them.
@@ -2818,6 +2877,7 @@ TYPE
    @returns(@true if the two fonts are of the same general type @(both are
      color fonts or both are monochrome fonts, for instance@).) *)
   FUNCTION al_is_compatible_font (f1, f2: AL_FONTptr): BOOLEAN;
+    INLINE;
 
 (* Frees the memory being used by a font structure.  Don't use this on the
    default global Allegro font or any text routines using it could crash.  You
@@ -2859,24 +2919,29 @@ VAR
    @param(bg Background color.  Set to -1 to use transparent background.)
    @seealso(al_textout_centre_ex) @seealso(al_textout_right_ex) @seealso(al_textout_justify_ex)*)
   PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+    INLINE;
 (* Like @link(al_textout_ex), but interprets the @code(x) coordinate as the
    centre rather than the left edge of the string.
    @seealso(al_textout_ex) @seealso(al_textout_right_ex) @seealso(al_textout_justify_ex)*)
   PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+    INLINE;
 (* Like @link(al_textout_ex), but interprets the @code(x) coordinate as the
    right rather than the left edge of the string.
    @seealso(al_textout_ex) @seealso(al_textout_centre_ex) @seealso(al_textout_justify_ex)*)
   PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+    INLINE;
 (* Draws justified text within the region @code(x1-x2).  If the amount of spare
    space is greater than the @code(diff) value, it will give up and draw
    regular left justified text instead.
    @seealso(al_textout_ex) @seealso(al_textout_centre_ex) @seealso(al_textout_right_ex)*)
   PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x1, x2, y, diff, color, bg: LONGINT);
+    INLINE;
 
 
 
 (* Returns the length (in pixels) of a string in the specified font. *)
   FUNCTION al_text_length (f: AL_FONTptr; str: STRING): LONGINT;
+    INLINE;
 (* Returns the height (in pixels) of the specified font. *)
   FUNCTION al_text_height (f: AL_FONTptr): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'text_height';
@@ -3002,6 +3067,7 @@ VAR
   truecolor destination bitmaps, so you can use palette effects on specific
   sprites within a truecolor program. . *)
   PROCEDURE al_draw_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+    INLINE;
 
 (* Like @link(al_draw_sprite), except it can stretch the sprite image to the
    specified width and height and requires the sprite image and destination
@@ -3034,6 +3100,7 @@ VAR
 )
    ) *)
   PROCEDURE al_draw_sprite_ex (bmp, sprite: AL_BITMAPptr; x, y, mode, flip: LONGINT);
+    INLINE;
 
 (* This is like @link(al_draw_sprite), but it additionally flip the image
    horizontally.  Flipping horizontally means that the x-axis is reversed,
@@ -3041,6 +3108,7 @@ VAR
    which is not the same as rotating the sprite (and it is a lot faster than
    the rotation routine).  The sprite must be a memory bitmap. *)
   PROCEDURE al_draw_sprite_h_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+    INLINE;
 
 (* This is like @link(al_draw_sprite), but it additionally flip the image
    vertically.  Flipping vertically means that the y-axis is reversed,
@@ -3048,6 +3116,7 @@ VAR
    which is not the same as rotating the sprite (and it is a lot faster than
    the rotation routine).  The sprite must be a memory bitmap. *)
   PROCEDURE al_draw_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+    INLINE;
 
 (* This is like @link(al_draw_sprite), but it additionally flip the image
    vertically and horizontally.  Flipping vertically means that the y-axis is
@@ -3056,6 +3125,7 @@ VAR
    which is not the same as rotating the sprite (and it is a lot faster than
    the rotation routine).  The sprite must be a memory bitmap. *)
   PROCEDURE al_draw_sprite_vh_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+    INLINE;
 
 (* Uses the global @link(al_color_table) table or truecolor blender functions
    to overlay the sprite on top of the existing image.  This must only be used
@@ -3088,6 +3158,7 @@ VAR
    source sprite is an 8-bit image;  if this is the case, you should pay
    attention to properly set up your color map table for index 0. *)
   PROCEDURE al_draw_trans_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+    INLINE;
 
 (* In 256-color modes, uses the global @link(al_color_table) table to tint the
    sprite image to the specified color or to light it to the level specified by
@@ -3102,6 +3173,7 @@ VAR
      This must only be used after you have set up the color mapping table @(for
      256-color modes@) or blender functions @(for truecolor modes@).) *)
   PROCEDURE al_draw_lit_sprite (bmp, sprite: AL_BITMAPptr; x, y, c: LONGINT);
+    INLINE;
 
 (* Draws the sprite image onto the bitmap.  It is placed with its top left
    corner at the specified position, then rotated by the specified angle around
@@ -3112,40 +3184,48 @@ VAR
 
    Positive increments of the angle will make the sprite rotate clockwise. *)
   PROCEDURE al_rotate_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
+    INLINE;
 
 (* Like @link(al_rotate_sprite), but flips the image vertically before
    rotating it.  To flip horizontally, use this routine but add
    @code(al_itofix @(128@)) to the angle.  To flip in both directions, use
    @code(al_rotate_sprite) and add @code(al_itofix @(128@)) to its angle. *)
   PROCEDURE al_rotate_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
+    INLINE;
 
 (* Like @link(al_rotate_sprite), but stretches or shrinks the image at the
    same time as rotating it. *)
   PROCEDURE al_rotate_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED);
+    INLINE;
 
 (* Draws the sprite, similar to @link(al_rotate_scaled_sprite) except that it
   flips the sprite vertically first. *)
   PROCEDURE al_rotate_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED);
+    INLINE;
 
 (* Like @link(al_rotate_sprite), but aligns the point in the sprite given by
    @code(cx, cy) to @code(x, y) in the bitmap, then rotates around this
    point. *)
   PROCEDURE al_pivot_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
+    INLINE;
 
 (* Like @link(al_rotate_sprite_v_flip), but aligns the point in the sprite
    given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates around
    this point. *)
   PROCEDURE al_pivot_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
+    INLINE;
 
 (* Like @link(al_rotate_scaled_sprite), but aligns the point in the sprite
    given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates around
    this point. *)
   PROCEDURE al_pivot_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED);
+    INLINE;
 
 (* Like @link(al_rotate_scaled_sprite_v_flip), but aligns the point in the
    sprite given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates
    and scales around this point. *)
   PROCEDURE al_pivot_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED);
+    INLINE;
 
 
 
@@ -3192,6 +3272,7 @@ TYPE
    @seealso(al_draw_sprite) *)
   PROCEDURE al_draw_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
 				x, y: LONGINT);
+    INLINE;
 
 (* Translucent version of @link(al_draw_rle_sprite).  This must only be used
    after you have set up the color mapping table (for 256-color modes) or
@@ -3206,6 +3287,7 @@ TYPE
    @seealso(al_set_trans_blender) *)
   PROCEDURE al_draw_trans_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
 					x, y: LONGINT);
+    INLINE;
 
 (* Tinted version of @link(al_draw_rle_sprite).  This must only be used after
    you have set up the color mapping table (for 256-color modes) or blender
@@ -3217,6 +3299,7 @@ TYPE
    @seealso(al_draw_rle_sprite) @seealso(al_color_table) *)
   PROCEDURE al_draw_lit_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
 					x, y, color: LONGINT);
+    INLINE;
 
 
 
@@ -3328,11 +3411,13 @@ CONST
 (* Retrieves the global sound output volume, both for digital samples and MIDI
    playback, as integers from 0 to 255. *)
   PROCEDURE al_get_volume (VAR digi, midi: LONGINT);
+    INLINE;
 
 (* Retrieves the hardware sound output volume, both for digital samples and
    MIDI playback, as integers from 0 to 255, or -1 if the information is not
    available. *)
   PROCEDURE al_get_hardware_volume (VAR digi, midi: LONGINT);
+    INLINE;
 
 
 
@@ -3442,6 +3527,7 @@ VAR
      might in the future when somebody writes some patch-caching wavetable
      drivers :-@)) *)
   FUNCTION al_play_midi (midi: AL_MIDIptr; loop: BOOLEAN): BOOLEAN;
+    INLINE;
 
 (* Starts playing a MIDI file with a user-defined loop position.  When the
    player reaches the @code(loop_end) position or the end of the file
@@ -3451,6 +3537,7 @@ VAR
 
    @returns(@false if an error occurs, @true otherwise.) *)
   FUNCTION al_play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: LONGINT): BOOLEAN;
+    INLINE;
 
 (* Stops whatever music is currently playing. This is the same thing as calling
    @code(al_play_midi @(@nil, @false@)).
@@ -3492,6 +3579,7 @@ VAR
 
    @returns(@false if an error occurred.) *)
   FUNCTION al_load_midi_patches: BOOLEAN;
+    INLINE;
 
 
 
