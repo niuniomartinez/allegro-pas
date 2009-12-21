@@ -62,6 +62,7 @@ CONST
     @code(AL_FLI_ERROR) if something went wrong, or the value returned by the
     @code(callback) function if that was what stopped it.) *)
   FUNCTION al_play_fli (filename: STRING; bmp: AL_BITMAPptr; loop: BOOLEAN; callback: AL_SIMPLE_FUNC): LONGINT;
+    INLINE;
 
 (* Plays an Autodesk Animator FLI or FLC animation on the specified
    @link(AL_BITMAP), reading the data from a copy of the file which is held in
@@ -82,6 +83,7 @@ CONST
     @code(AL_FLI_ERROR) if something went wrong, or the value returned by the
     @code(callback) function if that was what stopped it.) *)
   FUNCTION al_play_memory_fli (fli_data: POINTER; bmp: AL_BITMAPptr; loop: BOOLEAN; callback: AL_SIMPLE_FUNC): LONGINT;
+    INLINE;
 
 
 
@@ -130,6 +132,7 @@ VAR
      wrong, like trying to open another FLI file without closing the previous
      one.) *)
   FUNCTION al_open_fli (filename: STRING): LONGINT;
+    INLINE;
 
 (* Open FLI files ready for playing, reading the data from memory.  Information
    about the current FLI is held in the global variables @link(al_fli_bitmap)
@@ -154,6 +157,7 @@ VAR
    @code(AL_FLI_NOT_OPEN) on error, and @code(AL_FLI_EOF) on reaching the end
    of the file.) *)
   FUNCTION al_next_fli_frame (loop: BOOLEAN): LONGINT;
+    INLINE;
 
 (* Once you have done whatever you are going to do with the
    @link(al_fli_bitmap) and @link(al_fli_palette), call this function to reset

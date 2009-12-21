@@ -21,7 +21,7 @@ PROGRAM example;
                            AL_BITMAP structure and LCL's TPaintBox and so.
 
    The project is configured to add debug and profile information in the
-   executable, so it is big.  Go to the porject menu and change the
+   executable, so it is big.  Go to the project menu and change the
    configuration to deactivate debug and profile and activate optimizations to
    create a definitive smaller executable.
 

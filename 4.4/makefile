@@ -69,7 +69,7 @@ EXMDIR = examples/
 LIBDIR = lib/
 
 FLAGS = -g -O- -pg -Sh
-#FLAGS = -02 -Sh
+#FLAGS = -02 -Sh -Si
 
 # -- Source files list --
 include makefile.list

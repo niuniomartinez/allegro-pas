@@ -85,6 +85,10 @@ UNIT al3d;
   the linear interpolation themselves.  Therefore a new set of blender
   functions passed to @code(al_set_blender_mode) is ignored.
 
+  @bold(Note:) *LIT polygon type don't work correctly in high color and real
+  color graphic modes (i.e. 15, 16, 24 and 32 bits per pixel).  This is a
+  problem with Allegro not Allegro.pas.  8bpp paletted mode works correctly.
+
   @bold(See also) @link(al_polygon3d)
 
 @bold(Zbuffered rendering)
@@ -413,9 +417,11 @@ VAR
    result in (xout, yout, zout). @seealso(al_matrix_mul) *)
   PROCEDURE al_apply_matrix (m: AL_MATRIXptr;
 		x, y, z: AL_FIXED; VAR xout, yout, zout: AL_FIXED);
+    INLINE;
 (* Same as @link(al_apply_matrix) but using floats instead than fixed. *)
   PROCEDURE al_apply_matrix_f (m: AL_MATRIX_Fptr;
 		x, y, z: SINGLE; VAR xout, yout, zout: SINGLE);
+    INLINE;
 
 (* Calculates the length of the vector (x, y, z), using that good 'ole
    Pythagoras theorem.
@@ -452,8 +458,10 @@ VAR
    result.
    @seealso(al_cross_product) @seealso(al_normalize_vector) *)
   FUNCTION al_dot_product (x1, y1, z1, x2, y2, z2: AL_FIXED): AL_FIXED;
+    INLINE;
 (* Same as @link(al_dot_product) but using floats instead than fixed. *)
   FUNCTION al_dot_product_f (x1, y1, z1, x2, y2, z2: SINGLE): SINGLE;
+    INLINE;
 
 (* Sets the viewport used to scale the output of the @link(al_persp_project)
    function.  Pass the dimensions of the screen area you want to draw onto,
@@ -486,8 +494,10 @@ VAR
    @seealso(al_persp_project_f) @seealso(al_set_projection_viewport)
    @seealso(al_get_camera_matrix) *)
   PROCEDURE al_persp_project (x, y, z: AL_FIXED; VAR xout, yout: AL_FIXED);
+    INLINE;
 (* Same as @link(al_persp_project_f) but using floats instead than fixed. *)
   PROCEDURE al_persp_project_f (x, y, z: SINGLE; VAR xout, yout: SINGLE);
+    INLINE;
 
 
 
@@ -640,14 +650,26 @@ CONST
   value in the vertex structure.  This must only be used after you have set up
   the color mapping table or blender functions!
 
+  @bold(Note:) this polygon type doesn't work correctly in high color and real
+  color graphic modes (i.e. 15, 16, 24 and 32 bits per pixel).  This is a
+  problem with Allegro not Allegro.pas.  8bpp paletted mode works correctly.
+
   @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_LIT        =  8;
 (* Like @link(AL_POLYTYPE_ATEX_LIT), but @link(al_bitmap_mask_color) texture
   map pixels are skipped, allowing parts of the texture map to be transparent.
+
+  @bold(Note:) this polygon type doesn't work correctly in high color and real
+  color graphic modes (i.e. 15, 16, 24 and 32 bits per pixel).  This is a
+  problem with Allegro not Allegro.pas.  8bpp paletted mode works correctly.
   @seealso(al_polygon3d) *)
   AL_POLYTYPE_ATEX_MASK_LIT   =  9;
 (* Like @link(AL_POLYTYPE_PTEX_LIT), but @link(al_bitmap_mask_color) texture
   map pixels are skipped, allowing parts of the texture map to be transparent.
+
+  @bold(Note:) this polygon type doesn't work correctly in high color and real
+  color graphic modes (i.e. 15, 16, 24 and 32 bits per pixel).  This is a
+  problem with Allegro not Allegro.pas.  8bpp paletted mode works correctly.
 
   @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_MASK_LIT   = 10;
@@ -741,10 +763,12 @@ CONST
   PROCEDURE al_polygon3d (bmp: AL_BITMAPptr; _type: LONGINT;
 			  texture: AL_BITMAPptr; vc: LONGINT;
 			  vtx: AL_V3D_LIST);
+    INLINE;
 (* Same as @link(al_polygon3d) but using floats instead than fixed. *)
   PROCEDURE al_polygon3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
 			    texture: AL_BITMAPptr; vc: LONGINT;
 			    vtx: AL_V3D_LIST_F);
+    INLINE;
 
 (* Draw 3D triangles, using fixed point vertex structures.  Unlike
   @link(al_quad3d), this procedure is not a wrapper of @link(al_polygon3d).
@@ -755,18 +779,22 @@ CONST
   @seealso(al_triangle3d_f) *)
   PROCEDURE al_triangle3d (bmp: AL_BITMAPptr; _type: LONGINT;
 			   texture: AL_BITMAPptr; v1, v2, v3: AL_V3Dptr);
+    INLINE;
 (* Same as @link(al_triangle3d) but using floats instead than fixed. *)
   PROCEDURE al_triangle3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
 			   texture: AL_BITMAPptr; v1, v2, v3: AL_V3D_Fptr);
+    INLINE;
 
 (* Draw 3D quads, using fixed point vertex structures.  This is equivalent to
    calling @link(al_polygon3d)@code(@(bmp, type, tex, 4, v@)).
    @seealso(al_triangle3d) @seealso(al_quad3d_f) *)
   PROCEDURE al_quad3d (bmp: AL_BITMAPptr; _type: LONGINT;
 			texture: AL_BITMAPptr; v1, v2, v3, v4: AL_V3Dptr);
+    INLINE;
 (* Same as @link(al_quad3d) but using floats instead than fixed. *)
   PROCEDURE al_quad3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
 			texture: AL_BITMAPptr; v1, v2, v3, v4: AL_V3D_Fptr);
+    INLINE;
 
 VAR
 (* This number (default value = 100.0) controls the behaviour of the z-sorting

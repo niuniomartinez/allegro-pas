@@ -75,18 +75,22 @@ TYPE
    32767) and underflows (trying to convert an integer lesser than -32768) are
    not detected even in debug builds! The values simply "wrap around".  *)
   FUNCTION al_itofix (x: LONGINT): AL_FIXED;
+    INLINE;
 
 (* Converts fixed point to integer, rounding as required to the nearest
    integer. *)
   FUNCTION al_fixtoi (x: AL_FIXED): LONGINT;
+    INLINE;
 
 (* Converts a floating point value to fixed point.  Unlike @link(al_itofix),
    this function clamps values which could overflow the type conversion,
    setting @link(al_errno) to non-zero in the process if this happens. *)
   FUNCTION al_ftofix (x: REAL): AL_FIXED;
+    INLINE;
 
 (* Converts fixed point to floating point. *)
   FUNCTION al_fixtof (x: AL_FIXED): REAL;
+    INLINE;
 
 
 
@@ -98,6 +102,7 @@ TYPE
    integer operators, but if an overflow occurs it will set @link(al_errno)
    and clamp the result, rather than just letting it wrap.*)
   FUNCTION al_fixadd (x, y: AL_FIXED): AL_FIXED;
+    INLINE;
 
 (* Safe function to subtract fixed point numbers clamping underflow.
 
@@ -107,6 +112,7 @@ TYPE
    integer operators, but if an overflow occurs it will set @link(al_errno)
    and clamp the result, rather than just letting it wrap.*)
   FUNCTION al_fixsub (x, y: AL_FIXED): AL_FIXED;
+    INLINE;
 
 (* A fixed point value can be multiplied or divided by an integer with the
    normal `*' and `/' operators.  To multiply two fixed point values, though,
@@ -117,6 +123,7 @@ TYPE
    is successful.  This means that if you are going to test for overflow you
    should set @code(al_errno := 0) before calling @code(al_fixmul). *)
   FUNCTION al_fixmul (x, y: AL_FIXED): AL_FIXED;
+    INLINE;
 
 (* A fixed point value can be divided by an integer with the normal `/' and
    @code(DIV) operators.  To divide two fixed point values, though, you must
@@ -127,6 +134,7 @@ TYPE
    is successful.  This means that if you are going to test for overflow you
    should set @code(al_errno := 0) before calling @code(al_fixdiv). *)
   FUNCTION al_fixdiv (x, y: AL_FIXED): AL_FIXED;
+    INLINE;
 
 (* This finds out the non negative square root of `x'.  If `x' is negative,
    @link(al_errno) is set to @code(EDOM) and the function returns zero. *)
@@ -147,17 +155,23 @@ CONST
 
 (* This function finds the sine of a value using a lookup table. *)
   FUNCTION al_fixsin (x: AL_FIXED): AL_FIXED;
+    INLINE;
 
 (* This function finds the cosine of a value using a lookup table. *)
   FUNCTION al_fixcos (x: AL_FIXED): AL_FIXED;
+    INLINE;
+
 (* This function finds the tangent of a value using a lookup table. *)
   FUNCTION al_fixtan (x: AL_FIXED): AL_FIXED;
+    INLINE;
 
 (* This function finds the inverse sine of a value using a lookup table. *)
   FUNCTION al_fixasin (x: AL_FIXED): AL_FIXED;
+    INLINE;
 
 (* This function finds the inverse cosine of a value using a lookup table. *)
   FUNCTION al_fixacos (x: AL_FIXED): AL_FIXED;
+    INLINE;
 
 (* Fixed point hypotenuse (returns the square root of `x*x + y*y').  This
    should be better than calculating the formula yourself manually, since the

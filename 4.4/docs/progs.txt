@@ -215,6 +215,15 @@
   @bold(See also:) @link(al_enable_hardware_cursor) @link(al_gfx_capabilities)
   @link(al_select_mouse_cursor)
 
+  @section(2 Lazarus Lazarus example)
+
+  This program shows a way to use Allegro.pas within Lazarus application.  It
+  presents a window with a menu that allows to load a bitmap, which is draw
+  in the window, or a sound, which is played.
+
+  Read all comments, including the ones at the @code(example.lpr) file for
+  detailed information.
+
 @section(1 tools Tools)
 
 @section(2 grabber Grabber)
