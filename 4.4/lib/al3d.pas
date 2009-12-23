@@ -417,11 +417,9 @@ VAR
    result in (xout, yout, zout). @seealso(al_matrix_mul) *)
   PROCEDURE al_apply_matrix (m: AL_MATRIXptr;
 		x, y, z: AL_FIXED; VAR xout, yout, zout: AL_FIXED);
-    INLINE;
 (* Same as @link(al_apply_matrix) but using floats instead than fixed. *)
   PROCEDURE al_apply_matrix_f (m: AL_MATRIX_Fptr;
 		x, y, z: SINGLE; VAR xout, yout, zout: SINGLE);
-    INLINE;
 
 (* Calculates the length of the vector (x, y, z), using that good 'ole
    Pythagoras theorem.

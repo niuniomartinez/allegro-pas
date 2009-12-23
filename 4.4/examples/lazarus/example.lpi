@@ -9,7 +9,7 @@
       <Title Value="The Allegro's Lazarus example"/>
       <Icon Value="0"/>
       <UseXPManifest Value="True"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -36,9 +36,9 @@
         <Filename Value="example.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="example"/>
-        <CursorPos X="9" Y="66"/>
-        <TopLine Value="52"/>
-        <UsageCount Value="24"/>
+        <CursorPos X="34" Y="39"/>
+        <TopLine Value="23"/>
+        <UsageCount Value="26"/>
       </Unit0>
       <Unit1>
         <Filename Value="UnitMainForm.pas"/>
@@ -46,19 +46,21 @@
         <ComponentName Value="Form1"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitMainForm"/>
-        <CursorPos X="1" Y="147"/>
-        <TopLine Value="121"/>
+        <CursorPos X="71" Y="139"/>
+        <TopLine Value="129"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="UnitBitmapInterface.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="UnitBitmapInterface"/>
-        <CursorPos X="1" Y="86"/>
-        <TopLine Value="46"/>
-        <UsageCount Value="24"/>
+        <CursorPos X="1" Y="101"/>
+        <TopLine Value="87"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="26"/>
+        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="../../../../../../../usr/lib/lazarus/0.9.28.2/lcl/forms.pp"/>
@@ -96,123 +98,95 @@
         <UsageCount Value="10"/>
       </Unit7>
     </Units>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="22" HistoryIndex="21">
       <Position1>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="134" Column="57" TopLine="119"/>
+        <Caret Line="134" Column="1" TopLine="117"/>
       </Position1>
       <Position2>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="138" Column="67" TopLine="118"/>
+        <Caret Line="140" Column="1" TopLine="117"/>
       </Position2>
       <Position3>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="41" Column="33" TopLine="1"/>
+        <Caret Line="46" Column="2" TopLine="25"/>
       </Position3>
       <Position4>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="139" Column="1" TopLine="117"/>
+        <Caret Line="45" Column="2" TopLine="25"/>
       </Position4>
       <Position5>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="140" Column="1" TopLine="117"/>
+        <Caret Line="46" Column="2" TopLine="25"/>
       </Position5>
       <Position6>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="139" Column="1" TopLine="117"/>
+        <Caret Line="47" Column="2" TopLine="25"/>
       </Position6>
       <Position7>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="138" Column="1" TopLine="117"/>
+        <Caret Line="46" Column="2" TopLine="25"/>
       </Position7>
       <Position8>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="137" Column="1" TopLine="117"/>
+        <Caret Line="81" Column="24" TopLine="61"/>
       </Position8>
       <Position9>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="136" Column="1" TopLine="117"/>
+        <Caret Line="80" Column="24" TopLine="61"/>
       </Position9>
       <Position10>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="135" Column="1" TopLine="117"/>
+        <Caret Line="79" Column="24" TopLine="61"/>
       </Position10>
       <Position11>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="134" Column="1" TopLine="117"/>
+        <Caret Line="78" Column="24" TopLine="61"/>
       </Position11>
       <Position12>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="140" Column="1" TopLine="117"/>
+        <Caret Line="79" Column="24" TopLine="61"/>
       </Position12>
       <Position13>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="46" Column="2" TopLine="25"/>
+        <Caret Line="80" Column="24" TopLine="61"/>
       </Position13>
       <Position14>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="45" Column="2" TopLine="25"/>
+        <Caret Line="81" Column="24" TopLine="61"/>
       </Position14>
       <Position15>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="46" Column="2" TopLine="25"/>
+        <Caret Line="82" Column="24" TopLine="61"/>
       </Position15>
       <Position16>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="47" Column="2" TopLine="25"/>
+        <Caret Line="69" Column="67" TopLine="69"/>
       </Position16>
       <Position17>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="46" Column="2" TopLine="25"/>
+        <Caret Line="70" Column="67" TopLine="69"/>
       </Position17>
       <Position18>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="81" Column="24" TopLine="61"/>
+        <Caret Line="152" Column="46" TopLine="116"/>
       </Position18>
       <Position19>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="80" Column="24" TopLine="61"/>
+        <Caret Line="159" Column="46" TopLine="119"/>
       </Position19>
       <Position20>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="79" Column="24" TopLine="61"/>
+        <Caret Line="184" Column="1" TopLine="157"/>
       </Position20>
       <Position21>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="78" Column="24" TopLine="61"/>
+        <Caret Line="183" Column="1" TopLine="159"/>
       </Position21>
       <Position22>
         <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="79" Column="24" TopLine="61"/>
+        <Caret Line="151" Column="2" TopLine="127"/>
       </Position22>
-      <Position23>
-        <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="80" Column="24" TopLine="61"/>
-      </Position23>
-      <Position24>
-        <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="81" Column="24" TopLine="61"/>
-      </Position24>
-      <Position25>
-        <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="82" Column="24" TopLine="61"/>
-      </Position25>
-      <Position26>
-        <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="69" Column="67" TopLine="69"/>
-      </Position26>
-      <Position27>
-        <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="70" Column="67" TopLine="69"/>
-      </Position27>
-      <Position28>
-        <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="152" Column="46" TopLine="116"/>
-      </Position28>
-      <Position29>
-        <Filename Value="UnitMainForm.pas"/>
-        <Caret Line="159" Column="46" TopLine="119"/>
-      </Position29>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

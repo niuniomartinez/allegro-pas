@@ -1,20 +1,21 @@
 object Form1: TForm1
-  Left = 390
-  Height = 453
-  Top = 158
-  Width = 624
+  Left = 240
+  Height = 300
+  Top = 138
+  Width = 400
   Caption = 'The Allegro''s Lazarus example'
-  ClientHeight = 428
-  ClientWidth = 624
+  ClientHeight = 273
+  ClientWidth = 400
   Menu = MainMenu1
   OnClose = FormClose
+  OnCreate = FormCreate
   Position = poDefault
   LCLVersion = '0.9.28.2'
   object PaintBox: TPaintBox
     Left = 0
-    Height = 428
+    Height = 273
     Top = 0
-    Width = 624
+    Width = 400
     Align = alClient
     OnPaint = PaintBoxPaint
   end
@@ -32,10 +33,6 @@ object Form1: TForm1
         Caption = 'Load &picture...'
         OnClick = MenuItem3Click
       end
-      object MenuItem4: TMenuItem
-        Caption = 'Load &sound...'
-        OnClick = MenuItem4Click
-      end
     end
     object MenuItem2: TMenuItem
       Caption = '?'
@@ -44,10 +41,5 @@ object Form1: TForm1
         OnClick = MenuItem5Click
       end
     end
-  end
-  object OpenSoundDialog: TOpenDialog
-    Filter = 'Sound files (*.voc, *.wav)|*.voc;*.wav|Creative Labs (*.voc)|*.voc|Windows wave (*.wav)|*.wav'
-    left = 192
-    top = 80
   end
 end
