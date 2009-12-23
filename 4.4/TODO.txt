@@ -1,11 +1,12 @@
+* MIDI:
+  + load_ibk
+
+* Audio stream (all).
+
 * Tools
 
   + GUI creator:  Simple drag'n'drop editor using Allegro's GUI.  Save GUIs
     as text files (may be XML?) and as Pascal unit.
-
-* Rotate sprite/bitmap
-
-  Just make it run, even if it's "ugly".
 
 * UNICODE
 
@@ -16,8 +17,5 @@
 
   The idea is to complete the documentation specially adding more "See also"
   sections and some code snipets in some parts.
-
-  Also more examples, specially one or two to show how to integrate Allegro.pas
-  in Lazarus projects and may be others.
 
 * New installation system via fpmake and/or fpcmake.

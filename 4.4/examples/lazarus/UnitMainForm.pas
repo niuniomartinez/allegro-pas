@@ -40,15 +40,12 @@ TYPE
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
-    MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
     OpenBitmapDialog: TOpenDialog;
-    OpenSoundDialog: TOpenDialog;
     PaintBox: TPaintBox;
     PROCEDURE FormCreate(Sender: TObject);
     PROCEDURE FormClose(Sender: TObject; VAR CloseAction: TCloseAction);
     PROCEDURE MenuItem3Click(Sender: TObject);
-    PROCEDURE MenuItem4Click(Sender: TObject);
     PROCEDURE MenuItem5Click(Sender: TObject);
     PROCEDURE PaintBoxPaint(Sender: TObject);
   PRIVATE
@@ -56,8 +53,6 @@ TYPE
     fBitmap: AL_BITMAPptr;
   (* The palette. *)
     fPalette: AL_PALETTE;
-  (* The sound to play. *)
-    fSample: AL_SAMPLEptr;
   PUBLIC
     { PUBLIC declarations }
   END; 
@@ -79,7 +74,6 @@ USES
 PROCEDURE TForm1.FormCreate(Sender: TObject);
 BEGIN
   fBitmap := NIL; { No bitmap! }
-  fSample := NIL; { No sound! }
 END;
 
 
@@ -94,9 +88,6 @@ BEGIN
   IF fBitmap <> NIL THEN
     al_destroy_bitmap (fBitmap);
   fBitmap := NIL;
-  IF fSample <> NIL THEN
-    al_destroy_sample (fSample);
-  fSample := NIL;
 END;
 
 
@@ -125,31 +116,7 @@ END;
 
 
 
-(* Allows to select a sound sample, loads it and playw it once.
-   See the file filter in the OpenBitmapDialog's Filter property.
-     It lists only the formats supported by Allegro. *)
-PROCEDURE TForm1.MenuItem4Click(Sender: TObject);
-BEGIN
-  IF OpenSoundDialog.Execute THEN
-  BEGIN
-  { If there is a sample, destroys it. }
-    IF fSample <> NIL THEN
-      al_destroy_sample (fSample);
-  { Loads the sample. }
-    fSample := al_load_sample (OpenSoundDialog.FileName);
-    IF fSample = NIL THEN
-      Application.MessageBox (
-        PChar ('Can''t load file '+ExtractFileName (OpenSoundDialog.FileName)),
-        'Error', MB_ICONERROR)
-    ELSE
-    { Plays the sample once. }
-      al_play_sample (fSample, 255, 127, 1000, 0);
-  END;
-END;
-
-
-
-(* Shows a message box with a brief explaining of the project. *)
+(* Shows a message box with a brief explanation of the project. *)
 PROCEDURE TForm1.MenuItem5Click (Sender: TObject);
 BEGIN
   Application.MessageBox (
@@ -163,12 +130,24 @@ END;
 
 (* Paints the bitmap if exists. *)
 PROCEDURE TForm1.PaintBoxPaint(Sender: TObject);
+VAR
+  ZoomedImage: AL_BITMAPptr;
 BEGIN
   IF fBitmap = NIL THEN
     EXIT;
   TRY
-  { Creates a temporal bitmap. }
-    BlitBitmap2Canvans (fBitmap, fPalette, PaintBox.Canvas);
+  { Creates a temporal bitmap to zoom the image to fit the client area. }
+    ZoomedImage := al_create_bitmap_ex (al_bitmap_color_depth (fBitmap),
+                PaintBox.Canvas.Width, PaintBox.Canvas.Height);
+    al_stretch_blit (fBitmap, ZoomedImage,
+      0, 0, fBitmap^.w, fBitmap^.h,
+      0, 0, ZoomedImage^.w, ZoomedImage^.h);
+    TRY
+      BlitBitmap2Canvans (ZoomedImage, fPalette, PaintBox.Canvas);
+    FINALLY
+    { Destroys the temporal file. }
+      al_destroy_bitmap (ZoomedImage);
+    END;
   EXCEPT
     ON Error: Exception DO
       Application.MessageBox (PChar (Error.Message), 'Error', MB_ICONERROR);
@@ -179,6 +158,5 @@ END;
 
 INITIALIZATION
   {$I UnitMainForm.lrs}
-
 END.
 

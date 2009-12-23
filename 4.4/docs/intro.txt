@@ -15,10 +15,6 @@
   Allegro.pas is a wrapper to allow Pascal compilers (such as Free Pascal or
   Delphi) to use the Allegro library.
 
-  This version is a BETA version.  It has some things that just don't work or
-  that will change in the near future.  Please see
-  @link(objectives section "Objectives") for a brief description of the goals.
-
   Read @link(use section "How to use Allegro.pas") for a description of the
   main module of the library.
 

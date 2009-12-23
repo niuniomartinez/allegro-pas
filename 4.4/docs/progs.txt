@@ -218,8 +218,8 @@
   @section(2 Lazarus Lazarus example)
 
   This program shows a way to use Allegro.pas within Lazarus application.  It
-  presents a window with a menu that allows to load a bitmap, which is draw
-  in the window, or a sound, which is played.
+  presents a window with a menu that allows to load a bitmap, which is drawn
+  in the window.
 
   Read all comments, including the ones at the @code(example.lpr) file for
   detailed information.

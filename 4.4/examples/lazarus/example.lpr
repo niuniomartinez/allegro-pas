@@ -15,8 +15,7 @@ PROGRAM example;
 
    This project has 3 files:
    * example.lpr:  The main file.
-   * UnitMainForm:  The main window description.  It also implements Allegro's
-                    initialization and finalization.
+   * UnitMainForm:  The main window.
    * UnitBitmapInterface:  A helpful unit, it helps to integrate Allegro's
                            AL_BITMAP structure and LCL's TPaintBox and so.
 
@@ -37,39 +36,45 @@ USES
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, UnitMainForm, LResources, UnitBitmapInterface
+  Forms, UnitMainForm, LResources
   { you can add units after this }
-  , allegro, LCLType;
+  , Allegro, LCLType;
 
 {$IFDEF WINDOWS}{$R example.rc}{$ENDIF}
+
+
+
+  VAR
+  (* Result of Allegro initialisation. *)
+    RS: BOOLEAN;
 
 BEGIN
   Application.Title := 'The Allegro''s Lazarus example';
   {$I example.lrs}
-  Application.Initialize;
-{ Initializes Allegro. }
-  IF NOT al_init THEN
-    Application.MessageBox ('Can''t initialize Allegro',
-      'Error', MB_ICONERROR)
-  ELSE BEGIN
-  { Avoid automatic color conversion when loading bitmpas.  This way the
-    example shows how to deal with different color formats. }
-    al_set_color_conversion (AL_COLORCONV_NONE);
-  { Use a TRY .. FINALLY block to be sure Allegro is finalized correctly. }
-    TRY
-    { Try to initialize sound system. }
-      IF NOT al_install_sound (AL_DIGI_AUTODETECT, AL_MIDI_AUTODETECT) THEN
-        IF NOT al_install_sound (AL_DIGI_AUTODETECT, AL_MIDI_NONE) THEN
-          Application.MessageBox ('Can''t initialize sound.' +#10+
-            'The example will continue anyway', 'Warning', MB_ICONEXCLAMATION)
-        ELSE
-          Application.MessageBox ('No complete support for sound.' +#10+
-            'The example will continue anyway', 'Warning', MB_ICONEXCLAMATION);
+{ Initialise Allegro, avoiding interferences.
+  As we call al_install using "AL_SYSTEM_NONE" we can't use timers, keyboard,
+  graphics modes, joysticks, sound, etc.  If you try to initialize them then
+  it will throw a segmentation fault exception or just doesn't do nothing. }
+  RS := al_install (AL_SYSTEM_NONE);
+{ Uses a TRY .. FINALLY structure to be sure it will call "al_exit". }
+  TRY
+  { Initialises application. }
+    Application.Initialize;
+  { If Allegro did initialised, we follow normally. }
+    IF RS THEN
+    BEGIN
       Application.CreateForm(TForm1, Form1);
-      Application.Run;
-    FINALLY
-      al_exit;
+    { Avoids automatic color conversion when loading bitmpas.  This way the
+      example shows how to deal with different color formats. }
+      al_set_color_conversion (AL_COLORCONV_NONE);
+    END
+    ELSE BEGIN
+      Application.MessageBox ('Can''t initialize Allegro',
+        'Error', MB_ICONERROR);
     END;
+    Application.Run;
+  FINALLY
+    al_exit;
   END;
 END.
 

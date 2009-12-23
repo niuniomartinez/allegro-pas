@@ -18,6 +18,9 @@ UNIT UnitBitmapInterface;
 
    A helpful unit, it helps to integrate Allegro's AL_BITMAP structure and
    LCL's TCanvas.
+
+   I'm sure there's a faster way to draw pixels in the canvas but I can't find
+   it in the Lazarus' documentation.  If you find it, pleas send it me.
  *)
 
 {$mode objfpc}{$H+}
@@ -26,8 +29,6 @@ INTERFACE
 
 USES
   allegro, Graphics;
-
-
 
 (* Draws the given bitmap in the given canvas. *)
   PROCEDURE BlitBitmap2Canvans (aBitmap: AL_BITMAPptr; aPalette: AL_PALETTE;
@@ -100,13 +101,17 @@ USES
   PROCEDURE BlitBitmap2Canvans (aBitmap: AL_BITMAPptr; aPalette: AL_PALETTE;
                                 aCanvas: TCanvas);
   BEGIN
-  { Different color depths, different methods. }
-    IF al_bitmap_color_depth (aBitmap) = 8 THEN
-      BlitPalettedBitmap (aBitmap, aPalette, aCanvas)
-    ELSE IF al_bitmap_color_depth (aBitmap) IN [15, 16, 24, 32] THEN
-      BlitHighTrueBitmap (aBitmap, aCanvas)
-    ELSE
-      RAISE Exception.Create ('Unsupported Bitmap depth!');
+    TRY
+    { Different color depths, different methods. }
+      IF al_bitmap_color_depth (aBitmap) = 8 THEN
+        BlitPalettedBitmap (aBitmap, aPalette, aCanvas)
+      ELSE IF al_bitmap_color_depth (aBitmap) IN [15, 16, 24, 32] THEN
+        BlitHighTrueBitmap (aBitmap, aCanvas)
+      ELSE
+        RAISE Exception.Create ('Unsupported Bitmap depth!');
+    FINALLY
+      aCanvas.
+    END;
   END;
 
 END.

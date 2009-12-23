@@ -5,12 +5,21 @@ Cambios entre las versiones 4.4.0 Beta2 y 4.4.0
   ------------------
   * Corregidos parámetros de al_getr_depth, al_getb_depth, al_getb_depth y
     al_geta_depth, así como el enlace a las funciones correspondientes.
+  * Corregida declaración de la variable al_mouse_w
+
+ Novedades
+ ---------
+  + Añadido ejemplo de integración con Lazarus.
+  + Añadida función al_get_midi_length.
 
  Otros
  -----
- - Eliminado el aviso de error en el ejemplo exsprite, ya que la nueva versión
-   de Allegro no falla.
- - Añadido ejemplo de integración con Lazarus.
+  - Eliminado el aviso de error en el ejemplo exsprite, ya que la nueva versión
+    de Allegro no falla.
+  - Eliminado el aviso de error en la documentación de las funciones 3D
+    referente a las texturas, pero añadido uno referente al modo "LIT", para
+    reflejar la nueva situación.
+  - Muchas funciones y procedimientos hechos "inline".
 
 
 

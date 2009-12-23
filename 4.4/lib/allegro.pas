@@ -49,10 +49,10 @@ CONST
   AL_PAS_VERSION = 0;
 (* Defined to TRUE if current version is a BETA version.  A BETA version is a
    test version and may be uncomplete or untested. *)
-  AL_PAS_IS_BETA = TRUE;
+  AL_PAS_IS_BETA = FALSE;
 (* Defined to a text string containing all version numbers and maybe some
    additional text. *)
-  AL_PAS_VERSION_STR = '4.4.0 beta';
+  AL_PAS_VERSION_STR = '4.4.0';
 
 
 
@@ -3564,6 +3564,21 @@ VAR
    value of 2 means the MIDI file looped back to the start.) *)
   FUNCTION al_midi_seek(target: LONGINT): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_seek';
+
+(* This function will simulate playing the given MIDI, from start to end, to
+   determine how long it takes to play.  After calling this function,
+   @link(al_midi_pos) will contain the negative number of beats, and
+   @link(al_midi_time) the length of the midi, in seconds.
+
+   Note that any currently playing midi is stopped when you call this function.
+   Usually you would call it before @link(al_play_midi), to get the length of
+   the midi to be played.
+
+   @returns(the value of al_midi_time, the length of the midi.)
+   @seealso(al_load_midi) @seealso(al_midi_time) @seealso(al_midi_pos)
+ *)
+  FUNCTION al_get_midi_length (midi: AL_MIDIptr): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_midi_length';
 
 (* Streams a block of MIDI commands into the player in real-time, allowing you
    to trigger notes, jingles, etc, over the top of whatever MIDI file is
