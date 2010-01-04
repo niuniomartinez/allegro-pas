@@ -39,12 +39,8 @@ USES
 TYPE
 (* Extends the basic cube. *)
   TRotableCube = CLASS (TCube)
-  PRIVATE
-    Rotate: TVector;
   PUBLIC
     CONSTRUCTOR Create (aTexture: AL_BITMAPptr); OVERLOAD;
-    DESTRUCTOR Destroy; OVERRIDE;
-    PROCEDURE Update;
   END;
 
 
@@ -54,26 +50,6 @@ TYPE
   BEGIN
     INHERITED Create (0, 0, al_itofix (-5), al_itofix (1), aTexture);
     DrawMode := POLYTYPE_WIRED;
-    Rotate := TVector.Create (al_ftofix ((Random (32) - 16) / 8),
-			      al_ftofix ((Random (32) - 16) / 8),
-			      al_ftofix ((Random (32) - 16) / 8));
-  END;
-
-
-
-(* Destructor. *)
-  DESTRUCTOR TRotableCube.Destroy;
-  BEGIN
-    Rotate.Free;
-    INHERITED Destroy;
-  END;
-
-
-
-(* Updates the cube. *)
-  PROCEDURE TRotableCube.Update;
-  BEGIN
-    Ang.Add (Rotate);
   END;
 
 

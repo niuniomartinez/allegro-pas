@@ -59,8 +59,13 @@ TYPE
 (* A simple cube. *)
   TCube = CLASS
   PRIVATE
-    fPosition, fAngle: TVector;
+    fPosition, fAngle, fRotate: TVector;
     fSize: AL_FIXED;
+    fVertexColor: ARRAY [1..4] OF INTEGER;
+    fUseZbuff: INTEGER;
+
+    PROCEDURE SetUseZbuff (UseIt: BOOLEAN);
+    FUNCTION GetUseZbuff: BOOLEAN;
   PROTECTED
     fDrawmode: LONGINT;
     fTexture: AL_BITMAPptr;
@@ -70,9 +75,12 @@ TYPE
   PUBLIC
   (* Creates the cube. *)
     CONSTRUCTOR Create (px, py, pz, aSize: AL_FIXED; aTexture: AL_BITMAPptr);
-	VIRTUAL;
   (* Destroys the cube. *)
     DESTRUCTOR Destroy; OVERRIDE;
+  (* Sets a color for the cube. *)
+    PROCEDURE SetColor (aR, aG, aB: INTEGER);
+  (* Updates cube. *)
+    PROCEDURE Update; VIRTUAL;
   (* Draws the cube. *)
     PROCEDURE Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIXptr); VIRTUAL;
 
@@ -86,6 +94,8 @@ TYPE
     PROPERTY DrawMode: LONGINT READ fDrawmode WRITE fDrawmode;
   (* Cube texture.  Note it isn't destroyed by the cube. *)
     PROPERTY Texture: AL_BITMAPptr READ fTexture WRITE fTexture;
+  (* To use Z-buffer if available.  Don't use it by default. *)
+    PROPERTY UseZbuff: BOOLEAN READ GetUseZbuff WRITE SetUseZbuff;
   PRIVATE
   (* Draws the faces. *)
     PROCEDURE DrawFaces (aBitmap: AL_BITMAPptr);
@@ -145,13 +155,36 @@ VAR
 
 
 
+(* Set or clear the use of Z-buffer. *)
+  PROCEDURE TCube.SetUseZbuff (UseIt: BOOLEAN);
+  BEGIN
+    IF UseIt THEN
+      fUseZbuff := AL_POLYTYPE_ZBUF
+    ELSE
+      fUseZbuff := 0;
+  END;
+
+
+
+(* Returns TRUE if it uses Z-buffer. *)
+  FUNCTION TCube.GetUseZbuff: BOOLEAN;
+  BEGIN
+    RESULT := (fUseZbuff = AL_POLYTYPE_ZBUF);
+  END;
+
+
+
 (* Constructor. *)
   CONSTRUCTOR TCube.Create (px, py, pz, aSize: AL_FIXED; aTexture: AL_BITMAPptr);
   BEGIN
     fPosition := TVector.Create (px, py, pz);
     fAngle := TVector.Create (0, 0, 0);
+    fRotate := TVector.Create (al_ftofix ((Random (32) - 16) / 8),
+			       al_ftofix ((Random (32) - 16) / 8),
+			       al_ftofix ((Random (32) - 16) / 8));
     fSize := aSize;
     fTexture := aTexture;
+    fUseZbuff := 0;
     IF fTexture <> NIL THEN
     BEGIN
       fDrawmode  := AL_POLYTYPE_PTEX;
@@ -160,6 +193,10 @@ VAR
     END
     ELSE
       fDrawmode := AL_POLYTYPE_FLAT;
+    fVertexColor[1] := $000000;
+    fVertexColor[2] := $7F0000;
+    fVertexColor[3] := $FF0000;
+    fVertexColor[4] := $7F0000;
   END;
 
 
@@ -169,7 +206,32 @@ VAR
   BEGIN
     fPosition.Free;
     fAngle.Free;
+    fRotate.Free;
     INHERITED Destroy;
+  END;
+
+
+
+(* Sets a color for the cube. *)
+  PROCEDURE TCube.SetColor (aR, aG, aB: INTEGER);
+  VAR
+    tR, tG, tB: INTEGER;
+  BEGIN
+    tR := aR SHR 1;
+    tG := aG SHR 1;
+    tB := aB SHR 1;
+  { Vertex 1 is still black. }
+    fVertexColor[2] := (tR SHL 16) OR (tG SHL 8) OR tB;
+    fVertexColor[3] := (aR SHL 16) OR (aG SHL 8) OR aB;
+    fVertexColor[4] := fVertexColor[2];
+  END;
+
+
+
+(* Updates the cube. *)
+  PROCEDURE TCube.Update;
+  BEGIN
+    fAngle.Add (fRotate);
   END;
 
 
@@ -209,10 +271,10 @@ VAR
 	  Point[1].c := al_palette_color^[Cnt+1];
 	AL_POLYTYPE_GRGB:
 	  BEGIN
-	    Point[1].c := $000000;
-	    Point[2].c := $7F0000;
-	    Point[3].c := $FF0000;
-	    Point[4].c := $7F0000;
+	    Point[1].c := fVertexColor[1];
+	    Point[2].c := fVertexColor[2];
+	    Point[3].c := fVertexColor[3];
+	    Point[4].c := fVertexColor[4];
 	  END;
 	  ELSE BEGIN
 	    Point[1].c := al_palette_color^[$D0];
@@ -308,7 +370,7 @@ VAR
     BEGIN
       IF fDrawmode <> POLYTYPE_WIRED THEN
       BEGIN
-	al_quad3d (aBitmap, fDrawmode, fTexture, @Point[1], @Point[2], @Point[3], @Point[4])
+	al_quad3d (aBitmap, fDrawmode OR fUseZbuff, fTexture, @Point[1], @Point[2], @Point[3], @Point[4])
       END
       ELSE BEGIN
 	al_line (aBitmap, Point[1].x SHR 16, Point[1].y SHR 16,
