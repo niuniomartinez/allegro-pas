@@ -101,17 +101,13 @@ USES
   PROCEDURE BlitBitmap2Canvans (aBitmap: AL_BITMAPptr; aPalette: AL_PALETTE;
                                 aCanvas: TCanvas);
   BEGIN
-    TRY
-    { Different color depths, different methods. }
-      IF al_bitmap_color_depth (aBitmap) = 8 THEN
-        BlitPalettedBitmap (aBitmap, aPalette, aCanvas)
-      ELSE IF al_bitmap_color_depth (aBitmap) IN [15, 16, 24, 32] THEN
-        BlitHighTrueBitmap (aBitmap, aCanvas)
-      ELSE
-        RAISE Exception.Create ('Unsupported Bitmap depth!');
-    FINALLY
-      aCanvas.
-    END;
+  { Different color depths, different methods. }
+    IF al_bitmap_color_depth (aBitmap) = 8 THEN
+      BlitPalettedBitmap (aBitmap, aPalette, aCanvas)
+    ELSE IF al_bitmap_color_depth (aBitmap) IN [15, 16, 24, 32] THEN
+      BlitHighTrueBitmap (aBitmap, aCanvas)
+    ELSE
+      RAISE Exception.Create ('Unsupported Bitmap depth!');
   END;
 
 END.
