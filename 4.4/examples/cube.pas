@@ -62,10 +62,10 @@ TYPE
     fPosition, fAngle, fRotate: TVector;
     fSize: AL_FIXED;
     fVertexColor: ARRAY [1..4] OF INTEGER;
-    fUseZbuff: INTEGER;
+    fUseZbuff: BOOLEAN;
+    fZbuff: INTEGER;
 
     PROCEDURE SetUseZbuff (UseIt: BOOLEAN);
-    FUNCTION GetUseZbuff: BOOLEAN;
   PROTECTED
     fDrawmode: LONGINT;
     fTexture: AL_BITMAPptr;
@@ -75,6 +75,7 @@ TYPE
   PUBLIC
   (* Creates the cube. *)
     CONSTRUCTOR Create (px, py, pz, aSize: AL_FIXED; aTexture: AL_BITMAPptr);
+	VIRTUAL;
   (* Destroys the cube. *)
     DESTRUCTOR Destroy; OVERRIDE;
   (* Sets a color for the cube. *)
@@ -95,7 +96,7 @@ TYPE
   (* Cube texture.  Note it isn't destroyed by the cube. *)
     PROPERTY Texture: AL_BITMAPptr READ fTexture WRITE fTexture;
   (* To use Z-buffer if available.  Don't use it by default. *)
-    PROPERTY UseZbuff: BOOLEAN READ GetUseZbuff WRITE SetUseZbuff;
+    PROPERTY UseZbuff: BOOLEAN READ fUseZbuff WRITE SetUseZbuff;
   PRIVATE
   (* Draws the faces. *)
     PROCEDURE DrawFaces (aBitmap: AL_BITMAPptr);
@@ -158,18 +159,11 @@ VAR
 (* Set or clear the use of Z-buffer. *)
   PROCEDURE TCube.SetUseZbuff (UseIt: BOOLEAN);
   BEGIN
+    fUseZbuff := UseIt;
     IF UseIt THEN
-      fUseZbuff := AL_POLYTYPE_ZBUF
+      fZbuff := AL_POLYTYPE_ZBUF
     ELSE
-      fUseZbuff := 0;
-  END;
-
-
-
-(* Returns TRUE if it uses Z-buffer. *)
-  FUNCTION TCube.GetUseZbuff: BOOLEAN;
-  BEGIN
-    RESULT := (fUseZbuff = AL_POLYTYPE_ZBUF);
+      fZbuff := 0;
   END;
 
 
@@ -184,7 +178,8 @@ VAR
 			       al_ftofix ((Random (32) - 16) / 8));
     fSize := aSize;
     fTexture := aTexture;
-    fUseZbuff := 0;
+    fUseZbuff := FALSE;
+    fZbuff := 0;
     IF fTexture <> NIL THEN
     BEGIN
       fDrawmode  := AL_POLYTYPE_PTEX;
@@ -321,7 +316,7 @@ VAR
 	IF (Normal < 0) THEN
 	  CONTINUE;
       END;
-    { Insert the face in the face list ordered by Z. }
+    { Insert the face in the face list. }
       INC (fVisibleFaces);
     { If list is empty. }
       IF fVisibleFaces = 1 THEN
@@ -370,7 +365,7 @@ VAR
     BEGIN
       IF fDrawmode <> POLYTYPE_WIRED THEN
       BEGIN
-	al_quad3d (aBitmap, fDrawmode OR fUseZbuff, fTexture, @Point[1], @Point[2], @Point[3], @Point[4])
+	al_quad3d (aBitmap, fDrawmode OR fZbuff, fTexture, @Point[1], @Point[2], @Point[3], @Point[4])
       END
       ELSE BEGIN
 	al_line (aBitmap, Point[1].x SHR 16, Point[1].y SHR 16,
