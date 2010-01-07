@@ -44,14 +44,13 @@ USES
 
 
 
-  VAR
-  (* Result of Allegro initialisation. *)
-    RS: BOOLEAN;
-
+VAR
+(* Result of Allegro initialisation. *)
+  RS: BOOLEAN;
 BEGIN
   Application.Title := 'The Allegro''s Lazarus example';
   {$I example.lrs}
-{ Initialise Allegro, avoiding interferences.
+{ Initialises Allegro, avoiding interferences.
   As we call al_install using "AL_SYSTEM_NONE" we can't use timers, keyboard,
   graphics modes, joysticks, sound, etc.  If you try to initialize them then
   it will throw a segmentation fault exception or just doesn't do nothing. }

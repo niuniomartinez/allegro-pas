@@ -9,7 +9,7 @@
       <Title Value="The Allegro's Lazarus example"/>
       <Icon Value="0"/>
       <UseXPManifest Value="True"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -46,8 +46,8 @@
         <ComponentName Value="Form1"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="UnitMainForm"/>
-        <CursorPos X="71" Y="139"/>
-        <TopLine Value="129"/>
+        <CursorPos X="3" Y="122"/>
+        <TopLine Value="119"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="26"/>
         <Loaded Value="True"/>
@@ -98,7 +98,7 @@
         <UsageCount Value="10"/>
       </Unit7>
     </Units>
-    <JumpHistory Count="22" HistoryIndex="21">
+    <JumpHistory Count="23" HistoryIndex="22">
       <Position1>
         <Filename Value="UnitMainForm.pas"/>
         <Caret Line="134" Column="1" TopLine="117"/>
@@ -187,6 +187,10 @@
         <Filename Value="UnitMainForm.pas"/>
         <Caret Line="151" Column="2" TopLine="127"/>
       </Position22>
+      <Position23>
+        <Filename Value="UnitMainForm.pas"/>
+        <Caret Line="139" Column="71" TopLine="129"/>
+      </Position23>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

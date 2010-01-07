@@ -48,7 +48,7 @@ TYPE
 (* Creates the cube. *)
   CONSTRUCTOR TRotableCube.Create (aTexture: AL_BITMAPptr);
   BEGIN
-    INHERITED Create (0, 0, al_itofix (-5), al_itofix (1), aTexture);
+    INHERITED Create (0, 0, al_itofix (5), al_itofix (1), aTexture);
     DrawMode := POLYTYPE_WIRED;
   END;
 

@@ -1,22 +1,21 @@
-ex3d.pp      - 3D demo.
-exblend.pp:	How to use the translucency functions in truecolor video modes.
-excolmap.pp:	Creating graphical effects with color mapping tables.
-exdata.pp:	Appending datafiles onto your executable.
-exdbuf.pp:	How to use double buffering to avoid flicker.
-exfixed.pp:	Using fixed point maths.
-exgui.pp:	Using menu and dialog objects.
-exhello.pp:	Simple graphical "hello world" program.
-exhsvrgb.pp:	Translating HSV space -> RGB values.
-exkeys.pp:	Demonstrates how to access the keyboard.
-exmouse.pp:	Getting input from the mouse.
-expal.pp:	Palette effects and color cycling.
-expat.pp:	Using patterned drawing modes and sub-bitmaps.
-exsprite.pp:	Datafiles access and sprite animation.
-exscn3d.pp   - Using the 3d scene functions.
-exsyscur.pp:	How to use system cursors.
-extrans.pp:	Lighting and translucency effects.
-extruec.pp:	Truecolor pixel format conversions.
+ex3d.pp     - 3D demo.
+exblend.pp  - How to use the translucency functions in truecolor video modes.
+excolmap.pp - Creating graphical effects with color mapping tables.
+exdata.pp   - Appending datafiles onto your executable.
+exdbuf.pp   - How to use double buffering to avoid flicker.
+exfixed.pp  - Using fixed point maths.
+exgui.pp    - Using menu and dialog objects.
+exhello.pp  - Simple graphical "hello world" program.
+exhsvrgb.pp - Translating HSV space -> RGB values.
+exkeys.pp   - Demonstrates how to access the keyboard.
+exmouse.pp  - Getting input from the mouse.
+expal.pp    - Palette effects and color cycling.
+expat.pp    - Using patterned drawing modes and sub-bitmaps.
+exsprite.pp - Datafiles access and sprite animation.
+exscn3d.pp  - Using the 3d scene functions.
+exsyscur.pp - How to use system cursors.
+extrans.pp  - Lighting and translucency effects.
+extruec.pp  - Truecolor pixel format conversions.
+exzbuf.pp   - Another 3D demo.
 
-lazarus/	How to use Allegro.pas inside Lazarus applications.
-
-agl/exmasked.pp: How to use masked textures with OpenGL.
+lazarus/    - How to use Allegro.pas inside Lazarus applications.
