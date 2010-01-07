@@ -146,12 +146,12 @@ VAR
 (* Dictionary to know the vertex for each face. *)
   VertexIndex: ARRAY [0..23] OF INTEGER = (
   { Each line is a face. }
-    1, 2, 3, 0,
-    7, 6, 5, 4,
-    4, 5, 1, 0,
-    6, 7, 3, 2,
-    3, 7, 4, 0,
-    5, 6, 2, 1
+    2, 1, 0, 3,
+    4, 5, 6, 7,
+    0, 1, 5, 4,
+    2, 3, 7, 6,
+    4, 7, 3, 0,
+    1, 2, 6, 5
   );
 
 
@@ -241,7 +241,6 @@ VAR
     z1, z2: AL_FIXED;
     Matrix: AL_MATRIX;
     Vertex: ARRAY [0..7] OF AL_V3D;
-    Normal: LONGINT;
 
   (* Helper procedure to define a face. *)
     PROCEDURE SetFace (Ndx: INTEGER); INLINE;
@@ -305,15 +304,12 @@ VAR
       v3 := VertexIndex[v1 + 2];
       v4 := VertexIndex[v1 + 3];
       v1 := VertexIndex[v1];
-    { Calculate the z normal to know if face should be drawn.
-      Read documentation of al_polygon_z_normal for more info. }
-      Normal := al_polygon_z_normal (@Vertex[v1], @Vertex[v2], @Vertex[v3]);
       IF ((AL_POLYTYPE_FLAT <= fDrawmode) AND (fDrawmode <= AL_POLYTYPE_PTEX))
       OR (fDrawmode = AL_POLYTYPE_ATEX_LIT)
       OR (fDrawmode = AL_POLYTYPE_PTEX_LIT)
       THEN BEGIN
       { Only faces with positive normals are visible. }
-	IF (Normal < 0) THEN
+	IF al_polygon_z_normal (@Vertex[v1], @Vertex[v2], @Vertex[v3]) < 0 THEN
 	  CONTINUE;
       END;
     { Insert the face in the face list. }

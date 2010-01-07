@@ -48,7 +48,7 @@ TYPE
 (* Cube constructor. *)
   CONSTRUCTOR TZCube.Create (px, py, pz: AL_FIXED);
   BEGIN
-    INHERITED Create (px, py, pz, al_itofix (1), NIL);
+    INHERITED Create (px, py, pz, al_itofix (30), NIL);
     DrawMode := AL_POLYTYPE_GRGB;
     UseZbuff := TRUE;
   END;
@@ -173,11 +173,9 @@ BEGIN (* The program starts here. *)
 
 { Initialise the cubes. }
   Randomize;
-{  Cube1 := TZCube.Create (al_itofix ( 16), 0, al_itofix (100)); }
-  Cube1 := TZCube.Create (0, 0, al_itofix (5));
+  Cube1 := TZCube.Create (al_itofix ( 16), 0, al_itofix (100));
   Cube1.SetColor ($FF, 0, 0);
-{  Cube2 := TZCube.Create (al_itofix (-16), 0, al_itofix (105)); }
-  Cube2 := TZCube.Create (0, 0, al_itofix (-1));
+  Cube2 := TZCube.Create (al_itofix (-16), 0, al_itofix (105));
   Cube2.SetColor (0, $FF, 0);
 
   Paused := FALSE;

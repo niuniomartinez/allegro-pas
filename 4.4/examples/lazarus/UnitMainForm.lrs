@@ -12,6 +12,6 @@ LazarusResources.Add('TForm1','FORMDATA',[
   +' '#3'top'#2#19#0#9'TMenuItem'#9'MenuItem1'#7'Caption'#6#5'&File'#0#9'TMenuI'
   +'tem'#9'MenuItem3'#7'Caption'#6#16'Load &picture...'#7'OnClick'#7#14'MenuIte'
   +'m3Click'#0#0#0#9'TMenuItem'#9'MenuItem2'#7'Caption'#6#1'?'#0#9'TMenuItem'#9
-  +'MenuItem5'#7'Caption'#6#8'About...'#7'OnClick'#7#14'MenuItem5Click'#0#0#0#0
+  +'MenuItem4'#7'Caption'#6#8'About...'#7'OnClick'#7#14'MenuItem4Click'#0#0#0#0
   +#0
 ]);

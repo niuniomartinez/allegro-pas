@@ -36,9 +36,9 @@ object Form1: TForm1
     end
     object MenuItem2: TMenuItem
       Caption = '?'
-      object MenuItem5: TMenuItem
+      object MenuItem4: TMenuItem
         Caption = 'About...'
-        OnClick = MenuItem5Click
+        OnClick = MenuItem4Click
       end
     end
   end

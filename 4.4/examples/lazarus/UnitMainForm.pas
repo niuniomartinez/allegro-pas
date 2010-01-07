@@ -40,13 +40,13 @@ TYPE
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
-    MenuItem5: TMenuItem;
+    MenuItem4: TMenuItem;
     OpenBitmapDialog: TOpenDialog;
     PaintBox: TPaintBox;
     PROCEDURE FormCreate(Sender: TObject);
     PROCEDURE FormClose(Sender: TObject; VAR CloseAction: TCloseAction);
     PROCEDURE MenuItem3Click(Sender: TObject);
-    PROCEDURE MenuItem5Click(Sender: TObject);
+    PROCEDURE MenuItem4Click(Sender: TObject);
     PROCEDURE PaintBoxPaint(Sender: TObject);
   PRIVATE
   (* The bitmap to be shown on the window. *)
@@ -117,7 +117,7 @@ END;
 
 
 (* Shows a message box with a brief explanation of the project. *)
-PROCEDURE TForm1.MenuItem5Click (Sender: TObject);
+PROCEDURE TForm1.MenuItem4Click (Sender: TObject);
 BEGIN
   Application.MessageBox (
         'This is a simple example of how to integrate Allegro.pas with Lazarus.'+

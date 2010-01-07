@@ -15,11 +15,11 @@ UNIT al3d;
   middle finger points in the direction of the z axis.
 
   Allegro's world coordinate system typically has the positive x axis right,
-  the positive y axis up, and the positive z axis out of the screen.  What all
+  the positive y axis up, and the positive z axis in to the screen.  What all
   this means is this:  Assume, the viewer is located at the origin (0/0/0) in
-  world space, looks along the negative z axis (0/0/-1), and is oriented so up
+  world space, looks along the negative z axis (0/0/1), and is oriented so up
   is along the positive y axis (0/1/0).  Then something located at
-  (100/200/-300) will be 100 to the right, 200 above, and 300 in front of the
+  (100/200/300) will be 100 to the right, 200 above, and 300 in front of the
   viewer.  Just like in OpenGL.  (Of course, both OpenGL and Allegro allow to
   use a different system.)
 
