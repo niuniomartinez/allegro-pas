@@ -11,17 +11,10 @@ all: adbanner examples demo
 examples: $(EXMFILES)
 	@echo "Finished all examples"
 
-examplesgl: $(GLEXMFILES)
-	@echo "Finished all examples"
-
 # Demo game.
 demo: $(DEMO)
 
 # Executables.
-$(EXMDIR)agl/%$(BINSUF): $(EXMDIR)agl/%.pp $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR)agl/ -FU$(LIBDIR) -k-lglx $< -o$@
-	@echo Example $@ ready!
-
 $(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR) -FU$(LIBDIR) $< -o$@
 	@echo Example $@ ready!
@@ -37,6 +30,7 @@ status: adbanner
 	@echo "-----------------"
 	@echo "  Project : $(PROJECT)"
 	@echo "  Platform : $(PLATFORM)"
+	@echo "  Compiler options : $(FLAGS)"
 	@echo "  Units : $(LIBFILES)"
 	@echo "  Examples : $(EXMFILES) $(GLEXMFILES)"
 	@echo "  Demo game : $(DEMO)"
@@ -44,16 +38,13 @@ status: adbanner
 # Cleans everything.
 veryclean: clean
 	$(DELETE) $(EXMFILES)
-	$(DELETE) $(GLEXMFILES)
 	$(DELETE) $(DEMO)
 	$(DELETE) docs/html/*.*
 	$(DELETE) docs/cache/*.*
 
 # Clean temporary files.
 clean:
-	$(DELETE) $(OBJDIR)*$(OBJSUF)
 	$(DELETE) $(EXMDIR)*$(OBJSUF)
-	$(DELETE) $(EXMDIR)agl/*$(OBJSUF)
 	$(DELETE) $(LIBDIR)*$(OBJSUF)
 	$(DELETE) $(LIBDIR)*.ppu
 	$(DELETE) $(DEMODIR)*$(OBJSUF)

@@ -56,8 +56,6 @@ TYPE
 
 
 VAR
-(* Graphics mode selection. *)
-  c, w, h, bpp: LONGINT;
   Buffer: AL_BITMAPptr;
 (* Input. *)
   Key: LONGINT;
@@ -131,35 +129,17 @@ BEGIN (* The program starts here. *)
   al_install_int_ex (@Timer, AL_BPS_TO_TIMER (50));
 
 { Set a graphics mode. }
-  IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
-  BEGIN
-    al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
-  { Show an error message. }
-    al_message (al_error);
-  { Shutdown Allegro.  You should do it because it isn't automatic. }
-    al_exit;
-    EXIT;
-  END;
-  al_set_palette (al_desktop_palette);
-
-  c := AL_GFX_AUTODETECT;
-  w := AL_SCREEN_W; h := AL_SCREEN_H; bpp := al_bitmap_color_depth (al_screen);
-  IF NOT al_gfx_mode_select_ex (c, w, h, bpp) THEN
-  BEGIN
-    al_exit;
-    EXIT;
-  END;
-
-  al_set_color_depth (bpp);
-  IF NOT al_set_gfx_mode (c, w, h, 0, 0) THEN
-  BEGIN
-    al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
-  { Show an error message. }
-    al_message (al_error);
-  { Shutdown Allegro.  You should do it because it isn't automatic. }
-    al_exit;
-    EXIT;
-  END;
+  al_set_color_depth (8);
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 240, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 240, 0, 0) THEN
+    BEGIN
+      al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
+    { Show an error message. }
+      al_message (al_error);
+    { Shutdown Allegro.  You should do it because it isn't automatic. }
+      al_exit;
+      EXIT;
+    END;
 
 { Double buffer the animation and create the Z-buffer. }
   Buffer := al_create_bitmap (AL_SCREEN_W, AL_SCREEN_H);
@@ -218,8 +198,8 @@ BEGIN (* The program starts here. *)
     al_clear_zbuffer (Zbuf, 0);
     Cube1.Draw (Buffer, @al_identity_matrix);
     Cube2.Draw (Buffer, @al_identity_matrix);
-    al_textout_ex (Buffer, al_font, 'Color depth: '+IntToStr (bpp)+'bpp',
-		   1, 9, -1, -1);
+    al_textout_ex (Buffer, al_font, 'Z-buffer example', 1, 9, -1, -1);
+    al_textout_ex (Buffer, al_font, 'Press ''P'' to pause', 1, 19, -1, -1);
     al_vsync;
     al_blit (Buffer, al_screen, 0, 0, 0, 0, AL_SCREEN_W, AL_SCREEN_H);
 

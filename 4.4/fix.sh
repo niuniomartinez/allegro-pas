@@ -29,7 +29,7 @@ proc_fix()
 # prepare for the given platform.
 
 case "$1" in
-   "win32"   ) proc_fix "Windows (FPC)" "WIN2";;
+   "win32"   ) proc_fix "Windows (FPC)" "WIN32";;
    "linux"   ) proc_fix "Linux (FPC)"   "LINUX";;
    "help"    ) proc_help;;
    *         ) proc_help;;

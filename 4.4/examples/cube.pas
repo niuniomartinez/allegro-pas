@@ -9,7 +9,7 @@ UNIT cube;
                                     /\____/               \ \_\
                                     \_/__/                 \/_/
 
-   Defines a simple 3D cube used by 3D examples.
+   Defines a simple 3D cube used by ex3d and exzbuf examples.
 
    It isn't a very efficient piece of code, but it does show the stuff in
    action.  It is left to the reader as an exercise to design a proper model

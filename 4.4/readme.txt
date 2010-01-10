@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 4.4.0 Beta            \_/__/                 \/_/
+     Version 4.4.0                 \_/__/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Ñuño Martínez, October 30, 2009.
+  by Ñuño Martínez, January 11, 2010.
 
 
 
@@ -38,10 +38,6 @@ Introduction
   I wrote it to use it by myself, so I didn't included all functionality of
   Allegro.  Anyway, I'll fix it and complete it as I'm using it (or as other
   users do).  Any collaboration will be welcomed.
-
-  This version is a Beta version because there are some parts that doesn't
-  works properly.  Anyway you can use it to create almost any game you can
-  imagine.
 
 
 
@@ -178,7 +174,7 @@ Contact info
 ============
 
   You'll find more information at http://allegro-pas.sourceforge.net.  There
-  are forums and a mailing-list in that site.
+  are forums, a mailing-list and "wiki" pages in that site.
 
-  Another nice forum is "Pascal Game Development"
+  Another nice forum I visit is "Pascal Game Development"
   (http://www.pascalgamedevelopment.com/).

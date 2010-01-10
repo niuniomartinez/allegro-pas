@@ -13,9 +13,4 @@
   Actually supported but there's some problems with it.  Should find a way to
   integrate it with FPC/Lazarus UNICODE support (i.e. utf8string, etc.)
 
-* Examples & documentation
-
-  The idea is to complete the documentation specially adding more "See also"
-  sections and some code snipets in some parts.
-
 * New installation system via fpmake and/or fpcmake.
