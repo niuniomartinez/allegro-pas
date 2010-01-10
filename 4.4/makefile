@@ -68,9 +68,9 @@ DEMODIR = demo/
 EXMDIR = examples/
 LIBDIR = lib/
 
-#FLAGS = -Nu -O3 -Sh -Si -Xs -XX
+FLAGS = -Nu -O3 -Sh -Si -Xs -XX
 # Use next line instead to activate debug.
-FLAGS = -g -O- -pg -Sh
+#FLAGS = -g -O- -pg -Sh
 
 # -- Source files list --
 include makefile.list

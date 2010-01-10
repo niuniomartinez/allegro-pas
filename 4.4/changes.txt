@@ -1,3 +1,27 @@
+Changes between versions 4.4.0 Beta2 and 4.4.0
+==============================================
+
+  Bugfixing
+  ---------
+  * Parameters of al_getr_depth, al_getb_depth, al_getb_depth and
+    al_geta_depth and link fixed.
+  * al_mouse_w fixed,
+
+ News
+ ----
+  + Added Lazarus example.
+  + Added al_get_midi_length function.
+  + Addedd al_packfile_password and low-level file functions (chunks & vtable).
+
+ Other
+ -----
+  - Deleted warning in ejemplo exsprite.
+  - Deleted warning about 3D textured functions and added a waring for LIT
+    ones.
+  - A lot of functions and procedures defined as "inline".
+
+
+
 Changes between versions 4.4.0 Beta and 4.4.0 Beta2
 ===================================================
 

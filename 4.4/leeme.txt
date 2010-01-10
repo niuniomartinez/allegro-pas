@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Versión 4.4.0 Beta 2          \_/__/                 \/_/
+     Versión 4.4.0                 \_/__/                 \/_/
 
   Una envolvente para utilizar la biblioteca Allegro en Pascal
-  por Ñuño Martínez, 11 de Noviembre de 2009.
+  por Ñuño Martínez, 11 de Enero de 2010.
 
 
 
@@ -39,9 +39,6 @@ Introducción
   toda la funcionalidad disponible en Allegro.  Aun así,  la iré corrigiendo y
   ampliándo según vaya necesitándose.  También administraré las modificaciones
   o añadidos que lleguen a mis manos para que estén disponibles para todos.
-
-  Esta es una versión "beta" ya que hay cosas que todavía no funcionan bien.
-  Aun así puede crear una gran variedad de juegos sin problemas.
 
 
 
@@ -119,7 +116,7 @@ Instrucciones de instalación
   Si utiliza GNU/Linux, instale en su sistema la biblioteca Allegro versión
   4.4.0, que podrá encontrar en la página
   http://sourceforge.net/project/showfiles.php?group_id=5665 .  Es posible que
-  sólo necesite la versión de usuario (normalmente etiquetada como "enduser").
+  sólo necesite la versión de usuario (etiquetada como "enduser").
 
   En el caso de utilizar Windows tiene dos opciones, instalar la Allegro tal
   como indica el párrafo anterior para obtener el archivo "alleg44.dll" o
@@ -128,7 +125,7 @@ Instrucciones de instalación
 
   IMPORTANTE:  Tenga en cuenta que, en principio, Allegro.pas 4.4.0 funcionará
   únicamente con la versión 4.4.0 de Allegro (incluyendo versiones RC) pero
-  no con versiones más modernas.  Tenga también en cuenta que Allegro es
+  quizá no con versiones más modernas.  Tenga también en cuenta que Allegro es
   independiente de Allegro.pas y se instala de forma disferente.
 
   Abra una consola de comandos y sitúese en el directorio de Allegro.pas,
@@ -159,7 +156,7 @@ Utilizar la biblioteca
 
   Para utilizar Allegro.pas copie los archivos fuente con extensión ".pas" y
   ".inc" del subdirectorio lib en el mismo subdirectorio de las fuentes de su
-  programa.  También puede copiar dichos archivos en el directorio de unidades
+  programa.  También puede copiar estos archivos en el directorio de unidades
   de su compilador de forma que estos estén disponibles para cualquier
   compilación.
 
@@ -199,7 +196,7 @@ Información de contacto
   Encontrará la información referente a Allegro.pas y podrá encontrar las
   últimas versiones publicadas en http://allegro-pas.sourceforge.net.
   Allí encontrará una lista de correo y un foro público donde podrá exponer sus
-  dudas y hacer sugerencias.
+  dudas y hacer sugerencias.  También se han creado páginas "wiki".
 
   Otros foros interesantes sobre la programación de juegos, donde también
   pueden ayudarle si tiene problemas con Allegro.pas, se encuentra en el sitio
