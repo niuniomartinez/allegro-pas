@@ -30,8 +30,8 @@ UNIT al3d;
   fixed point arithmetic, and another which uses floating point.  The syntax
   for these is identical, but the floating point functions and structures are
   postfixed with @code('_f'), eg. the fixed point function
-  @link(al_cross_product) has a floating point equivalent
-  @link(al_cross_product_f).
+  @code(al_cross_product) has a floating point equivalent
+  @code(al_cross_product_f).
 
   3d transformations are accomplished by the use of a modelling matrix.  This
   is a 4x4 array of numbers that can be multiplied with a 3d point to produce a
@@ -80,8 +80,8 @@ UNIT al3d;
 
   Using MMX for *LIT routines has a side effect:  normally (without MMX), these
   routines use the blender functions used also for other lighting functions,
-  set with @link(al_set_trans_blender) or @link(al_set_blender_mode).  The MMX
-  versions only use the RGB value passed to @link(al_set_trans_blender) and do
+  set with @code(al_set_trans_blender) or @code(al_set_blender_mode).  The MMX
+  versions only use the RGB value passed to @code(al_set_trans_blender) and do
   the linear interpolation themselves.  Therefore a new set of blender
   functions passed to @code(al_set_blender_mode) is ignored.
 
@@ -106,8 +106,8 @@ UNIT al3d;
 
   Z-buffered polygons are designed as an extension of the normal
   @code(AL_POLYTYPE_* ) rendering styles.  Just OR the POLYTYPE with the value
-  @link(AL_POLYTYPE_ZBUF), and the normal @link(al_polygon3d),
-  @link(al_polygon3d_f), @link(al_quad3d), etc. functions will render
+  @code(AL_POLYTYPE_ZBUF), and the normal @code(al_polygon3d),
+  @code(al_polygon3d_f), @code(al_quad3d), etc. functions will render
   z-buffered polygons.
 
   Example:
@@ -116,16 +116,16 @@ UNIT al3d;
 
   A Z-buffered rendering procedure looks like a double-buffered rendering
   procedure.  You should follow four steps: create a Z-buffer at the beginning
-  of the program and make the library use it by calling @link(al_set_zbuffer).
+  of the program and make the library use it by calling @code(al_set_zbuffer).
   Then, for each frame, clear the Z-buffer and draw polygons with
   @code(AL_POLYTYPE_* OR AL_POLYTYPE_ZBUF) and finally destroy the Z-buffer
   when leaving the program.
 
   Notes on Z-buffered renderers:
   @unorderedList(
-    @item(Unlike the normal @link(AL_POLYTYPE_FLAT) renderers, the Z-buffered
-      ones don't use the @link(al_hline) routine.  Therefore
-      @link(al_drawing_mode) has no effect.)
+    @item(Unlike the normal @code(AL_POLYTYPE_FLAT) renderers, the Z-buffered
+      ones don't use the @code(al_hline) routine.  Therefore
+      @code(al_drawing_mode) has no effect.)
     @item(The @code( *LIT* ) routines work the traditional way - through the set
       of blender routines)
     @item(All the Z-buffered routines are much slower than their normal
@@ -153,15 +153,15 @@ UNIT al3d;
   @orderedList(
     @item(Initialize the scene (set the clip area, clear the bitmap, blit a
       background, etc.))
-    @item(Call @link(al_clear_scene).)
+    @item(Call @code(al_clear_scene).)
     @item(Transform all your points to camera space.)
     @item(Clip polygons.)
-    @item(Project with @link(al_persp_project) or @link(al_persp_project_f).)
-    @item("Draw" polygons with @link(al_scene_polygon3d) and/or
-      @link(al_scene_polygon3d_f).  This doesn't do any actual drawing, only
+    @item(Project with @code(al_persp_project) or @code(al_persp_project_f).)
+    @item("Draw" polygons with @code(al_scene_polygon3d) and/or
+      @code(al_scene_polygon3d_f).  This doesn't do any actual drawing, only
       initializes tables.)
     @item(Render all the polygons defined previously to the bitmap with
-      @link(al_render_scene).)
+      @code(al_render_scene).)
     @item(Overlay some non-3D graphics.)
     @item(Show the bitmap (blit it to screen, flip the page, etc).)
   )
@@ -170,7 +170,7 @@ UNIT al3d;
   keep track of what polygons are "in" and which is the nearest.  Vertical
   coherency is used - the edge list for a scanline is sorted starting from the
   previous one - it won't change much.  The scene rendering routines use the
-  same low-level asm routines as normal @link(al_polygon3d).
+  same low-level asm routines as normal @code(al_polygon3d).
 
   Notes on scene rendering:
   @unorderedList(
@@ -179,14 +179,14 @@ UNIT al3d;
       @code(al_polygon3d), which only uses z coordinate for @code ( *PTEX* ).@))
     @item(All polygons passed to @code(al_scene_polygon3d) have to be
       @code(al_persp_project)'ed.)
-    @item(After @link(al_render_scene) the mode is reset to
-      @link(AL_DRAW_MODE_SOLID).)
+    @item(After @code(al_render_scene) the mode is reset to
+      @code(AL_DRAW_MODE_SOLID).)
   )
 
   Using a lot of @code( *MASK* ) polygons drastically reduces performance,
   because when a MASKed polygon is the first in line of sight, the polygons
   underneath have to be drawn too.  The same applies to @code(AL_POLYTYPE_FLAT) polygons
-  drawn with @link(AL_DRAW_MODE_TRANS).
+  drawn with @code(AL_DRAW_MODE_TRANS).
 
   Z-buffered rendering works also within the scene renderer.  It may be helpful
   when you have a few intersecting polygons, but most of the polygons may be
@@ -211,7 +211,7 @@ USES
 
 
 TYPE
-(* Pointer to @link(AL_MATRIX). *)
+(* Pointer to @code(AL_MATRIX). *)
   AL_MATRIXptr = ^AL_MATRIX;
 (* Fixed point matrix structure.
   @seealso(al3d) @seealso(AL_MATRIX_F) *)
@@ -220,7 +220,7 @@ TYPE
     t: ARRAY [0..2] OF AL_FIXED; (*<Translation. *)
   END;
 
-(* Pointer to @link(AL_MATRIX_F).
+(* Pointer to @code(AL_MATRIX_F).
    @seealso(al3d) @seealso(AL_MATRIX) *)
   AL_MATRIX_Fptr = ^AL_MATRIX_F;
 (* Floating point matrix structure. *)
@@ -246,7 +246,7 @@ VAR
    @seealso(al_qtranslate_matrix) *)
   PROCEDURE al_get_translation_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_translation_matrix';
-(* Same as @link(al_get_translation_matrix) but in floating point. *)
+(* Same as @code(al_get_translation_matrix) but in floating point. *)
   PROCEDURE al_get_translation_matrix_f (m: AL_MATRIX_Fptr; x, y, z: SINGLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_translation_matrix_f';
 
@@ -257,7 +257,7 @@ VAR
    @seealso(al_qtranslate_matrix) *)
   PROCEDURE al_get_scaling_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_scaling_matrix';
-(* Same as @link(al_get_scaling_matrix) but in floating point. *)
+(* Same as @code(al_get_scaling_matrix) but in floating point. *)
   PROCEDURE al_get_scaling_matrix_f (m: AL_MATRIX_Fptr; x, y, z: SINGLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_scaling_matrix_f';
 
@@ -267,7 +267,7 @@ VAR
    @seealso(al_apply_matrix) @seealso(al_get_rotation_matrix) *)
   PROCEDURE al_get_x_rotate_matrix (m: AL_MATRIXptr; r: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_x_rotate_matrix';
-(* Same as @link(al_get_x_rotate_matrix) but in floating point. *)
+(* Same as @code(al_get_x_rotate_matrix) but in floating point. *)
   PROCEDURE al_get_x_rotate_matrix_f (m: AL_MATRIX_Fptr; r: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_x_rotate_matrix_f';
 
@@ -277,7 +277,7 @@ VAR
    @seealso(al_apply_matrix) @seealso(al_get_rotation_matrix) *)
   PROCEDURE al_get_y_rotate_matrix (m: AL_MATRIXptr; r: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_y_rotate_matrix';
-(* Same as @link(al_get_y_rotate_matrix) but in floating point. *)
+(* Same as @code(al_get_y_rotate_matrix) but in floating point. *)
   PROCEDURE al_get_y_rotate_matrix_f (m: AL_MATRIX_Fptr; r: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_y_rotate_matrix_f';
 
@@ -287,7 +287,7 @@ VAR
    @seealso(al_apply_matrix) @seealso(al_get_rotation_matrix) *)
   PROCEDURE al_get_z_rotate_matrix (m: AL_MATRIXptr; r: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_z_rotate_matrix';
-(* Same as @link(al_get_y_rotate_matrix) but in floating point. *)
+(* Same as @code(al_get_y_rotate_matrix) but in floating point. *)
   PROCEDURE al_get_z_rotate_matrix_f (m: AL_MATRIX_Fptr; r: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_z_rotate_matrix_f';
 (* Constructs a transformation matrix which will rotate points around all three
@@ -303,7 +303,7 @@ VAR
    @seealso(al_get_align_matrix) *)
   PROCEDURE al_get_rotation_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_rotation_matrix';
-(* Same as @link(al_get_rotation_matrix) but in floating point. *)
+(* Same as @code(al_get_rotation_matrix) but in floating point. *)
   PROCEDURE al_get_rotation_matrix_f (m: AL_MATRIX_Fptr; x, y, z: SINGLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_rotation_matrix_f';
 
@@ -316,7 +316,7 @@ VAR
   PROCEDURE al_get_align_matrix (m: AL_MATRIXptr; xfront, yfront, zfront,
 				 xup, yup, zup: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_align_matrix';
-(* Same as @link(al_get_align_matrix) but in floating point. *)
+(* Same as @code(al_get_align_matrix) but in floating point. *)
   PROCEDURE al_get_align_matrix_f (m: AL_MATRIX_Fptr; xfront, yfront, zfront,
 				 xup, yup, zup: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_align_matrix_f';
@@ -325,11 +325,11 @@ VAR
    specified x,y,z vector by the specified angle (given in binary, 256 degrees
    to a circle format).
    @seealso(al_get_vector_rotation_matrix_f) @seealso(al_apply_matrix)
-   @seealso(al_get_rotation_matrix) @link(al_get_align_matrix) *)
+   @seealso(al_get_rotation_matrix) @seealso(al_get_align_matrix) *)
   PROCEDURE al_get_vector_rotation_matrix (m: AL_MATRIXptr; x,y,z,a: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME
     'get_vector_rotation_matrix';
-(* Same as @link(al_get_vector_rotation_matrix) but in floating point. *)
+(* Same as @code(al_get_vector_rotation_matrix) but in floating point. *)
   PROCEDURE al_get_vector_rotation_matrix_f (m: AL_MATRIX_Fptr; x,y,z,a: SINGLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME
     'get_vector_rotation_matrix_f';
@@ -343,7 +343,7 @@ VAR
   PROCEDURE al_get_transformation_matrix (m:AL_MATRIXptr;
 			scale, xr, yr, zr, x, y, z: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_transformation_matrix';
-(* Same as @link(al_get_transformation_matrix) but in floating point. *)
+(* Same as @code(al_get_transformation_matrix) but in floating point. *)
   PROCEDURE al_get_transformation_matrix_f (m:AL_MATRIX_Fptr;
 			scale, xr, yr, zr, x, y, z: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_transformation_matrix_f';
@@ -367,13 +367,13 @@ VAR
      @(set it to 1 for no scaling - but keep in mind that the projection also
      performs scaling according to the viewport size@).  Typically, you will
      pass @code(w/h), where w and h are the parameters you passed to
-     @link(al_set_projection_viewport).)
+     @code(al_set_projection_viewport).)
    @seealso(al_apply_matrix) @seealso(al_set_projection_viewport)
    @seealso(al_persp_project) *)
   PROCEDURE al_get_camera_matrix (m: AL_MATRIXptr; x, y, z,
 		xfront, yfront, zfront, xup, yup, zup, fov, aspect: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_camera_matrix';
-(* Same as @link(al_get_camera_matrix) but in floating point. *)
+(* Same as @code(al_get_camera_matrix) but in floating point. *)
   PROCEDURE al_get_camera_matrix_f (m: AL_MATRIX_Fptr; x, y, z,
 		xfront, yfront, zfront, xup, yup, zup, fov, aspect: SINGLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_camera_matrix_f';
@@ -384,7 +384,7 @@ VAR
    @seealso(al_qtranslate_matrix_f) @seealso(al_get_translation_matrix) *)
   PROCEDURE al_qtranslate_matrix (m: AL_MATRIXptr; x, y, z: AL_FIXED);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_qtranslate_matrix';
-(* Same as @link(al_qtranslate_matrix) but in floating point. *)
+(* Same as @code(al_qtranslate_matrix) but in floating point. *)
   PROCEDURE al_qtranslate_matrix_f (m: AL_MATRIX_Fptr; x, y, z: SINGLE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_qtranslate_matrix_f';
 
@@ -394,7 +394,7 @@ VAR
    @seealso(al_qscale_matrix_f) @seealso(al_get_scaling_matrix) *)
   PROCEDURE al_qscale_matrix (m: AL_MATRIXptr; scale: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'qscale_matrix';
-(* Same as @link(al_qscale_matrix) but in floating point. *)
+(* Same as @code(al_qscale_matrix) but in floating point. *)
   PROCEDURE al_qscale_matrix_f (m: AL_MATRIX_Fptr; scale: SINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'qscale_matrix_f';
 
@@ -409,7 +409,7 @@ VAR
    @seealso(al_apply_matrix) @seealso(al_matrix_mul_f) *)
   PROCEDURE al_matrix_mul (m1, m2, out: AL_MATRIXptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'matrix_mul';
-(* Same as @link(al_matrix_mul) but using floats instead than fixed. *)
+(* Same as @code(al_matrix_mul) but using floats instead than fixed. *)
   PROCEDURE al_matrix_mul_f (m1, m2, out: AL_MATRIX_Fptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'matrix_mul_f';
 
@@ -417,7 +417,7 @@ VAR
    result in (xout, yout, zout). @seealso(al_matrix_mul) *)
   PROCEDURE al_apply_matrix (m: AL_MATRIXptr;
 		x, y, z: AL_FIXED; VAR xout, yout, zout: AL_FIXED);
-(* Same as @link(al_apply_matrix) but using floats instead than fixed. *)
+(* Same as @code(al_apply_matrix) but using floats instead than fixed. *)
   PROCEDURE al_apply_matrix_f (m: AL_MATRIX_Fptr;
 		x, y, z: SINGLE; VAR xout, yout, zout: SINGLE);
 
@@ -426,7 +426,7 @@ VAR
    @seealso(al_vector_length_f) @seealso(al_normalize_vector) *)
   FUNCTION al_vector_length (x, y, z: AL_FIXED): AL_FIXED; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'vector_length';
-(* Same as @link(al_vector_length) but using floats instead than fixed. *)
+(* Same as @code(al_vector_length) but using floats instead than fixed. *)
   FUNCTION al_vector_length_f (x, y, z: SINGLE): SINGLE; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'vector_length_f';
 
@@ -435,7 +435,7 @@ VAR
    @seealso(al_normalize_vector_f) @seealso(al_vector_length) *)
   PROCEDURE al_normalize_vector (x, y, z: AL_FIXEDptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'normalize_vector';
-(* Same as @link(al_normalize_vector) but using floats instead than fixed. *)
+(* Same as @code(al_normalize_vector) but using floats instead than fixed. *)
   PROCEDURE al_normalize_vector_f (x, y, z: PSINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'normalize_vector_f';
 
@@ -447,7 +447,7 @@ VAR
   PROCEDURE al_cross_product (x1, y1, z1, x2, y2, z2: AL_FIXED;
 			      xout, yout, zout: AL_FIXEDptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'cross_product';
-(* Same as @link(al_cross_product) but using floats instead than fixed. *)
+(* Same as @code(al_cross_product) but using floats instead than fixed. *)
   PROCEDURE al_cross_product_f (x1, y1, z1, x2, y2, z2: SINGLE;
 			      xout, yout, zout: PSINGLE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'cross_product_f';
@@ -457,15 +457,15 @@ VAR
    @seealso(al_cross_product) @seealso(al_normalize_vector) *)
   FUNCTION al_dot_product (x1, y1, z1, x2, y2, z2: AL_FIXED): AL_FIXED;
     INLINE;
-(* Same as @link(al_dot_product) but using floats instead than fixed. *)
+(* Same as @code(al_dot_product) but using floats instead than fixed. *)
   FUNCTION al_dot_product_f (x1, y1, z1, x2, y2, z2: SINGLE): SINGLE;
     INLINE;
 
-(* Sets the viewport used to scale the output of the @link(al_persp_project)
+(* Sets the viewport used to scale the output of the @code(al_persp_project)
    function.  Pass the dimensions of the screen area you want to draw onto,
-   which will typically be 0, 0, @link(AL_SCREEN_W), and @link(AL_SCREEN_H).
+   which will typically be 0, 0, @code(AL_SCREEN_W), and @code(AL_SCREEN_H).
    Also don't forget to pass an appropriate aspect ratio to
-   @link(al_get_camera_matrix) later.  The width and height you specify here
+   @code(al_get_camera_matrix) later.  The width and height you specify here
    will determine how big your viewport is in 3d space.  So if an object in
    your 3D space is w units wide, it will fill the complete screen when you run
    into it (i.e., if it has a distance of 1.0 after the camera matrix was
@@ -479,7 +479,7 @@ VAR
 
 (* Projects the 3d point (x, y, z) into 2d screen space, storing the result in
    (xout, yout) and using the scaling parameters previously set by calling
-   @link(al_set_projection_viewport).  This function projects from the
+   @code(al_set_projection_viewport).  This function projects from the
    normalized viewing pyramid, which has a camera at the origin and facing
    along the positive z axis.  The x axis runs left/right, y runs up/down, and
    z increases with depth into the screen.  The camera has a 90 degree field of
@@ -493,16 +493,16 @@ VAR
    @seealso(al_get_camera_matrix) *)
   PROCEDURE al_persp_project (x, y, z: AL_FIXED; VAR xout, yout: AL_FIXED);
     INLINE;
-(* Same as @link(al_persp_project_f) but using floats instead than fixed. *)
+(* Same as @code(al_persp_project_f) but using floats instead than fixed. *)
   PROCEDURE al_persp_project_f (x, y, z: SINGLE; VAR xout, yout: SINGLE);
     INLINE;
 
 
 
 TYPE
-(* Pointer to @link(AL_V3D). *)
+(* Pointer to @code(AL_V3D). *)
   AL_V3Dptr = ^AL_V3D;
-(* A vertex structure used by @link(al_polygon3d) and other polygon rendering
+(* A vertex structure used by @code(al_polygon3d) and other polygon rendering
    functions. @seealso(AL_V3D_F) @seealso(alfixed) *)
   AL_V3D = RECORD
   (* Position. *)
@@ -512,12 +512,12 @@ TYPE
   (* Color. *)
     c: LONGINT;
   END;
-(* List of pointers to @link(AL_V3D). *)
+(* List of pointers to @code(AL_V3D). *)
   AL_V3D_LIST = ^AL_V3Dptr;
 
-(* Pointer to @link(AL_V3D_F). *)
+(* Pointer to @code(AL_V3D_F). *)
   AL_V3D_fptr = ^AL_V3D_f;
-(*Like @link(AL_V3D) but using float values instead of fixed ones.
+(*Like @code(AL_V3D) but using float values instead of fixed ones.
   @seealso(al_polygon3d_f) *)
   AL_V3D_f = RECORD
   (* Position. *)
@@ -527,12 +527,12 @@ TYPE
   (* Color. *)
     c: LONGINT;
   END;
-(* List of pointers to @link(AL_V3D_F). *)
+(* List of pointers to @code(AL_V3D_F). *)
   AL_V3D_LIST_f = ^AL_V3D_fptr;
 
 
 
-(* Fixed point version of @link(al_clip3d_f).  This function should be used
+(* Fixed point version of @code(al_clip3d_f).  This function should be used
    with caution, due to the limited precision of fixed point arithmetic and
    high chance of rounding errors:  the floating point code is better for most
    situations. @returns(the number of vertices after clipping is done.)
@@ -543,7 +543,7 @@ TYPE
 (* Clips the polygon given in @code(vtx).  The number of vertices is @code(vc),
    the result goes in @code(vout), and @code(vtmp) and @code(out) are needed
    for internal purposes.  The pointers in @code(vtx), @code(vout) and
-   @code(vtmp) must point to valid @link(AL_V3D_f) structures.
+   @code(vtmp) must point to valid @code(AL_V3D_f) structures.
 
    As additional vertices may appear in the process of clipping, so the size
    of @code(vout), @code(vtmp) and @code(out) should be at least @code(vc *
@@ -556,7 +556,7 @@ TYPE
    camera matrix, but before the perspective projection.  The routine will
    correctly interpolate @code(u), @code(v), and @code(c) in the vertex
    structure.  However, no provision is made for high/truecolor
-   @link(AL_POLYTYPE_GCOL).
+   @code(AL_POLYTYPE_GCOL).
    @returns(the number of vertices after clipping is done.)
    @seealso(al_clip3d) @seealso(al_polygon3d_f) *)
   FUNCTION al_clip3d_f (_type: LONGINT; min_z, max_z: SINGLE; vc: LONGINT;
@@ -572,14 +572,15 @@ TYPE
 
    However, this method of culling back-faces must only be used once the X and
    Y coordinates have been projected into screen space using
-   @link(al_persp_project) (or if an orthographic (isometric) projection is
+   @code(al_persp_project) (or if an orthographic (isometric) projection is
    being used).  Note that this function will fail if the three vertices are
-   co-linear (they lie on the same line) in 3D space.
-
+   co-linear (they lie on the same line) in 3D space.  Also note that the fixed
+   point version of the function is less accurate than the floating point one
+   so it might return wrong values in some cases.
    @seealso(al_cross_product) *)
   FUNCTION al_polygon_z_normal (v1, v2, v3: AL_V3Dptr): AL_FIXED; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal';
-(* Same as @link(al_polygon_z_normal) but using floats instead than fixed. *)
+(* Same as @code(al_polygon_z_normal) but using floats instead than fixed. *)
   FUNCTION al_polygon_z_normal_f (v1, v2, v3: AL_V3D_Fptr): SINGLE; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal_f';
 
@@ -587,7 +588,7 @@ TYPE
 
 CONST
 (* A simple flat shaded polygon, taking the color from the `c' value of the
-   first vertex.  This polygon type is affected by the @link(al_drawing_mode)
+   first vertex.  This polygon type is affected by the @code(al_drawing_mode)
    function, so it can be used to render @code(XOR) or translucent polygons.
    @seealso(al_polygon3d) *)
   AL_POLYTYPE_FLAT            =  0;
@@ -595,12 +596,12 @@ CONST
    from the `c' value, and interpolated across the polygon.  This is very fast,
    but will only work in 256-color modes if your palette contains a smooth
    gradient between the colors.  In truecolor modes it interprets the color as
-   a packed, display-format value as produced by the @link(al_makecol)
+   a packed, display-format value as produced by the @code(al_makecol)
    function.
    @seealso(al_polygon3d) @seealso(al_drawing_mode) *)
   AL_POLYTYPE_GCOL            =  1;
 (* A gouraud shaded polygon which interpolates RGB triplets rather than a
-   single color.  In 256-color modes this uses the global @link(al_rgb_table)
+   single color.  In 256-color modes this uses the global @code(al_rgb_table)
    table to convert the result to an 8-bit paletted color, so it must only be
    used after you have set up the RGB mapping table!  The colors for each
    vertex are taken from the `c' value, which is interpreted as a 24-bit RGB
@@ -613,37 +614,37 @@ CONST
   flat-on to the camera, but because it doesn't deal with perspective
   foreshortening, it can produce strange warping artifacts.  To see what this
   means, run Allegro's ex3d example program and see what happens to the
-  @link(al_polygon3d) procedure when you zoom in very close to the cube. *)
+  @code(al_polygon3d) procedure when you zoom in very close to the cube. *)
   AL_POLYTYPE_ATEX            =  3;
 (* A perspective-correct texture mapped polygon.  This uses the `z' value from
   the vertex structure as well as the u/v coordinates, so textures are
   displayed correctly regardless of the angle they are viewed from.  Because it
   involves division calculations in the inner texture mapping loop, this mode
-  is a lot slower than @link(AL_POLYTYPE_ATEX), and it uses floating point so
+  is a lot slower than @code(AL_POLYTYPE_ATEX), and it uses floating point so
   it will be very slow on anything less than a Pentium (even with an FPU, a 486
   can't overlap floating point division with other integer operations like the
   Pentium can).
 
   @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX            =  4;
-(* Like @link(AL_POLYTYPE_ATEX), but @link(al_bitmap_mask_color) texture map
+(* Like @code(AL_POLYTYPE_ATEX), but @code(al_bitmap_mask_color) texture map
   pixels are skipped, allowing parts of the texture map to be transparent.
   @seealso(al_polygon3d) *)
   AL_POLYTYPE_ATEX_MASK       =  5;
-(* Like @link(AL_POLYTYPE_PTEX), but @link(al_bitmap_mask_color) texture map
+(* Like @code(AL_POLYTYPE_PTEX), but @code(al_bitmap_mask_color) texture map
   pixels are skipped, allowing parts of the texture map to be transparent.
 
   @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_MASK       =  6;
-(* Like @link(AL_POLYTYPE_ATEX), but the global @link(al_color_table) (for
-  256-color modes) or @link(alblend blender) function (for non-MMX truecolor
+(* Like @code(AL_POLYTYPE_ATEX), but the global @code(al_color_table) (for
+  256-color modes) or @code(alblend blender) function (for non-MMX truecolor
   modes) is used to blend the texture with a light level taken from the `c'
   value in the vertex structure.  This must only be used after you have set up
   the color mapping table or blender functions!
   @seealso(al_polygon3d) *)
   AL_POLYTYPE_ATEX_LIT        =  7;
-(* Like @link(AL_POLYTYPE_PTEX), but the global @link(al_color_table) (for
-  256-color modes) or @link(alblend blender) function (for non-MMX truecolor
+(* Like @code(AL_POLYTYPE_PTEX), but the global @code(al_color_table) (for
+  256-color modes) or @code(alblend blender) function (for non-MMX truecolor
   modes) is used to blend the texture with a light level taken from the `c'
   value in the vertex structure.  This must only be used after you have set up
   the color mapping table or blender functions!
@@ -654,7 +655,7 @@ CONST
 
   @seealso(al_polygon3d) *)
   AL_POLYTYPE_PTEX_LIT        =  8;
-(* Like @link(AL_POLYTYPE_ATEX_LIT), but @link(al_bitmap_mask_color) texture
+(* Like @code(AL_POLYTYPE_ATEX_LIT), but @code(al_bitmap_mask_color) texture
   map pixels are skipped, allowing parts of the texture map to be transparent.
 
   @bold(Note:) this polygon type doesn't work correctly in high color and real
@@ -662,7 +663,7 @@ CONST
   problem with Allegro not Allegro.pas.  8bpp paletted mode works correctly.
   @seealso(al_polygon3d) *)
   AL_POLYTYPE_ATEX_MASK_LIT   =  9;
-(* Like @link(AL_POLYTYPE_PTEX_LIT), but @link(al_bitmap_mask_color) texture
+(* Like @code(AL_POLYTYPE_PTEX_LIT), but @code(al_bitmap_mask_color) texture
   map pixels are skipped, allowing parts of the texture map to be transparent.
 
   @bold(Note:) this polygon type doesn't work correctly in high color and real
@@ -688,11 +689,11 @@ CONST
   @seealso(al_polygon3d) @seealso(AL_POLYTYPE_PTEX)
   @seealso(al_create_trans_table) @seealso(al_set_trans_blender) *)
   AL_POLYTYPE_PTEX_TRANS      = 12;
-(* Like @link(AL_POLYTYPE_ATEX_TRANS), but @link(al_bitmap_mask_color) texture
+(* Like @code(AL_POLYTYPE_ATEX_TRANS), but @code(al_bitmap_mask_color) texture
   map pixels are skipped, allowing parts of the texture map to be transparent.
   @seealso(al_polygon3d) *)
   AL_POLYTYPE_ATEX_MASK_TRANS = 13;
-(* Like @link(AL_POLYTYPE_PTEX_TRANS), but @link(al_bitmap_mask_color) texture
+(* Like @code(AL_POLYTYPE_PTEX_TRANS), but @code(al_bitmap_mask_color) texture
   map pixels are skipped, allowing parts of the texture map to be transparent.
 
   @seealso(al_polygon3d) *)
@@ -707,11 +708,11 @@ CONST
 (* Draw 3d polygons onto the specified bitmap, using the specified rendering
   mode.  This routine don't support concave or self-intersecting shapes, and
   it can't draw onto mode-X screen bitmaps (if you want to write 3d code in
-  mode-X, draw onto a memory bitmap and then @link(al_blit) to the
-  @link(al_screen)).  The width and height of the texture bitmap must be powers
+  mode-X, draw onto a memory bitmap and then @code(al_blit) to the
+  @code(al_screen)).  The width and height of the texture bitmap must be powers
   of two, but can be different, eg. a 64x16 texture is fine, but a 17x3 one is
   not.  The vertex count parameter (@code(vc)) should be followed by an array
-  containing the appropriate number of pointers to @link(AL_V3D) structures.
+  containing the appropriate number of pointers to @code(AL_V3D) structures.
 
   How the vertex data is used depends on the rendering mode:
 
@@ -762,14 +763,14 @@ CONST
 			  texture: AL_BITMAPptr; vc: LONGINT;
 			  vtx: AL_V3D_LIST);
     INLINE;
-(* Same as @link(al_polygon3d) but using floats instead than fixed. *)
+(* Same as @code(al_polygon3d) but using floats instead than fixed. *)
   PROCEDURE al_polygon3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
 			    texture: AL_BITMAPptr; vc: LONGINT;
 			    vtx: AL_V3D_LIST_F);
     INLINE;
 
 (* Draw 3D triangles, using fixed point vertex structures.  Unlike
-  @link(al_quad3d), this procedure is not a wrapper of @link(al_polygon3d).
+  @code(al_quad3d), this procedure is not a wrapper of @code(al_polygon3d).
   The @code(al_triangle3d) procedure uses their own routines taking into
   account the constantness of the gradients.  Therefore @code(al_triangle3d
   @(bmp, type, tex, v1, v2, v3@)) is faster than @code (al_polygon3d @(bmp,
@@ -778,18 +779,18 @@ CONST
   PROCEDURE al_triangle3d (bmp: AL_BITMAPptr; _type: LONGINT;
 			   texture: AL_BITMAPptr; v1, v2, v3: AL_V3Dptr);
     INLINE;
-(* Same as @link(al_triangle3d) but using floats instead than fixed. *)
+(* Same as @code(al_triangle3d) but using floats instead than fixed. *)
   PROCEDURE al_triangle3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
 			   texture: AL_BITMAPptr; v1, v2, v3: AL_V3D_Fptr);
     INLINE;
 
 (* Draw 3D quads, using fixed point vertex structures.  This is equivalent to
-   calling @link(al_polygon3d)@code(@(bmp, type, tex, 4, v@)).
+   calling @code(al_polygon3d)@code(@(bmp, type, tex, 4, v@)).
    @seealso(al_triangle3d) @seealso(al_quad3d_f) *)
   PROCEDURE al_quad3d (bmp: AL_BITMAPptr; _type: LONGINT;
 			texture: AL_BITMAPptr; v1, v2, v3, v4: AL_V3Dptr);
     INLINE;
-(* Same as @link(al_quad3d) but using floats instead than fixed. *)
+(* Same as @code(al_quad3d) but using floats instead than fixed. *)
   PROCEDURE al_quad3d_f (bmp: AL_BITMAPptr; _type: LONGINT;
 			texture: AL_BITMAPptr; v1, v2, v3, v4: AL_V3D_Fptr);
     INLINE;
@@ -825,18 +826,18 @@ TYPE
   AL_ZBUFFERptr = ^AL_ZBUFFER;
 (* Structure used by Allegro's 3d zbuffered rendering functions.
 
-   You are not supposed to mix @code(AL_ZBUFFER) with @link(AL_BITMAP) even
+   You are not supposed to mix @code(AL_ZBUFFER) with @code(AL_BITMAP) even
    though it is currently possible to do so.  This is just an internal
    representation, and it may change in the future.
    @seealso(al_create_zbuffer) *)
   AL_ZBUFFER = AL_BITMAP;
 
 
-(* Creates a Z-buffer using the size of the @link(AL_BITMAP) you are planning
+(* Creates a Z-buffer using the size of the @code(AL_BITMAP) you are planning
    to draw on.  Several Z-buffers can be defined but only one can be used at
-   the same time, so you must call @link(al_set_zbuffer) to make this Z-buffer
+   the same time, so you must call @code(al_set_zbuffer) to make this Z-buffer
    active.
-   @returns(the pointer to the @link(AL_ZBUFFER) or @nil if there was an error.
+   @returns(the pointer to the @code(AL_ZBUFFER) or @nil if there was an error.
      Remember to destroy the @code(AL_ZBUFFER) once you are done with it, to
      avoid having memory leaks.)
    @seealso(al_create_sub_zbuffer) @seealso(al_clear_zbuffer)
@@ -858,7 +859,7 @@ TYPE
   you would usually want to create a normal z-buffer (not sub-z-buffer) the
   size of the visible screen.  You don't need to first create a z-buffer the
   size of the virtual screen and then a sub-z-buffer of that.
-  @returns(The pointer to the sub @link(AL_ZBUFFER) or @nil if there was an
+  @returns(The pointer to the sub @code(AL_ZBUFFER) or @nil if there was an
   error.  Remember to destroy the z-buffer once you are done with it, to avoid
   having memory leaks.)
   @seealso(al_create_zbuffer) *)
@@ -867,7 +868,7 @@ TYPE
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_sub_zbuffer';
 
 (* Makes the given Z-buffer be the active one.  This should have been
-  previously created with @link(al_create_zbuffer). *)
+  previously created with @code(al_create_zbuffer). *)
   PROCEDURE al_set_zbuffer (zbuf: AL_ZBUFFERptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_zbuffer';
 
@@ -909,21 +910,21 @@ TYPE
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_scene';
 
 (* Puts a polygon in the rendering list.  Nothing is really rendered at this
-   moment.  Should be called between @link(al_clear_scene) and
-   @link(al_render_scene).
+   moment.  Should be called between @code(al_clear_scene) and
+   @code(al_render_scene).
 
-   Arguments are the same as for @link(al_polygon3d), except the bitmap is
+   Arguments are the same as for @code(al_polygon3d), except the bitmap is
    missing.  The one passed to @code(al_clear_scene) will be used.
 
-   Unlike @link(al_polygon3d), the polygon may be concave or self-intersecting.
+   Unlike @code(al_polygon3d), the polygon may be concave or self-intersecting.
    Shapes that penetrate one another may look OK, but they are not really
    handled by this code.
 
    Note that the texture is stored as a pointer only, and you should keep the
    actual bitmap around until @code(al_render_scene), where it is used.
 
-   Since the @link(AL_POLYTYPE_FLAT) style is implemented with the low-level
-   @link(al_hline) funtion, the @code(AL_POLYTYPE_FLAT) style is subject to
+   Since the @code(AL_POLYTYPE_FLAT) style is implemented with the low-level
+   @code(al_hline) funtion, the @code(AL_POLYTYPE_FLAT) style is subject to
    DRAW_MODEs.  All these modes are valid.  Along with the polygon, this mode
    will be stored for the rendering moment, and also all the other related
    variables (color_map pointer, pattern pointer, anchor, blender values).
@@ -939,13 +940,13 @@ TYPE
 				vx: LONGINT; vtx: AL_V3D_LIST): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scene_polygon3d';
 
-(* Floating point version of @link(al_scene_polygon3d). *)
+(* Floating point version of @code(al_scene_polygon3d). *)
   FUNCTION al_scene_polygon3d_f (_type: LONGINT; texture: AL_BITMAPptr;
 			vx: LONGINT; vtx: AL_V3D_LIST_F): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scene_polygon3d_f';
 
-(* Renders all the specified @link(al_scene_polygon3d)'s on the bitmap passed
-   to @link(al_clear_scene).  Rendering is done one scanline at a time, with no
+(* Renders all the specified @code(al_scene_polygon3d)'s on the bitmap passed
+   to @code(al_clear_scene).  Rendering is done one scanline at a time, with no
    pixel being processed more than once.
 
    Note that between @code(al_clear_scene) and @code(al_render_scene) you

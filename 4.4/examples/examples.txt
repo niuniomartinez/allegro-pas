@@ -1,7 +1,7 @@
 ex3d.pp     - 3D demo.
 exblend.pp  - How to use the translucency functions in truecolor video modes.
 excolmap.pp - Creating graphical effects with color mapping tables.
-exdata.pp   - Appending datafiles onto your executable.
+exdata.pp   - Appening datafiles onto your executable.
 exdbuf.pp   - How to use double buffering to avoid flicker.
 exfixed.pp  - Using fixed point maths.
 exgui.pp    - Using menu and dialog objects.

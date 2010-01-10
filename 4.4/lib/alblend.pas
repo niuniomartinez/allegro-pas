@@ -42,19 +42,19 @@ USES
 
 
 TYPE
-(* @link(alblend) @link(al_set_blender_mode) @link(al_set_blender_mode_ex) *)
+(* @code(alblend) @code(al_set_blender_mode) @code(al_set_blender_mode_ex) *)
   AL_BLENDER_FUNC = FUNCTION (x, y, n: DWORD): DWORD; CDECL;
 
 
 
 (* Enables the special alpha-channel blending mode, which is used for drawing
    32-bit RGBA sprites.  After calling this function, you can use
-   @link(al_draw_trans_sprite) or @link(al_draw_trans_rle_sprite) to draw a
+   @code(al_draw_trans_sprite) or @code(al_draw_trans_rle_sprite) to draw a
    32-bit source image onto any hicolor or truecolor destination.  The alpha
    values will be taken directly from the source graphic, so you can vary the
    solidity of each part of the image.  You can't use any of the normal
    translucency functions while this mode is active, though, so you should
-   reset to one of the normal blender modes (eg. @link(al_set_trans_blender))
+   reset to one of the normal blender modes (eg. @code(al_set_trans_blender))
    before drawing anything other than 32-bit RGBA sprites. *)
   PROCEDURE al_set_alpha_blender; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_alpha_blender';
@@ -62,10 +62,10 @@ TYPE
 (* Enables the special alpha-channel editing mode, which is used for drawing
    alpha channels over the top of an existing 32-bit RGB sprite, to turn it
    into an RGBA format image.  After calling this function, you can set the
-   drawing mode to @link(AL_DRAW_MODE_TRANS) and then write draw color values
+   drawing mode to @code(AL_DRAW_MODE_TRANS) and then write draw color values
    (0-255) onto a 32-bit image.  This will leave the color values unchanged,
    but alter the alpha to whatever values you are writing.  After enabling this
-   mode you can also use @link(al_draw_trans_sprite) to superimpose an 8-bit
+   mode you can also use @code(al_draw_trans_sprite) to superimpose an 8-bit
    alpha mask over the top of an existing 32-bit sprite. *)
   PROCEDURE al_set_write_alpha_blender; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_write_alpha_blender';
@@ -156,11 +156,11 @@ TYPE
 				 r, g, b, a: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_blender_mode';
 
-(* Like @link(al_set_blender_mode), but allows you to specify a more complete
+(* Like @code(al_set_blender_mode), but allows you to specify a more complete
    set of blender routines.  The @code(b15), @code(b16), @code(b24), and
    @code(b32) routines are used when drawing pixels onto destinations of the
    same format, while @code(b15x), @code(b16x), and @code(b24x) are used by
-   @link(al_draw_trans_sprite) and @link(al_draw_trans_rle_sprite) when drawing
+   @code(al_draw_trans_sprite) and @code(al_draw_trans_rle_sprite) when drawing
    RGBA images onto destination bitmaps of another format.  These blenders will
    be passed a 32-bit @code(x) parameter, along with a @code(y) value of a
    different color depth, and must try to do something sensible in response. *)

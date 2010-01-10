@@ -2,7 +2,7 @@ UNIT alfixed;
 (*<Fixed point math routines
 
   Allegro provides some routines for working with fixed point numbers, and
-  defines the type @link(AL_FIXED) to be a signed 32-bit integer.  The high
+  defines the type @code(AL_FIXED) to be a signed 32-bit integer.  The high
   word is used for the integer part and the low word for the fraction, giving a
   range of -32768 to 32767 and an accuracy of about four or five decimal
   places.  Fixed point numbers can be assigned, compared, added, subtracted,
@@ -62,7 +62,7 @@ USES
 
 
 TYPE
-(* Pointer to @link(AL_FIXED). *)
+(* Pointer to @code(AL_FIXED). *)
   AL_FIXEDptr = ^AL_FIXED;
 (* This is a fixed point integer which can replace float with similar results
    and is faster than float on low end machines. *)
@@ -82,9 +82,9 @@ TYPE
   FUNCTION al_fixtoi (x: AL_FIXED): LONGINT;
     INLINE;
 
-(* Converts a floating point value to fixed point.  Unlike @link(al_itofix),
+(* Converts a floating point value to fixed point.  Unlike @code(al_itofix),
    this function clamps values which could overflow the type conversion,
-   setting @link(al_errno) to non-zero in the process if this happens. *)
+   setting @code(al_errno) to non-zero in the process if this happens. *)
   FUNCTION al_ftofix (x: REAL): AL_FIXED;
     INLINE;
 
@@ -99,7 +99,7 @@ TYPE
    Although fixed point numbers can be added with the normal '+' integer
    operator, that doesn't provide any protection against overflow.  If overflow
    is a problem, you should use this function instead.  It is slower than using
-   integer operators, but if an overflow occurs it will set @link(al_errno)
+   integer operators, but if an overflow occurs it will set @code(al_errno)
    and clamp the result, rather than just letting it wrap.*)
   FUNCTION al_fixadd (x, y: AL_FIXED): AL_FIXED;
     INLINE;
@@ -109,7 +109,7 @@ TYPE
    Although fixed point numbers can be substracted with the normal 'x' integer
    operator, that doesn't provide any protection against overflow.  If overflow
    is a problem, you should use this function instead.  It is slower than using
-   integer operators, but if an overflow occurs it will set @link(al_errno)
+   integer operators, but if an overflow occurs it will set @code(al_errno)
    and clamp the result, rather than just letting it wrap.*)
   FUNCTION al_fixsub (x, y: AL_FIXED): AL_FIXED;
     INLINE;
@@ -118,7 +118,7 @@ TYPE
    normal `*' and `/' operators.  To multiply two fixed point values, though,
    you must use this function.
 
-   If an overflow occurs, @link(al_errno) will be set and the maximum possible
+   If an overflow occurs, @code(al_errno) will be set and the maximum possible
    value will be returned, but @code(al_errno) is not cleared if the operation
    is successful.  This means that if you are going to test for overflow you
    should set @code(al_errno := 0) before calling @code(al_fixmul). *)
@@ -129,7 +129,7 @@ TYPE
    @code(DIV) operators.  To divide two fixed point values, though, you must
    use this function.
 
-   If an overflow occurs, @link(al_errno) will be set and the maximum possible
+   If an overflow occurs, @code(al_errno) will be set and the maximum possible
    value will be returned, but @code(al_errno) is not cleared if the operation
    is successful.  This means that if you are going to test for overflow you
    should set @code(al_errno := 0) before calling @code(al_fixdiv). *)
@@ -137,7 +137,7 @@ TYPE
     INLINE;
 
 (* This finds out the non negative square root of `x'.  If `x' is negative,
-   @link(al_errno) is set to @code(EDOM) and the function returns zero. *)
+   @code(al_errno) is set to @code(EDOM) and the function returns zero. *)
   FUNCTION al_fixsqrt (x: AL_FIXED): AL_FIXED; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fixsqrt';
 
