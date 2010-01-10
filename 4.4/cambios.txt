@@ -11,6 +11,8 @@ Cambios entre las versiones 4.4.0 Beta2 y 4.4.0
  ---------
   + Añadido ejemplo de integración con Lazarus.
   + Añadida función al_get_midi_length.
+  + Añadida función al_packfile_password y funciones de bajo nivel para
+    archivos de disco (chunks y vtable).
 
  Otros
  -----

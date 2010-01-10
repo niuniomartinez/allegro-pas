@@ -27,12 +27,12 @@ USES
 
 
 TYPE
-(* Pointer to @link(AL_COLOR_MAP). *)
+(* Pointer to @code(AL_COLOR_MAP). *)
   AL_COLOR_MAPptr = ^AL_COLOR_MAP;
 (* Clolor map. *)
   AL_COLOR_MAP = ARRAY [0..AL_PAL_SIZE-1, 0..AL_PAL_SIZE-1] OF BYTE;
 (* Call-back procedure to be ussed to create color tables using
-   @link(al_create_color_table).
+   @code(al_create_color_table).
    This procedure must have the form:
    @longcode(#
      PROCEDURE (pal: AL_PALETTE; x, y: LONGINT; rgb: AL_RGBptr); CDECL;
@@ -51,7 +51,7 @@ TYPE
    This function treats source color #0 as a special case, leaving the
    destination unchanged whenever a zero source pixel is encountered, so that
    masked sprites will draw correctly.  This function will take advantage of
-   the global @link(al_rgb_map) variable to speed up color conversions.  If the
+   the global @code(al_rgb_map) variable to speed up color conversions.  If the
    callback function is not @nil, it will be called 256 times during the
    calculation, allowing you to display a progress indicator. *)
   PROCEDURE al_create_trans_table (table: AL_COLOR_MAPptr; pal: AL_PALETTE;
@@ -66,7 +66,7 @@ TYPE
    light levels it will output a color somewhere between the two extremes.  The
    r, g, and b values are in the range 0-63.
 
-   This function will take advantage of the global @link(al_rgb_map) variable to
+   This function will take advantage of the global @code(al_rgb_map) variable to
    speed up color conversions.  If the callback function is not @nil, it will
    be called 256 times during the calculation, allowing you to display a
    progress indicator. *)
@@ -92,8 +92,8 @@ TYPE
 
 (* Fills the specified color mapping table with lookup data for doing a
    paletted equivalent of whatever truecolor blender mode is currently
-   selected.  After calling @link(al_set_trans_blender),
-   @link(al_set_blender_mode), or any of the other truecolor blender mode
+   selected.  After calling @code(al_set_trans_blender),
+   @code(al_set_blender_mode), or any of the other truecolor blender mode
    routines, you can use this function to create an 8-bit mapping table that
    will have the same results as whatever 24-bit blending mode you have
    enabled.
@@ -106,7 +106,7 @@ TYPE
 
 VAR
 (* Pointer to the color mapping table.  You must allocate your own
-   @link(AL_COLOR_MAP) either statically or dynamically and set
+   @code(AL_COLOR_MAP) either statically or dynamically and set
    @code(al_color_table) to it before using any translucent or lit drawing
    functions in a 256-color video mode! *)
   al_color_table: AL_COLOR_MAPptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'color_map';

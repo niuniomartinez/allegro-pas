@@ -5,7 +5,7 @@
 
   @unorderedList(
     @item(@bold(@link(intro Introduction)))
-    @item(@bold(@link(use How to use Allegro.pas)))
+    @item(@bold(@link(use_allegro How to use Allegro.pas)))
     @item(@bold(@link(contact Contact info)))
   )
 
@@ -15,14 +15,14 @@
   Allegro.pas is a wrapper to allow Pascal compilers (such as Free Pascal or
   Delphi) to use the Allegro library.
 
-  Read @link(use section "How to use Allegro.pas") for a description of the
+  Read @link(use_allegro section "How to use Allegro.pas") for a description of the
   main module of the library.
 
   If you want to collaborate please join the main Allegro.pas mailing list
   (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).
 
 
-@section(1 use How to use Allegro.pas)
+@section(1 use_allegro How to use Allegro.pas)
 
   The best way to start with Allegro.pas is to study the sources at examples
   and look for detailed description of procedures and functions at the
@@ -42,7 +42,7 @@
     @item(@bold(@link(bitmap Bitmaps)))
     @item(@bold(@link(mouse Mouse routines)))
     @item(@bold(@link(graphmode Graphics modes initialization)))
-    @item(@bold(@link(draw Drawing primitives)))
+    @item(@bold(@link(draw_primitives Drawing primitives)))
     @item(@bold(@link(text text drawing)))
     @item(@bold(@link(bltspr Bitting and sprite drawing)))
     @item(@bold(@link(rlespr Run-length compressed sprites)))
@@ -413,7 +413,7 @@
 
 
 
-@section(2 draw Drawing primitives)
+@section(2 draw_primitives Drawing primitives)
 
   All these routines are affected by the current drawing mode and the clipping
   rectangle of the destination bitmap.  Unless specified otherwise, all
