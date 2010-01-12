@@ -74,6 +74,12 @@ USES
 PROCEDURE TForm1.FormCreate(Sender: TObject);
 BEGIN
   fBitmap := NIL; { No bitmap! }
+  IF AL_PAS_IS_BETA THEN
+    Application.MessageBox (
+      'This is a beta version, wich means it is a test version.'+
+      #10+'To get an stable version visit http://allegro-pas.sourceforge.net',
+      'Information', MB_ICONINFORMATION
+    );
 END;
 
 
@@ -121,7 +127,8 @@ PROCEDURE TForm1.MenuItem4Click (Sender: TObject);
 BEGIN
   Application.MessageBox (
         'This is a simple example of how to integrate Allegro.pas with Lazarus.'+
-        #10+'Read the source comments for more  information.',
+        #10+'Read the source comments for more  information.'+
+        #10+#10+'Linked with Allegro.pas '+AL_PAS_VERSION_STR,
         'About...', MB_ICONINFORMATION);
 
 END;
