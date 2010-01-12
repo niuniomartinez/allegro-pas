@@ -11,7 +11,9 @@ Changes between versions 4.4.0 Beta2 and 4.4.0
  ----
   + Added Lazarus example.
   + Added al_get_midi_length function.
-  + Addedd al_packfile_password and low-level file functions (chunks & vtable).
+  + Added al_packfile_password and low-level file functions (chunks & vtable).
+  + Added functions to load and save bitmaps and samples from and to an
+    AL_PACKFILEptr.
 
  Other
  -----
