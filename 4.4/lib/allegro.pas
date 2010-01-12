@@ -1773,9 +1773,41 @@ VAR
           ...
    al_destroy_bitmap (bmp);
 #)
-   *)
+     @seealso(al_load_bmp) @seealso(al_load_pcx) @seealso(al_load_tga)
+     @seealso(al_load_lbm) @seealso(al_save_bitmap) *)
   FUNCTION al_load_bitmap (filename: STRING; pal: AL_PALETTEptr): AL_BITMAPptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_bitmap';
+
+(* Loads an 8-bit, 16-bit, 24-bit or 32-bit Windows or OS/2 BMP file.  Remember
+   that you are responsible for destroying the bitmap when you are finished
+   with it to avoid memory leaks.
+   @returns(a pointer to the bitmap or @nil on error.)
+   @seealso(al_load_bitmap) @seealso(al_load_bmp_pf) *)
+  FUNCTION al_load_bmp (filename: STRING; palette: AL_PALETTEptr): AL_BITMAPptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_bmp';
+
+(* Loads a 256-color IFF ILBM/PBM file.  Remember that you are responsible for
+   destroying the bitmap when you are finished with it to avoid memory leaks.
+   @returns(a pointer to the bitmap or @nil on error.)
+   @seealso(al_load_bitmap) @seealso(al_load_lbm_pf) *)
+  FUNCTION al_load_lbm (filename: STRING; palette: AL_PALETTEptr): AL_BITMAPptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_lbm';
+
+(* Loads a 256-color or 24-bit truecolor PCX file. Remember that you are
+   responsible for destroying the bitmap when you are finished with it to avoid
+   memory leaks.
+   @returns(a pointer to the bitmap or @nil on error.)
+   @seealso(al_load_bitmap) @seealso(al_load_pcx_pf) *)
+  FUNCTION al_load_pcx (filename: STRING; palette: AL_PALETTEptr): AL_BITMAPptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_pcx';
+
+(* Loads a 256-color, 15-bit hicolor, 24-bit truecolor, or 32-bit
+   truecolor+alpha TGA file.  Remember that you are responsible for destroying
+   the bitmap when you are finished with it to avoid memory leaks.
+   @returns(a pointer to the bitmap or @nil on error.)
+   @seealso(al_load_bitmap) @seealso(al_load_tga_pf) *)
+  FUNCTION al_load_tga (filename: STRING; palette: AL_PALETTEptr): AL_BITMAPptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_tga';
 
 
 
@@ -1803,6 +1835,26 @@ VAR
   *)
   FUNCTION al_save_bitmap (filename: STRING; bmp: AL_BITMAPptr; pal: AL_PALETTEptr): LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'save_bitmap';
+
+(* Writes a bitmap into a 256-color or 24-bit truecolor BMP file.
+   @returns(non-zero on error.)
+   @seealso(al_save_bitmap) @seealso(al_save_bmp_pf) *)
+  FUNCTION al_save_bmp (filename: STRING; palette: AL_PALETTEptr): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'save_bmp';
+
+(* Writes a bitmap into a 256-color or 24-bit truecolor PCX file.
+   @returns(non-zero on error.)
+   @seealso(al_save_bitmap) @seealso(al_save_pcx_pf) *)
+  FUNCTION al_save_pcx (filename: STRING; palette: AL_PALETTEptr): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'save_pcx';
+
+(* Writes a bitmap into a 256-color, 15-bit hicolor, 24-bit truecolor, or
+   32-bit truecolor+alpha TGA file.
+   @returns(non-zero on error.)
+   @seealso(al_save_bitmap) @seealso(al_save_tga_pf) *)
+  FUNCTION al_save_tga (filename: STRING; palette: AL_PALETTEptr): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'save_tga';
+
 
 
 
@@ -2844,9 +2896,11 @@ TYPE
 
    @returns(a pointer to the font or @nil on error.  Remember that you are
      responsible for destroying the font when you are finished with it to avoid
-     memory leaks.) *)
+     memory leaks.)
+   @seealso(al_load_bmp_pf) *)
   FUNCTION al_load_bitmap_font (filename: STRING; palette: AL_PALETTEptr;
     p: POINTER): POINTER;
+
 
 (* This function is the work-horse of @code(al_load_bitmap_font), and can be
    used to grab a font from a bitmap in memory.  You can use this if you want
@@ -3672,15 +3726,19 @@ TYPE
 
    Remember to free this sample later to avoid memory leaks.
 
-   @returns(a pointer to the @code(AL_SAMPLE) or @nil on error.) *)
+   @returns(a pointer to the @code(AL_SAMPLE) or @nil on error.)
+   @seealso(al_load_wav_pf) *)
   FUNCTION al_load_wav (filename: STRING): AL_SAMPLEptr;
 
 (* Loads a sample from a Creative Labs VOC file.
 
   Remember to free this sample later to avoid memory leaks.
 
-   @returns(a pointer to the @code(AL_SAMPLE) or @nil on error.) *)
+   @returns(a pointer to the @code(AL_SAMPLE) or @nil on error.)
+   @seealso(al_load_voc_pf) *)
   FUNCTION al_load_voc (filename: STRING): AL_SAMPLEptr;
+
+
 
 (* Constructs a new sample structure of the specified type.
 

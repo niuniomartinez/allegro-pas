@@ -67,7 +67,7 @@ UNIT alfile;
 INTERFACE
 
 USES
-  albase; { Needs some basic definitions. }
+  albase, allegro; { Needs some basic definitions. }
 
 
 (***************
@@ -423,6 +423,52 @@ BEGIN
 
 
 
+(****************************************
+ * Semi-low-level object file functions *
+ ****************************************)
+
+(* A version of @code(al_load_bmp) which reads a BMP file from a packfile. *)
+  FUNCTION al_load_bmp_pf (f: AL_PACKFILEptr; palette: AL_PALETTEptr): AL_BITMAPptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_bmp_pf';
+
+(* A version of @code(al_load_lbm) which reads a BMP file from a packfile. *)
+  FUNCTION al_load_lbm_pf (f: AL_PACKFILEptr; palette: AL_PALETTEptr): AL_BITMAPptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_lbm_pf';
+
+(* A version of @code(al_load_pcx) which reads a BMP file from a packfile. *)
+  FUNCTION al_load_pcx_pf (f: AL_PACKFILEptr; palette: AL_PALETTEptr): AL_BITMAPptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_pcx_pf';
+
+(* A version of @code(al_load_pcx) which reads a BMP file from a packfile. *)
+  FUNCTION al_load_tga_pf (f: AL_PACKFILEptr; palette: AL_PALETTEptr): AL_BITMAPptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_tga_pf';
+
+
+
+(* A version of @code(al_save_bmp) which reads a BMP file from a packfile. *)
+  FUNCTION al_save_bmp_pf (f: AL_PACKFILEptr; palette: AL_PALETTEptr): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'save_bmp_pf';
+
+(* A version of @code(al_save_pcx) which reads a BMP file from a packfile. *)
+  FUNCTION al_save_pcx_pf (f: AL_PACKFILEptr; palette: AL_PALETTEptr): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'save_pcx_pf';
+
+(* A version of @code(al_save_pcx) which reads a BMP file from a packfile. *)
+  FUNCTION al_save_tga_pf (f: AL_PACKFILEptr; palette: AL_PALETTEptr): LONGINT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'save_tga_pf';
+
+
+
+(* A version of @code(al_load_wav) which reads from a packfile. *)
+  FUNCTION al_load_wav_pf (f: AL_PACKFILEptr): AL_SAMPLEptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_wav_pf';
+
+(* A version of @code(al_load_voc) which reads from a packfile. *)
+  FUNCTION al_load_voc_pf (f: AL_PACKFILEptr): AL_SAMPLEptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_voc_pf';
+
+
+
 (**************
  * Data files *
  **************)
@@ -510,8 +556,7 @@ VAR
 IMPLEMENTATION
 
 USES
-  sysutils,
-  allegro;
+  sysutils;
 
 
 

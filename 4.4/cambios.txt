@@ -13,6 +13,8 @@ Cambios entre las versiones 4.4.0 Beta2 y 4.4.0
   + Añadida función al_get_midi_length.
   + Añadida función al_packfile_password y funciones de bajo nivel para
     archivos de disco (chunks y vtable).
+  + Añadidas funciones para leer y grabar gráficos y sonidos directamente desde
+    un AL_PACKFILEptr.
 
  Otros
  -----
