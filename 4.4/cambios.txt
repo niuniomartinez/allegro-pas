@@ -15,6 +15,7 @@ Cambios entre las versiones 4.4.0 Beta2 y 4.4.0
     archivos de disco (chunks y vtable).
   + Añadidas funciones para leer y grabar gráficos y sonidos directamente desde
     un AL_PACKFILEptr.
+  + Añadido el directorio "resources" con archivos y explicaciones útiles.
 
  Otros
  -----

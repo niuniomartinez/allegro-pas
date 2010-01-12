@@ -14,6 +14,7 @@ Changes between versions 4.4.0 Beta2 and 4.4.0
   + Added al_packfile_password and low-level file functions (chunks & vtable).
   + Added functions to load and save bitmaps and samples from and to an
     AL_PACKFILEptr.
+  + Added directory "resources" with useful files and information.
 
  Other
  -----
