@@ -64,14 +64,13 @@ TYPE
     fVertexColor: ARRAY [1..4] OF INTEGER;
     fUseZbuff: BOOLEAN;
     fZbuff: INTEGER;
-
-    PROCEDURE SetUseZbuff (UseIt: BOOLEAN);
-  PROTECTED
     fDrawmode: LONGINT;
     fTexture: AL_BITMAPptr;
     fTexWidth, fTexHeight: AL_FIXED;
     fFaces: ARRAY [1..6] OF TFace;
     fVisibleFaces: INTEGER; (* Number of faces to draw. *)
+
+    PROCEDURE SetUseZbuff (UseIt: BOOLEAN);
   PUBLIC
   (* Creates the cube. *)
     CONSTRUCTOR Create (px, py, pz, aSize: AL_FIXED; aTexture: AL_BITMAPptr);

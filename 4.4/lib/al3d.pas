@@ -885,7 +885,7 @@ TYPE
   memory leaks in your program.
   @seealso(al_create_zbuffer) *)
   PROCEDURE al_destroy_zbuffer (bmp: AL_BITMAPptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_sub_zbuffer';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_zbuffer';
 
 
 (* Allocates memory for a scene, @code(nedge) and @code(npoly) are your
