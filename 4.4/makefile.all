@@ -39,8 +39,6 @@ status: adbanner
 veryclean: clean
 	$(DELETE) $(EXMFILES)
 	$(DELETE) $(DEMO)
-	$(DELETE) docs/html/*.*
-	$(DELETE) docs/cache/*.*
 
 # Clean temporary files.
 clean:
