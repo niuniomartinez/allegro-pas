@@ -9,7 +9,7 @@
      Versión 4.4.0                 \_/__/                 \/_/
 
   Una envolvente para utilizar la biblioteca Allegro en Pascal
-  por Ñuño Martínez, 11 de Enero de 2010.
+  por Ñuño Martínez, 14 de Enero de 2010.
 
 
 

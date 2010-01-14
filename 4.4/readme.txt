@@ -9,7 +9,7 @@
      Version 4.4.0                 \_/__/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Ñuño Martínez, January 11, 2010.
+  by Ñuño Martínez, January 14, 2010.
 
 
 
