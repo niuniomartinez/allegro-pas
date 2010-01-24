@@ -62,6 +62,7 @@ UNIT alfile;
 { Free Pascal. }
  {$PACKRECORDS C}
  {$LONGSTRINGS ON}
+ {$SMARTLINK ON}
 {$ENDIF}
 
 INTERFACE

@@ -201,6 +201,7 @@ UNIT al3d;
 { Free Pascal. }
  {$MODE FPC}
  {$PACKRECORDS C}
+ {$SMARTLINK ON}
 {$ENDIF}
 
 INTERFACE
