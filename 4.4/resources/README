@@ -2,7 +2,7 @@
   Here you have som interesting files.
 
 allegro.cfg - An empty config file you can edit with a text editor or the
-	      "setup" utillity.  It's loaded by Allegro automaticly.  Read
+	      "setup" utility.  It's loaded by Allegro automaticly.  Read
 	      the configuration section in the documentation for more info.
 keyboard.dat - Information about keyboard, loaded by Allegro automaticly.
 language.dat - Language file, loaded by Allegro automaticly.
