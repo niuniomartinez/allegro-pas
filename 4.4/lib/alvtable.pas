@@ -34,7 +34,7 @@ TYPE
     Use the Allegro.pas Drawing Primitives instead. }
     color_depth: LONGINT;
     mask_color: LONGINT;
-    unwrite_bank: POINTER;  (* C function on some machines, asm on i386 *)
+    unwrite_bank: _BMP_METHOD_;  (* C function on some machines, asm on i386 *)
     set_clip: _BMP_METHOD_;
     acquire: _BMP_METHOD_;
     release: _BMP_METHOD_;

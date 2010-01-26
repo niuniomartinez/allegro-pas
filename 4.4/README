@@ -130,8 +130,9 @@ Installation
   Free Pascal and any additional library correctly installed and configured.
   If you have problems read the "Contact info" section.
 
-  There's HTML documentation at "docs" subdirectory.  You can rebuild that
-  using "pasdoc" (http://pasdoc.sipsolutions.net/).
+  You can copy files with extension ".pas" and ".inc" from directory "lib" to
+  your program sources directory.  Also you can copy those files to your
+  compiler's unit directory.
 
 
 
@@ -139,9 +140,8 @@ Installation
 How to use
 ==========
 
-  To use Allegro.pas in your programs just copy files with extension ".pas"
-  and ".inc" from directory "lib" to your program sources directory.  Also you
-  can copy those files to your compiler's unit directory.
+  There's HTML documentation at "docs" subdirectory.  You can rebuild that
+  using "pasdoc" (http://pasdoc.sipsolutions.net/).
 
   ATM no special configuration needed.
 
