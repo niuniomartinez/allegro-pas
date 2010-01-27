@@ -4304,7 +4304,7 @@ CONST
 
 
   FUNCTION calibrate_joystick_name (n: LONGINT): PCHAR; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'calibrate_joystick_name';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_calibrate_joystick_name (n: LONGINT): STRING;
   VAR
@@ -4330,7 +4330,7 @@ CONST
 
 
   FUNCTION save_joystick_data (filename: PCHAR): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'save_joystick_data';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_save_joystick_data (filename: STRING): BOOLEAN;
   BEGIN
@@ -4340,7 +4340,7 @@ CONST
 
 
   FUNCTION load_joystick_data (filename: PCHAR): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_joystick_data';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_load_joystick_data (filename: STRING): BOOLEAN;
   BEGIN
@@ -4356,9 +4356,6 @@ CONST
  * Color and palette *
  *********************)
 
-{ Next commented declaration is for "_hsv_to_rgb" but for some reason it
-  throws EAccessViolation exception, so this procedure was translated from
-  the original C code. }
   PROCEDURE _hsv_to_rgb_ (h, s, v: SINGLE; r, g, b: PLONGINT); CDECL;
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'hsv_to_rgb';
 
@@ -4845,7 +4842,7 @@ TYPE
  ****************)
 
   PROCEDURE textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_ex';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
   BEGIN
@@ -4855,7 +4852,7 @@ TYPE
 
 
   PROCEDURE textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_centre_ex';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
   BEGIN
@@ -4864,7 +4861,7 @@ TYPE
 
 
   PROCEDURE textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_right_ex';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
   BEGIN
@@ -4874,7 +4871,7 @@ TYPE
 
 
   PROCEDURE textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x1, x2, y, diff, color, bg: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_justify_ex';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x1, x2, y, diff, color, bg: LONGINT);
   BEGIN
@@ -4884,7 +4881,7 @@ TYPE
 
 
   FUNCTION text_length (f: AL_FONTptr; str: PCHAR): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'text_length';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_text_length (f: AL_FONTptr; str: STRING): LONGINT;
   BEGIN
@@ -5094,7 +5091,7 @@ END;
  ********)
 
   FUNCTION load_midi (filename: PCHAR): AL_MIDIptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_midi';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_load_midi (filename: STRING): AL_MIDIptr;
   BEGIN
@@ -5141,7 +5138,7 @@ END;
  *******************)
 
   FUNCTION load_sample (filename: PCHAR): AL_SAMPLEptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_sample';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_load_sample (filename: STRING): AL_SAMPLEptr;
   BEGIN
@@ -5151,7 +5148,7 @@ END;
 
 
   FUNCTION load_wav (filename: PCHAR): AL_SAMPLEptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_wav';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_load_wav (filename: STRING): AL_SAMPLEptr;
   BEGIN
@@ -5161,7 +5158,7 @@ END;
 
 
   FUNCTION load_voc (filename: PCHAR): AL_SAMPLEptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_voc';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_load_voc (filename: STRING): AL_SAMPLEptr;
   BEGIN
@@ -5171,7 +5168,7 @@ END;
 
 
   FUNCTION save_sample (filename: PCHAR; spl: AL_SAMPLEptr): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'save_sample';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_save_sample (filename: STRING; spl: AL_SAMPLEptr): BOOLEAN;
   BEGIN
@@ -5181,7 +5178,7 @@ END;
 
 
   PROCEDURE register_sample_file_type (ext: PCHAR; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'register_sample_file_type';
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   PROCEDURE al_register_sample_file_type (ext: STRING; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC);
   BEGIN
