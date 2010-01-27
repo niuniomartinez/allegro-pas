@@ -15,6 +15,7 @@ exsprite.pp - Datafiles access and sprite animation.
 exscn3d.pp  - Using the 3d scene functions.
 exsyscur.pp - How to use system cursors.
 extrans.pp  - Lighting and translucency effects.
+exshade.pp  - Gouraud shaded sprite example.
 extruec.pp  - Truecolor pixel format conversions.
 exzbuf.pp   - Another 3D demo.
 

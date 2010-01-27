@@ -75,7 +75,7 @@ TYPE
     clear_to_color: PROCEDURE (bmp: AL_BITMAPptr; color: LONGINT); CDECL;
     pivot_scaled_sprite_flip: PROCEDURE (bmp, sprite: AL_BITMAPptr; x, y, cx, cy, angle, scale: AL_FIXED; v_flip: LONGINT); CDECL;
     do_stretch_blit: PROCEDURE (source, dest: AL_BITMAPptr; s_x, s_y, s_w, s_h, d_x, d_y, d_w, d_h, masked: LONGINT); CDECL;
-    draw_gouraud_sprite: POINTER;
+    draw_gouraud_sprite: PROCEDURE (bmp, spr: AL_BITMAPptr; x, y, c1, c2, c3, c4: LONGINT); CDECL;
     draw_sprite_end: AL_SIMPLE_PROC;
     blit_end: AL_SIMPLE_PROC;
     polygon: PROCEDURE (bmp: AL_BITMAPptr; vertices: LONGINT; points: PLONGINT; color: LONGINT); CDECL;

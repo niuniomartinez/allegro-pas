@@ -3189,7 +3189,10 @@ VAR
   Although generally not supporting graphics of mixed color depths, as a
   special case this function can be used to draw 256-color source images onto
   truecolor destination bitmaps, so you can use palette effects on specific
-  sprites within a truecolor program. . *)
+  sprites within a truecolor program.
+  @seealso(al_draw_sprite_v_flip) @seealso(al_draw_trans_sprite)
+  @seealso(al_draw_lit_sprite) @seealso(al_draw_gouraud_sprite)
+  @seealso(al_rotate_sprite) @seealso(al_draw_rle_sprite) *)
   PROCEDURE al_draw_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
     INLINE;
 
@@ -3280,7 +3283,8 @@ VAR
    as you call @code(al_set_write_alpha_blender) first.  As
    @code(al_draw_sprite) this function skips transparent pixels, except if the
    source sprite is an 8-bit image;  if this is the case, you should pay
-   attention to properly set up your color map table for index 0. *)
+   attention to properly set up your color map table for index 0.
+   @seealso(al_draw_lit_sprite) @seealso(al_color_table) *)
   PROCEDURE al_draw_trans_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
     INLINE;
 
@@ -3295,9 +3299,19 @@ VAR
 
    @param(c must be in the range [0..255] whatever its actual meaning is.
      This must only be used after you have set up the color mapping table @(for
-     256-color modes@) or blender functions @(for truecolor modes@).) *)
+     256-color modes@) or blender functions @(for truecolor modes@).)
+   @seealso(al_draw_sprite) @seealso(al_draw_gouraud_sprite)
+   @seealso(al_color_table) *)
   PROCEDURE al_draw_lit_sprite (bmp, sprite: AL_BITMAPptr; x, y, c: LONGINT);
     INLINE;
+
+(* More sophisticated version of @code(al_draw_lit_sprite):  the 'color'
+   parameter is not constant across the sprite image anymore but interpolated
+   between the four specified corner colors.  The corner values passed to this
+   function indicate the strength of the color applied on them, ranging from 0
+   (no strength) to 255 (full strength).
+   @seealso(al_draw_sprite) @seealso(al_color_table) *)
+  PROCEDURE al_draw_gouraud_sprite (bmp, sprite: AL_BITMAPptr; x, y, c1, c2, c3, c4: LONGINT); INLINE;
 
 (* Draws the sprite image onto the bitmap.  It is placed with its top left
    corner at the specified position, then rotated by the specified angle around
@@ -3384,7 +3398,7 @@ TYPE
 (* Destroys an RLE sprite structure previously returned by
    @code(al_get_rle_sprite).  If you pass a @nil pointer this function won't do
    anything.  Use this once you are done with an RLE sprite to avoid memory
-   leaks in your program. 
+   leaks in your program.
    @param(sprite The RLE sprite to destroy.) *)
   PROCEDURE al_destroy_rle_sprite (sprite: AL_RLE_SPRITEptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_rle_sprite';
@@ -4948,6 +4962,11 @@ BEGIN
 END;
 
 
+
+PROCEDURE al_draw_gouraud_sprite (bmp, sprite: AL_BITMAPptr; x, y, c1, c2, c3, c4: LONGINT);
+BEGIN
+  bmp^.vtable^.draw_gouraud_sprite (bmp, sprite, x, y, c1, c2, c3, c4);
+END;
 
 PROCEDURE al_rotate_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
 BEGIN

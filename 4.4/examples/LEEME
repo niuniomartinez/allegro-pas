@@ -15,6 +15,7 @@ exscn3d.pp  - Uso de las funciones "scene".
 exsprite.pp - Acceso a archivos de datos y animación de imágenes (sprites).
 exsyscur.pp - Muestra cómo utilizar los cursores del sistema.
 extrans.pp  - Efectos de luz y transparencia.
+exshade.pp  - Ejemplo de 'sprite' con sombreado.
 extruec.pp  - Conversión de colores en formato "true-color".
 exzbuf.pp   - Otro ejemplo de cubos 3D.
 
