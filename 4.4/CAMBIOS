@@ -5,6 +5,7 @@ Cambios entre las versiones 4.4.0 y 4.4.1
   ---------
    + Añadidas versiones de al_getpixel de al_putpixel de muy bajo nivel.  Son
      más rápidas.
+   + Añadida función de dibujo de sprites Gouraud y un ejemplo de la misma.
 
 
 
