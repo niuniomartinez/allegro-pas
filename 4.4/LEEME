@@ -143,10 +143,10 @@ Instrucciones de instalación
   Ejecute los programas de ejemplo y el juego de demostración para comprobar
   su buen funcionamiento.
 
-  Se incluye la documentación en formato HTML en el subdirectorio "docs".
-  Puede utilizar la utilidad pasdoc (http://pasdoc.sipsolutions.net/) para
-  regenerarla, utilizando el archivo makefile que se encuentra en el
-  subdirectorio "docs".
+  Copie los archivos fuente con extensión ".pas" y ".inc" del subdirectorio
+  lib en el mismo subdirectorio de las fuentes de su programa.  También puede
+  copiar estos archivos en el directorio de unidades de su compilador de forma
+  que estos estén disponibles para cualquier compilación.
 
 
 
@@ -154,11 +154,10 @@ Instrucciones de instalación
 Utilizar la biblioteca
 ======================
 
-  Para utilizar Allegro.pas copie los archivos fuente con extensión ".pas" y
-  ".inc" del subdirectorio lib en el mismo subdirectorio de las fuentes de su
-  programa.  También puede copiar estos archivos en el directorio de unidades
-  de su compilador de forma que estos estén disponibles para cualquier
-  compilación.
+  Se incluye la documentación en formato HTML en el subdirectorio "docs".
+  Puede utilizar la utilidad pasdoc (http://pasdoc.sipsolutions.net/) para
+  regenerarla, utilizando el archivo makefile que se encuentra en el
+  subdirectorio "docs".
 
   En principio no necesita ninguna configuración especial para compilar los
   programas.
