@@ -42,9 +42,9 @@ veryclean: clean
 
 # Clean temporary files.
 clean:
-	$(DELETE) $(EXMDIR)*$(OBJSUF)
 	$(DELETE) $(LIBDIR)*$(OBJSUF)
 	$(DELETE) $(LIBDIR)*.ppu
+	$(DELETE) $(LIBDIR)*.a
 	$(DELETE) $(DEMODIR)*$(OBJSUF)
 	$(DELETE) $(DEMODIR)*.ppu
 
