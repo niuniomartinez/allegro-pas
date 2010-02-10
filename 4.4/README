@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 4.4.0                 \_/__/                 \/_/
+     Version 4.4.1                 \_/__/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Ñuño Martínez, January 14, 2010.
+  by Ñuño Martínez, February 10, 2010.
 
 
 
@@ -108,7 +108,7 @@ Installation
   system.  If you have Lazarus IDE then it should be enough.  Visit Free
   Pascal's web site for more information (http://www.freepascal.org/).
 
-  If you're using GNU/Linux then install Allegro 4.4.0.  You can download it
+  If you're using GNU/Linux then install Allegro 4.4.  You can download it
   from http://sourceforge.net/project/showfiles.php?group_id=5665 .  May be you
   can install the "enduser" version.
 
@@ -116,8 +116,8 @@ Installation
   the previous paragraph to obtain the file "alleg44.dll" or download the
   "bin" version of Allegro.pas wich include such file and precompiled tools.
 
-  NOTE:  Allegro.pas 4.4.0 will work ONLY with Allegro 4.4.0 (and its RC
-  releases).  It will not work with newer versions at the moment.
+  NOTE:  Allegro.pas 4.4 will work ONLY with Allegro 4.4 (and its RC releases).
+  It will not work with newer versions at the moment.
 
   Open a console and go to the Allegro.pas directory.  In most cases just
   use "cd allegro.pas".
@@ -140,10 +140,15 @@ Installation
 How to use
 ==========
 
-  There's HTML documentation at "docs" subdirectory.  You can rebuild that
-  using "pasdoc" (http://pasdoc.sipsolutions.net/).
+  If you have "pasdoc" (http://pasdoc.sipsolutions.net/) you can build all
+  documentation in HTML format using the "makefile" at "docs" subdirectory.
 
-  ATM no special configuration needed.
+  Else you can download the documentation from the "Downloads" page of the
+  project (http://allegro-pas.sourceforge.net/download) or read it on-line
+  from http://allegro-pas.sourceforge.net/docs.
+
+  Also you should pay attention to the contents of the "resources"
+  subdirectory.
 
 
 

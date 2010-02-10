@@ -2781,31 +2781,31 @@ CONST
 (* Faster inline version of @code(al_getpixel).  This is specific for 8 bits
    color depth and don't do any clipping, so you must make sure the point
    lies inside the bitmap. @returns(the value of the pixel in 8bpp) *)
-  FUNCTION al__getpixel (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  FUNCTION _al_getpixel (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
     INLINE;
 
 (* Faster inline version of @code(al_getpixel).  This is specific for 15 bits
    color depth and don't do any clipping, so you must make sure the point
    lies inside the bitmap. @returns(the value of the pixel in 15bpp) *)
-  FUNCTION al__getpixel15 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  FUNCTION _al_getpixel15 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
     INLINE;
 
 (* Faster inline version of @code(al_getpixel).  This is specific for 16 bits
    color depth and don't do any clipping, so you must make sure the point
    lies inside the bitmap. @returns(the value of the pixel in 16bpp) *)
-  FUNCTION al__getpixel16 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  FUNCTION _al_getpixel16 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
     INLINE;
 
 (* Faster inline version of @code(al_getpixel).  This is specific for 24 bits
    color depth and don't do any clipping, so you must make sure the point
    lies inside the bitmap. @returns(the value of the pixel in 24bpp) *)
-  FUNCTION al__getpixel24 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  FUNCTION _al_getpixel24 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
     INLINE;
 
 (* Faster inline version of @code(al_getpixel).  This is specific for 32 bits
    color depth and don't do any clipping, so you must make sure the point
    lies inside the bitmap. @returns(the value of the pixel in 32bpp) *)
-  FUNCTION al__getpixel32 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  FUNCTION _al_getpixel32 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
     INLINE;
 
 (* Writes a pixel to the specified position in the bitmap, using the current
@@ -2817,35 +2817,35 @@ CONST
    implemented as an inline functions for specific 8 bits color depth.  It
    don't perform any clipping (they will crash if you try to draw outside the
    bitmap!), and ignore the drawing mode. *)
-  PROCEDURE al__putpixel (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+  PROCEDURE _al_putpixel (bmp: AL_BITMAPptr; x, y, color: LONGINT);
     INLINE;
 
 (* Like the regular @code(al_putpixel), but much faster because it's
    implemented as an inline functions for specific 15 bits color depth.  It
    don't perform any clipping (they will crash if you try to draw outside the
    bitmap!), and ignore the drawing mode. *)
-  PROCEDURE al__putpixel15 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+  PROCEDURE _al_putpixel15 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
     INLINE;
 
 (* Like the regular @code(al_putpixel), but much faster because it's
    implemented as an inline functions for specific 16 bits color depth.  It
    don't perform any clipping (they will crash if you try to draw outside the
    bitmap!), and ignore the drawing mode. *)
-  PROCEDURE al__putpixel16 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+  PROCEDURE _al_putpixel16 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
     INLINE;
 
 (* Like the regular @code(al_putpixel), but much faster because it's
    implemented as an inline functions for specific 24 bits color depth.  It
    don't perform any clipping (they will crash if you try to draw outside the
    bitmap!), and ignore the drawing mode. *)
-  PROCEDURE al__putpixel24 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+  PROCEDURE _al_putpixel24 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
     INLINE;
 
 (* Like the regular @code(al_putpixel), but much faster because it's
    implemented as an inline functions for specific 32 bits color depth.  It
    don't perform any clipping (they will crash if you try to draw outside the
    bitmap!), and ignore the drawing mode. *)
-  PROCEDURE al__putpixel32 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+  PROCEDURE _al_putpixel32 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
     INLINE;
 
 (* Draws a vertical line onto the bitmap, from point (x, y1) to (x, y2). *)
@@ -4606,34 +4606,34 @@ TYPE
     al_getpixel := bmp^.vtable^.getpixel (bmp, x, y);
   END;
 
-  FUNCTION al__getpixel (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  FUNCTION _al_getpixel (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
   VAR
     addr: DWORD;
   BEGIN
     addr := bmp^.read_bank (bmp, y);
-    al__getpixel := (BYTEPtr (addr + DWORD (x)))^;
+    _al_getpixel := (BYTEPtr (addr + DWORD (x)))^;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
-  FUNCTION al__getpixel15 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  FUNCTION _al_getpixel15 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
   VAR
     addr: DWORD;
   BEGIN
     addr := bmp^.read_bank (bmp, y);
-    al__getpixel15 := (PWORD (addr + DWORD (x)))^;
+    _al_getpixel15 := (PWORD (addr + DWORD (x)))^;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
-  FUNCTION al__getpixel16 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  FUNCTION _al_getpixel16 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
   VAR
     addr: DWORD;
   BEGIN
     addr := bmp^.read_bank (bmp, y);
-    al__getpixel16 := (PWORD (addr + DWORD (x)))^;
+    _al_getpixel16 := (PWORD (addr + DWORD (x)))^;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
-  FUNCTION al__getpixel24 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  FUNCTION _al_getpixel24 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
   VAR
     addr: DWORD;
 
@@ -4654,16 +4654,16 @@ TYPE
 
   BEGIN
     addr := bmp^.read_bank (bmp, y);
-    al__getpixel24 := READ3BYTES;
+    _al_getpixel24 := READ3BYTES;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
-  FUNCTION al__getpixel32 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  FUNCTION _al_getpixel32 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
   VAR
     addr: DWORD;
   BEGIN
     addr := bmp^.read_bank (bmp, y);
-    al__getpixel32 := (PLONGINT (addr + DWORD (x)))^;
+    _al_getpixel32 := (PLONGINT (addr + DWORD (x)))^;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
@@ -4672,7 +4672,7 @@ TYPE
     bmp^.vtable^.putpixel (bmp, x, y, color);
   END;
 
-  PROCEDURE al__putpixel (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+  PROCEDURE _al_putpixel (bmp: AL_BITMAPptr; x, y, color: LONGINT);
   VAR
     addr: DWORD;
   BEGIN
@@ -4681,7 +4681,7 @@ TYPE
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
-  PROCEDURE al__putpixel15 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+  PROCEDURE _al_putpixel15 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
   VAR
     addr: DWORD;
   BEGIN
@@ -4690,7 +4690,7 @@ TYPE
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
-  PROCEDURE al__putpixel16 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+  PROCEDURE _al_putpixel16 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
   VAR
     addr: DWORD;
   BEGIN
@@ -4699,7 +4699,7 @@ TYPE
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
-  PROCEDURE al__putpixel24 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+  PROCEDURE _al_putpixel24 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
   VAR
     addr: DWORD;
 
@@ -4722,7 +4722,7 @@ TYPE
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
-  PROCEDURE al__putpixel32 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
+  PROCEDURE _al_putpixel32 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
   VAR
     addr: DWORD;
   BEGIN

@@ -20,7 +20,7 @@ $(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
 	@echo Example $@ ready!
 
 $(DEMODIR)%$(BINSUF): $(DEMOSRC) $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(DEMODIR) $< -o$@
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(DEMODIR) -FU$(LIBDIR) $< -o$@
 	@echo Demo game ready!
 
 # Returns some variables.
@@ -32,7 +32,7 @@ status: adbanner
 	@echo "  Platform : $(PLATFORM)"
 	@echo "  Compiler options : $(FLAGS)"
 	@echo "  Units : $(LIBFILES)"
-	@echo "  Examples : $(EXMFILES) $(GLEXMFILES)"
+	@echo "  Examples : $(EXMFILES)"
 	@echo "  Demo game : $(DEMO)"
 
 # Cleans everything.
@@ -45,16 +45,6 @@ clean:
 	$(DELETE) $(LIBDIR)*$(OBJSUF)
 	$(DELETE) $(LIBDIR)*.ppu
 	$(DELETE) $(LIBDIR)*.a
-	$(DELETE) $(DEMODIR)*$(OBJSUF)
-	$(DELETE) $(DEMODIR)*.ppu
-
-# Strip symbols and compress with upx packer (http://upx.sf.net/)
-upx:
-	@echo "Sorry, the compress feature is not done yet."
-
-# Install.
-install:
-	@echo "Sorry, the install feature is not done yet."
 
 # Show all options.
 help: adbanner

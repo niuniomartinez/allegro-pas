@@ -3,9 +3,17 @@ Cambios entre las versiones 4.4.0 y 4.4.1
 
   Novedades
   ---------
-   + Añadidas versiones de al_getpixel de al_putpixel de muy bajo nivel.  Son
+   + Añadidas versiones de al_getpixel y de al_putpixel de muy bajo nivel.  Son
      más rápidas.
-   + Añadida función de dibujo de sprites Gouraud y un ejemplo de la misma.
+   + Nuevo procedimiento al_draw_gouraud_sprite y su correspondiente ejemplo.
+
+  Otros
+  -----
+  + Añadida la directiva "smartlinking" a los archivos, lo cual hace que los
+    ejecutables sean más pequeños al no incluir funciones que no utiliza.
+  * Correcciones en la documentación y los "makefiles".
+  * Corregido el nombre del archivo "shared-object" en Linux, ya que lo han
+    cambiado de nombre.
 
 
 

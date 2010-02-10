@@ -1,3 +1,18 @@
+Changes between versions 4.4.0 an 4.4.1
+=======================================
+
+  News
+  ----
+  + Added low-level versions of al_getpixel and al_putpixel, slightly faster.
+  + New sprite procedure al_draw_gouraud_sprite and an example.
+
+  Other
+  -----
+  + Added "smartlinking" directive.
+  * Fixes on makefiles and documentation.
+  * Fixes on Linux's "shared-object" filename, because it changed.
+
+
 Changes between versions 4.4.0 Beta2 and 4.4.0
 ==============================================
 
