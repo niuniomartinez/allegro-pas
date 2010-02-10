@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Versión 4.4.0                 \_/__/                 \/_/
+     Versión 4.4.1                 \_/__/                 \/_/
 
   Una envolvente para utilizar la biblioteca Allegro en Pascal
-  por Ñuño Martínez, 14 de Enero de 2010.
+  por Ñuño Martínez, 1o de Febrero de 2010.
 
 
 
@@ -123,10 +123,10 @@ Instrucciones de instalación
   descargarse la versión "binaria" de Allegro.pas, la cual contiene dicho
   archivo y las herramientas.
 
-  IMPORTANTE:  Tenga en cuenta que, en principio, Allegro.pas 4.4.0 funcionará
-  únicamente con la versión 4.4.0 de Allegro (incluyendo versiones RC) pero
-  quizá no con versiones más modernas.  Tenga también en cuenta que Allegro es
-  independiente de Allegro.pas y se instala de forma disferente.
+  IMPORTANTE:  Tenga en cuenta que, en principio, Allegro.pas 4.4 funcionará
+  únicamente con las versiones de la rama 4.4 de Allegro (incluyendo versiones
+  RC) pero quizá no con versiones más modernas.  Tenga también en cuenta que
+  Allegro es independiente de Allegro.pas y se instala de forma diferente.
 
   Abra una consola de comandos y sitúese en el directorio de Allegro.pas,
   normalmente ejecutando el comando "cd allegro.pas".
@@ -154,13 +154,15 @@ Instrucciones de instalación
 Utilizar la biblioteca
 ======================
 
-  Se incluye la documentación en formato HTML en el subdirectorio "docs".
-  Puede utilizar la utilidad pasdoc (http://pasdoc.sipsolutions.net/) para
-  regenerarla, utilizando el archivo makefile que se encuentra en el
-  subdirectorio "docs".
+  Si dispone de la utilidad pasdoc (http://pasdoc.sipsolutions.net/), puede
+  generar la documentación en formato HTML utilizando el archivo makefile que
+  se encuentra en el subdirectorio "docs".
 
-  En principio no necesita ninguna configuración especial para compilar los
-  programas.
+  Si no, puede descargarse la documentación desde la página de descargas
+  del proyecto (http://allegro-pas.sourceforge.net/download) o consultarla
+  en línea en http://allegro-pas.sourceforge.net/docs
+
+  Revise, también, el contenido del directorio "resources".
 
 
 

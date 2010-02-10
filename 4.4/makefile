@@ -34,6 +34,8 @@ ifeq ($(TARGET),WIN32)
 	LIBSUF = .dll
 	# Object sufix
 	OBJSUF = .o
+	# Extra flags.
+	EFLAGS = -WG
 
 	# File management
 	# TODO: Detect MSys, Cywing and such...
@@ -51,6 +53,8 @@ ifeq ($(TARGET),LINUX)
 	BINSUF = 
 	# Object sufix
 	OBJSUF = .o
+	# Extra flags.
+	EFLAGS = 
 
 	# File management
 	DELETE = rm -rf
@@ -68,9 +72,9 @@ DEMODIR = demo/
 EXMDIR = examples/
 LIBDIR = lib/
 
-FLAGS = -Nu -O3 -Sh -Si -Xs -XX
+FLAGS = -Nu -O3 -Sh -Si -Xs -XX $(EFLAGS)
 # Use next line instead to activate debug.
-#FLAGS = -g -O- -pg -Sh
+#FLAGS = Co -CO -Ct -gl -O- -pg -Sh $(EFLAGS)
 
 # -- Source files list --
 include makefile.list
