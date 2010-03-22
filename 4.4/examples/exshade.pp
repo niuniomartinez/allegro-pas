@@ -49,6 +49,7 @@ VAR
   Pal: AL_PALETTE;
   Buffer, Planet: AL_BITMAPptr;
   Buf: STRING[255];
+  ScreenW, ScreenH, SpriteW, SpriteH: INTEGER;
 (* RGB -> color mapping table. Not needed, but speeds things up *)
   rgb_table: AL_RGB_MAP;
   light_table : AL_COLOR_MAP;
@@ -94,28 +95,29 @@ BEGIN
   al_create_light_table (@light_table, pal, 0, 0, 0, NIL);
   al_color_table := @light_table;
 
-  al_set_trans_blender (0, 0, 0, 128);
+{ Pre-calculate values used to calculate distances. }
+  ScreenW := AL_SCREEN_W DIV 2;
+  ScreenH := AL_SCREEN_H DIV 2;
+  SpriteW := ScreenW + Planet^.w;
+  SpriteH := ScreenH + Planet^.h;
 
+  al_set_trans_blender (0, 0, 0, 128);
   REPEAT
-    al_poll_mouse();
+    al_poll_mouse;
 
     al_draw_gouraud_sprite (Buffer, Planet,
-	AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
-	Distance (AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
-		  al_mouse_x, al_mouse_y),
-	Distance (AL_SCREEN_W DIV 2 + Planet^.w, AL_SCREEN_H DIV 2,
-		  al_mouse_x, al_mouse_y),
-	Distance (AL_SCREEN_W DIV 2 + Planet^.w, AL_SCREEN_H DIV 2 + Planet^.h,
-		  al_mouse_x, al_mouse_y),
-	Distance (AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2 + Planet^.h,
-		  al_mouse_x, al_mouse_y));
+	ScreenW, ScreenH,
+	Distance (ScreenW, ScreenH, al_mouse_x, al_mouse_y),
+	Distance (SpriteW, ScreenH, al_mouse_x, al_mouse_y),
+	Distance (SpriteW, SpriteH, al_mouse_x, al_mouse_y),
+	Distance (ScreenW, SpriteH, al_mouse_x, al_mouse_y));
 
     al_textout_ex (Buffer, al_font, 'Gouraud Shaded Sprite Demo', 0, 0,
 		   al_palette_color^[10], -1);
 
-    al_show_mouse (Buffer);
+    al_circle (Buffer, al_mouse_x, al_mouse_y, 4, al_palette_color^[10]);
     al_blit (Buffer, al_screen, 0, 0, 0, 0, AL_SCREEN_W, AL_SCREEN_H);
-    al_show_mouse (NIL);
+    al_circle (Buffer, al_mouse_x, al_mouse_y, 4, al_palette_color^[31]);
   UNTIL al_keypressed;
 
   al_destroy_bitmap (Planet);
