@@ -4,18 +4,20 @@ excolmap.pp - Crear efectos gráficos usando tablas de mapeo de color.
 exdata.pp   - Acceder al contenido de los archivos de datos (datafiles).
 exdbuf.pp   - Cómo usar doble página para eliminar parpadeos.
 exfixed.pp  - Uso de matemáticas de punto flotante.
+exflip.pp   - Cómo utilizar intercambio de páginas.
 exgui.pp    - Uso de los objetos de menú y diálogo.
 exhello.pp  - Sencillo "hello world".
+exjoy.pp    - Cómo calibrar y utilizar mandos de juego.
 exhsvrgb.pp - Transformación del espacio HSV a valores RGB.
 exkeys.pp   - Muestra diferentes formas de acceder al teclado.
 exmouse.pp  - Obtener entradas desde el ratón.
 expal.pp    - Efectos de paletas y rotación de colores.
 expat.pp    - Usar plantillas y sub-bitmap.
 exscn3d.pp  - Uso de las funciones "scene".
+exshade.pp  - Ejemplo de 'sprite' con sombreado.
 exsprite.pp - Acceso a archivos de datos y animación de imágenes (sprites).
 exsyscur.pp - Muestra cómo utilizar los cursores del sistema.
 extrans.pp  - Efectos de luz y transparencia.
-exshade.pp  - Ejemplo de 'sprite' con sombreado.
 extruec.pp  - Conversión de colores en formato "true-color".
 exzbuf.pp   - Otro ejemplo de cubos 3D.
 
