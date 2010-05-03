@@ -178,13 +178,13 @@ BEGIN (* The program starts here. *)
 	BEGIN
 	  IF Key = AL_KEY_PGDN THEN
 	  BEGIN
-	    INC (Cube1.Pos.z, 1 SHL 14);
-	    INC (Cube2.Pos.z, 1 SHL 14);
+	    Cube1.Pos.z := Cube1.Pos.z + (1 SHL 14);
+	    Cube2.Pos.z := Cube1.Pos.z + (1 SHL 14);
 	  END
 	  ELSE IF Key = AL_KEY_PGUP THEN
 	  BEGIN
-	    DEC (Cube1.Pos.z, 1 SHL 14);
-	    DEC (Cube2.Pos.z, 1 SHL 14);
+	    Cube1.Pos.z := Cube1.Pos.z - (1 SHL 14);
+	    Cube2.Pos.z := Cube1.Pos.z - (1 SHL 14);
 	  END
 	  ELSE IF Key = AL_KEY_P THEN
 	    Paused := NOT Paused;
