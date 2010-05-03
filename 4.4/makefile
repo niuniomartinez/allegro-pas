@@ -72,7 +72,7 @@ DEMODIR = demo/
 EXMDIR = examples/
 LIBDIR = lib/
 
-FLAGS = -Nu -O3 -Sh -Si -Xs -XX $(EFLAGS)
+FLAGS = -O3 -Sh -Si -Xs -XX $(EFLAGS)
 # Use next line instead to activate debug.
 #FLAGS = Co -CO -Ct -gl -O- -pg -Sh $(EFLAGS)
 

@@ -240,11 +240,11 @@ BEGIN (* The program starts here. *)
 	IF Key <> AL_KEY_ESC THEN
 	BEGIN
 	  IF Key = AL_KEY_PGDN THEN
-	    INC (TheCube.Pos.z, 1 SHL 14)
+	    TheCube.Pos.z := TheCube.Pos.z + (1 SHL 14)
 	  ELSE IF Key = AL_KEY_PGUP THEN
-	    DEC (TheCube.Pos.z, 1 SHL 14)
+	    TheCube.Pos.z := TheCube.Pos.z - (1 SHL 14)
 	  ELSE BEGIN
-	    INC (TheCube.DrawMode);
+	    TheCube.DrawMode := TheCube.DrawMode + 1;
 	    IF TheCube.DrawMode >= AL_POLYTYPE_MAX THEN
 	    BEGIN
 	      TheCube.DrawMode := POLYTYPE_WIRED;
