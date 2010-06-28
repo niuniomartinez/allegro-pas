@@ -87,15 +87,16 @@ VAR
     Filename: STRING;
     Pic: AL_BITMAPptr;
   BEGIN
-    filename := ExtractFilePath (ParamStr (0)) + 'allegro.pcx';
-
-    Pic := al_load_bitmap (filename, @Palette);
+    Filename := ExtractFilePath (ParamStr (0)) + 'allegro.pcx';
+    Pic := al_load_bitmap (Filename, @Palette);
+Write (''); { If you delete this line it doesn't run in some systems(?) [Xubuntu 10.04] }
     IF Pic = NIL THEN
     BEGIN
       al_message ('Can''t load allegro.pcx.');
       RESULT := FALSE;
       EXIT;
     END;
+  { Texture size must be power of two. }
     Texture := al_create_bitmap (128, 128);
     al_stretch_blit (Pic, Texture, 0, 0, Pic^.w, Pic^.h, 0, 0, 128, 128);
     al_destroy_bitmap (Pic);
@@ -162,7 +163,6 @@ VAR
       RESULT := FALSE;
       EXIT;
     END;
-
     IF NOT LoadTexture THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
@@ -220,7 +220,7 @@ VAR
 	BEGIN
 	  FOR J := 1 TO nv DO
 	    al_persp_project_f (Vout[j].x, Vout[j].y, Vout[j].z,
-			      Vout[j].x, Vout[j].y);
+				Vout[j].x, Vout[j].y);
 	  al_scene_polygon3d_f (AL_POLYTYPE_PTEX, Texture, nv, @pVout[1]);
 	END;
     END;
@@ -277,7 +277,6 @@ BEGIN (* The program starts here. *)
     pVtmp[j] := @Vtmp[j];
     pVout[j] := @Vout[j];
   END;
-
   Tick := 1;
   WHILE al_key[AL_KEY_ESC] = 0 DO
   BEGIN
