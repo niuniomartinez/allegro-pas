@@ -579,11 +579,9 @@ TYPE
    point version of the function is less accurate than the floating point one
    so it might return wrong values in some cases.
    @seealso(al_cross_product) *)
-  FUNCTION al_polygon_z_normal (v1, v2, v3: AL_V3Dptr): AL_FIXED; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal';
+  FUNCTION al_polygon_z_normal (v1, v2, v3: AL_V3Dptr): AL_FIXED;
 (* Same as @code(al_polygon_z_normal) but using floats instead than fixed. *)
-  FUNCTION al_polygon_z_normal_f (v1, v2, v3: AL_V3D_Fptr): SINGLE; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal_f';
+  FUNCTION al_polygon_z_normal_f (v1, v2, v3: AL_V3D_Fptr): SINGLE;
 
 
 
@@ -1026,6 +1024,31 @@ VAR
     z1 := 1.0 / z;
     xout := ((x * z1) * _persp_xscale_f) + _persp_xoffset_f;
     yout := ((y * z1) * _persp_yscale_f) + _persp_yoffset_f;
+  END;
+
+
+
+  FUNCTION al_polygon_z_normal (v1, v2, v3: AL_V3Dptr): AL_FIXED;
+  VAR
+    S1, S2, S3: AL_V3D_F;
+  BEGIN
+    S1.x:=al_ftofix(v1^.x); S1.y:=al_ftofix(v1^.y); S1.z:=al_ftofix(v1^.z);
+    S2.x:=al_ftofix(v2^.x); S2.y:=al_ftofix(v2^.y); S2.z:=al_ftofix(v2^.z);
+    S3.x:=al_ftofix(v3^.x); S3.y:=al_ftofix(v3^.y); S3.z:=al_ftofix(v3^.z);
+    al_polygon_z_normal :=
+      al_ftofix (al_polygon_z_normal_f (@S1, @S2, @S3));
+  END;
+
+
+
+  FUNCTION al_polygon_z_normal_f (v1, v2, v3: AL_V3D_Fptr): SINGLE;
+  VAR
+    S1, S2, S3: SINGLE;
+  BEGIN
+    S1 := v1^.x * ((v2^.y * v3^.z) - (v3^.y * v2^.z));
+    S2 := v2^.x * ((v3^.y * v1^.z) - (v1^.y * v3^.z));
+    S3 := v3^.x * ((v1^.y * v2^.z) - (v2^.y * v1^.z));
+    al_polygon_z_normal_f := -S1 - S2 - S3;
   END;
 
 

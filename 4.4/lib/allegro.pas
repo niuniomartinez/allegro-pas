@@ -47,13 +47,13 @@ CONST
   AL_SUB_VERSION = 4;
 (* Defined to the minor version of Allegro.pas.  From a version number like
    4.1.16, this would be defined to the integer 16. *)
-  AL_PAS_VERSION = 0;
+  AL_PAS_VERSION = 2;
 (* Defined to TRUE if current version is a BETA version.  A BETA version is a
    test version and may be uncomplete or untested. *)
   AL_PAS_IS_BETA = FALSE;
 (* Defined to a text string containing all version numbers and maybe some
    additional text. *)
-  AL_PAS_VERSION_STR = '4.4.0';
+  AL_PAS_VERSION_STR = '4.4.2';
 
 
 

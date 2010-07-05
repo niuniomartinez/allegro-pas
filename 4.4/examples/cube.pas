@@ -321,7 +321,7 @@ VAR
 	z1 := Vertex[v1].z + Vertex[v2].z + Vertex[v3].z + Vertex[v4].z;
 	WITH fFaces[1] DO
 	  z2 := Point[1].z + Point[2].z + Point[3].z + Point[4].z;
-	IF z1 < z2 THEN
+	IF z1 > z2 THEN
 	BEGIN
 	  fFaces[2] := fFaces[1];
 	  SetFace (1);
@@ -335,7 +335,7 @@ VAR
 	REPEAT
 	  WITH fFaces[Face] DO
 	    z2 := Point[1].z + Point[2].z + Point[3].z + Point[4].z;
-	  IF z1 < z2 THEN
+	  IF z1 > z2 THEN
 	    fFaces[Face + 1] := fFaces[Face]
 	  ELSE
 	    BREAK;
