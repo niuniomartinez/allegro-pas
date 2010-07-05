@@ -216,7 +216,7 @@ Write (''); { If you delete this line it doesn't run in some systems(?) [Xubuntu
       nv := al_clip3d_f (AL_POLYTYPE_PTEX, 0.24, 1000, 4, @pV[1], @pVout[1],
 			@pVtmp[1], @Out[0]);
       IF nv > 0 THEN
-	IF FacetIsVisible (vout[1], vout[2], vout[3]) THEN
+	IF al_polygon_z_normal_f (@vout[1], @vout[2], @vout[3]) <= 0 THEN
 	BEGIN
 	  FOR J := 1 TO nv DO
 	    al_persp_project_f (Vout[j].x, Vout[j].y, Vout[j].z,
