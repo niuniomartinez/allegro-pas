@@ -7,7 +7,8 @@ Cambios entre las versiones 4.4.1 y 4.4.2
  - Añadido ejemplo exflip
  - Añadido ejemplo exjoy
  - reimplementación de al_polygon_z_normal(_f).
-
+ - Modificado ex3d para que no limite el tamaño del modo gráfico.
+ - Añadido ejemplo exconfig.
 
 
 Cambios entre las versiones 4.4.0 y 4.4.1

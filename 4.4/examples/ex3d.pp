@@ -150,16 +150,6 @@ VAR
 
 
 
-(* Due to precision errors in fixed point version of al_polygon_normal_z
-   function, on the biggest graphics modes the facets "blinks".  This
-   function avoids to select those graphics modes. *)
-  FUNCTION CheckGfxMode (c, w, h, d: LONGINT): LONGINT; CDECL;
-  BEGIN
-    IF w > 800 THEN CheckGfxMode := 1 ELSE CheckGfxMode := 0;
-  END;
-
-
-
 BEGIN (* The program starts here. *)
 
 { You should always do this at the start of Allegro programs. }
@@ -187,7 +177,7 @@ BEGIN (* The program starts here. *)
 
   c := AL_GFX_AUTODETECT;
   w := AL_SCREEN_W; h := AL_SCREEN_H; bpp := al_bitmap_color_depth (al_screen);
-  IF NOT al_gfx_mode_select_filter (c, w, h, bpp, @CheckGfxMode) THEN
+  IF NOT al_gfx_mode_select_ex (c, w, h, bpp) THEN
   BEGIN
     al_exit;
     EXIT;
