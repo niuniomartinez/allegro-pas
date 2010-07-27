@@ -1550,6 +1550,11 @@ END.
 
 
 
+(* This is used to define call-back parameters for some drawing procedures. *)
+  AL_POINT_PROC = PROCEDURE (bmp: AL_BITMAPptr; x, y, c: LONGINT); CDECL;
+
+
+
 (* Creates a memory bitmap sized @code(w) by @code(h).  The bitmap will have
    clipping turned on, and the clipping rectangle set to the full size of the
    bitmap.  The image memory will not be cleared, so it will probably contain
@@ -2856,12 +2861,13 @@ CONST
   PROCEDURE al_hline	   (bmp: AL_BITMAPptr; x1, y, x2, color: LONGINT);
     INLINE;
 
-(* Draws a line onto the bitmap, from point (x1, y1) to (x2, y2). *)
+(* Draws a line onto the bitmap, from point (x1, y1) to (x2, y2).
+   @seealso(al_fastline) @seealso(al_polygon) @seealso(al_do_line). *)
   PROCEDURE al_line	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
     INLINE;
 
 (* Faster version of the previous function.  Note that pixel correctness is not
-   guaranteed for this function. *)
+   guaranteed for this function. @seealso(al_line) *)
   PROCEDURE al_fastline	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
     INLINE;
 
@@ -2874,20 +2880,35 @@ CONST
   PROCEDURE al_rectfill	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
     INLINE;
 
-(* Draws a circle with the specified centre and radius. *)
+(* Draws a circle with the specified centre and radius. @seealso(al_ellipse)
+   @seealso(al_circlefill) @seealso(al_do_circle) @seealso(al_arc) *)
   PROCEDURE al_circle	   (bmp: AL_BITMAPptr; x, y, r, color: LONGINT);
     INLINE;
 
-(* Draws a filled circle with the specified centre and radius. *)
+(* Draws a filled circle with the specified centre and radius.
+   @seealso(al_circle) *)
   PROCEDURE al_circlefill  (bmp: AL_BITMAPptr; x, y, r, color: LONGINT);
     INLINE;
 
-(* Draws an ellipse with the specified centre and radius. *)
+(* Draws an ellipse with the specified centre and radius. @seealso(al_circle)
+   @seealso(al_ellipsefill) @seealso(al_arc) @seealso(al_do_ellipse) *)
   PROCEDURE al_ellipse	   (bmp: AL_BITMAPptr; x, y, rx, ry, color: LONGINT);
     INLINE;
 
-(* Draws a filled ellipse with the specified centre and radius. *)
+(* Draws a filled ellipse with the specified centre and radius.
+   @seealso(al_ellipse) *)
   PROCEDURE al_ellipsefill (bmp: AL_BITMAPptr; x, y, rx, ry, color: LONGINT);
+    INLINE;
+
+(* Draws a circular arc.
+
+  Draws a circular arc with centre x, y and radius r, in an anticlockwise
+  direction starting from the angle a1 and ending when it reaches a2.  These
+  values are specified in 16.16 fixed point format, with 256 equal to a full
+  circle, 64 a right angle, etc.  Zero is to the right of the centre point, and
+  larger values rotate anticlockwise from there.
+  @seealso(al_circle) @seealso(al_do_arc) *)
+  PROCEDURE al_arc (bmp: AL_BITMAPptr; x, y: LONGINT; ang1, ang2: AL_FIXED; r, color: LONGINT);
     INLINE;
 
 (* Floodfills an enclosed area, starting at point (x, y), with the specified
@@ -2898,8 +2919,101 @@ CONST
 (* Draws a filled polygon with an arbitrary number of corners.  Pass the number
    of vertices and an array containing a series of x, y points (a total of
    vertices*2 values). *)
-  PROCEDURE al_polygon     (bmp: AL_BITMAPptr; vertices: LONGINT; points: ARRAY OF LONGINT; color: LONGINT);
+  PROCEDURE al_polygon (bmp: AL_BITMAPptr; vertices: LONGINT; CONST points: ARRAY OF LONGINT; color: LONGINT);
     INLINE;
+
+(* Draws a Bezier spline using the four control points specified in the points
+   array.  Read the description of al_calc_spline for information on how to
+   build the points array.
+   @seealso(al_calc_spline) *)
+  PROCEDURE al_spline (bmp: AL_BITMAPptr; CONST points: ARRAY OF LONGINT; color: LONGINT);
+    INLINE;
+
+(* Calculates all the points along a line from point (x1, y1) to (x2, y2),
+   calling the supplied function for each one.  This will be passed a copy of
+   the bmp parameter, the x and y position, and a copy of the d parameter, so
+   it is suitable for use with al_putpixel. Example:
+@longcode(#
+PROCEDURE DrawDustParticle (bmp: AL_BITMAPptr; x, y, d: LONGINT); CDECL;
+BEGIN
+   ...
+END;
+
+  al_do_line (al_screen, 0, 0, AL_SCREEN_W-1, AL_SCREEN_H-2,
+              DustStrength, @DrawDustParticle);
+#) @seealso(al_do_circle) @seealso(al_do_ellipse) @seealso(al_do_arc) *)
+  PROCEDURE al_do_line (bmp: AL_BITMAPptr; x1, y1, x2, y2, d: LONGINT; proc: AL_POINT_PROC); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_line';
+
+(* Calculates all the points in a circle around point (x, y) with radius r,
+   calling the supplied function for each one.  This will be passed a copy of
+   the bmp parameter, the x and y position, and a copy of the d parameter, so
+   it is suitable for use with al_putpixel. Example:
+@longcode(#
+PROCEDURE DrawExplosionRing (bmp: AL_BITMAPptr; x, y, d: LONGINT); CDECL;
+BEGIN
+   ...
+END;
+
+  al_do_circle (al_screen, AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
+                AL_SCREEN_H DIV 16, FlameColor, @DrawExplosionRing);
+#) @seealso(al_do_line) @seealso(al_do_ellipse) @seealso(al_do_arc) *)
+  PROCEDURE al_do_circle (bmp: AL_BITMAPptr; x, y, radius, d: LONGINT; proc: AL_POINT_PROC); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_circle';
+
+(* Calculates all the points in an ellipse around point (x, y) with radius rx
+   and ry, calling the supplied function for each one.  This will be passed a
+   copy of the bmp parameter, the x and y position, and a copy of the d
+   parameter, so it is suitable for use with al_putpixel. Example:
+@longcode(#
+PROCEDURE DrawExplosionRing (bmp: AL_BITMAPptr; x, y, d: LONGINT); CDECL;
+BEGIN
+   ...
+END;
+
+  al_do_ellipse (al_screen, AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
+                AL_SCREEN_H DIV 16, FlameColor, @DrawExplosionRing);
+#) @seealso(al_do_line) @seealso(al_do_circle) @seealso(al_do_arc) *)
+  PROCEDURE al_do_ellipse (bmp: AL_BITMAPptr; x, y, rx, ry, d: LONGINT; proc: AL_POINT_PROC); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_ellipse';
+
+(* Calculates all the points in a circular arc around point (x, y) with radius
+   r, calling the supplied function for each one.  This will be passed a copy
+   of the bmp parameter, the x and y position, and a copy of the d parameter,
+   so it is suitable for use with al_putpixel.  The arc will be plotted in an
+   anticlockwise direction starting from the angle a1 and ending when it
+   reaches a2.  These values are specified in 16.16 fixed point format, with
+   256 equal to a full circle, 64 a right angle, etc. Zero is to the right of
+   the centre point, and larger values rotate anticlockwise from there.
+   Example:
+@longcode(#
+PROCEDURE DrawExplosionRing (bmp: AL_BITMAPptr; x, y, d: LONGINT); CDECL;
+BEGIN
+   ...
+END;
+
+  al_do_arc (al_screen, AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
+                AL_SCREEN_H DIV 16, FlameColor, @DrawExplosionRing);
+#) @seealso(al_do_line) @seealso(al_do_circle) @seealso(al_do_ellipse) *)
+  PROCEDURE al_do_arc (bmp: AL_BITMAPptr; x, y: LONGINT; ang1, ang2: AL_FIXED; r, d: LONGINT; proc: AL_POINT_PROC); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_arc';
+
+(* Calculates a series of npts values along a Bezier spline, storing them in
+   the output x and y arrays.  The Bezier curve is specified by the four x/y
+   control points in the points array:  points[0] and points[1] contain the
+   coordinates of the first control point, points[2] and points[3] are the
+   second point, etc.  Control points 0 and 3 are the ends of the spline, and
+   points 1 and 2 are guides.  The curve probably won't pass through points 1
+   and 2, but they affect the shape of the curve between points 0 and 3 @(the
+   lines p0-p1 and p2-p3 are tangents to the spline@).  The easiest way to
+   think of it is that the curve starts at p0, heading in the direction of p1,
+   but curves round so that it arrives at p3 from the direction of p2.  In
+   addition to their role as graphics primitives, spline curves can be useful
+   for constructing smooth paths around a series of control points, as in
+   exspline.pp.
+   @seealso(al_spline) *)
+  PROCEDURE al_calc_spline (CONST points: ARRAY OF LONGINT; npts: LONGINT; VAR x, y: ARRAY OF LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'calc_spline';
 
 
 
@@ -4781,14 +4895,24 @@ TYPE
     bmp^.vtable^.ellipsefill (bmp, x, y, rx, ry, color);
   END;
 
+  PROCEDURE al_arc (bmp: AL_BITMAPptr; x, y: LONGINT; ang1, ang2: AL_FIXED; r, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.arc (bmp, x, y, ang1, ang2, r, color);
+  END;
+
   PROCEDURE al_floodfill (bmp: AL_BITMAPptr; x, y, color: LONGINT);
   BEGIN
     bmp^.vtable^.floodfill (bmp, x, y, color);
   END;
 
-  PROCEDURE al_polygon (bmp: AL_BITMAPptr; vertices: LONGINT; points: ARRAY OF LONGINT; color: LONGINT);
+  PROCEDURE al_polygon (bmp: AL_BITMAPptr; vertices: LONGINT; CONST points: ARRAY OF LONGINT; color: LONGINT);
   BEGIN
     bmp^.vtable^.polygon (bmp, vertices, @points[0], color);
+  END;
+
+  PROCEDURE al_spline (bmp: AL_BITMAPptr; CONST points: ARRAY OF LONGINT; color: LONGINT);
+  BEGIN
+    bmp^.vtable^.spline (bmp, @points[0], color);
   END;
 
 
