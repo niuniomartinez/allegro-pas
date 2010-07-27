@@ -1,5 +1,7 @@
 + Complete explanation of Joystick. i.e. problems with configuration file.
 
+* Change some parameters from "POINTER" to "VAR ARRAY OF..." (i.e: polygons).  I've checked it passes data correctly to C.
+
 * MIDI:
   + load_ibk
 

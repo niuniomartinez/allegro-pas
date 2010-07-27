@@ -1,6 +1,3 @@
-
-
-
 Cambios entre las versiones 4.4.1 y 4.4.2
 =========================================
 
@@ -9,6 +6,11 @@ Cambios entre las versiones 4.4.1 y 4.4.2
  - reimplementación de al_polygon_z_normal(_f).
  - Modificado ex3d para que no limite el tamaño del modo gráfico.
  - Añadido ejemplo exconfig.
+ - Añadidas funciones al_arc, al_do_line, al_do_circle, al_do_ellipse y al_do_arc.
+ - Añadida funcion al_spline.
+ - Añadido ejemplo exspline.
+ - Añadido modificador "CONST" a algún parámetro.
+ - Algún cambio en la documentación.
 
 
 Cambios entre las versiones 4.4.0 y 4.4.1

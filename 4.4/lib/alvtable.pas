@@ -84,8 +84,8 @@ TYPE
     circlefill: _CIRCLE_METHOD_;
     ellipse: _ELLIPSE_METHOD_;
     ellipsefill: _ELLIPSE_METHOD_;
-    arc: POINTER;
-    spline: POINTER;
+    arc: PROCEDURE (bmp: AL_BITMAPptr; x, y: LONGINT; ang1, ang2: AL_FIXED; r, color: LONGINT);
+    spline: PROCEDURE (bmp: AL_BITMAPptr; points: PLONGINT; color: LONGINT); CDECL;
     floodfill: PROCEDURE (bmp: AL_BITMAPptr; x, y, c: LONGINT); CDECL;
     polygon3d: PROCEDURE (bmp: AL_BITMAPptr; _type: LONGINT; texture: AL_BITMAPptr; vc: LONGINT; vtx: POINTER); CDECL;
     polygon3d_f: PROCEDURE (bmp: AL_BITMAPptr; _type: LONGINT; texture: AL_BITMAPptr; vc: LONGINT; vtx: POINTER); CDECL;
