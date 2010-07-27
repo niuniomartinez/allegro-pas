@@ -11,6 +11,7 @@ Cambios entre las versiones 4.4.1 y 4.4.2
  - Añadido ejemplo exspline.
  - Añadido modificador "CONST" a algún parámetro.
  - Algún cambio en la documentación.
+ - Añadida función al_triangle.
 
 
 Cambios entre las versiones 4.4.0 y 4.4.1
