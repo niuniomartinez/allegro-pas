@@ -335,11 +335,14 @@ VAR
 	ELSE
 	  Col := Col + Ship.faces[Ndx].colour;
 
-	Outs[Ship.faces[Ndx].v2].c := al_palette_color^[Col];
-	al_triangle3d (buffer, AL_POLYTYPE_FLAT, NIL,
-		@Outs[Ship.faces[Ndx].v1],
-		@Outs[Ship.faces[Ndx].v2],
-		@Outs[Ship.faces[Ndx].v3]);
+	al_triangle (buffer,
+		al_fixtoi (Outs[Ship.faces[Ndx].v1].x),
+		al_fixtoi (Outs[Ship.faces[Ndx].v1].y),
+		al_fixtoi (Outs[Ship.faces[Ndx].v2].x),
+		al_fixtoi (Outs[Ship.faces[Ndx].v2].y),
+		al_fixtoi (Outs[Ship.faces[Ndx].v3].x),
+		al_fixtoi (Outs[Ship.faces[Ndx].v3].y),
+		al_palette_color^[Col]);
       END;
     END;
   END;

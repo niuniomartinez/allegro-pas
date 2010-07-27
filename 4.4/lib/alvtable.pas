@@ -48,7 +48,7 @@ TYPE
     line: _LINE_METHOD_;
     fastline: _LINE_METHOD_;
     rectfill: _LINE_METHOD_;
-    triangle: FUNCTION (bmp: AL_BITMAPptr; x1, y1, x2, y2, x3, y3, color: LONGINT): LONGINT; CDECL;
+    triangle: PROCEDURE (bmp: AL_BITMAPptr; x1, y1, x2, y2, x3, y3, color: LONGINT); CDECL;
     draw_sprite: _SPR_METHOD_;
     draw_256_sprite: _SPR_METHOD_;
     draw_sprite_v_flip: _SPR_METHOD_;

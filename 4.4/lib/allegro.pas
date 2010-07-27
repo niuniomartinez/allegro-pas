@@ -2918,8 +2918,14 @@ CONST
 
 (* Draws a filled polygon with an arbitrary number of corners.  Pass the number
    of vertices and an array containing a series of x, y points (a total of
-   vertices*2 values). *)
+   vertices*2 values).
+   @seealso(al_triangle) @seealso(al_polygon3d) @seealso(al_drawing_mode) *)
   PROCEDURE al_polygon (bmp: AL_BITMAPptr; vertices: LONGINT; CONST points: ARRAY OF LONGINT; color: LONGINT);
+    INLINE;
+
+(* Draws a filled triangle between the three points.
+   @seealso(al_polygon) @seealso(al_triangle3d) @seealso(al_drawing_mode) *)
+  PROCEDURE al_triangle (bmp: AL_BITMAPptr; x1, y1, x2, y2, x3, y3, color: LONGINT);
     INLINE;
 
 (* Draws a Bezier spline using the four control points specified in the points
@@ -4908,6 +4914,11 @@ TYPE
   PROCEDURE al_polygon (bmp: AL_BITMAPptr; vertices: LONGINT; CONST points: ARRAY OF LONGINT; color: LONGINT);
   BEGIN
     bmp^.vtable^.polygon (bmp, vertices, @points[0], color);
+  END;
+
+  PROCEDURE al_triangle (bmp: AL_BITMAPptr; x1, y1, x2, y2, x3, y3, color: LONGINT);
+  BEGIN
+    bmp^.vtable^.triangle (bmp, x1, y1, x2, y2, x3, y3, color);
   END;
 
   PROCEDURE al_spline (bmp: AL_BITMAPptr; CONST points: ARRAY OF LONGINT; color: LONGINT);
