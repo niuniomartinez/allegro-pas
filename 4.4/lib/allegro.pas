@@ -3487,6 +3487,56 @@ VAR
 
 
 
+  PROCEDURE al_rotate_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_trans';
+
+  PROCEDURE al_rotate_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_v_flip_trans';
+
+  PROCEDURE al_rotate_scaled_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_trans';
+
+  PROCEDURE al_rotate_scaled_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_v_flip_trans';
+
+  PROCEDURE al_pivot_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_trans';
+
+  PROCEDURE al_pivot_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_v_flip_trans';
+
+  PROCEDURE al_pivot_scaled_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_trans';
+
+  PROCEDURE al_pivot_scaled_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_v_flip_trans';
+
+  PROCEDURE al_rotate_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED; color: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_lit';
+
+  PROCEDURE al_rotate_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED; color: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_v_flip_lit';
+
+  PROCEDURE al_rotate_scaled_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED; color: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_lit';
+
+  PROCEDURE al_rotate_scaled_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED; color: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_v_flip_lit';
+
+  PROCEDURE al_pivot_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED; color: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_lit';
+
+  PROCEDURE al_pivot_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED; color: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_v_flip_lit';
+
+  PROCEDURE al_pivot_scaled_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED; color: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_lit';
+
+  PROCEDURE al_pivot_scaled_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED; color: LONGINT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_v_flip_lit';
+
+
+
 (********************************
  * Run-lenth compressed sprites *
  ********************************)
