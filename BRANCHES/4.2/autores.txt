@@ -1,0 +1,6 @@
+Ñuño Martínez <http://pagina.de/niunio>
+ - Inició el proyecto, realizando todo lo que no hayan hecho los demás.
+
+Seoane <http://delphi.jmrds.com>
+ - Ayudó a que Allegro.pas funcione con Delphi, escribiendo incluso un
+   parche para el módulo de punto fijo.
