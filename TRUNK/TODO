@@ -1,0 +1,22 @@
+* Revise list of examples.
+
++ Complete explanation of Joystick. i.e. problems with configuration file.
+
+* Change some parameters from "POINTER" to "VAR ARRAY OF..." (i.e: polygons).  I've checked it passes data correctly to C.
+
+* MIDI:
+  + load_ibk
+
+* Audio stream (all).
+
+* Tools
+
+  + GUI creator:  Simple drag'n'drop editor using Allegro's GUI.  Save GUIs
+    as text files (may be XML?) and as Pascal unit.
+
+* UNICODE
+
+  Actually supported but there's some problems with it.  Should find a way to
+  integrate it with FPC/Lazarus UNICODE support (i.e. utf8string, etc.)
+
+* New installation system via fpmake and/or fpcmake.
