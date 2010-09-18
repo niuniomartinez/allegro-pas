@@ -1,6 +1,0 @@
-Ñuño Martínez <http://pagina.de/niunio>
- - Started the project, doing whatever nobody else did.
-
-Seoane <http://delphi.jmrds.com>
- - Helps to make Allegro.pas compatible with Delphi.  Even he wrotes some code
-   for the fixed-point module.
