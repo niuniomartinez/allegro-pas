@@ -3487,24 +3487,41 @@ VAR
 
 
 
+(* Rotates a sprite.
+
+  Draws the sprite image onto the bitmap. It is placed with its top left corner at the specified position, then rotated by the specified angle around its centre. The angle is a fixed point 16.16 number in the same format used by the fixed point trig routines, with 256 equal to a full circle, 64 a right angle, etc. All rotation functions can draw between any two bitmaps, even screen bitmaps or bitmaps of different color depth.
+
+  Positive increments of the angle will make the sprite rotate clockwise on the screen, as demonstrated by the Allegro example.
+  @seealso(al_draw_trans_sprite) @seealso(al_rotate_scaled_sprite_trans) @seealso(al_rotate_sprite_v_flip_trans) @seealso(al_rotate_scaled_sprite_v_flip_trans) *)
   PROCEDURE al_rotate_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_trans';
+(* Rotates and flips a sprite.
 
+  Like al_rotate_sprite_trans, but flips the image vertically before rotating it.  To flip horizontally, use this routine but add @code(all_itofix (128)) to the angle.  To flip in both directions, use al_rotate_sprite and add @code(al_itofix (128)) to its angle. *)
   PROCEDURE al_rotate_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_v_flip_trans';
+(* Rotates and stretches a sprite.
 
+  Like al_rotate_sprite_trans, but stretches or shrinks the image at the same time as rotating it. *)
   PROCEDURE al_rotate_scaled_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_trans';
+(* Rotates and stretches a sprite.
 
+  Like al_rotate_scaled_sprite_trans, except that it flips the sprite vertically first. *)
   PROCEDURE al_rotate_scaled_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_v_flip_trans';
+(* Rotates a sprite around a specified point.
 
+  Like al_rotate_sprite_trans, but aligns the point in the sprite given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates around this point. *)
   PROCEDURE al_pivot_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_trans';
+(* Rotates and flips a sprite around a specified point.
 
+  Like al_rotate_sprite_trans, but aligns the point in the sprite given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates around this point. *)
   PROCEDURE al_pivot_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_v_flip_trans';
-
+(* Rotates and stretches a sprite.
+  Like al_rotate_scaled_sprite_trans, but aligns the point in the sprite given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates and scales around this point. *)
   PROCEDURE al_pivot_scaled_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_trans';
 
