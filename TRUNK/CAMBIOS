@@ -12,6 +12,11 @@ Cambios entre las versiones 4.4.1 y 4.4.2
  - Añadido modificador "CONST" a algún parámetro.
  - Algún cambio en la documentación.
  - Añadida función al_triangle.
+ - Añadidos más procedimientos de dibujo de sprites.
+ - Simplificado el mapa damero, colocando los gráficos más apropiadamente.
+ - Mejorado el aspecto y usabilidad del editor de mapas usando el GUI y otras
+   mejoras gráficas.
+
 
 
 Cambios entre las versiones 4.4.0 y 4.4.1

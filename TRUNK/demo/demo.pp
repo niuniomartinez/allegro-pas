@@ -11,13 +11,11 @@ USES
   error,    { To show nice error messages. }
   framectr, { The frame speed controller. }
   game,     { Game main loop. }
-  gamedata  { Management of the game data: graphics, sound, etc. }
-;
+  gamedata; { Management of the game data: graphics, sound, etc. }
 
 
 
-  (* InitProgram:
-   *   Initializes the program. *)
+(* Initializes the program. *)
   FUNCTION InitProgram: BOOLEAN;
   VAR
     GDriver, Sw, Sh: INTEGER;
@@ -99,8 +97,7 @@ USES
 
 
 
-  (* Intro:
-   *   Shows an introduction animation with a fanfarre. *)
+(* Shows an introduction animation with a fanfarre. *)
   PROCEDURE Intro;
   VAR
     Bmp: AL_BITMAPptr; { This bitmap helps to center the animation. }
@@ -123,8 +120,7 @@ USES
 
 
 
-  (* EndProgram:
-   *   Releases all resources and closes down the program. *)
+(* Releases all resources and closes down the program. *)
   PROCEDURE EndProgram;
   BEGIN
   { Release resources. }

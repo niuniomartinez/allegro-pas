@@ -13,12 +13,11 @@ PROGRAM mapedit;
 
 USES
   allegro,
+  algui,    { To use the Allegro's GUI. }
   error,    { To show nice error messages. }
   gamedata, { Management of the game data: graphics, sound, etc. }
   sysutils, { For string manipulation. }
   tilemap;  { Tilemap management. }
-
-
 
 CONST
 { Coordinates and size of the first button.  This way we can change it easy. }
@@ -29,13 +28,11 @@ CONST
   CAPTION = 'Allegro.pas Demo Game Map Editor';
   CAPTION_MODIFIED = CAPTION + ' [Modified]';
 
-
-
 VAR
   BoardNumber: INTEGER;
   BoardModified: BOOLEAN; { TRUE if modified, FALSE if not. }
 { Colors }
-  CWhite, CBlack: DWORD;
+  CWhite, CBlack, CGray: DWORD;
 { Buttons. }
   BtnBmp: ARRAY [0..6] OF AL_BITMAPptr;
 { Selected tile button. }
@@ -46,18 +43,40 @@ VAR
 
 
 (* Helper function to make simple questions. *)
-  FUNCTION AskYesNo (Question: STRING; y: INTEGER): BOOLEAN;
-  VAR
-    Key: INTEGER;
+  FUNCTION AskYesNo (Question: STRING): BOOLEAN;
   BEGIN
-  { Draw it in the screen. }
-    al_textout_ex (al_screen, al_font, Question+'[Y/N]', 1, y, CWhite, CBlack);
+    AskYesNo :=
+      al_alert (Question, '', '', '&Yes', '&No', Ord ('y'), Ord ('n')) = 1;
+  END;
+
+
+
+(* Helper procedure to draw boxes. *)
+  PROCEDURE DrawBox (x1, y1, x2, y2: INTEGER);
+  BEGIN
+    al_rectfill (al_screen, x1, y1, x2 - 1, y2 - 1, CWhite);
+    al_rect (al_screen, x1, y1, x2 - 1, y2 - 1, CBlack);
+    al_vline (al_screen, x2, y1 + 1, y2, CBlack);
+    al_hline (al_screen, x1 + 1, y2, x2, CBlack);
+  END;
+
+
+
+(* Helper procedure to ask the file names. *)
+  PROCEDURE AskBoardNumber;
+  VAR
+    W2, H2: INTEGER;
+  BEGIN
+    W2 := AL_SCREEN_W DIV 2;
+    H2 := AL_SCREEN_H DIV 2;
+    DrawBox (W2 - 132, H2 - 16, W2 + 132, H2 + 25);
+    al_gui_textout_ex (al_screen, 'Board number (1, 2, 3, etc.)?',
+		   W2, H2, CBlack, CWhite, TRUE);
   { Wait until user press a valid key. }
     REPEAT
-      Key := al_readkey SHR 8; { Get the scan code. }
-    UNTIL Key IN [AL_KEY_Y, AL_KEY_N, AL_KEY_ESC];
-  { And the answer is... }
-    AskYesNo := (Key = AL_KEY_Y);
+      Key := al_readkey AND $000000FF; { Get the ASCII code. }
+      BoardNumber := Key - ORD ('0');
+    UNTIL (0 < BoardNumber) AND (BoardNumber < 10);
   END;
 
 
@@ -121,7 +140,11 @@ VAR
   { Calculate common colors. }
     CWhite := al_makecol (255, 255, 255);
     CBlack := al_makecol (0, 0, 0);
-    al_clear_to_color (al_screen, CBlack);
+    CGray  := al_makecol (127, 127, 127);
+    al_clear_to_color (al_screen, CGray);
+    al_gui_fg_color := CBlack;
+    al_gui_bg_color := CWhite;
+    al_gui_mg_color := CGray;
   { Mouse.  Done here because it needs the correct palette color. }
     IF al_install_mouse < 0 THEN
     BEGIN
@@ -136,7 +159,6 @@ VAR
     FOR Cnt := 0 TO 6 DO
     BEGIN
       BtnBmp[Cnt] := al_create_bitmap (BTN_SIZE, BTN_SIZE);
-      al_clear_to_color (BtnBmp[Cnt], CBlack);
       IF Cnt = 0 THEN
       BEGIN
       { The 'delete' button. }
@@ -163,20 +185,35 @@ VAR
 
 (* Updates the buttons on the screen. *)
   PROCEDURE DrawButtons;
+
+  (* Helper function to calculate the X coordinate. *)
+    FUNCTION XPos (Btn: INTEGER): INTEGER;
+    BEGIN
+      XPos := BTN_POS_X + (Btn * BTN_SIZE);
+    END;
+
   VAR
-    Cnt: INTEGER;
+    Cnt, X: INTEGER;
   BEGIN
     al_acquire_screen;
     FOR Cnt := 0 TO 6 DO
       al_blit (BtnBmp[Cnt], al_screen, 0, 0,
-		BTN_POS_X + (Cnt * BTN_SIZE), BTN_POS_Y,
+		XPos (Cnt), BTN_POS_Y,
 		BTN_SIZE, BTN_SIZE);
   { Draw a rectangle to show the selected button. }
+    X := XPos (TileButton);
     al_rect (al_screen,
-	     BTN_POS_X + (TileButton * BTN_SIZE), BTN_POS_Y,
-	     BTN_POS_X + (TileButton * BTN_SIZE) + BTN_SIZE - 1,
+	     X, BTN_POS_Y,
+	     X + BTN_SIZE - 1,
 	     BTN_POS_Y + BTN_SIZE - 1,
 	     CWhite);
+    FOR Cnt := 0 TO ((BTN_SIZE DIV 2) - 1) DO
+    BEGIN
+      al_putpixel (al_screen, X + (Cnt * 2), BTN_POS_Y, CBlack);
+      al_putpixel (al_screen, X + (Cnt * 2), BTN_POS_Y + BTN_SIZE - 1, CBlack);
+      al_putpixel (al_screen, X, BTN_POS_Y + (Cnt * 2), CBlack);
+      al_putpixel (al_screen, X + BTN_SIZE - 1, BTN_POS_Y + (Cnt * 2), CBlack);
+    END;
     al_release_screen;
   END;
 
@@ -190,19 +227,24 @@ VAR
     Cnt: INTEGER;
   BEGIN
     al_acquire_screen;
-    al_clear_to_color (al_screen, CBlack);
+    al_clear_to_color (al_screen, CGray);
   { The map. }
     DrawBoardMiniature (al_screen);
   { The buttons. }
+    DrawBox (BTN_POS_X - 4, BTN_POS_Y - 4,
+      BTN_POS_X + 4 + (BTN_SIZE * 7), BTN_POS_Y + 12 + BTN_SIZE);
     DrawButtons;
   { A bit of help. }
-    al_textout_ex (al_screen, al_font, '(N)ew, (L)oad, (S)ave, (P)review, (Q)uit',
-		   1, AL_SCREEN_H DIV 2, CWhite, CBlack);
+    Cnt := BTN_POS_X + 8 + (BTN_SIZE * 7);
+    DrawBox (Cnt, BTN_POS_Y, Cnt + 344, BTN_POS_Y + 32);
+    al_gui_textout_ex (al_screen, 'Functions:', Cnt + 8, BTN_POS_Y + 8, CBlack, CWhite, FALSE);
+    al_gui_textout_ex (al_screen, 'F1 New|F2 Save|F3 Load|F4 Preview|F5 Quit',
+		   Cnt + 8, BTN_POS_Y + 20, CBlack, CWhite, FALSE);
     FOR Cnt := 0 TO 6 DO
       al_textout_centre_ex (al_screen, al_font, IntToStr (Cnt),
 			    BTN_POS_X + (Cnt * BTN_SIZE) + (BTN_SIZE DIV 2),
 			    BTN_POS_Y + BTN_SIZE + 1,
-			    CWhite, CBlack);
+			    CBlack, CWhite);
     al_release_screen;
   END;
 
@@ -276,20 +318,17 @@ VAR
   PROCEDURE CreateBoard;
   VAR
     x, y: INTEGER;
-    Key: INTEGER;
+    Response: INTEGER;
   BEGIN
   { Ask the board size. }
-    al_textout_ex (al_screen, al_font, 'Board size? (S)mall, (M)edium, (B)ig',
-		   1, 19, CWhite, CBlack);
-  { Wait until user press a valid key. }
-    REPEAT
-      Key := al_readkey SHR 8; { Get the scan code. }
-    UNTIL Key IN [AL_KEY_S, AL_KEY_M, AL_KEY_B];
+    Response := al_alert3 ('Board size?', '', '',
+	'&Small', '&Medium', '&Big',
+	ORD('S'), ORD('M'), ORD('B'));
   { Set board size. }
-    CASE Key OF
-      AL_KEY_S: BoardLength := 50;
-      AL_KEY_M: BoardLength := 100;
-      AL_KEY_B: BoardLength := 150;
+    CASE Response OF
+      1: BoardLength := 50;
+      2: BoardLength := 100;
+      3: BoardLength := 150;
     END;
   { Initialize board. }
     FOR x := 1 TO BoardLength DO
@@ -314,29 +353,20 @@ VAR
 
 (* Asks for a new board and creates it. *)
   PROCEDURE NewBoard;
-  VAR
-    Key: INTEGER;
   BEGIN
   { If the board was modified, ask if should save it. }
     IF BoardModified THEN
     BEGIN
-      IF AskYesNo ('The board was changed.  Save it?', 1) THEN
+      IF AskYesNo ('The board was changed.  Save it?') THEN
 	SaveBoard;
       RedrawScreen;
     END;
-  { Question. }
-    al_textout_ex (al_screen, al_font, 'Board number (1, 2, 3, etc.)',
-		   1, 1, CWhite, CBlack);
-  { Wait until user press a valid key. }
-    REPEAT
-      Key := al_readkey AND $000000FF; { Get the ASCII code. }
-      BoardNumber := Key - ORD ('0');
-    UNTIL (0 < BoardNumber) AND (BoardNumber < 10);
+    AskBoardNumber;
   { Check if the board yet exists. }
     IF FileExists ('board'+ IntToStr (BoardNumber)+'.brd') THEN
     BEGIN
     { Ask if wants to create a new board. }
-      IF NOT AskYesNo ('The board exists.  Overwrite it?', 10) THEN
+      IF NOT AskYesNo ('The board exists.  Overwrite it?') THEN
       { If answer is 'not' then exits without create it. }
         EXIT;
     END;
@@ -347,30 +377,21 @@ VAR
 
 (* Asks for a new board and loads it. *)
   PROCEDURE LoadBoard;
-  VAR
-    Key: INTEGER;
   BEGIN
   { If the board was modified, ask if should save it. }
     IF BoardModified THEN
     BEGIN
-      IF AskYesNo ('The board was changed.  Save it?', 1) THEN
+      IF AskYesNo ('The board was changed.  Save it?') THEN
 	SaveBoard;
       RedrawScreen;
     END;
-  { Question. }
-    al_textout_ex (al_screen, al_font, 'Board number (1, 2, 3, etc.)',
-		   1, 1, CWhite, CBlack);
-  { Wait until user press a valid key. }
-    REPEAT
-      Key := al_readkey AND $000000FF; { Get the ASCII code. }
-      BoardNumber := Key - ORD ('0');
-    UNTIL (0 < BoardNumber) AND (BoardNumber < 10);
+    AskBoardNumber;
   { Try to load the board.   Note: it uses the unit name to tell the compiler
     we want to use the function from the 'tilemap' unit. }
     IF NOT tilemap.LoadBoard (BoardNumber) THEN
     BEGIN
     { Ask if wants to create a new board. }
-      IF AskYesNo ('The board doesn''t exist.  Create it?', 10) THEN
+      IF AskYesNo ('The board doesn''t exist.  Create it?') THEN
         CreateBoard;
     END
     ELSE BEGIN
@@ -407,7 +428,7 @@ VAR
   { If the board was modified, ask if should save it. }
     IF BoardModified THEN
     BEGIN
-      IF AskYesNo ('The board was changed.  Save it?', 9) THEN
+      IF AskYesNo ('The board was changed.  Save it?') THEN
         SaveBoard;
     END;
   { Release resources. }
@@ -469,22 +490,22 @@ VAR
   { Deactivate the close button. }
     al_set_close_button_callback (NIL);
   { Q and [Esc] are the same. }
-    IF Key = AL_KEY_Q THEN Key := AL_KEY_ESC;
+    IF Key = AL_KEY_F5 THEN Key := AL_KEY_ESC;
   { Hide the mouse. }
     al_show_mouse (NIL);
   { Check for keys. }
     CASE Key OF
-    AL_KEY_L: { Load board. }
+    AL_KEY_F3: { Load board. }
       LoadBoard;
-    AL_KEY_N: { Create new board. }
+    AL_KEY_F1: { Create new board. }
       NewBoard;
-    AL_KEY_S: { Save board. }
-      IF AskYesNo ('Save the board?', 1) THEN
+    AL_KEY_F2: { Save board. }
+      IF AskYesNo ('Save the board?') THEN
 	SaveBoard;
-    AL_KEY_P: { Tilemap preview. }
+    AL_KEY_F4: { Tilemap preview. }
       Preview;
     AL_KEY_ESC: { Exit. }
-      IF NOT AskYesNo ('Quit the editor?', 1) THEN
+      IF NOT AskYesNo ('Quit the editor?') THEN
       { Set Key with an arbritrary value to prevent quit. }
 	Key := AL_KEY_MAX;
     END;
@@ -618,7 +639,7 @@ BEGIN
     BEGIN
       Key := al_readkey SHR 8; { Get the scan code. }
     { Check if an action key was pressed. }
-      IF Key IN [AL_KEY_N, AL_KEY_L, AL_KEY_Q, AL_KEY_ESC, AL_KEY_S, AL_KEY_P] THEN
+      IF Key IN [AL_KEY_F1, AL_KEY_F2, AL_KEY_F3, AL_KEY_F4, AL_KEY_F5, AL_KEY_ESC] THEN
 	ActionKeys (Key);
     { Check if a number key was pressed. }
       IF ((AL_KEY_0 - 1) < Key) AND (Key < AL_KEY_7) THEN
