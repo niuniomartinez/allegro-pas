@@ -271,13 +271,13 @@ BEGIN
 	al_blit (Data^[Board[X, Y] - T_BLK1].dat, Bmp, 0, 0, PosX, PosY, TSIZE, TSIZE)
       ELSE
       IF Board[X, Y] = T_COIN THEN
-	al_draw_rle_sprite (Bmp, Data^[BMP_COIN].dat, PosX, PosY)
+	al_blit (Data^[BMP_COIN].dat, Bmp, 0, 0, PosX, PosY, TSIZE, TSIZE)
       ELSE
       IF Board[X, Y] = T_START THEN
 	al_draw_rle_sprite (Bmp, Data^[BMP_MAIN_R0].dat, PosX, PosY)
       ELSE
       IF Board[X, Y] = T_END THEN
-	al_draw_rle_sprite (Bmp, Data^[BMP_END].dat, PosX, PosY);
+	al_blit (Data^[BMP_END].dat, bmp, 0, 0, PosX, PosY, TSIZE, TSIZE);
     { Increment the tile position. }
       INC (PosX, TSIZE);
     END;
