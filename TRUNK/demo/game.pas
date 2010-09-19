@@ -8,8 +8,7 @@ INTERFACE
 
 
 
-(* RunGame:
- *   Runs the game main loop. *)
+(* Runs the game main loop. *)
 PROCEDURE RunGame;
 
 
@@ -22,16 +21,13 @@ USES
 
 
 
-(* RunGame:
- *   Runs the game main loop. *)
-PROCEDURE RunGame;
-BEGIN
-{ The main loop. }
-  WHILE RunTitle DO
-    PlayGame;
-END;
-
-
+(* Runs the game main loop. *)
+  PROCEDURE RunGame;
+  BEGIN
+  { The main loop. }
+    WHILE RunTitle DO
+      PlayGame;
+  END;
 
 END.
 

@@ -45,8 +45,7 @@ VAR
 
 
 
-  (* AskYesNo:
-   *   Helper function to make simple questions. *)
+(* Helper function to make simple questions. *)
   FUNCTION AskYesNo (Question: STRING; y: INTEGER): BOOLEAN;
   VAR
     Key: INTEGER;
@@ -62,9 +61,8 @@ VAR
   END;
 
 
-  
-  (* InitProgram:
-   *   Initializes the editor. *)
+
+(* Initializes the editor. *)
   FUNCTION InitProgram: BOOLEAN;
   VAR
     Palette: AL_PALETTEptr;
@@ -73,7 +71,7 @@ VAR
   { Dictionary to know which bitmap draw in each button. }
     BtnGlyph: ARRAY [0..6] OF INTEGER = (
       -1,		{ Delete. }
-      BMP_MAIN_R0,	{ Player start position. }
+      BMP_START,	{ Player start position. }
       BMP_END,		{ End of the map. }
       BMP_COIN,		{ Coins. }
       BMP_BLK1,		{ Blocks. }
@@ -147,32 +145,23 @@ VAR
 				BTN_SIZE DIV 2, BTN_SIZE DIV 2 - 4,
 				CWhite, -1);
       END
-      ELSE IF (Cnt > 3) THEN
+      ELSE
       BEGIN
       { These are bitmaps, so use stretch blit. }
 	RefBmp := Data^[BtnGlyph[Cnt]].dat;
 	al_stretch_blit (RefBmp, BtnBmp[Cnt],
 			0, 0, RefBmp^.w, RefBmp^.h,
 			0, 0, BTN_SIZE, BTN_SIZE);
-      END
-      ELSE BEGIN
-      { The others are RLE sprites. }
-	al_clear_to_color (Bmp, al_makecol (0, 255, 255));
-	al_draw_rle_sprite (Bmp, Data^[BtnGlyph[Cnt]].dat, 0, 0);
-	al_stretch_blit (Bmp, BtnBmp[Cnt],
-			0, 0, Bmp^.w, Bmp^.h,
-			0, 0, BTN_SIZE, BTN_SIZE);
       END;
     END;
-    al_destroy_bitmap (Bmp); { Don't forget to destroy bitmaps. }
+    al_destroy_bitmap (Bmp); { Don't forget to destroy temporary bitmaps. }
   { If we're here, we're done. }
     InitProgram := TRUE;
   END;
 
 
 
-  (* DrawButtons:
-   *   Updates the buttons on the screen. *)
+(* Updates the buttons on the screen. *)
   PROCEDURE DrawButtons;
   VAR
     Cnt: INTEGER;
@@ -193,10 +182,9 @@ VAR
 
 
 
-  (* RedrawScreen:
-   *   Redraws the screen.  It clears the screen creating flicks.  Note that
-   *   sometimes the editor calls DrawBoardMiniature or DrawButtons that don't
-   *   clears the screen avoiding flickering. *)
+(* Redraws the screen.  It clears the screen creating flicks.  Note that
+   sometimes the editor calls DrawBoardMiniature or DrawButtons that don't
+   clears the screen avoiding flickering. *)
   PROCEDURE RedrawScreen;
   VAR
     Cnt: INTEGER;
@@ -220,10 +208,20 @@ VAR
 
 
 
-  (* SaveBoard:
-   *   Saves the current board in a file.  The name of the map is
-   *   "boardN.brd". *)
+(* Saves the current board in a file.  The name of the map is
+   "boardN.brd". *)
   PROCEDURE SaveBoard;
+
+  (* Translates the tile value to the file value.  This way the file can be
+     loaded by a text editor. *)
+    FUNCTION TranslateTile (Tile: BYTE): CHAR;
+    VAR
+      Dictionary: ARRAY [0..6] OF CHAR =
+	('A', 'D', 'E', 'B', 'L', 'M', 'N');
+    BEGIN
+      TranslateTile := Dictionary[Tile];
+    END;
+
   VAR
     Path, FileName: STRING; F: TEXT; { File definition. }
     Column: STRING[15];	     { To save the file. }
@@ -253,7 +251,7 @@ VAR
     { Create the columns. }
       Column := StringOfChar (' ', 15);
       FOR y := 1 TO 15 DO
-	Column [y] := CHAR (Board [x, 16 - y] + ORD ('A'));
+	Column [y] := TranslateTile (Board [x, 16 - y]);
     { Save the column. }
       WriteLn (F, Column);
     END;
@@ -274,8 +272,7 @@ VAR
 
 
 
-  (* CreateBoard:
-   *   Helper procedure to create a new board. *)
+(* Helper procedure to create a new board. *)
   PROCEDURE CreateBoard;
   VAR
     x, y: INTEGER;
@@ -315,8 +312,7 @@ VAR
 
 
 
-  (* NewBoard:
-   *   Asks for a new board and creates it. *)
+(* Asks for a new board and creates it. *)
   PROCEDURE NewBoard;
   VAR
     Key: INTEGER;
@@ -349,8 +345,7 @@ VAR
 
 
 
-  (* LoadBoard:
-   *   Asks for a new board and loads it. *)
+(* Asks for a new board and loads it. *)
   PROCEDURE LoadBoard;
   VAR
     Key: INTEGER;
@@ -390,9 +385,8 @@ VAR
 
 
 
-  (* CloseButtonCallback:
-   *   Procedure for the close button of the window.  It just modifies a
-   *   variable which is checked somewhere in the main loop. *)
+(* Procedure for the close button of the window.  It just modifies a
+   variable which is checked somewhere in the main loop. *)
   PROCEDURE CloseButtonCallback; CDECL;
   BEGIN
   { See the main loop below to see the ending condition. }
@@ -401,8 +395,7 @@ VAR
 
 
 
-  (* EndProgram:
-   *   End of the program.  Releases all resources used. *)
+(* End of the program.  Releases all resources used. *)
   PROCEDURE EndProgram;
   VAR
     Cnt: INTEGER;
@@ -429,8 +422,7 @@ VAR
 
 
 
-  (* Preview:
-   *   Shows a preview of the tilemap. *)
+(* Shows a preview of the tilemap. *)
   PROCEDURE Preview;
   VAR
     BmpOut: AL_BITMAPptr;
@@ -471,8 +463,7 @@ VAR
 
 
 
-  (* ActionKeys:
-   *   Checks the user input and proccess functions as load, save, etc. *)
+(* Checks the user input and proccess functions as load, save, etc. *)
   PROCEDURE ActionKeys (VAR Key: LONGINT);
   BEGIN
   { Deactivate the close button. }
@@ -506,8 +497,7 @@ VAR
 
 
 
-  (* CursorKeys:
-   *   Proccess the cursor keys. *)
+(* Proccess the cursor keys. *)
   PROCEDURE CursorKeys (Key: LONGINT; VAR cx, cy: INTEGER);
   BEGIN
   { Change cursor only if the it's inside the map. }
@@ -532,34 +522,28 @@ VAR
 
 
 
-  (* ChangeTile:
-   *   Sets the tile type.  Note that it changes it only if necesary, this way
-   *   it's faster and prevents flickering. *)
+(* Sets the tile type.  Note that it changes it only if necesary, this way
+   it's faster and prevents flickering. *)
   PROCEDURE ChangeTile (tx, ty: INTEGER);
-  VAR
-  { Dictionary to know the tile from the button. }
-    BtnTile: ARRAY [0..6] OF BYTE = (
-      T_VOID, T_START, T_END, T_COIN, T_BLK1, T_BLK2, T_BLK3
-    );
   BEGIN
   { Change tile only if it's inside the map... }
     IF (1 <= tx) AND (tx <= BoardLength) AND (1 <= ty) AND (ty <= BoardHeight) THEN
     { ... and it's different. }
-      IF Board[tx, ty] <> BtnTile[TileButton] THEN
+      IF Board[tx, ty] <> TileButton THEN
       BEGIN
       { If it's the starting tile, delete the old one and store the new. }
-        IF BtnTile[TileButton] = T_START THEN
+        IF TileButton = T_START THEN
 	BEGIN
 	  Board[StartX, StartY] := T_VOID;
 	  StartX := tx; StartY := ty;
 	END;
       { If it's the ending tile, delete the old one and store the new. }
-        IF BtnTile[TileButton] = T_END THEN
+        IF TileButton = T_END THEN
 	BEGIN
 	  Board[EndX, EndY] := T_VOID;
 	  EndX := tx; EndY := ty;
 	END;
-	Board[tx, ty] := BtnTile[TileButton];
+	Board[tx, ty] := TileButton;
 	IF NOT BoardModified THEN
 	BEGIN
 	  BoardModified := TRUE;
