@@ -1246,9 +1246,12 @@ TYPE
 
 (* Convert color values between the HSV and RGB color spaces.  The RGB values
    range from 0 to 255, hue is from 0 to 360, and saturation and value are from
-   0 to 1. *)
+   0 to 1. @seealso(al_rgb_to_hsv) *)
   PROCEDURE al_hsv_to_rgb (h, s, v: SINGLE; VAR r, g, b: LONGINT);
     INLINE;
+(* Convert color values between the HSV and RGB color spaces.  The RGB values
+   range from 0 to 255, hue is from 0 to 360, and saturation and value are from
+   0 to 1. @seealso(al_hsv_to_rgb) *)
   PROCEDURE al_rgb_to_hsv (r, g, b: LONGINT; VAR h, s, v: SINGLE);
     INLINE;
 
@@ -1301,7 +1304,7 @@ VAR
    would be a shame to remove it :-)
 
    The contents of this palette are 16 colors repeated 16 times.  Color entry
-   zero is equal to color entry 16, which is equal to color entry 24, etc.
+   zero is equal to color entry 16, which is equal to color entry 32, etc.
 @table(
   @rowhead(@cell(Index) @cell(Color) @cell(RGB values) )
   @row(@cell( 0) @cell(White       ) @cell(@code(63  63  63)))
@@ -2383,70 +2386,6 @@ VAR
 
 
 
-CONST
-(* @exclude Define color conversion modes. *)
-  AL_COLORCONV_NONE	= 0;
-
-  AL_COLORCONV_8_TO_15	= 1; {< @exclude }
-  AL_COLORCONV_8_TO_16	= 2; {< @exclude }
-  AL_COLORCONV_8_TO_24	= 4; {< @exclude }
-  AL_COLORCONV_8_TO_32	= 8; {< @exclude }
-
-  AL_COLORCONV_15_TO_8	= $10; {< @exclude }
-  AL_COLORCONV_15_TO_16	= $20; {< @exclude }
-  AL_COLORCONV_15_TO_24	= $40; {< @exclude }
-  AL_COLORCONV_15_TO_32	= $80; {< @exclude }
-
-  AL_COLORCONV_16_TO_8	= $100; {< @exclude }
-  AL_COLORCONV_16_TO_15	= $200; {< @exclude }
-  AL_COLORCONV_16_TO_24	= $400; {< @exclude }
-  AL_COLORCONV_16_TO_32	= $800; {< @exclude }
-
-  AL_COLORCONV_24_TO_8	= $1000; {< @exclude }
-  AL_COLORCONV_24_TO_15	= $2000; {< @exclude }
-  AL_COLORCONV_24_TO_16	= $4000; {< @exclude }
-  AL_COLORCONV_24_TO_32	= $8000; {< @exclude }
-
-  AL_COLORCONV_32_TO_8	= $10000; {< @exclude }
-  AL_COLORCONV_32_TO_15	= $20000; {< @exclude }
-  AL_COLORCONV_32_TO_16	= $40000; {< @exclude }
-  AL_COLORCONV_32_TO_24	= $80000; {< @exclude }
-
-  AL_COLORCONV_32A_TO_8		= $100000; {< @exclude }
-  AL_COLORCONV_32A_TO_15	= $200000; {< @exclude }
-  AL_COLORCONV_32A_TO_16	= $400000; {< @exclude }
-  AL_COLORCONV_32A_TO_24	= $800000; {< @exclude }
-
-  AL_COLORCONV_DITHER_PAL	= $1000000; {< @exclude }
-  AL_COLORCONV_DITHER_HI	= $2000000; {< @exclude }
-  AL_COLORCONV_KEEP_TRANS	= $4000000; {< @exclude }
-
-  AL_COLORCONV_DITHER	= AL_COLORCONV_DITHER_PAL OR AL_COLORCONV_DITHER_HI; {< @exclude }
-
-  AL_COLORCONV_EXPAND_256	= AL_COLORCONV_8_TO_15 OR AL_COLORCONV_8_TO_16 OR AL_COLORCONV_8_TO_24 OR AL_COLORCONV_8_TO_32; {< @exclude }
-
-  AL_COLORCONV_REDUCE_TO_256	= AL_COLORCONV_15_TO_8 OR AL_COLORCONV_16_TO_8 OR AL_COLORCONV_24_TO_8 OR AL_COLORCONV_32_TO_8 OR AL_COLORCONV_32A_TO_8; {< @exclude }
-
-  AL_COLORCONV_EXPAND_15_TO_16	= AL_COLORCONV_15_TO_16; {< @exclude }
-
-  AL_COLORCONV_REDUCE_16_TO_15	= AL_COLORCONV_16_TO_15; {< @exclude }
-
-  AL_COLORCONV_EXPAND_HI_TO_TRUE = AL_COLORCONV_15_TO_24 OR AL_COLORCONV_15_TO_32 OR AL_COLORCONV_16_TO_24 OR AL_COLORCONV_16_TO_32; {< @exclude }
-
-  AL_COLORCONV_REDUCE_TRUE_TO_HI = AL_COLORCONV_24_TO_15 OR AL_COLORCONV_24_TO_16 OR AL_COLORCONV_32_TO_15 OR AL_COLORCONV_32_TO_16; {< @exclude }
-
-  AL_COLORCONV_24_EQUALS_32	= AL_COLORCONV_24_TO_32 OR AL_COLORCONV_32_TO_24; {< @exclude }
-
-  AL_COLORCONV_TOTAL	= AL_COLORCONV_EXPAND_256 OR AL_COLORCONV_REDUCE_TO_256 OR AL_COLORCONV_EXPAND_15_TO_16 OR AL_COLORCONV_REDUCE_16_TO_15 OR AL_COLORCONV_EXPAND_HI_TO_TRUE OR AL_COLORCONV_REDUCE_TRUE_TO_HI OR AL_COLORCONV_24_EQUALS_32 OR AL_COLORCONV_32A_TO_15 OR AL_COLORCONV_32A_TO_16 OR AL_COLORCONV_32A_TO_24; {< @exclude }
-
-  AL_COLORCONV_PARTIAL	= AL_COLORCONV_EXPAND_15_TO_16 OR AL_COLORCONV_REDUCE_16_TO_15 OR AL_COLORCONV_24_EQUALS_32; {< @exclude }
-
-  AL_COLORCONV_MOST	= AL_COLORCONV_EXPAND_15_TO_16  OR AL_COLORCONV_REDUCE_16_TO_15 OR AL_COLORCONV_EXPAND_HI_TO_TRUE OR AL_COLORCONV_REDUCE_TRUE_TO_HI OR AL_COLORCONV_24_EQUALS_32; {< @exclude }
-
-  AL_COLORCONV_KEEP_ALPHA	= AL_COLORCONV_TOTAL AND NOT (AL_COLORCONV_32A_TO_8 OR AL_COLORCONV_32A_TO_15 OR AL_COLORCONV_32A_TO_16 OR AL_COLORCONV_32A_TO_24); {< @exclude }
-
-
-
 (* Sets the pixel format to be used by subsequent calls to
    @code(al_set_gfx_mode) and @code(al_create_bitmap).  Valid depths are 8 (the
    default), 15, 16, 24, and 32 bits.
@@ -2544,9 +2483,16 @@ CONST
   PROCEDURE al_set_color_conversion (mode: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_color_conversion';
 
-(* Returns the current color conversion mode. *)
+(* Returns the current color conversion mode. @seealso(al_set_color_conversion) *)
   FUNCTION al_get_color_conversion: LONGINT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_color_conversion';
+
+
+
+(* Color conversion constants. *)
+  {$include alclrcnv.inc}
+
+
 
 (* Switches into graphics mode.  The card parameter should usually be one of
    the Allegro magic drivers (read introduction of this unit) or see the
@@ -2760,11 +2706,11 @@ CONST
 
 
 
-(* Clears the bitmap to color 0. *)
+(* Clears the bitmap to color 0. @seealso(al_clear_to_color) *)
   PROCEDURE al_clear_bitmap (bitmap: AL_BITMAPptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clear_bitmap';
 
-(* Clears the bitmap to the specified color. *)
+(* Clears the bitmap to the specified color. @seealso(al_clear_bitmap)*)
   PROCEDURE al_clear_to_color (bitmap: AL_BITMAPptr; color: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clear_to_color';
 
@@ -3005,18 +2951,21 @@ END;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_arc';
 
 (* Calculates a series of npts values along a Bezier spline, storing them in
-   the output x and y arrays.  The Bezier curve is specified by the four x/y
-   control points in the points array:  points[0] and points[1] contain the
-   coordinates of the first control point, points[2] and points[3] are the
-   second point, etc.  Control points 0 and 3 are the ends of the spline, and
-   points 1 and 2 are guides.  The curve probably won't pass through points 1
-   and 2, but they affect the shape of the curve between points 0 and 3 @(the
-   lines p0-p1 and p2-p3 are tangents to the spline@).  The easiest way to
-   think of it is that the curve starts at p0, heading in the direction of p1,
-   but curves round so that it arrives at p3 from the direction of p2.  In
-   addition to their role as graphics primitives, spline curves can be useful
-   for constructing smooth paths around a series of control points, as in
-   exspline.pp.
+   the output x and y arrays.
+
+   The Bezier curve is specified by the four x/y control points in the points
+   array:  points[0] and points[1] contain the coordinates of the first control
+   point, points[2] and points[3] are the second point, etc.  Control points 0
+   and 3 are the ends of the spline, and points 1 and 2 are guides.  The curve
+   probably won't pass through points 1 and 2, but they affect the shape of the
+   curve between points 0 and 3 @(the lines p0-p1 and p2-p3 are tangents to the
+   spline@).  The easiest way to think of it is that the curve starts at p0,
+   heading in the direction of p1, but curves round so that it arrives at p3
+   from the direction of p2.
+
+   In addition to their role as graphics primitives, spline curves can be
+   useful for constructing smooth paths around a series of control points, as
+   in exspline.pp.
    @seealso(al_spline) *)
   PROCEDURE al_calc_spline (CONST points: ARRAY OF LONGINT; npts: LONGINT; VAR x, y: ARRAY OF LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'calc_spline';
@@ -3521,34 +3470,54 @@ VAR
   PROCEDURE al_pivot_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_v_flip_trans';
 (* Rotates and stretches a sprite.
+
   Like al_rotate_scaled_sprite_trans, but aligns the point in the sprite given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates and scales around this point. *)
   PROCEDURE al_pivot_scaled_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_trans';
 
+(* Rotates and stretches a sprite.
+
+  Like al_rotate_scaled_sprite_v_flip_trans, but aligns the point in the sprite given by (cx, cy) to (x, y) in the bitmap, then rotates and scales around this point. *)
   PROCEDURE al_pivot_scaled_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_v_flip_trans';
+(* Rotates a sprite.
 
+  Draws the sprite image onto the bitmap.  It is placed with its top left corner at the specified position, then rotated by the specified angle around its centre.  The angle is a fixed point 16.16 number in the same format used by the fixed point trig routines, with 256 equal to a full circle, 64 a right angle, etc.  All rotation functions can draw between any two bitmaps, even screen bitmaps or bitmaps of different color depth. *)
   PROCEDURE al_rotate_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED; color: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_lit';
+(* Rotates a sprite.
 
+   Like al_rotate_sprite_lit, but flips the image vertically before rotating it.  To flip horizontally, use this routine but add itofix(128) to the angle. To flip in both directions, use al_rotate_sprite and add itofix(128) to its angle. *)
   PROCEDURE al_rotate_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED; color: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_v_flip_lit';
+(* Rotates and stretches a sprite.
 
+  Like al_rotate_sprite_lit, but stretches or shrinks the image at the same time as rotating it. *)
   PROCEDURE al_rotate_scaled_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED; color: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_lit';
+(* Rotates and stretches a sprite.
 
+  Draws the sprite, similar to al_rotate_scaled_sprite_lit except that it flips the sprite vertically first. *)
   PROCEDURE al_rotate_scaled_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED; color: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_v_flip_lit';
+(* Rotates a sprite.
 
+  Like al_rotate_sprite_lit, but aligns the point in the sprite given by (cx, cy) to (x, y) in the bitmap, then rotates around this point. *)
   PROCEDURE al_pivot_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED; color: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_lit';
+(* Rotates a sprite.
 
+  Like al_rotate_sprite_v_flip_lit, but aligns the point in the sprite given by (cx, cy) to (x, y) in the bitmap, then rotates around this point. *)
   PROCEDURE al_pivot_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED; color: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_v_flip_lit';
+(* Rotates and stretches a sprite.
 
+  Like al_rotate_scaled_sprite_lit, but aligns the point in the sprite given by (cx, cy) to (x, y) in the bitmap, then rotates and scales around this point. *)
   PROCEDURE al_pivot_scaled_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED; color: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_lit';
+(* Rotates and stretches a sprite.
 
+  Like al_rotate_scaled_sprite_v_flip_lit(), but aligns the point in the sprite given by (cx, cy) to (x, y) in the bitmap, then rotates and scales around this point. *)
   PROCEDURE al_pivot_scaled_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED; color: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_v_flip_lit';
 
