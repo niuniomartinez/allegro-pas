@@ -1,3 +1,27 @@
+Changes between versions 4.4.1 y 4.4.2
+======================================
+
+  Bugfixing
+  ---------
+  * Function al_polygon_z_normal(_f) rewrited.
+
+  News
+  ----
+  + Added new examples: exflip, exjoy, exconfig, exrotscl and exspline.
+  + Added drawing functions: al_arc, al_spline, al_triangle and a lot of sprite
+    drawing ones.
+  + Added routing functions:  al_do_line, al_do_circle, al_do_ellipse,
+    al_do_arc and al_calc_spline.
+
+  Other
+  -----
+  * Now ex3d doesn't limits the size of the graphics mode.
+  * Added "CONST" modifier in some parameters.
+  + Modified the demo game to simplify the tilemap engine and improving the
+    map editor interface.
+
+
+
 Changes between versions 4.4.0 an 4.4.1
 =======================================
 

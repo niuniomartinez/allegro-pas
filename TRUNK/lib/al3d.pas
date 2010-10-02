@@ -517,10 +517,10 @@ TYPE
   AL_V3D_LIST = ^AL_V3Dptr;
 
 (* Pointer to @code(AL_V3D_F). *)
-  AL_V3D_fptr = ^AL_V3D_f;
+  AL_V3D_Fptr = ^AL_V3D_F;
 (*Like @code(AL_V3D) but using float values instead of fixed ones.
   @seealso(al_polygon3d_f) *)
-  AL_V3D_f = RECORD
+  AL_V3D_F = RECORD
   (* Position. *)
     x, y, z: SINGLE;
   (* Texture map coordinates. *)
@@ -529,7 +529,7 @@ TYPE
     c: LONGINT;
   END;
 (* List of pointers to @code(AL_V3D_F). *)
-  AL_V3D_LIST_f = ^AL_V3D_fptr;
+  AL_V3D_LIST_F = ^AL_V3D_Fptr;
 
 
 
@@ -1032,9 +1032,9 @@ VAR
   VAR
     S1, S2, S3: AL_V3D_F;
   BEGIN
-    S1.x:=al_ftofix(v1^.x); S1.y:=al_ftofix(v1^.y); S1.z:=al_ftofix(v1^.z);
-    S2.x:=al_ftofix(v2^.x); S2.y:=al_ftofix(v2^.y); S2.z:=al_ftofix(v2^.z);
-    S3.x:=al_ftofix(v3^.x); S3.y:=al_ftofix(v3^.y); S3.z:=al_ftofix(v3^.z);
+    S1.x:=al_fixtof(v1^.x); S1.y:=al_fixtof(v1^.y); S1.z:=al_fixtof(v1^.z);
+    S2.x:=al_fixtof(v2^.x); S2.y:=al_fixtof(v2^.y); S2.z:=al_fixtof(v2^.z);
+    S3.x:=al_fixtof(v3^.x); S3.y:=al_fixtof(v3^.y); S3.z:=al_fixtof(v3^.z);
     al_polygon_z_normal :=
       al_ftofix (al_polygon_z_normal_f (@S1, @S2, @S3));
   END;
