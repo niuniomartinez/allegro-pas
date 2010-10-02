@@ -1,21 +1,24 @@
 Cambios entre las versiones 4.4.1 y 4.4.2
 =========================================
 
- - Añadido ejemplo exflip
- - Añadido ejemplo exjoy
- - reimplementación de al_polygon_z_normal(_f).
- - Modificado ex3d para que no limite el tamaño del modo gráfico.
- - Añadido ejemplo exconfig.
- - Añadidas funciones al_arc, al_do_line, al_do_circle, al_do_ellipse y al_do_arc.
- - Añadida funcion al_spline.
- - Añadido ejemplo exspline.
- - Añadido modificador "CONST" a algún parámetro.
- - Algún cambio en la documentación.
- - Añadida función al_triangle.
- - Añadidos más procedimientos de dibujo de sprites.
- - Simplificado el mapa damero, colocando los gráficos más apropiadamente.
- - Mejorado el aspecto y usabilidad del editor de mapas usando el GUI y otras
-   mejoras gráficas.
+  Errores corregidos
+  ------------------
+  * Se ha reescrito la función al_polygon_z_normal(_f).
+
+  Novedades
+  ---------
+  + Se han añadido nuevos ejemplos: exflip, exjoy, exconfig, exrotscl y exspline.
+  + Se han añadido la función de dibujo: al_arc, al_spline, al_triangle y
+    multitud de funciones de dibujo de "sprites".
+  + Se han añadido las funciones de trazado de rutas: al_do_line, al_do_circle,
+    al_do_ellipse, al_do_arc y al_calc_spline.
+
+  Otros
+  -----
+  * Se ha modificado ex3d para que no limite el tamaño del modo gráfico.
+  * Se ha añadido el modificador "CONST" a algún parámetro.
+  + Se ha modificado el juego de demostración, simplificando el sistema de
+    mapas y mejorando el entorno del editor.
 
 
 

@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Versión 4.4.1                 \_/__/                 \/_/
+     Versión 4.4.2                 \_/__/                 \/_/
 
   Una envolvente para utilizar la biblioteca Allegro en Pascal
-  por Ñuño Martínez, 1o de Febrero de 2010.
+  por Ñuño Martínez, 3 de Octubre de 2010.
 
 
 
@@ -37,7 +37,7 @@ Introducción
 
   En principio, la he programado para uso propio, por lo que no he incluido
   toda la funcionalidad disponible en Allegro.  Aun así,  la iré corrigiendo y
-  ampliándo según vaya necesitándose.  También administraré las modificaciones
+  ampliando según vaya necesitándose.  También administraré las modificaciones
   o añadidos que lleguen a mis manos para que estén disponibles para todos.
 
 
@@ -71,7 +71,8 @@ Características
   Objetos, procedimientos y funciones para la creación de diálogos y menús
   de forma simple.
 
-  Dibujo de polígonos 3D con texturas y transparencias.
+  Dibujo de polígonos 3D con texturas y transparencias.  Además incluye
+  técnicas como z-buffer y s-buffer.
 
 
 
@@ -114,7 +115,7 @@ Instrucciones de instalación
   Pascal para más información (http://www.freepascal.org/).
 
   Si utiliza GNU/Linux, instale en su sistema la biblioteca Allegro versión
-  4.4.0, que podrá encontrar en la página
+  4.4.x, que podrá encontrar en la página
   http://sourceforge.net/project/showfiles.php?group_id=5665 .  Es posible que
   sólo necesite la versión de usuario (etiquetada como "enduser").
 
@@ -128,25 +129,26 @@ Instrucciones de instalación
   RC) pero quizá no con versiones más modernas.  Tenga también en cuenta que
   Allegro es independiente de Allegro.pas y se instala de forma diferente.
 
-  Abra una consola de comandos y sitúese en el directorio de Allegro.pas,
-  normalmente ejecutando el comando "cd allegro.pas".
+  Para compilar los ejemplos y el juego de demostración, abra una consola de
+  comandos y sitúese en el directorio donde ha descomprimido el paquete de
+  distribución de Allegro.pas, por ejemplo ejecutando el comando
+  "cd allegro.pas".  Ejecute el guión "fix.bat", si utiliza Windows, o
+  "./fix.sh" si utiliza GNU/Linux o similar y siga las instrucciones de la
+  pantalla.  Finalmente ejecute el comando "make";  esto debería ser suficiente
+  para compilar los ejemplos y el juego de demostración.  Si se produce algún
+  error, asegúrese que tanto el compilador como la biblioteca Allegro y
+  cualquier otra biblioteca adicional están correctamente instalados y
+  configurados.  Si aun así tiene problemas, lea la sección "Información de
+  contacto" para recibir más información.
 
-  Ejecute el guión "fix.bat", si utiliza Windows, o "./fix.sh" si utiliza
-  GNU/Linux o similar y siga las instrucciones de la pantalla.
+  Para utilizar Allegro.pas en sus programas, primero deberá configurar el
+  compilador para que pueda encontrar la biblioteca.  Para ello puede escribir
+  esta configuración en el archivo de configuración "fpc.cfg" o utilizar las
+  opciones de la línea de comandos.
 
-  Ejecute el comando "make".  Esto debería compilar los ejemplos y el juego
-  de demostración.  Si se produce algún error, asegúrese que tanto el
-  compilador como la biblioteca Allegro y cualquier otra biblioteca adicional
-  están correctamente instalados y configurados.  Si aun así tiene problemas,
-  lea la sección "Información de contacto" para recibir más información.
-
-  Ejecute los programas de ejemplo y el juego de demostración para comprobar
-  su buen funcionamiento.
-
-  Copie los archivos fuente con extensión ".pas" y ".inc" del subdirectorio
-  lib en el mismo subdirectorio de las fuentes de su programa.  También puede
-  copiar estos archivos en el directorio de unidades de su compilador de forma
-  que estos estén disponibles para cualquier compilación.
+  Use los parámetros "-FuUnitPath" y "-FiIncludePath" para indicar dónde se
+  encuentra el subdirectorio "lib" de Allegro.pas.  Por ejemplo:
+  fpc -FuD:\allegro.pas\lib -FiD:\allegro.pas\lib
 
 
 

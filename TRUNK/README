@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 4.4.1                 \_/__/                 \/_/
+     Version 4.4.2                 \_/__/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Ñuño Martínez, February 10, 2010.
+  by Ñuño Martínez, October 3, 2010.
 
 
 
@@ -50,7 +50,7 @@ Features
   please tell us your experience.
 
   Drawing functions including putpixel, line, rectangles, sprites, etc.
-  Supports clipping, translucency/lighting and can draw directly to the
+  Supports clipping, translucency, lighting and can draw directly to the
   screen or to memory bitmaps.
 
   Full-screen or windowed modes and 8, 15, 16, 24 and 32 bits per pixel.
@@ -68,7 +68,8 @@ Features
 
   GUI dialog manager and file selector.
 
-  3D textured polygons with and without transparences.
+  3D textured polygons with and without transparency.  Also included z-buffer
+  and s-buffer algorithms.
 
 
 
@@ -108,7 +109,7 @@ Installation
   system.  If you have Lazarus IDE then it should be enough.  Visit Free
   Pascal's web site for more information (http://www.freepascal.org/).
 
-  If you're using GNU/Linux then install Allegro 4.4.  You can download it
+  If you're using GNU/Linux then install Allegro 4.4.x.  You can download it
   from http://sourceforge.net/project/showfiles.php?group_id=5665 .  May be you
   can install the "enduser" version.
 
@@ -119,20 +120,22 @@ Installation
   NOTE:  Allegro.pas 4.4 will work ONLY with Allegro 4.4 (and its RC releases).
   It will not work with newer versions at the moment.
 
-  Open a console and go to the Allegro.pas directory.  In most cases just
-  use "cd allegro.pas".
+  To compile the examples and the demonstration game, open a command console
+  and go to the directory where you did extract the distributed parchive of
+  Allegro.pas (i.e. use "cd allegro.pas").  Then, if you're using Windows
+  run the "fix.bat" file and follow the on screen instructions,  if you're
+  using GNU/Linux or similar then run the "fix.sh" script.  Finally run "make";
+  this should build the examples and the demonstration game.  If there's an
+  error then be sure you have Allegro, Free Pascal and any additional library
+  correctly installed and configured.  If you have problems read the "Contact
+  info" section.
 
-  Execute "fix.bat" on Windows or "./fix.sh" on GNU/Linux and follow the
-  on screen instructions.
+  To use Allegro.pas in your games you need to setup your compilers to be able
+  to compile it.  You can write settings to fpc.cfg configuration file or use
+  them directly as command line parameters.
 
-  Execute the "make" command.  This should create the examples and the
-  demonstration game.  If there's an error then be sure you have Allegro,
-  Free Pascal and any additional library correctly installed and configured.
-  If you have problems read the "Contact info" section.
-
-  You can copy files with extension ".pas" and ".inc" from directory "lib" to
-  your program sources directory.  Also you can copy those files to your
-  compiler's unit directory.
+  Use "-FuUnitPath" and "-FiIncludePath" parameters for the Allegro.pas' "lib"
+  directores.  Example: fpc -FuD:\allegro.pas\lib -FiD:\allegro.pas\lib
 
 
 
