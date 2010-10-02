@@ -4,61 +4,61 @@ CONST
 { @exclude }
   AL_KEY_B		= 2;
 { @exclude }
-  AL_KEY_C              = 3;
+  AL_KEY_C		= 3;
 { @exclude }
-  AL_KEY_D              = 4;
+  AL_KEY_D		= 4;
 { @exclude }
-  AL_KEY_E              = 5;
+  AL_KEY_E		= 5;
 { @exclude }
-  AL_KEY_F              = 6;
+  AL_KEY_F		= 6;
 { @exclude }
   AL_KEY_G		= 7;
 { @exclude }
   AL_KEY_H		= 8;
 { @exclude }
-  AL_KEY_I              = 9;
+  AL_KEY_I		= 9;
 { @exclude }
-  AL_KEY_J              = 10;
+  AL_KEY_J		= 10;
 { @exclude }
-  AL_KEY_K              = 11;
+  AL_KEY_K		= 11;
 { @exclude }
-  AL_KEY_L              = 12;
+  AL_KEY_L		= 12;
 { @exclude }
-  AL_KEY_M              = 13;
+  AL_KEY_M		= 13;
 { @exclude }
-  AL_KEY_N              = 14;
+  AL_KEY_N		= 14;
 { @exclude }
-  AL_KEY_O              = 15;
+  AL_KEY_O		= 15;
 { @exclude }
-  AL_KEY_P              = 16;
+  AL_KEY_P		= 16;
 { @exclude }
-  AL_KEY_Q              = 17;
+  AL_KEY_Q		= 17;
 { @exclude }
-  AL_KEY_R              = 18;
+  AL_KEY_R		= 18;
 { @exclude }
-  AL_KEY_S              = 19;
+  AL_KEY_S		= 19;
 { @exclude }
-  AL_KEY_T              = 20;
+  AL_KEY_T		= 20;
 { @exclude }
-  AL_KEY_U              = 21;
+  AL_KEY_U		= 21;
 { @exclude }
-  AL_KEY_V              = 22;
+  AL_KEY_V		= 22;
 { @exclude }
-  AL_KEY_W              = 23;
+  AL_KEY_W		= 23;
 { @exclude }
-  AL_KEY_X              = 24;
+  AL_KEY_X		= 24;
 { @exclude }
-  AL_KEY_Y              = 25;
+  AL_KEY_Y		= 25;
 { @exclude }
-  AL_KEY_Z              = 26;
+  AL_KEY_Z		= 26;
 { @exclude }
-  AL_KEY_0	        = 27;
+  AL_KEY_0		= 27;
 { @exclude }
-  AL_KEY_1	        = 28;
+  AL_KEY_1		= 28;
 { @exclude }
   AL_KEY_2		= 29;
 { @exclude }
-  AL_KEY_3	        = 30;
+  AL_KEY_3		= 30;
 { @exclude }
   AL_KEY_4		= 31;
 { @exclude }
@@ -86,9 +86,9 @@ CONST
 { @exclude }
   AL_KEY_6_PAD		= 43;
 { @exclude }
-  AL_KEY_7_PAD  	= 44;
+  AL_KEY_7_PAD		= 44;
 { @exclude }
-  AL_KEY_8_PAD  	= 45;
+  AL_KEY_8_PAD		= 45;
 { @exclude }
   AL_KEY_9_PAD		= 46;
 { @exclude }
@@ -142,67 +142,67 @@ CONST
 { @exclude }
   AL_KEY_BACKSLASH2	= 71;
 { @exclude }
-  AL_KEY_COMMA  	= 72;
+  AL_KEY_COMMA		= 72;
 { @exclude }
   AL_KEY_STOP		= 73;
 { @exclude }
-  AL_KEY_SLASH  	= 74;
+  AL_KEY_SLASH		= 74;
 { @exclude }
-  AL_KEY_SPACE  	= 75;
+  AL_KEY_SPACE		= 75;
 { @exclude }
-  AL_KEY_INSERT  	= 76;
+  AL_KEY_INSERT		= 76;
 { @exclude }
-  AL_KEY_DEL  	     	= 77;
+  AL_KEY_DEL		= 77;
 { @exclude }
-  AL_KEY_HOME  	     	= 78;
+  AL_KEY_HOME		= 78;
 { @exclude }
-  AL_KEY_END  	     	= 79;
+  AL_KEY_END		= 79;
 { @exclude }
-  AL_KEY_PGUP  	     	= 80;
+  AL_KEY_PGUP		= 80;
 { @exclude }
-  AL_KEY_PGDN  	     	= 81;
+  AL_KEY_PGDN		= 81;
 { @exclude }
-  AL_KEY_LEFT  		= 82;
+  AL_KEY_LEFT		= 82;
 { @exclude }
-  AL_KEY_RIGHT  	= 83;
+  AL_KEY_RIGHT		= 83;
 { @exclude }
-  AL_KEY_UP  	     	= 84;
+  AL_KEY_UP		= 84;
 { @exclude }
-  AL_KEY_DOWN  	     	= 85;
+  AL_KEY_DOWN		= 85;
 { @exclude }
-  AL_KEY_SLASH_PAD      = 86;
+  AL_KEY_SLASH_PAD	= 86;
 { @exclude }
-  AL_KEY_ASTERISK       = 87;
+  AL_KEY_ASTERISK	= 87;
 { @exclude }
-  AL_KEY_MINUS_PAD      = 88;
+  AL_KEY_MINUS_PAD	= 88;
 { @exclude }
-  AL_KEY_PLUS_PAD       = 89;
+  AL_KEY_PLUS_PAD	= 89;
 { @exclude }
-  AL_KEY_DEL_PAD  	= 90;
+  AL_KEY_DEL_PAD	= 90;
 { @exclude }
-  AL_KEY_ENTER_PAD      = 91;
+  AL_KEY_ENTER_PAD	= 91;
 { @exclude }
-  AL_KEY_PRTSCR  	= 92;
+  AL_KEY_PRTSCR		= 92;
 { @exclude }
-  AL_KEY_PAUSE  	= 93;
+  AL_KEY_PAUSE		= 93;
 { @exclude }
-  AL_KEY_ABNT_C1  	= 94;
+  AL_KEY_ABNT_C1	= 94;
 { @exclude }
-  AL_KEY_YEN  	  	= 95;
+  AL_KEY_YEN		= 95;
 { @exclude }
-  AL_KEY_KANA  	     	= 96;
+  AL_KEY_KANA		= 96;
 { @exclude }
-  AL_KEY_CONVERT  	= 97;
+  AL_KEY_CONVERT	= 97;
 { @exclude }
-  AL_KEY_NOCONVERT      = 98;
+  AL_KEY_NOCONVERT	= 98;
 { @exclude }
-  AL_KEY_AT  	      	= 99;
+  AL_KEY_AT		= 99;
 { @exclude }
-  AL_KEY_CIRCUMFLEX     = 100;
+  AL_KEY_CIRCUMFLEX	= 100;
 { @exclude }
-  AL_KEY_COLON2  	= 101;
+  AL_KEY_COLON2		= 101;
 { @exclude }
-  AL_KEY_KANJI  	= 102;
+  AL_KEY_KANJI		= 102;
 { @exclude }
   AL_KEY_EQUALS_PAD	= 103;  { MacOS X }
 { @exclude }
@@ -229,32 +229,32 @@ CONST
   AL_KEY_UNKNOWN8	= 114;
 
 { @exclude }
-  AL_KEY_MODIFIERS      = 115;
+  AL_KEY_MODIFIERS	= 115;
 
 { @exclude }
-  AL_KEY_LSHIFT  	= 115;
+  AL_KEY_LSHIFT		= 115;
 { @exclude }
-  AL_KEY_RSHIFT 	= 116;
+  AL_KEY_RSHIFT		= 116;
 { @exclude }
-  AL_KEY_LCONTROL       = 117;
+  AL_KEY_LCONTROL	= 117;
 { @exclude }
-  AL_KEY_RCONTROL       = 118;
+  AL_KEY_RCONTROL	= 118;
 { @exclude }
-  AL_KEY_ALT  	      	= 119;
+  AL_KEY_ALT		= 119;
 { @exclude }
-  AL_KEY_ALTGR  	= 120;
+  AL_KEY_ALTGR		= 120;
 { @exclude }
-  AL_KEY_LWIN  	      	= 121;
+  AL_KEY_LWIN		= 121;
 { @exclude }
-  AL_KEY_RWIN  	      	= 122;
+  AL_KEY_RWIN		= 122;
 { @exclude }
-  AL_KEY_MENU  	      	= 123;
+  AL_KEY_MENU		= 123;
 { @exclude }
-  AL_KEY_SCRLOCK  	= 124;
+  AL_KEY_SCRLOCK	= 124;
 { @exclude }
-  AL_KEY_NUMLOCK  	= 125;
+  AL_KEY_NUMLOCK	= 125;
 { @exclude }
-  AL_KEY_CAPSLOCK       = 126;
+  AL_KEY_CAPSLOCK	= 126;
 
 { @exclude }
   AL_KEY_MAX		= 127;
@@ -264,28 +264,28 @@ CONST
 { @exclude }
   AL_KB_CTRL_FLAG	 = $0002;
 { @exclude }
-  AL_KB_ALT_FLAG         = $0004;
+  AL_KB_ALT_FLAG 	 = $0004;
 { @exclude }
-  AL_KB_LWIN_FLAG        = $0008;
+  AL_KB_LWIN_FLAG	 = $0008;
 { @exclude }
-  AL_KB_RWIN_FLAG        = $0010;
+  AL_KB_RWIN_FLAG	 = $0010;
 { @exclude }
-  AL_KB_MENU_FLAG        = $0020;
+  AL_KB_MENU_FLAG	 = $0020;
 { @exclude }
-  AL_KB_COMMAND_FLAG     = $0040;
+  AL_KB_COMMAND_FLAG	 = $0040;
 { @exclude }
-  AL_KB_SCROLOCK_FLAG    = $0100;
+  AL_KB_SCROLOCK_FLAG	 = $0100;
 { @exclude }
-  AL_KB_NUMLOCK_FLAG     = $0200;
+  AL_KB_NUMLOCK_FLAG	 = $0200;
 { @exclude }
-  AL_KB_CAPSLOCK_FLAG    = $0400;
+  AL_KB_CAPSLOCK_FLAG	 = $0400;
 { @exclude }
-  AL_KB_INALTSEQ_FLAG    = $0800;
+  AL_KB_INALTSEQ_FLAG	 = $0800;
 { @exclude }
-  AL_KB_ACCENT1_FLAG     = $1000;
+  AL_KB_ACCENT1_FLAG	 = $1000;
 { @exclude }
-  AL_KB_ACCENT2_FLAG     = $2000;
+  AL_KB_ACCENT2_FLAG	 = $2000;
 { @exclude }
-  AL_KB_ACCENT3_FLAG     = $4000;
+  AL_KB_ACCENT3_FLAG	 = $4000;
 { @exclude }
-  AL_KB_ACCENT4_FLAG     = $8000;
+  AL_KB_ACCENT4_FLAG	 = $8000;
