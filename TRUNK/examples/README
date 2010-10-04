@@ -4,18 +4,22 @@ excolmap.pp - Creating graphical effects with color mapping tables.
 exdata.pp   - Appening datafiles onto your executable.
 exdbuf.pp   - How to use double buffering to avoid flicker.
 exfixed.pp  - Using fixed point maths.
+exflip.pp   - How to use page flipping.
 exgui.pp    - Using menu and dialog objects.
 exhello.pp  - Simple graphical "hello world" program.
 exhsvrgb.pp - Translating HSV space -> RGB values.
 exkeys.pp   - Demonstrates how to access the keyboard.
+exjoy.pp    - How to calibrate and use joysticks and pads.
 exmouse.pp  - Getting input from the mouse.
 expal.pp    - Palette effects and color cycling.
 expat.pp    - Using patterned drawing modes and sub-bitmaps.
-exsprite.pp - Datafiles access and sprite animation.
+exrotscl.pp - Rotate and scale sprites.  Bitmap alpha channel.
 exscn3d.pp  - Using the 3d scene functions.
+exshade.pp  - Gouraud shaded sprite example.
+exspline.pp - Use of spline.
+exsprite.pp - Datafiles access and sprite animation.
 exsyscur.pp - How to use system cursors.
 extrans.pp  - Lighting and translucency effects.
-exshade.pp  - Gouraud shaded sprite example.
 extruec.pp  - Truecolor pixel format conversions.
 exzbuf.pp   - Another 3D demo.
 

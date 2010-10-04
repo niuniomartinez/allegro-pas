@@ -119,7 +119,7 @@ Instrucciones de instalación
   http://sourceforge.net/project/showfiles.php?group_id=5665 .  Es posible que
   sólo necesite la versión de usuario (etiquetada como "enduser").
 
-  En el caso de utilizar Windows tiene dos opciones, instalar la Allegro tal
+  En el caso de utilizar Windows tiene dos opciones: instalar la Allegro tal
   como indica el párrafo anterior para obtener el archivo "alleg44.dll" o
   descargarse la versión "binaria" de Allegro.pas, la cual contiene dicho
   archivo y las herramientas.
