@@ -1,5 +1,8 @@
 UNIT albase;
 (*<Defines basic stuff. *)
+
+{$include _alcfg.inc}
+
 INTERFACE
 
 CONST
@@ -18,6 +21,10 @@ CONST
 (* Defined to a text string containing all version numbers and maybe some
    additional text. *)
   AL_PAS_VERSION_STR = '4.4.9 alpha';
+
+TYPE
+(* To define callback variables and parameters. *)
+  AL_CALLBACK_PROC = PROCEDURE;
 
 IMPLEMENTATION
 

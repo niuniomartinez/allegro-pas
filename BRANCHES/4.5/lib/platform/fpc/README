@@ -1,0 +1,5 @@
+This is the Free Pascal platform implementation.
+
+These units implements drivers that allows Allegro.pas to use the Free
+Pascal runtime library.  So Allegro can run in any platform supported by
+Free Pascal (theoretically).
