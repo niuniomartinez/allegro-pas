@@ -1,0 +1,9 @@
+WARNING:
+  This is a Work In Progress version of the next release of Allegro.pas.
+  This version migth be unusable.
+
+Objectives:
+
+  In order to fix some problems with the original Allegro library, the
+  objective of this branch is to rewrite the whole library using Pascal but
+  keeping the orignal interface.
