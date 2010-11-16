@@ -16,7 +16,7 @@ demo: $(DEMO)
 
 # Executables.
 $(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR) -FU$(LIBDIR) $< -o$@
+	fpc $(FLAGS) $(INCLUDES) $(UNITS) -FE$(EXMDIR) -FU$(LIBDIR) $< -o$@
 	@echo Example $@ ready!
 
 $(DEMODIR)%$(BINSUF): $(DEMOSRC) $(LIBFILES)

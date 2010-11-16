@@ -1,13 +1,10 @@
 UNIT allegro;
-(*<Initialization, finalization, error handling and basic configuration of
-  the Allegro library. *)
+(*<Initialization, finalization, error handling and basic configuration of the
+  Allegro library. *)
 
 {$include _alcfg.inc }
 
 INTERFACE
-
-USES
-  albase;
 
 (***************
  * Core system *
@@ -81,8 +78,8 @@ VAR
    mode and removing whatever mouse, keyboard, and timer routines have been
    installed.  You don't normally need to bother making an explicit call to
    this function, because the @code(allegro) unit does call it at the
-   FINALIZATION section so it will be called automatically when your program
-   exits.
+   @code(FINALIZATION) section so it will be called automatically when your
+   program exits.
 
    Note that after you call this function, other functions like
    al_destroy_bitmap will most likely crash.
@@ -114,6 +111,9 @@ VAR
   PROCEDURE al_message (CONST msg: STRING);
 
 IMPLEMENTATION
+
+USES
+  almodule, alsysdrv;
 
 VAR
 { To know if system is up and needs to be finalised. }
@@ -154,8 +154,10 @@ VAR
   PROCEDURE al_exit;
   BEGIN
     IF IsAllegroInstalled THEN
-    { Right now it doesn't do nothing. }
+    BEGIN
+      _alUninstallAllModules_;
       IsAllegroInstalled := FALSE;
+    END;
   END;
 
 
