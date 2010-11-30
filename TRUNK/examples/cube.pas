@@ -279,6 +279,12 @@ VAR
       END;
     END;
 
+  (* Helper function to know if facet is visible. *)
+    FUNCTION FaceVisible (P1, P2, P3: AL_V3D): BOOLEAN;
+    BEGIN
+      FaceVisible := (al_fixtof (P2.x-P1.x) * al_fixtof (P3.y-P2.y)) - (al_fixtof (P3.x-P2.x) * al_fixtof (P2.y-P1.y)) > 0;
+    END;
+
   BEGIN
   { Create the transformation matrix. }
     al_get_transformation_matrix (@Matrix, fSize, fAngle.x, fAngle.y, fAngle.z,
@@ -308,7 +314,7 @@ VAR
       OR (fDrawmode = AL_POLYTYPE_PTEX_LIT)
       THEN BEGIN
       { Only faces with positive normals are visible. }
-	IF al_polygon_z_normal (@Vertex[v1], @Vertex[v2], @Vertex[v3]) < 0 THEN
+	IF NOT FaceVisible (Vertex[v1], Vertex[v2], Vertex[v3]) THEN
 	  CONTINUE;
       END;
     { Insert the face in the face list. }
