@@ -64,8 +64,6 @@ BEGIN { The program starts here. }
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Shows an error message. }
       al_message (al_error);
-    { Shutdowns Allegro. }
-      al_exit;
       EXIT;
     END;
   al_set_palette (al_desktop_palette);
@@ -91,9 +89,5 @@ BEGIN { The program starts here. }
 
   al_readkey;
 
-{ Shutdown Allegro. }
-  al_exit;
-
 { End of the program. }
 END.
-

@@ -76,8 +76,6 @@ BEGIN { The program starts here. }
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
       al_message (al_error);
-    { Shutdown Allegro. }
-      al_exit;
       EXIT;
     END;
 
@@ -90,8 +88,6 @@ BEGIN { The program starts here. }
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
   { Show an error message. }
     al_message ('Error reading allegro.pcx');
-  { Shutdown Allegro. }
-    al_exit;
     EXIT;
   END;
 
@@ -202,8 +198,6 @@ BEGIN { The program starts here. }
   al_destroy_bitmap (spotlight);
   al_destroy_bitmap (truecolor_spotlight);
   al_destroy_bitmap (background);
-  al_exit;
 
 { End of the program. }
 END.
-

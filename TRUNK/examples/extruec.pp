@@ -102,8 +102,5 @@ BEGIN { The program starts here. }
   test (24);
   test (32);
 
-{ Shutdown Allegro. }
-  al_exit;
-
 { End of the program. }
 END.

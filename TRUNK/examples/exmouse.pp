@@ -69,8 +69,6 @@ BEGIN { The program starts here. }
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
       al_message (al_error);
-    { Shutdown Allegro. }
-      al_exit;
       EXIT;
     END;
 
@@ -85,8 +83,6 @@ BEGIN { The program starts here. }
 			  AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
 			  al_makecol (0, 0, 0),	al_makecol (255, 255, 255));
     al_readkey;
-  { Shutdown Allegro. }
-    al_exit;
     EXIT;
   END;
 
@@ -187,9 +183,5 @@ BEGIN { The program starts here. }
 
   al_destroy_bitmap (custom_cursor);
 
-{ Shutdown Allegro. }
-  al_exit;
-
 { End of the program. }
 END.
-

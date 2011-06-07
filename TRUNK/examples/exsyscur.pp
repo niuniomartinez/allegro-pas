@@ -144,5 +144,4 @@ BEGIN
 
   REPEAT ; UNTIL  HandleKey;
 
-  al_exit;
 END.

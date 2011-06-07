@@ -169,8 +169,6 @@ BEGIN (* The program starts here. *)
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
   { Show an error message. }
     al_message (al_error);
-  { Shutdown Allegro.  You should do it because it isn't automatic. }
-    al_exit;
     EXIT;
   END;
   al_set_palette (al_desktop_palette);
@@ -179,7 +177,6 @@ BEGIN (* The program starts here. *)
   w := AL_SCREEN_W; h := AL_SCREEN_H; bpp := al_bitmap_color_depth (al_screen);
   IF NOT al_gfx_mode_select_ex (c, w, h, bpp) THEN
   BEGIN
-    al_exit;
     EXIT;
   END;
 
@@ -189,8 +186,6 @@ BEGIN (* The program starts here. *)
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
   { Show an error message. }
     al_message (al_error);
-  { Shutdown Allegro.  You should do it because it isn't automatic. }
-    al_exit;
     EXIT;
   END;
 
@@ -265,9 +260,6 @@ BEGIN (* The program starts here. *)
   TheCube.Free;
   al_destroy_bitmap (Buffer);
   al_destroy_bitmap (Texture);
-
-{ Shutdown Allegro.  You should do it because it isn't automatic. }
-  al_exit;
 
 { End of the program. }
 END.

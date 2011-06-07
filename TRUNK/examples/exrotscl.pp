@@ -48,8 +48,6 @@ BEGIN { The program starts here. }
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
   { Shows an error message. }
     al_message (al_error);
-  { Shutdowns Allegro. }
-    al_exit;
     EXIT;
   END;
 
@@ -58,7 +56,6 @@ BEGIN { The program starts here. }
   BEGIN
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     al_message ('Could not create double buffer.');
-    al_exit;
     EXIT;
   END;
 
@@ -70,7 +67,6 @@ BEGIN { The program starts here. }
     al_destroy_bitmap (dBuf);
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     al_message ('Could not load inkblot.tga.');
-    al_exit;
     EXIT;
   END;
 
@@ -82,7 +78,6 @@ BEGIN { The program starts here. }
     al_destroy_bitmap (b);
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     al_message ('Could not load inkblot.tga.');
-    al_exit;
     EXIT;
   END;
   al_clear_to_color (b2, al_makeacol (255, 255, 255, 255));
@@ -146,7 +141,6 @@ BEGIN { The program starts here. }
   al_destroy_bitmap (b);
   al_destroy_bitmap (b2);
   al_destroy_bitmap (dBuf);
-  al_exit;
 
 { End of the program. }
 END.

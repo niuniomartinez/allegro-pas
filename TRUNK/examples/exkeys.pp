@@ -127,8 +127,6 @@ BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Shows an error message. }
       al_message ('Unable to set any graphic mode'+chr(13)+al_error);
-    { Shutdowns Allegro. }
-      al_exit;
       EXIT;
     END;
   al_set_palette (al_desktop_palette);
@@ -272,6 +270,4 @@ BEGIN
 
   al_clear_keybuf;
   al_keyboard_lowlevel_callback := NIL;
-
-  al_exit;
 END.

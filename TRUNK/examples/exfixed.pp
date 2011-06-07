@@ -80,9 +80,5 @@ BEGIN { The program starts here. }
 	  [al_fixtof (x), al_fixtof (z)]);
   al_message (TextBuffer);
 
-{ Shutdown Allegro. }
-  al_exit;
-
 { End of the program. }
 END.
-

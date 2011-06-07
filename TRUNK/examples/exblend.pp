@@ -119,8 +119,6 @@ BEGIN { The program starts here. }
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
   { Show an error message. }
     al_message (al_error);
-  { Shutdown Allegro. }
-    al_exit;
     EXIT;
   END;
 
@@ -137,8 +135,6 @@ BEGIN { The program starts here. }
   BEGIN
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     al_message ('Error reading allegro.pcx!');
-  { Shutdown Allegro. }
-    al_exit;
     EXIT;
   END;
 
@@ -149,8 +145,6 @@ BEGIN { The program starts here. }
   BEGIN
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     al_message ('Error reading mysha.pcx!');
-  { Shutdown Allegro. }
-    al_exit;
     EXIT;
   END;
 
@@ -219,7 +213,6 @@ BEGIN { The program starts here. }
   al_destroy_bitmap (image1);
   al_destroy_bitmap (image2);
   al_destroy_bitmap (buffer);
-  al_exit;
 
 { End of the program. }
 END.

@@ -99,24 +99,28 @@ END;
    Windows GDI interfacing functions.
    @param(system_id Identification of the system.)
    @returns(@true on success or @false on failure @(e.g. no system driver
-     could be used@).) *)
+     could be used@).)
+   @seealso(al_exit) @seealso(al_set_uformat) @seealso(al_set_config_file) *)
   FUNCTION al_install (system_id: LONGINT): BOOLEAN;
 
 (* Function which initialises the Allegro library.  This is the same thing as
    calling @code(al_install @(AL_SYSTEM_AUTODETECT@)).
-
    @returns(@true on success or @false on failure @(e.g. no system driver
-     could be used@).) *)
+     could be used@).)
+   @seealso(al_exit) *)
   FUNCTION al_init: BOOLEAN;
 
 (* Closes down the Allegro system.  This includes returning the system to text
    mode and removing whatever mouse, keyboard, and timer routines have been
-   installed.  This procedure must be called before exit the program.
+   installed.  You don't normally need to bother making an explicit call to
+   this function, because it will be called automatically when your program
+   exits.
 
    Note that after you call this function, other functions like
-   al_destroy_bitmap will most likely crash. *)
-  PROCEDURE al_exit; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_exit';
+   al_destroy_bitmap will most likely crash.  This might be a problem for
+   some Object Pascal programs, depending where the destructors are called.
+   @seealso(al_install) @seealso(al_init) *)
+  PROCEDURE al_exit; INLINE;
 
 
 
@@ -4070,6 +4074,8 @@ USES
 
 
 VAR
+(* To know if Allegro was initialised. *)
+  IsAllegroUp: BOOLEAN;
 (* To be used as "errnum". *)
   NumError: LONGINT;
 (* To access to stytem drivers. *)
@@ -4103,8 +4109,9 @@ VAR
 (* Initialises the Allegro library. *)
   FUNCTION al_install (system_id: LONGINT): BOOLEAN;
   BEGIN
-    al_install := _install_allegro_version_check (system_id, @NumError, NIL,
-		  (4 SHL 16) OR (4 SHL 8) OR 0) = 0;
+    IsAllegroUp := _install_allegro_version_check (system_id, @NumError, NIL,
+		(4 SHL 16) OR (4 SHL 8) OR 0) = 0;
+    al_install := IsAllegroUp;
   END;
 
 
@@ -4112,8 +4119,24 @@ VAR
 (* Initialises the Allegro library. *)
   FUNCTION al_init: BOOLEAN;
   BEGIN
-    al_init := _install_allegro_version_check (AL_SYSTEM_AUTODETECT, @NumError,
-	       NIL, (4 SHL 16) OR (4 SHL 8) OR 0) = 0;
+    IsAllegroUp := _install_allegro_version_check (AL_SYSTEM_AUTODETECT, @NumError,
+		NIL, (4 SHL 16) OR (4 SHL 8) OR 0) = 0;
+    al_init := IsAllegroUp;
+  END;
+
+
+
+(* Closes down the Allegro system. *)
+  PROCEDURE allegro_exit; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_exit';
+
+  PROCEDURE al_exit;
+  BEGIN
+    IF IsAllegroUp THEN
+    BEGIN
+      IsAllegroUp := FALSE;
+      allegro_exit;
+    END;
   END;
 
 
@@ -5389,4 +5412,9 @@ INITIALIZATION
   AL_U_UNICODE	:= AL_ID('UNIC');
   AL_U_UTF8	:= AL_ID('UTF8');
   AL_U_CURRENT	:= AL_ID('cur.');
+
+  IsAllegroUp := FALSE;
+FINALIZATION
+{ To be sure it closes down Allegro. }
+  al_exit;
 END.

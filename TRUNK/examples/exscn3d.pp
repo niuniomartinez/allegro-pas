@@ -256,8 +256,6 @@ BEGIN (* The program starts here. *)
 { Set up graphics mode. }
   IF NOT IntitGfx THEN
   BEGIN
-  { Shutdown Allegro.  You should do it because it isn't automatic. }
-    al_exit;
     EXIT;
   END;
   al_set_palette (Palette);
@@ -332,9 +330,6 @@ BEGIN (* The program starts here. *)
   al_destroy_bitmap (Texture);
   al_destroy_bitmap (Buffer);
   al_destroy_scene;
-
-{ Shutdown Allegro.  You should do it because it isn't automatic. }
-  al_exit;
 
 { End of the program. }
 END.

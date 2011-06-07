@@ -249,8 +249,6 @@ BEGIN (* The program starts here. *)
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
       al_message (al_error);
-    { Shutdown Allegro.  You should do it because it isn't automatic. }
-      al_exit;
       EXIT;
     END;
   al_set_palette (al_default_palette);
@@ -259,7 +257,5 @@ BEGIN (* The program starts here. *)
     EXIT;
 { Call example routine. }
   Example;
-{ Shutdown Allegro.  You should do it because it isn't automatic. }
-  al_exit;
 { End of the program. }
 END.
