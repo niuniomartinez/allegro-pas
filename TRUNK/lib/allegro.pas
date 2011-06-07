@@ -352,9 +352,9 @@ VAR
 
    The override config file will not only take precedence when reading, but
    will also be used for storing values.  When you are done with using the
-   override config file, you can call @code(al_override_config_file) with a
-   @nil parameter, so config data will be directly read from the current config
-   file again.
+   override config file, you can call @code(al_override_config_file) with an
+   empty string as parameter, so config data will be directly read from the
+   current config file again.
 
    @bold(Note:) The override file is completely independent from the current
    configuration.  You can e.g. call @code(al_set_config_file), and the
@@ -809,35 +809,36 @@ IF  al_key[AL_KEY_SPACE] <> 0 THEN
 
    These are the keyboard scancodes:
    @longcode(#
-          KEY_A ... KEY_Z,
-          KEY_0 ... KEY_9,
-          KEY_0_PAD ... KEY_9_PAD,
-          KEY_F1 ... KEY_F12,
+          AL_KEY_A ... AL_KEY_Z,
+          AL_KEY_0 ... AL_KEY_9,
+          AL_KEY_0_PAD ... AL_KEY_9_PAD,
+          AL_KEY_F1 ... AL_KEY_F12,
 
-          KEY_ESC, KEY_TILDE, KEY_MINUS, KEY_EQUALS,
-          KEY_BACKSPACE, KEY_TAB, KEY_OPENBRACE, KEY_CLOSEBRACE,
-          KEY_ENTER, KEY_COLON, KEY_QUOTE, KEY_BACKSLASH,
-          KEY_BACKSLASH2, KEY_COMMA, KEY_STOP, KEY_SLASH,
-          KEY_SPACE,
+          AL_KEY_ESC, AL_KEY_TILDE, AL_KEY_MINUS, AL_KEY_EQUALS,
+          AL_KEY_BACKSPACE, AL_KEY_TAB, AL_KEY_OPENBRACE, AL_KEY_CLOSEBRACE,
+          AL_KEY_ENTER, AL_KEY_COLON, AL_KEY_QUOTE, AL_KEY_BACKSLASH,
+          AL_KEY_BACKSLASH2, AL_KEY_COMMA, AL_KEY_STOP, AL_KEY_SLASH,
+          AL_KEY_SPACE,
 
-          KEY_INSERT, KEY_DEL, KEY_HOME, KEY_END, KEY_PGUP,
-          KEY_PGDN, KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN,
+          AL_KEY_INSERT, AL_KEY_DEL, AL_KEY_HOME, AL_KEY_END, AL_KEY_PGUP,
+          AL_KEY_PGDN, AL_KEY_LEFT, AL_KEY_RIGHT, AL_KEY_UP, AL_KEY_DOWN,
 
-          KEY_SLASH_PAD, KEY_ASTERISK, KEY_MINUS_PAD,
-          KEY_PLUS_PAD, KEY_DEL_PAD, KEY_ENTER_PAD,
+          AL_KEY_SLASH_PAD, AL_KEY_ASTERISK, AL_KEY_MINUS_PAD,
+          AL_KEY_PLUS_PAD, AL_KEY_DEL_PAD, AL_KEY_ENTER_PAD,
 
-          KEY_PRTSCR, KEY_PAUSE,
+          AL_KEY_PRTSCR, AL_KEY_PAUSE,
 
-          KEY_ABNT_C1, KEY_YEN, KEY_KANA, KEY_CONVERT, KEY_NOCONVERT,
-          KEY_AT, KEY_CIRCUMFLEX, KEY_COLON2, KEY_KANJI,
+          AL_KEY_ABNT_C1, AL_KEY_YEN, AL_KEY_KANA, AL_KEY_CONVERT,
+          AL_KEY_NOCONVERT, AL_KEY_AT, AL_KEY_CIRCUMFLEX, AL_KEY_COLON2,
+          AL_KEY_KANJI,
 
-          KEY_LSHIFT, KEY_RSHIFT,
-          KEY_LCONTROL, KEY_RCONTROL,
-          KEY_ALT, KEY_ALTGR,
-          KEY_LWIN, KEY_RWIN, KEY_MENU,
-          KEY_SCRLOCK, KEY_NUMLOCK, KEY_CAPSLOCK
+          AL_KEY_LSHIFT, AL_KEY_RSHIFT,
+          AL_KEY_LCONTROL, AL_KEY_RCONTROL,
+          AL_KEY_ALT, AL_KEY_ALTGR,
+          AL_KEY_LWIN, AL_KEY_RWIN, AL_KEY_MENU,
+          AL_KEY_SCRLOCK, AL_KEY_NUMLOCK, AL_KEY_CAPSLOCK,
 
-          KEY_EQUALS_PAD, KEY_BACKQUOTE, KEY_SEMICOLON, KEY_COMMAND
+          AL_KEY_EQUALS_PAD, AL_KEY_BACKQUOTE, AL_KEY_SEMICOLON, AL_KEY_COMMAND
    #)
 
    Finally, you may notice an @italic(`odd') behaviour of the
@@ -853,21 +854,21 @@ IF  al_key[AL_KEY_SPACE] <> 0 THEN
    returns @true, you must manually call @code(al_poll_keyboard) to update it
    with the current input state.  This can contain any of the flags:
    @longcode(#
-          KB_SHIFT_FLAG
-          KB_CTRL_FLAG
-          KB_ALT_FLAG
-          KB_LWIN_FLAG
-          KB_RWIN_FLAG
-          KB_MENU_FLAG
-          KB_COMMAND_FLAG
-          KB_SCROLOCK_FLAG
-          KB_NUMLOCK_FLAG
-          KB_CAPSLOCK_FLAG
-          KB_INALTSEQ_FLAG
-          KB_ACCENT1_FLAG
-          KB_ACCENT2_FLAG
-          KB_ACCENT3_FLAG
-          KB_ACCENT4_FLAG
+          AL_KB_SHIFT_FLAG
+          AL_KB_CTRL_FLAG
+          AL_KB_ALT_FLAG
+          AL_KB_LWIN_FLAG
+          AL_KB_RWIN_FLAG
+          AL_KB_MENU_FLAG
+          AL_KB_COMMAND_FLAG
+          AL_KB_SCROLOCK_FLAG
+          AL_KB_NUMLOCK_FLAG
+          AL_KB_CAPSLOCK_FLAG
+          AL_KB_INALTSEQ_FLAG
+          AL_KB_ACCENT1_FLAG
+          AL_KB_ACCENT2_FLAG
+          AL_KB_ACCENT3_FLAG
+          AL_KB_ACCENT4_FLAG
    #) *)
   al_key_shifts: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'key_shifts';
 
@@ -1164,9 +1165,7 @@ TYPE
    but you should not usually care about it.  Read @code(alpalete) unit for a
    description on how to obtain/use this structure. *)
   AL_RGB = RECORD
-    r	  : BYTE;
-    g	  : BYTE;
-    b	  : BYTE;
+    r, g, b: BYTE;
     filler: BYTE;
   END;
 
@@ -1348,19 +1347,19 @@ VAR
    Unlike the other palette functions this doesn't do any retrace
    synchronisation, so you should call @code(al_vsync) before it to prevent
    snow problems. *)
-  PROCEDURE al_set_color (idx: LONGINT; p: AL_RGBptr); CDECL;
+  PROCEDURE al_set_color (idx: LONGINT; CONST p: AL_RGBptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_color';
 
 (* Sets the entire palette of 256 colors.  You should provide an array of 256
    RGB structures.  Unlike @code(al_set_color), there is no need to call
    @code(al_vsync) before this function. *)
-  PROCEDURE al_set_palette (p: AL_PALETTE); CDECL;
+  PROCEDURE al_set_palette (CONST p: AL_PALETTE); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_palette';
 
 (* Sets the palette entries between @code(from) and @code(ato) (inclusive:
    pass 0 and 255 to set the entire palette).  If @code(al_vsync) is not zero it
    waits for the vertical retrace, otherwise it sets the colors immediately. *)
-  PROCEDURE al_set_palette_range (p: AL_PALETTE; from, ato, vsync: LONGINT); CDECL;
+  PROCEDURE al_set_palette_range (CONST p: AL_PALETTE; from, ato, vsync: LONGINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_palette_range';
 
 (* Retrieves the specified palette entry. *)
@@ -4191,7 +4190,10 @@ VAR
 
   PROCEDURE al_set_config_file (filename: STRING);
   BEGIN
-    set_config_file (PCHAR (filename));
+    IF filename <> '' THEN
+      set_config_file (PCHAR (filename))
+    ELSE
+      set_config_file (NIL);
   END;
 
 
@@ -4201,7 +4203,10 @@ VAR
 
   PROCEDURE al_override_config_file (filename: STRING);
   BEGIN
-    override_config_file (PCHAR (filename));
+    IF filename <> '' THEN
+      override_config_file (PCHAR (filename))
+    ELSE
+      override_config_file (NIL);
   END;
 
 

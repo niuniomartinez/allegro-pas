@@ -91,7 +91,7 @@ CONST
 VAR
 (* Contains the current frame of the FLI/FLC animation.  If there is no open
    animation, its value will be @nil. *)
-  al_fli_bitmap: AL_BITMAP; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_bitmap';
+  al_fli_bitmap: AL_BITMAPptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_bitmap';
 (* Contains the current FLI palette. *)
   al_fli_palette: AL_PALETTE; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_palette';
 (* These variables are set by @code(al_next_fli_frame) to indicate which part
