@@ -44,8 +44,6 @@ BEGIN { The program starts here. }
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
       al_message (al_error);
-    { Shutdown Allegro.  You should do it because it isn't automatic. }
-      al_exit;
       EXIT;
     END;
 
@@ -70,9 +68,6 @@ BEGIN { The program starts here. }
 
 { Wait until a key is pressed. }
   al_readkey;
-
-{ Shutdown Allegro.  You should do it because it isn't automatic. }
-  al_exit;
 
 { End of the program. }
 END.

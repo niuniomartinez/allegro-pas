@@ -351,8 +351,6 @@ BEGIN { The program starts here. }
 	al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
       { Shows an error message. }
 	al_message (al_error);
-      { Shutdowns Allegro. }
-	al_exit;
 	EXIT;
       END;
 
@@ -400,8 +398,6 @@ BEGIN { The program starts here. }
       END
     END;
   UNTIL FALSE;
-
-  al_exit;
 
 { End of the program. }
 END.

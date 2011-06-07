@@ -61,8 +61,6 @@ USES
 	{ Show an error message.
 	  Can't use 'ErrorMessage' because the graphic mode isn't up. }
 	  al_message (al_error);
-	{ Shutdown Allegro. }
-	  al_exit;
 	  EXIT;
 	END;
     { Calculate the screen scale factor.  See the play loop. }
@@ -75,16 +73,12 @@ USES
     IF NOT InstallFrameRate THEN
     BEGIN
       ErrorMessage ('Can''t install frame controller.  More timer interrupts needed.');
-    { Shutdown Allegro. }
-      al_exit;
       EXIT;
     END;
   { Load the game data. }
     IF NOT LoadData THEN
     BEGIN
       ErrorMessage ('Can''t load the game data.');
-    { Shutdown Allegro. }
-      al_exit;
       EXIT;
     END;
   { Initialize the random number generator. }
@@ -125,8 +119,6 @@ USES
   BEGIN
   { Release resources. }
     ReleaseData;
-  { Shutdown Allegro. }
-    al_exit;
   END;
 
 

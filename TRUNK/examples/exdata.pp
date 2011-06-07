@@ -59,8 +59,6 @@ BEGIN { The program starts here. }
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
       al_message (al_error);
-    { Shutdown Allegro. }
-      al_exit;
       EXIT;
     END;
 
@@ -75,7 +73,6 @@ BEGIN { The program starts here. }
   BEGIN
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     al_message ('Error loading example.dat');
-    al_exit;
     EXIT;
   END;
 
@@ -100,9 +97,5 @@ BEGIN { The program starts here. }
 { Unload the datafile when we are finished with it. }
   al_unload_datafile (datafile);
 
-{ Shutdown Allegro. }
-  al_exit;
-
 { End of the program. }
 END.
-

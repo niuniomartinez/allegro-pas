@@ -10,6 +10,11 @@ Cambios entre las versiones 4.4.2 y 4.4.3
 
   * Corregido el tipo de la variable al_fli_bitmap.
 
+  Novedades
+  ---------
+  + Ya no es necesario llamar a al_exit, ya que es llamado en la sección
+    FINALIZATION de la unidad "allegro".
+
   Otros
   -----
   * Documentación actualizada con algunas correcciones.

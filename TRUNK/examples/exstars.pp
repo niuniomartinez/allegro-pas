@@ -380,8 +380,6 @@ BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
       al_message (al_error);
-    { Shutdown Allegro.  You should do it because it isn't automatic. }
-      al_exit;
       EXIT;
     END;
   END;
@@ -507,5 +505,4 @@ BEGIN
   UNTIL al_key[AL_KEY_ESC] <> 0;
 
   al_destroy_bitmap (buffer);
-  al_exit;
 END.

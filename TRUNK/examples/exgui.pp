@@ -322,8 +322,6 @@ BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
       al_message ('Unable to set any graphic mode'+chr(13)+al_error);
-    { Shutdown Allegro. }
-      al_exit;
       EXIT;
     END;
 
@@ -335,7 +333,6 @@ BEGIN
   BEGIN
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     al_message ('Error loading example.dat');
-    al_exit;
     EXIT;
   END;
 
@@ -371,5 +368,4 @@ BEGIN
   al_do_dialog (TheDialog, -1);
 
   al_unload_datafile (datafile);
-  al_exit;
 END.

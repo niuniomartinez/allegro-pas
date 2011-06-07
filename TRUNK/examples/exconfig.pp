@@ -156,8 +156,5 @@ BEGIN { The program starts here. }
 			AL_SCREEN_W DIV 2, 20, al_makecol (r,g,b), -1);
   al_readkey();
 
-{ Shutdown Allegro. }
-  al_exit;
-
 { End of the program. }
 END.

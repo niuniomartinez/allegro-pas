@@ -60,8 +60,6 @@ BEGIN { The program starts here. }
 	    al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
 	 { Shows an error message. }
 	    al_message (al_error);
-	 { Shutdowns Allegro. }
-	    al_exit;
 	   EXIT;
 	 END;
 
@@ -97,8 +95,6 @@ BEGIN { The program starts here. }
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
    { Shows an error message. }
       al_message ('Unable to create two video memory pages');
-   { Shutdowns Allegro. }
-      al_exit;
       EXIT;
    END;
 
@@ -126,7 +122,6 @@ BEGIN { The program starts here. }
 { Shutdown Allegro. }
   al_destroy_bitmap (page1);
   al_destroy_bitmap (page2);
-  al_exit;
 
 { End of the program. }
 END.

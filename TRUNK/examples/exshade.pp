@@ -69,8 +69,6 @@ BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
       al_message (al_error);
-    { Shutdown Allegro. }
-      al_exit;
       EXIT;
     END;
 
@@ -81,7 +79,6 @@ BEGIN
   BEGIN
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     al_message ('Error reading ' + Buf);
-    al_exit;
     EXIT;
   END;
 
@@ -122,5 +119,4 @@ BEGIN
 
   al_destroy_bitmap (Planet);
   al_destroy_bitmap (Buffer);
-  al_exit;
 END.
