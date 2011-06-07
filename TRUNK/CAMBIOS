@@ -6,6 +6,8 @@ Cambios entre las versiones 4.4.2 y 4.4.3
   * Corregida la implementación de al_set_color, al_set_palette
     y al_set_palette_range, al_set_config_file y al_override_config_file,
 
+  * Corregido un error en la impementación de al_arc.
+
   * Corregido el tipo de la variable al_fli_bitmap.
 
   Otros
