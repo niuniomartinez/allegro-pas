@@ -1,4 +1,12 @@
+* Check _al_putpixel32 implementation.
+
+* Test al_arc routine.
+
+* Use "FINALIZATION" to call "al_exit".
+
 * Revise list of examples.
+
+* Check Windows alleg44.dll build parameters.  Be sure it's optimised.
 
 + Complete explanation of Joystick. i.e. problems with configuration file.
 
@@ -8,11 +16,6 @@
   + load_ibk
 
 * Audio stream (all).
-
-* Tools
-
-  + GUI creator:  Simple drag'n'drop editor using Allegro's GUI.  Save GUIs
-    as text files (may be XML?) and as Pascal unit.
 
 * UNICODE
 

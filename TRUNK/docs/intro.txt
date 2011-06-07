@@ -109,7 +109,7 @@
   or @link(al_init).  If you want to work in a text mode other than UTF-8, it
   is best to set it with @link(al_set_uformat) just before you call these.
 
-  @bold(Note:)  While UNICODE is almost supported by Free Pascal an Lazarus,
+  @bold(Note:)  While UNICODE is almost supported by Free Pascal and Lazarus,
   you might have bad results using it with Allegro.pas.  See the TODO.txt file
   for more information.
 
