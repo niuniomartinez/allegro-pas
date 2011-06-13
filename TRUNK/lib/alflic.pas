@@ -30,11 +30,7 @@ UNIT alflic;
   animation, or to play it back at a different speed.  You could do both of
   these with the lower level functions described below. *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$MODE FPC}
- {$LONGSTRINGS ON}
-{$ENDIF}
+{$INCLUDE allegro.cfg }
 
 INTERFACE
 

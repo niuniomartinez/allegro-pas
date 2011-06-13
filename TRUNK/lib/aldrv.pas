@@ -1,14 +1,10 @@
-(*Defines structs and variables used internally by Allegro and the add-ons. 
+UNIT aldrv;
+(*<Defines structs and variables used internally by Allegro and the add-ons. 
 
   Note that some parts of this unit are platform-dependent so they aren't
   available in all platforms. *)
-UNIT aldrv;
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$PACKRECORDS C}
- {$MODE FPC}
-{$ENDIF}
+{$INCLUDE allegro.cfg }
 
 INTERFACE
 

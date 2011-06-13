@@ -58,12 +58,7 @@ UNIT alfile;
 
   @bold(See also) @link(al_pack_fopen) *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$PACKRECORDS C}
- {$LONGSTRINGS ON}
- {$SMARTLINK ON}
-{$ENDIF}
+{$INCLUDE allegro.cfg }
 
 INTERFACE
 

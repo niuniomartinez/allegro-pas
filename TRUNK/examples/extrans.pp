@@ -70,6 +70,13 @@ BEGIN { The program starts here. }
   al_install_timer;
   al_install_mouse;
 
+{ We can set the color depth by command line. }
+  IF ParamCount > 0 THEN
+    al_set_color_depth (StrToInt (ParamStr (1)))
+  ELSE IF al_desktop_color_depth <> 0 THEN
+    al_set_color_depth (al_desktop_color_depth);
+{ Otherwhise it will use 8bpp. }
+
   IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
@@ -113,7 +120,7 @@ BEGIN { The program starts here. }
     al_circlefill (spotlight, 64, 64, 64 - i DIV 4, i);
 
 { Select the lighting table. }
-    al_color_table := @light_table;
+  al_color_table := @light_table;
 
 { Display a spotlight effect. }
   REPEAT
