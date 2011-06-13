@@ -43,7 +43,7 @@ BEGIN { The program starts here. }
 
 { Some platforms do page flipping by making one large screen that you
   can then scroll, while others give you several smaller, unique
-  surfaces. If you use the create_video_bitmap() function, the same
+  surfaces. If you use the al_create_video_bitmap() function, the same
   code can work on either kind of platform, but you have to be careful
   how you set the video mode in the first place. We want two pages of
   320x200 video memory, but if we just ask for that, on DOS Allegro

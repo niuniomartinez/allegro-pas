@@ -197,12 +197,7 @@ UNIT al3d;
   @bold(See also) @link(al_create_scene)
  *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$MODE FPC}
- {$PACKRECORDS C}
- {$SMARTLINK ON}
-{$ENDIF}
+{$INCLUDE allegro.cfg}
 
 INTERFACE
 

@@ -1,10 +1,9 @@
-* Check _al_putpixel32 implementation.
-
-* Test al_arc routine.
-
-* Use "FINALIZATION" to call "al_exit".
+* Check polygon checking in 3D examples.  Fix all them, modifying "normal-z"
+  calculation.
 
 * Revise list of examples.
+
++ Add triple-buffer example, if available.
 
 * Check Windows alleg44.dll build parameters.  Be sure it's optimised.
 
@@ -21,5 +20,3 @@
 
   Actually supported but there's some problems with it.  Should find a way to
   integrate it with FPC/Lazarus UNICODE support (i.e. utf8string, etc.)
-
-* New installation system via fpmake and/or fpcmake.

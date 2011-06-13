@@ -28,6 +28,7 @@ VAR
    Direction : INTEGER;
    Angle, Scale: AL_FIXED;
    X, Y: INTEGER;
+
 BEGIN { The program starts here. }
    Mode := NORMAL;
    fAngle := 0;
@@ -45,10 +46,13 @@ BEGIN { The program starts here. }
   al_set_color_depth (32);
   IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
   BEGIN
-    al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
-  { Shows an error message. }
-    al_message (al_error);
-    EXIT;
+    IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
+    BEGIN
+      al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
+    { Shows an error message. }
+      al_message (al_error);
+      EXIT;
+    END;
   END;
 
   dBuf := al_create_bitmap (AL_SCREEN_W, AL_SCREEN_H);
@@ -88,8 +92,8 @@ BEGIN { The program starts here. }
   BEGIN
     Angle := al_ftofix (fAngle);
     Scale := al_ftofix (fScale);
-    x := TRUNC ((AL_SCREEN_W - (b^.w * fScale)) / 2);
-    y := TRUNC ((AL_SCREEN_H - (b^.h * fscale)) / 2);
+    x := TRUNC (AL_SCREEN_W - (b^.w * fScale)) DIV 2;
+    y := TRUNC (AL_SCREEN_H - (b^.h * fscale)) DIV 2;
 
   { XXX flickers badly due to no buffering. }
     al_clear_to_color (dBuf, al_makecol (255, 255, 255));
@@ -109,7 +113,7 @@ BEGIN { The program starts here. }
     LIT:
       BEGIN
 	al_set_trans_blender (255, 0, 0, 0);
-	al_rotate_scaled_sprite_lit (dbuf, b, x, y, Angle, Scale, 128);
+	al_rotate_scaled_sprite_lit (dbuf, b2, x, y, Angle, Scale, 128);
 	al_textout_centre_ex (dbuf, al_font, 'Lit', AL_SCREEN_W DIV 2, AL_SCREEN_H - 20, al_makecol (0, 0, 0), -1);
       END;
     END;
@@ -128,6 +132,7 @@ BEGIN { The program starts here. }
       fScale := 1;
     END;
 
+  { Comment next line to make it faster. }
     al_rest (5);
 
     IF al_keypressed THEN

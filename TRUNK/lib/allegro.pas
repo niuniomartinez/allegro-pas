@@ -1,18 +1,12 @@
-(*Allegro core.
+UNIT allegro;
+(*<Allegro core.
 
   This is the main module of the Allegro library.  There are very different
   stuff on this unit, but procedures, functions, types, variables and constants
   are grouped to make it easer to find them.  Read the @bold(Introduction)
   section for a brief description of this unit. *)
-UNIT allegro;
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$PACKRECORDS C}
- {$MODE FPC}
- {$LONGSTRINGS ON}
- {$SMARTLINK ON}
-{$ENDIF}
+{$INCLUDE allegro.cfg }
 
 INTERFACE
 
@@ -902,7 +896,7 @@ IF  al_key[AL_KEY_SPACE] <> 0 THEN
 
 
 (* Key scan-code and flag identifiers. *)
-  {$include alkeyid.inc}
+  {$INCLUDE alkeyid.inc}
 
 
 
@@ -2493,7 +2487,7 @@ VAR
 
 
 (* Color conversion constants. *)
-  {$include alclrcnv.inc}
+  {$INCLUDE alclrcnv.inc}
 
 
 
@@ -4804,7 +4798,7 @@ TYPE
     addr: DWORD;
   BEGIN
     addr := bmp^.read_bank (bmp, y);
-    _al_getpixel15 := (PWORD (addr + DWORD (x)))^;
+    _al_getpixel15 := (PWORD (addr + (DWORD (x) * 2)))^;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
@@ -4813,7 +4807,7 @@ TYPE
     addr: DWORD;
   BEGIN
     addr := bmp^.read_bank (bmp, y);
-    _al_getpixel16 := (PWORD (addr + DWORD (x)))^;
+    _al_getpixel16 := (PWORD (addr + (DWORD (x) * 2)))^;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
@@ -4825,13 +4819,13 @@ TYPE
     BEGIN
       READ3BYTES :=
     {$IFDEF ENDIAN_BIG}
-	   ((PLONGINT (addr + DWORD (x)    ))^ SHL 16)
-	OR ((PLONGINT (addr + DWORD (x) + 1))^ SHL  8)
-	OR ((PLONGINT (addr + DWORD (x) + 2))^       )
+	   ((PLONGINT (addr + (DWORD (x) * 3)    ))^ SHL 16)
+	OR ((PLONGINT (addr + (DWORD (x) * 3) + 1))^ SHL  8)
+	OR ((PLONGINT (addr + (DWORD (x) * 3) + 2))^       )
     {$ELSE}
-	   ((PLONGINT (addr + DWORD (x)    ))^       )
-	OR ((PLONGINT (addr + DWORD (x) + 1))^ SHL  8)
-	OR ((PLONGINT (addr + DWORD (x) + 2))^ SHL 16)
+	   ((PLONGINT (addr + (DWORD (x) * 3)    ))^       )
+	OR ((PLONGINT (addr + (DWORD (x) * 3) + 1))^ SHL  8)
+	OR ((PLONGINT (addr + (DWORD (x) * 3) + 2))^ SHL 16)
     {$ENDIF}
       ;
     END;
@@ -4847,7 +4841,7 @@ TYPE
     addr: DWORD;
   BEGIN
     addr := bmp^.read_bank (bmp, y);
-    _al_getpixel32 := (PLONGINT (addr + DWORD (x)))^;
+    _al_getpixel32 := (PLONGINT (addr + (DWORD (x) * 4)))^;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
@@ -4870,7 +4864,7 @@ TYPE
     addr: DWORD;
   BEGIN
     addr := bmp^.write_bank (bmp, y);
-    (PWORD (addr + DWORD (x)))^ := color;
+    (PWORD (addr + (DWORD (x) * 2)))^ := color;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
@@ -4879,7 +4873,7 @@ TYPE
     addr: DWORD;
   BEGIN
     addr := bmp^.write_bank (bmp, y);
-    (PWORD (addr + DWORD (x)))^ := color;
+    (PWORD (addr + (DWORD (x) * 2)))^ := color;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
@@ -4890,19 +4884,19 @@ TYPE
     PROCEDURE WRITE3BYTES; INLINE;
     BEGIN
     {$IFDEF ENDIAN_BIG}
-	(PLONGINT (addr + DWORD (x)    ))^ := (color SHR 16) AND $FF;
-	(PLONGINT (addr + DWORD (x) + 1))^ := (color SHR  8) AND $FF;
-	(PLONGINT (addr + DWORD (x) + 2))^ :=  color         AND $FF;
+	(PLONGINT (addr + (DWORD (x) * 3)    ))^ := (color SHR 16) AND $FF;
+	(PLONGINT (addr + (DWORD (x) * 3) + 1))^ := (color SHR  8) AND $FF;
+	(PLONGINT (addr + (DWORD (x) * 3) + 2))^ :=  color         AND $FF;
     {$ELSE}
-	(PLONGINT (addr + DWORD (x)    ))^ :=  color         AND $FF;
-	(PLONGINT (addr + DWORD (x) + 1))^ := (color SHR  8) AND $FF;
-	(PLONGINT (addr + DWORD (x) + 2))^ := (color SHR 16) AND $FF;
+	(PLONGINT (addr + (DWORD (x) * 3)    ))^ :=  color         AND $FF;
+	(PLONGINT (addr + (DWORD (x) * 3) + 1))^ := (color SHR  8) AND $FF;
+	(PLONGINT (addr + (DWORD (x) * 3) + 2))^ := (color SHR 16) AND $FF;
     {$ENDIF}
     END;
 
   BEGIN
     addr := bmp^.write_bank (bmp, y);
-    (BYTEPtr (addr + DWORD (x)))^ := color;
+    WRITE3BYTES;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
@@ -4911,7 +4905,7 @@ TYPE
     addr: DWORD;
   BEGIN
     addr := bmp^.write_bank (bmp, y);
-    (PLONGINT (addr + DWORD (x)))^ := color;
+    (PLONGINT (addr + (DWORD (x) * 4)))^ := color;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 

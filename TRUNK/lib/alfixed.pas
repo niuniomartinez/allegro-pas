@@ -49,10 +49,7 @@ UNIT alfixed;
   add-on package for the very few users who still find it convenient and
   useful, and Allegro functions using fixed point math will use other types. *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$MODE FPC}
-{$ENDIF}
+{$INCLUDE allegro.cfg }
 
 INTERFACE
 

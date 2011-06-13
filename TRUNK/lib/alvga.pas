@@ -14,10 +14,7 @@ UNIT alvga;
   solid or invisible.  Color mapping tables can be precalculated with the
   colormap utility, or generated at runtime. *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$MODE FPC}
-{$ENDIF}
+{$INCLUDE allegro.cfg }
 
 INTERFACE
 

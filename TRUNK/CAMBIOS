@@ -3,12 +3,16 @@ Cambios entre las versiones 4.4.2 y 4.4.3
 
   Errores corregidos
   ------------------
-  * Corregida la implementación de al_set_color, al_set_palette
-    y al_set_palette_range, al_set_config_file y al_override_config_file,
+  * Corregida mejorada la implementación de al_set_color, al_set_palette
+    y al_set_palette_range, y al_set_config_file y al_override_config_file,
+
+  * Corregido el tipo de la variable al_fli_bitmap.
 
   * Corregido un error en la impementación de al_arc.
 
-  * Corregido el tipo de la variable al_fli_bitmap.
+  * Corregidos múltiples errores en _al_putpixel* y _al_getpixel*.
+
+  * Corregido un error ene el ejemplo exrotscl.
 
   Novedades
   ---------
@@ -17,6 +21,13 @@ Cambios entre las versiones 4.4.2 y 4.4.3
 
   Otros
   -----
+  * Ahora el ejemplo "extrans" usa la profundidad de color del escritorio,
+    si es posible.  También permite seleccionar la profundidad de color usando
+    la línea de comandos.
+
+  * Se han movido las directivas de configuración interna del compilador a un
+    archivo que se incluye en todas las unidades.
+
   * Documentación actualizada con algunas correcciones.
 
 Cambios entre las versiones 4.4.1 y 4.4.2

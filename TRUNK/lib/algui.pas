@@ -183,13 +183,7 @@ UNIT algui;
   menu items it would be a good idea to prefix all your options with a space or
   two, to ensure there is room for the check. *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$MODE FPC}
- {$PACKRECORDS C}
- {$LONGSTRINGS ON}
- {$SMARTLINK ON}
-{$ENDIF}
+{$INCLUDE allegro.cfg }
 
 INTERFACE
 

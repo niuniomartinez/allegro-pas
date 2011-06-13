@@ -2,10 +2,7 @@ UNIT albase;
 (*< Base definitions to interface with Allegro and the Allegro.pas dynamic
  * modules. *)
 
-{$IFNDEF FPC}
-{ At the moment only Free Pascal was tested.  Delphi support was broke. }
- {$ERROR Can't compile with this compiler. Do you want to help? }
-{$ENDIF}
+{$INCLUDE allegro.cfg}
 
 INTERFACE
 

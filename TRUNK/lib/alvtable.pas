@@ -4,10 +4,7 @@ UNIT alvtable;
  *      Virtual table to be used by AL_BITMAP.  FOR INTERNAL USE ONLY.
  *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
- {$PACKRECORDS C}
-{$ENDIF}
+{$INCLUDE allegro.cfg }
 
 INTERFACE
 
