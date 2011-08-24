@@ -54,8 +54,10 @@
   You @bold(must) call either @link(al_install) or @link(al_init) before doing
   anything other than using the @link(unicode UNICODE routines).
 
-  On the other hand, you @bold(must) call @link(al_exit) before to finish the
-  program.
+  On the other hand, you can call @link(al_exit) before to finish the program
+  to close Allegro.  You don't need to do it because it will be called
+  automaticly by the @code(FINALIZATION) section of Allegro.pas but some times
+  it's neccessary to call it before.
 
 
 @section(2 unicode UNICODE routines)

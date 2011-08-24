@@ -55,7 +55,7 @@ VAR
     EndSlideshow: BOOLEAN;
     NumLine: INTEGER;
   BEGIN
-  { Setup the title sequence. }
+  { Setup of the title sequence. }
     Palette := Data^[TITLE_PAL].dat;
     al_set_color (0, @(Palette[0]));
     al_clear_bitmap (al_screen);
@@ -66,7 +66,7 @@ VAR
   { Sound. }
     al_play_midi (Data^[TITLE_MUSIC].dat, TRUE);
     al_play_sample (Data^[WELCOME_SPL].dat, 255, 127, 1000, 0);
-  { If "-jumpstart" used then don't do the first part of title. }
+  { If "-jumpstart" used then doesn't do the first part of title. }
     IF DoIntro THEN
     BEGIN
     { First part, zoom-in the title bitmap. }
@@ -79,17 +79,17 @@ VAR
 	  DEC (Tick);
 	  INC (Cnt);
 	END;
-      { Draw the title bitmap. }
+      { Draws the title bitmap. }
 	al_vsync;
 	al_stretch_blit (Data^[TITLE_BMP].dat, al_screen,
 			0, 0, 320, 128,
-		     { Calculate the center of screen. }
+		     { Calculates the center of screen. }
 			(AL_SCREEN_W DIV 2) -  Cnt,
 			(AL_SCREEN_H DIV 2) - (Cnt * 64) DIV 160 - 32,
 			Cnt * 2, (Cnt * 128) DIV 160);
       UNTIL (Cnt >= 160) OR al_keypressed;
     END;
-  {Draw it again, at full size. }
+  { Draws it again, at full size. }
     al_blit (Data^[TITLE_BMP].dat, al_screen, 0, 0,
 	     (AL_SCREEN_W DIV 2) - 160, (AL_SCREEN_H DIV 2) - 96,
 	     320, 128);
@@ -99,14 +99,14 @@ VAR
     REPEAT
       WHILE Tick > 0 DO
       BEGIN
-      { Check keyboard. }
+      { Checks keyboard. }
 	IF al_keypressed THEN
 	BEGIN
 	  Key := al_readkey SHR 8;
 	  IF (Key = AL_KEY_SPACE) OR (Key = AL_KEY_ESC) THEN
 	    EndSlideShow := TRUE;
 	END
-      { Check joystick. }
+      { Checks joystick. }
 	ELSE IF al_num_joysticks > 0 THEN
 	BEGIN
 	  al_poll_joystick;
@@ -119,7 +119,7 @@ VAR
       { For each 'Tick' we decrement the x coordinate of the slide show. }
 	DEC (Tick);
 	DEC (Cnt);
-      { Check if we have shown all text and change the line if so. }
+      { Checks if we have shown all text and change the line if so. }
 	IF Cnt <= Length (TextShow[NumLine]) * (-8) THEN
 	BEGIN
 	  INC (NumLine);
@@ -136,7 +136,7 @@ VAR
     UNTIL EndSlideshow;
   { Result. }
     RunTitle := Key = AL_KEY_SPACE;
-  { Release resources. }
+  { Releases resources. }
     al_destroy_bitmap (SlideBmp);
     al_stop_midi;
   END;
