@@ -91,6 +91,17 @@
 
   @bold(See also:) @link(algui)
 
+  @section(2 exconfig.pp exconfig.pp)
+
+  This program shows how to use the configuration routines. A first look at the
+  example shows nothing more than a static graphic and the wait for a key press.
+  However, the way this graphic is displayed is configured through a custom
+  exconfig.ini file which is loaded manually. From this file the example obtains
+  parameters like fullscreen/windowed mode, a specific graphic resolution to set
+  up, which graphic to show, how to blit it on the screen, etc.
+
+  @bold(See also:) @link(configuration Configuration routines) @link(al_set_config_file)
+
   @section(2 exdata.pp exdata.pp)
 
   This program demonstrates how to access the contents of an Allegro datafile
