@@ -59,7 +59,7 @@ VAR
   PROCEDURE InitAlex;
   BEGIN
     AlexSpr := @(SpritePlane[ALEX_SPR]);
-  { Put Alex at the startpoint. }
+  { Puts Alex at the startpoint. }
     AlexSpr^.x := (StartX * TSIZE) - TSIZE;
     AlexSpr^.y := (StartY * TSIZE) - TSIZE;
   { Initial frame. }
@@ -80,7 +80,7 @@ VAR
     PROCEDURE StartStand;
     BEGIN
       AlexState := STAND;
-    { Check if Alex is facing left or right. }
+    { Checks if Alex is facing left or right. }
       IF AlexSpr^.Index < BMP_MAIN_R0 THEN
 	AlexSpr^.Index := BMP_MAIN_L0
       ELSE
@@ -90,7 +90,7 @@ VAR
     PROCEDURE StartFall;
     BEGIN
       AlexState := FALLING;
-    { Check if Alex is facing left or right. }
+    { Checks if Alex is facing left or right. }
       IF AlexSpr^.Index < BMP_MAIN_R0 THEN
 	AlexSpr^.Index := BMP_MAIN_LJ
       ELSE
@@ -99,12 +99,12 @@ VAR
 
     PROCEDURE StartJump;
     BEGIN
-    { Check if Alex can jump (there's no ceiling). }
+    { Checks if Alex can jump (there's no ceiling). }
       IF CheckCeilCollision (ALEX_SPR) THEN
 	EXIT;
       AlexState := JUMPING;
       AlexCount := 0;
-    { Check if Alex is facing left or right. }
+    { Checks if Alex is facing left or right. }
       IF AlexSpr^.Index < BMP_MAIN_R0 THEN
 	AlexSpr^.Index := BMP_MAIN_LJ
       ELSE
@@ -128,19 +128,19 @@ VAR
   VAR
     Tx, Ty, Tmp: INTEGER;
   BEGIN
-  { Get joystick information. }
+  { Gets joystick information. }
     al_poll_joystick;
   { Each state is different. }
     CASE AlexState OF
     STAND:
       IF CheckGround THEN
       BEGIN
-      { Check if Alex is facing left or right. }
+      { Checks if Alex is facing left or right. }
 	IF AlexSpr^.Index < BMP_MAIN_R0 THEN
 	  AlexSpr^.Index := BMP_MAIN_L0
 	ELSE
 	    AlexSpr^.Index := BMP_MAIN_R0;
-      { Check keyboard. }
+      { Checks keyboard. }
 	IF (al_key[AL_KEY_LEFT] <> 0) OR (al_key[AL_KEY_RIGHT] <> 0)
 	OR (al_joy[0].stick[0].axis[0].d1 <> 0)
 	OR (al_joy[0].stick[0].axis[0].d2 <> 0) THEN
@@ -151,17 +151,17 @@ VAR
     WALKING:
       IF CheckGround THEN
       BEGIN
-      { Check if Alex wants to jump. }
+      { Checks if Alex wants to jump. }
 	IF (al_key[AL_KEY_SPACE] <> 0) OR (al_joy[0].button[0].b <> 0) THEN
 	  StartJump
 	ELSE
-      { Check walking left. }
+      { Checks walking left. }
 	IF ((al_key[AL_KEY_LEFT]<>0) OR (al_joy[0].stick[0].axis[0].d1<>0))
 	AND NOT CheckLeftCollision (ALEX_SPR) THEN
 	BEGIN
-	{ Move Alex. }
+	{ Moves Alex. }
 	  DEC (AlexSpr^.x);
-	  { Check if the sprite should be changed.  Without this, Alex will move
+	  { Checks if the sprite should be changed.  Without this, Alex will move
 	  their legs too fast. }
 	  INC (AlexCount);
 	  IF AlexCount > 10 THEN
@@ -174,13 +174,13 @@ VAR
 	  END;
 	END
 	ELSE
-      { Check Walking right. }
+      { Checks Walking right. }
 	IF ((al_key[AL_KEY_RIGHT] <> 0) OR (al_joy[0].stick[0].axis[0].d2<>0))
 	AND NOT CheckRightCollision (ALEX_SPR) THEN
 	BEGIN
-	{ Move Alex. }
+	{ Moves Alex. }
 	  INC (AlexSpr^.x);
-	{ Check if the sprite should be changed.  Without this, Alex will move
+	{ Checks if the sprite should be changed.  Without this, Alex will move
 	  their legs too fast. }
 	  INC (AlexCount);
 	  IF AlexCount > 10 THEN
@@ -193,13 +193,13 @@ VAR
 	  END;
 	END
 	ELSE
-	{ Change AlexCount.  Without this Alex can do "moon-walks". }
+	{ Changes AlexCount.  Without this Alex can do "moon-walks". }
 	  AlexCount := 100;
       END;
     JUMPING:
       { Dont check ground. }
       BEGIN
-      { Check if we can jump. }
+      { Checks if we can jump. }
 	IF (AlexCount < 32) AND NOT CheckCeilCollision (ALEX_SPR) THEN
 	BEGIN
 	  DEC (AlexSpr^.y, 2);
@@ -245,7 +245,7 @@ VAR
 	  KillAlex;
       END
       ELSE
-      { There's a ground. }
+      { There's ground. }
 	StartStand;
     DEAD:
       BEGIN
@@ -274,7 +274,7 @@ VAR
 	INC (AlexCount);
       END;
     END;
-  { Check if Alex gets coins. }
+  { Checks if Alex gets coins. }
     IF AlexState <> DEAD THEN
     BEGIN
       Tmp := CheckCollisionWith (ALEX_SPR, T_COIN);
@@ -305,14 +305,14 @@ VAR
 	END;
       END;
     END;
-  { Check if Alex reaches the end of the map. }
+  { Checks if Alex reaches the end of the map. }
     IF NOT AlexDead
     AND (AlexSpr^.x DIV TSIZE = EndX-1) AND (AlexSpr^.y DIV TSIZE = EndY-1) THEN
     BEGIN
       PlaySoundSample (ALEX_SPR, Data^[SND_WIN].dat);
       AlexWin := TRUE;
     END;
-  { Calculate the scroll position from Alex position. }
+  { Calculates the scroll position from Alex position. }
     ScrollX := AlexSpr^.x - (SCREENW DIV 2) + (TSIZE DIV 2);
     ScrollY := AlexSpr^.y - (SCREENH DIV 2) + (TSIZE DIV 2);
   END;
@@ -326,7 +326,7 @@ VAR
     BEGIN
       AlexState := DEAD;
       AlexCount := 0;
-    { Check if Alex is facing left or right. }
+    { Checks if Alex is facing left or right. }
       IF AlexSpr^.Index < BMP_MAIN_R0 THEN
 	AlexSpr^.Index := BMP_MAIN_LD
       ELSE

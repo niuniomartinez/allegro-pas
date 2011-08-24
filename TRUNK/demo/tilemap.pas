@@ -41,19 +41,19 @@ CONST
 
 
 
-  (* Gets the map information from a file.  The name of the map is
-     "boardN.brd".  Returns TRUE on success or FALSE on failure. *)
+(* Gets the map information from a file.  The name of the map is
+   "boardN.brd".  Returns TRUE on success or FALSE on failure. *)
   FUNCTION LoadBoard (N: INTEGER): BOOLEAN;
 
-  (* Draws an small version of the map in the given bitmap. *)
+(* Draws an small version of the map in the given bitmap. *)
   PROCEDURE DrawBoardMiniature (Bmp: AL_BITMAPptr);
 
-  (* Be sure that the scroll isn't out of the edges of the board.  Should be
-     used before draw anything. *)
+(* Be sure that the scroll isn't out of the edges of the board.  Should be
+   used before draw anything. *)
   PROCEDURE FixScroll (CONST Bmp: AL_BITMAPptr; CONST Ix, Iy: INTEGER;
 			VAR Ox, Oy: INTEGER);
 
-  (* Draws the board in the given bitmap at the given scroll coordinates. *)
+(* Draws the board in the given bitmap at the given scroll coordinates. *)
   PROCEDURE DrawBoard (Bmp: AL_BITMAPptr; ScrollX, ScrollY: INTEGER);
 
 
@@ -96,28 +96,28 @@ USES
     x, y, ry: INTEGER;
   BEGIN
     LoadBoard := FALSE;
-  { Build the file name.
-    First, get the path where the execubable is. }
+  { Builds the file name.
+    First, gets the path where the execubable is. }
     Path :=  ExtractFilePath (PARAMSTR (0));
-  { Create the file name. }
+  { Creates the file name. }
     Filename :=  'board' + IntToStr (N) + '.brd';
-  { Build the final name with path. }
+  { Builds the final name with path. }
     FileName := Path + Filename;
-  { Open the file. }
+  { Opens the file. }
     {$I-} { To save file errors in IOResult. }
     Assign (F, FileName); Reset (F);
     IF IOResult <> 0 THEN
       EXIT;
   { First line is the length of the board. }
     ReadLN (F, BoardLength);
-  { Mark the starting and ending points: they aren't defined. }
+  { Marks the starting and ending points: they aren't defined. }
     StartX := -1; StartY := -1;
     EndX := -1; EndY := -1;
-  { Read the columns. }
+  { Reads the columns. }
     FOR x := 1 TO BoardLength DO
     BEGIN
       ReadLN (F, Column);
-    { Parse the columns. }
+    { Parses the columns. }
       FOR y := 1 TO BoardHeight DO
       BEGIN
       { Needed because the y coordinate is inverted at the file. }
@@ -128,30 +128,30 @@ USES
 	BEGIN
 	  IF StartX = -1 THEN
 	  BEGIN
-	  { Store the coordinates. }
+	  { Stores the coordinates. }
 	    StartX := x;
 	    StartY := ry;
-	  { Delete the starting point tile. }
+	  { Deletes the starting point tile. }
 	    Board[x, ry] := T_VOID;
 	  END;
 	END
-      { Look for the ending point. }
+      { Looks for the ending point. }
 	ELSE IF Board[x, ry] = T_END THEN
-	{ Store the right-most exit point. }
+	{ Stores the right-most exit point. }
 	  IF EndX <= x THEN
 	  BEGIN
-	  { Store the coordinates. }
+	  { Stores the coordinates. }
 	    EndX := x;
 	    EndY := ry;
-	  { Delete the ending point tile. }
+	  { Deletes the ending point tile. }
 	    Board[x, ry] := T_VOID;
 	  END;
 	END;
       END;
     {$I+} { End storing file errors in IOResult. }
-  { Close the file. }
+  { Closes the file. }
     Close (F);
-  { Check errors. }
+  { Checks errors. }
     IF IOResult <> 0 THEN
       EXIT
     ELSE
@@ -216,7 +216,7 @@ USES
 
 
 
-(* Be sure that the scroll isn't out of the edges of the board.  Should be
+(* Fixes the scroll values so it isn't out of the edges of the board.  Should be
    used before to draw anything. *)
   PROCEDURE FixScroll (CONST Bmp: AL_BITMAPptr; CONST Ix, Iy: INTEGER;
 			VAR Ox, Oy: INTEGER);
@@ -249,31 +249,32 @@ USES
     PosX, PosY: INTEGER; { Where to draw the tile. }
     X, Y: INTEGER; { Tile to draw. }
   BEGIN
-  { Calculate how many tiles can be drawn in the bitmap. }
+  { Calculates how many tiles can be drawn in the bitmap. }
     NumTilesW  := (Bmp^.w DIV TSIZE) + 1; { Adds one for the edges. }
     NumTilesH  := (Bmp^.h DIV TSIZE) + 1;
     IF NumTilesH > BoardHeight THEN NumTilesH := BoardHeight;
-  { Calculate the first tile to be drawn. }
+  { Calculates the first tile to be drawn. }
     FirstTileX := (ScrollX DIV TSIZE) + 1;
     FirstTileY := (ScrollY DIV TSIZE) + 1;
-  { Calculate the offset of that first tile.  They are the coordinates where the
+  { Calculates the offset of that first tile.  They are the coordinates where the
     first tile will be drawn.  The tile offset is the pixel of the tile that is in
     the upper left pixel of the output bitmap. }
     OffsetX := -(ScrollX MOD TSIZE);
     OffsetY := -(ScrollY MOD TSIZE);
-  { Draw. }
+  { Draws. }
     PosY := OffsetY;
     FOR Y := FirstTileY TO FirstTileY + NumTilesH DO
     BEGIN
       PosX := OffsetX;
       FOR X := FirstTileX TO FirstTileX + NumTilesW DO
       BEGIN
-	IF Board[X, Y] > T_VOID THEN
+	IF (X <= BoardLength) AND (Y <= BoardHeight)
+	AND (Board[X, Y] > T_VOID) THEN
 	  al_blit (Data^[Board[X, Y] - 1].dat, Bmp, 0, 0, PosX, PosY, TSIZE, TSIZE);
-      { Increment the tile position. }
+      { Next tile position. }
 	INC (PosX, TSIZE);
       END;
-    { Increment the tile position. }
+    { Next tile position. }
       INC (PosY, TSIZE);
     END;
   END;

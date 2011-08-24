@@ -98,25 +98,25 @@ VAR
 
 
 
-(* Check if there's a ground tile below the sprite. *)
+(* Checks if there's a ground tile below the sprite. *)
   FUNCTION CheckGroundCollision (CONST SprNdx: INTEGER): BOOLEAN;
   BEGIN
     CheckGroundCollision := FALSE;
-  { First, check if the sprite is just above a tile. }
+  { First, checks if the sprite is just above a tile. }
     IF SpritePlane[SprNdx].y MOD TSIZE <> 0 THEN
       EXIT;
-  { Check if the tile to is not out of the map. }
+  { Checks if the tile is not out of the map. }
     IF SpritePlane[SprNdx].y >= (BoardHeight - 1) * TSiZE THEN
       CheckGroundCollision := FALSE
     ELSE
-  { Check the tile just below the sprite. }
+  { Checks the tile just below the sprite. }
     IF Board[(SpritePlane[SprNdx].x DIV TSIZE) + 1,
 	     (SpritePlane[SprNdx].y DIV TSIZE) + 2] >= T_BLK1 THEN
       CheckGroundCollision := TRUE
     ELSE
-    { Check if the sprite is in the middle of two tiles. }
+    { Checks if the sprite is in the middle of two tiles. }
       IF SpritePlane[SprNdx].x MOD TSIZE <> 0 THEN
-      { It is, so check again with the other tile. }
+      { It is, so checks again with the other tile. }
 	IF Board[(SpritePlane[SprNdx].x DIV TSIZE) + 2,
 		 (SpritePlane[SprNdx].y DIV TSIZE) + 2] >= T_BLK1 THEN
 	  CheckGroundCollision := TRUE
@@ -124,25 +124,25 @@ VAR
 
 
 
-(* Check if there's a ceil tile above the sprite. *)
+(* Checks if there's a ceil tile above the sprite. *)
   FUNCTION CheckCeilCollision (CONST SprNdx: INTEGER): BOOLEAN;
   BEGIN
     CheckCeilCollision := FALSE;
-  { First, check if the sprite is just below a tile. }
+  { First, checks if the sprite is just below a tile. }
     IF SpritePlane[SprNdx].y MOD TSIZE <> 0 THEN
       EXIT;
-  { Check if the tile is not out of the map. }
+  { Checks if the tile is not out of the map. }
     IF SpritePlane[SprNdx].y DIV TSIZE < 1 THEN
       CheckCeilCollision := TRUE
     ELSE
-  { Check the tile just above the sprite. }
+  { Checks the tile just above the sprite. }
     IF Board[(SpritePlane[SprNdx].x DIV TSIZE) + 1,
 	     (SpritePlane[SprNdx].y DIV TSIZE)] >= T_BLK1 THEN
       CheckCeilCollision := TRUE
     ELSE
-    { Check if the sprite is in the middle of two tiles. }
+    { Checks if the sprite is in the middle of two tiles. }
       IF SpritePlane[SprNdx].x MOD TSIZE <> 0 THEN
-      { It is, so check again with the other tile. }
+      { It is, so checks again with the other tile. }
 	IF Board[(SpritePlane[SprNdx].x DIV TSIZE) + 2,
 		 (SpritePlane[SprNdx].y DIV TSIZE)] >= T_BLK1 THEN
 	  CheckCeilCollision := TRUE
@@ -150,27 +150,27 @@ VAR
 
 
 
-(* Check if there's a ground tile on the left of the sprite. *)
+(* Checks if there's a ground tile on the left of the sprite. *)
   FUNCTION CheckLeftCollision (CONST SprNdx: INTEGER): BOOLEAN;
   BEGIN
     CheckLeftCollision := FALSE;
-  { First, check if the sprite is just in the right side of a tile. }
+  { First, checks if the sprite is just in the right side of a tile. }
     IF SpritePlane[SprNdx].x MOD TSIZE <> 0 THEN
       EXIT;
-  { Now, Check if the tile to chek is inside the map. }
+  { Now, Checks if the tile is inside the map. }
     IF SpritePlane[SprNdx].x DIV TSIZE < 1 THEN
     BEGIN
       CheckLeftCollision := TRUE;
       EXIT;
     END;
-  { Check the tile on the left of the sprite. }
+  { Checks the tile on the left of the sprite. }
     IF Board[(SpritePlane[SprNdx].x DIV TSIZE),
 	     (SpritePlane[SprNdx].y DIV TSIZE) + 1] >= T_BLK1 THEN
       CheckLeftCollision := TRUE
     ELSE
-    { Check if the sprite is in the middle of two tiles. }
+    { Checks if the sprite is in the middle of two tiles. }
       IF SpritePlane[SprNdx].y MOD TSIZE <> 0 THEN
-      { It is, so check again with the other tile. }
+      { It is, so checks again with the other tile. }
 	IF Board[(SpritePlane[SprNdx].x DIV TSIZE),
 		 (SpritePlane[SprNdx].y DIV TSIZE) + 2] >= T_BLK1 THEN
 	  CheckLeftCollision := TRUE
@@ -178,27 +178,27 @@ VAR
 
 
 
-(* Check if there's a ground tile on the right of the sprite. *)
+(* Checks if there's a ground tile on the right of the sprite. *)
   FUNCTION CheckRightCollision (CONST SprNdx: INTEGER): BOOLEAN;
   BEGIN
     CheckRightCollision := FALSE;
-  { First, check if the sprite is just in the right side of a tile. }
+  { First, checks if the sprite is just in the right side of a tile. }
     IF SpritePlane[SprNdx].x MOD TSIZE <> 0 THEN
       EXIT;
-  { Now, Check if the tile to chek is inside the map. }
+  { Now, Checks if the tile is inside the map. }
     IF (SpritePlane[SprNdx].x DIV TSIZE) + 2 > BoardLength THEN
     BEGIN
       CheckRightCollision := TRUE;
       EXIT;
     END;
-  { Check the tile on the right of the sprite. }
+  { Checks the tile on the right of the sprite. }
     IF Board[(SpritePlane[SprNdx].x DIV TSIZE) + 2,
 	     (SpritePlane[SprNdx].y DIV TSIZE) + 1] >= T_BLK1 THEN
     CheckRightCollision := TRUE
     ELSE
-    { Check if the sprite is in the middle of two tiles. }
+    { Checks if the sprite is in the middle of two tiles. }
     IF SpritePlane[SprNdx].y MOD TSIZE <> 0 THEN
-    { It is, so check again with the other tile. }
+    { It is, so checks again with the other tile. }
       IF Board[(SpritePlane[SprNdx].x DIV TSIZE) + 2,
 	       (SpritePlane[SprNdx].y DIV TSIZE) + 2] >= T_BLK1 THEN
 	CheckRightCollision := TRUE
@@ -221,10 +221,10 @@ VAR
     Tmp, Tx, Ty: INTEGER;
     BEGIN
     Tmp := 0;
-  { Get the tile coordinates of the top left pixel of the sprite. }
+  { Gets the tile coordinates of the top left pixel of the sprite. }
     Tx := (SpritePlane[SprNdx].x DIV TSIZE) + 1;
     Ty := (SpritePlane[SprNdx].y DIV TSIZE) + 1;
-  { Check only if where inside the map and the tile. }
+  { Checks only if where inside the map and the tile. }
     IF (0 < Tx) AND (Tx <= BoardLength) AND (0 < Ty) AND (Ty <= BoardHeight) THEN
       IF Board[Tx, Ty] = TileVal THEN
 	Tmp := 1;
@@ -260,18 +260,18 @@ VAR
     LastScrollX := ScrollX;
     FOR Cnt := (NUM_SPRITES - 1) DOWNTO 0 DO
     BEGIN
-    { Draw only active sprites. }
+    { Draws only active sprites. }
       IF SpritePlane[Cnt].Index > BMP_NONE THEN
       BEGIN
-      { Calculate screen coordinates from world ones. }
+      { Calculates screen coordinates from world ones. }
 	Posx := SpritePlane[Cnt].x - ScrollX;
 	Posy := SpritePlane[Cnt].y - ScrollY;
-      { Get the RLE description. }
+      { Gets the RLE description. }
 	RLESprite := Data^[SpritePlane[Cnt].Index].dat;
-      { Check if the sprite is inside the output bitmap. }
+      { Checks if the sprite is inside the output bitmap. }
 	IF ((-RLESprite^.w) < Posx) AND ((-RLESprite^.h) < Posy)
 	AND (Posx < Bmp^.w) AND (Posy < Bmp^.h) THEN
-	{ Draw the sprite. }
+	{ Draws the sprite. }
 	  al_draw_rle_sprite (Bmp, RLESprite, PosX, PosY);
       END;
     END;
@@ -285,9 +285,9 @@ VAR
   VAR
     Pan: INTEGER;
   BEGIN
-  { Calculate the 'pan'. }
+  { Calculates the 'pan'. }
     Pan := (SpritePlane[Spr].x - LastScrollX) * 256 DIV 320;
-  { Play the sample. }
+  { Plays the sample. }
     al_play_sample (Sample, 127, Pan, 1000, 0);
   END;
 

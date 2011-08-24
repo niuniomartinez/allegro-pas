@@ -698,7 +698,7 @@ VAR
   IF (val AND $ff) = 3 THEN
     al_message ('You pressed Control+C');
 
-  IF val = (AL_KEY_X LSH 8) THEN
+  IF val = (AL_KEY_X SHL 8) THEN
     al_message ('You pressed Alt+X');
    #)
 
@@ -1536,15 +1536,15 @@ END.
     w, h: LONGINT;		{< width and height in pixels }
     clip: LONGINT;		{< flag if clipping is turned on }
     cl, cr, ct, cb: LONGINT;	{< clip left, right, top and bottom values }
-    vtable: AL_GFX_VTABLEptr;	{< drawing functions }
-    write_bank: _BMP_BANK_SWITCHER;	{< C func on some machines, asm on i386 }
-    read_bank: _BMP_BANK_SWITCHER;	{< C func on some machines, asm on i386 }
-    dat: POINTER;		{< the memory we allocated for the bitmap }
+    vtable: AL_GFX_VTABLEptr;	{< @exclude drawing functions }
+    write_bank: _BMP_BANK_SWITCHER;	{< @exclude C func on some machines, asm on i386 }
+    read_bank: _BMP_BANK_SWITCHER;	{< @exclude C func on some machines, asm on i386 }
+    dat: POINTER;		{< @exclude the memory we allocated for the bitmap }
     id: DWORD;			{< for identifying sub-bitmaps }
-    extra: POINTER;		{< points to a structure with more info }
+    extra: POINTER;		{< @exclude points to a structure with more info }
     x_ofs: LONGINT;		{< horizontal offset (for sub-bitmaps) }
     y_ofs: LONGINT;		{< vertical offset (for sub-bitmaps) }
-    seg: LONGINT;		{< bitmap segment }
+    seg: LONGINT;		{< @exclude bitmap segment }
     line: POINTER;		{< ZERO_SIZE_ARRAY(unsigned char *, line); }
   END;
 
