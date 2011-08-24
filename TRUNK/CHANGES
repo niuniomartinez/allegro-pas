@@ -3,6 +3,31 @@ Changes between versions 4.4.1 y 4.4.2
 
   Bugfixing
   ---------
+  * Fixed or polished the implementation of al_set_color, al_set_palette,
+    al_set_palette_range, al_set_config_file and al_override_config_file.
+  * Fixed type of variable al_fli_bitmap.
+  * Fixed but in al_arc.
+  * Fixed multiple bugs at _al_putpixel* and _al_getpixel*.
+  * Fixed a bug in example/exrotscl.
+
+  News
+  ----
+  + No need to call al_exit anymor, as it's called at FINALIZATION section.
+
+  Other
+  -----
+  * Now "extrans" uses desktop color depth if available.  It also allows to
+    select the color depth by command line.
+  * Internal configuration directives moved to its own file.
+  * Documentaiont updated and fixed.
+
+
+
+Changes between versions 4.4.1 y 4.4.2
+======================================
+
+  Bugfixing
+  ---------
   * Function al_polygon_z_normal(_f) rewrited.
 
   News

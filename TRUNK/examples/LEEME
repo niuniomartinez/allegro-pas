@@ -1,6 +1,7 @@
 ex3d.pp     - Ejemplo del cubo 3D.
 exblend.pp  - Cómo usar las funciones de transparencia en "true-color".
 excolmap.pp - Crear efectos gráficos usando tablas de mapeo de color.
+exconfig.pp - Usar las rutinas de configuración.
 exdata.pp   - Acceder al contenido de los archivos de datos (datafiles).
 exdbuf.pp   - Cómo usar doble página para eliminar parpadeos.
 exfixed.pp  - Uso de matemáticas de punto flotante.

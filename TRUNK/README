@@ -6,7 +6,7 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 4.4.2                 \_/__/                 \/_/
+     Version 4.4.3                 \_/__/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
   by Ñuño Martínez, October 3, 2010.
@@ -21,7 +21,7 @@ Contents
  - Features
  - License
  - Installation
- - How to use
+ - Documentaion
  - Release programs
  - Help needed
  - Contact info
@@ -32,8 +32,8 @@ Contents
 Introduction
 ============
 
-  Allegro.pas is a wrapper to allow Pascal compilers (such as Free Pascal or
-  Delphi) to use the Allegro library.
+  Allegro.pas is a wrapper to allow Pascal compilers (such as Free Pascal)
+  to use the Allegro library.
 
   I wrote it to use it by myself, so I didn't included all functionality of
   Allegro.  Anyway, I'll fix it and complete it as I'm using it (or as other
@@ -105,20 +105,47 @@ License
 Installation
 ============
 
-  Be sure your have Free Pascal compiler installed and configured on your
-  system.  If you have Lazarus IDE then it should be enough.  Visit Free
-  Pascal's web site for more information (http://www.freepascal.org/).
+  Before to intall Allegro.pas you need to install an additional library
+  (Allegro) and a compatible Pascal compiler (i.e. Free Pascal).
 
-  If you're using GNU/Linux then install Allegro 4.4.x.  You can download it
-  from http://sourceforge.net/project/showfiles.php?group_id=5665 .  May be you
-  can install the "enduser" version.
+The Allegro library
+-------------------
 
-  If you're using Windows then you have two ways:  Install Allegro as said in
-  the previous paragraph to obtain the file "alleg44.dll" or download the
-  "bin" version of Allegro.pas wich include such file and precompiled tools.
+  You should remember: "Allegro.pas is a wrapper to use the Allegro library
+  with Pascal compilers".  Allegro and Allegro.pas are different and
+  independent projects and it's important to not mix them.  So you need the
+  original Allegro library to make Allegro.pas works.
 
-  NOTE:  Allegro.pas 4.4 will work ONLY with Allegro 4.4 (and its RC releases).
-  It will not work with newer versions at the moment.
+  Current Allegro.pas version is compatible with the 4.4 branch of the Allegro
+  library.  That means it can link with any version that starts with numbers 4.4
+  (i.e. 4.4.0 RC, 4.4.0, 4.4.1, etc.) but not with previous (4.2, 3.0) or
+  more modern ones (4.9, 5.0).
+
+  If you're a Windows user you can get a pre-compiled version of Allegro from
+  http://sourceforge.net/projects/allegro-pas/files/allegro-pas-bin/
+  Note that this version might be older than the last released by Allegro, but
+  it works fairly stable.
+
+  Linux users' best option is to download the sources from Allegro's site and
+  compile by themselves.  There are complete instructions to do this in the
+  "docs/build" subdirectory.
+
+The Pascal compiler
+-------------------
+
+  NOTE: Current version ISN'T compatible with Delphi, but compatibility should
+        be back in Allegro.pas version 5.
+
+  The best compiler to use Allegro.pas is Free Pascal (AKA: FPC) which can be
+  installed separately or with the Lazarus IDE.
+
+  Both FPC and Lazarus are easy to install.  Just go to its webpage at
+  http://www.freepascal.org/ or http://www.lazarus.freepascal.org/,
+  select the Download section, get the package that fits better with your
+  system and follow the instructions.
+
+Compile demonstration and examples
+----------------------------------
 
   To compile the examples and the demonstration game, open a command console
   and go to the directory where you did extract the distributed parchive of
@@ -130,6 +157,9 @@ Installation
   correctly installed and configured.  If you have problems read the "Contact
   info" section.
 
+Use Allegro.pas in your programs
+--------------------------------
+
   To use Allegro.pas in your games you need to setup your compilers to be able
   to compile it.  You can write settings to fpc.cfg configuration file or use
   them directly as command line parameters.
@@ -137,11 +167,17 @@ Installation
   Use "-FuUnitPath" and "-FiIncludePath" parameters for the Allegro.pas' "lib"
   directores.  Example: fpc -FuD:\allegro.pas\lib -FiD:\allegro.pas\lib
 
+More information
+----------------
+
+  There's an updated copy of the full installation process at the Allegro.pas'
+  wiki page at http://allegro-pas.sourceforge.net/wiki/doku.php?id=install
 
 
-==========
-How to use
-==========
+
+============
+Documentaion
+============
 
   If you have "pasdoc" (http://pasdoc.sipsolutions.net/) you can build all
   documentation in HTML format using the "makefile" at "docs" subdirectory.

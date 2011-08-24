@@ -19,7 +19,9 @@
   main module of the library.
 
   If you want to collaborate please join the main Allegro.pas mailing list
-  (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main).
+  (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main)
+  or the Allegro.pas public forum
+  (http://sourceforge.net/apps/phpbb/allegro-pas/).
 
 
 @section(1 use_allegro How to use Allegro.pas)
