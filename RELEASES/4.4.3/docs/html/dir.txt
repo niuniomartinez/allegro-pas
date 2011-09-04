@@ -1,0 +1,5 @@
+Este archivo es necesario porque algunos programas de descompresión no crean
+los directorios sin archivos.
+
+This file is needed because some unzip programs skip empty directories.
+
