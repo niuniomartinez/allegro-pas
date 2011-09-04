@@ -55,25 +55,20 @@ BEGIN
   graphics modes, joysticks, sound, etc.  If you try to initialize them then
   it will throw a segmentation fault exception or just doesn't do nothing. }
   RS := al_install (AL_SYSTEM_NONE);
-{ Uses a TRY .. FINALLY structure to be sure it will call "al_exit". }
-  TRY
-  { Initialises application. }
-    Application.Initialize;
-  { If Allegro did initialised, we follow normally. }
-    IF RS THEN
-    BEGIN
-      Application.CreateForm(TForm1, Form1);
-    { Avoids automatic color conversion when loading bitmpas.  This way the
-      example shows how to deal with different color formats. }
-      al_set_color_conversion (AL_COLORCONV_NONE);
-    END
-    ELSE BEGIN
-      Application.MessageBox ('Can''t initialize Allegro',
-        'Error', MB_ICONERROR);
-    END;
-    Application.Run;
-  FINALLY
-    al_exit;
+{ Initialises application. }
+  Application.Initialize;
+{ If Allegro did initialised, we follow normally. }
+  IF RS THEN
+  BEGIN
+    Application.CreateForm(TForm1, Form1);
+  { Avoids automatic color conversion when loading bitmaps.  This way the
+    example shows how to deal with different color formats. }
+    al_set_color_conversion (AL_COLORCONV_NONE);
+  END
+  ELSE BEGIN
+    Application.MessageBox ('Can''t initialize Allegro',
+      'Error', MB_ICONERROR);
   END;
+  Application.Run;
 END.
 
