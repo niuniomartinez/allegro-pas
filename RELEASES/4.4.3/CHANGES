@@ -1,0 +1,308 @@
+Changes between versions 4.4.2 y 4.4.3
+======================================
+
+  Bugfixing
+  ---------
+  * Fixed or polished the implementation of al_set_color, al_set_palette,
+    al_set_palette_range, al_set_config_file and al_override_config_file.
+  * Fixed type of variable al_fli_bitmap.
+  * Fixed but in al_arc.
+  * Fixed multiple bugs at _al_putpixel* and _al_getpixel*.
+  * Fixed a bug in example/exrotscl.
+
+  News
+  ----
+  + No need to call al_exit anymor, as it's called at FINALIZATION section.
+
+  Other
+  -----
+  * Now "extrans" uses desktop color depth if available.  It also allows to
+    select the color depth by command line.
+  * Internal configuration directives moved to its own file.
+  * Documentaiont updated and fixed.
+
+
+
+Changes between versions 4.4.1 y 4.4.2
+======================================
+
+  Bugfixing
+  ---------
+  * Function al_polygon_z_normal(_f) rewrited.
+
+  News
+  ----
+  + Added new examples: exflip, exjoy, exconfig, exrotscl and exspline.
+  + Added drawing functions: al_arc, al_spline, al_triangle and a lot of sprite
+    drawing ones.
+  + Added routing functions:  al_do_line, al_do_circle, al_do_ellipse,
+    al_do_arc and al_calc_spline.
+
+  Other
+  -----
+  * Now ex3d doesn't limits the size of the graphics mode.
+  * Added "CONST" modifier in some parameters.
+  + Modified the demo game to simplify the tilemap engine and improving the
+    map editor interface.
+
+
+
+Changes between versions 4.4.0 an 4.4.1
+=======================================
+
+  News
+  ----
+  + Added low-level versions of al_getpixel and al_putpixel, slightly faster.
+  + New sprite procedure al_draw_gouraud_sprite and an example.
+
+  Other
+  -----
+  + Added "smartlinking" directive.
+  * Fixes on makefiles and documentation.
+  * Fixes on Linux's "shared-object" filename, because it changed.
+
+
+Changes between versions 4.4.0 Beta2 and 4.4.0
+==============================================
+
+  Bugfixing
+  ---------
+  * Parameters of al_getr_depth, al_getb_depth, al_getb_depth and
+    al_geta_depth and link fixed.
+  * al_mouse_w fixed,
+
+ News
+ ----
+  + Added Lazarus example.
+  + Added al_get_midi_length function.
+  + Added al_packfile_password and low-level file functions (chunks & vtable).
+  + Added functions to load and save bitmaps and samples from and to an
+    AL_PACKFILEptr.
+  + Added directory "resources" with useful files and information.
+
+ Other
+ -----
+  - Deleted warning in ejemplo exsprite.
+  - Deleted warning about 3D textured functions and added a waring for LIT
+    ones.
+  - A lot of functions and procedures defined as "inline".
+
+
+
+Changes between versions 4.4.0 Beta and 4.4.0 Beta2
+===================================================
+
+  Bugfixing
+  ---------
+  + Added unit "windows" in unit aldrv, so now compile and runs allways.
+  + Added a call to vsync in "expal" example, so fastest systems are slower
+    now.
+
+  Other
+  -----
+  * exsprite modified because pivot sprite functions work on Windows.
+  * Few fix on documentation.
+
+
+
+Changes between versions 4.4.0 Alpha2 and 4.4.0 Beta
+====================================================
+
+  Bugfixing
+  ---------
+  - Fixed al_gui_mouse_y, al_gui_mouse_z and al_gui_mouse_b.
+  - Some changes on documentation.
+
+
+
+Changes between versions 4.4.0 Alpha and 4.4.0 Alpha 2
+======================================================
+
+  Bugfixing
+  ---------
+  - Changed some declarations from DOUBLE to SINGLE because Allegro espects
+    floating point values 4 bytes long.
+
+  News
+  ----
+  - Added al3d unit to allow software based 3D graphics.  NOT OPENGL RELATED.
+  - Added hook al_midi_msg_callback for MIDI messages.
+
+  Other
+  -----
+  - "test" removed.
+  - Tools deleted because they're located in the original Allegro release.
+  - New faster al_fixmul implementation suggested by Martin Kalbfuss.
+
+
+
+Changes between versions 4.3.0 Alpha2 and 4.4.0 Alpha
+=====================================================
+
+  News
+  ----
+  - New algui unit, to create simple GUI dialogs.  NOT LAZARUS RELATED.
+  - Added new examples.
+
+  Other
+  -----
+  - New unit distribution more compact.
+  - A lot of changes on sources, API and documentation.
+
+
+
+Changes between versions 4.3.0 Alpha y 4.3.0 Alpha2
+===================================================
+
+  News
+  ----
+  - Added OpenGL support for test it (May be it will be completly rewriten).
+
+  Bugfixing
+  ---------
+  - A lot of fixes in code and documentation.
+
+  Other
+  -----
+  - Added brief setup tool.
+
+
+
+Changes between versions 4.2.2 y 4.3.0 Alpha
+============================================
+
+  News
+  ----
+  - New documentation based in "pasdoc".
+  - New functions and procedures added.
+  - Added basic UNICODE support.
+  - Added RLE sprites support.
+
+  API changes
+  -----------
+  - New API more Pascal-like, less pointers, etc.
+
+  Other
+  -----
+  - "alpas" dynamic library isn't needed.
+  - Added brief grabber tool.
+
+
+
+Changes between version 4.2.1 and 4.2.2
+=======================================
+
+  News
+  ----
+  - Added a lot of functions to create, write and read files, allowing LZSS
+    compression.
+
+
+
+Changes between version 4.2.1 BETA 4 and 4.2.1
+==============================================
+
+  News
+  ----
+  - Added a full demonstration game.  It isn't the same than the Allegro's one.
+
+  Bugfixing
+  ---------
+  - Lot of small changes to avoid compilation warnings and increase Delphi
+    compatibility.
+
+  API changes
+  -----------
+  - AL_NO_FLI_OPEN fixed with AL_NO_FLIC_OPEN.
+  - "al_generate_optimized_palette" moved to "albitmap".
+  - Some parameters changed from AL_RGBptr to AL_PALETTEptr.
+
+  Other
+  -----
+  - Documentation complete.
+
+
+
+Changes between version 4.2.1 BETA 3 and 4.2.1 BETA 4
+=====================================================
+
+  News
+  ----
+  - Added 'al_poll_joystick' function.
+
+  Bugfixing
+  ---------
+  - Fixed 'alconfig.pas'.
+  - Fixed variables LFLAGS and LDFLAGS in the makefile.
+  - Fixed 'aljstick.pas'.
+
+  Other
+  -----
+  - Set ASCII text mode in Allegro initialization.  Before it used UTF-8.
+
+
+
+Changes between versions 4.2.1 BETA 2 and 4.2.1 BETA 3
+======================================================
+
+  Bugfixing
+  ---------
+  - al_set_window_title fixed.
+  - mistake with al_set_clip and al_set_clip_state fixed.
+
+
+
+Changes between versions 4.2.1 BETA and 4.2.1 BETA 2
+====================================================
+
+  News
+  ----
+  - Added color depth selection in "exblend".
+  - Added optimization options in makefile.
+
+
+  Bugfixing
+  ---------
+  - Seonae provided code to increase Delphi compatibility.
+
+  API changes
+  -----------
+  - More CDECL added.
+  - {$H+} added to use ANSISTRING instead of PCHAR.
+  - MSWINDOWS defined in FreePascal for Windows.  This helps in Delphi
+    compatibility.
+
+  Other
+  -----
+  - More and better documentation, including some fixes...
+
+
+
+Changes between versions 4.2.0 and 4.2.1 BETA
+=============================================
+
+  News
+  ----
+  - New unit "alfont" to manage text fonts.
+  - New unit "albmfile" to load and save bitmaps from disk.
+  - New unit "alsprrle" that sopports RLE sprites.
+  - New units "al256tra" and "altrutra" with support to transparency and
+    lighting in 8, 15, 16, 24 & 32 bit color modes.
+  - New procedures: al_desktop_color_depth, al_get_desktop_resolution,
+    al_set_window_title, al_draw_trans_sprite, al_draw_lit_sprite.
+  - New identifier constants.
+  - New draw modes, including transparency.
+  - RGB map support added to accelerate 8bit image reduction.
+  - New examples.
+
+  Bugfixing
+  ---------
+  - Bug fixed in "extruec".
+  - Name fixed "al_putixel" -> "al_putpixel".
+
+  API changes
+  -----------
+  - Changed "AL_SYS_AUTODETECT" by "AL_SYSTEM_AUTODETECT".
+  - "AL_FONTptr" moved to unit "alfont".
+  - "al_get_executable_name" moved to unit "alfile".
+
