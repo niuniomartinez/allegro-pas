@@ -1,19 +1,20 @@
 object Form1: TForm1
-  Left = 240
+  Left = 193
   Height = 300
-  Top = 138
+  Top = 149
   Width = 400
   Caption = 'The Allegro''s Lazarus example'
-  ClientHeight = 270
+  ClientHeight = 273
   ClientWidth = 400
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
-  ParentFont = False
   Position = poDefault
-  LCLVersion = '0.9.26'
+  LCLVersion = '0.9.30'
   object PaintBox: TPaintBox
-    Height = 270
+    Left = 0
+    Height = 273
+    Top = 0
     Width = 400
     Align = alClient
     OnPaint = PaintBoxPaint
@@ -41,4 +42,4 @@ object Form1: TForm1
       end
     end
   end
-end
+end

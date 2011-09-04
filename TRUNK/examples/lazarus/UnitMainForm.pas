@@ -28,7 +28,7 @@ INTERFACE
 
 USES
   Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  Menus, ExtCtrls, Buttons,
+  Menus, ExtCtrls, Buttons, ComCtrls,
   Allegro;
 
 TYPE
@@ -126,11 +126,10 @@ END;
 PROCEDURE TForm1.MenuItem4Click (Sender: TObject);
 BEGIN
   Application.MessageBox (
-        'This is a simple example of how to integrate Allegro.pas with Lazarus.'+
-        #10+'Read the source comments for more  information.'+
-        #10+#10+'Linked with Allegro.pas '+AL_PAS_VERSION_STR,
-        'About...', MB_ICONINFORMATION);
-
+    'This is a simple example of how to integrate Allegro.pas with Lazarus.'+
+    #10+'Read the source comments for more  information.'+
+    #10+#10+'Linked with Allegro.pas '+AL_PAS_VERSION_STR,
+    'About...', MB_ICONINFORMATION);
 END;
 
 
