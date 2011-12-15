@@ -84,7 +84,7 @@ VAR
 
 
 (* Draws the scene. *)
-  PROCEDURE DrawScene
+  PROCEDURE DrawScene;
   BEGIN
   { Clear the RGB buffer and the depth buffer. }
     glClear (GL_COLOR_BUFFER_BIT OR GL_DEPTH_BUFFER_BIT);
@@ -101,7 +101,7 @@ VAR
 
   { Draw the sides of the three-sided pyramid. }
     glEnable (GL_TEXTURE_2D);
-    glBindTexture (GL_TEXTURE_2D, tex);
+    glBindTexture (GL_TEXTURE_2D, Texture);
     glBegin (GL_TRIANGLE_FAN);
       glTexCoord2f (0, 0); glVertex3d ( 0,  4,  0);
       glTexCoord2f (1, 0); glVertex3d ( 0, -4, -4);
@@ -155,7 +155,7 @@ VAR
 
   { Bottom is texture-mapped. }
     glEnable (GL_TEXTURE_2D);
-    glBindTexture (GL_TEXTURE_2D, tex);
+    glBindTexture (GL_TEXTURE_2D, Texture);
     glBegin (GL_QUADS);
       glTexCoord2f (0, 0); glVertex3d (-3,  3, -3);
       glTexCoord2f (1, 0); glVertex3d (-3,  3,  3);
@@ -167,7 +167,7 @@ VAR
 
 
 (* Loads and adds the textures. *)
-  PROCEDURE SetupTextures (Display ALLEGRO_DISPLAY_PTR);
+  FUNCTION SetupTextures (Display: ALLEGRO_DISPLAY_PTR): BOOLEAN;
   VAR
     tmpBmp: ALLEGRO_BITMAP_PTR;
     Font: ALLEGRO_FONT_PTR;
@@ -177,15 +177,16 @@ VAR
     IF Font = NIL THEN
     BEGIN
       abort_example ('Error loading `data/fixed_font.tga');
-      exit (1);
+      EXIT (FALSE);
     END;
 
     tmpBmp := al_load_bitmap ('data/mysha.pcx');
     IF tmpBmp = NIL THEN
     BEGIN
       abort_example ('Error loading ''data/mysha.pcx''');
-      exit (1);
+      EXIT (FALSE);
     END;
+    SetupTextures := TRUE;
     w := 128;
     h := 128;
     Bitmap := al_create_bitmap (w, h);
@@ -200,7 +201,7 @@ VAR
     ELSE
       al_draw_textf (Font, al_map_rgb (255, 0, 0), 0, 5, 0, 'Z-buffer: %i bits', Depth);
     al_set_target_backbuffer (Display);
-    al_destroy_bitmap (tmp_bmp);
+    al_destroy_bitmap (tmpBmp);
     al_destroy_font (Font);
 
     glEnable (GL_TEXTURE_2D);
@@ -248,7 +249,8 @@ BEGIN
   glEnable (GL_DEPTH_TEST);
   glDisable (GL_CULL_FACE);
 
-  SetupTextures (Display);
+  IF NOT SetupTextures (Display) THEN
+    EXIT;
   al_start_timer (Timer);
 
   DoLoop := TRUE;
