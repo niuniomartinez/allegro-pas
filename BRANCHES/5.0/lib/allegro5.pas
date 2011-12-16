@@ -86,6 +86,28 @@ END;
 *)
   FUNCTION al_get_allegro_version: DWORD; CDECL;
 
+
+
+TYPE
+(* Abstract type representing a bitmap (2D image). *)
+  ALLEGRO_BITMAPptr = POINTER;
+
+
+
+(* Loads an image file into an @link(ALLEGRO_BITMAPptr). The file type is determined by the extension.
+
+   @bold(Note:) the core Allegro library does not support any image file formats by default. You must use the @bold(allegro_image) addon, or register your own format handler.
+  @returns(@nil on error.)
+  @seealso(al_load_bitmap_f) @seealso(al_register_bitmap_loader) @seealso(al_set_new_bitmap_format) @seealso(al_set_new_bitmap_flags) @seealso(al_init_image_addon)
+ *)
+  FUNCTION al_load_bitmap (CONST filename: PCHAR): ALLEGRO_BITMAPptr; CDECL;
+
+{$include alkeyid.inc}
+
+TYPE
+(* An opaque type representing an open display or window. *)
+  ALLEGRO_DISPLAYptr = POINTER;
+
 IMPLEMENTATION
 
   FUNCTION al_install_system (version: DWORD; atexit_ptr: POINTER): BOOLEAN; CDECL;
@@ -100,6 +122,9 @@ IMPLEMENTATION
   END;
 
   FUNCTION al_get_allegro_version: DWORD; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_load_bitmap (CONST filename: PCHAR): ALLEGRO_BITMAPptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
 FINALIZATION

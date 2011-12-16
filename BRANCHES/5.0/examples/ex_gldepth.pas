@@ -41,7 +41,7 @@ CONST
 VAR
 (* Texture. *)
   Texture: GLuint;
-  Bitmap: ALLEGRO_BITMAP_PTR;
+  Bitmap: ALLEGRO_BITMAPptr;
 (* Stores if key is pressed. *)
   KeyStatus: ARRAY [0..ALLEGRO_KEY_MAX] OF BOOLEAN;
 
@@ -66,19 +66,19 @@ VAR
   PROCEDURE Keyboard;
   BEGIN
     IF KeyStatus[ALLEGRO_KEY_LEFT] THEN
-      INC (Camera.yAngle, AngleSpeed);
+      Camera.yAngle := Camera.yAngle + AngleSpeed;
     IF KeyStatus[ALLEGRO_KEY_RIGHT] THEN
-      INC (Camera.yAngle, AngleSpeed);
+      Camera.yAngle := Camera.yAngle - AngleSpeed;
 
     IF KeyStatus[ALLEGRO_KEY_UP] THEN
-      INC (Camera.xAngle, AngleSpeed);
+      Camera.xAngle := Camera.xAngle + AngleSpeed;
     IF KeyStatus[ALLEGRO_KEY_DOWN] THEN
-      INC (Camera.xAngle, AngleSpeed);
+      Camera.xAngle := Camera.xAngle - AngleSpeed;
 
     IF KeyStatus[ALLEGRO_KEY_PGUP] THEN
-      INC (Camera.Dist, DistSpeed);
+      Camera.Dist := Camera.Dist + DistSpeed;
     IF KeyStatus[ALLEGRO_KEY_PGDN] THEN
-      INC (Camera.Dist, DistSpeed);
+      Camera.Dist := Camera.Dist - DistSpeed;
   END;
 
 
@@ -167,23 +167,23 @@ VAR
 
 
 (* Loads and adds the textures. *)
-  FUNCTION SetupTextures (Display: ALLEGRO_DISPLAY_PTR): BOOLEAN;
+  FUNCTION SetupTextures (Display: ALLEGRO_DISPLAYptr): BOOLEAN;
   VAR
-    tmpBmp: ALLEGRO_BITMAP_PTR;
-    Font: ALLEGRO_FONT_PTR;
+    tmpBmp: ALLEGRO_BITMAPptr;
+    Font: ALLEGRO_FONTptr;
     w, h, Depth: INTEGER;
   BEGIN
     Font := al_load_font ('data/fixed_font.tga', 0, 0);
     IF Font = NIL THEN
     BEGIN
-      abort_example ('Error loading `data/fixed_font.tga');
+      WriteLn ('Error loading `data/fixed_font.tga');
       EXIT (FALSE);
     END;
 
     tmpBmp := al_load_bitmap ('data/mysha.pcx');
     IF tmpBmp = NIL THEN
     BEGIN
-      abort_example ('Error loading ''data/mysha.pcx''');
+      WriteLn ('Error loading ''data/mysha.pcx''');
       EXIT (FALSE);
     END;
     SetupTextures := TRUE;
@@ -195,7 +195,7 @@ VAR
       0, 0, al_get_bitmap_width (Bitmap), al_get_bitmap_height (Bitmap),
       0, 0, w, h, 0);
 
-    Depth = al_get_display_option (Display, ALLEGRO_DEPTH_SIZE);
+    Depth := al_get_display_option (Display, ALLEGRO_DEPTH_SIZE);
     IF Depth = 0 THEN
       al_draw_textf (Font, al_map_rgb (255, 0, 0), 0, 5, 0, 'No Z-buffer!')
     ELSE
@@ -207,22 +207,22 @@ VAR
     glEnable (GL_TEXTURE_2D);
     glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
-    Texture = al_get_opengl_texture (Bitmap);
+    Texture := al_get_opengl_texture (Bitmap);
   END;
 
 
 
 VAR
-  Display: ALLEGRO_DISPLAY_PTR;
-  Queue: ALLEGRO_EVENT_QUEUE_PTR;
-  Timer: ALLEGRO_TIMER_PTR;
-  Event: ALLEGRO_EVENT_PTR;
+  Display: ALLEGRO_DISPLAYptr;
+  Queue: ALLEGRO_EVENT_QUEUEptr;
+  Timer: ALLEGRO_TIMERptr;
+  Event: ALLEGRO_EVENTptr;
   DoLoop: BOOLEAN;
 BEGIN
 { Inits Allegro. }
   IF NOT al_init THEN
   BEGIN
-    abort_example ('Could not init Allegro.');
+    WriteLn ('Could not init Allegro.');
     EXIT;
   END;
 
@@ -232,16 +232,16 @@ BEGIN
 
   al_set_new_display_flags (ALLEGRO_OPENGL);
   al_set_new_display_option (ALLEGRO_DEPTH_SIZE, 16, ALLEGRO_SUGGEST);
-  Display = al_create_display (640, 480);
+  Display := al_create_display (640, 480);
   IF Display = NIL THEN
   BEGIN
-    abort_example ('Could not create display.');
+    WriteLn ('Could not create display.');
     EXIT;
   END;
 
-  Timer = al_create_timer (1. / 60.);
+  Timer := al_create_timer (1 / 60);
 
-  Queue = al_create_event_queue;
+  Queue := al_create_event_queue;
   al_register_event_source (Queue,al_get_keyboard_event_source);
   al_register_event_source (Queue,al_get_display_event_source (Display));
   al_register_event_source (Queue,al_get_timer_event_source (Timer));
