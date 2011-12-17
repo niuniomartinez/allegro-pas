@@ -4,7 +4,7 @@ PROGRAM test;
  *)
 
 USES
-  Allegro5;
+  Allegro5, al5image;
 
 
 
@@ -21,7 +21,10 @@ BEGIN
   al_init_result := al_init;
   WriteLn ('al_init returned => ', al_init_result);
   IF al_init_result THEN
-    WriteLn ('Allegro 5 installed and initialised. :)')
+  BEGIN
+    WriteLn ('Allegro 5 installed and initialised. :)');
+    al_init_image_addon;
+  END
   ELSE
     WriteLn ('Allegro 5 didn''t work! :(')
 END.
