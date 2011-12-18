@@ -215,6 +215,10 @@ END;
         ALLEGRO_SUPPORT_SEPARATE_ALPHA = 30;
         ALLEGRO_DISPLAY_OPTIONS_COUNT = 31;
 
+    ALLEGRO_DONTCARE = 0;
+    ALLEGRO_REQUIRE = 1;
+    ALLEGRO_SUGGEST = 2;
+
   TYPE
     ALLEGRO_DISPLAY_ORIENTATION =  INTEGER;
 
@@ -253,6 +257,10 @@ END;
    @seealso(al_set_new_display_option) @seealso(al_get_display_option)
  *)
   PROCEDURE al_set_new_display_flags (flags: INTEGER); CDECL;
+
+  FUNCTION al_create_display (w, h: INTEGER): ALLEGRO_DISPLAYptr; CDECL;
+
+  PROCEDURE al_destroy_display (display: ALLEGRO_DISPLAYptr); CDECL;
 
 (* This function selects the bitmap to which all subsequent drawing operations in the calling thread will draw to. To return to drawing to a display, set the backbuffer of the display as the target bitmap, using @link(al_get_backbuffer). As a convenience, you may also use @link(al_set_target_backbuffer).
 
@@ -314,6 +322,10 @@ al_draw_line (x1, y1, x2, y2, color, 0);
  *)
   FUNCTION al_get_target_bitmap: ALLEGRO_BITMAPptr; CDECL;
 
+  PROCEDURE al_flip_display; CDECL;
+
+  PROCEDURE al_set_new_display_option (option, value, importance: INTEGER); CDECL;
+
 (* Return an extra display setting of the display.
    @seealso(al_set_new_display_option)
  *)
@@ -350,6 +362,12 @@ IMPLEMENTATION
   PROCEDURE al_set_new_display_flags (flags: INTEGER); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
+  FUNCTION al_create_display (w, h: INTEGER): ALLEGRO_DISPLAYptr; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_destroy_display (display: ALLEGRO_DISPLAYptr); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
   PROCEDURE al_set_target_bitmap (Bitmap: ALLEGRO_BITMAPptr); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -360,6 +378,12 @@ IMPLEMENTATION
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_target_bitmap: ALLEGRO_BITMAPptr; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_flip_display; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_set_new_display_option (option, value, importance: INTEGER); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_display_option (display: ALLEGRO_DISPLAYptr; option: INTEGER): INTEGER; CDECL;
