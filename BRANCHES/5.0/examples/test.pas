@@ -3,9 +3,9 @@ PROGRAM test;
   So far, this demonstrates if it links and works.
  *)
 
-USES
-  Allegro5, al5gl,
-  GL;
+  USES
+    Allegro5, al5gl,
+    GL;
 
 
 
@@ -58,23 +58,11 @@ USES
     glEnd;
   END;
 
-
-
-
-  FUNCTION mi_atexit (Ptr: POINTER): INTEGER; CDECL;
-  BEGIN
-    mi_atexit := 0;
-  END;
-
 VAR
   al_init_result: BOOLEAN;
   Display: ALLEGRO_DISPLAYptr;
 BEGIN
-  WriteLn ('Allegro version is ', al_get_allegro_version);
-  WriteLn ('My Allegro.pas is ', ALLEGRO_VERSION_INT);
-  al_init_result := al_init;
-  WriteLn ('al_init returned => ', al_init_result);
-  IF al_init_result THEN
+  IF al_init THEN
   BEGIN
     WriteLn ('Allegro 5 installed and initialised. :)');
     al_set_new_display_flags (ALLEGRO_OPENGL);

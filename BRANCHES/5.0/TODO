@@ -1,2 +1,17 @@
 In no special order
 
+  * Something prevents to exit at al_uninstall_system.  Fix it!
+
+  * Header "timer.h" is short enough to translate in a single step.
+
+  * Lots of documentation aren't written.
+
+  * Currently, all enums are implemented as CONST.  Som of these enums have
+    name and are implemented as LONGINT.  Ask and/or test if it's possible to
+    implement enums as sets.
+
+  * Test if it's possible to change parameters with pointers in to VAR
+    or OUT paramaeters:
+      al4font.al_get_text_dimensions
+      allegro5.al_wait_for_event
+

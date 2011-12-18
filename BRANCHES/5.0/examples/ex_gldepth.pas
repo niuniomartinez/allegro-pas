@@ -11,7 +11,8 @@ USES
   al5image,
   al5gl,
   al5font,
-  GL;
+  GL,
+  sysutils;
 
 TYPE
 (* Stores camera information. *)
@@ -197,9 +198,9 @@ VAR
 
     Depth := al_get_display_option (Display, ALLEGRO_DEPTH_SIZE);
     IF Depth = 0 THEN
-      al_draw_textf (Font, al_map_rgb (255, 0, 0), 0, 5, 0, 'No Z-buffer!')
+      al_draw_text (Font, al_map_rgb (255, 0, 0), 0, 5, 0, 'No Z-buffer!')
     ELSE
-      al_draw_textf (Font, al_map_rgb (255, 0, 0), 0, 5, 0, 'Z-buffer: %i bits', Depth);
+      al_draw_text (Font, al_map_rgb (255, 0, 0), 0, 5, 0, PCHAR ('Z-buffer: '+IntToStr (Depth)+'bits'));
     al_set_target_backbuffer (Display);
     al_destroy_bitmap (tmpBmp);
     al_destroy_font (Font);
@@ -216,7 +217,7 @@ VAR
   Display: ALLEGRO_DISPLAYptr;
   Queue: ALLEGRO_EVENT_QUEUEptr;
   Timer: ALLEGRO_TIMERptr;
-  Event: ALLEGRO_EVENTptr;
+  Event: ALLEGRO_EVENT;
   DoLoop: BOOLEAN;
 BEGIN
 { Inits Allegro. }
@@ -256,8 +257,8 @@ BEGIN
   DoLoop := TRUE;
   WHILE DoLoop DO
   BEGIN
-    al_wait_for_event (Queue, &Event);
-    CASE Event.type OF
+    al_wait_for_event (Queue, @Event);
+    CASE Event._type OF
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       DoLoop := FALSE;
     ALLEGRO_EVENT_KEY_DOWN:
@@ -274,11 +275,15 @@ BEGIN
 	IF al_is_event_queue_empty (Queue) THEN
 	BEGIN
 	  SetCameraPosition;
-	  draw;
+	  DrawScene;
 	  al_flip_display;
 	END;
       END;
     END;
   END;
+WriteLn ('Exit from loop.  Will destroy bitmap.');
   al_destroy_bitmap (Bitmap);
+WriteLn ('Bitmap destroyed.  Will close system.');
+  al_uninstall_system;
+WriteLn ('System closed.');
 END.
