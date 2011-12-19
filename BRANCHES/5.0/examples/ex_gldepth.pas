@@ -77,9 +77,9 @@ VAR
       Camera.xAngle := Camera.xAngle - AngleSpeed;
 
     IF KeyStatus[ALLEGRO_KEY_PGUP] THEN
-      Camera.Dist := Camera.Dist + DistSpeed;
-    IF KeyStatus[ALLEGRO_KEY_PGDN] THEN
       Camera.Dist := Camera.Dist - DistSpeed;
+    IF KeyStatus[ALLEGRO_KEY_PGDN] THEN
+      Camera.Dist := Camera.Dist + DistSpeed;
   END;
 
 
@@ -281,9 +281,5 @@ BEGIN
       END;
     END;
   END;
-WriteLn ('Exit from loop.  Will destroy bitmap.');
   al_destroy_bitmap (Bitmap);
-WriteLn ('Bitmap destroyed.  Will close system.');
-  al_uninstall_system;
-WriteLn ('System closed.');
 END.
