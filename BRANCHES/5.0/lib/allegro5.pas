@@ -12,8 +12,8 @@ INTERFACE
 (* The code is distributed in sections.  Each section wraps with a header file (approx.). *)
 
 (******************************************************************************
- * system.h *
- ************)
+ * base.h *
+ **********)
 
   CONST
   (* Name of the dynamicly linked unit.
@@ -41,34 +41,11 @@ INTERFACE
      @seealso(al_install_system)
    *)
     ALLEGRO_VERSION_INT  = (
-		          (ALLEGRO_VERSION SHL 24)
-		       OR (ALLEGRO_SUB_VERSION SHL 16)
-		       OR (ALLEGRO_WIP_VERSION SHL  8)
-		       OR  ALLEGRO_RELEASE_NUMBER
+	   (ALLEGRO_VERSION SHL 24)
+	OR (ALLEGRO_SUB_VERSION SHL 16)
+	OR (ALLEGRO_WIP_VERSION SHL  8)
+	OR  ALLEGRO_RELEASE_NUMBER
     );
-
-
-
-(* Initialize the Allegro system.  No other Allegro functions can be called before this (with one or two exceptions).
-   @param(version Should always be set to @link(ALLEGRO_VERSION_INT).)
-   @param(atexit_ptr If it is non-@nil, and if hasn't been done already, @link(al_uninstall_system) will be registered as an @code(atexit) function.
-
-   @bold(TODO:) Since Pascal doesn't has an @code(atexit) function @(it's a C function with similar functionality than @code(FINALIZATION) section@) may be it should be set always to @nil.  Ask to Allegro's developers about it.)
-   @returns(@true if Allegro was successfully initialized by this function call @(or already was initialized previously@), @false if Allegro cannot be used.)
-   @seealso(al_init)
- *)
-  FUNCTION al_install_system (version: DWORD; atexit_ptr: POINTER): BOOLEAN; CDECL;
-
-(* Closes down the Allegro system.
-
-   @bold(Note:) @code(al_uninstall_system) can be called without a corresponding @link(al_install_system) call.
- *)
-  PROCEDURE al_uninstall_system; CDECL;
-
-(* Like @link(al_install_system), but automatically passes @link(ALLEGRO_VERSION_INT) in the version and passes @nil as the @code(atexit_ptr) parameter.
-   @seealso(al_install_system)
- *)
-  FUNCTION al_init: BOOLEAN;
 
 (* Returns the (compiled) version of the Allegro library.
 
@@ -92,10 +69,58 @@ END;
 *)
   FUNCTION al_get_allegro_version: DWORD; CDECL;
 
+  TYPE
+  (* Description of user main function for @link(al_run_main) *)
+    ALLEGRO_USER_MAIN = FUNCTION (c: LONGINT; v: POINTER): LONGINT; CDECL;
 
+(* This function is useful in cases where you don't have a main function but want to run Allegro (mostly useful in a wrapper library). Under Windows and Linux this is no problem because you simply can call @link(al_install_system). But some other system (like OSX) don't allow calling @code(al_install_system) in the main thread. @code(al_run_main) will know what to do in that case.
+
+  The passed @code(argc) and @code(argv) will simply be passed on to @code(user_main) and the return value of @code(user_main) will be returned. *)
+  FUNCTION al_run_main (argc: LONGINT; argv: POINTER; user_main: ALLEGRO_USER_MAIN): LONGINT; CDECL;
+
+(* This function can be used to create a packed 32 bit integer from 8 bit
+   characters, on both 32 and 64 bit machines.  These can be used for various
+   things, like custom datafile objects or system IDs. Example:
+
+@longcode(#
+VAR
+  OSTYPE_LINUX: LONGINT;
+BEGIN
+  OSTYPE_LINUX := AL_ID('TUX ');
+END;
+  #) *)
+  FUNCTION AL_ID (str: SHORTSTRING): LONGINT;
+
+
+
+(******************************************************************************
+ * system.h *
+ ************)
+
+(* Initializes the Allegro system.  No other Allegro functions can be called before this (with one or two exceptions).
+   @param(version Should always be set to @link(ALLEGRO_VERSION_INT).)
+   @param(atexit_ptr If it is non-@nil, and if hasn't been done already, @link(al_uninstall_system) will be registered as an @code(atexit) function.
+
+   @bold(TODO:) Since Pascal doesn't has an @code(atexit) function @(it's a C function with similar functionality than @code(FINALIZATION) section@) may be it should be set always to @nil.  Ask to Allegro's developers about it.)
+   @returns(@true if Allegro was successfully initialized by this function call @(or already was initialized previously@), @false if Allegro cannot be used.)
+   @seealso(al_init)
+ *)
+  FUNCTION al_install_system (version: DWORD; atexit_ptr: POINTER): BOOLEAN; CDECL;
+
+(* Closes down the Allegro system.
+
+   @bold(Note:) @code(al_uninstall_system) can be called without a corresponding @link(al_install_system) call.
+ *)
+  PROCEDURE al_uninstall_system; CDECL;
+
+(* Like @link(al_install_system), but automatically passes @link(ALLEGRO_VERSION_INT) in the version and passes @nil as the @code(atexit_ptr) parameter.
+   @seealso(al_install_system)
+ *)
+  FUNCTION al_init: BOOLEAN;
 
 (* Types "forwarded". *)
   TYPE
+  (* Pointer to @link(ALLEGRO_EVENT_SOURCE). *)
     ALLEGRO_EVENT_SOURCEptr = ^ALLEGRO_EVENT_SOURCE;
     ALLEGRO_EVENT_SOURCE = RECORD
       __pad : ARRAY [0..31] OF LONGINT;
@@ -123,7 +148,6 @@ END;
   (* Abstract type representing a bitmap (2D image). *)
     ALLEGRO_BITMAPptr = POINTER;
 
-
 (* Returns the width of a bitmap in pixels. *)
   FUNCTION al_get_bitmap_width (bitmap: ALLEGRO_BITMAPptr): LONGINT; CDECL;
 
@@ -134,7 +158,7 @@ END;
    @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_set_new_bitmap_flags) *)
   FUNCTION al_get_bitmap_format (bitmap: ALLEGRO_BITMAPptr): LONGINT; CDECL;
 
-(* Return the flags user to create the bitmap.
+(* Returns the flags user to create the bitmap.
   @seealso(al_set_new_bitmap_flags) *)
   FUNCTION al_get_bitmap_flags (bitmap: ALLEGRO_BITMAPptr): LONGINT; CDECL;
 
@@ -203,19 +227,19 @@ END;
    @seealso(al_draw_bitmap) @seealso(al_draw_bitmap_region) @seealso(al_draw_scaled_bitmap) @seealso(al_draw_rotated_bitmap) *)
   PROCEDURE al_draw_scaled_rotated_bitmap (bitmap: ALLEGRO_BITMAPptr; cx, cy, dx, dy, xscale, yscale, angle: SINGLE; flags: LONGINT); CDECL;
 
-(* Convert r, g, b (ranging from 0-255) into an @link(ALLEGRO_COLOR), using 255 for alpha.
+(* Converts r, g, b (ranging from 0-255) into an @link(ALLEGRO_COLOR), using 255 for alpha.
    @seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb_f) *)
   FUNCTION al_map_rgb (r, g, b: BYTE): ALLEGRO_COLOR; CDECL;
 
-(* Convert r, g, b (ranging from 0.0-1.0) into an @link(ALLEGRO_COLOR), using 1.0 for alpha.
+(* Converts r, g, b (ranging from 0.0-1.0) into an @link(ALLEGRO_COLOR), using 1.0 for alpha.
    @seealso(al_map_rgb) @seealso(al_map_rgba_f) @seealso(al_map_rgb_f) *)
   FUNCTION al_map_rgba (r, g, b, a: BYTE): ALLEGRO_COLOR; CDECL;
 
-(* Convert r, g, b, a (ranging from 0-255) into an @link(ALLEGRO_COLOR).
+(* Converts r, g, b, a (ranging from 0-255) into an @link(ALLEGRO_COLOR).
    @seealso(al_map_rgb) @seealso(al_map_rgba) @seealso(al_map_rgba_f) *)
   FUNCTION al_map_rgb_f (r, g, b: SINGLE): ALLEGRO_COLOR; CDECL;
 
-(* Convert r, g, b, a (ranging from 0.0-1.0) into an @link(ALLEGRO_COLOR).
+(* Converts r, g, b, a (ranging from 0.0-1.0) into an @link(ALLEGRO_COLOR).
    @seealso(al_map_rgb) @seealso(al_map_rgba) @seealso(al_map_rgb_f) *)
   FUNCTION al_map_rgba_f (r, g, b, a: SINGLE): ALLEGRO_COLOR; CDECL;
 
@@ -242,8 +266,13 @@ END;
   TYPE
     ALLEGRO_KEYBOARDptr = POINTER;
 
+(* Installs a keyboard driver.
+   @returns(@true if successful. If a driver was already installed, nothing happens and @true is returned.)
+   @seealso(al_uninstall_keyboard) @seealso(al_is_keyboard_installed) *)
   FUNCTION al_install_keyboard: BOOLEAN; CDECL;
 
+(* Retrieves the keyboard event source.
+   @returns(@nil if the keyboard subsystem was not installed.) *)
   FUNCTION al_get_keyboard_event_source: ALLEGRO_EVENT_SOURCEptr; CDECL;
 
 
@@ -352,20 +381,20 @@ END;
      @seealso(al_get_display_mode) *)
     ALLEGRO_DISPLAY_MODE = RECORD
     (* Screen width. *)
-      width : LONGINT;
+      width,
     (* Screen height. *)
-      height : LONGINT;
+      height,
     (* The pixel format of the mode. *)
-      format : LONGINT;
+      format,
     (* The refresh rate of the mode.  It may be zero if unknown. *)
-      refresh_rate : LONGINT;
+      refresh_rate: LONGINT;
     END;
   (* Describes a monitors size and position relative to other monitors. @code(x1), @code(y1) will be @code(0), @code(0) on the primary display. Other monitors can have negative values if they are to the left or above the primary display. *)
     ALLEGRO_MONITOR_INFO = RECORD
-      x1 : LONGINT;
-      y1 : LONGINT;
-      x2 : LONGINT;
-      y2 : LONGINT;
+      x1,
+      y1,
+      x2,
+      y2: LONGINT;
     END;
 
 (* Sets various flags to be used when creating new displays on the calling thread.
@@ -398,14 +427,14 @@ END;
  *)
   PROCEDURE al_set_new_display_flags (flags: LONGINT); CDECL;
 
-(* Create a display, or window, with the specified dimensions. The parameters of the display are determined by the last calls to @code(al_set_new_display_* ). Default parameters are used if none are set explicitly. Creating a new display will automatically make it the active one, with the backbuffer selected for drawing.
+(* Creates a display, or window, with the specified dimensions. The parameters of the display are determined by the last calls to @code(al_set_new_display_* ). Default parameters are used if none are set explicitly. Creating a new display will automatically make it the active one, with the backbuffer selected for drawing.
 
    Each display has a distinct OpenGL rendering context associated with it. See @link(al_set_target_bitmap) for the discussion about rendering contexts.
    @returns(@nil on error.)
    @seealso(al_set_new_display_flags) @seealso(al_set_new_display_option) @seealso(al_set_new_display_refresh_rate) @seealso(al_set_new_display_adapter) @seealso(al_set_window_position) *)
   FUNCTION al_create_display (w, h: LONGINT): ALLEGRO_DISPLAYptr; CDECL;
 
-(* Destroy a display.
+(* Destroys a display.
 
    If the target bitmap of the calling thread is tied to the display, then it implies a call to @code(al_set_target_bitmap @(@nil@);) before the display is destroyed.
 
@@ -462,13 +491,13 @@ al_draw_line (x1, y1, x2, y2, color, 0);
  *)
   PROCEDURE al_set_target_backbuffer (display: ALLEGRO_DISPLAYptr); CDECL;
 
-(* Return a special bitmap representing the back-buffer of the display.
+(* Returns a special bitmap representing the back-buffer of the display.
 
    Care should be taken when using the backbuffer bitmap (and its sub-bitmaps) as the source bitmap (e.g as the bitmap argument to @link(al_draw_bitmap)). Only untransformed operations are hardware accelerated. This consists of @link(al_draw_bitmap) and @link(al_draw_bitmap_region) when the current transformation is the identity. If the tranformation is not the identity, or some other drawing operation is used, the call will be routed through the memory bitmap routines, which are slow. If you need those operations to be accelerated, then first copy a region of the backbuffer into a temporary bitmap (via the @link(al_draw_bitmap) and @link(al_draw_bitmap_region)), and then use that temporary bitmap as the source bitmap.
  *)
   FUNCTION al_get_backbuffer (display: ALLEGRO_DISPLAYptr): ALLEGRO_BITMAPptr; CDECL;
 
-(* Return the target bitmap of the calling thread.
+(* Returns the target bitmap of the calling thread.
   @link(al_set_target_bitmap)
  *)
   FUNCTION al_get_target_bitmap: ALLEGRO_BITMAPptr; CDECL;
@@ -483,9 +512,10 @@ al_draw_line (x1, y1, x2, y2, color, 0);
   @seealso(al_set_new_display_flags) @seealso(al_set_new_display_option) *)
   PROCEDURE al_flip_display; CDECL;
 
+(* Retrieves the associated event source. *)
   FUNCTION al_get_display_event_source (display: ALLEGRO_DISPLAYptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
 
-(* Set an extra display option, to be used when creating new displays on the calling thread. Display options differ from display flags, and specify some details of the context to be created within the window itself. These mainly have no effect on Allegro itself, but you may want to specify them, for example if you want to use multisampling.
+(* Sets an extra display option, to be used when creating new displays on the calling thread. Display options differ from display flags, and specify some details of the context to be created within the window itself. These mainly have no effect on Allegro itself, but you may want to specify them, for example if you want to use multisampling.
 
   The 'importance' parameter can be either:@definitionList(
     @itemLabel(@code(ALLEGRO_REQUIRE))@item(The display will not be created if the setting can not be met.)
@@ -519,7 +549,7 @@ al_draw_line (x1, y1, x2, y2, color, 0);
    @seealso(al_set_new_display_flags) *)
   PROCEDURE al_set_new_display_option (option, value, importance: LONGINT); CDECL;
 
-(* Return an extra display setting of the display.
+(* Returns an extra display setting of the display.
    @seealso(al_set_new_display_option)
  *)
   FUNCTION al_get_display_option (display: ALLEGRO_DISPLAYptr; option: LONGINT): LONGINT; CDECL;
@@ -549,15 +579,78 @@ al_draw_line (x1, y1, x2, y2, color, 0);
  ***********)
 
   TYPE
+  (* Pointer to @code(ALLEGRO_TIMER). *)
     ALLEGRO_TIMERptr = POINTER;
+  (* This is an abstract data type representing a timer object. *)
     ALLEGRO_TIMEOUTptr = POINTER;
 
+(* Converts microseconds to seconds. *)
+  FUNCTION ALLEGRO_USECS_TO_SECS (x: DOUBLE): DOUBLE; INLINE;
+
+(* Converts milliseconds to seconds. *)
+  FUNCTION ALLEGRO_MSECS_TO_SECS (x: DOUBLE): DOUBLE; INLINE;
+
+(* Converts beats per second to seconds. *)
+  FUNCTION ALLEGRO_BPS_TO_SECS (x: DOUBLE): DOUBLE; INLINE;
+
+(* Converts beats per minute to seconds. *)
+  FUNCTION ALLEGRO_BPM_TO_SECS (x: DOUBLE): DOUBLE; INLINE;
+
+(* Installs a new timer.
+
+   The new timer is initially stopped.
+
+   The system driver must be installed before this function can be called.
+
+   Usage note: typical granularity is on the order of microseconds, but with some drivers might only be milliseconds.
+   @param(speed_secs is in seconds per "tick", and must be positive.)
+   @returns(If successful, a pointer to a new timer object, otherwise @nil.)
+   @seealso(al_start_timer) @seealso(al_destroy_timer) *)
   FUNCTION al_create_timer (speed_secs: DOUBLE): ALLEGRO_TIMERptr; CDECL;
 
+(* Uninstalls the timer specified. If the timer is started, it will automatically be stopped before uninstallation. It will also automatically unregister the timer with any event queues.
+
+   Does nothing if passed the @nil pointer.
+   @seealso(al_create_timer) *)
+  PROCEDURE al_destroy_timer (timer: ALLEGRO_TIMERptr); CDECL;
+
+(* Starts the timer specified. From then, the timer's counter will increment at a constant rate, and it will begin generating events. Starting a timer that is already started does nothing.
+   @seealso(al_stop_timer) @seealso(al_get_timer_started) *)
   PROCEDURE al_start_timer (timer: ALLEGRO_TIMERptr); CDECL;
 
+(* Stops the timer specified. The timer's counter will stop incrementing and it will stop generating events. Stopping a timer that is already stopped does nothing.
+   @seealso(al_start_timer) @seealso(al_get_timer_started) *)
   PROCEDURE al_stop_timer (timer: ALLEGRO_TIMERptr); CDECL;
 
+(* Returns @true if the @code(timer) specified is currently started. *)
+  FUNCTION al_get_timer_started (CONST timer: ALLEGRO_TIMERptr): BOOLEAN; CDECL;
+
+(* Returns the @code(timer)'s speed, in seconds.
+   @seealso(al_set_timer_speed) *)
+  FUNCTION al_get_timer_speed (CONST timer: ALLEGRO_TIMERptr): DOUBLE; CDECL;
+
+(* Sets the @code(timer)'s speed, i.e. the rate at which its counter will be incremented when it is started. This can be done when the timer is started or stopped. If the timer is currently running, it is made to look as though the speed change occured precisely at the last tick.
+   @param(speed_secs Has exactly the same meaning as with @link(al_create_timer).)
+   @seealso(al_get_timer_speed) *)
+  PROCEDURE al_set_timer_speed (timer: ALLEGRO_TIMERptr; speed_secs: DOUBLE); CDECL;
+
+(* Returns the @code(timer)'s counter value. The timer can be started or stopped.
+   @seealso(al_set_timer_count) *)
+  FUNCTION al_get_timer_count (CONST timer: ALLEGRO_TIMERptr): cint64; CDECL;
+
+(* Sets the timer's counter value. The timer can be started or stopped. The count value may be positive or negative, but will always be incremented by +1 at each tick.
+   @seealso(al_get_timer_count) @seealso(al_add_timer_count) *)
+  PROCEDURE al_set_timer_count (CONST timer: ALLEGRO_TIMERptr; count: cint64); CDECL;
+
+(* Adds diff to the timer's counter value. This is similar to writing:
+@longcode(#
+al_set_timer_count (timer, al_get_timer_count (timer) + diff);
+#)
+   except that the addition is performed atomically, so no ticks will be lost.
+   @seealso(al_set_timer_count) *)
+  PROCEDURE al_add_timer_count (CONST timer: ALLEGRO_TIMERptr; diff: cint64); CDECL;
+
+(* Retrieves the associated event source. *)
   FUNCTION al_get_timer_event_source (timer: ALLEGRO_TIMERptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
 
 
@@ -567,35 +660,42 @@ al_draw_line (x1, y1, x2, y2, color, 0);
  ************)
 
   TYPE
-    ALLEGRO_EVENT_TYPE = DWORD;
+  (* Type of an event.
+     @seealso ALLEGRO_EVENT *)
+    ALLEGRO_EVENT_TYPE = (
+    (* A joystick axis value changed.@definitionList(
+	@itemLabel(@code(joystick.id: @link(ALLEGRO_JOYSTICKptr))) @item(The joystick which generated the event. This is not the same as the event source @code(joystick.source).)
+	@itemLabel(@code(joystick.stick: LONGINT)) @item(The stick number, counting from zero. Axes on a joystick are grouped into "sticks".)
+	@itemLabel(@code(joystick.axis: LONGINT)) @item(The axis number on the stick, counting from zero.)
+	@itemLabel(@code(joystick.pos: SINGLE)) @item(The axis position, from -1.0 to +1.0.)
+      ) *)
+      ALLEGRO_EVENT_JOYSTICK_AXIS = 1,
+      ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN = 2,
+      ALLEGRO_EVENT_JOYSTICK_BUTTON_UP = 3,
+      ALLEGRO_EVENT_JOYSTICK_CONFIGURATION = 4,
 
-  CONST
-    ALLEGRO_EVENT_JOYSTICK_AXIS = 1;
-    ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN = 2;
-    ALLEGRO_EVENT_JOYSTICK_BUTTON_UP = 3;
-    ALLEGRO_EVENT_JOYSTICK_CONFIGURATION = 4;
+      ALLEGRO_EVENT_KEY_DOWN = 10,
+      ALLEGRO_EVENT_KEY_CHAR = 11,
+      ALLEGRO_EVENT_KEY_UP = 12,
 
-    ALLEGRO_EVENT_KEY_DOWN = 10;
-    ALLEGRO_EVENT_KEY_CHAR = 11;
-    ALLEGRO_EVENT_KEY_UP = 12;
+      ALLEGRO_EVENT_MOUSE_AXES = 20,
+      ALLEGRO_EVENT_MOUSE_BUTTON_DOWN = 21,
+      ALLEGRO_EVENT_MOUSE_BUTTON_UP = 22,
+      ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY = 23,
+      ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY = 24,
+      ALLEGRO_EVENT_MOUSE_WARPED = 25,
 
-    ALLEGRO_EVENT_MOUSE_AXES = 20;
-    ALLEGRO_EVENT_MOUSE_BUTTON_DOWN = 21;
-    ALLEGRO_EVENT_MOUSE_BUTTON_UP = 22;
-    ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY = 23;
-    ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY = 24;
-    ALLEGRO_EVENT_MOUSE_WARPED = 25;
+      ALLEGRO_EVENT_TIMER = 30,
 
-    ALLEGRO_EVENT_TIMER = 30;
-
-    ALLEGRO_EVENT_DISPLAY_EXPOSE = 40;
-    ALLEGRO_EVENT_DISPLAY_RESIZE = 41;
-    ALLEGRO_EVENT_DISPLAY_CLOSE = 42;
-    ALLEGRO_EVENT_DISPLAY_LOST = 43;
-    ALLEGRO_EVENT_DISPLAY_FOUND = 44;
-    ALLEGRO_EVENT_DISPLAY_SWITCH_IN = 45;
-    ALLEGRO_EVENT_DISPLAY_SWITCH_OUT = 46;
-    ALLEGRO_EVENT_DISPLAY_ORIENTATION = 47;
+      ALLEGRO_EVENT_DISPLAY_EXPOSE = 40,
+      ALLEGRO_EVENT_DISPLAY_RESIZE = 41,
+      ALLEGRO_EVENT_DISPLAY_CLOSE = 42,
+      ALLEGRO_EVENT_DISPLAY_LOST = 43,
+      ALLEGRO_EVENT_DISPLAY_FOUND = 44,
+      ALLEGRO_EVENT_DISPLAY_SWITCH_IN = 45,
+      ALLEGRO_EVENT_DISPLAY_SWITCH_OUT = 46,
+      ALLEGRO_EVENT_DISPLAY_ORIENTATION = 47
+    );
 
   TYPE
     ALLEGRO_ANY_EVENT = RECORD
@@ -662,7 +762,41 @@ al_draw_line (x1, y1, x2, y2, color, 0);
       error : DOUBLE;
     END;
 
+  (* Pointer to @link(ALLEGRO_USER_EVENT). *)
     ALLEGRO_USER_EVENT_DESCRIPTORptr = POINTER;
+  (* An event structure that can be emitted by user event sources. These are the public fields:
+
+    * ALLEGRO_EVENT_SOURCE *source;
+    * intptr_t data1;
+    * intptr_t data2;
+    * intptr_t data3;
+    * intptr_t data4;
+
+Like all other event types this structure is a part of the @link(ALLEGRO_EVENT) union. To access the fields in an @code(ALLEGRO_EVENT) variable ev, you would use:
+
+    * ev.user.source
+    * ev.user.data1
+    * ev.user.data2
+    * ev.user.data3
+    * ev.user.data4
+
+To create a new user event you would do this:
+@longcode(#
+VAR
+  MyEventSource: ALLEGRO_EVENT_SOURCE;
+  MyEvent: ALLEGRO_EVENT;
+  SomeVar: SINGLE;
+BEGIN
+  al_init_user_event_source (@MyEventSource);
+  MyEvent.user._type := ALLEGRO_GET_EVENT_TYPE ('MINE');
+  MyEvent.user.data1 := 1;
+  MyEvent.user.data2 := @SomeVar;
+
+  al_emit_user_event (@MyEventSource, @MyEvent, NIL);
+END
+#)
+  Event type identifiers for user events are assigned by the user. Please see the documentation for @link(ALLEGRO_GET_EVENT_TYPE) for the rules you should follow when assigning identifiers.
+  @seealso(al_emit_user_event) @seealso(ALLEGRO_GET_EVENT_TYPE) *)
     ALLEGRO_USER_EVENT = RECORD
       _type : ALLEGRO_EVENT_TYPE;
       source : ALLEGRO_EVENT_SOURCEptr;
@@ -674,7 +808,19 @@ al_draw_line (x1, y1, x2, y2, color, 0);
       data4 : PLONGINT;
     END;
 
+  (* Pointer to @link(ALLEGRO_EVENT). *)
     ALLEGRO_EVENTptr = ^ALLEGRO_EVENT;
+  (* It is a union of all builtin event structures, i.e. it is an object large enough to hold the data of any event type. All events have the following fields in common:
+     @definitionList(
+       @itemLabel(@code(_type: @link(ALLEGRO_EVENT_TYPE))) @item(Indicates the type of event.)
+       @itemLabel(@code(any.source: @link(ALLEGRO_EVENT_SOURCEptr))) @item(The event source which generated the event.)
+       @itemLabel(@code(any.timestamp: DOUBLE)) @item(When the event was generated.)
+     )
+     By examining the @code(_type) field you can then access type-specific fields. The @code(any.source) field tells you which event source generated that particular event. The @code(any.timestamp) field tells you when the event was generated. The time is referenced to the same starting point as @link(al_get_time).
+
+    Each event is of one of the following types, with the usable fields given:@unorderedList(
+      @item(ALLEGRO_EVENT_JOYSTICK_AXIS) @item(ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN) @item(ALLEGRO_EVENT_JOYSTICK_BUTTON_UP) @item(ALLEGRO_EVENT_JOYSTICK_CONFIGURATION) @item(ALLEGRO_EVENT_KEY_DOWN) @item(ALLEGRO_EVENT_KEY_CHAR) @item(ALLEGRO_EVENT_KEY_UP) @item(ALLEGRO_EVENT_MOUSE_AXES) @item(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) @item(ALLEGRO_EVENT_MOUSE_BUTTON_UP) @item(ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY) @item(ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY) @item(ALLEGRO_EVENT_MOUSE_WARPED) @item(ALLEGRO_EVENT_TIMER) @item(ALLEGRO_EVENT_DISPLAY_EXPOSE) @item(ALLEGRO_EVENT_DISPLAY_RESIZE) @item(ALLEGRO_EVENT_DISPLAY_CLOSE) @item(ALLEGRO_EVENT_DISPLAY_LOST) @item(ALLEGRO_EVENT_DISPLAY_FOUND) @item(ALLEGRO_EVENT_DISPLAY_SWITCH_IN) @item(ALLEGRO_EVENT_DISPLAY_SWITCH_OUT) @item(ALLEGRO_EVENT_DISPLAY_ORIENTATION)
+    ) *)
     ALLEGRO_EVENT = RECORD
       case LONGINT OF
 	0 : ( _type : ALLEGRO_EVENT_TYPE );
@@ -715,6 +861,28 @@ al_draw_line (x1, y1, x2, y2, color, 0);
 
 IMPLEMENTATION
 
+(******************************************************************************
+ * base.h *
+ **********)
+
+  FUNCTION al_get_allegro_version: DWORD; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_run_main (argc: LONGINT; argv: POINTER; user_main: ALLEGRO_USER_MAIN): LONGINT; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION AL_ID (str: SHORTSTRING): LONGINT;
+  BEGIN
+    AL_ID := (ORD (str[1]) SHL 24) OR (ORD (str[2]) SHL 16)
+	     OR (ORD (str[3]) SHL  8) OR  ORD (str[4]);
+  END;
+
+
+
+(******************************************************************************
+ * system.h *
+ ************)
+
   FUNCTION al_install_system (version: DWORD; atexit_ptr: POINTER): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -725,9 +893,6 @@ IMPLEMENTATION
   BEGIN
     al_init := al_install_system (ALLEGRO_VERSION_INT, NIL);
   END;
-
-  FUNCTION al_get_allegro_version: DWORD; CDECL;
-  EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_bitmap_width (bitmap: ALLEGRO_BITMAPptr): LONGINT; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
@@ -819,7 +984,36 @@ IMPLEMENTATION
   FUNCTION al_get_display_option (display: ALLEGRO_DISPLAYptr; option: LONGINT): LONGINT; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
+
+
+(******************************************************************************
+ * timer.h *
+ ***********)
+
+  FUNCTION ALLEGRO_USECS_TO_SECS (x: DOUBLE): DOUBLE;
+  BEGIN
+    ALLEGRO_USECS_TO_SECS := x / 1000000
+  END;
+
+  FUNCTION ALLEGRO_MSECS_TO_SECS (x: DOUBLE): DOUBLE;
+  BEGIN
+    ALLEGRO_MSECS_TO_SECS := x / 1000
+  END;
+
+  FUNCTION ALLEGRO_BPS_TO_SECS (x: DOUBLE): DOUBLE;
+  BEGIN
+    ALLEGRO_BPS_TO_SECS := 1 / x
+  END;
+
+  FUNCTION ALLEGRO_BPM_TO_SECS (x: DOUBLE): DOUBLE;
+  BEGIN
+    ALLEGRO_BPM_TO_SECS := 60 / x
+  END;
+
   FUNCTION al_create_timer (speed_secs: DOUBLE): ALLEGRO_TIMERptr; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_destroy_timer (timer: ALLEGRO_TIMERptr); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_start_timer (timer: ALLEGRO_TIMERptr); CDECL;
@@ -828,8 +1022,32 @@ IMPLEMENTATION
   PROCEDURE al_stop_timer (timer: ALLEGRO_TIMERptr); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
+  FUNCTION al_get_timer_started (CONST timer: ALLEGRO_TIMERptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_timer_speed (CONST timer: ALLEGRO_TIMERptr): DOUBLE; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_set_timer_speed (timer: ALLEGRO_TIMERptr; speed_secs: DOUBLE); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_timer_count (CONST timer: ALLEGRO_TIMERptr): cint64; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_set_timer_count (CONST timer: ALLEGRO_TIMERptr; count: cint64); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_add_timer_count (CONST timer: ALLEGRO_TIMERptr; diff: cint64); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
   FUNCTION al_get_timer_event_source (timer: ALLEGRO_TIMERptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * events.h *
+ ************)
 
   FUNCTION al_create_event_queue: ALLEGRO_EVENT_QUEUEptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
