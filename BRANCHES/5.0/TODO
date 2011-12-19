@@ -1,7 +1,5 @@
 In no special order
 
-  * Something prevents to exit at al_uninstall_system.  Fix it!
-
   * Header "timer.h" is short enough to translate in a single step.
 
   * Lots of documentation aren't written.

@@ -552,7 +552,7 @@ al_draw_line (x1, y1, x2, y2, color, 0);
     ALLEGRO_TIMERptr = POINTER;
     ALLEGRO_TIMEOUTptr = POINTER;
 
-  FUNCTION al_create_timer (speed_secs: SINGLE): ALLEGRO_TIMERptr; CDECL;
+  FUNCTION al_create_timer (speed_secs: DOUBLE): ALLEGRO_TIMERptr; CDECL;
 
   PROCEDURE al_start_timer (timer: ALLEGRO_TIMERptr); CDECL;
 
@@ -819,7 +819,7 @@ IMPLEMENTATION
   FUNCTION al_get_display_option (display: ALLEGRO_DISPLAYptr; option: LONGINT): LONGINT; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_create_timer (speed_secs: SINGLE): ALLEGRO_TIMERptr; CDECL;
+  FUNCTION al_create_timer (speed_secs: DOUBLE): ALLEGRO_TIMERptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_start_timer (timer: ALLEGRO_TIMERptr); CDECL;
@@ -868,7 +868,6 @@ IMPLEMENTATION
   EXTERNAL ALLEGRO_LIB_NAME;
 
 FINALIZATION
-WriteLn ('We''re in the Allegro5 utin FINALIZATION section, going to call "al_uninstall_system".');
+{ Ensures that we call it, as Pascal hasn't an "atexit" function. }
   al_uninstall_system;
-WriteLn ('Closed.');
 END.
