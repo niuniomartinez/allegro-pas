@@ -234,6 +234,8 @@ END;
    @seealso(al_map_rgb) @seealso(al_map_rgba) @seealso(al_map_rgb_f) *)
   FUNCTION al_map_rgba_f (r, g, b, a: SINGLE): ALLEGRO_COLOR; CDECL;
 
+  FUNCTION al_clone_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr; CDECL;
+
 
 
 (******************************************************************************
@@ -502,6 +504,8 @@ al_draw_line (x1, y1, x2, y2, color, 0);
   )
   @seealso(al_set_new_display_flags) @seealso(al_set_new_display_option) *)
   PROCEDURE al_flip_display; CDECL;
+
+  PROCEDURE al_update_display_region (x, y, Width, height: LONGINT); CDECL;
 
 (* Retrieves the associated event source. *)
   FUNCTION al_get_display_event_source (display: ALLEGRO_DISPLAYptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
@@ -930,13 +934,28 @@ IMPLEMENTATION
   FUNCTION al_map_rgba_f (r, g, b, a: SINGLE): ALLEGRO_COLOR; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
+  FUNCTION al_clone_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * bitmap_io.h *
+ ***************)
+
+  FUNCTION al_load_bitmap (CONST filename: PCHAR): ALLEGRO_BITMAPptr; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * keyboard.h *
+ **************)
+
   FUNCTION al_install_keyboard: BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_keyboard_event_source: ALLEGRO_EVENT_SOURCEptr; CDECL;
-  EXTERNAL ALLEGRO_LIB_NAME;
-
-  FUNCTION al_load_bitmap (CONST filename: PCHAR): ALLEGRO_BITMAPptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_set_new_bitmap_flags (flags: LONGINT); CDECL;
@@ -964,6 +983,9 @@ IMPLEMENTATION
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_flip_display; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_update_display_region (x, y, Width, height: LONGINT); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_display_event_source (display: ALLEGRO_DISPLAYptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
