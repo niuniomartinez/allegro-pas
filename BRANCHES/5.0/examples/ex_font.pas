@@ -5,46 +5,47 @@ PROGRAM ex_font;
   USES
     Allegro5, al5font, al5image;
 
-  { #include "common.c" }
-
   CONST
-    EURO = $e282ac;
-
-
+    EURO = #226#82#172;
 
   PROCEDURE WaitForEsc (Display: ALLEGRO_DISPLAYptr);
+  VAR
+    Queue: ALLEGRO_EVENT_QUEUEptr;
+    Event: ALLEGRO_EVENT;
+    ScreenClone: ALLEGRO_BITMAPptr;
+    EndLoop: BOOLEAN;
+    x, y, w, h: INTEGER;
   BEGIN
-{
-   ALLEGRO_EVENT_QUEUE *queue;
-   ALLEGRO_BITMAP *screen_clone;
-   al_install_keyboard();
-   queue = al_create_event_queue();
-   al_register_event_source(queue, al_get_keyboard_event_source());
-   al_register_event_source(queue, al_get_display_event_source(display));
-   screen_clone = al_clone_bitmap(al_get_target_bitmap());
-   while (1) {
-      ALLEGRO_EVENT event;
-      al_wait_for_event(queue, &event);
-      if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-         break;
-      else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
-         if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
-            break;
-      }
-      else if (event.type == ALLEGRO_EVENT_DISPLAY_EXPOSE) {
-         int x = event.display.x;
-         int y = event.display.y;
-         int w = event.display.width;
-         int h = event.display.height;
-
-         al_draw_bitmap_region(screen_clone, x, y, w, h,
-            x, y, 0);
-         al_update_display_region(x, y, w, h);
-      }
-   }
-   al_destroy_bitmap(screen_clone);
-   al_destroy_event_queue(queue);
-}
+    al_install_keyboard;
+    Queue := al_create_event_queue;
+    al_register_event_source (Queue, al_get_keyboard_event_source);
+    al_register_event_source (Queue, al_get_display_event_source (Display));
+    ScreenClone := al_clone_bitmap (al_get_target_bitmap);
+    EndLoop := FALSE;
+    REPEAT
+      al_wait_for_event (Queue, @Event);
+      IF Event._type = ALLEGRO_EVENT_DISPLAY_CLOSE THEN
+	EndLoop := TRUE
+      ELSE IF Event._type = ALLEGRO_EVENT_KEY_DOWN THEN
+	BEGIN
+	  IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
+	    EndLoop := TRUE;
+	END
+	
+      ELSE IF Event._type = ALLEGRO_EVENT_DISPLAY_EXPOSE THEN
+	BEGIN
+	  al_draw_bitmap_region (
+	    ScreenClone,
+	    Event.display.x, Event.display.y,
+	    Event.display.width, Event.display.height,
+	    Event.display.x, Event.display.y,
+	    0
+	  );
+	  al_update_display_region(x, y, w, h);
+	END;
+    UNTIL EndLoop;
+    al_destroy_bitmap (ScreenClone);
+    al_destroy_event_queue (Queue);
   END;
 
 
@@ -76,47 +77,48 @@ BEGIN
     WriteLn ('Failed to create display.');
     EXIT;
   END;
-{
-    bitmap = al_load_bitmap("data/mysha.pcx");
-    if (!bitmap) {
-        abort_example("Failed to load mysha.pcx\n");
-        return 1;
-    }
 
-    f = al_load_font("data/bmpfont.tga", 0, 0);
-    if (!f) {
-        abort_example("Failed to load bmpfont.tga\n");
-        return 1;
-    }
-    
-    font_bitmap = al_load_bitmap("data/a4_font.tga");
-    if (!font_bitmap) {
-        abort_example("Failed to load a4_font.tga\n");
-        return 1;
-    }
-    a4f = al_grab_font_from_bitmap(font_bitmap, 4, ranges);
+  Bitmap := al_load_bitmap ('data/mysha.pcx');
+  IF Bitmap = NIL THEN
+  BEGIN
+    WriteLn ('Failed to load misha.pcx.');
+    EXIT;
+  END;
 
-    /* Draw background */
-    al_draw_bitmap(bitmap, 0, 0, 0);
+  Font := al_load_font ('data/bmpfont.tga', 0, 0);
+  IF Font = NIL THEN
+  BEGIN
+    WriteLn ('Failed to load bmpfont.tga.');
+    EXIT;
+  END;
 
-    /* Draw red text */
-    al_draw_textf(f, al_map_rgb(255, 0, 0), 10, 10, 0, "red");
+  FontBitmap := al_load_bitmap ('data/a4_font.tga');
+  IF FontBitmap = NIL THEN
+  BEGIN
+    WriteLn ('Failed to load a4_font.tga.');
+    EXIT;
+  END;
 
-    /* Draw green text */
-    al_draw_textf(f, al_map_rgb(0, 255, 0), 10, 50, 0, "green");
-    
-    /* Draw a unicode symbol */
-    al_draw_textf(a4f, al_map_rgb(0, 0, 255), 10, 90, 0, "Mysha's 0.02" EURO);
+  A4Font := al_grab_font_from_bitmap (FontBitmap, 4, Ranges);
 
-    al_flip_display();
+{ Draw background }
+  al_draw_bitmap (Bitmap, 0, 0, 0);
 
-    wait_for_esc(display);
+{ Draw red text }
+  al_draw_text (Font, al_map_rgb (255, 0, 0), 10, 10, 0, 'red');
 
-    al_destroy_bitmap(bitmap);
-    al_destroy_bitmap(font_bitmap);
-    al_destroy_font(f);
-    al_destroy_font(a4f);
-    return 0;
-}
+{ Draw green text }
+  al_draw_text (Font, al_map_rgb (0, 255, 0), 10, 50, 0, 'green');
 
+{ Draw a unicode symbol }
+  al_draw_text (A4Font, al_map_rgb (0, 0, 255), 10, 90, 0, 'Mysha''s 0.02' + EURO);
+
+  al_flip_display;
+
+  WaitForEsc (Display);
+
+  al_destroy_bitmap (Bitmap);
+  al_destroy_font (Font);
+  al_destroy_bitmap (FontBitmap);
+  al_destroy_font (A4Font);
 END.
