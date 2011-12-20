@@ -2,19 +2,13 @@ UNIT al5font;
 (*<The Allegro 5 Font addon. *)
 (*TODO: License. *)
 
-{$include allegro.cfg}
 
 INTERFACE
 
   USES
     Allegro5;
 
-  CONST
-  (* Name of the dynamicly linked unit.
-
-    @bold(TODO:) This should be defined at the @code(allegro.cfg) file as it's different in each platform.
-   *)
-    ALLEGRO_FONT_LIB_NAME = 'liballegro_font.so.5.0';
+{$include allegro.cfg}
 
   TYPE
     ALLEGRO_FONT_VTABLEptr = ^ALLEGRO_FONT_VTABLE;
@@ -63,7 +57,7 @@ INTERFACE
   PROCEDURE al_shutdown_font_addon; CDECL;
 
 (* Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version.) *)
-  FUNCTION al_get_allegro_font_version: DWORD; CDECL;
+  FUNCTION al_get_allegro_font_version: LONGWORD; CDECL;
 
 (* Informs Allegro of a new font file type, telling it how to load files of this format.
 
@@ -222,7 +216,7 @@ IMPLEMENTATION
   PROCEDURE al_shutdown_font_addon; CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
-  FUNCTION al_get_allegro_font_version: DWORD; CDECL;
+  FUNCTION al_get_allegro_font_version: LONGWORD; CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
   FUNCTION al_register_font_loader (CONST ext: PCHAR; load: FONT_LOADER_FUNCTION): BOOLEAN; CDECL;

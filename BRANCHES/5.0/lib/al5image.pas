@@ -6,18 +6,9 @@ UNIT al5image;
    Other formats may be available depending on the operating system and installed libraries, but are not guaranteed and should not be assumed to be universally available. *)
 (*TODO: License. *)
 
-{$include allegro.cfg}
-
 INTERFACE
 
-CONST
-(* Name of the dynamicly linked unit.
-
-  @bold(TODO:) This should be defined at the @code(allegro.cfg) file as it's different in each platform.
- *)
-  ALLEGRO_IMAGE_LIB_NAME = 'liballegro_image.so.5.0';
-
-
+{$include allegro.cfg}
 
 (* Initializes the image addon. *)
   FUNCTION al_init_image_addon: BOOLEAN; CDECL;
@@ -26,7 +17,7 @@ CONST
   PROCEDURE al_shutdown_image_addon; CDECL;
 
 (* Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version). *)
-  FUNCTION al_get_allegro_image_version: DWORD; CDECL;
+  FUNCTION al_get_allegro_image_version: LONGWORD; CDECL;
 
 IMPLEMENTATION
 
@@ -36,7 +27,7 @@ IMPLEMENTATION
   PROCEDURE al_shutdown_image_addon; CDECL;
   EXTERNAL ALLEGRO_IMAGE_LIB_NAME;
 
-  FUNCTION al_get_allegro_image_version: DWORD; CDECL;
+  FUNCTION al_get_allegro_image_version: LONGWORD; CDECL;
   EXTERNAL ALLEGRO_IMAGE_LIB_NAME;
 
 END.

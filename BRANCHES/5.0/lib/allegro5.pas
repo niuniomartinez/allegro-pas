@@ -2,12 +2,9 @@ UNIT Allegro5;
 (*<Wrapper of the Allegro 5 core library. *)
 (*TODO: License. *)
 
-{$include allegro.cfg}
-
 INTERFACE
 
-  USES
-    ctypes;
+{$include allegro.cfg}
 
 (* The code is distributed in sections.  Each section wraps with a header file (approx.). *)
 
@@ -16,12 +13,6 @@ INTERFACE
  **********)
 
   CONST
-  (* Name of the dynamicly linked unit.
-
-    @bold(TODO:) This should be defined at the @code(allegro.cfg) file as it's different in each platform.
-   *)
-    ALLEGRO_LIB_NAME = 'liballegro.so.5.0';
-
   (* Major version of Allegro. *)
     ALLEGRO_VERSION      =   5;
   (* Minor version of Allegro. *)
@@ -37,7 +28,7 @@ INTERFACE
      number 2, just to confuse you.
   *)
     ALLEGRO_RELEASE_NUMBER = 0;
-  (* Packs version number in a simple @code(DWORD) number.
+  (* Packs version number in a simple @code(LONGWORD) number.
      @seealso(al_install_system)
    *)
     ALLEGRO_VERSION_INT  = (
@@ -54,7 +45,7 @@ INTERFACE
   You can use code like this to extract them:
 @longcode(#
 VAR
-  Version: DWORD;
+  Version: LONGWORD;
   Major, Minor, Revision, Release: LONGINT;
 BEGIN
   version := al_get_allegro_version;
@@ -67,7 +58,7 @@ END;
 
   The release number is 0 for an unofficial version and 1 or greater for an official release. For example "5.0.2[1]" would be the (first) official 5.0.2 release while "5.0.2[0]" would be a compile of a version from the "5.0.2" branch before the official release.
 *)
-  FUNCTION al_get_allegro_version: DWORD; CDECL;
+  FUNCTION al_get_allegro_version: LONGWORD; CDECL;
 
   TYPE
   (* Description of user main function for @link(al_run_main) *)
@@ -105,7 +96,7 @@ END;
    @returns(@true if Allegro was successfully initialized by this function call @(or already was initialized previously@), @false if Allegro cannot be used.)
    @seealso(al_init)
  *)
-  FUNCTION al_install_system (version: DWORD; atexit_ptr: POINTER): BOOLEAN; CDECL;
+  FUNCTION al_install_system (version: LONGWORD; atexit_ptr: POINTER): BOOLEAN; CDECL;
 
 (* Closes down the Allegro system.
 
@@ -636,11 +627,11 @@ al_draw_line (x1, y1, x2, y2, color, 0);
 
 (* Returns the @code(timer)'s counter value. The timer can be started or stopped.
    @seealso(al_set_timer_count) *)
-  FUNCTION al_get_timer_count (CONST timer: ALLEGRO_TIMERptr): cint64; CDECL;
+  FUNCTION al_get_timer_count (CONST timer: ALLEGRO_TIMERptr): INT64; CDECL;
 
 (* Sets the timer's counter value. The timer can be started or stopped. The count value may be positive or negative, but will always be incremented by +1 at each tick.
    @seealso(al_get_timer_count) @seealso(al_add_timer_count) *)
-  PROCEDURE al_set_timer_count (CONST timer: ALLEGRO_TIMERptr; count: cint64); CDECL;
+  PROCEDURE al_set_timer_count (CONST timer: ALLEGRO_TIMERptr; count: INT64); CDECL;
 
 (* Adds diff to the timer's counter value. This is similar to writing:
 @longcode(#
@@ -648,7 +639,7 @@ al_set_timer_count (timer, al_get_timer_count (timer) + diff);
 #)
    except that the addition is performed atomically, so no ticks will be lost.
    @seealso(al_set_timer_count) *)
-  PROCEDURE al_add_timer_count (CONST timer: ALLEGRO_TIMERptr; diff: cint64); CDECL;
+  PROCEDURE al_add_timer_count (CONST timer: ALLEGRO_TIMERptr; diff: INT64); CDECL;
 
 (* Retrieves the associated event source. *)
   FUNCTION al_get_timer_event_source (timer: ALLEGRO_TIMERptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
@@ -733,7 +724,7 @@ al_set_timer_count (timer, al_get_timer_count (timer) + diff);
       display : ALLEGRO_DISPLAYptr;
       keycode : LONGINT;
       unichar : LONGINT;
-      modifiers : DWORD;
+      modifiers : LONGWORD;
       _repeat : BOOLEAN;
     END;
 
@@ -750,7 +741,7 @@ al_set_timer_count (timer, al_get_timer_count (timer) + diff);
       dy : LONGINT;
       dz : LONGINT;
       dw : LONGINT;
-      button : DWORD;
+      button : LONGWORD;
       pressure : SINGLE;
     END;
 
@@ -758,7 +749,7 @@ al_set_timer_count (timer, al_get_timer_count (timer) + diff);
       _type : ALLEGRO_EVENT_TYPE;
       source : ALLEGRO_TIMERptr;
       timestamp : DOUBLE;
-      count : cint64;
+      count : INT64;
       error : DOUBLE;
     END;
 
@@ -865,7 +856,7 @@ IMPLEMENTATION
  * base.h *
  **********)
 
-  FUNCTION al_get_allegro_version: DWORD; CDECL;
+  FUNCTION al_get_allegro_version: LONGWORD; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_run_main (argc: LONGINT; argv: POINTER; user_main: ALLEGRO_USER_MAIN): LONGINT; CDECL;
@@ -883,7 +874,7 @@ IMPLEMENTATION
  * system.h *
  ************)
 
-  FUNCTION al_install_system (version: DWORD; atexit_ptr: POINTER): BOOLEAN; CDECL;
+  FUNCTION al_install_system (version: LONGWORD; atexit_ptr: POINTER): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_uninstall_system; CDECL;
@@ -1031,13 +1022,13 @@ IMPLEMENTATION
   PROCEDURE al_set_timer_speed (timer: ALLEGRO_TIMERptr; speed_secs: DOUBLE); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_get_timer_count (CONST timer: ALLEGRO_TIMERptr): cint64; CDECL;
+  FUNCTION al_get_timer_count (CONST timer: ALLEGRO_TIMERptr): INT64; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  PROCEDURE al_set_timer_count (CONST timer: ALLEGRO_TIMERptr; count: cint64); CDECL;
+  PROCEDURE al_set_timer_count (CONST timer: ALLEGRO_TIMERptr; count: INT64); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  PROCEDURE al_add_timer_count (CONST timer: ALLEGRO_TIMERptr; diff: cint64); CDECL;
+  PROCEDURE al_add_timer_count (CONST timer: ALLEGRO_TIMERptr; diff: INT64); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_timer_event_source (timer: ALLEGRO_TIMERptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
@@ -1084,6 +1075,10 @@ IMPLEMENTATION
 
   FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr; timeout: ALLEGRO_TIMEOUTptr): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
+
+INITIALIZATION
+{ Delphi forces an INITIALIZATION section if FINALIZATION is used. }
+  ;
 
 FINALIZATION
 { Ensures that we call it, as Pascal hasn't an "atexit" function. }
