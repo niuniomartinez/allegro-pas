@@ -243,9 +243,9 @@ BEGIN
   Timer := al_create_timer (1 / 60);
 
   Queue := al_create_event_queue;
-  al_register_event_source (Queue,al_get_keyboard_event_source);
-  al_register_event_source (Queue,al_get_display_event_source (Display));
-  al_register_event_source (Queue,al_get_timer_event_source (Timer));
+  al_register_event_source (Queue, al_get_keyboard_event_source);
+  al_register_event_source (Queue, al_get_display_event_source (Display));
+  al_register_event_source (Queue, al_get_timer_event_source (Timer));
 
   glEnable (GL_DEPTH_TEST);
   glDisable (GL_CULL_FACE);

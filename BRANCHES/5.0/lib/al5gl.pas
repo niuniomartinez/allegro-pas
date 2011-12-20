@@ -7,14 +7,7 @@ INTERFACE
     Allegro5,
     GL;
 
-  CONST
-  (* Name of the dynamicly linked unit.
-
-    @bold(TODO:) This should be defined at the @code(allegro.cfg) file as it's different in each platform.
-   *)
-    ALLEGRO_GL_LIB_NAME = 'liballegro_main.so.5.0';
-
-
+{$include allegro.cfg}
 
 (* Returns the OpenGL texture id internally used by the given bitmap if it uses one, else 0.
 
