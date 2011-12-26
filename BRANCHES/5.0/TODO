@@ -3,6 +3,7 @@ In no special order
   * Header "timer.h" is short enough to translate in a single step.
 
   * Lots of documentation aren't written.
+    May be I should find another documentation tool as pasdoc is "dirty".
 
   * Currently, all enums are implemented as CONST.  Som of these enums have
     name and are implemented as LONGINT.  Ask and/or test if it's possible to

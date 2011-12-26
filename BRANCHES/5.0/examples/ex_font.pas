@@ -3,6 +3,7 @@ PROGRAM ex_font;
 (* TODO: License. *)
 
   USES
+    Common,
     Allegro5, al5font, al5image;
 
   CONST
@@ -62,10 +63,7 @@ VAR
   );
 BEGIN
   IF NOT al_init THEN
-  BEGIN
-    WriteLn ('Could not init Allegro.');
-    EXIT;
-  END;
+    AbortExample ('Could not init Allegro.');
   al_init_image_addon;
   al_init_font_addon;
 
@@ -73,31 +71,19 @@ BEGIN
   al_set_new_display_flags (ALLEGRO_GENERATE_EXPOSE_EVENTS);
   Display := al_create_display (320, 200);
   IF Display = NIL THEN
-  BEGIN
-    WriteLn ('Failed to create display.');
-    EXIT;
-  END;
+    AbortExample ('Failed to create display.');
 
   Bitmap := al_load_bitmap ('data/mysha.pcx');
   IF Bitmap = NIL THEN
-  BEGIN
-    WriteLn ('Failed to load misha.pcx.');
-    EXIT;
-  END;
+    AbortExample ('Failed to load misha.pcx.');
 
   Font := al_load_font ('data/bmpfont.tga', 0, 0);
   IF Font = NIL THEN
-  BEGIN
-    WriteLn ('Failed to load bmpfont.tga.');
-    EXIT;
-  END;
+    AbortExample ('Failed to load bmpfont.tga.');
 
   FontBitmap := al_load_bitmap ('data/a4_font.tga');
   IF FontBitmap = NIL THEN
-  BEGIN
-    WriteLn ('Failed to load a4_font.tga.');
-    EXIT;
-  END;
+    AbortExample ('Failed to load a4_font.tga.');
 
   A4Font := al_grab_font_from_bitmap (FontBitmap, 4, Ranges);
 

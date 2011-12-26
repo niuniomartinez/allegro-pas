@@ -4,6 +4,7 @@ PROGRAM test;
  *)
 
   USES
+    Common,
     Allegro5, al5gl,
     GL;
 
@@ -75,8 +76,8 @@ BEGIN
       al_flip_display;
     END
     ELSE
-      WriteLn ('Could not create display.');
+      AbortExample ('Could not create display.');
   END
   ELSE
-    WriteLn ('Allegro 5 didn''t work! :(')
+    AbortExample ('Allegro 5 didn''t work! :(')
 END.

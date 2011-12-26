@@ -7,10 +7,8 @@ PROGRAM ex_gldepth;
 (* TODO: License. *)
 
 USES
-  Allegro5,
-  al5image,
-  al5gl,
-  al5font,
+  Common,
+  Allegro5, al5image, al5gl, al5font,
   GL,
   sysutils;
 
@@ -176,17 +174,11 @@ VAR
   BEGIN
     Font := al_load_font ('data/fixed_font.tga', 0, 0);
     IF Font = NIL THEN
-    BEGIN
-      WriteLn ('Error loading `data/fixed_font.tga');
-      EXIT (FALSE);
-    END;
+      AbortExample ('Error loading `data/fixed_font.tga');
 
     tmpBmp := al_load_bitmap ('data/mysha.pcx');
     IF tmpBmp = NIL THEN
-    BEGIN
-      WriteLn ('Error loading ''data/mysha.pcx''');
-      EXIT (FALSE);
-    END;
+      AbortExample ('Error loading ''data/mysha.pcx''');
     SetupTextures := TRUE;
     w := 128;
     h := 128;
@@ -222,10 +214,7 @@ VAR
 BEGIN
 { Inits Allegro. }
   IF NOT al_init THEN
-  BEGIN
-    WriteLn ('Could not init Allegro.');
-    EXIT;
-  END;
+    AbortExample ('Error initialising Allegro.');
 
   al_init_image_addon;
   al_init_font_addon;
@@ -235,10 +224,7 @@ BEGIN
   al_set_new_display_option (ALLEGRO_DEPTH_SIZE, 16, ALLEGRO_SUGGEST);
   Display := al_create_display (640, 480);
   IF Display = NIL THEN
-  BEGIN
-    WriteLn ('Could not create display.');
-    EXIT;
-  END;
+    AbortExample ('Could not create display.');
 
   Timer := al_create_timer (1 / 60);
 
