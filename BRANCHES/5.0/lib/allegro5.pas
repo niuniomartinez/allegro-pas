@@ -38,6 +38,10 @@ INTERFACE
 	OR  ALLEGRO_RELEASE_NUMBER
     );
 
+    ALLEGRO_PI = 3.14159265358979323846;
+
+
+
 (* Returns the (compiled) version of the Allegro library.
 
   The version number is packed into a single integer as groups of 8 bits in the form @code(@(major SHL 24@) OR @(minor SHL 16@) OR @(revision SHL 8@) OR release).
