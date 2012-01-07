@@ -28,8 +28,8 @@ CONST
    TYPE_WIND  = 1;
    TYPE_WATER = 2;
    TYPE_FIRE  = 3;
-   NUM_TYPES  = 4;
-   TYPE_NONE  = NUM_TYPES;
+   MAX_TYPES  = 3;
+   TYPE_NONE  = MAX_TYPES + 1;
 
    IMG_EARTH        = TYPE_EARTH;
    IMG_WIND         = TYPE_WIND;
@@ -61,7 +61,7 @@ TYPE
 
    PAnim = ^TAnim;
    TAnim = RECORD
-      lval: PSINGLE;   { NIL if unused. }
+      lVal: PSINGLE;   { NIL if unused. }
       StartVal,
       EndVal:     SINGLE;
       Func: TInterp;
@@ -81,7 +81,7 @@ TYPE
 
    PToken = ^TToken;
    TToken = RECORD
-      _type: LONGWORD; { TYPE_ }
+      TheType: LONGWORD; { TYPE_ }
       X, Y: SINGLE;
       Pitch: LONGINT; { [0, NUM_PITCH] }
       Bot, Top: TSprite;
@@ -94,9 +94,12 @@ TYPE
      Next: PFlair;
    END;
 
-(****************************************************************************/
-/* Globals                                                                  */
-/****************************************************************************)
+
+
+(****************************************************************************
+ * Globals                                                                  *
+ ****************************************************************************)
+
 CONST
    NUM_PITCH   = 8;
    TOKENS_X    = 16;
@@ -107,14 +110,14 @@ VAR
    Display: ALLEGRO_DISPLAYptr;
    RefreshTimer, PlaybackTimer: ALLEGRO_TIMERptr;
 
-   Images: ARRAY [1..IMG_MAX] OF ALLEGRO_BITMAPptr;
-   ElementSamples: ARRAY [1..NUM_TYPES] OF ARRAY [1..NUM_PITCH] OF ALLEGRO_SAMPLEptr;
+   Images: ARRAY [0..IMG_MAX] OF ALLEGRO_BITMAPptr;
+   ElementSamples: ARRAY [0..MAX_TYPES] OF ARRAY [1..NUM_PITCH] OF ALLEGRO_SAMPLEptr;
    SelectSample: ALLEGRO_SAMPLEptr;
 
    Tokens: ARRAY [1..NUM_TOKENS] OF TToken;
-   Buttons: ARRAY [1..NUM_TYPES] OF TToken;
+   Buttons: ARRAY [0..MAX_TYPES] OF TToken;
    Glow, GlowOverlay: TSprite;
-   GlowColor: ALLEGRO_COLOR;
+   GlowColor: ARRAY [0..MAX_TYPES] OF ALLEGRO_COLOR;
    Flairs: PFlair = NIL;
    HoverToken: PToken = NIL;
    SelectedButton: PToken = NIL;
@@ -136,51 +139,50 @@ CONST
 
    HAIKU_DATA = 'data/haiku/';
 
+
+
 (****************************************************************************
  * Init                                                                     *
  ****************************************************************************)
 
    PROCEDURE LoadImages;
+   VAR
+      Ndx: INTEGER;
    BEGIN
-{
-   int i;
+      Images[IMG_EARTH]       := al_load_bitmap (HAIKU_DATA+'earth4.png');
+      Images[IMG_WIND]        := al_load_bitmap (HAIKU_DATA+'wind3.png');
+      Images[IMG_WATER]       := al_load_bitmap (HAIKU_DATA+'water.png');
+      Images[IMG_FIRE]        := al_load_bitmap (HAIKU_DATA+'fire.png');
+      Images[IMG_BLACK]       := al_load_bitmap (HAIKU_DATA+'black_bead_opaque_A.png');
+      Images[IMG_DROPSHADOW]  := al_load_bitmap (HAIKU_DATA+'dropshadow.png');
+      Images[IMG_AIR_EFFECT]  := al_load_bitmap (HAIKU_DATA+'air_effect.png');
+      Images[IMG_WATER_DROPS] := al_load_bitmap (HAIKU_DATA+'water_droplets.png');
+      Images[IMG_FLAME]       := al_load_bitmap (HAIKU_DATA+'flame2.png');
+      Images[IMG_MAIN_FLAME]  := al_load_bitmap (HAIKU_DATA+'main_flame2.png');
+      Images[IMG_GLOW]        := al_load_bitmap (HAIKU_DATA+'healthy_glow.png');
+      Images[IMG_GLOW_OVERLAY]:= al_load_bitmap (HAIKU_DATA+'overlay_pretty.png');
 
-   images[IMG_EARTH]       = al_load_bitmap(HAIKU_DATA 'earth4.png');
-   images[IMG_WIND]        = al_load_bitmap(HAIKU_DATA 'wind3.png');
-   images[IMG_WATER]       = al_load_bitmap(HAIKU_DATA 'water.png');
-   images[IMG_FIRE]        = al_load_bitmap(HAIKU_DATA 'fire.png');
-   images[IMG_BLACK]       = al_load_bitmap(HAIKU_DATA 'black_bead_opaque_A.png');
-   images[IMG_DROPSHADOW]  = al_load_bitmap(HAIKU_DATA 'dropshadow.png');
-   images[IMG_AIR_EFFECT]  = al_load_bitmap(HAIKU_DATA 'air_effect.png');
-   images[IMG_WATER_DROPS] = al_load_bitmap(HAIKU_DATA 'water_droplets.png');
-   images[IMG_FLAME]       = al_load_bitmap(HAIKU_DATA 'flame2.png');
-   images[IMG_MAIN_FLAME]  = al_load_bitmap(HAIKU_DATA 'main_flame2.png');
-   images[IMG_GLOW]        = al_load_bitmap(HAIKU_DATA 'healthy_glow.png');
-   images[IMG_GLOW_OVERLAY]= al_load_bitmap(HAIKU_DATA 'overlay_pretty.png');
-
-   for (i = 0; i < IMG_MAX; i++) {
-      if (images[i] == NULL)
-         abort_example('Error loading image.\n');
-   }
-}
+      FOR Ndx := LOW (Images) TO HIGH (Images) DO
+         IF Images[Ndx] = NIL THEN
+            AbortExample ('Error loading image.');
    END;
 
 
 
    PROCEDURE LoadSamples;
    CONST
-      Base: ARRAY [1..NUM_TYPES] OF STRING = (
+      Base: ARRAY [0..MAX_TYPES] OF STRING = (
          'earth', 'air', 'water', 'fire'
       );
    VAR
       Name: STRING;
       t, p: LONGINT;
    BEGIN
-      FOR t := 1 TO NUM_TYPES DO
+      FOR t := LOW (Base) TO HIGH (Base) DO
       BEGIN
          FOR p := 1 TO NUM_PITCH DO
          BEGIN
-            Name := HAIKU_DATA + Base[t] + '_' + IntToStr (p) + '.ogg';
+            Name := HAIKU_DATA + Base[t] + '_' + IntToStr (p - 1) + '.ogg';
             ElementSamples[t][p] := al_load_sample (Name);
             IF ElementSamples[t][p] = NIL THEN
                AbortExample ('Error loading ' + Name + '.');
@@ -193,793 +195,861 @@ CONST
 
 
 
-   {
-static void init_sprite(Sprite *spr, int image, float x, float y, float scale,
-   float opacity)
-}
-{
-   int i;
+   PROCEDURE InitSprite (VAR Spr: TSprite; Image: INTEGER; x, y, Scale, Opacity: SINGLE);
+   VAR
+      Ndx: INTEGER;
+   BEGIN
+      Spr.Image := Image;
+      Spr.X := x;
+      Spr.Y := y;
+      Spr.ScaleX := Scale;
+      Spr.ScaleY := Scale;
+      Spr.AlignX := 0.5;
+      Spr.AlignY := 0.5;
+      Spr.Angle := 0.0;
+      Spr.R := 1.0;
+      Spr.G := 1.0;
+      Spr.B := 1.0;
+      Spr.Opacity := Opacity;
+      FOR Ndx := LOW (Spr.Anims) TO HIGH (Spr.Anims) DO
+         Spr.Anims[Ndx].lval := NIL;
+   END;
 
-   spr->image = image;
-   spr->x = x;
-   spr->y = y;
-   spr->scale_x = spr->scale_y = scale;
-   spr->align_x = spr->align_y = 0.5;
-   spr->angle = 0.0;
-   spr->r = spr->g = spr->b = 1.0;
-   spr->opacity = opacity;
-   for (i = 0; i < MAX_ANIMS; i++)
-      spr->anims[i].lval = NULL;
-}
-(*
-static void init_tokens(void)
-{
-   const float token_w = token_size * token_scale;
-   const float token_x = game_board_x + token_w/2.0;
-   const float token_y = 80;
-   int i;
 
-   for (i = 0; i < NUM_TOKENS; i++) {
-      int tx = i % TOKENS_X;
-      int ty = i / TOKENS_X;
-      float px = token_x + tx * token_w;
-      float py = token_y + ty * token_w;
 
-      tokens[i].type = TYPE_NONE;
-      tokens[i].x = px;
-      tokens[i].y = py;
-      tokens[i].pitch = NUM_PITCH - 1 - ty;
-      assert(tokens[i].pitch >= 0 && tokens[i].pitch < NUM_PITCH);
-      init_sprite(&tokens[i].bot, IMG_BLACK, px, py, token_scale, 0.4);
-      init_sprite(&tokens[i].top, IMG_BLACK, px, py, token_scale, 0.0);
-   }
-}
+   PROCEDURE InitTokens;
+   CONST
+      TokenW = TokenSize * TokenScale;
+      TokenX = GameBoardX + TokenW / 2;
+      TokenY = 80;
+   VAR
+      Ndx, tx, ty: INTEGER;
+      px, py: SINGLE;
+   BEGIN
+      FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
+      BEGIN
+         tx := (Ndx - 1) MOD TOKENS_X;
+         ty := (Ndx - 1) MOD TOKENS_Y;
+         px := TokenX + tx * TokenW;
+         py := TokenY + ty * TokenW;
 
-static void init_buttons(void)
-*)
-{
-   const float dist[NUM_TYPES] = {-1.5, -0.5, 0.5, 1.5};
-   int i;
+         Tokens[Ndx].TheType := TYPE_NONE;
+         Tokens[Ndx].X := px;
+         Tokens[Ndx].Y := py;
+         Tokens[Ndx].Pitch := NUM_PITCH - 1 - ty;
+         InitSprite (Tokens[Ndx].Bot, IMG_BLACK, px, py, TokenScale, 0.4);
+         InitSprite (Tokens[Ndx].Top, IMG_BLACK, px, py, TokenScale, 0.0);
+      END;
+   END;
 
-   for (i = 0; i < NUM_TYPES; i++) {
-      float x = screen_w/2 + 150 * dist[i];
-      float y = screen_h - 80;
 
-      buttons[i].type = i;
-      buttons[i].x = x;
-      buttons[i].y = y;
-      init_sprite(&buttons[i].bot, IMG_DROPSHADOW, x, y,
-         dropshadow_unsel_scale, 0.4);
-      buttons[i].bot.align_y = 0.0;
-      init_sprite(&buttons[i].top, i, x, y, button_unsel_scale, 1.0);
-   }
-}
 
-(*
-static void init_glow(void)
-{
-   init_sprite(&glow, IMG_GLOW, screen_w/2, screen_h, 1.0, 1.0);
-   glow.align_y = 1.0;
-   glow.r = glow.g = glow.b = 0.0;
+   PROCEDURE InitButtons;
+   CONST
+      Dist: ARRAY [0..MAX_TYPES] OF SINGLE = (-1.5, -0.5, 0.5, 1.5);
+   VAR
+      Ndx: INTEGER;
+      X, Y: SINGLE;
+   BEGIN
+      Y := ScreenH - 80;
+      FOR Ndx := LOW (Buttons) TO HIGH (Buttons) DO
+      BEGIN
+         X := ScreenW DIV 2 + 150 * Dist[Ndx];
+         Buttons[Ndx].TheType := Ndx;
+         Buttons[Ndx].X := X;
+         Buttons[Ndx].Y := Y;
+         InitSprite (Buttons[Ndx].Bot, IMG_DROPSHADOW, X, Y, DropshadowUnselScale, 0.4);
+         Buttons[Ndx].Bot.AlignY := 0.0;
+         InitSprite (Buttons[Ndx].Top, Ndx, X, Y, ButtonUnselScale, 1.0);
+      END;
+   END;
 
-   init_sprite(&glow_overlay, IMG_GLOW_OVERLAY, 0.0, 0.0, 1.0, 1.0);
-   glow_overlay.align_x = 0.0;
-   glow_overlay.align_y = 0.0;
-   glow_overlay.r = glow_overlay.g = glow_overlay.b = 0.0;
 
-   glow_color[TYPE_EARTH] = al_map_rgb(0x6b, 0x8e, 0x23); /* olivedrab */
-   glow_color[TYPE_WIND]  = al_map_rgb(0xad, 0xd8, 0xe6); /* lightblue */
-   glow_color[TYPE_WATER] = al_map_rgb(0x41, 0x69, 0xe1); /* royalblue */
-   glow_color[TYPE_FIRE]  = al_map_rgb(0xff, 0x00, 0x00); /* red */
-}
-   *)
+
+   PROCEDURE InitGlow;
+   BEGIN
+     InitSprite (Glow, IMG_GLOW, ScreenW DIV 2, ScreenH, 1.0, 1.0);
+     Glow.AlignY := 1.0;
+     Glow.R := 0.0;
+     Glow.g := 0.0;
+     Glow.b := 0.0;
+
+     InitSprite (GlowOverlay, IMG_GLOW_OVERLAY, 0.0, 0.0, 1.0, 1.0);
+     GlowOverlay.AlignX := 0.0;
+     GlowOverlay.AlignY := 0.0;
+     GlowOverlay.R := 0.0;
+     GlowOverlay.g := 0.0;
+     GlowOverlay.b := 0.0;
+
+     GlowColor[TYPE_EARTH] := al_map_rgb ($6B, $8E, $23); { olivedrab }
+     GlowColor[TYPE_WIND]  := al_map_rgb ($AD, $D8, $E6); { lightblue }
+     GlowColor[TYPE_WATER] := al_map_rgb ($41, $69, $E1); { royalblue }
+     GlowColor[TYPE_FIRE]  := al_map_rgb ($FF, $00, $00); { red }
+   END;
+
+
 
 (****************************************************************************
  * Flairs                                                                   *
  ****************************************************************************)
-(*
-static Sprite *make_flair(int image, float x, float y, float end_time)
-{
-   Flair *fl = malloc(sizeof *fl);
-   init_sprite(&fl->sprite, image, x, y, 1.0, 1.0);
-   fl->end_time = end_time;
-   fl->next = flairs;
-   flairs = fl;
-   return &fl->sprite;
-}
 
-static void free_old_flairs(float now)
-{
-   Flair *prev, *fl, *next;
+   FUNCTION CreateFlair (Image: INTEGER; X, Y, EndTime: SINGLE): PSprite;
+   VAR
+      FL: PFlair;
+   BEGIN
+      GetMem (FL, SizeOf (TFlair));
+      InitSprite (FL^.Sprite, Image, X, Y, 1.0, 1.0);
+      FL^.EndTime := EndTime;
+      FL^.Next := Flairs;
+      Flairs := FL;
+      CreateFlair := @(FL^.Sprite);
+   END;
 
-   prev = NULL;
-   for (fl = flairs; fl != NULL; fl = next) {
-      next = fl->next;
-      if (fl->end_time > now)
-         prev = fl;
-      else {
-         if (prev)
-            prev->next = next;
-         else
-            flairs = next;
-         free(fl);
-      }
-   }
-}
 
-static void free_all_flairs(void)
-{
-   Flair *next;
 
-   for (; flairs != NULL; flairs = next) {
-      next = flairs->next;
-      free(flairs);
-   }
-}
-*)
+   PROCEDURE FreeOldFlairs (Now: SINGLE);
+   VAR
+      Prev, Fl, Next: PFlair;
+   BEGIN
+      Prev := NIL;
+      Fl := Flairs;
+      WHILE Fl <> NIL DO
+      BEGIN
+         Next := Fl^.Next;
+         IF Fl^.EndTime > Now THEN
+            Prev := Fl
+         ELSE BEGIN
+            IF Prev <> NIL THEN
+               Prev^.Next := Next
+            ELSE
+               Flairs := Next;
+            FreeMem (Fl, SizeOf (TFlair));
+         END;
+         Fl := Next;
+      END;
+   END;
+
+
+
+   PROCEDURE FreeAllFlairs;
+   VAR
+      Next: PFlair;
+   BEGIN
+     WHILE Flairs <> NIL DO
+     BEGIN
+        Next := Flairs^.Next;
+        FreeMem (Flairs, SizeOf (TFlair));
+     END;
+   END;
+
+
+
 (****************************************************************************
  * Animations                                                               *
  ****************************************************************************)
-(*
-static Anim *get_next_anim(Sprite *spr)
-{
-   static Anim dummy_anim;
-   unsigned i;
 
-   for (i = 0; i < MAX_ANIMS; i++) {
-      if (spr->anims[i].lval == NULL)
-         return &spr->anims[i];
-   }
+   FUNCTION GetNextAnim (CONST Spr: TSprite): PAnim;
+   VAR
+      DummyAnim: TAnim;
+      Ndx: LONGWORD;
+   BEGIN
+      FOR Ndx := LOW (Spr.Anims) TO HIGH (Spr.Anims) DO
+         IF Spr.Anims[Ndx].lval = NIL THEN
+         BEGIN
+            GetNextAnim := @(Spr.Anims[Ndx]);
+            EXIT;
+         END;
+      GetNextAnim := @DummyAnim;
+   END;
 
-   assert(false);
-   return &dummy_anim;
-}
 
-static void fix_conflicting_anims(Sprite *grp, float *lval, float start_time,
-   float start_val)
-{
-   unsigned i;
 
-   for (i = 0; i < MAX_ANIMS; i++) {
-      Anim *anim = &grp->anims[i];
+   PROCEDURE FixConflictingAnims (VAR Grp: TSprite; lVal: PSINGLE; StartTime, StartVal: SINGLE);
+   VAR
+      Ndx: LONGWORD;
+      Anim: PAnim;
+   BEGIN
+      FOR Ndx := LOW (Grp.Anims) TO HIGH (Grp.Anims) DO
+      BEGIN
+         Anim := @(Grp.Anims[Ndx]);
+         IF Anim^.lVal = lVal THEN
+         BEGIN
+         (* If an old animation would overlap with the new one, truncate it
+          * and make it converge to the new animation's starting value. *)
+            IF Anim^.EndTime > StartTime THEN
+            BEGIN
+               Anim^.EndTime := StartTime;
+               Anim^.EndVal := StartVal;
+            END;
+         (* Cancel any old animations which are scheduled to start after the
+          * new one, or which have been reduced to nothing. *)
+            IF (Anim^.StartTime >= StartTime)
+            OR (Anim^.StartTime >= Anim^.EndTime) THEN
+               Grp.Anims[Ndx].lVal := NIL;
+         END;
+      END;
+   END;
 
-      if (anim->lval != lval)
-         continue;
 
-      /* If an old animation would overlap with the new one, truncate it
-       * and make it converge to the new animation's starting value.
-       */
-      if (anim->end_time > start_time) {
-         anim->end_time = start_time;
-         anim->end_val = start_val;
-      }
 
-      /* Cancel any old animations which are scheduled to start after the
-       * new one, or which have been reduced to nothing.
-       */
-      if (anim->start_time >= start_time ||
-         anim->start_time >= anim->end_time)
-      {
-         grp->anims[i].lval = NULL;
-      }
-   }
-}
+   PROCEDURE AnimFull (VAR Spr: TSprite; lVal: PSINGLE; StartVal, EndVal: SINGLE; Func: TInterp; Delay, Duration: SINGLE);
+   VAR
+      StartTime: SINGLE;
+      Anim: PAnim;
+   BEGIN
+     StartTime := al_get_time + Delay;
+     FixConflictingAnims (Spr, lVal, StartTime, StartVal);
+     Anim := GetNextAnim (Spr);
 
-static void anim_full(Sprite *spr, float *lval, float start_val, float end_val,
-   Interp func, float delay, float duration)
-{
-   float start_time;
-   Anim *anim;
+     Anim^.lVal := lVal;
+     Anim^.StartVal := StartVal;
+     Anim^.EndVal := EndVal;
+     Anim^.Func := Func;
+     Anim^.StartTime := StartTime;
+     Anim^.EndTime := StartTime + Duration;
+   END;
 
-   start_time = al_get_time() + delay;
-   fix_conflicting_anims(spr, lval, start_time, start_val);
 
-   anim = get_next_anim(spr);
-   anim->lval = lval;
-   anim->start_val = start_val;
-   anim->end_val = end_val;
-   anim->func = func;
-   anim->start_time = start_time;
-   anim->end_time = start_time + duration;
-}
 
-static void anim(Sprite *spr, float *lval, float start_val, float end_val,
-   Interp func, float duration)
-{
-   anim_full(spr, lval, start_val, end_val, func, 0.0, duration);
-}
+   PROCEDURE Anim (VAR Spr: TSprite; lVal: PSINGLE; StartVal, EndVal: SINGLE; Func: TInterp; Duration: SINGLE);
+   BEGIN
+      AnimFull (Spr, lVal, StartVal, EndVal, Func, 0, Duration);
+   END;
 
-static void anim_to(Sprite *spr, float *lval, float end_val,
-   Interp func, float duration)
-{
-   anim_full(spr, lval, *lval, end_val, func, 0.0, duration);
-}
 
-static void anim_delta(Sprite *spr, float *lval, float delta,
-   Interp func, float duration)
-{
-   anim_full(spr, lval, *lval, *lval + delta, func, 0.0, duration);
-}
 
-static void anim_tint(Sprite *spr, const ALLEGRO_COLOR color, Interp func,
-   float duration)
-{
-   float r, g, b;
+   PROCEDURE AnimTo (VAR Spr: TSprite; lVal: PSINGLE; EndVal: SINGLE; Func: TInterp; Duration: SINGLE);
+   BEGIN
+     AnimFull (Spr, lVal, lVal^, EndVal, Func, 0, Duration);
+   END;
 
-   al_unmap_rgb_f(color, &r, &g, &b);
-   anim_to(spr, &spr->r, r, func, duration);
-   anim_to(spr, &spr->g, g, func, duration);
-   anim_to(spr, &spr->b, b, func, duration);
-}
 
-static float interpolate(Interp func, float t)
-{
-   switch (func) {
 
-   case INTERP_LINEAR:
-      return t;
+   PROCEDURE AnimDelta (VAR Spr: TSprite; lVal: PSINGLE; Delta: SINGLE; Func: TInterp; Duration: SINGLE);
+   BEGIN
+     AnimFull (Spr, lVal, lVal^, lVal^ + Delta, Func, 0, Duration);
+   END;
 
-   case INTERP_FAST:
-      return -t*(t-2);
 
-   case INTERP_DOUBLE_FAST:
-      t--;
-      return t*t*t + 1;
 
-   case INTERP_SLOW:
-      return t*t;
+   PROCEDURE AnimTint (VAR Spr: TSprite; CONST Color: ALLEGRO_COLOR; Func: TInterp; Duration: SINGLE);
+   VAR
+      R, G, B: SINGLE;
+   BEGIN
+     al_unmap_rgb_f (Color, R, G, B);
 
-   case INTERP_DOUBLE_SLOW:
-      return t*t*t;
+     AnimTo (Spr, @(Spr.r), R, Func, Duration);
+     AnimTo (Spr, @(Spr.g), G, Func, Duration);
+     AnimTo (Spr, @(Spr.b), B, Func, Duration);
+   END;
 
-   case INTERP_SLOW_IN_OUT: {
-      // Quadratic easing in/out - acceleration until halfway, then deceleration
-      float b = 0;
-      float c = 1;
-      float d = 1;
-      t /= d/2;
-      if (t < 1) {
-         return c/2 * t * t + b;
-      } else {
-         t--;
-         return -c/2 * (t*(t-2) - 1) + b;
-      }
-   }
 
-   case INTERP_BOUNCE: {
-      // BOUNCE EASING: exponentially decaying parabolic bounce
-      // t: current time, b: beginning value, c: change in position, d: duration
-      // bounce easing out
-      if (t < (1/2.75))
-         return (7.5625*t*t);
-      if (t < (2/2.75)) {
-         t -= (1.5/2.75);
-         return (7.5625*t*t + 0.75);
-      }
-      if (t < (2.5/2.75)) {
-         t -= (2.25/2.75);
-         return (7.5625*t*t + 0.9375);
-      }
-      t -= (2.625/2.75);
-      return (7.5625*t*t + 0.984375);
-   }
 
-   default:
-      assert(false);
-      return 0.0;
-   }
-}
+   FUNCTION Interpolate (Func: TInterp; t: SINGLE): SINGLE;
+   VAR
+      b, c, d: SINGLE;
+   BEGIN
+      CASE Func OF
+         INTERP_LINEAR:
+            Interpolate := t;
+         INTERP_FAST:
+            Interpolate := -t * (t - 2);
+         INTERP_DOUBLE_FAST:
+         BEGIN
+            t := t - 1;
+            Interpolate := t * t * t + 1;
+         END;
+         INTERP_SLOW:
+            Interpolate := t * t;
+         INTERP_DOUBLE_SLOW:
+            Interpolate := t * t * t;
+         INTERP_SLOW_IN_OUT:
+         BEGIN
+         { Quadratic easing in/out - acceleration until halfway, then deceleration. }
+            b := 0; { TODO: Why are these values in variables? }
+            c := 1;
+            d := 1;
+            t := t / (d / 2);
+            IF t < 1 THEN
+               Interpolate := c / 2 * t * t + b
+            ELSE BEGIN
+               t := t - 1;
+               Interpolate := (-c) / 2 * (t * (t - 2) - 1) + b
+            END;
+         END;
+         INTERP_BOUNCE:
+         BEGIN { TODO: Next comment may explay the previous TODO (WTF?) }
+         { BOUNCE EASING: exponentially decaying parabolic bounce
+           t: current time, b: beginning value, c: change in position, d: duration
+           bounce easing out }
+            IF t < (1 / 2.75) THEN
+               Interpolate := 7.5625 * t * t
+            ELSE IF t < (2 / 2.75) THEN
+            BEGIN
+               t := t - (1.5 / 2.75);
+               Interpolate := 7.5625 * t * t + 0.75
+            END
+            ELSE IF t < (2.5 / 2.75) THEN
+            BEGIN
+               t := t - (2.5 / 2.75);
+               Interpolate := 7.5625 * t * t + 0.9375
+            END
+            ELSE BEGIN
+               t := t - (2.625 / 2.75);
+               Interpolate := 7.5625 * t * t + 0.984375
+            END;
+         END;
+         ELSE
+            Interpolate := 0.0
+      END;
+   END;
 
-static void update_anim(Anim *anim, float now)
-{
-   float dt, t, range;
 
-   if (!anim->lval)
-      return;
 
-   if (now < anim->start_time)
-      return;
+   PROCEDURE UpdateAnim (VAR Anim: TAnim; Now: SINGLE);
+   VAR
+      dt, t, Range: SINGLE;
+   BEGIN
+      IF Anim.lVal = NIL THEN
+         EXIT;
+      IF Now < Anim.StartTime THEN
+         EXIT;
+      dt := Now - Anim.StartTime;
+      t := dt / (Anim. EndTime - Anim.StartTime);
+      IF t >= 1.0 THEN
+      BEGIN
+      { Animation has run to completion }
+         Anim.lVal^ := Anim.EndVal;
+         Anim.lVal := NIL;
+         EXIT;
+      END;
+      Range := Anim.EndVal - Anim.StartVal;
+      Anim.lVal^ := Anim.StartVal + Interpolate (Anim.Func, t) * Range;
+   END;
 
-   dt = now - anim->start_time;
-   t = dt / (anim->end_time - anim->start_time);
 
-   if (t >= 1.0) {
-      /* animation has run to completion */
-      *anim->lval = anim->end_val;
-      anim->lval = NULL;
-      return;
-   }
 
-   range = anim->end_val - anim->start_val;
-   *anim->lval = anim->start_val + interpolate(anim->func, t) * range;
-}
+   PROCEDURE UpdateSpriteAnims (VAR Spr: TSprite; Now: SINGLE);
+   VAR
+      Ndx: INTEGER;
+   BEGIN
+      FOR Ndx := LOW (Spr.Anims) TO HIGH (Spr.Anims) DO
+         UpdateAnim (Spr.Anims[Ndx], Now);
+   END;
 
-static void update_sprite_anims(Sprite *spr, float now)
-{
-   int i;
 
-   for (i = 0; i < MAX_ANIMS; i++)
-      update_anim(&spr->anims[i], now);
-}
+   PROCEDURE UpdateTokenAnims (VAR Token: TToken; Now: SINGLE);
+   BEGIN
+      UpdateSpriteAnims (Token.Bot, Now);
+      UpdateSpriteAnims (Token.Top, Now);
+   END;
 
-static void update_token_anims(Token *token, float now)
-{
-   update_sprite_anims(&token->bot, now);
-   update_sprite_anims(&token->top, now);
-}
 
-static void update_anims(float now)
-{
-   Flair *fl;
-   int i;
 
-   for (i = 0; i < NUM_TOKENS; i++)
-      update_token_anims(&tokens[i], now);
+   PROCEDURE UpdateAnims (Now: SINGLE);
+   VAR
+      fl: PFlair;
+      Ndx: INTEGER;
+   BEGIN
+      FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
+         UpdateTokenAnims (Tokens[Ndx], Now);
+      FOR Ndx := LOW (Buttons) TO HIGH (Buttons) DO
+         UpdateTokenAnims (Buttons[Ndx], Now);
+      UpdateSpriteAnims (Glow, Now);
+      UpdateSpriteAnims (GlowOverlay, Now);
+      fl := Flairs;
+      WHILE fl <> NIL DO
+      BEGIN
+         UpdateSpriteAnims (fl^.Sprite, Now);
+         fl := fl^.Next;
+      END;
+   END;
 
-   for (i = 0; i < NUM_TYPES; i++)
-      update_token_anims(&buttons[i], now);
 
-   update_sprite_anims(&glow, now);
-   update_sprite_anims(&glow_overlay, now);
 
-   for (fl = flairs; fl != NULL; fl = fl->next)
-      update_sprite_anims(&fl->sprite, now);
-}
-*)
 (****************************************************************************
  * Drawing                                                                  *
  ****************************************************************************)
-(*
-static void draw_sprite(const Sprite *spr)
-{
-   ALLEGRO_BITMAP *bmp;
-   ALLEGRO_COLOR tint;
-   float cx, cy;
 
-   bmp = images[spr->image];
-   cx = spr->align_x * al_get_bitmap_width(bmp);
-   cy = spr->align_y * al_get_bitmap_height(bmp);
-   tint = al_map_rgba_f(spr->r, spr->g, spr->b, spr->opacity);
+   PROCEDURE DrawSprite (CONST Spr: TSprite);
+   VAR
+      Bmp: ALLEGRO_BITMAPptr;
+      Tint: ALLEGRO_COLOR;
+      cx, cy: SINGLE;
+   BEGIN
+      Bmp := Images[Spr.Image];
+      cx := Spr.AlignX * al_get_bitmap_width (Bmp);
+      cy := Spr.AlignY * al_get_bitmap_height (Bmp);
+      Tint := al_map_rgba_f (Spr.r, Spr.g, Spr.b, Spr.Opacity);
+      al_draw_tinted_scaled_rotated_bitmap (
+         Bmp, Tint, cx, cy,
+         Spr.x, Spr.y, Spr.ScaleX, Spr.ScaleY, Spr.Angle, 0
+      );
+   END;
 
-   al_draw_tinted_scaled_rotated_bitmap(bmp, tint, cx, cy,
-      spr->x, spr->y, spr->scale_x, spr->scale_y, spr->angle, 0);
-}
 
-static void draw_token(const Token *token)
-{
-   draw_sprite(&token->bot);
-   draw_sprite(&token->top);
-}
 
-static void draw_screen(void)
-{
-   Flair *fl;
-   int i;
+   PROCEDURE DrawToken (CONST Token: TToken);
+   BEGIN
+      DrawSprite (Token.Bot);
+      DrawSprite (Token.Top);
+   END;
 
-   al_clear_to_color(al_map_rgb(0, 0, 0));
 
-   al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_ONE);
 
-   draw_sprite(&glow);
-   draw_sprite(&glow_overlay);
+   PROCEDURE DrawScreen;
+   VAR
+      fl: PFlair;
+      Ndx: INTEGER;
+   BEGIN
+      al_clear_to_color (al_map_rgb (0, 0, 0));
+      al_set_blender (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_ONE);
+      DrawSprite (Glow);
+      DrawSprite (GlowOverlay);
+      FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
+         DrawToken (Tokens[Ndx]);
+      al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
+      FOR Ndx := LOW (Buttons) TO HIGH (Buttons) DO
+         DrawToken (Buttons[Ndx]);
+      al_set_blender (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_ONE);
+      fl := Flairs;
+      WHILE fl <> NIL DO
+      BEGIN
+         DrawSprite (fl^.Sprite);
+         fl := fl^.Next;
+      END;
+      al_flip_display;
+   END;
 
-   for (i = 0; i < NUM_TOKENS; i++)
-      draw_token(&tokens[i]);
 
-   al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
 
-   for (i = 0; i < NUM_TYPES; i++)
-      draw_token(&buttons[i]);
-
-   al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_ONE);
-
-   for (fl = flairs; fl != NULL; fl = fl->next)
-      draw_sprite(&fl->sprite);
-
-   al_flip_display();
-}
-*)
 (****************************************************************************
  * Playback                                                                 *
  ****************************************************************************)
-(*
-static void spawn_wind_effects(float x, float y)
-{
-   const float now = al_get_time();
-   Sprite *spr;
 
-   spr = make_flair(IMG_AIR_EFFECT, x, y, now + 1.0);
-   anim(spr, &spr->scale_x, 0.9, 1.3, INTERP_FAST, 1.0);
-   anim(spr, &spr->scale_y, 0.9, 1.3, INTERP_FAST, 1.0);
-   anim(spr, &spr->opacity, 1.0, 0.0, INTERP_FAST, 1.0);
+   PROCEDURE SpawnWindEffects (x, y: SINGLE);
+   VAR
+      Now: SINGLE;
+      Spr: PSprite;
+   BEGIN
+      Now := al_get_time;
+      Spr := CreateFlair (IMG_AIR_EFFECT, x, y, Now + 1);
+      Anim (Spr^, @(Spr^.ScaleX), 0.9, 1.3, INTERP_FAST, 1);
+      Anim (Spr^, @(Spr^.ScaleY), 0.9, 1.3, INTERP_FAST, 1);
+      Anim (Spr^, @(Spr^.Opacity), 1, 0, INTERP_FAST, 1);
+      Spr := CreateFlair (IMG_AIR_EFFECT, x, y, Now + 1.2);
+      Anim (Spr^, @(Spr^.Opacity), 1, 0, INTERP_LINEAR, 1.2);
+      Anim (Spr^, @(Spr^.ScaleX), 1.1, 1.5, INTERP_FAST, 1.2);
+      Anim (Spr^, @(Spr^.ScaleY), 1.1, 0.5, INTERP_FAST, 1.2);
+      AnimDelta (Spr^, @(spr^.x), 10, INTERP_FAST, 1.2);
+   END;
 
-   spr = make_flair(IMG_AIR_EFFECT, x, y, now + 1.2);
-   anim(spr, &spr->opacity, 1.0, 0.0, INTERP_LINEAR, 1.2);
-   anim(spr, &spr->scale_x, 1.1, 1.5, INTERP_FAST, 1.2);
-   anim(spr, &spr->scale_y, 1.1, 0.5, INTERP_FAST, 1.2);
-   anim_delta(spr, &spr->x, 10.0, INTERP_FAST, 1.2);
-}
 
-static void spawn_fire_effects(float x, float y)
-{
-   const float now = al_get_time();
-   Sprite *spr;
-   int i;
 
-   spr = make_flair(IMG_MAIN_FLAME, x, y, now + 0.8);
-   spr->align_y = 0.75;
-   anim_full(spr, &spr->scale_x, 0.2, 1.3, INTERP_BOUNCE, 0.0, 0.4);
-   anim_full(spr, &spr->scale_y, 0.2, 1.3, INTERP_BOUNCE, 0.0, 0.4);
-   anim_full(spr, &spr->scale_x, 1.3, 1.4, INTERP_BOUNCE, 0.4, 0.5);
-   anim_full(spr, &spr->scale_y, 1.3, 1.4, INTERP_BOUNCE, 0.4, 0.5);
-   anim_full(spr, &spr->opacity, 1.0, 0.0, INTERP_FAST, 0.3, 0.5);
+   PROCEDURE SpawnFireEffects (x, y: SINGLE);
+   VAR
+      Now: SINGLE;
+      Spr: PSprite;
+      i: INTEGER;
+   BEGIN
+      Now := al_get_time;
+      Spr := CreateFlair (IMG_MAIN_FLAME, x, y, Now + 0.8);
+      Spr^.AlignY := 0.75;
+      AnimFull (Spr^, @(Spr^.ScaleX),  0.2, 1.3, INTERP_BOUNCE, 0.0, 0.4);
+      AnimFull (Spr^, @(Spr^.ScaleY),  0.2, 1.3, INTERP_BOUNCE, 0.0, 0.4);
+      AnimFull (Spr^, @(Spr^.ScaleX),  1.3, 1.4, INTERP_BOUNCE, 0.4, 0.5);
+      AnimFull (Spr^, @(Spr^.ScaleY),  1.3, 1.4, INTERP_BOUNCE, 0.4, 0.5);
+      AnimFull (Spr^, @(Spr^.Opacity), 1.0, 0.0, INTERP_FAST, 0.3, 0.5);
+      FOR i := 0 TO 2 DO
+      BEGIN
+         Spr := CreateFlair (IMG_FLAME, x, y, Now + 0.7);
+         Spr^.AlignX := 1.3;
+         Spr^.Angle := TWOPI / 3 * i;
+         AnimDelta (Spr^, @(Spr^.Angle), -PI, INTERP_DOUBLE_FAST, 0.7);
+         Anim (Spr^, @(Spr^.Opacity), 1.0, 0.0, INTERP_SLOW, 0.7);
+         Anim (Spr^, @(Spr^.ScaleX),  0.2, 1.0, INTERP_FAST, 0.7);
+         Anim (Spr^, @(Spr^.ScaleY),  0.2, 1.0, INTERP_FAST, 0.7);
+      END;
+   END;
 
-   for (i = 0; i < 3; i++) {
-      spr = make_flair(IMG_FLAME, x, y, now + 0.7);
-      spr->align_x = 1.3;
-      spr->angle = TWOPI / 3 * i;
 
-      anim_delta(spr, &spr->angle, -PI, INTERP_DOUBLE_FAST, 0.7);
-      anim(spr, &spr->opacity, 1.0, 0.0, INTERP_SLOW, 0.7);
-      anim(spr, &spr->scale_x, 0.2, 1.0, INTERP_FAST, 0.7);
-      anim(spr, &spr->scale_y, 0.2, 1.0, INTERP_FAST, 0.7);
-   }
-}
 
-static float random_sign(void)
-{
-   return (rand() % 2) ? -1.0 : 1.0;
-}
+   PROCEDURE SpawnWaterEffects (x, y: SINGLE);
 
-static float random_float(float min, float max)
-{
-   return ((float) rand()/RAND_MAX)*(max-min) + min;
-}
+      FUNCTION RandomSign: SINGLE;
+      BEGIN
+         IF Random (2) = 1 THEN
+            RandomSign := -1
+         ELSE
+            RandomSign := 1
+      END;
 
-static void spawn_water_effects(float x, float y)
-{
-#define RAND(a, b)      (random_float((a), (b)))
-#define MRAND(a, b)     (random_float((a), (b)) * max_duration)
-#define SIGN            (random_sign())
+      FUNCTION RandomFloat (Min, Max: SINGLE): SINGLE;
+      BEGIN
+         RandomFloat := Random () * (Max - Min) + Min;
+      END;
 
-   float    now = al_get_time();
-   float    max_duration = 1.0;
-   Sprite   *spr;
-   int      i;
+   VAR
+      MaxDuration: SINGLE;
 
-   spr = make_flair(IMG_WATER, x, y, now + max_duration);
-   anim(spr, &spr->scale_x, 1.0, 2.0, INTERP_FAST, 0.5);
-   anim(spr, &spr->scale_y, 1.0, 2.0, INTERP_FAST, 0.5);
-   anim(spr, &spr->opacity, 0.5, 0.0, INTERP_FAST, 0.5);
+      FUNCTION MRand (Min, Max: SINGLE): SINGLE;
+      BEGIN
+         MRand := RandomFloat (Min, Max) * MaxDuration;
+      END;
 
-   for (i = 0; i < 9; i++) {
-      spr = make_flair(IMG_WATER_DROPS, x, y, now + max_duration);
-      spr->scale_x = RAND(0.3, 1.2) * SIGN;
-      spr->scale_y = RAND(0.3, 1.2) * SIGN;
-      spr->angle = RAND(0.0, TWOPI);
-      spr->r = RAND(0.0, 0.6);
-      spr->g = RAND(0.4, 0.6);
-      spr->b = 1.0;
+   VAR
+      Now: SINGLE;
+      Spr: PSprite;
+      i: INTEGER;
+   BEGIN
+      MaxDuration := 1.0; { TODO: Why is this value a variable? }
+      Now := al_get_time;
+      Spr := CreateFlair (IMG_WATER, x, y, Now + MaxDuration);
+      Anim (Spr^, @(Spr^.ScaleX), 1.0, 2.0, INTERP_FAST, 0.5);
+      Anim (Spr^, @(Spr^.ScaleY), 1.0, 2.0, INTERP_FAST, 0.5);
+      Anim (Spr^, @(Spr^.Opacity), 0.5, 0.0, INTERP_FAST, 0.5);
+      FOR i := 0 TO 8 DO
+      BEGIN
+         Spr := CreateFlair (IMG_WATER_DROPS, x, y, Now + MaxDuration);
+         Spr^.ScaleX := RandomFloat (0.3, 1.2) * RandomSign;
+         Spr^.ScaleY := RandomFloat (1.3, 1.2) * RandomSign;
+         Spr^.Angle := RandomFloat (0, TWOPI);
+         Spr^.r := RandomFloat (0, 0.6);
+         Spr^.g := RandomFloat (0.4, 0.6);
+         Spr^.b := 1;
+         IF i = 0 THEN
+            AnimTo (Spr^, @(Spr^.Opacity), 0, INTERP_LINEAR, MaxDuration)
+         ELSE
+            AnimTo (Spr^, @(Spr^.Opacity), 0, INTERP_DOUBLE_SLOW, MRand (0.7, 1));
+         AnimTo (Spr^, @(Spr^.ScaleX), RandomFloat (0.8, 3), INTERP_FAST, MRand (0.7, 1));
+         AnimTo (Spr^, @(Spr^.ScaleY), RandomFloat (0.8, 3), INTERP_FAST, MRand (0.7, 1));
+         AnimTo (Spr^, @(Spr^.X), RandomFloat (0, 20) * RandomSign, INTERP_FAST, MRand (0.7, 1));
+         AnimTo (Spr^, @(Spr^.Y), RandomFloat (0, 20) * RandomSign, INTERP_FAST, MRand (0.7, 1));
+      END;
+   END;
 
-      if (i == 0) {
-         anim_to(spr, &spr->opacity, 0.0, INTERP_LINEAR, max_duration);
-      } else {
-         anim_to(spr, &spr->opacity, 0.0, INTERP_DOUBLE_SLOW, MRAND(0.7, 1.0));
-      }
-      anim_to(spr, &spr->scale_x, RAND(0.8, 3.0), INTERP_FAST, MRAND(0.7, 1.0));
-      anim_to(spr, &spr->scale_y, RAND(0.8, 3.0), INTERP_FAST, MRAND(0.7, 1.0));
-      anim_delta(spr, &spr->x, MRAND(0, 20.0)*SIGN, INTERP_FAST, MRAND(0.7, 1.0));
-      anim_delta(spr, &spr->y, MRAND(0, 20.0)*SIGN, INTERP_FAST, MRAND(0.7, 1.0));
-   }
 
-#undef RAND
-#undef MRAND
-#undef SIGN
-}
 
-static void play_element(int type, int pitch, float vol, float pan)
-{
-   al_play_sample(element_samples[type][pitch], vol, pan, 1.0,
-      ALLEGRO_PLAYMODE_ONCE, NULL);
-}
+   PROCEDURE PlayElement (TheType, Pitch: INTEGER; Volume, Pan: SINGLE);
+   BEGIN
+      al_play_sample (ElementSamples[TheType][Pitch], Volume, Pan, 1.0, ALLEGRO_PLAYMODE_ONCE, NIL);
+   END;
 
-static void activate_token(Token *token)
-{
-   const float sc = token_scale;
-   Sprite *spr = &token->top;
 
-   switch (token->type) {
 
-   case TYPE_EARTH:
-      play_element(TYPE_EARTH, token->pitch, 0.8, 0.0);
-      anim(spr, &spr->scale_x, spr->scale_x+0.4, spr->scale_x, INTERP_FAST, 0.3);
-      anim(spr, &spr->scale_y, spr->scale_y+0.4, spr->scale_y, INTERP_FAST, 0.3);
-      break;
+   PROCEDURE ActivateToken (Token: TToken);
+   CONST
+      sc = TokenScale;
+   VAR
+      Spr: PSprite;
+   BEGIN
+      Spr := @(Token.Top);
+      CASE Token.TheType OF
+      TYPE_EARTH:
+         BEGIN
+            PlayElement (TYPE_EARTH, Token.Pitch, 0.8, 0.0);
+            Anim (Spr^, @(Spr^.ScaleX), Spr^.ScaleX + 0.4, Spr^.ScaleX, INTERP_FAST, 0.3);
+            Anim (Spr^, @(Spr^.ScaleY), Spr^.ScaleY + 0.4, Spr^.ScaleY, INTERP_FAST, 0.3);
+         END;
+      TYPE_WIND:
+         BEGIN
+            PlayElement (TYPE_WIND, Token.Pitch, 0.8, 0.0);
+            AnimFull (Spr^, @(Spr^.ScaleX), sc * 1.0, sc * 0.8, INTERP_SLOW_IN_OUT, 0.0, 0.5);
+            AnimFull (Spr^, @(Spr^.ScaleX), sc * 0.8, sc * 1.0, INTERP_SLOW_IN_OUT, 0.5, 0.8);
+            AnimFull (Spr^, @(Spr^.ScaleY), sc * 1.0, sc * 0.8, INTERP_SLOW_IN_OUT, 0.0, 0.5);
+            AnimFull (Spr^, @(Spr^.ScaleY), sc * 0.8, sc * 1.0, INTERP_SLOW_IN_OUT, 0.5, 0.8);
+            SpawnWindEffects (Spr^.x, Spr^.y);
+         END;
+      TYPE_WATER:
+         BEGIN
+            PlayElement (TYPE_WATER, Token.Pitch, 0.7, 0.5);
+            AnimFull (Spr^, @(Spr^.ScaleX), sc * 1.3, sc * 0.8, INTERP_BOUNCE, 0.0, 0.5);
+            AnimFull (Spr^, @(Spr^.ScaleX), sc * 0.8, sc * 1.0, INTERP_BOUNCE, 0.5, 0.5);
+            AnimFull (Spr^, @(Spr^.ScaleY), sc * 0.8, sc * 1.3, INTERP_BOUNCE, 0.0, 0.5);
+            AnimFull (Spr^, @(Spr^.ScaleY), sc * 1.3, sc * 1.0, INTERP_BOUNCE, 0.5, 0.5);
+            SpawnWaterEffects (Spr^.x, Spr^.y);
+         END;
+      TYPE_FIRE:
+         BEGIN
+            PlayElement (TYPE_FIRE, Token.Pitch, 0.8, 0.0);
+            Anim (Spr^, @(Spr^.ScaleX), sc * 1.3, sc, INTERP_SLOW_IN_OUT, 1.0);
+            Anim (Spr^, @(Spr^.ScaleY), sc * 1.3, sc, INTERP_SLOW_IN_OUT, 1.0);
+            SpawnFireEffects (Spr^.x, Spr^.y);
+         END;
+      END;
+   END;
 
-   case TYPE_WIND:
-      play_element(TYPE_WIND, token->pitch, 0.8, 0.0);
-      anim_full(spr, &spr->scale_x, sc*1.0, sc*0.8, INTERP_SLOW_IN_OUT, 0.0, 0.5);
-      anim_full(spr, &spr->scale_x, sc*0.8, sc*1.0, INTERP_SLOW_IN_OUT, 0.5, 0.8);
-      anim_full(spr, &spr->scale_y, sc*1.0, sc*0.8, INTERP_SLOW_IN_OUT, 0.0, 0.5);
-      anim_full(spr, &spr->scale_y, sc*0.8, sc*1.0, INTERP_SLOW_IN_OUT, 0.5, 0.8);
-      spawn_wind_effects(spr->x, spr->y);
-      break;
 
-   case TYPE_WATER:
-      play_element(TYPE_WATER, token->pitch, 0.7, 0.5);
-      anim_full(spr, &spr->scale_x, sc*1.3, sc*0.8, INTERP_BOUNCE, 0.0, 0.5);
-      anim_full(spr, &spr->scale_x, sc*0.8, sc*1.0, INTERP_BOUNCE, 0.5, 0.5);
-      anim_full(spr, &spr->scale_y, sc*0.8, sc*1.3, INTERP_BOUNCE, 0.0, 0.5);
-      anim_full(spr, &spr->scale_y, sc*1.3, sc*1.0, INTERP_BOUNCE, 0.5, 0.5);
-      spawn_water_effects(spr->x, spr->y);
-      break;
 
-   case TYPE_FIRE:
-      play_element(TYPE_FIRE, token->pitch, 0.8, 0.0);
-      anim(spr, &spr->scale_x, sc*1.3, sc, INTERP_SLOW_IN_OUT, 1.0);
-      anim(spr, &spr->scale_y, sc*1.3, sc, INTERP_SLOW_IN_OUT, 1.0);
-      spawn_fire_effects(spr->x, spr->y);
-      break;
-   }
-}
+   PROCEDURE UpdatePlayback;
+   VAR
+      y: INTEGER;
+   BEGIN
+      FOR Y := 0 TO (TOKENS_Y - 1) DO
+         ActivateToken (Tokens[Y * TOKENS_X + PlaybackColumn + 1]);
+      DEC (PlaybackColumn);
+      IF PlaybackColumn >= TOKENS_X THEN
+         PlaybackColumn := 0;
+   END;
 
-static void update_playback(void)
-{
-   int y;
-
-   for (y = 0; y < TOKENS_Y; y++)
-      activate_token(&tokens[y * TOKENS_X + playback_column]);
-
-   if (++playback_column >= TOKENS_X)
-      playback_column = 0;
-}
-*)
 (****************************************************************************
  * Control                                                                  *
  ****************************************************************************)
-(*
-static bool is_touched(Token *token, float size, float x, float y)
-{
-   float half = size/2.0;
-   return (token->x - half <= x && x < token->x + half
-       &&  token->y - half <= y && y < token->y + half);
-}
 
-static Token *get_touched_token(float x, float y)
-{
-   int i;
-
-   for (i = 0; i < NUM_TOKENS; i++) {
-      if (is_touched(&tokens[i], token_size, x, y))
-         return &tokens[i];
-   }
-
-   return NULL;
-}
-
-static Token *get_touched_button(float x, float y)
-{
-   int i;
-
-   for (i = 0; i < NUM_TYPES; i++) {
-      if (is_touched(&buttons[i], button_size, x, y))
-         return &buttons[i];
-   }
-
-   return NULL;
-}
-
-static void select_token(Token *token)
-{
-   if (token->type == TYPE_NONE && selected_button) {
-      Sprite *spr = &token->top;
-      spr->image = selected_button->type;
-      anim_to(spr, &spr->opacity, 1.0, INTERP_FAST, 0.15);
-      token->type = selected_button->type;
-   }
-}
-
-static void unselect_token(Token *token)
-{
-   if (token->type != TYPE_NONE) {
-      Sprite *spr = &token->top;
-      anim_full(spr, &spr->opacity, spr->opacity, 0.0, INTERP_SLOW, 0.15, 0.15);
-      token->type = TYPE_NONE;
-   }
-}
-
-static void unselect_all_tokens(void)
-{
-   int i;
-
-   for (i = 0; i < NUM_TOKENS; i++)
-      unselect_token(&tokens[i]);
-}
-
-static void change_healthy_glow(int type, float x)
-{
-   anim_tint(&glow, glow_color[type], INTERP_SLOW_IN_OUT, 3.0);
-   anim_to(&glow, &glow.x, x, INTERP_SLOW_IN_OUT, 3.0);
-
-   anim_tint(&glow_overlay, glow_color[type], INTERP_SLOW_IN_OUT, 4.0);
-   anim_to(&glow_overlay, &glow_overlay.opacity, 1.0, INTERP_SLOW_IN_OUT, 4.0);
-}
-
-static void select_button(Token *button)
-{
-   Sprite *spr;
-
-   if (button == selected_button)
-      return;
-
-   if (selected_button) {
-      spr = &selected_button->top;
-      anim_to(spr, &spr->scale_x, button_unsel_scale, INTERP_SLOW, 0.3);
-      anim_to(spr, &spr->scale_y, button_unsel_scale, INTERP_SLOW, 0.3);
-      anim_to(spr, &spr->opacity, 0.5, INTERP_DOUBLE_SLOW, 0.2);
-
-      spr = &selected_button->bot;
-      anim_to(spr, &spr->scale_x, dropshadow_unsel_scale, INTERP_SLOW, 0.3);
-      anim_to(spr, &spr->scale_y, dropshadow_unsel_scale, INTERP_SLOW, 0.3);
-   }
-
-   selected_button = button;
-
-   spr = &button->top;
-   anim_to(spr, &spr->scale_x, button_sel_scale, INTERP_FAST, 0.3);
-   anim_to(spr, &spr->scale_y, button_sel_scale, INTERP_FAST, 0.3);
-   anim_to(spr, &spr->opacity, 1.0, INTERP_FAST, 0.3);
-
-   spr = &button->bot;
-   anim_to(spr, &spr->scale_x, dropshadow_sel_scale, INTERP_FAST, 0.3);
-   anim_to(spr, &spr->scale_y, dropshadow_sel_scale, INTERP_FAST, 0.3);
-
-   change_healthy_glow(button->type, button->x);
-
-   al_play_sample(select_sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
-}
-
-static void on_mouse_down(float x, float y, int mbut)
-{
-   Token *token;
-   Token *button;
-
-   if (mbut == 1) {
-      if ((token = get_touched_token(x, y)))
-         select_token(token);
-      else if ((button = get_touched_button(x, y)))
-         select_button(button);
-   }
-   else if (mbut == 2) {
-      if ((token = get_touched_token(x, y)))
-         unselect_token(token);
-   }
-}
-
-static void on_mouse_axes(float x, float y)
-{
-   Token *token = get_touched_token(x, y);
-
-   if (token == hover_token)
-      return;
-
-   if (hover_token) {
-      Sprite *spr = &hover_token->bot;
-      anim_to(spr, &spr->opacity, 0.4, INTERP_DOUBLE_SLOW, 0.2);
-   }
-
-   hover_token = token;
-
-   if (hover_token) {
-      Sprite *spr = &hover_token->bot;
-      anim_to(spr, &spr->opacity, 0.7, INTERP_FAST, 0.2);
-   }
-}
-
-static void main_loop(ALLEGRO_EVENT_QUEUE *queue)
-{
-   ALLEGRO_EVENT event;
-   bool redraw = true;
-
-   for (;;) {
-      if (redraw && al_is_event_queue_empty(queue)) {
-         float now = al_get_time();
-         free_old_flairs(now);
-         update_anims(now);
-         draw_screen();
-         redraw = false;
-      }
-
-      al_wait_for_event(queue, &event);
-
-      if (event.timer.source == refresh_timer) {
-         redraw = true;
-         continue;
-      }
-
-      if (event.timer.source == playback_timer) {
-         update_playback();
-         continue;
-      }
-
-      if (event.type == ALLEGRO_EVENT_MOUSE_AXES) {
-         on_mouse_axes(event.mouse.x, event.mouse.y);
-         continue;
-      }
-
-      if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
-         on_mouse_down(event.mouse.x, event.mouse.y, event.mouse.button);
-         continue;
-      }
-
-      if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-         break;
-      }
-
-      if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
-         if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
-            break;
-
-         if (event.keyboard.keycode == ALLEGRO_KEY_C)
-            unselect_all_tokens();
-      }
-   }
-}
-*)
+   FUNCTION IsTouched (Token: TToken; Size, x, y: SINGLE): BOOLEAN;
+   VAR
+      Half: SINGLE;
+   BEGIN
+      Half := Size / 2;
+      IsTouched := (Token.x - Half <= x) AND (x < Token.x + Half)
+               AND (Token.y - Half <= y) AND (y < Token.y + Half)
+   END;
 
 
+
+   FUNCTION GetTouchedToken (x, y: SINGLE): PToken;
+   VAR
+      Ndx: INTEGER;
+   BEGIN
+      GetTouchedToken := NIL;
+      FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
+         IF IsTouched (Tokens[Ndx], TokenSize, x, y) THEN
+         BEGIN
+            GetTouchedToken := @Tokens[Ndx];
+            EXIT;
+         END;
+   END;
+
+
+
+   FUNCTION GetTouchedButton (x, y: SINGLE): PToken;
+   VAR
+      Ndx: INTEGER;
+   BEGIN
+      GetTouchedButton := NIL;
+      FOR Ndx := LOW (Buttons) TO HIGH (Buttons) DO
+         IF IsTouched (Buttons[Ndx], ButtonSize, x, y) THEN
+         BEGIN
+            GetTouchedButton := @Buttons[Ndx];
+            EXIT;
+         END;
+   END;
+
+
+
+   PROCEDURE SelectToken (Token: PToken);
+   VAR
+      Spr: PSprite;
+   BEGIN
+      IF (Token^.TheType = TYPE_NONE) AND (SelectedButton <> NIL) THEN
+      BEGIN
+         Spr := @(Token^.Top);
+         Spr^.Image := SelectedButton^.TheType;
+         AnimTo (Spr^, @(Spr^.Opacity), 1, INTERP_FAST, 0.15);
+         Token^.TheType := SelectedButton^.TheType;
+      END;
+   END;
+
+
+
+   PROCEDURE UnselectToken (Token: PToken);
+   VAR
+      Spr: PSprite;
+   BEGIN
+      IF Token^.TheType <> TYPE_NONE THEN
+      BEGIN
+         Spr := @(Token^.Top);
+         AnimFull (Spr^, @(Spr^.Opacity), Spr^.Opacity, 0, INTERP_SLOW, 0.15, 0.15);
+         Token^.TheType := SelectedButton^.TheType;
+      END;
+   END;
+
+
+
+   PROCEDURE UnselectAllTokens;
+   VAR
+      Ndx: INTEGER;
+   BEGIN
+      FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
+         UnselectToken (@Tokens[Ndx]);
+   END;
+
+
+
+   PROCEDURE ChangeHealthyGlow (TheType: INTEGER; x: SINGLE);
+   BEGIN
+      AnimTint (Glow, GlowColor[TheType], INTERP_SLOW_IN_OUT, 3.0);
+      AnimTo (Glow, @Glow.x, x, INTERP_SLOW_IN_OUT, 3.0);
+
+      AnimTint (GlowOverlay, GlowColor[TheType], INTERP_SLOW_IN_OUT, 3.0);
+      AnimTo (GlowOverlay, @GlowOverlay.x, x, INTERP_SLOW_IN_OUT, 3.0);
+   END;
+
+
+
+   PROCEDURE SelectButton (Button: PToken);
+   VAR
+      Spr: PSprite;
+   BEGIN
+      IF Button = SelectedButton THEN
+         EXIT;
+      IF SelectedButton <> NIL THEN
+      BEGIN
+         Spr := @(SelectedButton^.Top);
+         AnimTo (Spr^, @(Spr^.ScaleX), ButtonUnselScale, INTERP_SLOW, 0.3);
+         AnimTo (Spr^, @(Spr^.ScaleY), ButtonUnselScale, INTERP_SLOW, 0.3);
+         AnimTo (Spr^, @(Spr^.Opacity), 0.5, INTERP_DOUBLE_SLOW, 0.2);
+
+         Spr := @(SelectedButton^.Bot);
+         AnimTo (Spr^, @(Spr^.ScaleX), DropshadowUnselScale, INTERP_SLOW, 0.3);
+         AnimTo (Spr^, @(Spr^.ScaleY), DropshadowUnselScale, INTERP_SLOW, 0.3);
+      END;
+      SelectedButton := Button;
+      Spr := @(Button^.Top);
+      AnimTo (Spr^, @(Spr^.ScaleX), ButtonSelScale, INTERP_FAST, 0.3);
+      AnimTo (Spr^, @(Spr^.ScaleY), ButtonSelScale, INTERP_FAST, 0.3);
+      AnimTo (Spr^, @(Spr^.Opacity), 1.0, INTERP_FAST, 0.3);
+      Spr := @(Button^.Bot);
+      AnimTo (Spr^, @(Spr^.ScaleX), DropshadowSelScale, INTERP_FAST, 0.3);
+      AnimTo (Spr^, @(Spr^.ScaleY), DropshadowSelScale, INTERP_FAST, 0.3);
+      ChangeHealthyGlow (Button^.TheType, Button^.x);
+      al_play_sample (SelectSample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NIL);
+   END;
+
+
+
+   PROCEDURE onMouseDown (x, y: SINGLE; mButton: INTEGER);
+   VAR
+      Token, Button: PToken;
+   BEGIN
+      IF mButton = 1 THEN
+      BEGIN
+         Token := GetTouchedToken (x, y);
+         IF Token <> NIL THEN
+            SelectToken (Token)
+         ELSE BEGIN
+            Button := GetTouchedButton (x, y);
+            IF Button <> NIL THEN
+               SelectButton (Button);
+         END;
+      END
+      ELSE IF mButton = 2 THEN
+      BEGIN
+         Token := GetTouchedToken (x, y);
+         IF Token <> NIL THEN
+            UnselectToken (Token);
+      END;
+   END;
+
+
+
+   PROCEDURE onMouseAxes (x, y: SINGLE);
+   VAR
+      Token: PToken;
+      Spr: PSprite;
+   BEGIN
+      Token := GetTouchedToken (x, y);
+      IF Token = HoverToken THEN
+         EXIT;
+      IF HoverToken <> NIL THEN
+      BEGIN
+         Spr := @(HoverToken^.Bot);
+         AnimTo (Spr^, @(Spr^.Opacity), 0.4, INTERP_DOUBLE_SLOW, 0.2);
+      END;
+      HoverToken := Token;
+      IF HoverToken <> NIL THEN
+      BEGIN
+         Spr := @(HoverToken^.Bot);
+         AnimTo (Spr^, @(Spr^.Opacity), 0.7, INTERP_FAST, 0.2);
+      END;
+   END;
+
+
+
+   PROCEDURE MainLoop (Queue: ALLEGRO_EVENT_QUEUEptr);
+   VAR
+      Event: ALLEGRO_EVENT;
+      EndLoop, Redraw: BOOLEAN;
+      Now: SINGLE;
+   BEGIN
+      EndLoop := FALSE;
+      Redraw := TRUE;
+      REPEAT
+         IF Redraw AND al_is_event_queue_empty (Queue) THEN
+         BEGIN
+            Now := al_get_time;
+            FreeOldFlairs (Now);
+            UpdateAnims (Now);
+            DrawScreen;
+            Redraw := FALSE;
+         END;
+
+         al_wait_for_event (Queue, Event);
+
+         IF Event.timer.source = RefreshTimer THEN
+            Redraw := true
+         ELSE IF Event.timer.source = PlaybackTimer THEN
+            UpdatePlayback
+         ELSE IF Event._type = ALLEGRO_EVENT_MOUSE_AXES THEN
+            onMouseAxes (Event.mouse.x, Event.mouse.y)
+         ELSE IF Event._type = ALLEGRO_EVENT_MOUSE_BUTTON_DOWN THEN
+            onMouseDown (event.mouse.x, event.mouse.y, event.mouse.button)
+         ELSE IF Event._type = ALLEGRO_EVENT_DISPLAY_CLOSE THEN
+            EndLoop := TRUE
+         ELSE IF Event._type = ALLEGRO_EVENT_KEY_DOWN THEN
+         BEGIN
+            IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
+               EndLoop := TRUE;
+            IF Event.keyboard.keycode = ALLEGRO_KEY_C THEN
+               UnselectAllTokens;
+         END;
+      UNTIL EndLoop;
+   END;
 
 VAR
    Queue: ALLEGRO_EVENT_QUEUEptr;
 BEGIN
-  IF NOT al_init THEN
-    AbortExample ('Error initialising Allegro.');
-  IF NOT al_install_audio OR NOT al_reserve_samples (128) THEN
-    AbortExample ('Error initialising audio.');
-  al_init_acodec_addon();
-  al_init_image_addon();
+   IF NOT al_init THEN
+      AbortExample ('Error initialising Allegro.');
+   IF NOT al_install_audio OR NOT al_reserve_samples (128) THEN
+      AbortExample ('Error initialising audio.');
+   al_init_acodec_addon();
+   al_init_image_addon();
 
-  al_set_new_bitmap_flags (ALLEGRO_MIN_LINEAR OR ALLEGRO_MAG_LINEAR);
+   al_set_new_bitmap_flags (ALLEGRO_MIN_LINEAR OR ALLEGRO_MAG_LINEAR);
+
+   Display := al_create_display (ScreenW, ScreenH);
+   IF Display = NIL THEN
+      AbortExample ('Error creating display.');
+   al_set_window_title (Display, 'Haiku - A Musical Instrument');
+
+   LoadImages;
+   LoadSamples;
+
+   InitTokens;
+   InitButtons;
+   InitGlow;
+   SelectButton (@(Buttons[TYPE_EARTH]));
+
+   al_install_keyboard;
+   al_install_mouse;
+
+   RefreshTimer := al_create_timer (1.0 / RefreshRate);
+   PlaybackTimer := al_create_timer (PlaybackPeriod / TOKENS_X);
+
+   Queue := al_create_event_queue;
+   al_register_event_source (Queue, al_get_display_event_source (Display));
+   al_register_event_source (Queue, al_get_keyboard_event_source);
+   al_register_event_source (Queue, al_get_mouse_event_source);
+   al_register_event_source (Queue, al_get_timer_event_source (RefreshTimer));
+   al_register_event_source (Queue, al_get_timer_event_source (PlaybackTimer));
+
+   al_start_timer (RefreshTimer);
+   al_start_timer (PlaybackTimer);
+
+   MainLoop (Queue);
+
+   FreeAllFlairs;
 END.
-{
-
-   al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
-
-   display = al_create_display(screen_w, screen_h);
-   if (!display) {
-      abort_example('Error creating display.\n');
-   }
-   al_set_window_title(display, 'Haiku - A Musical Instrument');
-
-   load_images();
-   load_samples();
-
-   init_tokens();
-   init_buttons();
-   init_glow();
-   select_button(&buttons[TYPE_EARTH]);
-
-   al_install_keyboard();
-   al_install_mouse();
-
-   refresh_timer = al_create_timer(1.0 / refresh_rate);
-   playback_timer = al_create_timer(playback_period / TOKENS_X);
-
-   queue = al_create_event_queue();
-   al_register_event_source(queue, al_get_display_event_source(display));
-   al_register_event_source(queue, al_get_keyboard_event_source());
-   al_register_event_source(queue, al_get_mouse_event_source());
-   al_register_event_source(queue, al_get_timer_event_source(refresh_timer));
-   al_register_event_source(queue, al_get_timer_event_source(playback_timer));
-
-   al_start_timer(refresh_timer);
-   al_start_timer(playback_timer);
-
-   main_loop(queue);
-
-   free_all_flairs();
-
-   return 0;
-}
 
 /* vim: set sts=3 sw=3 et: */

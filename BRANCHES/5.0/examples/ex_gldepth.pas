@@ -9,7 +9,11 @@ PROGRAM ex_gldepth;
 USES
   Common,
   Allegro5, al5image, al5gl, al5font,
+{$IFDEF FPC}
   GL,
+{$ELSE}
+  OpenGL,
+{$ENDIF}
   sysutils;
 
 TYPE
@@ -243,7 +247,7 @@ BEGIN
   DoLoop := TRUE;
   WHILE DoLoop DO
   BEGIN
-    al_wait_for_event (Queue, @Event);
+    al_wait_for_event (Queue, Event);
     CASE Event._type OF
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       DoLoop := FALSE;
