@@ -24,7 +24,7 @@ PROGRAM ex_font;
     ScreenClone := al_clone_bitmap (al_get_target_bitmap);
     EndLoop := FALSE;
     REPEAT
-      al_wait_for_event (Queue, @Event);
+      al_wait_for_event (Queue, Event);
       IF Event._type = ALLEGRO_EVENT_DISPLAY_CLOSE THEN
 	EndLoop := TRUE
       ELSE IF Event._type = ALLEGRO_EVENT_KEY_DOWN THEN

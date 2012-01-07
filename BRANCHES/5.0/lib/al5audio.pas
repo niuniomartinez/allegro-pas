@@ -265,8 +265,9 @@ ALLEGRO_KCM_AUDIO_FUNC(size_t, al_get_audio_depth_size, (ALLEGRO_AUDIO_DEPTH con
 ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_MIXER *, al_get_default_mixer, (void));
 ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_default_mixer, (ALLEGRO_MIXER *mixer));
 ALLEGRO_KCM_AUDIO_FUNC(bool, al_restore_default_mixer, (void));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_play_sample, (ALLEGRO_SAMPLE *data,
-      float gain, float pan, float speed, ALLEGRO_PLAYMODE loop, ALLEGRO_SAMPLE_ID *ret_id));
+*)
+   FUNCTION al_play_sample (data: ALLEGRO_SAMPLEptr; gain, pan, speed: SINGLE; loop: ALLEGRO_PLAYMODE; ret_id: ALLEGRO_SAMPLE_IDptr): BOOLEAN; CDECL;
+(*
 ALLEGRO_KCM_AUDIO_FUNC(void, al_stop_sample, (ALLEGRO_SAMPLE_ID *spl_id));
 ALLEGRO_KCM_AUDIO_FUNC(void, al_stop_samples, (void));
 
@@ -337,6 +338,9 @@ IMPLEMENTATION
 
 (* Simple audio layer *)
    FUNCTION al_reserve_samples (reserve_samples: LONGINT): BOOLEAN; CDECL;
-  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+   EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+   FUNCTION al_play_sample (data: ALLEGRO_SAMPLEptr; gain, pan, speed: SINGLE; loop: ALLEGRO_PLAYMODE; ret_id: ALLEGRO_SAMPLE_IDptr): BOOLEAN; CDECL;
+   EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
 END.

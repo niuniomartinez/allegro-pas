@@ -143,6 +143,97 @@ END;
   (* Abstract type representing a bitmap (2D image). *)
     ALLEGRO_BITMAPptr = POINTER;
 
+  (* ALLEGRO_PIXEL_FORMAT *)
+    ALLEGRO_PIXEL_FORMAT = (
+      ALLEGRO_PIXEL_FORMAT_ANY = 0,
+      ALLEGRO_PIXEL_FORMAT_ANY_NO_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_WITH_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_15_NO_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_16_NO_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_16_WITH_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_24_NO_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_32_NO_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ARGB_8888,
+      ALLEGRO_PIXEL_FORMAT_RGBA_8888,
+      ALLEGRO_PIXEL_FORMAT_ARGB_4444,
+      ALLEGRO_PIXEL_FORMAT_RGB_888,	{ 24 bit format }
+      ALLEGRO_PIXEL_FORMAT_RGB_565,
+      ALLEGRO_PIXEL_FORMAT_RGB_555,
+      ALLEGRO_PIXEL_FORMAT_RGBA_5551,
+      ALLEGRO_PIXEL_FORMAT_ARGB_1555,
+      ALLEGRO_PIXEL_FORMAT_ABGR_8888,
+      ALLEGRO_PIXEL_FORMAT_XBGR_8888,
+      ALLEGRO_PIXEL_FORMAT_BGR_888,	{ 24 bit format }
+      ALLEGRO_PIXEL_FORMAT_BGR_565,
+      ALLEGRO_PIXEL_FORMAT_BGR_555,
+      ALLEGRO_PIXEL_FORMAT_RGBX_8888,
+      ALLEGRO_PIXEL_FORMAT_XRGB_8888,
+      ALLEGRO_PIXEL_FORMAT_ABGR_F32,
+      ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE,
+      ALLEGRO_PIXEL_FORMAT_RGBA_4444,
+      ALLEGRO_NUM_PIXEL_FORMATS
+    );
+
+
+
+  CONST
+  (* Bitmap flags *)
+    ALLEGRO_MEMORY_BITMAP            = $0001;
+    ALLEGRO_KEEP_BITMAP_FORMAT       = $0002;
+    ALLEGRO_FORCE_LOCKING            = $0004;
+    ALLEGRO_NO_PRESERVE_TEXTURE      = $0008;
+    ALLEGRO_ALPHA_TEST               = $0010;
+    _ALLEGRO_INTERNAL_OPENGL         = $0020;
+    ALLEGRO_MIN_LINEAR               = $0040;
+    ALLEGRO_MAG_LINEAR               = $0080;
+    ALLEGRO_MIPMAP                   = $0100;
+    ALLEGRO_NO_PREMULTIPLIED_ALPHA   = $0200;
+    ALLEGRO_VIDEO_BITMAP             = $0400;
+
+
+
+   (* Flags for the blitting functions *)
+      ALLEGRO_FLIP_HORIZONTAL = $00001;
+      ALLEGRO_FLIP_VERTICAL   = $00002;
+
+
+
+   (* Locking flags *)
+      ALLEGRO_LOCK_READWRITE  = 0;
+      ALLEGRO_LOCK_READONLY   = 1;
+      ALLEGRO_LOCK_WRITEONLY  = 2;
+
+
+
+   TYPE
+   (* Blending modes *)
+      ALLEGRO_BLEND_MODE = (
+         ALLEGRO_ZERO = 0,
+         ALLEGRO_ONE = 1,
+         ALLEGRO_ALPHA = 2,
+         ALLEGRO_INVERSE_ALPHA = 3
+      );
+
+      ALLEGRO_BLEND_OPERATIONS = (
+         ALLEGRO_ADD = 0,
+         ALLEGRO_SRC_MINUS_DEST = 1,
+         ALLEGRO_DEST_MINUS_SRC = 2,
+         ALLEGRO_NUM_BLEND_OPERATIONS
+      );
+
+
+      ALLEGRO_LOCKED_REGION = RECORD
+         data: POINTER;
+         format, pitch, pixel_size: LONGINT;
+      END;
+
+
+
+  PROCEDURE al_set_new_bitmap_format (format: LONGINT); CDECL;
+
+  PROCEDURE al_set_new_bitmap_flags (flags: LONGINT); CDECL;
+
 (* Returns the width of a bitmap in pixels. *)
   FUNCTION al_get_bitmap_width (bitmap: ALLEGRO_BITMAPptr): LONGINT; CDECL;
 
@@ -172,6 +263,7 @@ END;
 (* Destroys the given bitmap, freeing all resources used by it. Does nothing if given the @nil pointer. *)
   PROCEDURE al_destroy_bitmap (Bitmap: ALLEGRO_BITMAPptr); CDECL;
 
+(* Blitting *)
 (* Draws an unscaled, unrotated bitmap at the given position to the current target bitmap (see @link(al_set_target_bitmap)).
 
    @bold(Note:) The current target bitmap must be a different bitmap. Drawing a bitmap to itself (or to a sub-bitmap of itself) or drawing a sub-bitmap to its parent (or another sub-bitmap of its parent) are not currently supported. To copy part of a bitmap into the same bitmap simply use a temporary bitmap instead.
@@ -222,6 +314,14 @@ END;
    @seealso(al_draw_bitmap) @seealso(al_draw_bitmap_region) @seealso(al_draw_scaled_bitmap) @seealso(al_draw_rotated_bitmap) *)
   PROCEDURE al_draw_scaled_rotated_bitmap (bitmap: ALLEGRO_BITMAPptr; cx, cy, dx, dy, xscale, yscale, angle: SINGLE; flags: LONGINT); CDECL;
 
+(* Tinted blitting *)
+   PROCEDURE al_draw_tinted_bitmap (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; dx, dy: SINGLE; flags: LONGINT); CDECL;
+   PROCEDURE al_draw_tinted_bitmap_region (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; sx, sy, sw, sh, dx, dy: SINGLE; flags: LONGINT); CDECL;
+   PROCEDURE al_draw_tinted_scaled_bitmap (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; sx, sy, sw, sh, dx, dy, dw, dh: SINGLE; flags: LONGINT); CDECL;
+   PROCEDURE al_draw_tinted_rotated_bitmap (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; cx, cy, dx, dy, angle: SINGLE; flags: LONGINT); CDECL;
+   PROCEDURE al_draw_tinted_scaled_rotated_bitmap (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; cx, cy, dx, dy, xscale, yscale, angle: SINGLE; flags: LONGINT); CDECL;
+
+(* Pixel mapping *)
 (* Converts r, g, b (ranging from 0-255) into an @link(ALLEGRO_COLOR), using 255 for alpha.
    @seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb_f) *)
   FUNCTION al_map_rgb (r, g, b: BYTE): ALLEGRO_COLOR; CDECL;
@@ -238,9 +338,26 @@ END;
    @seealso(al_map_rgb) @seealso(al_map_rgba) @seealso(al_map_rgb_f) *)
   FUNCTION al_map_rgba_f (r, g, b, a: SINGLE): ALLEGRO_COLOR; CDECL;
 
-  FUNCTION al_clone_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr; CDECL;
+(* Pixel unmapping *)
+  PROCEDURE al_unmap_rgb (color: ALLEGRO_COLOR; VAR r, g, b: BYTE); CDECL;
+  PROCEDURE al_unmap_rgba (color: ALLEGRO_COLOR; VAR r, g, b, a: BYTE); CDECL;
+  PROCEDURE al_unmap_rgb_f (color: ALLEGRO_COLOR; VAR r, g, b: SINGLE); CDECL;
+  PROCEDURE al_unmap_rgba_f (color: ALLEGRO_COLOR; VAR r, g, b, a: SINGLE); CDECL;
+  FUNCTION al_get_pixel_format_bits (format: LONGINT): LONGINT; CDECL;
 
+(* Miscellaneous *)
+   FUNCTION al_clone_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr; CDECL;
+   FUNCTION al_is_bitmap_locked (bitmap: ALLEGRO_BITMAPptr): BOOLEAN; CDECL;
 
+(* Blending *)
+   PROCEDURE al_set_blender (op: ALLEGRO_BLEND_OPERATIONS; source, dest: ALLEGRO_BLEND_MODE); CDECL;
+   PROCEDURE al_get_blender (VAR op: ALLEGRO_BLEND_OPERATIONS; source, dest: ALLEGRO_BLEND_MODE); CDECL;
+   PROCEDURE al_set_separate_blender (op: ALLEGRO_BLEND_OPERATIONS; source, dest: ALLEGRO_BLEND_MODE;
+				      alpha_op: ALLEGRO_BLEND_OPERATIONS; alpha_source, alpha_dest: ALLEGRO_BLEND_MODE); CDECL;
+   PROCEDURE al_get_separate_blender (VAR op: ALLEGRO_BLEND_OPERATIONS; source, dest: ALLEGRO_BLEND_MODE;
+				      alpha_op: ALLEGRO_BLEND_OPERATIONS; alpha_source, alpha_dest: ALLEGRO_BLEND_MODE); CDECL;
+
+   PROCEDURE _al_put_pixel (bitmap: ALLEGRO_BITMAPptr; x,y: LONGINT; color: ALLEGRO_COLOR); CDECL;
 
 (******************************************************************************
  * bitmap_io.h *
@@ -292,29 +409,29 @@ END;
     ALLEGRO_DISPLAYptr = POINTER;
 
   CONST
-(* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
+  (* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
     ALLEGRO_DEFAULT                     = 0 SHL 0;
-(* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
+  (* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
     ALLEGRO_WINDOWED                    = 1 SHL 0;
-(* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
+  (* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
     ALLEGRO_FULLSCREEN                  = 1 SHL 1;
-(* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
+  (* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
     ALLEGRO_OPENGL                      = 1 SHL 2;
-(* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
+  (* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
     ALLEGRO_DIRECT3D_INTERNAL           = 1 SHL 3;
-(* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
+  (* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
     ALLEGRO_RESIZABLE                   = 1 SHL 4;
-(* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
+  (* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
     ALLEGRO_NOFRAME                     = 1 SHL 5;
-(* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
+  (* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
     ALLEGRO_GENERATE_EXPOSE_EVENTS      = 1 SHL 6;
-(* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
+  (* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
     ALLEGRO_OPENGL_3_0                  = 1 SHL 7;
-(* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
+  (* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
     ALLEGRO_OPENGL_FORWARD_COMPATIBLE   = 1 SHL 8;
-(* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
+  (* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
     ALLEGRO_FULLSCREEN_WINDOW           = 1 SHL 9;
-(* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
+  (* Possible bit combination for the @code(flags) parameter of @link(al_set_new_display_flags). *)
     ALLEGRO_MINIMIZED                   = 1 SHL 10;
 
   TYPE
@@ -388,10 +505,7 @@ END;
     END;
   (* Describes a monitors size and position relative to other monitors. @code(x1), @code(y1) will be @code(0), @code(0) on the primary display. Other monitors can have negative values if they are to the left or above the primary display. *)
     ALLEGRO_MONITOR_INFO = RECORD
-      x1,
-      y1,
-      x2,
-      y2: LONGINT;
+      x1, y1, x2, y2: LONGINT;
     END;
 
 (* Sets various flags to be used when creating new displays on the calling thread.
@@ -514,6 +628,24 @@ al_draw_line (x1, y1, x2, y2, color, 0);
 (* Retrieves the associated event source. *)
   FUNCTION al_get_display_event_source (display: ALLEGRO_DISPLAYptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
 
+(* Primitives *)
+   PROCEDURE al_clear_to_color (color: ALLEGRO_COLOR); CDECL;
+   PROCEDURE al_draw_pixel (x, y: SINGLE; color: ALLEGRO_COLOR); CDECL;
+
+   PROCEDURE al_set_display_icon (display: ALLEGRO_DISPLAYptr; icon: ALLEGRO_BITMAPptr); CDECL;
+
+(* Stuff for multihead/window management *)
+   FUNCTION al_get_num_video_adapters: LONGINT; CDECL;
+   FUNCTION al_get_monitor_info (adapter: LONGINT; VAR info: ALLEGRO_MONITOR_INFO): BOOLEAN; CDECL;
+   FUNCTION al_get_new_display_adapter: LONGINT; CDECL;
+   PROCEDURE al_set_new_display_adapter (adapter: LONGINT); CDECL;
+   PROCEDURE al_set_new_window_position (x, y: LONGINT); CDECL;
+   PROCEDURE al_get_new_window_position (VAR x, y: LONGINT); CDECL;
+   PROCEDURE al_set_window_position (display: ALLEGRO_DISPLAYptr; x, y: LONGINT); CDECL;
+   PROCEDURE al_get_window_position (display: ALLEGRO_DISPLAYptr; VAR x, y: LONGINT); CDECL;
+
+   PROCEDURE al_set_window_title (display: ALLEGRO_DISPLAYptr; CONST title: PCHAR);CDECL;
+
 (* Sets an extra display option, to be used when creating new displays on the calling thread. Display options differ from display flags, and specify some details of the context to be created within the window itself. These mainly have no effect on Allegro itself, but you may want to specify them, for example if you want to use multisampling.
 
   The 'importance' parameter can be either:@definitionList(
@@ -553,6 +685,10 @@ al_draw_line (x1, y1, x2, y2, color, 0);
  *)
   FUNCTION al_get_display_option (display: ALLEGRO_DISPLAYptr; option: LONGINT): LONGINT; CDECL;
 
+(*Deferred drawing*)
+   PROCEDURE al_hold_bitmap_drawing (hold: BOOLEAN); CDECL;
+   FUNCTION al_is_bitmap_drawing_held: BOOLEAN; CDECL;
+
 
 
 (******************************************************************************
@@ -568,8 +704,89 @@ al_draw_line (x1, y1, x2, y2, color, 0);
  * mouse.h *
  ***********)
 
+  CONST
+  (* Allow up to four extra axes for future expansion. *)
+    ALLEGRO_MOUSE_MAX_EXTRA_AXES = 4;
+
   TYPE
     ALLEGRO_MOUSEptr = POINTER;
+
+  (* Type: ALLEGRO_MOUSE_STATE *)
+    ALLEGRO_MOUSE_STATEptr = ^ALLEGRO_MOUSE_STATE;
+    ALLEGRO_MOUSE_STATE = RECORD
+    (* (x, y) Primary mouse position
+     * (z) Mouse wheel position (1D 'wheel'), or,
+     * (w, z) Mouse wheel position (2D 'ball')
+     * display - the display the mouse is on (coordinates are relative to this)
+     * pressure - the pressure appleid to the mouse (for stylus/tablet)
+     *)
+      x, y, z, w: LONGINT;
+      more_axes: ARRAY [0..(ALLEGRO_MOUSE_MAX_EXTRA_AXES - 1)] OF LONGINT;
+      buttons: LONGINT;
+      pressure: SINGLE;
+      display: ALLEGRO_DISPLAYptr;
+    END;
+
+
+  (* Mouse cursors *)
+    ALLEGRO_MOUSE_CURSORptr = POINTER;
+
+    ALLEGRO_SYSTEM_MOUSE_CURSOR = (
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_NONE        =  0,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT     =  1,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_ARROW       =  2,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_BUSY        =  3,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_QUESTION    =  4,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_EDIT        =  5,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_MOVE        =  6,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_N    =  7,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_W    =  8,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_S    =  9,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_E    = 10,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_NW   = 11,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_SW   = 12,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_SE   = 13,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_NE   = 14,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_PROGRESS    = 15,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_PRECISION   = 16,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK        = 17,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_ALT_SELECT  = 18,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_UNAVAILABLE = 19,
+      ALLEGRO_NUM_SYSTEM_MOUSE_CURSORS
+    );
+
+  FUNCTION al_is_mouse_installed: BOOLEAN; CDECL;
+  FUNCTION al_install_mouse: BOOLEAN; CDECL;
+  PROCEDURE al_uninstall_mouse; CDECL;
+  FUNCTION al_get_mouse_num_buttons: LONGWORD; CDECL;
+  FUNCTION al_get_mouse_num_axes: LONGWORD; CDECL;
+  FUNCTION al_set_mouse_xy (display: ALLEGRO_DISPLAYptr; x, y: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_set_mouse_z (z: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_set_mouse_w (w: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_set_mouse_axis (axis, value: LONGINT): BOOLEAN; CDECL;
+  PROCEDURE al_get_mouse_state (ret_state: ALLEGRO_MOUSE_STATEptr); CDECL;
+  FUNCTION al_mouse_button_down (CONST state: ALLEGRO_MOUSE_STATEptr; button: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_get_mouse_state_axis (CONST state: ALLEGRO_MOUSE_STATEptr; axis: LONGINT): LONGINT; CDECL;
+
+  FUNCTION al_get_mouse_event_source: ALLEGRO_EVENT_SOURCEptr; CDECL;
+
+(*
+ * Cursors:
+ *
+ * This will probably become part of the display API.  It provides for
+ * hardware cursors only; software cursors may or may not be provided
+ * for later (it would need significant cooperation from the display
+ * API).
+ *)
+  FUNCTION al_create_mouse_cursor (sprite: ALLEGRO_BITMAPptr; xfocus, yfocus: LONGINT): ALLEGRO_MOUSE_CURSORptr; CDECL;
+  PROCEDURE al_destroy_mouse_cursor (cursor: ALLEGRO_MOUSE_CURSORptr);
+  FUNCTION al_set_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor: ALLEGRO_MOUSE_CURSORptr): BOOLEAN; CDECL;
+  FUNCTION al_set_system_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor_id: ALLEGRO_SYSTEM_MOUSE_CURSOR): BOOLEAN; CDECL;
+  FUNCTION al_show_mouse_cursor (display: ALLEGRO_DISPLAYptr): BOOLEAN; CDECL;
+  FUNCTION al_hide_mouse_cursor (display: ALLEGRO_DISPLAYptr): BOOLEAN; CDECL;
+  FUNCTION al_get_mouse_cursor_position (ret_x, ret_y: PLONGINT): BOOLEAN; CDECL;
+  FUNCTION al_grab_mouse (display: ALLEGRO_DISPLAYptr): BOOLEAN; CDECL;
+  FUNCTION al_ungrab_mouse: BOOLEAN; CDECL;
 
 
 
@@ -580,8 +797,6 @@ al_draw_line (x1, y1, x2, y2, color, 0);
   TYPE
   (* Pointer to @code(ALLEGRO_TIMER). *)
     ALLEGRO_TIMERptr = POINTER;
-  (* This is an abstract data type representing a timer object. *)
-    ALLEGRO_TIMEOUTptr = POINTER;
 
 (* Converts microseconds to seconds. *)
   FUNCTION ALLEGRO_USECS_TO_SECS (x: DOUBLE): DOUBLE; INLINE;
@@ -651,6 +866,25 @@ al_set_timer_count (timer, al_get_timer_count (timer) + diff);
 
 (* Retrieves the associated event source. *)
   FUNCTION al_get_timer_event_source (timer: ALLEGRO_TIMERptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
+
+
+
+(******************************************************************************
+ * altime.h *
+ ************)
+
+  TYPE
+    ALLEGRO_TIMEOUTptr = ^ALLEGRO_TIMEOUT;
+  (* This is an abstract data type representing a timer object. *)
+    ALLEGRO_TIMEOUT = RECORD
+      __pad1__, __pad2__: INT64;
+    END;
+
+    FUNCTION al_get_time: DOUBLE; CDECL;
+    PROCEDURE al_rest (seconds: DOUBLE); CDECL;
+
+  (* TODO: Change to VAR? *)
+    PROCEDURE al_init_timeout (timeout: ALLEGRO_TIMEOUTptr; seconds: DOUBLE); CDECL;
 
 
 
@@ -852,11 +1086,11 @@ END
 
   PROCEDURE al_flush_event_queue (queue: ALLEGRO_EVENT_QUEUEptr); CDECL;
 
-  PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr); CDECL;
+  PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT); CDECL;
 
-  FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr; secs: SINGLE): BOOLEAN; CDECL;
+  FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT; secs: SINGLE): BOOLEAN; CDECL;
 
-  FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr; timeout: ALLEGRO_TIMEOUTptr): BOOLEAN; CDECL;
+  FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT; timeout: ALLEGRO_TIMEOUTptr): BOOLEAN; CDECL;
 
 IMPLEMENTATION
 
@@ -893,6 +1127,18 @@ IMPLEMENTATION
     al_init := al_install_system (ALLEGRO_VERSION_INT, NIL);
   END;
 
+
+
+(******************************************************************************
+ * bitmap.h *
+ ************)
+
+  PROCEDURE al_set_new_bitmap_format (format: LONGINT); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_set_new_bitmap_flags (flags: LONGINT); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
   FUNCTION al_get_bitmap_width (bitmap: ALLEGRO_BITMAPptr): LONGINT; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -911,6 +1157,7 @@ IMPLEMENTATION
   PROCEDURE al_destroy_bitmap (Bitmap: ALLEGRO_BITMAPptr); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
+(* Blitting *)
   PROCEDURE al_draw_bitmap (bitmap: ALLEGRO_BITMAPptr; dx, dy: SINGLE; flags: LONGINT); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -926,6 +1173,23 @@ IMPLEMENTATION
   PROCEDURE al_draw_scaled_rotated_bitmap (bitmap: ALLEGRO_BITMAPptr; cx, cy, dx, dy, xscale, yscale, angle: SINGLE; flags: LONGINT); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
+(* Tinted blitting *)
+   PROCEDURE al_draw_tinted_bitmap (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; dx, dy: SINGLE; flags: LONGINT); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_draw_tinted_bitmap_region (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; sx, sy, sw, sh, dx, dy: SINGLE; flags: LONGINT); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_draw_tinted_scaled_bitmap (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; sx, sy, sw, sh, dx, dy, dw, dh: SINGLE; flags: LONGINT); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_draw_tinted_rotated_bitmap (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; cx, cy, dx, dy, angle: SINGLE; flags: LONGINT); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_draw_tinted_scaled_rotated_bitmap (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; cx, cy, dx, dy, xscale, yscale, angle: SINGLE; flags: LONGINT); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+(* Pixel mapping *)
   FUNCTION al_map_rgb (r, g, b: BYTE): ALLEGRO_COLOR; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -938,8 +1202,46 @@ IMPLEMENTATION
   FUNCTION al_map_rgba_f (r, g, b, a: SINGLE): ALLEGRO_COLOR; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_clone_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr; CDECL;
+(* Pixel unmapping *)
+  PROCEDURE al_unmap_rgb (color: ALLEGRO_COLOR; VAR r, g, b: BYTE); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_unmap_rgba (color: ALLEGRO_COLOR; VAR r, g, b, a: BYTE); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_unmap_rgb_f (color: ALLEGRO_COLOR; VAR r, g, b: SINGLE); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_unmap_rgba_f (color: ALLEGRO_COLOR; VAR r, g, b, a: SINGLE); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_pixel_format_bits (format: LONGINT): LONGINT; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+(* Miscellaneous *)
+   FUNCTION al_clone_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr; CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   FUNCTION al_is_bitmap_locked (bitmap: ALLEGRO_BITMAPptr): BOOLEAN; CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+(* Blending *)
+   PROCEDURE al_set_blender (op: ALLEGRO_BLEND_OPERATIONS; source, dest: ALLEGRO_BLEND_MODE); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_get_blender (VAR op: ALLEGRO_BLEND_OPERATIONS; source, dest: ALLEGRO_BLEND_MODE); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_set_separate_blender (op: ALLEGRO_BLEND_OPERATIONS; source, dest: ALLEGRO_BLEND_MODE;
+				      alpha_op: ALLEGRO_BLEND_OPERATIONS; alpha_source, alpha_dest: ALLEGRO_BLEND_MODE); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_get_separate_blender (VAR op: ALLEGRO_BLEND_OPERATIONS; source, dest: ALLEGRO_BLEND_MODE;
+				      alpha_op: ALLEGRO_BLEND_OPERATIONS; alpha_source, alpha_dest: ALLEGRO_BLEND_MODE); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE _al_put_pixel (bitmap: ALLEGRO_BITMAPptr; x,y: LONGINT; color: ALLEGRO_COLOR); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
@@ -962,8 +1264,6 @@ IMPLEMENTATION
   FUNCTION al_get_keyboard_event_source: ALLEGRO_EVENT_SOURCEptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  PROCEDURE al_set_new_bitmap_flags (flags: LONGINT); CDECL;
-  EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_set_new_display_flags (flags: LONGINT); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
@@ -995,10 +1295,127 @@ IMPLEMENTATION
   FUNCTION al_get_display_event_source (display: ALLEGRO_DISPLAYptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  PROCEDURE al_set_new_display_option (option, value, importance: LONGINT); CDECL;
+(* Primitives *)
+   PROCEDURE al_clear_to_color (color: ALLEGRO_COLOR); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_draw_pixel (x, y: SINGLE; color: ALLEGRO_COLOR); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_set_display_icon (display: ALLEGRO_DISPLAYptr; icon: ALLEGRO_BITMAPptr); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+(* Stuff for multihead/window management *)
+   FUNCTION al_get_num_video_adapters: LONGINT; CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   FUNCTION al_get_monitor_info (adapter: LONGINT; VAR info: ALLEGRO_MONITOR_INFO): BOOLEAN; CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   FUNCTION al_get_new_display_adapter: LONGINT; CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_set_new_display_adapter (adapter: LONGINT); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_set_new_window_position (x, y: LONGINT); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_get_new_window_position (VAR x, y: LONGINT); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_set_window_position (display: ALLEGRO_DISPLAYptr; x, y: LONGINT); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_get_window_position (display: ALLEGRO_DISPLAYptr; VAR x, y: LONGINT); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_set_window_title (display: ALLEGRO_DISPLAYptr; CONST title: PCHAR);CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   PROCEDURE al_set_new_display_option (option, value, importance: LONGINT); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   FUNCTION al_get_display_option (display: ALLEGRO_DISPLAYptr; option: LONGINT): LONGINT; CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+(*Deferred drawing*)
+   PROCEDURE al_hold_bitmap_drawing (hold: BOOLEAN); CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+   FUNCTION al_is_bitmap_drawing_held: BOOLEAN; CDECL;
+   EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * mouse.h *
+ ***********)
+
+  FUNCTION al_is_mouse_installed: BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_get_display_option (display: ALLEGRO_DISPLAYptr; option: LONGINT): LONGINT; CDECL;
+  FUNCTION al_install_mouse: BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_uninstall_mouse; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_mouse_num_buttons: LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_mouse_num_axes: LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_set_mouse_xy (display: ALLEGRO_DISPLAYptr; x, y: LONGINT): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_set_mouse_z (z: LONGINT): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_set_mouse_w (w: LONGINT): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_set_mouse_axis (axis, value: LONGINT): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_get_mouse_state (ret_state: ALLEGRO_MOUSE_STATEptr); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_mouse_button_down (CONST state: ALLEGRO_MOUSE_STATEptr; button: LONGINT): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_mouse_state_axis (CONST state: ALLEGRO_MOUSE_STATEptr; axis: LONGINT): LONGINT; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_mouse_event_source: ALLEGRO_EVENT_SOURCEptr; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_create_mouse_cursor (sprite: ALLEGRO_BITMAPptr; xfocus, yfocus: LONGINT): ALLEGRO_MOUSE_CURSORptr; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_destroy_mouse_cursor (cursor: ALLEGRO_MOUSE_CURSORptr);
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_set_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor: ALLEGRO_MOUSE_CURSORptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_set_system_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor_id: ALLEGRO_SYSTEM_MOUSE_CURSOR): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_show_mouse_cursor (display: ALLEGRO_DISPLAYptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_hide_mouse_cursor (display: ALLEGRO_DISPLAYptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_mouse_cursor_position (ret_x, ret_y: PLONGINT): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_grab_mouse (display: ALLEGRO_DISPLAYptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_ungrab_mouse: BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
 
@@ -1065,6 +1482,20 @@ IMPLEMENTATION
 (******************************************************************************
  * events.h *
  ************)
+  FUNCTION al_get_time: DOUBLE; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_rest (seconds: DOUBLE); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_init_timeout (timeout: ALLEGRO_TIMEOUTptr; seconds: DOUBLE); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * events.h *
+ ************)
 
   FUNCTION al_create_event_queue: ALLEGRO_EVENT_QUEUEptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
@@ -1093,13 +1524,13 @@ IMPLEMENTATION
   PROCEDURE al_flush_event_queue (queue: ALLEGRO_EVENT_QUEUEptr); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr); CDECL;
+  PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr; secs: SINGLE): BOOLEAN; CDECL;
+  FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT; secs: SINGLE): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr; timeout: ALLEGRO_TIMEOUTptr): BOOLEAN; CDECL;
+  FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT; timeout: ALLEGRO_TIMEOUTptr): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
 INITIALIZATION
