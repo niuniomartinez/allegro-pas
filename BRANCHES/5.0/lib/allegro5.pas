@@ -90,6 +90,15 @@ END;
 
 
 (******************************************************************************
+ * error.h *
+ ***********)
+
+  FUNCTION al_get_errno: LONGINT; CDECL;
+  PROCEDURE al_set_errno (errnum: LONGINT); CDECL;
+
+
+
+(******************************************************************************
  * system.h *
  ************)
 
@@ -521,7 +530,7 @@ END;
 
 (******************************************************************************
  * joystick.h *
- ************)
+ **************)
 
   CONST
 (* internal values *)
@@ -912,6 +921,18 @@ IMPLEMENTATION
 
 
 (******************************************************************************
+ * error.h *
+ ***********)
+
+  FUNCTION al_get_errno: LONGINT; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_set_errno (errnum: LONGINT); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
  * system.h *
  ************)
 
@@ -1287,7 +1308,7 @@ IMPLEMENTATION
 
 (******************************************************************************
  * joystick.h *
- ************)
+ **************)
 
   FUNCTION al_install_joystick: BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;

@@ -1,0 +1,47 @@
+
+VAR parameters
+==============
+
+  Some parameters that are pointers in C are implemented in Pascal as VAR parameters.
+
+  Some other are still pointers.
+
+
+
+Unimplemented headers
+=====================
+
+  config.h
+  --------
+
+  Object Pascal defines the class TStrings that implements similar
+  functionality.
+
+
+
+  file.h fshook.h
+  ---------------
+
+  Not at the moment.  May be if somebody ask for it or I find a real use.
+
+
+
+  fixed.h fmaths.h
+  ----------------
+
+  Not at the moment.
+
+
+
+  memory.h
+  --------
+
+  It uses C preprocesor and I don't know if it's possible to reproduce its
+  functionality using Pascal.
+
+
+
+  path.h
+  ------
+
+  As I see, Free Pascal RTL has same functionality.

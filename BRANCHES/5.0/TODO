@@ -3,17 +3,5 @@ In no special order
   * There are some "enum" types (sets). Be sure that they have the correct
     sice in bits.  Read FPC and Delphi help.
 
-  * Header "timer.h" is short enough to translate in a single step.
-
-  * Lots of documentation aren't written.
+  * Documentation isn't written.
     May be I should find another documentation tool as pasdoc is "dirty".
-
-  * Currently, all enums are implemented as CONST.  Som of these enums have
-    name and are implemented as LONGINT.  Ask and/or test if it's possible to
-    implement enums as sets.
-
-  * Test if it's possible to change parameters with pointers in to VAR
-    or OUT paramaeters:
-      al4font.al_get_text_dimensions
-      allegro5.al_wait_for_event
-
