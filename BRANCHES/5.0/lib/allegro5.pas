@@ -722,35 +722,54 @@ END;
  ************)
 
   TYPE
-    ALLEGRO_EVENT_TYPE = (
-      ALLEGRO_EVENT_JOYSTICK_AXIS = 1,
-      ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN = 2,
-      ALLEGRO_EVENT_JOYSTICK_BUTTON_UP = 3,
-      ALLEGRO_EVENT_JOYSTICK_CONFIGURATION = 4,
+    ALLEGRO_EVENT_TYPE = LONGWORD;
 
-      ALLEGRO_EVENT_KEY_DOWN = 10,
-      ALLEGRO_EVENT_KEY_CHAR = 11,
-      ALLEGRO_EVENT_KEY_UP = 12,
+  CONST
+    ALLEGRO_EVENT_JOYSTICK_AXIS          = 1;
+    ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN   = 2;
+    ALLEGRO_EVENT_JOYSTICK_BUTTON_UP     = 3;
+    ALLEGRO_EVENT_JOYSTICK_CONFIGURATION = 4;
 
-      ALLEGRO_EVENT_MOUSE_AXES = 20,
-      ALLEGRO_EVENT_MOUSE_BUTTON_DOWN = 21,
-      ALLEGRO_EVENT_MOUSE_BUTTON_UP = 22,
-      ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY = 23,
-      ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY = 24,
-      ALLEGRO_EVENT_MOUSE_WARPED = 25,
+    ALLEGRO_EVENT_KEY_DOWN               = 10;
+    ALLEGRO_EVENT_KEY_CHAR               = 11;
+    ALLEGRO_EVENT_KEY_UP                 = 12;
 
-      ALLEGRO_EVENT_TIMER = 30,
+    ALLEGRO_EVENT_MOUSE_AXES             = 20;
+    ALLEGRO_EVENT_MOUSE_BUTTON_DOWN      = 21;
+    ALLEGRO_EVENT_MOUSE_BUTTON_UP        = 22;
+    ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY    = 23;
+    ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY    = 24;
+    ALLEGRO_EVENT_MOUSE_WARPED           = 25;
 
-      ALLEGRO_EVENT_DISPLAY_EXPOSE = 40,
-      ALLEGRO_EVENT_DISPLAY_RESIZE = 41,
-      ALLEGRO_EVENT_DISPLAY_CLOSE = 42,
-      ALLEGRO_EVENT_DISPLAY_LOST = 43,
-      ALLEGRO_EVENT_DISPLAY_FOUND = 44,
-      ALLEGRO_EVENT_DISPLAY_SWITCH_IN = 45,
-      ALLEGRO_EVENT_DISPLAY_SWITCH_OUT = 46,
-      ALLEGRO_EVENT_DISPLAY_ORIENTATION = 47
-    );
+    ALLEGRO_EVENT_TIMER                  = 30;
 
+    ALLEGRO_EVENT_DISPLAY_EXPOSE         = 40;
+    ALLEGRO_EVENT_DISPLAY_RESIZE         = 41;
+    ALLEGRO_EVENT_DISPLAY_CLOSE          = 42;
+    ALLEGRO_EVENT_DISPLAY_LOST           = 43;
+    ALLEGRO_EVENT_DISPLAY_FOUND          = 44;
+    ALLEGRO_EVENT_DISPLAY_SWITCH_IN      = 45;
+    ALLEGRO_EVENT_DISPLAY_SWITCH_OUT     = 46;
+    ALLEGRO_EVENT_DISPLAY_ORIENTATION    = 47;
+
+(*    1 <= n < 512  - builtin events
+ *  512 <= n < 1024 - reserved user events (for addons)
+ * 1024 <= n        - unreserved user events
+ *)
+  FUNCTION ALLEGRO_EVENT_TYPE_IS_USER (t: LONGINT): BOOLEAN; INLINE;
+
+(*
+ * Event structures
+ *
+ * All event types have the following fields in common.
+ *
+ *  _type     -- the type of event this is
+ *  timestamp -- when this event was generated
+ *  source    -- which event source generated this event
+ *
+ * For people writing event sources: The common fields must be at the
+ * very start of each event structure.
+ *)
   TYPE
     ALLEGRO_ANY_EVENT = RECORD
       _type : ALLEGRO_EVENT_TYPE;
@@ -796,14 +815,8 @@ END;
       source : ALLEGRO_MOUSEptr;
       timestamp : DOUBLE;
       display : ALLEGRO_DISPLAYptr;
-      x : LONGINT;
-      y : LONGINT;
-      z : LONGINT;
-      w : LONGINT;
-      dx : LONGINT;
-      dy : LONGINT;
-      dz : LONGINT;
-      dw : LONGINT;
+      x, y, z, w : LONGINT;
+      dx, dy, dz, dw : LONGINT;
       button : LONGWORD;
       pressure : SINGLE;
     END;
@@ -816,41 +829,9 @@ END;
       error : DOUBLE;
     END;
 
-  (* Pointer to @link(ALLEGRO_USER_EVENT). *)
     ALLEGRO_USER_EVENT_DESCRIPTORptr = POINTER;
-  (* An event structure that can be emitted by user event sources. These are the public fields:
 
-    * ALLEGRO_EVENT_SOURCE *source;
-    * intptr_t data1;
-    * intptr_t data2;
-    * intptr_t data3;
-    * intptr_t data4;
-
-Like all other event types this structure is a part of the @link(ALLEGRO_EVENT) union. To access the fields in an @code(ALLEGRO_EVENT) variable ev, you would use:
-
-    * ev.user.source
-    * ev.user.data1
-    * ev.user.data2
-    * ev.user.data3
-    * ev.user.data4
-
-To create a new user event you would do this:
-@longcode(#
-VAR
-  MyEventSource: ALLEGRO_EVENT_SOURCE;
-  MyEvent: ALLEGRO_EVENT;
-  SomeVar: SINGLE;
-BEGIN
-  al_init_user_event_source (@MyEventSource);
-  MyEvent.user._type := ALLEGRO_GET_EVENT_TYPE ('MINE');
-  MyEvent.user.data1 := 1;
-  MyEvent.user.data2 := @SomeVar;
-
-  al_emit_user_event (@MyEventSource, @MyEvent, NIL);
-END
-#)
-  Event type identifiers for user events are assigned by the user. Please see the documentation for @link(ALLEGRO_GET_EVENT_TYPE) for the rules you should follow when assigning identifiers.
-  @seealso(al_emit_user_event) @seealso(ALLEGRO_GET_EVENT_TYPE) *)
+    ALLEGRO_USER_EVENTptr = ^ALLEGRO_USER_EVENT;
     ALLEGRO_USER_EVENT = RECORD
       _type : ALLEGRO_EVENT_TYPE;
       source : ALLEGRO_EVENT_SOURCEptr;
@@ -862,22 +843,16 @@ END
       data4 : PLONGINT;
     END;
 
-  (* Pointer to @link(ALLEGRO_EVENT). *)
     ALLEGRO_EVENTptr = ^ALLEGRO_EVENT;
-  (* It is a union of all builtin event structures, i.e. it is an object large enough to hold the data of any event type. All events have the following fields in common:
-     @definitionList(
-       @itemLabel(@code(_type: @link(ALLEGRO_EVENT_TYPE))) @item(Indicates the type of event.)
-       @itemLabel(@code(any.source: @link(ALLEGRO_EVENT_SOURCEptr))) @item(The event source which generated the event.)
-       @itemLabel(@code(any.timestamp: DOUBLE)) @item(When the event was generated.)
-     )
-     By examining the @code(_type) field you can then access type-specific fields. The @code(any.source) field tells you which event source generated that particular event. The @code(any.timestamp) field tells you when the event was generated. The time is referenced to the same starting point as @link(al_get_time).
 
-    Each event is of one of the following types, with the usable fields given:@unorderedList(
-      @item(ALLEGRO_EVENT_JOYSTICK_AXIS) @item(ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN) @item(ALLEGRO_EVENT_JOYSTICK_BUTTON_UP) @item(ALLEGRO_EVENT_JOYSTICK_CONFIGURATION) @item(ALLEGRO_EVENT_KEY_DOWN) @item(ALLEGRO_EVENT_KEY_CHAR) @item(ALLEGRO_EVENT_KEY_UP) @item(ALLEGRO_EVENT_MOUSE_AXES) @item(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) @item(ALLEGRO_EVENT_MOUSE_BUTTON_UP) @item(ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY) @item(ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY) @item(ALLEGRO_EVENT_MOUSE_WARPED) @item(ALLEGRO_EVENT_TIMER) @item(ALLEGRO_EVENT_DISPLAY_EXPOSE) @item(ALLEGRO_EVENT_DISPLAY_RESIZE) @item(ALLEGRO_EVENT_DISPLAY_CLOSE) @item(ALLEGRO_EVENT_DISPLAY_LOST) @item(ALLEGRO_EVENT_DISPLAY_FOUND) @item(ALLEGRO_EVENT_DISPLAY_SWITCH_IN) @item(ALLEGRO_EVENT_DISPLAY_SWITCH_OUT) @item(ALLEGRO_EVENT_DISPLAY_ORIENTATION)
-    ) *)
     ALLEGRO_EVENT = RECORD
       case LONGINT OF
+   (* This must be the same as the first field of _AL_EVENT_HEADER.  *)
 	0 : ( _type : ALLEGRO_EVENT_TYPE );
+   (* `any' is to allow the user to access the other fields which are
+    * common to all event types, without using some specific type
+    * structure.
+    *)
 	1 : ( any : ALLEGRO_ANY_EVENT );
 	2 : ( display : ALLEGRO_DISPLAY_EVENT );
 	3 : ( joystick : ALLEGRO_JOYSTICK_EVENT );
@@ -887,30 +862,33 @@ END
 	7 : ( user : ALLEGRO_USER_EVENT );
       END;
 
+      ALLEGRO_EVENT_DTOR_PROC = PROCEDURE (evt: ALLEGRO_USER_EVENTptr); CDECL;
+
+(* Event sources *)
+  PROCEDURE al_init_user_event_source (source: ALLEGRO_EVENT_SOURCEptr); CDECL; { TODO: Use VAR parameter? }
+  PROCEDURE al_destroy_user_event_source (source: ALLEGRO_EVENT_SOURCEptr); CDECL;
+(* The second argument is ALLEGRO_EVENT instead of ALLEGRO_USER_EVENT
+ * to prevent users passing a pointer to a too-short structure.
+ *)
+  FUNCTION al_emit_user_event (source: ALLEGRO_EVENT_SOURCEptr; Event: ALLEGRO_EVENTptr; dtor: ALLEGRO_EVENT_DTOR_PROC): BOOLEAN; CDECL;
+  PROCEDURE al_unref_user_event (event: ALLEGRO_USER_EVENTptr); CDECL;
+  PROCEDURE al_set_event_source_data (source: ALLEGRO_EVENT_SOURCEptr; data: PLONGINT); CDECL;
+  FUNCTION al_get_event_source_data (CONST source: ALLEGRO_EVENT_SOURCEptr): PLONGINT; CDECL;
+
+  TYPE
     ALLEGRO_EVENT_QUEUEptr = POINTER;
 
   FUNCTION al_create_event_queue: ALLEGRO_EVENT_QUEUEptr; CDECL;
-
   PROCEDURE al_destroy_event_queue (queue: ALLEGRO_EVENT_QUEUEptr); CDECL;
-
   PROCEDURE al_register_event_source (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr); CDECL;
-
   PROCEDURE al_unregister_event_source (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr); CDECL;
-
   FUNCTION al_is_event_queue_empty (queue: ALLEGRO_EVENT_QUEUEptr): BOOLEAN; CDECL;
-
   FUNCTION al_get_next_event (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr): BOOLEAN; CDECL;
-
   FUNCTION al_peek_next_event (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr): BOOLEAN; CDECL;
-
   FUNCTION al_drop_next_event (queue: ALLEGRO_EVENT_QUEUEptr): BOOLEAN; CDECL;
-
   PROCEDURE al_flush_event_queue (queue: ALLEGRO_EVENT_QUEUEptr); CDECL;
-
   PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT); CDECL;
-
   FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT; secs: SINGLE): BOOLEAN; CDECL;
-
   FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT; timeout: ALLEGRO_TIMEOUTptr): BOOLEAN; CDECL;
 
 IMPLEMENTATION
@@ -1501,6 +1479,12 @@ IMPLEMENTATION
 (******************************************************************************
  * altime.h *
  ************)
+
+  FUNCTION ALLEGRO_EVENT_TYPE_IS_USER (t: LONGINT): BOOLEAN;
+  BEGIN
+    ALLEGRO_EVENT_TYPE_IS_USER := t >= 512;
+  END;
+
   FUNCTION al_get_time: DOUBLE; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -1515,6 +1499,24 @@ IMPLEMENTATION
 (******************************************************************************
  * events.h *
  ************)
+
+  PROCEDURE al_init_user_event_source (source: ALLEGRO_EVENT_SOURCEptr); CDECL; { TODO: Use VAR parameter? }
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_destroy_user_event_source (source: ALLEGRO_EVENT_SOURCEptr); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_emit_user_event (source: ALLEGRO_EVENT_SOURCEptr; Event: ALLEGRO_EVENTptr; dtor: ALLEGRO_EVENT_DTOR_PROC): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_unref_user_event (event: ALLEGRO_USER_EVENTptr); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_set_event_source_data (source: ALLEGRO_EVENT_SOURCEptr; data: PLONGINT); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_event_source_data (CONST source: ALLEGRO_EVENT_SOURCEptr): PLONGINT; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_create_event_queue: ALLEGRO_EVENT_QUEUEptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
