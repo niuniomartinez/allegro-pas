@@ -28,8 +28,8 @@ CONST
    TYPE_WIND  = 1;
    TYPE_WATER = 2;
    TYPE_FIRE  = 3;
-   MAX_TYPES  = 3;
-   TYPE_NONE  = MAX_TYPES + 1;
+   NUM_TYPES  = 4;
+   TYPE_NONE  = NUM_TYPES;
 
    IMG_EARTH        = TYPE_EARTH;
    IMG_WIND         = TYPE_WIND;
@@ -43,12 +43,11 @@ CONST
    IMG_WATER_DROPS  = 9;
    IMG_FLAME        = 10;
    IMG_MAIN_FLAME   = 11;
-   IMG_MAX          = IMG_MAIN_FLAME;
+   IMG_MAX          = 12;
 
    MAX_ANIMS = 10;
 
 TYPE
-   PInterp = ^TInterp;
    TInterp = (
       INTERP_LINEAR,
       INTERP_FAST,
@@ -76,7 +75,7 @@ TYPE
       Angle: SINGLE;
       R, G, B: SINGLE;
       Opacity: SINGLE;
-      Anims: ARRAY [1..MAX_ANIMS] OF TAnim; { Keep it simple. }
+      Anims: ARRAY [0..MAX_ANIMS - 1] OF TAnim; { Keep it simple. }
    END;
 
    PToken = ^TToken;
@@ -110,14 +109,14 @@ VAR
    Display: ALLEGRO_DISPLAYptr;
    RefreshTimer, PlaybackTimer: ALLEGRO_TIMERptr;
 
-   Images: ARRAY [0..IMG_MAX] OF ALLEGRO_BITMAPptr;
-   ElementSamples: ARRAY [0..MAX_TYPES] OF ARRAY [1..NUM_PITCH] OF ALLEGRO_SAMPLEptr;
+   Images: ARRAY [0..IMG_MAX - 1] OF ALLEGRO_BITMAPptr;
+   ElementSamples: ARRAY [0..NUM_TYPES - 1] OF ARRAY [0..NUM_PITCH - 1] OF ALLEGRO_SAMPLEptr;
    SelectSample: ALLEGRO_SAMPLEptr;
 
-   Tokens: ARRAY [1..NUM_TOKENS] OF TToken;
-   Buttons: ARRAY [0..MAX_TYPES] OF TToken;
+   Tokens: ARRAY [0..NUM_TOKENS - 1] OF TToken;
+   Buttons: ARRAY [0..NUM_TYPES - 1] OF TToken;
    Glow, GlowOverlay: TSprite;
-   GlowColor: ARRAY [0..MAX_TYPES] OF ALLEGRO_COLOR;
+   GlowColor: ARRAY [0..NUM_TYPES] OF ALLEGRO_COLOR;
    Flairs: PFlair = NIL;
    HoverToken: PToken = NIL;
    SelectedButton: PToken = NIL;
@@ -171,18 +170,18 @@ CONST
 
    PROCEDURE LoadSamples;
    CONST
-      Base: ARRAY [0..MAX_TYPES] OF STRING = (
+      Base: ARRAY [0..NUM_TYPES - 1] OF STRING = (
          'earth', 'air', 'water', 'fire'
       );
    VAR
       Name: STRING;
       t, p: LONGINT;
    BEGIN
-      FOR t := LOW (Base) TO HIGH (Base) DO
+      FOR t := 0 TO NUM_TYPES - 1 DO
       BEGIN
-         FOR p := 1 TO NUM_PITCH DO
+         FOR p := 0 TO NUM_PITCH - 1 DO
          BEGIN
-            Name := HAIKU_DATA + Base[t] + '_' + IntToStr (p - 1) + '.ogg';
+            Name := HAIKU_DATA + Base[t] + '_' + IntToStr (p) + '.ogg';
             ElementSamples[t][p] := al_load_sample (Name);
             IF ElementSamples[t][p] = NIL THEN
                AbortExample ('Error loading ' + Name + '.');
@@ -228,8 +227,8 @@ CONST
    BEGIN
       FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
       BEGIN
-         tx := (Ndx - 1) MOD TOKENS_X;
-         ty := (Ndx - 1) MOD TOKENS_Y;
+         tx := Ndx MOD TOKENS_X;
+         ty := Ndx DIV TOKENS_X;
          px := TokenX + tx * TokenW;
          py := TokenY + ty * TokenW;
 
@@ -246,7 +245,7 @@ CONST
 
    PROCEDURE InitButtons;
    CONST
-      Dist: ARRAY [0..MAX_TYPES] OF SINGLE = (-1.5, -0.5, 0.5, 1.5);
+      Dist: ARRAY [0..NUM_TYPES - 1] OF SINGLE = (-1.5, -0.5, 0.5, 1.5);
    VAR
       Ndx: INTEGER;
       X, Y: SINGLE;
@@ -339,6 +338,7 @@ CONST
      BEGIN
         Next := Flairs^.Next;
         FreeMem (Flairs, SizeOf (TFlair));
+        Flairs := Next;
      END;
    END;
 
@@ -678,7 +678,7 @@ CONST
 
       FUNCTION RandomSign: SINGLE;
       BEGIN
-         IF Random (2) = 1 THEN
+         IF Random (2) < 1 THEN
             RandomSign := -1
          ELSE
             RandomSign := 1
@@ -686,7 +686,7 @@ CONST
 
       FUNCTION RandomFloat (Min, Max: SINGLE): SINGLE;
       BEGIN
-         RandomFloat := Random () * (Max - Min) + Min;
+         RandomFloat := Random * (Max - Min) + Min;
       END;
 
    VAR
@@ -702,8 +702,8 @@ CONST
       Spr: PSprite;
       i: INTEGER;
    BEGIN
-      MaxDuration := 1.0; { TODO: Why is this value a variable? }
       Now := al_get_time;
+      MaxDuration := 1.0; { TODO: Why is this value a variable? }
       Spr := CreateFlair (IMG_WATER, x, y, Now + MaxDuration);
       Anim (Spr^, @(Spr^.ScaleX), 1.0, 2.0, INTERP_FAST, 0.5);
       Anim (Spr^, @(Spr^.ScaleY), 1.0, 2.0, INTERP_FAST, 0.5);
@@ -712,7 +712,7 @@ CONST
       BEGIN
          Spr := CreateFlair (IMG_WATER_DROPS, x, y, Now + MaxDuration);
          Spr^.ScaleX := RandomFloat (0.3, 1.2) * RandomSign;
-         Spr^.ScaleY := RandomFloat (1.3, 1.2) * RandomSign;
+         Spr^.ScaleY := RandomFloat (0.3, 1.2) * RandomSign;
          Spr^.Angle := RandomFloat (0, TWOPI);
          Spr^.r := RandomFloat (0, 0.6);
          Spr^.g := RandomFloat (0.4, 0.6);
@@ -723,8 +723,8 @@ CONST
             AnimTo (Spr^, @(Spr^.Opacity), 0, INTERP_DOUBLE_SLOW, MRand (0.7, 1));
          AnimTo (Spr^, @(Spr^.ScaleX), RandomFloat (0.8, 3), INTERP_FAST, MRand (0.7, 1));
          AnimTo (Spr^, @(Spr^.ScaleY), RandomFloat (0.8, 3), INTERP_FAST, MRand (0.7, 1));
-         AnimTo (Spr^, @(Spr^.X), RandomFloat (0, 20) * RandomSign, INTERP_FAST, MRand (0.7, 1));
-         AnimTo (Spr^, @(Spr^.Y), RandomFloat (0, 20) * RandomSign, INTERP_FAST, MRand (0.7, 1));
+         AnimTo (Spr^, @(Spr^.X), MRand (0, 20) * RandomSign, INTERP_FAST, MRand (0.7, 1));
+         AnimTo (Spr^, @(Spr^.Y), MRand (0, 20) * RandomSign, INTERP_FAST, MRand (0.7, 1));
       END;
    END;
 
@@ -786,8 +786,8 @@ CONST
       y: INTEGER;
    BEGIN
       FOR Y := 0 TO (TOKENS_Y - 1) DO
-         ActivateToken (Tokens[Y * TOKENS_X + PlaybackColumn + 1]);
-      DEC (PlaybackColumn);
+         ActivateToken (Tokens[Y * TOKENS_X + PlaybackColumn]);
+      INC (PlaybackColumn);
       IF PlaybackColumn >= TOKENS_X THEN
          PlaybackColumn := 0;
    END;
@@ -860,7 +860,7 @@ CONST
       BEGIN
          Spr := @(Token^.Top);
          AnimFull (Spr^, @(Spr^.Opacity), Spr^.Opacity, 0, INTERP_SLOW, 0.15, 0.15);
-         Token^.TheType := SelectedButton^.TheType;
+         Token^.TheType := TYPE_NONE;
       END;
    END;
 
