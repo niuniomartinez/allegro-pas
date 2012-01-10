@@ -881,8 +881,8 @@ CONST
       AnimTint (Glow, GlowColor[TheType], INTERP_SLOW_IN_OUT, 3.0);
       AnimTo (Glow, @Glow.x, x, INTERP_SLOW_IN_OUT, 3.0);
 
-      AnimTint (GlowOverlay, GlowColor[TheType], INTERP_SLOW_IN_OUT, 3.0);
-      AnimTo (GlowOverlay, @GlowOverlay.x, x, INTERP_SLOW_IN_OUT, 3.0);
+      AnimTint (GlowOverlay, GlowColor[TheType], INTERP_SLOW_IN_OUT, 4.0);
+      AnimTo (GlowOverlay, @GlowOverlay.Opacity, 1.0, INTERP_SLOW_IN_OUT, 4.0);
    END;
 
 
