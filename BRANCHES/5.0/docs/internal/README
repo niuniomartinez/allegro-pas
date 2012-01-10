@@ -45,3 +45,11 @@ Unimplemented headers
   ------
 
   As I see, Free Pascal RTL has same functionality.
+
+
+
+  threads.h
+  ---------
+
+  Free Pascal has TThread class.  May be it's enough.
+

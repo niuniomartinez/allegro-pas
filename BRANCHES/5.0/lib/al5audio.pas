@@ -1,6 +1,22 @@
 UNIT al5audio;
+(*         ______   ___    ___
+ *        /\  _  \ /\_ \  /\_ \
+ *        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
+ *         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
+ *          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
+ *           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
+ *            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
+ *                                           /\____/
+ *                                           \_/__/
+ *
+ *      See readme.txt for copyright information.
+ *)
+
 
 INTERFACE
+
+  USES
+    Allegro5;
 
 {$include allegro.cfg}
 
@@ -18,8 +34,6 @@ INTERFACE
     ALLEGRO_MAX_CHANNELS = 8;
 
   TYPE
-(* Enum: ALLEGRO_AUDIO_DEPTH
- *)
     ALLEGRO_AUDIO_DEPTH = (
    (* Sample depth and type, and signedness. Mixers only use 32-bit signed
     * float (-1..+1). The unsigned value is a bit-flag applied to the depth
@@ -39,8 +53,7 @@ INTERFACE
     );
 
 
-  (* Enum: ALLEGRO_CHANNEL_CONF
-   *)
+
     ALLEGRO_CHANNEL_CONF = (
     (* Speaker configuration (mono, stereo, 2.1, 3, etc). With regards to
      * behavior, most of this code makes no distinction between, say, 4.1 and
@@ -59,8 +72,7 @@ INTERFACE
     );
 
 
-  (* Enum: ALLEGRO_PLAYMODE
-   *)
+
     ALLEGRO_PLAYMODE = (
       ALLEGRO_PLAYMODE_ONCE   = $100,
       ALLEGRO_PLAYMODE_LOOP   = $101,
@@ -72,41 +84,165 @@ INTERFACE
     );
 
 
-  (* Enum: ALLEGRO_MIXER_QUALITY
-   *)
+
     ALLEGRO_MIXER_QUALITY = (
       ALLEGRO_MIXER_QUALITY_POINT   = $110,
       ALLEGRO_MIXER_QUALITY_LINEAR  = $111
     );
 
   CONST
-  (* ALLEGRO_AUDIO_PAN_NONE *)
     ALLEGRO_AUDIO_PAN_NONE: SINGLE = -1000.0;
 
   TYPE
-  (* Type: ALLEGRO_SAMPLE *)
     ALLEGRO_SAMPLEptr = POINTER;
 
 
-  (* Type: ALLEGRO_SAMPLE_ID *)
+
     ALLEGRO_SAMPLE_IDptr = ^ALLEGRO_SAMPLE_ID;
     ALLEGRO_SAMPLE_ID = RECORD
-      Index, _id: LONGINT;
+      _index, _id: LONGINT;
     END;
 
-  (* Type: ALLEGRO_SAMPLE_INSTANCE *)
     ALLEGRO_SAMPLE_INSTANCEptr = POINTER;
 
-  (* Type: ALLEGRO_AUDIO_STREAM *)
     ALLEGRO_AUDIO_STREAMptr = POINTER;
 
-  (* Type: ALLEGRO_MIXER *)
     ALLEGRO_MIXERptr = POINTER;
 
-  (* Type: ALLEGRO_VOICE *)
     ALLEGRO_VOICEptr = POINTER;
 
+    ALLEGRO_MIXER_CALLBACK = PROCEDURE (buf: POINTER; samples: LONGWORD; data: POINTER); CDECL;
 
+    ALLEGRO_SAMPLE_LOADER = FUNCTION (CONST filename: PCHAR): ALLEGRO_SAMPLEptr; CDECL;
+
+    ALLEGRO_SAMPLE_SAVER = FUNCTION (CONST filename: PCHAR; spl: ALLEGRO_SAMPLEptr): BOOLEAN; CDECL;
+
+    ALLEGRO_AUDIO_STREAM_LOADER = FUNCTION (CONST filename: PCHAR; buffer_count, samples: LONGWORD): ALLEGRO_AUDIO_STREAMptr;
+
+
+
+(* Sample functions *)
+  FUNCTION al_create_sample (buf: POINTER; samples, freq: LONGWORD; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF; free_buf: BOOLEAN): ALLEGRO_SAMPLEptr; CDECL;
+  PROCEDURE al_destroy_sample (spl: ALLEGRO_SAMPLEptr); CDECL;
+
+(* Sample instance functions *)
+  FUNCTION al_create_sample_instance (data: ALLEGRO_SAMPLEptr): ALLEGRO_SAMPLE_INSTANCEptr; CDECL;
+  PROCEDURE al_destroy_sample_instance (spl: ALLEGRO_SAMPLE_INSTANCEptr); CDECL;
+
+  FUNCTION al_get_sample_frequency (CONST spl: ALLEGRO_SAMPLEptr): LONGWORD; CDECL;
+  FUNCTION al_get_sample_length (CONST spl: ALLEGRO_SAMPLEptr): LONGWORD; CDECL;
+  FUNCTION al_get_sample_depth (CONST spl: ALLEGRO_SAMPLEptr): ALLEGRO_AUDIO_DEPTH; CDECL;
+  FUNCTION al_get_sample_channels (CONST spl: ALLEGRO_SAMPLEptr): ALLEGRO_CHANNEL_CONF; CDECL;
+  FUNCTION al_get_sample_data (CONST spl: ALLEGRO_SAMPLEptr): POINTER; CDECL;
+
+  FUNCTION al_get_sample_instance_frequency (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): LONGWORD; CDECL;
+  FUNCTION al_get_sample_instance_length (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): LONGWORD; CDECL;
+  FUNCTION al_get_sample_instance_position (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): LONGWORD; CDECL;
+
+  FUNCTION al_get_sample_instance_speed (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): SINGLE; CDECL;
+  FUNCTION al_get_sample_instance_gain (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): SINGLE; CDECL;
+  FUNCTION al_get_sample_instance_pan (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): SINGLE; CDECL;
+  FUNCTION al_get_sample_instance_time (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): SINGLE; CDECL;
+
+  FUNCTION al_get_sample_instance_depth (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): ALLEGRO_AUDIO_DEPTH; CDECL;
+  FUNCTION al_get_sample_instance_channels (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): ALLEGRO_CHANNEL_CONF; CDECL;
+  FUNCTION al_get_sample_instance_playmode (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): ALLEGRO_PLAYMODE; CDECL;
+
+  FUNCTION al_get_sample_instance_playing (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): BOOLEAN; CDECL;
+  FUNCTION al_get_sample_instance_attached (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): BOOLEAN; CDECL;
+
+  FUNCTION al_set_sample_instance_position (spl: ALLEGRO_SAMPLE_INSTANCEptr; val: LONGWORD): BOOLEAN; CDECL;
+  FUNCTION al_set_sample_instance_length (spl: ALLEGRO_SAMPLE_INSTANCEptr; val: LONGWORD): BOOLEAN; CDECL;
+
+  FUNCTION al_set_sample_instance_speed (spl: ALLEGRO_SAMPLE_INSTANCEptr; val: SINGLE): BOOLEAN; CDECL;
+  FUNCTION al_set_sample_instance_gain (spl: ALLEGRO_SAMPLE_INSTANCEptr; val: SINGLE): BOOLEAN; CDECL;
+  FUNCTION al_set_sample_instance_pan (spl: ALLEGRO_SAMPLE_INSTANCEptr; val: SINGLE): BOOLEAN; CDECL;
+
+  FUNCTION al_set_sample_instance_playmode (spl: ALLEGRO_SAMPLE_INSTANCEptr; val: ALLEGRO_PLAYMODE): BOOLEAN; CDECL;
+
+  FUNCTION al_set_sample_instance_playing (spl: ALLEGRO_SAMPLE_INSTANCEptr; val: BOOLEAN): BOOLEAN; CDECL;
+  FUNCTION al_detach_sample_instance (spl: ALLEGRO_SAMPLE_INSTANCEptr): BOOLEAN; CDECL;
+
+  FUNCTION al_set_sample (spl: ALLEGRO_SAMPLE_INSTANCEptr; data: ALLEGRO_SAMPLEptr): BOOLEAN; CDECL;
+  FUNCTION al_get_sample (spl: ALLEGRO_SAMPLE_INSTANCEptr): ALLEGRO_SAMPLEptr; CDECL;
+  FUNCTION al_play_sample_instance (spl: ALLEGRO_SAMPLE_INSTANCEptr): BOOLEAN; CDECL;
+  FUNCTION al_stop_sample_instance (spl: ALLEGRO_SAMPLE_INSTANCEptr): BOOLEAN; CDECL;
+
+(* Stream functions *)
+  FUNCTION al_create_audio_stream (buffer_count, samples, freq: LONGWORD; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF): ALLEGRO_AUDIO_STREAMptr; CDECL;
+  PROCEDURE al_destroy_audio_stream (stream: ALLEGRO_AUDIO_STREAMptr); CDECL;
+  PROCEDURE al_drain_audio_stream (stream: ALLEGRO_AUDIO_STREAMptr); CDECL;
+
+  FUNCTION al_get_audio_stream_frequency (CONST stream: ALLEGRO_AUDIO_STREAMptr): LONGWORD; CDECL;
+  FUNCTION al_get_audio_stream_length (CONST stream: ALLEGRO_AUDIO_STREAMptr): LONGWORD; CDECL;
+  FUNCTION al_get_audio_stream_fragments (CONST stream: ALLEGRO_AUDIO_STREAMptr): LONGWORD; CDECL;
+  FUNCTION al_get_available_audio_stream_fragments (CONST stream: ALLEGRO_AUDIO_STREAMptr): LONGWORD; CDECL;
+
+  FUNCTION al_get_audio_stream_speed (CONST stream: ALLEGRO_AUDIO_STREAMptr): SINGLE; CDECL;
+  FUNCTION al_get_audio_stream_gain (CONST stream: ALLEGRO_AUDIO_STREAMptr): SINGLE; CDECL;
+  FUNCTION al_get_audio_stream_pan (CONST stream: ALLEGRO_AUDIO_STREAMptr): SINGLE; CDECL;
+
+  FUNCTION al_get_audio_stream_channels (CONST stream: ALLEGRO_AUDIO_STREAMptr): ALLEGRO_CHANNEL_CONF; CDECL;
+  FUNCTION al_get_audio_stream_depth (CONST stream: ALLEGRO_AUDIO_STREAMptr): ALLEGRO_AUDIO_DEPTH; CDECL;
+  FUNCTION al_get_audio_stream_playmode (CONST stream: ALLEGRO_AUDIO_STREAMptr): ALLEGRO_PLAYMODE; CDECL;
+
+  FUNCTION al_get_audio_stream_playing (CONST spl: ALLEGRO_AUDIO_STREAMptr): BOOLEAN; CDECL;
+  FUNCTION al_get_audio_stream_attached (CONST spl: ALLEGRO_AUDIO_STREAMptr): BOOLEAN; CDECL;
+
+  FUNCTION al_get_audio_stream_fragment (CONST stream: ALLEGRO_AUDIO_STREAMptr): POINTER; CDECL;
+
+  FUNCTION al_set_audio_stream_speed (stream: ALLEGRO_AUDIO_STREAMptr; val: SINGLE): BOOLEAN; CDECL;
+  FUNCTION al_set_audio_stream_gain (stream: ALLEGRO_AUDIO_STREAMptr; val: SINGLE): BOOLEAN; CDECL;
+  FUNCTION al_set_audio_stream_pan (stream: ALLEGRO_AUDIO_STREAMptr; val: SINGLE): BOOLEAN; CDECL;
+
+  FUNCTION al_set_audio_stream_playmode (stream: ALLEGRO_AUDIO_STREAMptr; val: ALLEGRO_PLAYMODE): BOOLEAN; CDECL;
+
+  FUNCTION al_set_audio_stream_playing (stream: ALLEGRO_AUDIO_STREAMptr; val: BOOLEAN): BOOLEAN; CDECL;
+  FUNCTION al_detach_audio_stream (stream: ALLEGRO_AUDIO_STREAMptr): BOOLEAN; CDECL;
+  FUNCTION al_set_audio_stream_fragment (stream: ALLEGRO_AUDIO_STREAMptr; val: POINTER): BOOLEAN; CDECL;
+
+  FUNCTION al_rewind_audio_stream (stream: ALLEGRO_AUDIO_STREAMptr): BOOLEAN; CDECL;
+  FUNCTION al_seek_audio_stream_secs (stream: ALLEGRO_AUDIO_STREAMptr; time: DOUBLE): BOOLEAN; CDECL;
+  FUNCTION al_get_audio_stream_position_secs (stream: ALLEGRO_AUDIO_STREAMptr): DOUBLE; CDECL;
+  FUNCTION al_get_audio_stream_length_secs (stream: ALLEGRO_AUDIO_STREAMptr): DOUBLE; CDECL;
+  FUNCTION al_set_audio_stream_loop_secs (stream: ALLEGRO_AUDIO_STREAMptr; start, finish: DOUBLE): BOOLEAN; CDECL;
+
+  FUNCTION al_get_audio_stream_event_source (stream: ALLEGRO_AUDIO_STREAMptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
+
+(* Mixer functions *)
+  FUNCTION al_create_mixer (freq: LONGWORD; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF): ALLEGRO_MIXERptr; CDECL;
+  PROCEDURE al_destroy_mixer (mixer: ALLEGRO_MIXERptr); CDECL;
+  FUNCTION al_attach_sample_instance_to_mixer (sample: ALLEGRO_SAMPLE_INSTANCEptr; mixer: ALLEGRO_MIXERptr): BOOLEAN; CDECL;
+  FUNCTION al_attach_audio_stream_to_mixer (stream: ALLEGRO_AUDIO_STREAMptr; mixer: ALLEGRO_MIXERptr): BOOLEAN; CDECL;
+  FUNCTION al_attach_mixer_to_mixer (mixerA, mixerB: ALLEGRO_MIXERptr): BOOLEAN; CDECL;
+  FUNCTION al_set_mixer_postprocess_callback (mixer: ALLEGRO_MIXERptr; cb: ALLEGRO_MIXER_CALLBACK; data: POINTER): BOOLEAN; CDECL;
+
+  FUNCTION al_get_mixer_frequency (CONST mixer: ALLEGRO_MIXERptr): LONGWORD; CDECL;
+  FUNCTION al_get_mixer_channels (CONST mixer: ALLEGRO_MIXERptr): ALLEGRO_CHANNEL_CONF; CDECL;
+  FUNCTION al_get_mixer_depth (CONST mixer: ALLEGRO_MIXERptr): ALLEGRO_AUDIO_DEPTH; CDECL;
+  FUNCTION al_get_mixer_quality (CONST mixer: ALLEGRO_MIXERptr): ALLEGRO_MIXER_QUALITY; CDECL;
+  FUNCTION al_get_mixer_playing (CONST mixer: ALLEGRO_MIXERptr): BOOLEAN; CDECL;
+  FUNCTION al_get_mixer_attached (CONST mixer: ALLEGRO_MIXERptr): BOOLEAN; CDECL;
+  FUNCTION al_set_mixer_frequency (mixer: ALLEGRO_MIXERptr; val: LONGWORD): BOOLEAN; CDECL;
+  FUNCTION al_set_mixer_quality (mixer: ALLEGRO_MIXERptr; val: ALLEGRO_MIXER_QUALITY): BOOLEAN; CDECL;
+  FUNCTION al_set_mixer_playing (mixer: ALLEGRO_MIXERptr; val: BOOLEAN): BOOLEAN; CDECL;
+  FUNCTION al_detach_mixer (mixer: ALLEGRO_MIXERptr): BOOLEAN; CDECL;
+
+(* Voice functions *)
+  FUNCTION al_create_voice (freq: LONGWORD; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF): ALLEGRO_VOICEptr; CDECL;
+  PROCEDURE al_destroy_voice (voice: ALLEGRO_VOICEptr); CDECL;
+  FUNCTION al_attach_sample_instance_to_voice (sample: ALLEGRO_SAMPLE_INSTANCEptr; voice: ALLEGRO_VOICEptr): BOOLEAN; CDECL;
+  FUNCTION al_attach_audio_stream_to_voice (stream: ALLEGRO_AUDIO_STREAMptr; voice: ALLEGRO_VOICEptr): BOOLEAN; CDECL;
+  FUNCTION al_attach_mixer_to_voice (mixer: ALLEGRO_MIXERptr; voice: ALLEGRO_VOICEptr): BOOLEAN; CDECL;
+  PROCEDURE al_detach_voice (voice: ALLEGRO_VOICEptr); CDECL;
+
+  FUNCTION al_get_voice_frequency (CONST voice: ALLEGRO_VOICEptr): LONGWORD; CDECL;
+  FUNCTION al_get_voice_position (CONST voice: ALLEGRO_VOICEptr): LONGWORD; CDECL;
+  FUNCTION al_get_voice_channels (CONST voice: ALLEGRO_VOICEptr): ALLEGRO_CHANNEL_CONF; CDECL;
+  FUNCTION al_get_voice_depth (CONST voice: ALLEGRO_VOICEptr): ALLEGRO_AUDIO_DEPTH; CDECL;
+  FUNCTION al_get_voice_playing (CONST voice: ALLEGRO_VOICEptr): BOOLEAN; CDECL;
+  FUNCTION al_set_voice_position (voice: ALLEGRO_VOICEptr; val: LONGWORD): BOOLEAN; CDECL;
+  FUNCTION al_set_voice_playing (voice: ALLEGRO_VOICEptr; val: BOOLEAN): BOOLEAN; CDECL;
 
 (* Misc. audio functions *)
   FUNCTION al_install_audio: BOOLEAN; CDECL;
@@ -114,172 +250,25 @@ INTERFACE
   FUNCTION al_is_audio_installed: BOOLEAN; CDECL;
   FUNCTION al_get_allegro_audio_version: LONGWORD; CDECL;
 
-(* Sample functions *)
-  FUNCTION al_create_sample (buf: POINTER; samples, freq: LONGWORD; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF; free_buf: BOOLEAN):
-    ALLEGRO_SAMPLEptr; CDECL;
-  PROCEDURE al_destroy_sample (spl: ALLEGRO_SAMPLEptr); CDECL;
-  FUNCTION al_load_sample (CONST filename: STRING): ALLEGRO_SAMPLEptr; CDECL;
+  FUNCTION al_get_channel_count (conf: ALLEGRO_CHANNEL_CONF): LONGWORD; CDECL;
+  FUNCTION al_get_audio_depth_size (conf: ALLEGRO_AUDIO_DEPTH): LONGWORD; CDECL;
 
-(* Sample instance functions *)
-  FUNCTION al_create_sample_instance (data: ALLEGRO_SAMPLEptr): ALLEGRO_SAMPLE_INSTANCEptr; CDECL;
-  PROCEDURE al_destroy_sample_instance (spl: ALLEGRO_SAMPLE_INSTANCEptr); CDECL;
+(* Simple audio layer *)
+  FUNCTION al_reserve_samples (reserve_samples: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_get_default_mixer: ALLEGRO_MIXERptr; CDECL;
+  FUNCTION al_set_default_mixer (mixer: ALLEGRO_MIXERptr): BOOLEAN; CDECL;
+  FUNCTION al_restore_default_mixer: BOOLEAN; CDECL;
+  FUNCTION al_play_sample (data: ALLEGRO_SAMPLEptr; gain, pan, speed: SINGLE; loop: ALLEGRO_PLAYMODE; ret_id: ALLEGRO_SAMPLE_IDptr): BOOLEAN; CDECL;
+  PROCEDURE al_stop_sample (spl_id: ALLEGRO_SAMPLE_IDptr); CDECL;
+  PROCEDURE al_stop_samples; CDECL;
 
-(*
-ALLEGRO_KCM_AUDIO_FUNC(unsigned int, al_get_sample_frequency, (const ALLEGRO_SAMPLE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(unsigned int, al_get_sample_length, (const ALLEGRO_SAMPLE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_AUDIO_DEPTH, al_get_sample_depth, (const ALLEGRO_SAMPLE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_CHANNEL_CONF, al_get_sample_channels, (const ALLEGRO_SAMPLE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(void *, al_get_sample_data, (const ALLEGRO_SAMPLE *spl));
+(* File type handlers *)
+  FUNCTION al_register_sample_loader (CONST ext: PCHAR; loader: ALLEGRO_SAMPLE_LOADER): BOOLEAN; CDECL;
+  FUNCTION al_register_sample_saver (CONST ext: PCHAR; saver: ALLEGRO_SAMPLE_SAVER): BOOLEAN; CDECL;
+  FUNCTION al_register_audio_stream_loader (CONST ext: PCHAR; stream_loader: ALLEGRO_AUDIO_STREAM_LOADER): BOOLEAN; CDECL;
 
-ALLEGRO_KCM_AUDIO_FUNC(unsigned int, al_get_sample_instance_frequency, (const ALLEGRO_SAMPLE_INSTANCE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(unsigned int, al_get_sample_instance_length, (const ALLEGRO_SAMPLE_INSTANCE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(unsigned int, al_get_sample_instance_position, (const ALLEGRO_SAMPLE_INSTANCE *spl));
+  {TODO: These needs Allegro's file access.
 
-ALLEGRO_KCM_AUDIO_FUNC(float, al_get_sample_instance_speed, (const ALLEGRO_SAMPLE_INSTANCE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(float, al_get_sample_instance_gain, (const ALLEGRO_SAMPLE_INSTANCE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(float, al_get_sample_instance_pan, (const ALLEGRO_SAMPLE_INSTANCE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(float, al_get_sample_instance_time, (const ALLEGRO_SAMPLE_INSTANCE *spl));
-
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_AUDIO_DEPTH, al_get_sample_instance_depth, (const ALLEGRO_SAMPLE_INSTANCE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_CHANNEL_CONF, al_get_sample_instance_channels, (const ALLEGRO_SAMPLE_INSTANCE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_PLAYMODE, al_get_sample_instance_playmode, (const ALLEGRO_SAMPLE_INSTANCE *spl));
-
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_get_sample_instance_playing, (const ALLEGRO_SAMPLE_INSTANCE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_get_sample_instance_attached, (const ALLEGRO_SAMPLE_INSTANCE *spl));
-
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_sample_instance_position, (ALLEGRO_SAMPLE_INSTANCE *spl, unsigned int val));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_sample_instance_length, (ALLEGRO_SAMPLE_INSTANCE *spl, unsigned int val));
-
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_sample_instance_speed, (ALLEGRO_SAMPLE_INSTANCE *spl, float val));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_sample_instance_gain, (ALLEGRO_SAMPLE_INSTANCE *spl, float val));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_sample_instance_pan, (ALLEGRO_SAMPLE_INSTANCE *spl, float val));
-
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_sample_instance_playmode, (ALLEGRO_SAMPLE_INSTANCE *spl, ALLEGRO_PLAYMODE val));
-
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_sample_instance_playing, (ALLEGRO_SAMPLE_INSTANCE *spl, bool val));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_detach_sample_instance, (ALLEGRO_SAMPLE_INSTANCE *spl));
-
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_sample, (ALLEGRO_SAMPLE_INSTANCE *spl, ALLEGRO_SAMPLE *data));
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_SAMPLE *, al_get_sample, (ALLEGRO_SAMPLE_INSTANCE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_play_sample_instance, (ALLEGRO_SAMPLE_INSTANCE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_stop_sample_instance, (ALLEGRO_SAMPLE_INSTANCE *spl));
-
-
-/* Stream functions */
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_AUDIO_STREAM*, al_create_audio_stream, (size_t buffer_count,
-      unsigned int samples, unsigned int freq,
-      ALLEGRO_AUDIO_DEPTH depth, ALLEGRO_CHANNEL_CONF chan_conf));
-ALLEGRO_KCM_AUDIO_FUNC(void, al_destroy_audio_stream, (ALLEGRO_AUDIO_STREAM *stream));
-ALLEGRO_KCM_AUDIO_FUNC(void, al_drain_audio_stream, (ALLEGRO_AUDIO_STREAM *stream));
-
-ALLEGRO_KCM_AUDIO_FUNC(unsigned int, al_get_audio_stream_frequency, (const ALLEGRO_AUDIO_STREAM *stream));
-ALLEGRO_KCM_AUDIO_FUNC(unsigned int, al_get_audio_stream_length, (const ALLEGRO_AUDIO_STREAM *stream));
-ALLEGRO_KCM_AUDIO_FUNC(unsigned int, al_get_audio_stream_fragments, (const ALLEGRO_AUDIO_STREAM *stream));
-ALLEGRO_KCM_AUDIO_FUNC(unsigned int, al_get_available_audio_stream_fragments, (const ALLEGRO_AUDIO_STREAM *stream));
-
-ALLEGRO_KCM_AUDIO_FUNC(float, al_get_audio_stream_speed, (const ALLEGRO_AUDIO_STREAM *stream));
-ALLEGRO_KCM_AUDIO_FUNC(float, al_get_audio_stream_gain, (const ALLEGRO_AUDIO_STREAM *stream));
-ALLEGRO_KCM_AUDIO_FUNC(float, al_get_audio_stream_pan, (const ALLEGRO_AUDIO_STREAM *stream));
-
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_CHANNEL_CONF, al_get_audio_stream_channels, (const ALLEGRO_AUDIO_STREAM *stream));
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_AUDIO_DEPTH, al_get_audio_stream_depth, (const ALLEGRO_AUDIO_STREAM *stream));
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_PLAYMODE, al_get_audio_stream_playmode, (const ALLEGRO_AUDIO_STREAM *stream));
-
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_get_audio_stream_playing, (const ALLEGRO_AUDIO_STREAM *spl));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_get_audio_stream_attached, (const ALLEGRO_AUDIO_STREAM *spl));
-
-ALLEGRO_KCM_AUDIO_FUNC(void *, al_get_audio_stream_fragment, (const ALLEGRO_AUDIO_STREAM *stream));
-
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_audio_stream_speed, (ALLEGRO_AUDIO_STREAM *stream, float val));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_audio_stream_gain, (ALLEGRO_AUDIO_STREAM *stream, float val));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_audio_stream_pan, (ALLEGRO_AUDIO_STREAM *stream, float val));
-
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_audio_stream_playmode, (ALLEGRO_AUDIO_STREAM *stream, ALLEGRO_PLAYMODE val));
-
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_audio_stream_playing, (ALLEGRO_AUDIO_STREAM *stream, bool val));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_detach_audio_stream, (ALLEGRO_AUDIO_STREAM *stream));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_audio_stream_fragment, (ALLEGRO_AUDIO_STREAM *stream, void *val));
-
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_rewind_audio_stream, (ALLEGRO_AUDIO_STREAM *stream));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_seek_audio_stream_secs, (ALLEGRO_AUDIO_STREAM *stream, double time));
-ALLEGRO_KCM_AUDIO_FUNC(double, al_get_audio_stream_position_secs, (ALLEGRO_AUDIO_STREAM *stream));
-ALLEGRO_KCM_AUDIO_FUNC(double, al_get_audio_stream_length_secs, (ALLEGRO_AUDIO_STREAM *stream));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_audio_stream_loop_secs, (ALLEGRO_AUDIO_STREAM *stream, double start, double end));
-
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_EVENT_SOURCE *, al_get_audio_stream_event_source, (ALLEGRO_AUDIO_STREAM *stream));
-
-/* Mixer functions */
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_MIXER*, al_create_mixer, (unsigned int freq,
-      ALLEGRO_AUDIO_DEPTH depth, ALLEGRO_CHANNEL_CONF chan_conf));
-ALLEGRO_KCM_AUDIO_FUNC(void, al_destroy_mixer, (ALLEGRO_MIXER *mixer));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_attach_sample_instance_to_mixer, (
-   ALLEGRO_SAMPLE_INSTANCE *stream, ALLEGRO_MIXER *mixer));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_attach_audio_stream_to_mixer, (ALLEGRO_AUDIO_STREAM *stream,
-   ALLEGRO_MIXER *mixer));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_attach_mixer_to_mixer, (ALLEGRO_MIXER *stream,
-   ALLEGRO_MIXER *mixer));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_mixer_postprocess_callback, (
-      ALLEGRO_MIXER *mixer,
-      void ( *cb)(void *buf, unsigned int samples, void *data),
-      void *data));
-
-ALLEGRO_KCM_AUDIO_FUNC(unsigned int, al_get_mixer_frequency, (const ALLEGRO_MIXER *mixer));
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_CHANNEL_CONF, al_get_mixer_channels, (const ALLEGRO_MIXER *mixer));
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_AUDIO_DEPTH, al_get_mixer_depth, (const ALLEGRO_MIXER *mixer));
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_MIXER_QUALITY, al_get_mixer_quality, (const ALLEGRO_MIXER *mixer));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_get_mixer_playing, (const ALLEGRO_MIXER *mixer));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_get_mixer_attached, (const ALLEGRO_MIXER *mixer));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_mixer_frequency, (ALLEGRO_MIXER *mixer, unsigned int val));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_mixer_quality, (ALLEGRO_MIXER *mixer, ALLEGRO_MIXER_QUALITY val));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_mixer_playing, (ALLEGRO_MIXER *mixer, bool val));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_detach_mixer, (ALLEGRO_MIXER *mixer));
-
-/* Voice functions */
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_VOICE*, al_create_voice, (unsigned int freq,
-      ALLEGRO_AUDIO_DEPTH depth,
-      ALLEGRO_CHANNEL_CONF chan_conf));
-ALLEGRO_KCM_AUDIO_FUNC(void, al_destroy_voice, (ALLEGRO_VOICE *voice));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_attach_sample_instance_to_voice, (
-   ALLEGRO_SAMPLE_INSTANCE *stream, ALLEGRO_VOICE *voice));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_attach_audio_stream_to_voice, (
-   ALLEGRO_AUDIO_STREAM *stream, ALLEGRO_VOICE *voice ));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_attach_mixer_to_voice, (ALLEGRO_MIXER *mixer,
-   ALLEGRO_VOICE *voice));
-ALLEGRO_KCM_AUDIO_FUNC(void, al_detach_voice, (ALLEGRO_VOICE *voice));
-
-ALLEGRO_KCM_AUDIO_FUNC(unsigned int, al_get_voice_frequency, (const ALLEGRO_VOICE *voice));
-ALLEGRO_KCM_AUDIO_FUNC(unsigned int, al_get_voice_position, (const ALLEGRO_VOICE *voice));
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_CHANNEL_CONF, al_get_voice_channels, (const ALLEGRO_VOICE *voice));
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_AUDIO_DEPTH, al_get_voice_depth, (const ALLEGRO_VOICE *voice));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_get_voice_playing, (const ALLEGRO_VOICE *voice));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_voice_position, (ALLEGRO_VOICE *voice, unsigned int val));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_voice_playing, (ALLEGRO_VOICE *voice, bool val));
-
-
-ALLEGRO_KCM_AUDIO_FUNC(size_t, al_get_channel_count, (ALLEGRO_CHANNEL_CONF conf));
-ALLEGRO_KCM_AUDIO_FUNC(size_t, al_get_audio_depth_size, (ALLEGRO_AUDIO_DEPTH conf));
-*)
-   (* Simple audio layer *)
-      FUNCTION al_reserve_samples (reserve_samples: LONGINT): BOOLEAN; CDECL;
-(*
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_MIXER *, al_get_default_mixer, (void));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_default_mixer, (ALLEGRO_MIXER *mixer));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_restore_default_mixer, (void));
-*)
-   FUNCTION al_play_sample (data: ALLEGRO_SAMPLEptr; gain, pan, speed: SINGLE; loop: ALLEGRO_PLAYMODE; ret_id: ALLEGRO_SAMPLE_IDptr): BOOLEAN; CDECL;
-(*
-ALLEGRO_KCM_AUDIO_FUNC(void, al_stop_sample, (ALLEGRO_SAMPLE_ID *spl_id));
-ALLEGRO_KCM_AUDIO_FUNC(void, al_stop_samples, (void));
-
-/* File type handlers */
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_register_sample_loader, (const char *ext,
-	ALLEGRO_SAMPLE *( *loader)(const char *filename)));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_register_sample_saver, (const char *ext,
-	bool ( *saver)(const char *filename, ALLEGRO_SAMPLE *spl)));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_register_audio_stream_loader, (const char *ext,
-	ALLEGRO_AUDIO_STREAM *( *stream_loader)(const char *filename,
-	    size_t buffer_count, unsigned int samples)));
-       
 ALLEGRO_KCM_AUDIO_FUNC(bool, al_register_sample_loader_f, (const char *ext,
 	ALLEGRO_SAMPLE *( *loader)(ALLEGRO_FILE *fp)));
 ALLEGRO_KCM_AUDIO_FUNC(bool, al_register_sample_saver_f, (const char *ext,
@@ -287,23 +276,300 @@ ALLEGRO_KCM_AUDIO_FUNC(bool, al_register_sample_saver_f, (const char *ext,
 ALLEGRO_KCM_AUDIO_FUNC(bool, al_register_audio_stream_loader_f, (const char *ext,
 	ALLEGRO_AUDIO_STREAM *( *stream_loader)(ALLEGRO_FILE *fp,
 	    size_t buffer_count, unsigned int samples)));
-*)
+	  }
 
+  FUNCTION al_load_sample (CONST filename: STRING): ALLEGRO_SAMPLEptr; CDECL;
+  FUNCTION al_save_sample (CONST filename: STRING; spl: ALLEGRO_SAMPLEptr): BOOLEAN; CDECL;
+  FUNCTION al_load_audio_stream (CONST filename: STRING; buffer_count, samples: LONGWORD): ALLEGRO_AUDIO_STREAMptr; CDECL;
 
-(*
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_save_sample, (const char *filename,
-	ALLEGRO_SAMPLE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_AUDIO_STREAM *, al_load_audio_stream, (const char *filename,
-	size_t buffer_count, unsigned int samples));
-   
+  {TODO: These needs Allegro's file access.
+
 ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_SAMPLE *, al_load_sample_f, (ALLEGRO_FILE* fp, const char *ident));
 ALLEGRO_KCM_AUDIO_FUNC(bool, al_save_sample_f, (ALLEGRO_FILE* fp, const char *ident,
 	ALLEGRO_SAMPLE *spl));
 ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_AUDIO_STREAM *, al_load_audio_stream_f, (ALLEGRO_FILE* fp, const char *ident,
 	size_t buffer_count, unsigned int samples));
+      }
 
-      *)
 IMPLEMENTATION
+
+(* Sample functions *)
+  FUNCTION al_create_sample (buf: POINTER; samples, freq: LONGWORD; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF; free_buf: BOOLEAN):
+    ALLEGRO_SAMPLEptr; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  PROCEDURE al_destroy_sample (spl: ALLEGRO_SAMPLEptr); CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+(* Sample instance functions *)
+  FUNCTION al_create_sample_instance (data: ALLEGRO_SAMPLEptr): ALLEGRO_SAMPLE_INSTANCEptr; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  PROCEDURE al_destroy_sample_instance (spl: ALLEGRO_SAMPLE_INSTANCEptr); CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_frequency (CONST spl: ALLEGRO_SAMPLEptr): LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_length (CONST spl: ALLEGRO_SAMPLEptr): LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_depth (CONST spl: ALLEGRO_SAMPLEptr): ALLEGRO_AUDIO_DEPTH; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_channels (CONST spl: ALLEGRO_SAMPLEptr): ALLEGRO_CHANNEL_CONF; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_data (CONST spl: ALLEGRO_SAMPLEptr): POINTER; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_instance_frequency (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_instance_length (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_instance_position (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_instance_speed (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): SINGLE; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_instance_gain (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): SINGLE; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_instance_pan (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): SINGLE; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_instance_time (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): SINGLE; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_instance_depth (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): ALLEGRO_AUDIO_DEPTH; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_instance_channels (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): ALLEGRO_CHANNEL_CONF; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_instance_playmode (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): ALLEGRO_PLAYMODE; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_instance_playing (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample_instance_attached (CONST spl: ALLEGRO_SAMPLE_INSTANCEptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_sample_instance_position (spl: ALLEGRO_SAMPLE_INSTANCEptr; val: LONGWORD): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_sample_instance_length (spl: ALLEGRO_SAMPLE_INSTANCEptr; val: LONGWORD): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_sample_instance_speed (spl: ALLEGRO_SAMPLE_INSTANCEptr; val: SINGLE): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_sample_instance_gain (spl: ALLEGRO_SAMPLE_INSTANCEptr; val: SINGLE): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_sample_instance_pan (spl: ALLEGRO_SAMPLE_INSTANCEptr; val: SINGLE): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_sample_instance_playmode (spl: ALLEGRO_SAMPLE_INSTANCEptr; val: ALLEGRO_PLAYMODE): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_sample_instance_playing (spl: ALLEGRO_SAMPLE_INSTANCEptr; val: BOOLEAN): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_detach_sample_instance (spl: ALLEGRO_SAMPLE_INSTANCEptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_sample (spl: ALLEGRO_SAMPLE_INSTANCEptr; data: ALLEGRO_SAMPLEptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_sample (spl: ALLEGRO_SAMPLE_INSTANCEptr): ALLEGRO_SAMPLEptr; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_play_sample_instance (spl: ALLEGRO_SAMPLE_INSTANCEptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_stop_sample_instance (spl: ALLEGRO_SAMPLE_INSTANCEptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+(* Stream functions *)
+  FUNCTION al_create_audio_stream (buffer_count, samples, freq: LONGWORD; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF): ALLEGRO_AUDIO_STREAMptr; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  PROCEDURE al_destroy_audio_stream (stream: ALLEGRO_AUDIO_STREAMptr); CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  PROCEDURE al_drain_audio_stream (stream: ALLEGRO_AUDIO_STREAMptr); CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_frequency (CONST stream: ALLEGRO_AUDIO_STREAMptr): LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_length (CONST stream: ALLEGRO_AUDIO_STREAMptr): LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_fragments (CONST stream: ALLEGRO_AUDIO_STREAMptr): LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_available_audio_stream_fragments (CONST stream: ALLEGRO_AUDIO_STREAMptr): LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_speed (CONST stream: ALLEGRO_AUDIO_STREAMptr): SINGLE; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_gain (CONST stream: ALLEGRO_AUDIO_STREAMptr): SINGLE; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_pan (CONST stream: ALLEGRO_AUDIO_STREAMptr): SINGLE; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_channels (CONST stream: ALLEGRO_AUDIO_STREAMptr): ALLEGRO_CHANNEL_CONF; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_depth (CONST stream: ALLEGRO_AUDIO_STREAMptr): ALLEGRO_AUDIO_DEPTH; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_playmode (CONST stream: ALLEGRO_AUDIO_STREAMptr): ALLEGRO_PLAYMODE; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_playing (CONST spl: ALLEGRO_AUDIO_STREAMptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_attached (CONST spl: ALLEGRO_AUDIO_STREAMptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_fragment (CONST stream: ALLEGRO_AUDIO_STREAMptr): POINTER; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_audio_stream_speed (stream: ALLEGRO_AUDIO_STREAMptr; val: SINGLE): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_audio_stream_gain (stream: ALLEGRO_AUDIO_STREAMptr; val: SINGLE): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_audio_stream_pan (stream: ALLEGRO_AUDIO_STREAMptr; val: SINGLE): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_audio_stream_playmode (stream: ALLEGRO_AUDIO_STREAMptr; val: ALLEGRO_PLAYMODE): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_audio_stream_playing (stream: ALLEGRO_AUDIO_STREAMptr; val: BOOLEAN): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_detach_audio_stream (stream: ALLEGRO_AUDIO_STREAMptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_audio_stream_fragment (stream: ALLEGRO_AUDIO_STREAMptr; val: POINTER): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_rewind_audio_stream (stream: ALLEGRO_AUDIO_STREAMptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_seek_audio_stream_secs (stream: ALLEGRO_AUDIO_STREAMptr; time: DOUBLE): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_position_secs (stream: ALLEGRO_AUDIO_STREAMptr): DOUBLE; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_length_secs (stream: ALLEGRO_AUDIO_STREAMptr): DOUBLE; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_audio_stream_loop_secs (stream: ALLEGRO_AUDIO_STREAMptr; start, finish: DOUBLE): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_audio_stream_event_source (stream: ALLEGRO_AUDIO_STREAMptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+(* Mixer functions *)
+  FUNCTION al_create_mixer (freq: LONGWORD; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF): ALLEGRO_MIXERptr; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  PROCEDURE al_destroy_mixer (mixer: ALLEGRO_MIXERptr); CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_attach_sample_instance_to_mixer (sample: ALLEGRO_SAMPLE_INSTANCEptr; mixer: ALLEGRO_MIXERptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_attach_audio_stream_to_mixer (stream: ALLEGRO_AUDIO_STREAMptr; mixer: ALLEGRO_MIXERptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_attach_mixer_to_mixer (mixerA, mixerB: ALLEGRO_MIXERptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_mixer_postprocess_callback (mixer: ALLEGRO_MIXERptr; cb: ALLEGRO_MIXER_CALLBACK; data: POINTER): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_mixer_frequency (CONST mixer: ALLEGRO_MIXERptr): LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_mixer_channels (CONST mixer: ALLEGRO_MIXERptr): ALLEGRO_CHANNEL_CONF; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_mixer_depth (CONST mixer: ALLEGRO_MIXERptr): ALLEGRO_AUDIO_DEPTH; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_mixer_quality (CONST mixer: ALLEGRO_MIXERptr): ALLEGRO_MIXER_QUALITY; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_mixer_playing (CONST mixer: ALLEGRO_MIXERptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_mixer_attached (CONST mixer: ALLEGRO_MIXERptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_mixer_frequency (mixer: ALLEGRO_MIXERptr; val: LONGWORD): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_mixer_quality (mixer: ALLEGRO_MIXERptr; val: ALLEGRO_MIXER_QUALITY): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_mixer_playing (mixer: ALLEGRO_MIXERptr; val: BOOLEAN): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_detach_mixer (mixer: ALLEGRO_MIXERptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_create_voice (freq: LONGWORD; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF): ALLEGRO_VOICEptr; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  PROCEDURE al_destroy_voice (voice: ALLEGRO_VOICEptr); CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_attach_sample_instance_to_voice (sample: ALLEGRO_SAMPLE_INSTANCEptr; voice: ALLEGRO_VOICEptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_attach_audio_stream_to_voice (stream: ALLEGRO_AUDIO_STREAMptr; voice: ALLEGRO_VOICEptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_attach_mixer_to_voice (mixer: ALLEGRO_MIXERptr; voice: ALLEGRO_VOICEptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  PROCEDURE al_detach_voice (voice: ALLEGRO_VOICEptr); CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_voice_frequency (CONST voice: ALLEGRO_VOICEptr): LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_voice_position (CONST voice: ALLEGRO_VOICEptr): LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_voice_channels (CONST voice: ALLEGRO_VOICEptr): ALLEGRO_CHANNEL_CONF; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_voice_depth (CONST voice: ALLEGRO_VOICEptr): ALLEGRO_AUDIO_DEPTH; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_voice_playing (CONST voice: ALLEGRO_VOICEptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_voice_position (voice: ALLEGRO_VOICEptr; val: LONGWORD): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_voice_playing (voice: ALLEGRO_VOICEptr; val: BOOLEAN): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
 (* Misc. audio functions *)
   FUNCTION al_install_audio: BOOLEAN; CDECL;
@@ -318,29 +584,51 @@ IMPLEMENTATION
   FUNCTION al_get_allegro_audio_version: LONGWORD; CDECL;
   EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
-(* Sample functions *)
-  FUNCTION al_create_sample (buf: POINTER; samples, freq: LONGWORD; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF; free_buf: BOOLEAN):
-    ALLEGRO_SAMPLEptr; CDECL;
+  FUNCTION al_get_channel_count (conf: ALLEGRO_CHANNEL_CONF): LONGWORD; CDECL;
   EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
-  PROCEDURE al_destroy_sample (spl: ALLEGRO_SAMPLEptr); CDECL;
+  FUNCTION al_get_audio_depth_size (conf: ALLEGRO_AUDIO_DEPTH): LONGWORD; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+(* Simple audio layer *)
+  FUNCTION al_reserve_samples (reserve_samples: LONGINT): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_get_default_mixer: ALLEGRO_MIXERptr; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_set_default_mixer (mixer: ALLEGRO_MIXERptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_restore_default_mixer: BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_play_sample (data: ALLEGRO_SAMPLEptr; gain, pan, speed: SINGLE; loop: ALLEGRO_PLAYMODE; ret_id: ALLEGRO_SAMPLE_IDptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  PROCEDURE al_stop_sample (spl_id: ALLEGRO_SAMPLE_IDptr); CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  PROCEDURE al_stop_samples; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+(* File type handlers *)
+  FUNCTION al_register_sample_loader (CONST ext: PCHAR; loader: ALLEGRO_SAMPLE_LOADER): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_register_sample_saver (CONST ext: PCHAR; saver: ALLEGRO_SAMPLE_SAVER): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+
+  FUNCTION al_register_audio_stream_loader (CONST ext: PCHAR; stream_loader: ALLEGRO_AUDIO_STREAM_LOADER): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
   FUNCTION al_load_sample (CONST filename: STRING): ALLEGRO_SAMPLEptr; CDECL;
   EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
-(* Sample instance functions *)
-  FUNCTION al_create_sample_instance (data: ALLEGRO_SAMPLEptr): ALLEGRO_SAMPLE_INSTANCEptr; CDECL;
+  FUNCTION al_save_sample (CONST filename: STRING; spl: ALLEGRO_SAMPLEptr): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
-  PROCEDURE al_destroy_sample_instance (spl: ALLEGRO_SAMPLE_INSTANCEptr); CDECL;
+  FUNCTION al_load_audio_stream (CONST filename: STRING; buffer_count, samples: LONGWORD): ALLEGRO_AUDIO_STREAMptr; CDECL;
   EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-
-(* Simple audio layer *)
-   FUNCTION al_reserve_samples (reserve_samples: LONGINT): BOOLEAN; CDECL;
-   EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-
-   FUNCTION al_play_sample (data: ALLEGRO_SAMPLEptr; gain, pan, speed: SINGLE; loop: ALLEGRO_PLAYMODE; ret_id: ALLEGRO_SAMPLE_IDptr): BOOLEAN; CDECL;
-   EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
 END.
