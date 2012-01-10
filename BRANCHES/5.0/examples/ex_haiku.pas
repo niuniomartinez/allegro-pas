@@ -16,7 +16,7 @@ PROGRAM haiku;
 USES
    Common,
    Allegro5,
-   al5audio, al5codec, al5image,
+   al5audio, al5acodec, al5image,
    sysutils;
 
 

@@ -519,8 +519,8 @@ END;
 
   FUNCTION al_keycode_to_name (keycode: LONGINT): PCHAR; CDECL;
 
-  PROCEDURE al_get_keyboard_state (ret_state: ALLEGRO_KEYBOARD_STATEptr); CDECL;
-  FUNCTION al_key_down (CONST state: ALLEGRO_KEYBOARD_STATEptr; keycode: LONGINT): BOOLEAN; CDECL;
+  PROCEDURE al_get_keyboard_state (VAR ret_state: ALLEGRO_KEYBOARD_STATE); CDECL;
+  FUNCTION al_key_down (VAR state: ALLEGRO_KEYBOARD_STATE; keycode: LONGINT): BOOLEAN; CDECL;
 
 (* Retrieves the keyboard event source.
    @returns(@nil if the keyboard subsystem was not installed.) *)
@@ -1295,10 +1295,10 @@ IMPLEMENTATION
   FUNCTION al_keycode_to_name (keycode: LONGINT): PCHAR; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  PROCEDURE al_get_keyboard_state (ret_state: ALLEGRO_KEYBOARD_STATEptr); CDECL;
+  PROCEDURE al_get_keyboard_state (VAR ret_state: ALLEGRO_KEYBOARD_STATE); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_key_down (CONST state: ALLEGRO_KEYBOARD_STATEptr; keycode: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_key_down (VAR state: ALLEGRO_KEYBOARD_STATE; keycode: LONGINT): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_keyboard_event_source: ALLEGRO_EVENT_SOURCEptr; CDECL;
