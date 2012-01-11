@@ -18,7 +18,11 @@ INTERFACE
 
   USES
     Allegro5,
+{$IFDEF FPC}
     GL;
+{$ELSE}
+    OpenGL;
+{$ENDIF}
 
 {$include allegro.cfg}
 
