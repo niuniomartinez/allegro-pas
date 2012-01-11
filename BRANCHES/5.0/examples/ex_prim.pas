@@ -461,56 +461,57 @@ static void LowPrimitives(Mode: TMODE)
    }
 }
 
-static void IndexedPrimitives(Mode: TMODE)
-{
-   static int indices1[] = {0, 1, 3, 4};
-   static int indices2[] = {5, 6, 7, 8};
-   static int indices3[] = {9, 10, 11, 12};
-   static ALLEGRO_VERTEX vtx[13];
-   static ALLEGRO_VERTEX vtx2[13];
-   if (mode == INIT) {
-      int Ndx = 0;
-      ALLEGRO_COLOR color;
-      for (Ndx = 0; Ndx < 13; Ndx++) {
-         float x, y;
-         x = 200 * cosf((float)Ndx / 13.0f * 2 * ALLEGRO_PI);
-         y = 200 * sinf((float)Ndx / 13.0f * 2 * ALLEGRO_PI);
-         
-         color = al_map_rgb((Ndx + 1) % 3 * 64, (Ndx + 2) % 3 * 64, (Ndx) % 3 * 64);
-         
-         vtx[Ndx].x = x; vtx[Ndx].y = y; vtx[Ndx].z = 0;
-         vtx2[Ndx].x = 0.1 * x; vtx2[Ndx].y = 0.1 * y;
-         vtx[Ndx].color = color;
-         vtx2[Ndx].color = color;
-      }
-   } else if (mode == LOGIC) {
-      int Ndx;
-      Theta += Speed;
-      for (Ndx = 0; Ndx < 4; Ndx++) {
-         indices1[Ndx] = ((int)al_get_time() + Ndx) % 13;
-         indices2[Ndx] = ((int)al_get_time() + Ndx + 4) % 13;
-         indices3[Ndx] = ((int)al_get_time() + Ndx + 8) % 13;
-      }
-      
-      al_build_transform(&MainTrans, ScreenW / 2, ScreenH / 2, 1, 1, Theta);
-   } else if (mode == DRAW) {
-      if (Blend)
-         al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE);
-      else
-         al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
-      
-      al_use_transform(&MainTrans);
-      
-      al_draw_indexed_prim(vtx, 0, 0, indices1, 4, ALLEGRO_PRIM_LINE_LIST);
-      al_draw_indexed_prim(vtx, 0, 0, indices2, 4, ALLEGRO_PRIM_LINE_STRIP);
-      al_draw_indexed_prim(vtx, 0, 0, indices3, 4, ALLEGRO_PRIM_LINE_LOOP);
-      al_draw_indexed_prim(vtx2, 0, 0, indices3, 4, ALLEGRO_PRIM_POINT_LIST);
-      
-      al_use_transform(&Identity);
-   }
-}
-
       *)
+
+
+  PROCEDURE IndexedPrimitives (Mode: TMODE);
+  VAR
+    Indices1: ARRAY [0..3] OF LONGINT = (0, 1, 3, 4);
+    Indices2: ARRAY [0..3] OF LONGINT = (5, 6, 7, 8);
+    Indices3: ARRAY [0..3] OF LONGINT = (9, 10, 11, 12);
+    vtx, vtx2 : ARRAY [0..12] OF ALLEGRO_VERTEX;
+    Ndx, x, y: INTEGER;
+    Color: ALLEGRO_COLOR;
+  BEGIN
+    CASE Mode OF
+    INIT:
+      FOR Ndx := LOW (vtx) TO HIGH (vtx) DO
+      BEGIN
+	x := TRUNC (200 * cos (Ndx / 13 * 2 * ALLEGRO_PI));
+	y := TRUNC (200 * sin (Ndx / 13 * 2 * ALLEGRO_PI));
+	Color := al_map_rgb ((Ndx + 1) MOD 3 * 64, (2 * Ndx + 2) MOD 3 * 64, Ndx MOD 3 * 64);
+	vtx[Ndx].x := x; vtx[Ndx].y := y; vtx[Ndx].z := 0;
+	vtx2[Ndx].x := 0.1 * x; vtx2[Ndx].y := 0.1 * y;
+	vtx[Ndx].color := Color;
+	vtx2[Ndx].color := Color;
+      END;
+    LOGIC:
+      BEGIN
+	Theta := Theta + Speed;
+	FOR Ndx := LOW (Indices1) TO HIGH (Indices1) DO
+	BEGIN
+	  indices1[Ndx] := TRUNC (al_get_time + Ndx) MOD 13;
+	  indices2[Ndx] := TRUNC (al_get_time + Ndx + 4) MOD 13;
+	  indices3[Ndx] := TRUNC (al_get_time + Ndx + 8) MOD 13;
+	END;
+	al_build_transform (MainTrans, ScreenW / 2, ScreenH / 2, 1, 1, Theta);
+      END;
+    DRAW:
+      BEGIN
+	IF Blend THEN
+	  al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE)
+	ELSE
+	  al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
+	al_use_transform (MainTrans);
+	al_draw_indexed_prim (@vtx[0], NIL, NIL, Indices1, 4, ALLEGRO_PRIM_LINE_LIST);
+	al_draw_indexed_prim (@vtx[0], NIL, NIL, Indices2, 4, ALLEGRO_PRIM_LINE_STRIP);
+	al_draw_indexed_prim (@vtx[0], NIL, NIL, Indices3, 4, ALLEGRO_PRIM_LINE_LOOP);
+	al_draw_indexed_prim (@vtx2[0], NIL, NIL, Indices3, 4, ALLEGRO_PRIM_POINT_LIST);
+	al_use_transform (Identity);
+      END;
+    END;
+  END;
+
 
 
 
@@ -589,7 +590,7 @@ BEGIN
   FixedTimestep := 1 / RefreshRate;
   RealTime := al_get_time;
   GameTime := al_get_time;
-  CurScreen := 5; { LOW (Screens); }
+  CurScreen := 2; { LOW (Screens); }
   Done := FALSE;
   Clip := FALSE;
 
@@ -606,7 +607,7 @@ BEGIN
   al_identity_transform (Identity);
 
   Screens[1] := NIL; { @LowPrimitives; }
-  Screens[2] := NIL; { @IndexedPrimitives; }
+  Screens[2] := @IndexedPrimitives;
   Screens[3] := NIL; { @HighPrimitives; }
   Screens[4] := NIL; { @TransformationsPrimitives; }
   Screens[5] := @FilledPrimitives;
@@ -617,8 +618,8 @@ BEGIN
   Screens[10] := @CustomVertexFormatPrimitives;
 
   ScreenName[1] := 'Low Level Primitives';
-  ScreenName[3] := 'Indexed Primitives';
-  ScreenName[4] := 'High Level Primitives';
+  ScreenName[2] := 'Indexed Primitives';
+  ScreenName[3] := 'High Level Primitives';
   ScreenName[4] := 'Transformations';
   ScreenName[5] := 'Low Level Filled Primitives';
   ScreenName[6] := 'Indexed Filled Primitives';
@@ -728,7 +729,7 @@ BEGIN
 	al_draw_bitmap (Buffer, 0, 0, 0);
       END;
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-      al_draw_text (Font, SolidWhite, ScreenW DIV 2, ScreenH - 20, ALLEGRO_ALIGN_CENTRE, ScreenName[CurScreen]);
+      al_draw_text (Font, SolidWhite, ScreenW DIV 2, ScreenH - 20, ALLEGRO_ALIGN_CENTRE, '('+IntToStr (CurScreen)+') '+ScreenName[CurScreen]);
       al_draw_text (Font, SolidWhite, 0, 0, 0, 'FPS: '+ FloatToStr (FramesDone / (al_get_time - TimeDiff)));
       al_draw_text (Font, SolidWhite, 0, 20, 0, 'Change Screen (Up/Down). Esc to Quit.');
       al_draw_text (Font, SolidWhite, 0, 40, 0, 'Rotation (Left/Right/Space): '+ FloatToStr (Speed));

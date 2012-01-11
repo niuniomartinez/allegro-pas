@@ -68,14 +68,16 @@ INTERFACE
    characters, on both 32 and 64 bit machines.  These can be used for various
    things, like custom datafile objects or system IDs. Example:
 
-@longcode(#
 VAR
   OSTYPE_LINUX: LONGINT;
 BEGIN
   OSTYPE_LINUX := AL_ID('TUX ');
 END;
-  #) *)
-  FUNCTION AL_ID (str: SHORTSTRING): LONGINT;
+ *)
+  TYPE
+    STR4 = STRING[4];
+
+  FUNCTION AL_ID (str: STR4): LONGINT;
 
 
 
@@ -926,6 +928,49 @@ END;
   PROCEDURE al_invert_transform (VAR trans: ALLEGRO_TRANSFORM); CDECL;
   FUNCTION al_check_inverse (VAR trans: ALLEGRO_TRANSFORM; tol: SINGLE): LONGINT; CDECL;
 
+
+
+(******************************************************************************
+ * utf8.h *
+ **********)
+
+  {TODO: Documentation says it's not needed as it's used internally.
+         Only basic functionality is implemented for convenience. }
+
+  TYPE
+    _al_tagbstring = RECORD
+      mlen, slen: LONGINT;
+      data: PBYTE;
+    END;
+
+
+
+    ALLEGRO_USTRptr = ^ALLEGRO_USTR;
+    ALLEGRO_USTR = _al_tagbstring;
+
+
+
+    ALLEGRO_USTR_INFOptr = ^ALLEGRO_USTR_INFO;
+    ALLEGRO_USTR_INFO = _al_tagbstring;
+
+(* Creating strings *)
+  FUNCTION al_ustr_new (CONST s: STRING): ALLEGRO_USTRptr; CDECL;
+  FUNCTION al_ustr_new_from_buffer (CONST s: POINTER; size: LONGWORD): ALLEGRO_USTRptr; CDECL;
+  PROCEDURE al_ustr_free (us: ALLEGRO_USTRptr); CDECL;
+  FUNCTION al_ustr_to_pchar (CONST us: ALLEGRO_USTRptr): PCHAR; CDECL;
+  FUNCTION al_ustr_to_buffer (CONST us: ALLEGRO_USTRptr; buffer: POINTER; size: LONGINT): PCHAR; CDECL;
+  FUNCTION al_ustr_dup (CONST us: ALLEGRO_USTRptr): ALLEGRO_USTRptr; CDECL;
+  FUNCTION al_ustr_dup_substr (CONST us: ALLEGRO_USTRptr; start_pos, end_pos: LONGINT): ALLEGRO_USTRptr; CDECL;
+
+(* Assign *)
+  FUNCTION al_ustr_assign (us1: ALLEGRO_USTRptr; CONST us2: ALLEGRO_USTRptr): BOOLEAN; CDECL;
+  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: STRING): BOOLEAN; CDECL;
+
+(* Compare *)
+  FUNCTION al_ustr_equal (CONST us1, us2: ALLEGRO_USTRptr): BOOLEAN; CDECL;
+  FUNCTION al_ustr_compare (CONST u, v: ALLEGRO_USTRptr): LONGINT; CDECL;
+  FUNCTION al_ustr_ncompare (CONST u, v: ALLEGRO_USTRptr): LONGINT; CDECL;
+
 IMPLEMENTATION
 
 (******************************************************************************
@@ -938,7 +983,7 @@ IMPLEMENTATION
   FUNCTION al_run_main (argc: LONGINT; argv: POINTER; user_main: ALLEGRO_USER_MAIN): LONGINT; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION AL_ID (str: SHORTSTRING): LONGINT;
+  FUNCTION AL_ID (str: STR4): LONGINT;
   BEGIN
     AL_ID := (ORD (str[1]) SHL 24) OR (ORD (str[2]) SHL 16)
 	     OR (ORD (str[3]) SHL  8) OR  ORD (str[4]);
@@ -1642,6 +1687,53 @@ IMPLEMENTATION
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_check_inverse (VAR trans: ALLEGRO_TRANSFORM; tol: SINGLE): LONGINT; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * utf8.h *
+ **********)
+
+(* Creating strings *)
+  FUNCTION al_ustr_new (CONST s: STRING): ALLEGRO_USTRptr; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_ustr_new_from_buffer (CONST s: POINTER; size: LONGWORD): ALLEGRO_USTRptr; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_ustr_free (us: ALLEGRO_USTRptr); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_ustr_to_pchar (CONST us: ALLEGRO_USTRptr): PCHAR; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME NAME 'al_cstr';
+
+  FUNCTION al_ustr_to_buffer (CONST us: ALLEGRO_USTRptr; buffer: POINTER; size: LONGINT): PCHAR; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_ustr_dup (CONST us: ALLEGRO_USTRptr): ALLEGRO_USTRptr; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_ustr_dup_substr (CONST us: ALLEGRO_USTRptr; start_pos, end_pos: LONGINT): ALLEGRO_USTRptr; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+
+(* Assign *)
+  FUNCTION al_ustr_assign (us1: ALLEGRO_USTRptr; CONST us2: ALLEGRO_USTRptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: STRING): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+
+(* Compare *)
+  FUNCTION al_ustr_equal (CONST us1, us2: ALLEGRO_USTRptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_ustr_compare (CONST u, v: ALLEGRO_USTRptr): LONGINT; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_ustr_ncompare (CONST u, v: ALLEGRO_USTRptr): LONGINT; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
 INITIALIZATION
