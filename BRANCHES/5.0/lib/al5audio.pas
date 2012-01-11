@@ -263,9 +263,9 @@ INTERFACE
   PROCEDURE al_stop_samples; CDECL;
 
 (* File type handlers *)
-  FUNCTION al_register_sample_loader (CONST ext: PCHAR; loader: ALLEGRO_SAMPLE_LOADER): BOOLEAN; CDECL;
-  FUNCTION al_register_sample_saver (CONST ext: PCHAR; saver: ALLEGRO_SAMPLE_SAVER): BOOLEAN; CDECL;
-  FUNCTION al_register_audio_stream_loader (CONST ext: PCHAR; stream_loader: ALLEGRO_AUDIO_STREAM_LOADER): BOOLEAN; CDECL;
+  FUNCTION al_register_sample_loader (CONST ext: STRING; loader: ALLEGRO_SAMPLE_LOADER): BOOLEAN; CDECL;
+  FUNCTION al_register_sample_saver (CONST ext: STRING; saver: ALLEGRO_SAMPLE_SAVER): BOOLEAN; CDECL;
+  FUNCTION al_register_audio_stream_loader (CONST ext: STRING; stream_loader: ALLEGRO_AUDIO_STREAM_LOADER): BOOLEAN; CDECL;
 
   {TODO: These needs Allegro's file access.
 
@@ -613,13 +613,13 @@ IMPLEMENTATION
   EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
 (* File type handlers *)
-  FUNCTION al_register_sample_loader (CONST ext: PCHAR; loader: ALLEGRO_SAMPLE_LOADER): BOOLEAN; CDECL;
+  FUNCTION al_register_sample_loader (CONST ext: STRING; loader: ALLEGRO_SAMPLE_LOADER): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
-  FUNCTION al_register_sample_saver (CONST ext: PCHAR; saver: ALLEGRO_SAMPLE_SAVER): BOOLEAN; CDECL;
+  FUNCTION al_register_sample_saver (CONST ext: STRING; saver: ALLEGRO_SAMPLE_SAVER): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
-  FUNCTION al_register_audio_stream_loader (CONST ext: PCHAR; stream_loader: ALLEGRO_AUDIO_STREAM_LOADER): BOOLEAN; CDECL;
+  FUNCTION al_register_audio_stream_loader (CONST ext: STRING; stream_loader: ALLEGRO_AUDIO_STREAM_LOADER): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
   FUNCTION al_load_sample (CONST filename: STRING): ALLEGRO_SAMPLEptr; CDECL;

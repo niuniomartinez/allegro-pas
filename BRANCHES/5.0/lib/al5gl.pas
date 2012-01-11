@@ -42,8 +42,8 @@ INTERFACE
     );
 
   FUNCTION al_get_opengl_version: LONGWORD; CDECL;
-  FUNCTION al_have_opengl_extension (CONST extension: PCHAR): BOOLEAN; CDECL;
-  FUNCTION al_get_opengl_proc_address (CONST name: PCHAR): POINTER;
+  FUNCTION al_have_opengl_extension (CONST extension: STRING): BOOLEAN; CDECL;
+  FUNCTION al_get_opengl_proc_address (CONST name: STRING): POINTER;
   FUNCTION al_get_opengl_texture (bitmap: ALLEGRO_BITMAPptr): GLuint; CDECL;
   PROCEDURE al_remove_opengl_fbo (bitmap: ALLEGRO_BITMAPptr); CDECL;
   FUNCTION al_get_opengl_fbo (bitmap: ALLEGRO_BITMAPptr): GLuint; CDECL;
@@ -57,10 +57,10 @@ IMPLEMENTATION
   FUNCTION al_get_opengl_version: LONGWORD; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_have_opengl_extension (CONST extension: PCHAR): BOOLEAN; CDECL;
+  FUNCTION al_have_opengl_extension (CONST extension: STRING): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_get_opengl_proc_address (CONST name: PCHAR): POINTER;
+  FUNCTION al_get_opengl_proc_address (CONST name: STRING): POINTER;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_opengl_texture (bitmap: ALLEGRO_BITMAPptr): GLuint; CDECL;

@@ -1,10 +1,25 @@
 
-VAR parameters
-==============
+Data types
+==========
 
-  Some parameters that are pointers in C are implemented in Pascal as VAR parameters.
+  Texts are managed in two different types:
 
-  Some other are still pointers.
+  When used as parameter, they're defined as STRING assuming they're ANSISTRING.
+  An exception are CALLBACKs.
+
+  If a function returns a text, it's defined as PCHAR.  May be it should bee
+  ANSISTRING too.
+
+
+
+parameters
+==========
+
+  Some parameters that are pointers in C are implemented in Pascal as VAR
+  parameters.  Some other are still pointers.
+
+  Text parameters are defined as STRING assuming they're ANSISTRING.
+  An exception are CALLBACKs.
 
 
 

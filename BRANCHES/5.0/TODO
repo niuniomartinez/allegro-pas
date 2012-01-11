@@ -5,3 +5,6 @@ In no special order
 
   * Documentation isn't written.
     May be I should find another documentation tool as pasdoc is "dirty".
+
+  * Test if it's possible to use STRING (ANSISTRING) as return values
+    instead of PCHAR.
