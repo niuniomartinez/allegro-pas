@@ -104,6 +104,7 @@ BEGIN
 	  FakeX := Width DIV 2;
 	  FakeY := Height DIV 2;
 	END;
+	Redraw := TRUE;
       END;
     ALLEGRO_EVENT_MOUSE_BUTTON_UP:
       IF Event.mouse.button = 2 THEN
