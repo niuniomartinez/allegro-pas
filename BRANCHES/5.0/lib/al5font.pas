@@ -46,7 +46,7 @@ INTERFACE
       vtable : ALLEGRO_FONT_VTABLEptr;
     END;
 
-    FONT_LOADER_FUNCTION = FUNCTION (CONST filename: PCHAR; size, flags: LONGINT): ALLEGRO_FONTptr; CDECL;
+    FONT_LOADER_FUNCTION = FUNCTION (CONST filename: STRING; size, flags: LONGINT): ALLEGRO_FONTptr; CDECL;
 
   CONST
     ALLEGRO_ALIGN_LEFT   = 0;
@@ -75,10 +75,10 @@ INTERFACE
    @param(load_font May be @nil to unregister an entry.)
    @returns(@true on success, @false on error. Returns @false if unregistering an entry that doesn't exist.)
    @seealso(al_init_font_addon) *)
-  FUNCTION al_register_font_loader (CONST ext: PCHAR; load: FONT_LOADER_FUNCTION): BOOLEAN; CDECL;
+  FUNCTION al_register_font_loader (CONST ext: STRING; load: FONT_LOADER_FUNCTION): BOOLEAN; CDECL;
 
 (* Load a bitmap font from. It does this by first calling @link(al_load_bitmap) and then @link(al_grab_font_from_bitmap). If you want to for example load an old A4 font, you could load the bitmap yourself, then call @link(al_convert_mask_to_alpha) on it and only then pass it to @link(al_grab_font_from_bitmap). *)
-  FUNCTION al_load_bitmap_font (CONST filename: PCHAR): ALLEGRO_FONTptr; CDECL;
+  FUNCTION al_load_bitmap_font (CONST filename: STRING): ALLEGRO_FONTptr; CDECL;
 
 (* Loads a font from disk.
 
@@ -87,7 +87,7 @@ INTERFACE
 
   @seealso(al_destroy_font) @seealso(al_init_font_addon) @seealso(al_register_font_loader)
  *)
-  FUNCTION al_load_font (CONST filename: PCHAR; size, flags: INTEGER): ALLEGRO_FONTptr; CDECL;
+  FUNCTION al_load_font (CONST filename: STRING; size, flags: INTEGER): ALLEGRO_FONTptr; CDECL;
 
 (* Creates a new font from an Allegro bitmap. You can delete the bitmap after the function returns as the font will contain a copy for itself.
 
@@ -147,11 +147,11 @@ END.
      @itemLabel(@code(ALLEGRO_ALIGN_RIGHT)) @item(raw the text right-aligned to the given position.)
    ))
    @seealso(al_draw_ustr) @seealso(al_draw_textf) @seealso(al_draw_justified_text) *)
-  PROCEDURE al_draw_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: SINGLE; flags: LONGINT; CONST str: PCHAR); CDECL;
+  PROCEDURE al_draw_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: SINGLE; flags: LONGINT; CONST str: STRING); CDECL;
 
 (* Like @link(al_draw_text), but justifies the string to the specified area.
    @seealso(al_draw_justified_textf) @seealso(al_draw_justified_ustr) *)
-  PROCEDURE al_draw_justified_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: SINGLE; flags: LONGINT; CONST str: PCHAR); CDECL;
+  PROCEDURE al_draw_justified_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: SINGLE; flags: LONGINT; CONST str: STRING); CDECL;
 
 {
 ALLEGRO_FONT_FUNC(void, al_draw_justified_ustr, (const ALLEGRO_FONT *font, ALLEGRO_COLOR color, float x1, float x2, float y, float diff, int flags, ALLEGRO_USTR const *text));
@@ -164,7 +164,7 @@ ALLEGRO_FONT_PRINTFUNC(void, al_draw_justified_textf, (const ALLEGRO_FONT *font,
 
 (* Calculates the length of a string in a particular font, in pixels.
    @seealso(al_get_ustr_width) @seealso(al_get_font_line_height) @seealso(al_get_text_dimensions) *)
-  FUNCTION al_get_text_width (CONST font: ALLEGRO_FONTptr; CONST str: PCHAR): LONGINT; CDECL;
+  FUNCTION al_get_text_width (CONST font: ALLEGRO_FONTptr; CONST str: STRING): LONGINT; CDECL;
 
 {
 ALLEGRO_FONT_FUNC(int, al_get_ustr_width, (const ALLEGRO_FONT *f, const ALLEGRO_USTR *ustr));
@@ -215,7 +215,7 @@ ALLEGRO_FONT_FUNC(void, al_get_ustr_dimensions, (const ALLEGRO_FONT *f,
    @param(bbw Width of bounding box.)
    @param(bbh Height of bounding box.)
    @seealso(al_get_text_width) @seealso(al_get_font_line_height) @seealso(al_get_ustr_dimensions) *)
-  PROCEDURE al_get_text_dimensions (CONST font: ALLEGRO_FONTptr; CONST str: PCHAR; bbx, bby, bbw, bbh: PLONGINT); CDECL;
+  PROCEDURE al_get_text_dimensions (CONST font: ALLEGRO_FONTptr; CONST str: STRING; bbx, bby, bbw, bbh: PLONGINT); CDECL;
 
 IMPLEMENTATION
 
@@ -228,25 +228,25 @@ IMPLEMENTATION
   FUNCTION al_get_allegro_font_version: LONGWORD; CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
-  FUNCTION al_register_font_loader (CONST ext: PCHAR; load: FONT_LOADER_FUNCTION): BOOLEAN; CDECL;
+  FUNCTION al_register_font_loader (CONST ext: STRING; load: FONT_LOADER_FUNCTION): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
-  FUNCTION al_load_bitmap_font (CONST filename: PCHAR): ALLEGRO_FONTptr; CDECL;
+  FUNCTION al_load_bitmap_font (CONST filename: STRING): ALLEGRO_FONTptr; CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
-  FUNCTION al_load_font (CONST filename: PCHAR; size, flags: INTEGER): ALLEGRO_FONTptr; CDECL;
+  FUNCTION al_load_font (CONST filename: STRING; size, flags: INTEGER): ALLEGRO_FONTptr; CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
   FUNCTION al_grab_font_from_bitmap (bmp: ALLEGRO_BITMAPptr; n: LONGINT; ranges: ARRAY OF LONGINT): ALLEGRO_FONTptr; CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
-  PROCEDURE al_draw_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: SINGLE; flags: LONGINT; CONST str: PCHAR); CDECL;
+  PROCEDURE al_draw_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: SINGLE; flags: LONGINT; CONST str: STRING); CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
-  PROCEDURE al_draw_justified_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: SINGLE; flags: LONGINT; CONST str: PCHAR); CDECL;
+  PROCEDURE al_draw_justified_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: SINGLE; flags: LONGINT; CONST str: STRING); CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
-  FUNCTION al_get_text_width (CONST font: ALLEGRO_FONTptr; CONST str: PCHAR): LONGINT; CDECL;
+  FUNCTION al_get_text_width (CONST font: ALLEGRO_FONTptr; CONST str: STRING): LONGINT; CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
   FUNCTION al_get_font_line_height (CONST font: ALLEGRO_FONTptr): LONGINT; CDECL;
@@ -261,7 +261,7 @@ IMPLEMENTATION
   PROCEDURE al_destroy_font (font: ALLEGRO_FONTptr); CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
-  PROCEDURE al_get_text_dimensions (CONST font: ALLEGRO_FONTptr; CONST str: PCHAR; bbx, bby, bbw, bbh: PLONGINT); CDECL;
+  PROCEDURE al_get_text_dimensions (CONST font: ALLEGRO_FONTptr; CONST str: STRING; bbx, bby, bbw, bbh: PLONGINT); CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
 END.

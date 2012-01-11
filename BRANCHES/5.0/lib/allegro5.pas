@@ -329,8 +329,8 @@ END;
 
 { TODO: Some functions need the file.h definitions. }
 
-  FUNCTION al_load_bitmap (CONST filename: PCHAR): ALLEGRO_BITMAPptr; CDECL;
-  FUNCTION al_save_bitmap (CONST filename: PCHAR): ALLEGRO_BITMAPptr; CDECL;
+  FUNCTION al_load_bitmap (CONST filename: STRING): ALLEGRO_BITMAPptr; CDECL;
+  FUNCTION al_save_bitmap (CONST filename: STRING): ALLEGRO_BITMAPptr; CDECL;
 
 
 
@@ -476,7 +476,7 @@ END;
   PROCEDURE al_set_window_position (display: ALLEGRO_DISPLAYptr; x, y: LONGINT); CDECL;
   PROCEDURE al_get_window_position (display: ALLEGRO_DISPLAYptr; VAR x, y: LONGINT); CDECL;
 
-  PROCEDURE al_set_window_title (display: ALLEGRO_DISPLAYptr; CONST title: PCHAR);CDECL;
+  PROCEDURE al_set_window_title (display: ALLEGRO_DISPLAYptr; CONST title: STRING);CDECL;
 
   PROCEDURE al_set_new_display_option (option: ALLEGRO_DISPLAY_OPTIONS; value, importance: LONGINT); CDECL;
   FUNCTION al_get_new_display_option (display: ALLEGRO_DISPLAYptr; option: ALLEGRO_DISPLAY_OPTIONS): LONGINT; CDECL;
@@ -892,13 +892,39 @@ END;
   PROCEDURE al_register_event_source (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr); CDECL;
   PROCEDURE al_unregister_event_source (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr); CDECL;
   FUNCTION al_is_event_queue_empty (queue: ALLEGRO_EVENT_QUEUEptr): BOOLEAN; CDECL;
-  FUNCTION al_get_next_event (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr): BOOLEAN; CDECL;
-  FUNCTION al_peek_next_event (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr): BOOLEAN; CDECL;
+  FUNCTION al_get_next_event (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT): BOOLEAN; CDECL;
+  FUNCTION al_peek_next_event (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT): BOOLEAN; CDECL;
   FUNCTION al_drop_next_event (queue: ALLEGRO_EVENT_QUEUEptr): BOOLEAN; CDECL;
   PROCEDURE al_flush_event_queue (queue: ALLEGRO_EVENT_QUEUEptr); CDECL;
   PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT); CDECL;
   FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT; secs: SINGLE): BOOLEAN; CDECL;
   FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT; timeout: ALLEGRO_TIMEOUTptr): BOOLEAN; CDECL;
+
+
+
+(******************************************************************************
+ * transformations.h *
+ *********************)
+
+  TYPE
+    ALLEGRO_TRANSFORMptr = ^ALLEGRO_TRANSFORM;
+    ALLEGRO_TRANSFORM = RECORD
+      m: ARRAY [0..3] OF ARRAY [0..3] OF SINGLE;
+    END;
+
+(* Transformations*)
+  PROCEDURE al_use_transform (VAR trans: ALLEGRO_TRANSFORM); CDECL;
+  PROCEDURE al_copy_transform (VAR dest, src: ALLEGRO_TRANSFORM); CDECL;
+  PROCEDURE al_identity_transform (VAR trans: ALLEGRO_TRANSFORM); CDECL;
+  PROCEDURE al_build_transform (VAR trans: ALLEGRO_TRANSFORM; x, y, sx, sy, theta: SINGLE); CDECL;
+  PROCEDURE al_translate_transform (VAR trans: ALLEGRO_TRANSFORM; x, y: SINGLE); CDECL;
+  PROCEDURE al_rotate_transform (VAR trans: ALLEGRO_TRANSFORM; theta: SINGLE); CDECL;
+  PROCEDURE al_scale_transform (VAR trans: ALLEGRO_TRANSFORM; sx, sy: SINGLE); CDECL;
+  PROCEDURE al_transform_coordinates (VAR trans: ALLEGRO_TRANSFORM; VAR x, y: SINGLE); CDECL;
+  PROCEDURE al_compose_transform (VAR trans, other: ALLEGRO_TRANSFORM); CDECL;
+  FUNCTION al_get_current_transform: ALLEGRO_TRANSFORMptr; CDECL;
+  PROCEDURE al_invert_transform (VAR trans: ALLEGRO_TRANSFORM); CDECL;
+  FUNCTION al_check_inverse (VAR trans: ALLEGRO_TRANSFORM; tol: SINGLE): LONGINT; CDECL;
 
 IMPLEMENTATION
 
@@ -1127,10 +1153,10 @@ IMPLEMENTATION
  * bitmap_io.h *
  ***************)
 
-  FUNCTION al_load_bitmap (CONST filename: PCHAR): ALLEGRO_BITMAPptr; CDECL;
+  FUNCTION al_load_bitmap (CONST filename: STRING): ALLEGRO_BITMAPptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_save_bitmap (CONST filename: PCHAR): ALLEGRO_BITMAPptr; CDECL;
+  FUNCTION al_save_bitmap (CONST filename: STRING): ALLEGRO_BITMAPptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
 
@@ -1252,7 +1278,7 @@ IMPLEMENTATION
   PROCEDURE al_get_window_position (display: ALLEGRO_DISPLAYptr; VAR x, y: LONGINT); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  PROCEDURE al_set_window_title (display: ALLEGRO_DISPLAYptr; CONST title: PCHAR);CDECL;
+  PROCEDURE al_set_window_title (display: ALLEGRO_DISPLAYptr; CONST title: STRING);CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_set_new_display_option (option: ALLEGRO_DISPLAY_OPTIONS; value, importance: LONGINT); CDECL;
@@ -1554,10 +1580,10 @@ IMPLEMENTATION
   FUNCTION al_is_event_queue_empty (queue: ALLEGRO_EVENT_QUEUEptr): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_get_next_event (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr): BOOLEAN; CDECL;
+  FUNCTION al_get_next_event (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_peek_next_event (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr): BOOLEAN; CDECL;
+  FUNCTION al_peek_next_event (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT): BOOLEAN; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_drop_next_event (queue: ALLEGRO_EVENT_QUEUEptr): BOOLEAN; CDECL;
@@ -1573,6 +1599,49 @@ IMPLEMENTATION
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT; timeout: ALLEGRO_TIMEOUTptr): BOOLEAN; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * transformations.h *
+ *********************)
+
+(* Transformations*)
+  PROCEDURE al_use_transform (VAR trans: ALLEGRO_TRANSFORM); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_copy_transform (VAR dest, src: ALLEGRO_TRANSFORM); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_identity_transform (VAR trans: ALLEGRO_TRANSFORM); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_build_transform (VAR trans: ALLEGRO_TRANSFORM; x, y, sx, sy, theta: SINGLE); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_translate_transform (VAR trans: ALLEGRO_TRANSFORM; x, y: SINGLE); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_rotate_transform (VAR trans: ALLEGRO_TRANSFORM; theta: SINGLE); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_scale_transform (VAR trans: ALLEGRO_TRANSFORM; sx, sy: SINGLE); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_transform_coordinates (VAR trans: ALLEGRO_TRANSFORM; VAR x, y: SINGLE); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_compose_transform (VAR trans, other: ALLEGRO_TRANSFORM); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_current_transform: ALLEGRO_TRANSFORMptr; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_invert_transform (VAR trans: ALLEGRO_TRANSFORM); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_check_inverse (VAR trans: ALLEGRO_TRANSFORM; tol: SINGLE): LONGINT; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
 INITIALIZATION

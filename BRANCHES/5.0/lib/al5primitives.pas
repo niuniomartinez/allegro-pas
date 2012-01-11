@@ -34,6 +34,7 @@ INTERFACE
 
 
     ALLEGRO_PRIM_ATTR = (
+      ALLEGRO_PRIM_ATTR_NONE = 0,
       ALLEGRO_PRIM_POSITION = 1,
       ALLEGRO_PRIM_COLOR_ATTR,
       ALLEGRO_PRIM_TEX_COORD,
@@ -44,7 +45,8 @@ INTERFACE
 
 
     ALLEGRO_PRIM_STORAGE = (
-      ALLEGRO_PRIM_FLOAT_2,
+      ALLEGRO_PRIM_STORAGE_NONE = 0,
+      ALLEGRO_PRIM_FLOAT_2 = 0,
       ALLEGRO_PRIM_FLOAT_3,
       ALLEGRO_PRIM_SHORT_2
     );
@@ -59,7 +61,9 @@ INTERFACE
   TYPE
     ALLEGRO_VERTEX_ELEMENTptr = ^ALLEGRO_VERTEX_ELEMENT;
     ALLEGRO_VERTEX_ELEMENT = RECORD
-      attribute, storage, offset: LONGINT;
+      attribute: ALLEGRO_PRIM_ATTR;
+      storage: ALLEGRO_PRIM_STORAGE;
+      offset: LONGINT;
     END;
 
 
@@ -91,8 +95,8 @@ INTERFACE
 (* Primary Functions *)
   FUNCTION al_init_primitives_addon: BOOLEAN; CDECL;
   PROCEDURE al_shutdown_primitives_addon; CDECL;
-  FUNCTION al_draw_prim (CONST vtxs: POINTER; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; start, finish, _type: LONGINT): LONGINT; CDECL;
-  FUNCTION al_draw_indexed_prim (CONST vtxs: POINTER; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; CONST indices: ARRAY OF LONGINT; num_vtx, _type: LONGINT): LONGINT; CDECL; {TODO: Need to test if the "indices" parameter does work correctly }
+  FUNCTION al_draw_prim (CONST vtxs: POINTER; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; start, finish: LONGINT; _type: ALLEGRO_PRIM_TYPE): LONGINT; CDECL;
+  FUNCTION al_draw_indexed_prim (CONST vtxs: POINTER; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; CONST indices: ARRAY OF LONGINT; num_vtx: LONGINT; _type: ALLEGRO_PRIM_TYPE): LONGINT; CDECL; {TODO: Need to test if the "indices" parameter does work correctly }
 
   FUNCTION al_create_vertex_decl (CONST elements: ALLEGRO_VERTEX_ELEMENTptr; stride: LONGINT): ALLEGRO_VERTEX_DECLptr; CDECL;
   PROCEDURE al_destroy_vertex_decl (decl: ALLEGRO_VERTEX_DECLptr); CDECL;
@@ -136,10 +140,10 @@ IMPLEMENTATION
   PROCEDURE al_shutdown_primitives_addon; CDECL;
   EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
 
-  FUNCTION al_draw_prim (CONST vtxs: POINTER; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; start, finish, _type: LONGINT): LONGINT; CDECL;
+  FUNCTION al_draw_prim (CONST vtxs: POINTER; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; start, finish: LONGINT; _type: ALLEGRO_PRIM_TYPE): LONGINT; CDECL;
   EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
 
-  FUNCTION al_draw_indexed_prim (CONST vtxs: POINTER; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; const indices: ARRAY OF LONGINT; num_vtx, _type: LONGINT): LONGINT; CDECL;
+  FUNCTION al_draw_indexed_prim (CONST vtxs: POINTER; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; CONST indices: ARRAY OF LONGINT; num_vtx: LONGINT; _type: ALLEGRO_PRIM_TYPE): LONGINT; CDECL;
   EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
 
   FUNCTION al_create_vertex_decl (CONST elements: ALLEGRO_VERTEX_ELEMENTptr; stride: LONGINT): ALLEGRO_VERTEX_DECLptr; CDECL;
