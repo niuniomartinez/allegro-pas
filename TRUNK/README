@@ -21,7 +21,7 @@ Contents
  - Features
  - License
  - Installation
- - Documentaion
+ - Documentation
  - Release programs
  - Help needed
  - Contact info
@@ -175,9 +175,9 @@ More information
 
 
 
-============
-Documentaion
-============
+=============
+Documentation
+=============
 
   If you have "pasdoc" (http://pasdoc.sipsolutions.net/) you can build all
   documentation in HTML format using the "makefile" at "docs" subdirectory.
