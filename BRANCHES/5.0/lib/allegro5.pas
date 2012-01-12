@@ -971,6 +971,40 @@ END;
   FUNCTION al_ustr_compare (CONST u, v: ALLEGRO_USTRptr): LONGINT; CDECL;
   FUNCTION al_ustr_ncompare (CONST u, v: ALLEGRO_USTRptr): LONGINT; CDECL;
 
+
+
+(******************************************************************************
+ * tls.h
+ *      Thread local storage routines.
+ *********)
+
+  TYPE
+    ALLEGRO_STATE_FLAGS = (
+      ALLEGRO_STATE_NEW_DISPLAY_PARAMETERS = $0001,
+      ALLEGRO_STATE_NEW_BITMAP_PARAMETERS  = $0002,
+      ALLEGRO_STATE_DISPLAY                = $0004,
+      ALLEGRO_STATE_TARGET_BITMAP          = $0008,
+      ALLEGRO_STATE_BLENDER                = $0010,
+      ALLEGRO_STATE_NEW_FILE_INTERFACE     = $0020,
+      ALLEGRO_STATE_TRANSFORM              = $0040,
+
+      ALLEGRO_STATE_BITMAP                 = ALLEGRO_STATE_TARGET_BITMAP + ALLEGRO_STATE_NEW_BITMAP_PARAMETERS,
+
+      ALLEGRO_STATE_ALL                    = $FFFF
+    );
+
+
+
+    ALLEGRO_STATE = RECORD
+    { Internally, a thread_local_state structure is placed here. }
+      _tls: ARRAY [0..1023] OF SHORTINT;
+    END;
+
+  PROCEDURE al_store_state (VAR state: ALLEGRO_STATE; flags: ALLEGRO_STATE_FLAGS);
+  PROCEDURE al_restore_state (VAR state: ALLEGRO_STATE);
+
+
+
 IMPLEMENTATION
 
 (******************************************************************************
@@ -1734,6 +1768,18 @@ IMPLEMENTATION
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_ustr_ncompare (CONST u, v: ALLEGRO_USTRptr): LONGINT; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * tls.h *
+ *********)
+
+  PROCEDURE al_store_state (VAR state: ALLEGRO_STATE; flags: ALLEGRO_STATE_FLAGS);
+  EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_restore_state (VAR state: ALLEGRO_STATE);
   EXTERNAL ALLEGRO_LIB_NAME;
 
 INITIALIZATION
