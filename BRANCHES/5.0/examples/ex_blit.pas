@@ -151,26 +151,27 @@ PROGRAM ex_blit;
     SetXY (x, y + ih);
 
     al_destroy_bitmap (Temp);
-(*
-   /* Test 3. */
-    Print ('Screen -> Memory -> Screen (%.1f fps)', get_fps(2));
-    get_xy(&x, &y);
-    al_draw_bitmap(ex.Pattern, x, y, 0);
 
-    al_set_new_bitmap_flags(ALLEGRO_MEMORY_BITMAP);
-    Temp = al_create_bitmap(iw, ih);
-    al_set_target_bitmap(Temp);
-    al_clear_to_color(al_map_rgba_f(1, 0, 0, 1));
+  { Test 3. }
+    Print (Format ('Screen -> Memory -> Screen (%.1f fps)', [getfps (2)]));
+    GetXY (x, y);
+    al_draw_bitmap (Pattern, x, y, 0);
+
+    al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
+    Temp := al_create_bitmap (iw, ih);
+    al_set_target_bitmap (Temp);
+    al_clear_to_color(al_map_rgba_f (1, 0, 0, 1));
     StartTimer (2);
-    al_draw_bitmap_region(Screen, x, y, iw, ih, 0, 0, 0);
+    al_draw_bitmap_region (Screen, x, y, iw, ih, 0, 0, 0);
 
-    al_set_target_bitmap(Screen);
-    al_draw_bitmap(Temp, x + 8 + iw, y, 0);
+    al_set_target_bitmap (Screen);
+    al_draw_bitmap (Temp, x + 8 + iw, y, 0);
     StopTimer (2);
     SetXY (x, y + ih);
-   
-    al_destroy_bitmap(Temp);
-    al_set_new_bitmap_flags(ALLEGRO_VIDEO_BITMAP);
+
+    al_destroy_bitmap (Temp);
+    al_set_new_bitmap_flags (ALLEGRO_VIDEO_BITMAP);
+(*
    
    /* Test 4. */
     Print ('Screen -> Locked -> Screen (%.1f fps)', get_fps(3));
@@ -275,4 +276,6 @@ BEGIN
   al_start_timer (TheTimer);
   Run;
   al_destroy_event_queue (Queue);
+{ Don't know why it fails at exit.  But it doesn't fails if you press key "Esc"
+  before one second of execution (?). }
 END.
