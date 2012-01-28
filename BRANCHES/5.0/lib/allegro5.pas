@@ -524,8 +524,6 @@ END;
   PROCEDURE al_get_keyboard_state (VAR ret_state: ALLEGRO_KEYBOARD_STATE); CDECL;
   FUNCTION al_key_down (VAR state: ALLEGRO_KEYBOARD_STATE; keycode: LONGINT): BOOLEAN; CDECL;
 
-(* Retrieves the keyboard event source.
-   @returns(@nil if the keyboard subsystem was not installed.) *)
   FUNCTION al_get_keyboard_event_source: ALLEGRO_EVENT_SOURCEptr; CDECL;
 
 
