@@ -13,12 +13,14 @@ UNIT al5audio;
  *)
 
 
+{$include allegro.cfg}
+
 INTERFACE
 
   USES
     Allegro5;
 
-{$include allegro.cfg}
+{$include allegro.inc}
 
   CONST
   (* Internal, used to communicate with acodec.
@@ -34,26 +36,28 @@ INTERFACE
     ALLEGRO_MAX_CHANNELS = 8;
 
   TYPE
-    ALLEGRO_AUDIO_DEPTH = (
-   (* Sample depth and type, and signedness. Mixers only use 32-bit signed
-    * float (-1..+1). The unsigned value is a bit-flag applied to the depth
-    * value.
-    *)
-       ALLEGRO_AUDIO_DEPTH_INT8      = $00,
-       ALLEGRO_AUDIO_DEPTH_INT16     = $01,
-       ALLEGRO_AUDIO_DEPTH_INT24     = $02,
-       ALLEGRO_AUDIO_DEPTH_FLOAT32   = $03,
+    ALLEGRO_AUDIO_DEPTH = LONGINT;
 
-       ALLEGRO_AUDIO_DEPTH_UNSIGNED  = $08,
+  CONST
+  (* Sample depth and type, and signedness. Mixers only use 32-bit signed
+   * float (-1..+1). The unsigned value is a bit-flag applied to the depth
+   * value.
+   *)
+    ALLEGRO_AUDIO_DEPTH_INT8      = $00;
+    ALLEGRO_AUDIO_DEPTH_INT16     = $01;
+    ALLEGRO_AUDIO_DEPTH_INT24     = $02;
+    ALLEGRO_AUDIO_DEPTH_FLOAT32   = $03;
+
+    ALLEGRO_AUDIO_DEPTH_UNSIGNED  = $08;
 
    (* For convenience *)
-       ALLEGRO_AUDIO_DEPTH_UINT8  = $08, { ALLEGRO_AUDIO_DEPTH_INT8  OR ALLEGRO_AUDIO_DEPTH_UNSIGNED }
-       ALLEGRO_AUDIO_DEPTH_UINT16 = $09, { ALLEGRO_AUDIO_DEPTH_INT16 OR ALLEGRO_AUDIO_DEPTH_UNSIGNED }
-       ALLEGRO_AUDIO_DEPTH_UINT24 = $0A  { ALLEGRO_AUDIO_DEPTH_INT24 OR ALLEGRO_AUDIO_DEPTH_UNSIGNED }
-    );
+    ALLEGRO_AUDIO_DEPTH_UINT8  = ALLEGRO_AUDIO_DEPTH_INT8  OR ALLEGRO_AUDIO_DEPTH_UNSIGNED;
+    ALLEGRO_AUDIO_DEPTH_UINT16 = ALLEGRO_AUDIO_DEPTH_INT16 OR ALLEGRO_AUDIO_DEPTH_UNSIGNED;
+    ALLEGRO_AUDIO_DEPTH_UINT24 = ALLEGRO_AUDIO_DEPTH_INT24 OR ALLEGRO_AUDIO_DEPTH_UNSIGNED;
 
 
 
+  TYPE
     ALLEGRO_CHANNEL_CONF = (
     (* Speaker configuration (mono, stereo, 2.1, 3, etc). With regards to
      * behavior, most of this code makes no distinction between, say, 4.1 and

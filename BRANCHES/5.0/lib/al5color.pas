@@ -12,12 +12,14 @@ UNIT al5color;
  *      See readme.txt for copyright information.
  *)
 
+{$include allegro.cfg}
+
 INTERFACE
 
   USES
     Allegro5;
 
-{$include allegro.cfg}
+{$include allegro.inc}
 
   FUNCTION al_get_allegro_color_version: LONGWORD; CDECL;
 

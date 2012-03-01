@@ -12,9 +12,11 @@ UNIT al5acodec;
  *      See readme.txt for copyright information.
  *)
 
+{$include allegro.cfg}
+
 INTERFACE
 
-{$include allegro.cfg}
+{$include allegro.inc}
 
   FUNCTION al_init_acodec_addon: BOOLEAN; CDECL;
   FUNCTION al_get_allegro_acodec_version: LONGWORD; CDECL;

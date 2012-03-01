@@ -6,9 +6,11 @@ UNIT al5image;
    Other formats may be available depending on the operating system and installed libraries, but are not guaranteed and should not be assumed to be universally available. *)
 (*TODO: License. *)
 
+{$include allegro.cfg}
+
 INTERFACE
 
-{$include allegro.cfg}
+{$include allegro.inc}
 
 (* Initializes the image addon. *)
   FUNCTION al_init_image_addon: BOOLEAN; CDECL;
