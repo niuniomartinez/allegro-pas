@@ -14,9 +14,11 @@ UNIT Allegro5;
  *      See readme.txt for copyright information.
  *)
 
+{$include allegro.cfg}
+
 INTERFACE
 
-{$include allegro.cfg}
+{$include allegro.inc}
 
 (* The code is distributed in sections.  Each section wraps with a header file (approx.). *)
 
@@ -267,7 +269,7 @@ END;
 
 (* Locking *)
   FUNCTION al_lock_bitmap (bitmap: ALLEGRO_BITMAPptr; format: ALLEGRO_PIXEL_FORMAT; flags: LONGINT): ALLEGRO_LOCKED_REGIONptr; CDECL;
-  FUNCTION al_lock_bitmap (bitmap: ALLEGRO_BITMAPptr; x, y, width, height: LONGINT; format: ALLEGRO_PIXEL_FORMAT; flags: LONGINT): ALLEGRO_LOCKED_REGIONptr; CDECL;
+  FUNCTION al_lock_bitmap_region (bitmap: ALLEGRO_BITMAPptr; x, y, width, height: LONGINT; format: ALLEGRO_PIXEL_FORMAT; flags: LONGINT): ALLEGRO_LOCKED_REGIONptr; CDECL;
   PROCEDURE al_unlock_bitmap (bitmap: ALLEGRO_BITMAPptr); CDECL;
 
   PROCEDURE al_put_pixel (x, y: LONGINT; color: ALLEGRO_COLOR); CDECL;
@@ -982,11 +984,10 @@ END;
       ALLEGRO_STATE_NEW_BITMAP_PARAMETERS  = $0002,
       ALLEGRO_STATE_DISPLAY                = $0004,
       ALLEGRO_STATE_TARGET_BITMAP          = $0008,
+      ALLEGRO_STATE_BITMAP                 = $000A, { ALLEGRO_STATE_TARGET_BITMAP + ALLEGRO_STATE_NEW_BITMAP_PARAMETERS, }
       ALLEGRO_STATE_BLENDER                = $0010,
       ALLEGRO_STATE_NEW_FILE_INTERFACE     = $0020,
       ALLEGRO_STATE_TRANSFORM              = $0040,
-
-      ALLEGRO_STATE_BITMAP                 = ALLEGRO_STATE_TARGET_BITMAP + ALLEGRO_STATE_NEW_BITMAP_PARAMETERS,
 
       ALLEGRO_STATE_ALL                    = $FFFF
     );
@@ -1134,7 +1135,7 @@ IMPLEMENTATION
   FUNCTION al_lock_bitmap (bitmap: ALLEGRO_BITMAPptr; format: ALLEGRO_PIXEL_FORMAT; flags: LONGINT): ALLEGRO_LOCKED_REGIONptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_lock_bitmap (bitmap: ALLEGRO_BITMAPptr; x, y, width, height: LONGINT; format: ALLEGRO_PIXEL_FORMAT; flags: LONGINT): ALLEGRO_LOCKED_REGIONptr; CDECL;
+  FUNCTION al_lock_bitmap_region (bitmap: ALLEGRO_BITMAPptr; x, y, width, height: LONGINT; format: ALLEGRO_PIXEL_FORMAT; flags: LONGINT): ALLEGRO_LOCKED_REGIONptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_unlock_bitmap (bitmap: ALLEGRO_BITMAPptr); CDECL;

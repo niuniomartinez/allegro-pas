@@ -12,12 +12,14 @@ UNIT al5font;
  *      See readme.txt for copyright information.
  *)
 
+{$include allegro.cfg}
+
 INTERFACE
 
   USES
     Allegro5;
 
-{$include allegro.cfg}
+{$include allegro.inc}
 
   TYPE
     ALLEGRO_FONT_VTABLEptr = POINTER;

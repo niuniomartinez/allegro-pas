@@ -14,6 +14,8 @@ UNIT al5gl;
  *      See readme.txt for copyright information.
  *)
 
+{$include allegro.cfg}
+
 INTERFACE
 
   USES
@@ -24,7 +26,7 @@ INTERFACE
     OpenGL;
 {$ENDIF}
 
-{$include allegro.cfg}
+{$include allegro.inc}
 
 (******************************************************************************
  * opengl/gl_ext.h *
