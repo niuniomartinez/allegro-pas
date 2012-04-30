@@ -36,7 +36,7 @@ VAR
 IMPLEMENTATION
 
 USES
-  gamedata, { To acces to de game datafile. }
+  gamedata, { To acces to the game datafile. }
   play,     { To know the size of the output screen. }
   sprites,  { Sprites management. }
   tilemap,  { Tilemap management. }
