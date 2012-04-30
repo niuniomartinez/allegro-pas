@@ -2,6 +2,14 @@
 Data types
 ==========
 
+  Data types on Pascal behaves different than C.  Actually FPC activates some
+  microprocessor exception mode to prevent/clamp/convert/whatever some data,
+  or it does with Intel x86 family.  As result of an Allegro.cc thread[1] this
+  affects the work of Allegro.
+
+
+THE REST OF THE FILE IS A MESS AND SHOULD BE FIXED!
+
   Texts are managed in two different types:
 
   When used as parameter, they're defined as STRING assuming they're ANSISTRING.
@@ -71,3 +79,7 @@ Unimplemented headers
 
   IIRC both Free Pascal and Delphi have TThread class.
 
+
+NOTES
+=====
+[1] http://www.allegro.cc/forums/thread/602423

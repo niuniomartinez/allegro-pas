@@ -1,5 +1,7 @@
 In no special order
 
+  * Check modifications done while the 2nd. PGD Challenge.
+
   * There are some "enum" types (sets). Be sure that they have the correct
     sice in bits.  Read FPC and Delphi help.
 
@@ -12,3 +14,8 @@ In no special order
 
   * Procedures that receibes STRING (ANSISTRING) as parameter seems to be
     broken (at least the "font" addon raises a rare error).  Check them.
+
+  * Document COLOR issue (can't use functions "_map_" as parameters in
+    Windows (?)).
+
+  * MUST normalize types (VAR vs. POINTER, OUT vs. VAR, STRING vs. PCHAR ...).
