@@ -6,49 +6,47 @@ PROGRAM ex_gldepth;
  *)
 (* TODO: License. *)
 
-USES
-  Common,
-  Allegro5, al5image, al5gl, al5font,
-{$IFDEF FPC}
-  GL,
-{$ELSE}
-  OpenGL,
-{$ENDIF}
-  sysutils;
+  USES
+    Common,
+    Allegro5, al5image, al5gl, al5font,
+  {$IFDEF FPC}
+    GL,
+  {$ELSE}
+    OpenGL,
+  {$ENDIF}
+    sysutils;
 
-TYPE
-(* Stores camera information. *)
-  TCamera = RECORD
-  (* Camera angle. *)
-    xAngle, yAngle, zAngle: DOUBLE;
-  (* Camera distance. *)
-    Dist: DOUBLE;
-  END;
-
-
-
-VAR
-(* Camera. *)
-  Camera: TCamera = (
-    xAngle:  0.0;
-    yAngle:  0.0;
-    zAngle:  0.0;
-    Dist  : 20.0;
-  );
-
-CONST
-(* Speed animation. *)
-  AngleSpeed = 5.0;
-  DistSpeed = 1.0;
-
-VAR
-(* Texture. *)
-  Texture: GLuint;
-  Bitmap: ALLEGRO_BITMAPptr;
-(* Stores if key is pressed. *)
-  KeyStatus: ARRAY [0..ALLEGRO_KEY_MAX] OF BOOLEAN;
+  TYPE
+  (* Stores camera information. *)
+    TCamera = RECORD
+    (* Camera angle. *)
+      xAngle, yAngle, zAngle: DOUBLE;
+    (* Camera distance. *)
+      Dist: DOUBLE;
+    END;
 
 
+
+  VAR
+  (* Camera. *)
+    Camera: TCamera = (
+      xAngle:  0.0;
+      yAngle:  0.0;
+      zAngle:  0.0;
+      Dist  : 20.0;
+    );
+
+  CONST
+  (* Speed animation. *)
+    AngleSpeed = 5.0;
+    DistSpeed = 1.0;
+
+  VAR
+  (* Texture. *)
+    Texture: GLuint;
+    Bitmap: ALLEGRO_BITMAPptr;
+  (* Stores if key is pressed. *)
+    KeyStatus: ARRAY [0..ALLEGRO_KEY_MAX] OF BOOLEAN;
 
 (* Sets camera position. *)
   PROCEDURE SetCameraPosition;
@@ -175,6 +173,7 @@ VAR
     tmpBmp: ALLEGRO_BITMAPptr;
     Font: ALLEGRO_FONTptr;
     w, h, Depth: INTEGER;
+    TextColor: ALLEGRO_COLOR;
   BEGIN
     Font := al_load_font ('data/fixed_font.tga', 0, 0);
     IF Font = NIL THEN
@@ -192,11 +191,12 @@ VAR
       0, 0, al_get_bitmap_width (Bitmap), al_get_bitmap_height (Bitmap),
       0, 0, w, h, 0);
 
+    TextColor := al_map_rgb (255, 0, 0);
     Depth := al_get_display_option (Display, ALLEGRO_DEPTH_SIZE);
     IF Depth = 0 THEN
-      al_draw_text (Font, al_map_rgb (255, 0, 0), 0, 5, 0, 'No Z-buffer!')
+      al_draw_text (Font, TextColor, 0, 5, 0, 'No Z-buffer!')
     ELSE
-      al_draw_text (Font, al_map_rgb (255, 0, 0), 0, 5, 0, PCHAR ('Z-buffer: '+IntToStr (Depth)+'bits'));
+      al_draw_text (Font, TextColor, 0, 5, 0, PCHAR ('Z-buffer: '+IntToStr (Depth)+'bits'));
     al_set_target_backbuffer (Display);
     al_destroy_bitmap (tmpBmp);
     al_destroy_font (Font);
@@ -209,12 +209,12 @@ VAR
 
 
 
-VAR
-  Display: ALLEGRO_DISPLAYptr;
-  Queue: ALLEGRO_EVENT_QUEUEptr;
-  Timer: ALLEGRO_TIMERptr;
-  Event: ALLEGRO_EVENT;
-  DoLoop: BOOLEAN;
+  VAR
+    Display: ALLEGRO_DISPLAYptr;
+    Queue: ALLEGRO_EVENT_QUEUEptr;
+    Timer: ALLEGRO_TIMERptr;
+    Event: ALLEGRO_EVENT;
+    DoLoop: BOOLEAN;
 BEGIN
 { Inits Allegro. }
   IF NOT al_init THEN

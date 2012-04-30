@@ -6,7 +6,11 @@ PROGRAM test;
   USES
     Common,
     Allegro5, al5gl,
+  {$IFDEF FPC}
     GL;
+  {$ELSE}
+    OpenGL;
+  {$ENDIF}
 
 
 

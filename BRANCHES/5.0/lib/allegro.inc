@@ -10,6 +10,7 @@ CONST
   ALLEGRO_MAIN_LIB_NAME       = 'liballegro_main.so.5.0';
   ALLEGRO_NATIVE_DLG_LIB_NAME = 'liballegro_dialog.so.5.0';
   ALLEGRO_PRIMITIVES_LIB_NAME = 'liballegro_primitives.so.5.0';
+  ALLEGRO_TTF_LIB_NAME        = 'liballegro_ttf.so.5.0';
 {$ELSEIF DEFINED(WINDOWS)}
   {$IFDEF MONOLITH}
   {It uses monolith staticly linked version. }
@@ -22,6 +23,7 @@ CONST
     ALLEGRO_MAIN_LIB_NAME       = 'allegro-5.0.5-monolith-mt-debug.dll';
     ALLEGRO_NATIVE_DLG_LIB_NAME = 'allegro-5.0.5-monolith-mt-debug.dll';
     ALLEGRO_PRIMITIVES_LIB_NAME = 'allegro-5.0.5-monolith-mt-debug.dll';
+    ALLEGRO_TTF_LIB_NAME        = 'allegro-5.0.5-monolith-mt-debug.dll';
   {$ELSE}
   {It uses add-ons }
     ALLEGRO_LIB_NAME            = 'allegro-debug-5.0.dll';
@@ -33,5 +35,6 @@ CONST
     ALLEGRO_MAIN_LIB_NAME       = 'allegro_main-debug-5.0.dll';
     ALLEGRO_NATIVE_DLG_LIB_NAME = 'allegro_dialog-debug-5.0.dll';
     ALLEGRO_PRIMITIVES_LIB_NAME = 'allegro_primitives-debug-5.0.dll';
+    ALLEGRO_TTF_LIB_NAME        = 'allegro_primitives-debug-5.0.dll';
   {$ENDIF}
 {$ENDIF}

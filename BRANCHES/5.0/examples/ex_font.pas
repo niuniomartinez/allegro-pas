@@ -35,12 +35,14 @@ PROGRAM ex_font;
 	
       ELSE IF Event._type = ALLEGRO_EVENT_DISPLAY_EXPOSE THEN
 	BEGIN
+	  x := Event.display.x;
+	  y := Event.display.y;
+	  w := Event.display.width;
+	  h := Event.display.height;
 	  al_draw_bitmap_region (
 	    ScreenClone,
-	    Event.display.x, Event.display.y,
-	    Event.display.width, Event.display.height,
-	    Event.display.x, Event.display.y,
-	    0
+	    x, y, w, h,
+	    x, y, 0
 	  );
 	  al_update_display_region(x, y, w, h);
 	END;

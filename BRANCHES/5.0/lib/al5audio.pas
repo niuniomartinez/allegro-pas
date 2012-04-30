@@ -36,24 +36,26 @@ INTERFACE
     ALLEGRO_MAX_CHANNELS = 8;
 
   TYPE
-    ALLEGRO_AUDIO_DEPTH = LONGINT;
+    ALLEGRO_AUDIO_DEPTH = (
+    (* Sample depth and type, and signedness. Mixers only use 32-bit signed
+     * float (-1..+1). The unsigned value is a bit-flag applied to the depth
+     * value.
+     *)
+      ALLEGRO_AUDIO_DEPTH_INT8      := $00,
+      ALLEGRO_AUDIO_DEPTH_INT16     := $01,
+      ALLEGRO_AUDIO_DEPTH_INT24     := $02,
+      ALLEGRO_AUDIO_DEPTH_FLOAT32   := $03,
+
+      ALLEGRO_AUDIO_DEPTH_UNSIGNED  := $08,
+
+    (* For convenience *)
+      ALLEGRO_AUDIO_DEPTH_UINT16 := $09, { ALLEGRO_AUDIO_DEPTH_INT16 OR ALLEGRO_AUDIO_DEPTH_UNSIGNED, }
+      ALLEGRO_AUDIO_DEPTH_UINT24 := $0A  { ALLEGRO_AUDIO_DEPTH_INT24 OR ALLEGRO_AUDIO_DEPTH_UNSIGNED  }
+    );
 
   CONST
-  (* Sample depth and type, and signedness. Mixers only use 32-bit signed
-   * float (-1..+1). The unsigned value is a bit-flag applied to the depth
-   * value.
-   *)
-    ALLEGRO_AUDIO_DEPTH_INT8      = $00;
-    ALLEGRO_AUDIO_DEPTH_INT16     = $01;
-    ALLEGRO_AUDIO_DEPTH_INT24     = $02;
-    ALLEGRO_AUDIO_DEPTH_FLOAT32   = $03;
-
-    ALLEGRO_AUDIO_DEPTH_UNSIGNED  = $08;
-
-   (* For convenience *)
-    ALLEGRO_AUDIO_DEPTH_UINT8  = ALLEGRO_AUDIO_DEPTH_INT8  OR ALLEGRO_AUDIO_DEPTH_UNSIGNED;
-    ALLEGRO_AUDIO_DEPTH_UINT16 = ALLEGRO_AUDIO_DEPTH_INT16 OR ALLEGRO_AUDIO_DEPTH_UNSIGNED;
-    ALLEGRO_AUDIO_DEPTH_UINT24 = ALLEGRO_AUDIO_DEPTH_INT24 OR ALLEGRO_AUDIO_DEPTH_UNSIGNED;
+  (* For convenience *)
+    ALLEGRO_AUDIO_DEPTH_UINT8  = ALLEGRO_AUDIO_DEPTH_UNSIGNED; { ALLEGRO_AUDIO_DEPTH_INT8 OR ALLEGRO_AUDIO_DEPTH_UNSIGNED, }
 
 
 
@@ -66,21 +68,21 @@ INTERFACE
      * the differences will become more important. (v>>4)+(v&0xF) should yield
      * the total channel count.
      *)
-      ALLEGRO_CHANNEL_CONF_1   = $10,
-      ALLEGRO_CHANNEL_CONF_2   = $20,
-      ALLEGRO_CHANNEL_CONF_3   = $30,
-      ALLEGRO_CHANNEL_CONF_4   = $40,
-      ALLEGRO_CHANNEL_CONF_5_1 = $51,
-      ALLEGRO_CHANNEL_CONF_6_1 = $61,
-      ALLEGRO_CHANNEL_CONF_7_1 = $71
+      ALLEGRO_CHANNEL_CONF_1   := $10,
+      ALLEGRO_CHANNEL_CONF_2   := $20,
+      ALLEGRO_CHANNEL_CONF_3   := $30,
+      ALLEGRO_CHANNEL_CONF_4   := $40,
+      ALLEGRO_CHANNEL_CONF_5_1 := $51,
+      ALLEGRO_CHANNEL_CONF_6_1 := $61,
+      ALLEGRO_CHANNEL_CONF_7_1 := $71
     );
 
 
 
     ALLEGRO_PLAYMODE = (
-      ALLEGRO_PLAYMODE_ONCE   = $100,
-      ALLEGRO_PLAYMODE_LOOP   = $101,
-      ALLEGRO_PLAYMODE_BIDIR  = $102
+      ALLEGRO_PLAYMODE_ONCE   := $100,
+      ALLEGRO_PLAYMODE_LOOP   := $101,
+      ALLEGRO_PLAYMODE_BIDIR  := $102
     {
       _ALLEGRO_PLAYMODE_STREAM_ONCE   = 0x103,   /* internal */
       _ALLEGRO_PLAYMODE_STREAM_ONEDIR = 0x104    /* internal */
@@ -90,8 +92,8 @@ INTERFACE
 
 
     ALLEGRO_MIXER_QUALITY = (
-      ALLEGRO_MIXER_QUALITY_POINT   = $110,
-      ALLEGRO_MIXER_QUALITY_LINEAR  = $111
+      ALLEGRO_MIXER_QUALITY_POINT   := $110,
+      ALLEGRO_MIXER_QUALITY_LINEAR  := $111
     );
 
   CONST
