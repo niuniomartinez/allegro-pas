@@ -28,7 +28,7 @@ CONST
   NUM_BOMBS = 6;
 
 VAR
-(* If the bomb is falling it is used to know how many time an sprite was used.
+(* If the bomb is falling it is used to know how many time a sprite was used.
  * If the bomb is exploding it is used to know how many time was exploding. *)
   BombCount: ARRAY [0..NUM_BOMBS-1] OF INTEGER;
 
@@ -76,7 +76,7 @@ VAR
 	{ Check if it reaches the ground. }
 	  IF (CheckGroundCollision (Cnt))
 	  OR (SpritePlane[Cnt].y > BoardHeight * TSIZE) THEN
-	  { Explode}
+	  { Explode. }
 	    StartExploding
 	  ELSE BEGIN
 	    INC (BombCount[Cnt]);
