@@ -42,14 +42,14 @@ INTERFACE
     ALLEGRO_ALIGN_CENTRE = 1;
     ALLEGRO_ALIGN_RIGHT  = 2;
 
-  FUNCTION al_register_font_loader (CONST ext: STRING; load: FONT_LOADER_FUNCTION): BOOLEAN; CDECL;
+  FUNCTION al_register_font_loader (CONST ext: STRING; load: FONT_LOADER_FUNCTION): BYTEBOOL; CDECL;
   FUNCTION al_load_bitmap_font (CONST filename: STRING): ALLEGRO_FONTptr; CDECL;
   FUNCTION al_load_font (CONST filename: STRING; size, flags: INTEGER): ALLEGRO_FONTptr; CDECL;
 
-  FUNCTION al_grab_font_from_bitmap (bmp: ALLEGRO_BITMAPptr; n: LONGINT; ranges: ARRAY OF LONGINT): ALLEGRO_FONTptr; CDECL;
+  FUNCTION al_grab_font_from_bitmap (bmp: ALLEGRO_BITMAPptr; n: LONGINT; ranges: ARRAY OF LONGINT): ALLEGRO_FONTptr; INLINE;
 
   PROCEDURE al_draw_ustr (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: SINGLE; flags: LONGINT; CONST ustr: ALLEGRO_USTRptr); CDECL;
-  PROCEDURE al_draw_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: SINGLE; flags: LONGINT; CONST str: STRING); CDECL;
+  PROCEDURE al_draw_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: SINGLE; flags: LONGINT; CONST str: STRING); INLINE;
   PROCEDURE al_draw_justified_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: SINGLE; flags: LONGINT; CONST str: STRING); CDECL;
   PROCEDURE al_draw_justified_ustr (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: SINGLE; flags: LONGINT; CONST str: ALLEGRO_USTRptr); CDECL;
 { No "format" procedures.  Use Pascal's Format function defined at sysutils unit instead. }
@@ -67,7 +67,10 @@ INTERFACE
 
 IMPLEMENTATION
 
-  FUNCTION al_register_font_loader (CONST ext: STRING; load: FONT_LOADER_FUNCTION): BOOLEAN; CDECL;
+  USES
+    sysutils; { Needed for string manipulation. }
+
+  FUNCTION al_register_font_loader (CONST ext: STRING; load: FONT_LOADER_FUNCTION): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
   FUNCTION al_load_bitmap_font (CONST filename: STRING): ALLEGRO_FONTptr; CDECL;
@@ -76,14 +79,29 @@ IMPLEMENTATION
   FUNCTION al_load_font (CONST filename: STRING; size, flags: INTEGER): ALLEGRO_FONTptr; CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
-  FUNCTION al_grab_font_from_bitmap (bmp: ALLEGRO_BITMAPptr; n: LONGINT; ranges: ARRAY OF LONGINT): ALLEGRO_FONTptr; CDECL;
-  EXTERNAL ALLEGRO_FONT_LIB_NAME;
+  FUNCTION _al_grab_font_from_bitmap_ (bmp: ALLEGRO_BITMAPptr; n: LONGINT; ranges: PLONGINT): ALLEGRO_FONTptr; CDECL;
+  EXTERNAL ALLEGRO_FONT_LIB_NAME NAME 'al_grab_font_from_bitmap';
+
+  FUNCTION al_grab_font_from_bitmap (bmp: ALLEGRO_BITMAPptr; n: LONGINT; ranges: ARRAY OF LONGINT): ALLEGRO_FONTptr;
+  BEGIN
+    al_grab_font_from_bitmap := _al_grab_font_from_bitmap_ (bmp, n, @ranges[0]);
+  END;
 
   PROCEDURE al_draw_ustr (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: SINGLE; flags: LONGINT; CONST ustr: ALLEGRO_USTRptr); CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
-  PROCEDURE al_draw_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: SINGLE; flags: LONGINT; CONST str: STRING); CDECL;
-  EXTERNAL ALLEGRO_FONT_LIB_NAME;
+  PROCEDURE _al_draw_text_ (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: SINGLE; flags: LONGINT; CONST str: PCHAR); CDECL;
+  EXTERNAL ALLEGRO_FONT_LIB_NAME NAME 'al_draw_text';
+
+  PROCEDURE al_draw_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: SINGLE; flags: LONGINT; CONST str: STRING);
+  VAR
+    TheString: PCHAR;
+  BEGIN
+    TheString := StrAlloc (Length (str));
+    StrPCopy (TheString, str);
+    _al_draw_text_ (font, color, x, y, flags, TheString);
+    StrDispose (TheString);
+  END;
 
   PROCEDURE al_draw_justified_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: SINGLE; flags: LONGINT; CONST str: STRING); CDECL;
   EXTERNAL ALLEGRO_FONT_LIB_NAME;

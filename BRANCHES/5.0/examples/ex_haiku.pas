@@ -188,7 +188,7 @@ CONST
          END;
       END;
       SelectSample := al_load_sample (HAIKU_DATA+'select.ogg');
-      IF ElementSamples[t][p] = NIL THEN
+      IF SelectSample = NIL THEN
          AbortExample ('Error loading select.ogg.');
    END;
 

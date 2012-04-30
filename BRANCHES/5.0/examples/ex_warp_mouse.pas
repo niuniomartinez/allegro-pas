@@ -16,7 +16,7 @@ PROGRAM ex_warp_mouse;
     Event: ALLEGRO_EVENT;
     EndLoop, RightButtonDown, Redraw: BOOLEAN;
     FakeX, FakeY, th: INTEGER;
-    White: ALLEGRO_COLOR;
+    White, Black, Red: ALLEGRO_COLOR;
 
 BEGIN
   RightButtonDown := FALSE;
@@ -43,20 +43,23 @@ BEGIN
 
   Font := al_load_font ('data/fixed_font.tga', 0, 0);
   White := al_map_rgb_f (1, 1, 1);
+  Black := al_map_rgb_f (0, 0, 0);
+  Red   := al_map_rgb_f (1, 0, 0);
 
   EndLoop := FALSE;
   REPEAT
+    al_get_next_event (EventQueue, Event);
     IF Redraw AND al_is_event_queue_empty (EventQueue) THEN
     BEGIN
       th := al_get_font_line_height (Font);
 
-      al_clear_to_color (al_map_rgb_f (0, 0, 0));
+      al_clear_to_color (Black);
 
       IF RightButtonDown THEN
       BEGIN
-	al_draw_line (Width DIV 2, Height DIV 2, FakeX, FakeY, al_map_rgb_f (1, 0, 0), 1);
-	al_draw_line (FakeX - 5, FakeY, FakeX + 5, FakeY, al_map_rgb_f (1, 1, 1), 2);
-	al_draw_line (FakeX, FakeY - 5, FakeX, FakeY + 5, al_map_rgb_f (1, 1, 1), 2);
+	al_draw_line (Width DIV 2, Height DIV 2, FakeX, FakeY, Red, 1);
+	al_draw_line (FakeX - 5, FakeY, FakeX + 5, FakeY, White, 2);
+	al_draw_line (FakeX, FakeY - 5, FakeX, FakeY + 5, White, 2);
       END;
 
       al_draw_text (Font, White, 0, 0, 0,

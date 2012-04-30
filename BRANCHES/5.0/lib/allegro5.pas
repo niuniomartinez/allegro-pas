@@ -44,7 +44,7 @@ INTERFACE
      Note x.y.z (= x.y.z.0) has release number 1, and x.y.z.1 has release
      number 2, just to confuse you.
   *)
-    ALLEGRO_RELEASE_NUMBER = 0;
+    ALLEGRO_RELEASE_NUMBER = 1;
   (* Packs version number in a simple LONGWORD number.
    *)
     ALLEGRO_VERSION_INT  = (
@@ -59,7 +59,7 @@ INTERFACE
 
   TYPE
   (* Description of user main function for al_run_main. *)
-    ALLEGRO_USER_MAIN = FUNCTION (c: LONGINT; v: POINTER): LONGINT; CDECL;
+    ALLEGRO_USER_MAIN = FUNCTION (argc: LONGINT; argv: POINTER): LONGINT; CDECL;
 
 (* Returns the compiled version of the Allegro library. *)
   FUNCTION al_get_allegro_version: LONGWORD; CDECL;
@@ -89,7 +89,8 @@ END;
 
 { TODO:
   At the moment I'll not include this header.  Object Pascal defines the
-  TStrings class that implements a similar functionality. }
+  TStrings class that implements a similar functionality.  Also both FCL and
+  VCL defines classes that allows to manage INI files too. }
 
 
 
@@ -119,16 +120,16 @@ END;
 
   FUNCTION al_init: BOOLEAN;
 
-  FUNCTION al_install_system (version: LONGWORD; atexit_ptr: POINTER): BOOLEAN; CDECL;
+  FUNCTION al_install_system (version: LONGWORD; atexit_ptr: POINTER): BYTEBOOL; CDECL;
   PROCEDURE al_uninstall_system; CDECL;
-  FUNCTION al_is_system_installed: BOOLEAN; CDECL;
+  FUNCTION al_is_system_installed: BYTEBOOL; CDECL;
   FUNCTION al_get_system_driver: ALLEGRO_SYSTEMptr; CDECL;
 
 { Modern Pascal compilers (i.e. Free Pascal) has functions and methods to get
   the path of system directories and the application name, so Allegro's
   functions for this aren't included. }
 
-  FUNCTION al_inhibit_screensaver (inhibit: BOOLEAN): BOOLEAN; CDECL;
+  FUNCTION al_inhibit_screensaver (inhibit: BYTEBOOL): BYTEBOOL; CDECL;
 
 
 
@@ -136,7 +137,6 @@ END;
  * color.h *
  ***********)
 
-(* Describes a color in a device independant way. Use @link(al_map_rgb) et al. and @link(al_unmap_rgb) et al. to translate from and to various color representations. *)
   TYPE
     ALLEGRO_COLOR = RECORD
       r, g, b, a: SINGLE;
@@ -154,7 +154,7 @@ END;
 
   (* ALLEGRO_PIXEL_FORMAT *)
     ALLEGRO_PIXEL_FORMAT = (
-      ALLEGRO_PIXEL_FORMAT_ANY = 0,
+      ALLEGRO_PIXEL_FORMAT_ANY := 0,
       ALLEGRO_PIXEL_FORMAT_ANY_NO_ALPHA,
       ALLEGRO_PIXEL_FORMAT_ANY_WITH_ALPHA,
       ALLEGRO_PIXEL_FORMAT_ANY_15_NO_ALPHA,
@@ -214,18 +214,18 @@ END;
   TYPE
   (* Blending modes *)
     ALLEGRO_BLEND_MODE = (
-      ALLEGRO_ZERO = 0,
-      ALLEGRO_ONE = 1,
-      ALLEGRO_ALPHA = 2,
-      ALLEGRO_INVERSE_ALPHA = 3
+      ALLEGRO_ZERO := 0,
+      ALLEGRO_ONE := 1,
+      ALLEGRO_ALPHA := 2,
+      ALLEGRO_INVERSE_ALPHA := 3
     );
 
 
 
     ALLEGRO_BLEND_OPERATIONS = (
-      ALLEGRO_ADD = 0,
-      ALLEGRO_SRC_MINUS_DEST = 1,
-      ALLEGRO_DEST_MINUS_SRC = 2,
+      ALLEGRO_ADD := 0,
+      ALLEGRO_SRC_MINUS_DEST := 1,
+      ALLEGRO_DEST_MINUS_SRC := 2,
       ALLEGRO_NUM_BLEND_OPERATIONS
     );
 
@@ -274,7 +274,7 @@ END;
 
   PROCEDURE al_put_pixel (x, y: LONGINT; color: ALLEGRO_COLOR); CDECL;
   PROCEDURE al_put_blended_pixel (x, y: LONGINT; color: ALLEGRO_COLOR); CDECL;
-  FUNCTION al_get_pixel (bitmap: ALLEGRO_BITMAPptr; x, y: LONGINT): ALLEGRO_BITMAPptr; CDECL;
+  FUNCTION al_get_pixel (bitmap: ALLEGRO_BITMAPptr; x, y: LONGINT): ALLEGRO_COLOR; CDECL;
   FUNCTION al_get_pixel_size (format: ALLEGRO_PIXEL_FORMAT): LONGINT;
 
 (* Pixel mapping *)
@@ -299,11 +299,11 @@ END;
 
 (* Sub bitmaps *)
   FUNCTION al_create_sub_bitmap (parent: ALLEGRO_BITMAPptr; x, y, w, h: LONGINT): ALLEGRO_BITMAPptr; CDECL;
-  FUNCTION al_is_sub_bitmap (bitmap: ALLEGRO_BITMAPptr): BOOLEAN; CDECL;
+  FUNCTION al_is_sub_bitmap (bitmap: ALLEGRO_BITMAPptr): BYTEBOOL; CDECL;
 
 (* Miscellaneous *)
   FUNCTION al_clone_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr; CDECL;
-  FUNCTION al_is_bitmap_locked (bitmap: ALLEGRO_BITMAPptr): BOOLEAN; CDECL;
+  FUNCTION al_is_bitmap_locked (bitmap: ALLEGRO_BITMAPptr): BYTEBOOL; CDECL;
 
 (* Blending *)
   PROCEDURE al_set_blender (op: ALLEGRO_BLEND_OPERATIONS; source, dest: ALLEGRO_BLEND_MODE); CDECL;
@@ -441,7 +441,7 @@ END;
   FUNCTION al_get_display_format (display: ALLEGRO_DISPLAYptr): LONGINT; CDECL;
   FUNCTION al_get_display_refresh_rate (display: ALLEGRO_DISPLAYptr): LONGINT; CDECL;
   FUNCTION al_get_display_flags (display: ALLEGRO_DISPLAYptr): LONGINT; CDECL;
-  FUNCTION al_toggle_display_flag (display: ALLEGRO_DISPLAYptr; flag: LONGINT; onoff: BOOLEAN): BOOLEAN; CDECL;
+  FUNCTION al_toggle_display_flag (display: ALLEGRO_DISPLAYptr; flag: LONGINT; onoff: BYTEBOOL): BYTEBOOL; CDECL;
 
   FUNCTION al_create_display (w, h: LONGINT): ALLEGRO_DISPLAYptr; CDECL;
   PROCEDURE al_destroy_display (display: ALLEGRO_DISPLAYptr); CDECL;
@@ -451,16 +451,16 @@ END;
   FUNCTION al_get_backbuffer (display: ALLEGRO_DISPLAYptr): ALLEGRO_BITMAPptr; CDECL;
   FUNCTION al_get_target_bitmap: ALLEGRO_BITMAPptr; CDECL;
 
-  FUNCTION al_acknowledge_resize (display: ALLEGRO_DISPLAYptr): BOOLEAN; CDECL;
-  FUNCTION al_resize_display (display: ALLEGRO_DISPLAYptr; width, height: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_acknowledge_resize (display: ALLEGRO_DISPLAYptr): BYTEBOOL; CDECL;
+  FUNCTION al_resize_display (display: ALLEGRO_DISPLAYptr; width, height: LONGINT): BYTEBOOL; CDECL;
   PROCEDURE al_flip_display; CDECL;
   PROCEDURE al_update_display_region (x, y, Width, height: LONGINT); CDECL;
-  FUNCTION al_is_compatible_bitmap (bitmap: ALLEGRO_BITMAPptr): BOOLEAN; CDECL;
+  FUNCTION al_is_compatible_bitmap (bitmap: ALLEGRO_BITMAPptr): BYTEBOOL; CDECL;
 
   FUNCTION al_get_num_display_modes: LONGINT; CDECL;
   FUNCTION al_get_display_mode (index: LONGINT; mode: ALLEGRO_DISPLAY_MODEptr): ALLEGRO_DISPLAY_MODEptr;
 
-  FUNCTION al_wait_for_vsync: BOOLEAN; CDECL;
+  FUNCTION al_wait_for_vsync: BYTEBOOL; CDECL;
 
   FUNCTION al_get_display_event_source (display: ALLEGRO_DISPLAYptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
 
@@ -472,7 +472,7 @@ END;
 
 (* Stuff for multihead/window management *)
   FUNCTION al_get_num_video_adapters: LONGINT; CDECL;
-  FUNCTION al_get_monitor_info (adapter: LONGINT; VAR info: ALLEGRO_MONITOR_INFO): BOOLEAN; CDECL;
+  FUNCTION al_get_monitor_info (adapter: LONGINT; VAR info: ALLEGRO_MONITOR_INFO): BYTEBOOL; CDECL;
   FUNCTION al_get_new_display_adapter: LONGINT; CDECL;
   PROCEDURE al_set_new_display_adapter (adapter: LONGINT); CDECL;
   PROCEDURE al_set_new_window_position (x, y: LONGINT); CDECL;
@@ -487,9 +487,9 @@ END;
   PROCEDURE al_reset_new_display_options; CDECL;
   FUNCTION al_get_display_option (display: ALLEGRO_DISPLAYptr; option: ALLEGRO_DISPLAY_OPTIONS): LONGINT; CDECL;
 
-(*Deferred drawing*)
-  PROCEDURE al_hold_bitmap_drawing (hold: BOOLEAN); CDECL;
-  FUNCTION al_is_bitmap_drawing_held: BOOLEAN; CDECL;
+(* Deferred drawing *)
+  PROCEDURE al_hold_bitmap_drawing (hold: BYTEBOOL); CDECL;
+  FUNCTION al_is_bitmap_drawing_held: BYTEBOOL; CDECL;
 
 
 
@@ -515,16 +515,16 @@ END;
       __key_down__internal__: ARRAY [0..((ALLEGRO_KEY_MAX * 31) DIV 32) - 1] OF LONGWORD;
     END;
 
-  FUNCTION al_is_keyboard_installed: BOOLEAN; CDECL;
-  FUNCTION al_install_keyboard: BOOLEAN; CDECL;
+  FUNCTION al_is_keyboard_installed: BYTEBOOL; CDECL;
+  FUNCTION al_install_keyboard: BYTEBOOL; CDECL;
   PROCEDURE al_uninstall_keyboard; CDECL;
 
-  FUNCTION al_set_keyboard_leds (leds: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_set_keyboard_leds (leds: LONGINT): BYTEBOOL; CDECL;
 
   FUNCTION al_keycode_to_name (keycode: LONGINT): PCHAR; CDECL;
 
   PROCEDURE al_get_keyboard_state (VAR ret_state: ALLEGRO_KEYBOARD_STATE); CDECL;
-  FUNCTION al_key_down (VAR state: ALLEGRO_KEYBOARD_STATE; keycode: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_key_down (VAR state: ALLEGRO_KEYBOARD_STATE; keycode: LONGINT): BYTEBOOL; CDECL;
 
   FUNCTION al_get_keyboard_event_source: ALLEGRO_EVENT_SOURCEptr; CDECL;
 
@@ -555,19 +555,19 @@ END;
 
 
     ALLEGRO_JOYFLAGS = (
-      ALLEGRO_JOYFLAG_DIGITAL  = $01,
-      ALLEGRO_JOYFLAG_ANALOGUE = $02
+      ALLEGRO_JOYFLAG_DIGITAL  := $01,
+      ALLEGRO_JOYFLAG_ANALOGUE := $02
     );
 
-  FUNCTION al_install_joystick     : BOOLEAN; CDECL;
-  PROCEDURE al_uninstall_joystick           ; CDECL;
-  FUNCTION al_is_joystick_installed: BOOLEAN; CDECL;
-  FUNCTION al_reconfigure_joysticks: BOOLEAN; CDECL;
+  FUNCTION al_install_joystick     : BYTEBOOL; CDECL;
+  PROCEDURE al_uninstall_joystick            ; CDECL;
+  FUNCTION al_is_joystick_installed: BYTEBOOL; CDECL;
+  FUNCTION al_reconfigure_joysticks: BYTEBOOL; CDECL;
 
   FUNCTION al_get_num_joysticks                  : LONGINT            ; CDECL;
   FUNCTION al_get_joystick        (joyn: LONGINT): ALLEGRO_JOYSTICKptr; CDECL;
   PROCEDURE al_release_joystick   (j: ALLEGRO_JOYSTICKptr)            ; CDECL;
-  FUNCTION al_get_joystick_active (j: ALLEGRO_JOYSTICKptr): BOOLEAN   ; CDECL;
+  FUNCTION al_get_joystick_active (j: ALLEGRO_JOYSTICKptr): BYTEBOOL  ; CDECL;
   FUNCTION al_get_joystick_name   (j: ALLEGRO_JOYSTICKptr): PCHAR     ; CDECL;
 
   FUNCTION al_get_joystick_num_sticks  (j: ALLEGRO_JOYSTICKptr)                : LONGINT; CDECL;
@@ -618,40 +618,40 @@ END;
     ALLEGRO_MOUSE_CURSORptr = POINTER;
 
     ALLEGRO_SYSTEM_MOUSE_CURSOR = (
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_NONE        =  0,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT     =  1,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_ARROW       =  2,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_BUSY        =  3,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_QUESTION    =  4,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_EDIT        =  5,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_MOVE        =  6,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_N    =  7,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_W    =  8,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_S    =  9,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_E    = 10,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_NW   = 11,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_SW   = 12,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_SE   = 13,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_NE   = 14,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_PROGRESS    = 15,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_PRECISION   = 16,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK        = 17,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_ALT_SELECT  = 18,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_UNAVAILABLE = 19,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_NONE        :=  0,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT     :=  1,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_ARROW       :=  2,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_BUSY        :=  3,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_QUESTION    :=  4,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_EDIT        :=  5,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_MOVE        :=  6,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_N    :=  7,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_W    :=  8,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_S    :=  9,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_E    := 10,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_NW   := 11,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_SW   := 12,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_SE   := 13,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_NE   := 14,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_PROGRESS    := 15,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_PRECISION   := 16,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK        := 17,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_ALT_SELECT  := 18,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_UNAVAILABLE := 19,
       ALLEGRO_NUM_SYSTEM_MOUSE_CURSORS
     );
 
-  FUNCTION al_is_mouse_installed: BOOLEAN; CDECL;
-  FUNCTION al_install_mouse: BOOLEAN; CDECL;
+  FUNCTION al_is_mouse_installed: BYTEBOOL; CDECL;
+  FUNCTION al_install_mouse: BYTEBOOL; CDECL;
   PROCEDURE al_uninstall_mouse; CDECL;
   FUNCTION al_get_mouse_num_buttons: LONGWORD; CDECL;
   FUNCTION al_get_mouse_num_axes: LONGWORD; CDECL;
-  FUNCTION al_set_mouse_xy (display: ALLEGRO_DISPLAYptr; x, y: LONGINT): BOOLEAN; CDECL;
-  FUNCTION al_set_mouse_z (z: LONGINT): BOOLEAN; CDECL;
-  FUNCTION al_set_mouse_w (w: LONGINT): BOOLEAN; CDECL;
-  FUNCTION al_set_mouse_axis (axis, value: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_set_mouse_xy (display: ALLEGRO_DISPLAYptr; x, y: LONGINT): BYTEBOOL; CDECL;
+  FUNCTION al_set_mouse_z (z: LONGINT): BYTEBOOL; CDECL;
+  FUNCTION al_set_mouse_w (w: LONGINT): BYTEBOOL; CDECL;
+  FUNCTION al_set_mouse_axis (axis, value: LONGINT): BYTEBOOL; CDECL;
   PROCEDURE al_get_mouse_state (ret_state: ALLEGRO_MOUSE_STATEptr); CDECL;
-  FUNCTION al_mouse_button_down (CONST state: ALLEGRO_MOUSE_STATEptr; button: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_mouse_button_down (CONST state: ALLEGRO_MOUSE_STATEptr; button: LONGINT): BYTEBOOL; CDECL;
   FUNCTION al_get_mouse_state_axis (CONST state: ALLEGRO_MOUSE_STATEptr; axis: LONGINT): LONGINT; CDECL;
 
   FUNCTION al_get_mouse_event_source: ALLEGRO_EVENT_SOURCEptr; CDECL;
@@ -666,13 +666,13 @@ END;
  *)
   FUNCTION al_create_mouse_cursor (sprite: ALLEGRO_BITMAPptr; xfocus, yfocus: LONGINT): ALLEGRO_MOUSE_CURSORptr; CDECL;
   PROCEDURE al_destroy_mouse_cursor (cursor: ALLEGRO_MOUSE_CURSORptr);
-  FUNCTION al_set_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor: ALLEGRO_MOUSE_CURSORptr): BOOLEAN; CDECL;
-  FUNCTION al_set_system_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor_id: ALLEGRO_SYSTEM_MOUSE_CURSOR): BOOLEAN; CDECL;
-  FUNCTION al_show_mouse_cursor (display: ALLEGRO_DISPLAYptr): BOOLEAN; CDECL;
-  FUNCTION al_hide_mouse_cursor (display: ALLEGRO_DISPLAYptr): BOOLEAN; CDECL;
-  FUNCTION al_get_mouse_cursor_position (ret_x, ret_y: PLONGINT): BOOLEAN; CDECL;
-  FUNCTION al_grab_mouse (display: ALLEGRO_DISPLAYptr): BOOLEAN; CDECL;
-  FUNCTION al_ungrab_mouse: BOOLEAN; CDECL;
+  FUNCTION al_set_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor: ALLEGRO_MOUSE_CURSORptr): BYTEBOOL; CDECL;
+  FUNCTION al_set_system_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor_id: ALLEGRO_SYSTEM_MOUSE_CURSOR): BYTEBOOL; CDECL;
+  FUNCTION al_show_mouse_cursor (display: ALLEGRO_DISPLAYptr): BYTEBOOL; CDECL;
+  FUNCTION al_hide_mouse_cursor (display: ALLEGRO_DISPLAYptr): BYTEBOOL; CDECL;
+  FUNCTION al_get_mouse_cursor_position (ret_x, ret_y: PLONGINT): BYTEBOOL; CDECL;
+  FUNCTION al_grab_mouse (display: ALLEGRO_DISPLAYptr): BYTEBOOL; CDECL;
+  FUNCTION al_ungrab_mouse: BYTEBOOL; CDECL;
 
 
 
@@ -699,7 +699,7 @@ END;
   PROCEDURE al_destroy_timer (timer: ALLEGRO_TIMERptr); CDECL;
   PROCEDURE al_start_timer (timer: ALLEGRO_TIMERptr); CDECL;
   PROCEDURE al_stop_timer (timer: ALLEGRO_TIMERptr); CDECL;
-  FUNCTION al_get_timer_started (CONST timer: ALLEGRO_TIMERptr): BOOLEAN; CDECL;
+  FUNCTION al_get_timer_started (CONST timer: ALLEGRO_TIMERptr): BYTEBOOL; CDECL;
   FUNCTION al_get_timer_speed (CONST timer: ALLEGRO_TIMERptr): DOUBLE; CDECL;
   PROCEDURE al_set_timer_speed (timer: ALLEGRO_TIMERptr; speed_secs: DOUBLE); CDECL;
   FUNCTION al_get_timer_count (CONST timer: ALLEGRO_TIMERptr): INT64; CDECL;
@@ -767,7 +767,7 @@ END;
  *  512 <= n < 1024 - reserved user events (for addons)
  * 1024 <= n        - unreserved user events
  *)
-  FUNCTION ALLEGRO_EVENT_TYPE_IS_USER (t: LONGINT): BOOLEAN; INLINE;
+  FUNCTION ALLEGRO_EVENT_TYPE_IS_USER (t: LONGINT): BYTEBOOL; INLINE;
 
 (*
  * Event structures
@@ -818,7 +818,7 @@ END;
       keycode : LONGINT;
       unichar : LONGINT;
       modifiers : LONGWORD;
-      _repeat : BOOLEAN;
+      _repeat : BYTEBOOL;
     END;
 
     ALLEGRO_MOUSE_EVENT = RECORD
@@ -881,7 +881,7 @@ END;
 (* The second argument is ALLEGRO_EVENT instead of ALLEGRO_USER_EVENT
  * to prevent users passing a pointer to a too-short structure.
  *)
-  FUNCTION al_emit_user_event (source: ALLEGRO_EVENT_SOURCEptr; Event: ALLEGRO_EVENTptr; dtor: ALLEGRO_EVENT_DTOR_PROC): BOOLEAN; CDECL;
+  FUNCTION al_emit_user_event (source: ALLEGRO_EVENT_SOURCEptr; Event: ALLEGRO_EVENTptr; dtor: ALLEGRO_EVENT_DTOR_PROC): BYTEBOOL; CDECL;
   PROCEDURE al_unref_user_event (event: ALLEGRO_USER_EVENTptr); CDECL;
   PROCEDURE al_set_event_source_data (source: ALLEGRO_EVENT_SOURCEptr; data: PLONGINT); CDECL;
   FUNCTION al_get_event_source_data (CONST source: ALLEGRO_EVENT_SOURCEptr): PLONGINT; CDECL;
@@ -893,14 +893,14 @@ END;
   PROCEDURE al_destroy_event_queue (queue: ALLEGRO_EVENT_QUEUEptr); CDECL;
   PROCEDURE al_register_event_source (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr); CDECL;
   PROCEDURE al_unregister_event_source (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr); CDECL;
-  FUNCTION al_is_event_queue_empty (queue: ALLEGRO_EVENT_QUEUEptr): BOOLEAN; CDECL;
-  FUNCTION al_get_next_event (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT): BOOLEAN; CDECL;
-  FUNCTION al_peek_next_event (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT): BOOLEAN; CDECL;
-  FUNCTION al_drop_next_event (queue: ALLEGRO_EVENT_QUEUEptr): BOOLEAN; CDECL;
+  FUNCTION al_is_event_queue_empty (queue: ALLEGRO_EVENT_QUEUEptr): BYTEBOOL; CDECL;
+  FUNCTION al_get_next_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT): BYTEBOOL; CDECL;
+  FUNCTION al_peek_next_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT): BYTEBOOL; CDECL;
+  FUNCTION al_drop_next_event (queue: ALLEGRO_EVENT_QUEUEptr): BYTEBOOL; CDECL;
   PROCEDURE al_flush_event_queue (queue: ALLEGRO_EVENT_QUEUEptr); CDECL;
-  PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT); CDECL;
-  FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT; secs: SINGLE): BOOLEAN; CDECL;
-  FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT; timeout: ALLEGRO_TIMEOUTptr): BOOLEAN; CDECL;
+  PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT); CDECL;
+  FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT; secs: SINGLE): BYTEBOOL; CDECL;
+  FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT; timeout: ALLEGRO_TIMEOUTptr): BYTEBOOL; CDECL;
 
 
 
@@ -916,9 +916,9 @@ END;
 
 (* Transformations*)
   PROCEDURE al_use_transform (VAR trans: ALLEGRO_TRANSFORM); CDECL;
-  PROCEDURE al_copy_transform (VAR dest, src: ALLEGRO_TRANSFORM); CDECL;
-  PROCEDURE al_identity_transform (VAR trans: ALLEGRO_TRANSFORM); CDECL;
-  PROCEDURE al_build_transform (VAR trans: ALLEGRO_TRANSFORM; x, y, sx, sy, theta: SINGLE); CDECL;
+  PROCEDURE al_copy_transform (OUT dest: ALLEGRO_TRANSFORM; VAR src: ALLEGRO_TRANSFORM); CDECL;
+  PROCEDURE al_identity_transform (OUT trans: ALLEGRO_TRANSFORM); CDECL;
+  PROCEDURE al_build_transform (OUT trans: ALLEGRO_TRANSFORM; x, y, sx, sy, theta: SINGLE); CDECL;
   PROCEDURE al_translate_transform (VAR trans: ALLEGRO_TRANSFORM; x, y: SINGLE); CDECL;
   PROCEDURE al_rotate_transform (VAR trans: ALLEGRO_TRANSFORM; theta: SINGLE); CDECL;
   PROCEDURE al_scale_transform (VAR trans: ALLEGRO_TRANSFORM; sx, sy: SINGLE); CDECL;
@@ -963,11 +963,11 @@ END;
   FUNCTION al_ustr_dup_substr (CONST us: ALLEGRO_USTRptr; start_pos, end_pos: LONGINT): ALLEGRO_USTRptr; CDECL;
 
 (* Assign *)
-  FUNCTION al_ustr_assign (us1: ALLEGRO_USTRptr; CONST us2: ALLEGRO_USTRptr): BOOLEAN; CDECL;
-  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: STRING): BOOLEAN; CDECL;
+  FUNCTION al_ustr_assign (us1: ALLEGRO_USTRptr; CONST us2: ALLEGRO_USTRptr): BYTEBOOL; CDECL;
+  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: STRING): BYTEBOOL; CDECL;
 
 (* Compare *)
-  FUNCTION al_ustr_equal (CONST us1, us2: ALLEGRO_USTRptr): BOOLEAN; CDECL;
+  FUNCTION al_ustr_equal (CONST us1, us2: ALLEGRO_USTRptr): BYTEBOOL; CDECL;
   FUNCTION al_ustr_compare (CONST u, v: ALLEGRO_USTRptr): LONGINT; CDECL;
   FUNCTION al_ustr_ncompare (CONST u, v: ALLEGRO_USTRptr): LONGINT; CDECL;
 
@@ -980,16 +980,16 @@ END;
 
   TYPE
     ALLEGRO_STATE_FLAGS = (
-      ALLEGRO_STATE_NEW_DISPLAY_PARAMETERS = $0001,
-      ALLEGRO_STATE_NEW_BITMAP_PARAMETERS  = $0002,
-      ALLEGRO_STATE_DISPLAY                = $0004,
-      ALLEGRO_STATE_TARGET_BITMAP          = $0008,
-      ALLEGRO_STATE_BITMAP                 = $000A, { ALLEGRO_STATE_TARGET_BITMAP + ALLEGRO_STATE_NEW_BITMAP_PARAMETERS, }
-      ALLEGRO_STATE_BLENDER                = $0010,
-      ALLEGRO_STATE_NEW_FILE_INTERFACE     = $0020,
-      ALLEGRO_STATE_TRANSFORM              = $0040,
+      ALLEGRO_STATE_NEW_DISPLAY_PARAMETERS := $0001,
+      ALLEGRO_STATE_NEW_BITMAP_PARAMETERS  := $0002,
+      ALLEGRO_STATE_DISPLAY                := $0004,
+      ALLEGRO_STATE_TARGET_BITMAP          := $0008,
+      ALLEGRO_STATE_BITMAP                 := $000A, { ALLEGRO_STATE_TARGET_BITMAP + ALLEGRO_STATE_NEW_BITMAP_PARAMETERS, }
+      ALLEGRO_STATE_BLENDER                := $0010,
+      ALLEGRO_STATE_NEW_FILE_INTERFACE     := $0020,
+      ALLEGRO_STATE_TRANSFORM              := $0040,
 
-      ALLEGRO_STATE_ALL                    = $FFFF
+      ALLEGRO_STATE_ALL                    := $FFFF
     );
 
 
@@ -1045,19 +1045,19 @@ IMPLEMENTATION
     al_init := al_install_system (ALLEGRO_VERSION_INT, NIL);
   END;
 
-  FUNCTION al_install_system (version: LONGWORD; atexit_ptr: POINTER): BOOLEAN; CDECL;
+  FUNCTION al_install_system (version: LONGWORD; atexit_ptr: POINTER): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_uninstall_system; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_is_system_installed: BOOLEAN; CDECL;
+  FUNCTION al_is_system_installed: BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_system_driver: ALLEGRO_SYSTEMptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_inhibit_screensaver (inhibit: BOOLEAN): BOOLEAN; CDECL;
+  FUNCTION al_inhibit_screensaver (inhibit: BYTEBOOL): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
 
@@ -1147,7 +1147,7 @@ IMPLEMENTATION
   PROCEDURE al_put_blended_pixel (x, y: LONGINT; color: ALLEGRO_COLOR); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_get_pixel (bitmap: ALLEGRO_BITMAPptr; x, y: LONGINT): ALLEGRO_BITMAPptr; CDECL;
+  FUNCTION al_get_pixel (bitmap: ALLEGRO_BITMAPptr; x, y: LONGINT): ALLEGRO_COLOR; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_pixel_size (format: ALLEGRO_PIXEL_FORMAT): LONGINT;
@@ -1197,14 +1197,14 @@ IMPLEMENTATION
   FUNCTION al_create_sub_bitmap (parent: ALLEGRO_BITMAPptr; x, y, w, h: LONGINT): ALLEGRO_BITMAPptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_is_sub_bitmap (bitmap: ALLEGRO_BITMAPptr): BOOLEAN; CDECL;
+  FUNCTION al_is_sub_bitmap (bitmap: ALLEGRO_BITMAPptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
 (* Miscellaneous *)
    FUNCTION al_clone_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr; CDECL;
    EXTERNAL ALLEGRO_LIB_NAME;
 
-   FUNCTION al_is_bitmap_locked (bitmap: ALLEGRO_BITMAPptr): BOOLEAN; CDECL;
+   FUNCTION al_is_bitmap_locked (bitmap: ALLEGRO_BITMAPptr): BYTEBOOL; CDECL;
    EXTERNAL ALLEGRO_LIB_NAME;
 
 (* Blending *)
@@ -1270,7 +1270,7 @@ IMPLEMENTATION
   FUNCTION al_get_display_flags (display: ALLEGRO_DISPLAYptr): LONGINT; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_toggle_display_flag (display: ALLEGRO_DISPLAYptr; flag: LONGINT; onoff: BOOLEAN): BOOLEAN; CDECL;
+  FUNCTION al_toggle_display_flag (display: ALLEGRO_DISPLAYptr; flag: LONGINT; onoff: BYTEBOOL): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_create_display (w, h: LONGINT): ALLEGRO_DISPLAYptr; CDECL;
@@ -1294,10 +1294,10 @@ IMPLEMENTATION
   FUNCTION al_get_target_bitmap: ALLEGRO_BITMAPptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_acknowledge_resize (display: ALLEGRO_DISPLAYptr): BOOLEAN; CDECL;
+  FUNCTION al_acknowledge_resize (display: ALLEGRO_DISPLAYptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_resize_display (display: ALLEGRO_DISPLAYptr; width, height: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_resize_display (display: ALLEGRO_DISPLAYptr; width, height: LONGINT): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_flip_display; CDECL;
@@ -1306,7 +1306,7 @@ IMPLEMENTATION
   PROCEDURE al_update_display_region (x, y, Width, height: LONGINT); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_is_compatible_bitmap (bitmap: ALLEGRO_BITMAPptr): BOOLEAN; CDECL;
+  FUNCTION al_is_compatible_bitmap (bitmap: ALLEGRO_BITMAPptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_num_display_modes: LONGINT; CDECL;
@@ -1315,7 +1315,7 @@ IMPLEMENTATION
   FUNCTION al_get_display_mode (index: LONGINT; mode: ALLEGRO_DISPLAY_MODEptr): ALLEGRO_DISPLAY_MODEptr;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_wait_for_vsync: BOOLEAN; CDECL;
+  FUNCTION al_wait_for_vsync: BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_display_event_source (display: ALLEGRO_DISPLAYptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
@@ -1335,7 +1335,7 @@ IMPLEMENTATION
   FUNCTION al_get_num_video_adapters: LONGINT; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_get_monitor_info (adapter: LONGINT; VAR info: ALLEGRO_MONITOR_INFO): BOOLEAN; CDECL;
+  FUNCTION al_get_monitor_info (adapter: LONGINT; VAR info: ALLEGRO_MONITOR_INFO): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_new_display_adapter: LONGINT; CDECL;
@@ -1372,10 +1372,10 @@ IMPLEMENTATION
   EXTERNAL ALLEGRO_LIB_NAME;
 
 (*Deferred drawing*)
-  PROCEDURE al_hold_bitmap_drawing (hold: BOOLEAN); CDECL;
+  PROCEDURE al_hold_bitmap_drawing (hold: BYTEBOOL); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_is_bitmap_drawing_held: BOOLEAN; CDECL;
+  FUNCTION al_is_bitmap_drawing_held: BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
 
@@ -1384,16 +1384,16 @@ IMPLEMENTATION
  * keyboard.h *
  **************)
 
-  FUNCTION al_is_keyboard_installed: BOOLEAN; CDECL;
+  FUNCTION al_is_keyboard_installed: BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_install_keyboard: BOOLEAN; CDECL;
+  FUNCTION al_install_keyboard: BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_uninstall_keyboard; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_set_keyboard_leds (leds: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_set_keyboard_leds (leds: LONGINT): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_keycode_to_name (keycode: LONGINT): PCHAR; CDECL;
@@ -1402,7 +1402,7 @@ IMPLEMENTATION
   PROCEDURE al_get_keyboard_state (VAR ret_state: ALLEGRO_KEYBOARD_STATE); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_key_down (VAR state: ALLEGRO_KEYBOARD_STATE; keycode: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_key_down (VAR state: ALLEGRO_KEYBOARD_STATE; keycode: LONGINT): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_keyboard_event_source: ALLEGRO_EVENT_SOURCEptr; CDECL;
@@ -1414,16 +1414,16 @@ IMPLEMENTATION
  * joystick.h *
  **************)
 
-  FUNCTION al_install_joystick: BOOLEAN; CDECL;
+  FUNCTION al_install_joystick: BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_uninstall_joystick  ; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_is_joystick_installed: BOOLEAN; CDECL;
+  FUNCTION al_is_joystick_installed: BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_reconfigure_joysticks: BOOLEAN; CDECL;
+  FUNCTION al_reconfigure_joysticks: BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_num_joysticks: LONGINT; CDECL;
@@ -1435,7 +1435,7 @@ IMPLEMENTATION
   PROCEDURE al_release_joystick (j: ALLEGRO_JOYSTICKptr); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_get_joystick_active (j: ALLEGRO_JOYSTICKptr): BOOLEAN; CDECL;
+  FUNCTION al_get_joystick_active (j: ALLEGRO_JOYSTICKptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_joystick_name (j: ALLEGRO_JOYSTICKptr): PCHAR; CDECL;
@@ -1474,10 +1474,10 @@ IMPLEMENTATION
  * mouse.h *
  ***********)
 
-  FUNCTION al_is_mouse_installed: BOOLEAN; CDECL;
+  FUNCTION al_is_mouse_installed: BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_install_mouse: BOOLEAN; CDECL;
+  FUNCTION al_install_mouse: BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_uninstall_mouse; CDECL;
@@ -1489,22 +1489,22 @@ IMPLEMENTATION
   FUNCTION al_get_mouse_num_axes: LONGWORD; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_set_mouse_xy (display: ALLEGRO_DISPLAYptr; x, y: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_set_mouse_xy (display: ALLEGRO_DISPLAYptr; x, y: LONGINT): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_set_mouse_z (z: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_set_mouse_z (z: LONGINT): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_set_mouse_w (w: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_set_mouse_w (w: LONGINT): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_set_mouse_axis (axis, value: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_set_mouse_axis (axis, value: LONGINT): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_get_mouse_state (ret_state: ALLEGRO_MOUSE_STATEptr); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_mouse_button_down (CONST state: ALLEGRO_MOUSE_STATEptr; button: LONGINT): BOOLEAN; CDECL;
+  FUNCTION al_mouse_button_down (CONST state: ALLEGRO_MOUSE_STATEptr; button: LONGINT): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_mouse_state_axis (CONST state: ALLEGRO_MOUSE_STATEptr; axis: LONGINT): LONGINT; CDECL;
@@ -1519,25 +1519,25 @@ IMPLEMENTATION
   PROCEDURE al_destroy_mouse_cursor (cursor: ALLEGRO_MOUSE_CURSORptr);
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_set_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor: ALLEGRO_MOUSE_CURSORptr): BOOLEAN; CDECL;
+  FUNCTION al_set_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor: ALLEGRO_MOUSE_CURSORptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_set_system_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor_id: ALLEGRO_SYSTEM_MOUSE_CURSOR): BOOLEAN; CDECL;
+  FUNCTION al_set_system_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor_id: ALLEGRO_SYSTEM_MOUSE_CURSOR): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_show_mouse_cursor (display: ALLEGRO_DISPLAYptr): BOOLEAN; CDECL;
+  FUNCTION al_show_mouse_cursor (display: ALLEGRO_DISPLAYptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_hide_mouse_cursor (display: ALLEGRO_DISPLAYptr): BOOLEAN; CDECL;
+  FUNCTION al_hide_mouse_cursor (display: ALLEGRO_DISPLAYptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_get_mouse_cursor_position (ret_x, ret_y: PLONGINT): BOOLEAN; CDECL;
+  FUNCTION al_get_mouse_cursor_position (ret_x, ret_y: PLONGINT): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_grab_mouse (display: ALLEGRO_DISPLAYptr): BOOLEAN; CDECL;
+  FUNCTION al_grab_mouse (display: ALLEGRO_DISPLAYptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_ungrab_mouse: BOOLEAN; CDECL;
+  FUNCTION al_ungrab_mouse: BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
 
@@ -1578,7 +1578,7 @@ IMPLEMENTATION
   PROCEDURE al_stop_timer (timer: ALLEGRO_TIMERptr); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_get_timer_started (CONST timer: ALLEGRO_TIMERptr): BOOLEAN; CDECL;
+  FUNCTION al_get_timer_started (CONST timer: ALLEGRO_TIMERptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_timer_speed (CONST timer: ALLEGRO_TIMERptr): DOUBLE; CDECL;
@@ -1605,7 +1605,7 @@ IMPLEMENTATION
  * altime.h *
  ************)
 
-  FUNCTION ALLEGRO_EVENT_TYPE_IS_USER (t: LONGINT): BOOLEAN;
+  FUNCTION ALLEGRO_EVENT_TYPE_IS_USER (t: LONGINT): BYTEBOOL;
   BEGIN
     ALLEGRO_EVENT_TYPE_IS_USER := t >= 512;
   END;
@@ -1631,7 +1631,7 @@ IMPLEMENTATION
   PROCEDURE al_destroy_user_event_source (source: ALLEGRO_EVENT_SOURCEptr); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_emit_user_event (source: ALLEGRO_EVENT_SOURCEptr; Event: ALLEGRO_EVENTptr; dtor: ALLEGRO_EVENT_DTOR_PROC): BOOLEAN; CDECL;
+  FUNCTION al_emit_user_event (source: ALLEGRO_EVENT_SOURCEptr; Event: ALLEGRO_EVENTptr; dtor: ALLEGRO_EVENT_DTOR_PROC): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_unref_user_event (event: ALLEGRO_USER_EVENTptr); CDECL;
@@ -1655,28 +1655,28 @@ IMPLEMENTATION
   PROCEDURE al_unregister_event_source (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_is_event_queue_empty (queue: ALLEGRO_EVENT_QUEUEptr): BOOLEAN; CDECL;
+  FUNCTION al_is_event_queue_empty (queue: ALLEGRO_EVENT_QUEUEptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_get_next_event (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT): BOOLEAN; CDECL;
+  FUNCTION al_get_next_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_peek_next_event (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT): BOOLEAN; CDECL;
+  FUNCTION al_peek_next_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_drop_next_event (queue: ALLEGRO_EVENT_QUEUEptr): BOOLEAN; CDECL;
+  FUNCTION al_drop_next_event (queue: ALLEGRO_EVENT_QUEUEptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_flush_event_queue (queue: ALLEGRO_EVENT_QUEUEptr); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT); CDECL;
+  PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT; secs: SINGLE): BOOLEAN; CDECL;
+  FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT; secs: SINGLE): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; VAR event: ALLEGRO_EVENT; timeout: ALLEGRO_TIMEOUTptr): BOOLEAN; CDECL;
+  FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT; timeout: ALLEGRO_TIMEOUTptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
 
@@ -1689,13 +1689,13 @@ IMPLEMENTATION
   PROCEDURE al_use_transform (VAR trans: ALLEGRO_TRANSFORM); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  PROCEDURE al_copy_transform (VAR dest, src: ALLEGRO_TRANSFORM); CDECL;
+  PROCEDURE al_copy_transform (OUT dest: ALLEGRO_TRANSFORM; VAR src: ALLEGRO_TRANSFORM); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  PROCEDURE al_identity_transform (VAR trans: ALLEGRO_TRANSFORM); CDECL;
+  PROCEDURE al_identity_transform (OUT trans: ALLEGRO_TRANSFORM); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  PROCEDURE al_build_transform (VAR trans: ALLEGRO_TRANSFORM; x, y, sx, sy, theta: SINGLE); CDECL;
+  PROCEDURE al_build_transform (OUT trans: ALLEGRO_TRANSFORM; x, y, sx, sy, theta: SINGLE); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_translate_transform (VAR trans: ALLEGRO_TRANSFORM; x, y: SINGLE); CDECL;
@@ -1752,15 +1752,15 @@ IMPLEMENTATION
 
 
 (* Assign *)
-  FUNCTION al_ustr_assign (us1: ALLEGRO_USTRptr; CONST us2: ALLEGRO_USTRptr): BOOLEAN; CDECL;
+  FUNCTION al_ustr_assign (us1: ALLEGRO_USTRptr; CONST us2: ALLEGRO_USTRptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: STRING): BOOLEAN; CDECL;
+  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: STRING): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
 
 (* Compare *)
-  FUNCTION al_ustr_equal (CONST us1, us2: ALLEGRO_USTRptr): BOOLEAN; CDECL;
+  FUNCTION al_ustr_equal (CONST us1, us2: ALLEGRO_USTRptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_ustr_compare (CONST u, v: ALLEGRO_USTRptr): LONGINT; CDECL;

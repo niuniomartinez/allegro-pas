@@ -11,7 +11,7 @@ PROGRAM ex_blit;
     Pattern: ALLEGRO_BITMAPptr;
     Font: ALLEGRO_FONTptr;
     Queue: ALLEGRO_EVENT_QUEUEptr;
-    Background, TextClr, White: ALLEGRO_COLOR;
+    Background, TextClr, White, Black, Red: ALLEGRO_COLOR;
     Timer, Counter: ARRAY [1..4] OF DOUBLE;
     FPS: INTEGER;
     TextX, TextY: SINGLE;
@@ -25,6 +25,7 @@ PROGRAM ex_blit;
     State: ALLEGRO_STATE;
     Lock: ALLEGRO_LOCKED_REGIONptr;
     Pattern: ALLEGRO_BITMAPptr;
+    Colour: ALLEGRO_COLOR;
   BEGIN
     mx := w * 0.5;
     my := h * 0.5;
@@ -41,10 +42,11 @@ PROGRAM ex_blit;
 	sat := power (1 - 1 / (1 + d * 0.1), 5);
 	hue := 3 * a * 180 / ALLEGRO_PI;
 	hue := (hue / 360 - floor (hue / 360)) * 360;
-	al_put_pixel (i, j, al_color_hsv (hue, sat, 1));
+	Colour := al_color_hsv (hue, sat, 1);
+	al_put_pixel (i, j, Colour);
       END;
     END;
-    al_put_pixel (0, 0, al_map_rgb (0, 0, 0));
+    al_put_pixel (0, 0, Black);
     al_unlock_bitmap (Pattern);
     al_restore_state (State);
     ExampleBitmap := Pattern;
@@ -141,7 +143,7 @@ PROGRAM ex_blit;
 
     Temp := al_create_bitmap (iw, ih);
     al_set_target_bitmap (Temp);
-    al_clear_to_color (al_map_rgba_f (1, 0, 0, 1));
+    al_clear_to_color (Red);
     StartTimer (1);
     al_draw_bitmap_region (Screen, x, y, iw, ih, 0, 0, 0);
 
@@ -160,7 +162,7 @@ PROGRAM ex_blit;
     al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
     Temp := al_create_bitmap (iw, ih);
     al_set_target_bitmap (Temp);
-    al_clear_to_color(al_map_rgba_f (1, 0, 0, 1));
+    al_clear_to_color (Red);
     StartTimer (2);
     al_draw_bitmap_region (Screen, x, y, iw, ih, 0, 0, 0);
 
@@ -248,6 +250,8 @@ PROGRAM ex_blit;
     Background := al_color_name ('beige');
     TextClr := al_color_name ('black');
     White := al_color_name ('white');
+    Black := al_color_name ('black');
+    Red := al_map_rgba_f (1, 0, 0, 1);
     Pattern := ExampleBitmap (100, 100);
   END;
 
