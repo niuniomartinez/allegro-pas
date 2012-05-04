@@ -1,5 +1,8 @@
 In no special order
 
+  * Add to documentation a note about to define symbol "DEBUGMODE" if using
+    "-g".
+
   * There are some "enum" types (sets). Be sure that they have the correct
     sice in bits.  Read FPC and Delphi help.
 
