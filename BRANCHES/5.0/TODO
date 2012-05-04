@@ -1,7 +1,5 @@
 In no special order
 
-  * Check modifications done while the 2nd. PGD Challenge.
-
   * There are some "enum" types (sets). Be sure that they have the correct
     sice in bits.  Read FPC and Delphi help.
 
