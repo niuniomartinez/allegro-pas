@@ -1,5 +1,5 @@
-				Convert C to Pascal
-				===================
+			Convert C to Pascal
+			===================
 
   This is a brief explanation about how to convert C code to Pascal.  Note that
   this document is to help to write the Allegro.pas wrapper library.
@@ -25,7 +25,7 @@ Allegro's API description
   Allegro aims to define an API that is the same in any platform supported, so
   it's easer to port programs from one to another.  Since each platform has a
   different calling conventions it defines some "macros" to help to declare
-  functions[1] and some variables.
+  functions[1], data types and variables.
 
   "AL_FUNC (type, name, args)" defines a procedure (if type is "void") or
   function.  Note that "args" are a list of "type name" separated by comma.
@@ -38,11 +38,12 @@ Allegro's API description
   becames
 
     PROCEDURE al_set_new_bitmap_format (format: LONGINT); CDECL;
-    FUNCTION al_get_new_bitmap_format: LONGINT) CDECL;
+    FUNCTION al_get_new_bitmap_format: LONGINT; CDECL;
 
-  Remember to put the "CDECL" modifier!
+  The "CDECL" modifier tells the compiler that it's a C function.  It's
+  necesary because C uses a different calling convention than Pascal.
 
-  All functions are in the dll/so/dylib file so they're external.  The link
+  Most functions are in dll/so/dylib files so they're external.  The link
   information should be in the "IMPLEMENTATION" section to try to keep the
   "INTERFACE" section as clean as possible.
 
@@ -54,6 +55,8 @@ Allegro's API description
 
     FUNCTION al_get_new_bitmap_format: LONGINT) CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
+
+  Some functions are "inline", and should be "INLINE" in Pascal too.
 
 
 
@@ -68,13 +71,13 @@ Data types
   results in some issues as discused in an Allegro.cc forum thread[2].
 
   Pointers in C are marked by "*".  "*char" are a pointer to char, but they
-  uses it actually for ANSISTRINGS.  I think it's better to use "PCHAR" and
+  actually use it as ANSISTRINGS.  I think it's better to use "PCHAR" and
   create inlined wrappers for parameters and function returning.
 
   C doesn't distiguish between array and pointers.  Actually an array is a
-  pointer that points to a "non dynamic" memory space.  I think this is what is
-  makeing problems so we'll use pointers and create inlined wrappers for
-  parameters and function returning.
+  pointer that points to a "non dynamic" memory space.  I think this is why
+  Allegro.pas isn't working properly so we'll use pointers and create inlined
+  wrappers for parameters and function returning.
 
   "bool" is the bad guy here.  It's a recent addition to the C language
   (1999 IIRC) and not all compilers supports it.  Allegro's defines it as
@@ -108,10 +111,41 @@ Data types
 Enumerations
 ------------
 
+  Enumerations are another "bad guy".  There are almost no difference between
+  "enum" and "int".  In a perfect world, we should use enumerations in Pascal,
+  but I think we shouldn't or use a wrapper for functions.
+
+  Free Pascal and Delphi optimizes enumerations.  Both have modifiers that
+  modifies that.
+
+  AFAIK C enums are 4 bytes wide, so we can do this:
+
+  PROCEDURE _ActualFunction_ (Value: LONGWORD); CDECL; EXTERNAL ...;
+
+  PROCEDURE TheProcedure (Variable: EnumType);
+  BEGIN
+    _ActualFunction_ (ORD (Variable));
+  END;
+
 
 
 Parameters and return values
 ----------------------------
+
+  In most functions parameters are pased "by value" with no modifications.
+
+  In some cases they're passed as "const", so we must use the "CONST" modifier.
+
+  C hasn't "VAR" nor "OUT" modifiers:  it uses pointer for this.  I think it is
+  a bad idea to use "VAR" and "OUT", so we should use pointers and wrappers for
+  this.
+
+  PROCEDURE _ActualFunction_ (ValuePtr: ^LONGWORD); CDECL; EXTERNAL ...;
+
+  PROCEDURE TheProcedure (VAR Variable: LONGWORD);
+  BEGIN
+    _ActualFunction_ (@Variable);
+  END;
 
 
 
