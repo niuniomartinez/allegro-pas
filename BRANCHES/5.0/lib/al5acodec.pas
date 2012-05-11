@@ -18,12 +18,12 @@ INTERFACE
 
 {$include allegro.inc}
 
-  FUNCTION al_init_acodec_addon: BOOLEAN; CDECL;
+  FUNCTION al_init_acodec_addon: BYTEBOOL; CDECL;
   FUNCTION al_get_allegro_acodec_version: LONGWORD; CDECL;
 
 IMPLEMENTATION
 
-  FUNCTION al_init_acodec_addon: BOOLEAN; CDECL;
+  FUNCTION al_init_acodec_addon: BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_ACODEC_LIB_NAME;
 
   FUNCTION al_get_allegro_acodec_version: LONGWORD; CDECL;
