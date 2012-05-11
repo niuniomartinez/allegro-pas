@@ -171,12 +171,12 @@ PROGRAM ex_gldepth;
   FUNCTION SetupTextures (Display: ALLEGRO_DISPLAYptr): BOOLEAN;
   VAR
     tmpBmp: ALLEGRO_BITMAPptr;
-    Font: ALLEGRO_FONTptr;
+    aFont: ALLEGRO_FONTptr;
     w, h, Depth: INTEGER;
     TextColor: ALLEGRO_COLOR;
   BEGIN
-    Font := al_load_font ('data/fixed_font.tga', 0, 0);
-    IF Font = NIL THEN
+    aFont := al_load_font ('data/fixed_font.tga', 0, 0);
+    IF aFont = NIL THEN
       AbortExample ('Error loading `data/fixed_font.tga');
 
     tmpBmp := al_load_bitmap ('data/mysha.pcx');
@@ -194,12 +194,12 @@ PROGRAM ex_gldepth;
     TextColor := al_map_rgb (255, 0, 0);
     Depth := al_get_display_option (Display, ALLEGRO_DEPTH_SIZE);
     IF Depth = 0 THEN
-      al_draw_text (Font, TextColor, 0, 5, 0, 'No Z-buffer!')
+      al_draw_text (aFont, TextColor, 0, 5, 0, 'No Z-buffer!')
     ELSE
-      al_draw_text (Font, TextColor, 0, 5, 0, PCHAR ('Z-buffer: '+IntToStr (Depth)+'bits'));
+      al_draw_text (aFont, TextColor, 0, 5, 0, PCHAR ('Z-buffer: '+IntToStr (Depth)+'bits'));
     al_set_target_backbuffer (Display);
     al_destroy_bitmap (tmpBmp);
-    al_destroy_font (Font);
+    al_destroy_font (aFont);
 
     glEnable (GL_TEXTURE_2D);
     glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);

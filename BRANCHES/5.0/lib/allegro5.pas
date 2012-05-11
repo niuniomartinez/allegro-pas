@@ -333,8 +333,8 @@ END;
 
 { TODO: Some functions need the file.h definitions. }
 
-  FUNCTION al_load_bitmap (CONST filename: STRING): ALLEGRO_BITMAPptr; CDECL;
-  FUNCTION al_save_bitmap (CONST filename: STRING): ALLEGRO_BITMAPptr; CDECL;
+  FUNCTION al_load_bitmap (CONST filename: STRING): ALLEGRO_BITMAPptr; INLINE;
+  FUNCTION al_save_bitmap (CONST filename: STRING; bitmap: ALLEGRO_BITMAPptr): BYTEBOOL; INLINE;
 
 
 
@@ -480,7 +480,7 @@ END;
   PROCEDURE al_set_window_position (display: ALLEGRO_DISPLAYptr; x, y: LONGINT); CDECL;
   PROCEDURE al_get_window_position (display: ALLEGRO_DISPLAYptr; VAR x, y: LONGINT); CDECL;
 
-  PROCEDURE al_set_window_title (display: ALLEGRO_DISPLAYptr; CONST title: STRING);CDECL;
+  PROCEDURE al_set_window_title (display: ALLEGRO_DISPLAYptr; CONST title: STRING); INLINE;
 
   PROCEDURE al_set_new_display_option (option: ALLEGRO_DISPLAY_OPTIONS; value, importance: LONGINT); CDECL;
   FUNCTION al_get_new_display_option (display: ALLEGRO_DISPLAYptr; option: ALLEGRO_DISPLAY_OPTIONS): LONGINT; CDECL;
@@ -935,7 +935,9 @@ END;
  **********)
 
   {TODO: Documentation says it's not needed as it's used internally.
-         Only basic functionality is implemented for convenience. }
+	Only basic functionality is implemented for convenience.
+
+	Use of WIDESTRING and UTFSTRING is recommendable. }
 
   TYPE
     _al_tagbstring = RECORD
@@ -954,7 +956,7 @@ END;
     ALLEGRO_USTR_INFO = _al_tagbstring;
 
 (* Creating strings *)
-  FUNCTION al_ustr_new (CONST s: STRING): ALLEGRO_USTRptr; CDECL;
+  FUNCTION al_ustr_new (CONST s: STRING): ALLEGRO_USTRptr; INLINE;
   FUNCTION al_ustr_new_from_buffer (CONST s: POINTER; size: LONGWORD): ALLEGRO_USTRptr; CDECL;
   PROCEDURE al_ustr_free (us: ALLEGRO_USTRptr); CDECL;
   FUNCTION al_ustr_to_pchar (CONST us: ALLEGRO_USTRptr): PCHAR; CDECL;
@@ -964,7 +966,7 @@ END;
 
 (* Assign *)
   FUNCTION al_ustr_assign (us1: ALLEGRO_USTRptr; CONST us2: ALLEGRO_USTRptr): BYTEBOOL; CDECL;
-  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: STRING): BYTEBOOL; CDECL;
+  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: STRING): BYTEBOOL; INLINE;
 
 (* Compare *)
   FUNCTION al_ustr_equal (CONST us1, us2: ALLEGRO_USTRptr): BYTEBOOL; CDECL;
@@ -1005,6 +1007,11 @@ END;
 
 
 IMPLEMENTATION
+
+  USES
+    al5data;
+
+
 
 (******************************************************************************
  * base.h *
@@ -1231,11 +1238,32 @@ IMPLEMENTATION
  * bitmap_io.h *
  ***************)
 
-  FUNCTION al_load_bitmap (CONST filename: STRING): ALLEGRO_BITMAPptr; CDECL;
-  EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION _al_load_bitmap_ (CONST filename: PCHAR): ALLEGRO_BITMAPptr; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME NAME 'al_load_bitmap';
 
-  FUNCTION al_save_bitmap (CONST filename: STRING): ALLEGRO_BITMAPptr; CDECL;
-  EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_load_bitmap (CONST filename: STRING): ALLEGRO_BITMAPptr;
+  VAR
+    FilenameZ: PCHAR;
+  BEGIN
+    FilenameZ := _al_create_null_str_ (filename);
+    al_load_bitmap := _al_load_bitmap_ (FilenameZ);
+    _al_dispose_str_ (FilenameZ);
+  END;
+
+
+
+  FUNCTION _al_save_bitmap_ (CONST filename: PCHAR; bitmap: ALLEGRO_BITMAPptr): BYTEBOOL; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME NAME 'al_save_bitmap';
+
+  FUNCTION al_save_bitmap (CONST filename: STRING; bitmap: ALLEGRO_BITMAPptr): BYTEBOOL;
+  VAR
+    FilenameZ: PCHAR;
+  BEGIN
+    FilenameZ := _al_create_null_str_ (filename);
+    al_save_bitmap := _al_save_bitmap_ (FilenameZ, bitmap);
+    _al_dispose_str_ (FilenameZ);
+  END;
+
 
 
 
@@ -1356,8 +1384,19 @@ IMPLEMENTATION
   PROCEDURE al_get_window_position (display: ALLEGRO_DISPLAYptr; VAR x, y: LONGINT); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  PROCEDURE al_set_window_title (display: ALLEGRO_DISPLAYptr; CONST title: STRING);CDECL;
-  EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE _al_set_window_title_ (display: ALLEGRO_DISPLAYptr; CONST title: PCHAR); CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME NAME 'al_set_window_title';
+
+  PROCEDURE al_set_window_title (display: ALLEGRO_DISPLAYptr; CONST title: STRING);
+  VAR
+    TitleZ: PCHAR;
+  BEGIN
+    TitleZ := _al_create_null_str_ (title);
+    _al_set_window_title_ (display, TitleZ);
+    _al_dispose_str_ (TitleZ);
+  END;
+
+
 
   PROCEDURE al_set_new_display_option (option: ALLEGRO_DISPLAY_OPTIONS; value, importance: LONGINT); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
@@ -1729,8 +1768,19 @@ IMPLEMENTATION
  **********)
 
 (* Creating strings *)
-  FUNCTION al_ustr_new (CONST s: STRING): ALLEGRO_USTRptr; CDECL;
-  EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION _al_ustr_new_ (CONST s: PCHAR): ALLEGRO_USTRptr; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME NAME 'al_ustr_new';
+
+  FUNCTION al_ustr_new (CONST s: STRING): ALLEGRO_USTRptr;
+  VAR
+    sZ: PCHAR;
+  BEGIN
+    sZ := _al_create_null_str_ (s);
+    al_ustr_new := _al_ustr_new_ (sZ);
+    _al_dispose_str_ (sZ);
+  END;
+
+
 
   FUNCTION al_ustr_new_from_buffer (CONST s: POINTER; size: LONGWORD): ALLEGRO_USTRptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
@@ -1755,8 +1805,17 @@ IMPLEMENTATION
   FUNCTION al_ustr_assign (us1: ALLEGRO_USTRptr; CONST us2: ALLEGRO_USTRptr): BYTEBOOL; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME;
 
-  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: STRING): BYTEBOOL; CDECL;
-  EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION _al_ustr_assign_cstr_ (us1: ALLEGRO_USTRptr; CONST s: PCHAR): BYTEBOOL; CDECL;
+  EXTERNAL ALLEGRO_LIB_NAME NAME 'al_ustr_assign_cstr';
+
+  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: STRING): BYTEBOOL;
+  VAR
+    sZ: PCHAR;
+  BEGIN
+    sZ := _al_create_null_str_ (s);
+    al_ustr_assign_cstr := _al_ustr_assign_cstr_ (us1, sZ);
+    _al_dispose_str_ (sZ);
+  END;
 
 
 (* Compare *)
@@ -1784,6 +1843,11 @@ IMPLEMENTATION
 INITIALIZATION
 { Delphi forces an INITIALIZATION section if FINALIZATION is used. }
   ;
+{ Suggested by FPC mailing list user. }
+
+{ $if defined(cpui386) or defined(cpux86_64)}
+{ SetExceptionMask(GetExceptionMask + [exZeroDivide, exInvalidOp]); }
+{ $ENDIF}
 
 FINALIZATION
 { Ensures that we call it, as Pascal hasn't an "atexit" function. }

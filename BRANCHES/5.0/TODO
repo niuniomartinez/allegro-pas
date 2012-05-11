@@ -3,18 +3,14 @@ In no special order
   * Add to documentation a note about to define symbol "DEBUGMODE" if using
     "-g".
 
+  * Units "al5color", "al5gl" have STRING parameters.  Add wrappers to PCHAR.
+
   * There are some "enum" types (sets). Be sure that they have the correct
     sice in bits.  Read FPC and Delphi help.
 
   * Documentation isn't written.
     May be I should find another documentation tool as pasdoc is "dirty".
-    If not, use pasdoc.
-
-  * Test if it's possible to use STRING (ANSISTRING) as return values
-    instead of PCHAR.
-
-  * Procedures that receibes STRING (ANSISTRING) as parameter seems to be
-    broken (at least the "font" addon raises a rare error).  Check them.
+    Else use pasdoc.
 
   * Document COLOR issue (can't use functions "_map_" as parameters in
     Windows (?)).
