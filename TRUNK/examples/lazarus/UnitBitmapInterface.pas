@@ -20,7 +20,7 @@ UNIT UnitBitmapInterface;
    LCL's TCanvas.
 
    I'm sure there's a faster way to draw pixels in the canvas but I can't find
-   it in the Lazarus' documentation.  If you find it, pleas send it me.
+   it in the Lazarus' documentation.  If you find it, please send it me.
  *)
 
 {$mode objfpc}{$H+}

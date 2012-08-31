@@ -16,11 +16,11 @@ demo: $(DEMO)
 
 # Executables.
 $(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR) -FU$(LIBDIR) $< -o$@
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR) -FU$(OBJDIR) $< -o$@
 	@echo Example $@ ready!
 
 $(DEMODIR)%$(BINSUF): $(DEMOSRC) $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(DEMODIR) -FU$(LIBDIR) $< -o$@
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(DEMODIR) -FU$(OBJDIR) $< -o$@
 	@echo Demo game ready!
 
 # Returns some variables.
@@ -42,9 +42,9 @@ veryclean: clean
 
 # Clean temporary files.
 clean:
-	$(DELETE) $(LIBDIR)*$(OBJSUF)
-	$(DELETE) $(LIBDIR)*.ppu
-	$(DELETE) $(LIBDIR)*.a
+	$(DELETE) $(OBJDIR)*$(OBJSUF)
+	$(DELETE) $(OBJDIR)*.ppu
+	$(DELETE) $(OBJDIR)*.a
 
 # Show all options.
 help: adbanner

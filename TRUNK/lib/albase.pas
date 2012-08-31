@@ -34,6 +34,52 @@ CONST
 
 
 TYPE
+(* Generic pointer. *)
+  AL_POINTER = POINTER;
+
+(* Pointer to signed 32bit integer values. *)
+  AL_INTptr = ^AL_INT;
+
+(* Signed 32bit integer values. *)
+  AL_INT = LONGINT;
+
+(* Unsigned 32bit integer values. *)
+  AL_UINT = LONGWORD;
+
+{$IFDEF CPU64}
+  {$IFDEF WINDOWS}
+(* Signed 32/64bit integer values. *)
+  AL_LONG = LONGINT;
+
+(* Unsigned 32/64bit integer values. *)
+  AL_ULONG = LONGWORD;
+  {$ELSE}
+(* Signed 32/64bit integer values. *)
+  AL_LONG = INT64;
+
+(* Unsigned 32/64bit integer values. *)
+  AL_ULONG = QWORD;
+  {$ENDIF}
+
+(* size_t equivalent. *)
+  AL_SIZE_T = QWORD;
+
+(* Rare "pointer difference". *)
+  AL_PTRDIFF_T = INT64;
+{$ELSE}
+(* Signed 32/64bit integer values. *)
+  AL_LONG = LONGINT;
+
+(* Unsigned 32/64bit integer values. *)
+  AL_ULONG = LONGWORD;
+
+(* size_t equivalent. *)
+  AL_SIZE_T = LONGWORD;
+
+(* Rare "pointer difference". *)
+  AL_PTRDIFF_T = LONGWORD;
+{$ENDIF}
+
 (* This is used to define call-back parameter or pointers to call-back
    procedures.
 
@@ -45,7 +91,7 @@ TYPE
 
    A call-back procedure must be declared as @code(CDECL) since Allegro is
    written in C. *)
-  AL_PARAM_PROC  = PROCEDURE (x: POINTER); CDECL;
+  AL_PARAM_PROC  = PROCEDURE (x: AL_POINTER); CDECL;
 (* This is used to define call-back parameter or pointers to call-back
    procedures.
 

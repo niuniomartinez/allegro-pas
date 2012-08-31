@@ -53,7 +53,7 @@ CONST
 
 VAR
 (* Stores the last error number. *)
-  al_errno: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_errno';
+  al_errno: AL_INTptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_errno';
 (* Text string used by @code(al_set_gfx_mode), @code(al_install_sound) and
    other functions to report error messages.  If they fail and you want to tell
    the user why, this is the place to look for a description of the problem. *)
@@ -75,7 +75,7 @@ BEGIN
   OSTYPE_LINUX := AL_ID('TUX ');
 END;
   #) *)
-  FUNCTION AL_ID (str: SHORTSTRING): LONGINT;
+  FUNCTION AL_ID (str: SHORTSTRING): AL_INT;
 
 
 
@@ -1533,19 +1533,19 @@ END.
    to modify the clipping region, please refrain from changing this structure.
    Use @code(al_set_clip_rect) instead. *)
   AL_BITMAP = RECORD
-    w, h: LONGINT;		{< width and height in pixels }
-    clip: LONGINT;		{< flag if clipping is turned on }
-    cl, cr, ct, cb: LONGINT;	{< clip left, right, top and bottom values }
+    w, h: AL_INT;		{< width and height in pixels }
+    clip: AL_INT;		{< flag if clipping is turned on }
+    cl, cr, ct, cb: AL_INT;	{< clip left, right, top and bottom values }
     vtable: AL_GFX_VTABLEptr;	{< @exclude drawing functions }
     write_bank: _BMP_BANK_SWITCHER;	{< @exclude C func on some machines, asm on i386 }
     read_bank: _BMP_BANK_SWITCHER;	{< @exclude C func on some machines, asm on i386 }
-    dat: POINTER;		{< @exclude the memory we allocated for the bitmap }
-    id: DWORD;			{< for identifying sub-bitmaps }
-    extra: POINTER;		{< @exclude points to a structure with more info }
-    x_ofs: LONGINT;		{< horizontal offset (for sub-bitmaps) }
-    y_ofs: LONGINT;		{< vertical offset (for sub-bitmaps) }
-    seg: LONGINT;		{< @exclude bitmap segment }
-    line: POINTER;		{< ZERO_SIZE_ARRAY(unsigned char *, line); }
+    dat: AL_POINTER;		{< @exclude the memory we allocated for the bitmap }
+    id: AL_ULONG;			{< for identifying sub-bitmaps }
+    extra: AL_POINTER;		{< @exclude points to a structure with more info }
+    x_ofs: AL_INT;		{< horizontal offset (for sub-bitmaps) }
+    y_ofs: AL_INT;		{< vertical offset (for sub-bitmaps) }
+    seg: AL_INT;		{< @exclude bitmap segment }
+    line: AL_POINTER;		{< ZERO_SIZE_ARRAY(unsigned char *, line); }
   END;
 
 
@@ -4092,7 +4092,7 @@ VAR
 
 
 (* Converts four 8 bit values to a packed 32 bit integer ID. *)
-  FUNCTION AL_ID (str: SHORTSTRING): LONGINT;
+  FUNCTION AL_ID (str: SHORTSTRING): AL_INT;
   BEGIN
     AL_ID := (ORD (str[1]) SHL 24) OR (ORD (str[2]) SHL 16)
 	     OR (ORD (str[3]) SHL  8) OR  ORD (str[4]);

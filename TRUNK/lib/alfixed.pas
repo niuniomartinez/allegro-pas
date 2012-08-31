@@ -63,7 +63,7 @@ TYPE
   AL_FIXEDptr = ^AL_FIXED;
 (* This is a fixed point integer which can replace float with similar results
    and is faster than float on low end machines. *)
-  AL_FIXED	= LONGINT;
+  AL_FIXED	= AL_INT;
 
 
 
@@ -71,12 +71,12 @@ TYPE
    16).  Remember that overflows (trying to convert an integer greater than
    32767) and underflows (trying to convert an integer lesser than -32768) are
    not detected even in debug builds! The values simply "wrap around".  *)
-  FUNCTION al_itofix (x: LONGINT): AL_FIXED;
+  FUNCTION al_itofix (x: AL_INT): AL_FIXED;
     INLINE;
 
 (* Converts fixed point to integer, rounding as required to the nearest
    integer. *)
-  FUNCTION al_fixtoi (x: AL_FIXED): LONGINT;
+  FUNCTION al_fixtoi (x: AL_FIXED): AL_INT;
     INLINE;
 
 (* Converts a floating point value to fixed point.  Unlike @code(al_itofix),
@@ -205,12 +205,12 @@ VAR
 
 
 (* Conversion. *)
-FUNCTION al_itofix (x: LONGINT): AL_FIXED;
+FUNCTION al_itofix (x: AL_INT): AL_FIXED;
 BEGIN
   al_itofix := x SHL 16;
 END;
 
-FUNCTION al_fixtoi (x: AL_FIXED): LONGINT;
+FUNCTION al_fixtoi (x: AL_FIXED): AL_INT;
 BEGIN
   IF x < 0 THEN
   { SHR doesn't keep the sign bit. }
@@ -246,14 +246,14 @@ BEGIN
   BEGIN 
     IF (x < 0) AND (y < 0) THEN
     BEGIN
-      al_errno := 34; { ERANGE }
+      al_errno^ := 34; { ERANGE }
       R := -$7FFFFFFF;
     END;
   END
   ELSE BEGIN
     IF (x > 0) AND (y > 0) THEN
     BEGIN
-      al_errno := 34; { ERANGE }
+      al_errno^ := 34; { ERANGE }
       R := $7FFFFFFF;
     END;
   END;
@@ -269,14 +269,14 @@ BEGIN
   BEGIN 
     IF (x < 0) AND (y > 0) THEN
     BEGIN
-      al_errno := 34; { ERANGE }
+      al_errno^ := 34; { ERANGE }
       R := -$7FFFFFFF;
     END;
   END
   ELSE BEGIN
     IF (x > 0) AND (y < 0) THEN
     BEGIN
-      al_errno := 34; { ERANGE }
+      al_errno^ := 34; { ERANGE }
       R := $7FFFFFFF;
     END;
   END;
@@ -293,7 +293,7 @@ FUNCTION al_fixdiv (x, y: AL_FIXED): AL_FIXED;
 BEGIN
   IF y = 0 THEN
   BEGIN
-    al_errno := 34; { ERANGE }
+    al_errno^ := 34; { ERANGE }
     IF x < 0 THEN
       al_fixdiv := -$7FFFFFFF
     ELSE

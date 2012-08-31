@@ -85,12 +85,12 @@ END;
 
 
 
-(* Release resources. *)
+(* Releases resources. *)
 PROCEDURE TForm1.FormClose(Sender: TObject; VAR CloseAction: TCloseAction);
 BEGIN
-{ Destroys the objects if it exists.  Don't destroy an Allegro object in the
+{ Destroy the objects if they exist.  Don't destroy an Allegro object in the
   'OnDestroy' event because then it would be called after the calling of
-  'al_exit'.  Be careful in the order of callings! }
+  'al_exit'.  Be careful with the order of callings! }
   IF fBitmap <> NIL THEN
     al_destroy_bitmap (fBitmap);
   fBitmap := NIL;
@@ -99,8 +99,8 @@ END;
 
 
 (* Allows to select a bitmap file, loads it and shows it on the window.
-   See the file filter in the OpenBitmapDialog's Filter property.  It lists only the
-   formats supported by Allegro. *)
+   See the file filter in the OpenBitmapDialog's Filter property.  It lists only
+   the formats supported by Allegro. *)
 PROCEDURE TForm1.MenuItem3Click(Sender: TObject);
 BEGIN
   IF OpenBitmapDialog.Execute THEN
@@ -127,7 +127,7 @@ PROCEDURE TForm1.MenuItem4Click (Sender: TObject);
 BEGIN
   Application.MessageBox (
     'This is a simple example of how to integrate Allegro.pas with Lazarus.'+
-    #10+'Read the source comments for more  information.'+
+    #10+'Read the source comments for more information.'+
     #10+#10+'Linked with Allegro.pas '+AL_PAS_VERSION_STR,
     'About...', MB_ICONINFORMATION);
 END;
