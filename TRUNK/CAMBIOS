@@ -1,9 +1,14 @@
 Cambios entre las versiones 4.4.3 y 4.4.4
 =========================================
 
+  Errores corregidos
+  ------------------
+  * Corregida la definición de al_errno.
+
   Otros
   -----
   * Errores en la documentación.
+  * Ahora los archivos objeto los guarda en otro directorio.
 
 
 
