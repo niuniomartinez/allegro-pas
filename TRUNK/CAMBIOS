@@ -4,6 +4,12 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   Errores corregidos
   ------------------
   * Corregida la definición de al_errno.
+  * Pequeño cambio en el ejemplo exhsvrgb.
+
+  Novedades
+  ---------
+  + Añadidas funciones de conversión entre codificaciones de texto.
+  + Soporte para sistemas de 64bit.
 
   Otros
   -----
