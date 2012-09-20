@@ -68,7 +68,7 @@ USES
       BEGIN
       { Calculate hue. }
 	h := (y / 300.0) * 360; { From 0 to 360. }
-	IF x < 151 THEN { Left side, hue and value. }
+	IF x < 150 THEN { Left side, hue and value. }
 	BEGIN
 	{ Calculate value. }
 	  v := x / 150.0; { From 0 to 1. }

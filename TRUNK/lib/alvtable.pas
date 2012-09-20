@@ -21,7 +21,7 @@ TYPE
   _CIRCLE_METHOD_ = PROCEDURE (bmp: AL_BITMAPptr; x, y, r, c: AL_INT); CDECL;
   _ELLIPSE_METHOD_ = PROCEDURE (bmp: AL_BITMAPptr; x, y, rx, ry, c: AL_INT); CDECL;
   _SPR_METHOD_ = PROCEDURE (bmp, spr: AL_BITMAPptr; x, y: AL_INT); CDECL;
-  _RLE_SPR_METHOD_ = PROCEDURE (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr; x, y: AL_INT); CDECL;
+  _RLE_SPR_METHOD_ = PROCEDURE (bmp: AL_BITMAPptr; CONST spr: AL_RLE_SPRITEptr; x, y: AL_INT); CDECL;
   _BLIT_METHOD_ = PROCEDURE (org, dest: AL_BITMAPptr; o_x, o_y, d_x, d_y, w, h: AL_INT); CDECL;
 
 (* The bitmap virtual table. *)
@@ -57,7 +57,7 @@ TYPE
     draw_rle_sprite: _RLE_SPR_METHOD_;
     draw_trans_rle_sprite: _RLE_SPR_METHOD_;
     draw_trans_rgba_rle_sprite: _RLE_SPR_METHOD_;
-    draw_lit_rle_sprite: PROCEDURE (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr; x, y, color: AL_INT); CDECL;
+    draw_lit_rle_sprite: PROCEDURE (bmp: AL_BITMAPptr; CONST spr: AL_RLE_SPRITEptr; x, y, color: AL_INT); CDECL;
     draw_character: AL_POINTER; { Unsuported methods were defined as simple pointers. }
     draw_glyph: AL_POINTER;
     blit_from_memory: _BLIT_METHOD_;
@@ -75,14 +75,14 @@ TYPE
     draw_gouraud_sprite: PROCEDURE (bmp, spr: AL_BITMAPptr; x, y, c1, c2, c3, c4: AL_INT); CDECL;
     draw_sprite_end: AL_SIMPLE_PROC;
     blit_end: AL_SIMPLE_PROC;
-    polygon: PROCEDURE (bmp: AL_BITMAPptr; vertices: AL_INT; points: AL_INTptr; color: AL_INT); CDECL;
+    polygon: PROCEDURE (bmp: AL_BITMAPptr; vertices: AL_INT; CONST points: AL_INTptr; color: AL_INT); CDECL;
     rect: _LINE_METHOD_;
     circle: _CIRCLE_METHOD_;
     circlefill: _CIRCLE_METHOD_;
     ellipse: _ELLIPSE_METHOD_;
     ellipsefill: _ELLIPSE_METHOD_;
     arc: PROCEDURE (bmp: AL_BITMAPptr; x, y: AL_INT; ang1, ang2: AL_FIXED; r, color: AL_INT); CDECL;
-    spline: PROCEDURE (bmp: AL_BITMAPptr; points: AL_INTptr; color: AL_INT); CDECL;
+    spline: PROCEDURE (bmp: AL_BITMAPptr; CONST points: AL_INTptr; color: AL_INT); CDECL;
     floodfill: PROCEDURE (bmp: AL_BITMAPptr; x, y, c: AL_INT); CDECL;
     polygon3d: PROCEDURE (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: AL_POINTER); CDECL;
     polygon3d_f: PROCEDURE (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: AL_POINTER); CDECL;
@@ -91,8 +91,7 @@ TYPE
     quad3d: PROCEDURE (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; v1, v2, v3, v4: AL_POINTER); CDECL;
     quad3d_f: PROCEDURE (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; v1, v2, v3, v4: AL_POINTER); CDECL;
 
-    draw_sprite_ex: PROCEDURE (bmp, sprite: AL_BITMAPptr; x, y, mode, flip:
-      AL_INT);
+    draw_sprite_ex: PROCEDURE (bmp, sprite: AL_BITMAPptr; x, y, mode, flip: AL_INT);
   END;
 
 IMPLEMENTATION

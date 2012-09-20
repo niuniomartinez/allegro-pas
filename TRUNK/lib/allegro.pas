@@ -10,57 +10,35 @@ UNIT allegro;
 
 INTERFACE
 
-USES
-  albase, alfixed, alvtable;
+  USES
+    albase, alfixed, alvtable;
 
 
-
-(***************
- * Core system *
- ***************
- * Defines a collection of procedures, identificators and variables that allows
- * to comunicate with the core system.  That is, error handling, initialization
- * and configuration of the base system. *)
-
-CONST
-(* Tells to @code(al_install) that must autodetect the system driver. *)
-  AL_SYSTEM_AUTODETECT	= 0;
-(* Tells to @code(al_install) that must install a stripped down version of
-   Allegro that won't even try to touch the hardware or do anything platform
-   specific:  this can be useful for situations where you only want to
-   manipulate memory bitmaps, such as the text mode datafile tools or the
-   Windows GDI interfacing functions.
-
-   Is equivalent to @code(AL_ID @('NONE'@);). *)
-  AL_SYSTEM_NONE	= $4E4F4E45;
-(* Defined to the major version of Allegro.  From a version number like 4.1.16,
-   this would be defined to the integer 4. *)
-  AL_VERSION = 4;
-(* Defined to the middle version of Allegro.  From a version number like
-   4.1.16, this would be defined to the integer 1. *)
-  AL_SUB_VERSION = 4;
-(* Defined to the minor version of Allegro.pas.  From a version number like
-   4.1.16, this would be defined to the integer 16. *)
-  AL_PAS_VERSION = 3;
-(* Defined to TRUE if current version is a BETA version.  A BETA version is a
-   test version and may be uncomplete or untested. *)
-  AL_PAS_IS_BETA = FALSE;
-(* Defined to a text string containing all version numbers and maybe some
-   additional text. *)
-  AL_PAS_VERSION_STR = '4.4.3';
+(* The code is distributed in sections.  Each section wraps with a header file
+  (approx.). *)
 
 
+(******************************************************************************
+ * base.h
+ *      Some global stuff.
+ *)
 
-VAR
-(* Stores the last error number. *)
-  al_errno: AL_INTptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_errno';
-(* Text string used by @code(al_set_gfx_mode), @code(al_install_sound) and
-   other functions to report error messages.  If they fail and you want to tell
-   the user why, this is the place to look for a description of the problem. *)
-  al_error: STRING; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_error';
-(* Text string containing a date and version number for the library, in case
-   you want to display these somewhere. *)
-  al_id_string: STRING; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_id';
+  CONST
+  (* Defined to the major version of Allegro.  From a version number like 4.1.16,
+     this would be defined to the integer 4. *)
+    AL_VERSION = 4;
+  (* Defined to the middle version of Allegro.  From a version number like
+     4.1.16, this would be defined to the integer 1. *)
+    AL_SUB_VERSION = 4;
+  (* Defined to the minor version of Allegro.pas.  From a version number like
+     4.1.16, this would be defined to the integer 16. *)
+    AL_PAS_VERSION = 3;
+  (* Defined to TRUE if current version is a BETA version.  A BETA version is a
+     test version and may be uncomplete or untested. *)
+    AL_PAS_IS_BETA = FALSE;
+  (* Defined to a text string containing all version numbers and maybe some
+     additional text. *)
+    AL_PAS_VERSION_STR = '4.4.3';
 
 
 
@@ -75,18 +53,53 @@ BEGIN
   OSTYPE_LINUX := AL_ID('TUX ');
 END;
   #) *)
-  FUNCTION AL_ID (str: SHORTSTRING): AL_INT;
+  FUNCTION AL_ID (str: SHORTSTRING): AL_INT32;
+
+
+
+  VAR
+  (* Stores the last error number. *)
+    al_errno: AL_INTptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_errno';
+
+
+
+(******************************************************************************
+ * system.h
+ *      System level:  initialization, cleanup, etc.
+ *)
+
+  VAR
+  (* Text string containing a date and version number for the library, in case
+    you want to display these somewhere. *)
+    al_id_string: AL_STRptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_id';
+
+  (* Text string used by @code(al_set_gfx_mode), @code(al_install_sound) and
+    other functions to report error messages.  If they fail and you want to tell
+    the user why, this is the place to look for a description of the problem. *)
+    al_error: AL_STRptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_error';
+
+  CONST
+  (* Tells to @link(al_install) that must autodetect the system driver. *)
+    AL_SYSTEM_AUTODETECT	= 0;
+  (* Tells to @link(al_install) that must install a stripped down version of
+    Allegro that won't even try to touch the hardware or do anything platform
+    specific:  this can be useful for situations where you only want to
+    manipulate memory bitmaps, such as the text mode datafile tools or the
+    Windows GDI interfacing functions.
+
+    Is equivalent to @code(AL_ID @('NONE'@);). *)
+    AL_SYSTEM_NONE	= $4E4F4E45;
 
 
 
 (* Initialises the Allegro library.  You must call either this or al_init
    before doing anything other.  The functions that can be called before this
    one will be marked explicitly in the documentation, like
-   @code(al_set_config_file).
+   @link(al_set_config_file).
 
    The available system ID codes will vary from one platform to another, but
-   you will almost always want to pass @code(AL_SYSTEM_AUTODETECT).
-   Alternatively, @code(AL_SYSTEM_NONE) installs a stripped down version of
+   you will almost always want to pass @link(AL_SYSTEM_AUTODETECT).
+   Alternatively, @link(AL_SYSTEM_NONE) installs a stripped down version of
    Allegro that won't even try to touch your hardware or do anything platform
    specific:  this can be useful for situations where you only want to
    manipulate memory bitmaps, such as the text mode datafile tools or the
@@ -95,7 +108,8 @@ END;
    @returns(@true on success or @false on failure @(e.g. no system driver
      could be used@).)
    @seealso(al_exit) @seealso(al_set_uformat) @seealso(al_set_config_file) *)
-  FUNCTION al_install (system_id: LONGINT): BOOLEAN;
+  FUNCTION al_install (system_id: AL_INT): BOOLEAN;
+    INLINE;
 
 (* Function which initialises the Allegro library.  This is the same thing as
    calling @code(al_install @(AL_SYSTEM_AUTODETECT@)).
@@ -103,6 +117,7 @@ END;
      could be used@).)
    @seealso(al_exit) *)
   FUNCTION al_init: BOOLEAN;
+    INLINE;
 
 (* Closes down the Allegro system.  This includes returning the system to text
    mode and removing whatever mouse, keyboard, and timer routines have been
@@ -114,14 +129,13 @@ END;
    al_destroy_bitmap will most likely crash.  This might be a problem for
    some Object Pascal programs, depending where the destructors are called.
    @seealso(al_install) @seealso(al_init) *)
-  PROCEDURE al_exit; INLINE;
-
-
+  PROCEDURE al_exit;
+    INLINE;
 
 (* Outputs a message.  Usually you want to use this to report messages to the
    user in an OS independant way when some Allegro subsystem cannot be
    initialised.  But you must not use this function if you are in a graphic
-   mode, only before calling @code(al_set_gfx_mode), or after a
+   mode, only before calling @link(al_set_gfx_mode), or after a
    @code(al_set_gfx_mode @(AL_GFX_TEXT@)).  Also, this function depends on a
    system driver being installed, which means that it won't display the message
    at all on some platforms if Allegro has not been initialised correctly.
@@ -141,8 +155,6 @@ END;
   END;
   #) *)
   PROCEDURE al_message (CONST msg: STRING);
-
-
 
 (* On platforms that have a close button, this routine installs a callback
    function to handle the close event.  In other words, when the user clicks
@@ -177,11 +189,21 @@ END;
     DoStuff;
   #)
    @returns(@true on success or @false on failure @(e.g. the feature is not
-     supported by the platform@).) *)
+     supported by the platform@).)
+   @seealso(al_set_window_title) *)
   FUNCTION al_set_close_button_callback (proc: AL_SIMPLE_PROC): BOOLEAN;
     INLINE;
 
+(*
+ * system.inl
+ *)
 
+(* On platforms that are capable of it, this routine alters the window title
+   for your Allegro program.
+   @param(title Title string.)
+   @seealso(al_set_close_button_callback) @seealso((al_set_uformat) *)
+  PROCEDURE al_set_window_title (CONST title: STRING);
+    INLINE;
 
 (* Finds out the currently selected desktop color depth.  You can use this
    information to make your program use the same color depth as the desktop,
@@ -193,11 +215,11 @@ END;
    before setting any graphics mode in order to retrieve the real desktop color
    depth.
    @returns(the color depth or zero on platforms where this information is not
-   available or does not apply.) *)
-  FUNCTION al_desktop_color_depth: LONGINT;
+   available or does not apply.)
+   @seealso(al_get_desktop_resolution) @seealso(al_set_color_depth)
+   @seealso(al_set_gfx_mode) *)
+  FUNCTION al_desktop_color_depth: AL_INT;
     INLINE;
-
-
 
 (* Finds out the currently selected desktop resolution.  You can use this
    information to avoid creating windows bigger than the current resolution.
@@ -212,38 +234,30 @@ END;
    @param(w Width desktop resolution.) @param(h Height desktop resolution.)
    @returns(@true on success, or @false if this information is not available or
    does not apply, in which case the values stored in the variables you
-   provided for `width' and `height' are undefined.) *)
-  FUNCTION al_get_desktop_resolution (VAR w, h: LONGINT): BOOLEAN;
-    INLINE;
-
-
-(* On platforms that are capable of it, this routine alters the window title
-   for your Allegro program.
-   @param(title Title string.) *)
-  PROCEDURE al_set_window_title (CONST title: STRING);
+   provided for `width' and `height' are undefined.)
+   @seealso(al_desktop_color_depth) @seealso(al_set_gfx_mode) *)
+  FUNCTION al_get_desktop_resolution (VAR w, h: AL_INT): BOOLEAN;
     INLINE;
 
 
 
+(******************************************************************************
+ * unicode.h
+ *      Unicode support routines.
+ *)
 
-(*******************
- * UNICODE support *
- *******************)
-
-VAR
-(* Fixed size, 8-bit ASCII characters. @seealso(al_set_uformat). *)
-  AL_U_ASCII: LONGINT;
-(* Alternative 8-bit codepage. @seealso(al_set_ucodepage)
-   @seealso(al_set_uformat). *)
-  AL_U_ASCII_CP: LONGINT;
-(* Fixed size, 16-bit Unicode characters. @seealso(al_set_uformat). *)
-  AL_U_UNICODE: LONGINT;
-(* Variable size, UTF-8 format Unicode characters. @seealso(al_set_uformat). *)
-  AL_U_UTF8: LONGINT;
-(* Current encoding. *)
-  AL_U_CURRENT: LONGINT;
-
-
+  VAR
+  (* Fixed size, 8-bit ASCII characters. @seealso(al_set_uformat). *)
+    AL_U_ASCII: AL_INT32;
+  (* Alternative 8-bit codepage. @seealso(al_set_ucodepage)
+     @seealso(al_set_uformat). *)
+    AL_U_ASCII_CP: AL_INT32;
+  (* Fixed size, 16-bit Unicode characters. @seealso(al_set_uformat). *)
+    AL_U_UNICODE: AL_INT32;
+  (* Variable size, UTF-8 format Unicode characters. @seealso(al_set_uformat). *)
+    AL_U_UTF8: AL_INT32;
+  (* Current encoding. @seealso(al_set_uformat) *)
+    AL_U_CURRENT: AL_INT32;
 
 (* Sets the current text encoding format.  This will affect all parts of
    Allegro, wherever you see a function that returns a string, or takes a
@@ -251,18 +265,17 @@ VAR
 
    Although you can change the text format on the fly, this is not a good
    idea.  Many strings, for example the names of your hardware drivers and any
-   language translations, are loaded when you call @code(al_init), so if you
+   language translations, are loaded when you call @link(al_init), so if you
    change the encoding format after this, they will be in the wrong format, and
    things will not work properly.  Generally you should only call
    @code(al_set_uformat) once, before @code(al_init), and then leave it on the
    same setting for the duration of your program.
 
-   @param(type Should be one of these values: @code(AL_U_ASCII),
-     @code(AL_U_ASCII_CP), @code(AL_U_UNICODE), @code(AL_U_UTF8).) *)
-  PROCEDURE al_set_uformat (aType: LONGINT); CDECL;
+   @param(type Should be one of these values: @link(AL_U_ASCII),
+     @link(AL_U_ASCII_CP), @link(AL_U_UNICODE), @link(AL_U_UTF8).) 
+   @seealso(al_get_uformat) @seealso(al_set_ucodepage) *)
+  PROCEDURE al_set_uformat (aType: AL_INT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_uformat';
-
-
 
 (* Finds out what text encoding format is currently selected.  This function is
    probably useful only if you are writing an Allegro addon dealing with text
@@ -270,12 +283,10 @@ VAR
 
    @returns(The currently selected text encoding format.)
    @seealso(al_set_uformat) *)
-  FUNCTION al_get_uformat: LONGINT; CDECL;
+  FUNCTION al_get_uformat: AL_INT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_uformat';
 
-
-
-(* When you select the @code(AL_U_ASCII_CP) encoding mode, a set of tables are
+(* When you select the @link(AL_U_ASCII_CP) encoding mode, a set of tables are
    used to convert between 8-bit characters and their Unicode equivalents.  You
    can use this function to specify a custom set of mapping tables, which
    allows you to support different 8-bit codepages.
@@ -302,32 +313,53 @@ VAR
      codepage.  The list is terminated by a zero Unicode value.  This allows
      you to create a many->one mapping, where many different Unicode characters
      can be represented by a single codepage value @(eg. for reducing accented
-     vowels to 7-bit ASCII@).) *)
-  PROCEDURE al_set_ucodepage (CONST table, extras: PWORD); CDECL;
+     vowels to 7-bit ASCII@).)
+   @seealso(al_set_uformat) *)
+  PROCEDURE al_set_ucodepage (CONST table, extras: AL_USHORTptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_ucodepage';
-
-
 
 (* Returns the number of characters in the string.  Note that this doesn't have
    to equal the string's size in bytes. *)
-  FUNCTION al_ustrlen (s: STRING): LONGINT;
+  FUNCTION al_ustrlen (s: STRING): AL_INT;
+    INLINE;
+
+(* Converts the specified string @code(s) from @code(_type) to @code(newtype),
+   it checks before doing the conversion, and doesn't bother if the string
+   formats are already the same @(either both types are equal, or one is
+   ASCII, the other is UTF-8, and the string contains only 7-bit ASCII
+   characters@).
+   @seealso(al_set_uformat) @seealso(uconvert_ascii)
+   @seealso(al_uconvert_toascii) *)
+  FUNCTION al_uconvert (CONST s: STRING; _type, newtype: AL_INT): STRING;
+
+(* Converts sgrings from ASCII into the current encoding format.
+   @seealso (al_uconvert) @seealso(al_uconvert_toascii) *)
+  FUNCTION al_uconvert_ascii (CONST s: STRING): STRING;
+    INLINE;
+
+(* Converts sgrings from the current encoding format into ASCII.
+   @seealso (al_uconvert) @seealso(al_uconvert_ascii) *)
+  FUNCTION al_uconvert_toascii (CONST s: STRING): STRING;
     INLINE;
 
 
 
-(**********************
- * Configuration file *
- **********************)
+(******************************************************************************
+ * config.h
+ *      Configuration access routines.
+ *)
 
 (* Sets the configuration file to be used by all subsequent config functions.
    (Allegro will not search for this file in other locations as it does with
    allegro.cfg at the time of initialization.)
 
-   All pointers returned by previous calls to @code(al_get_config_string) and
+   All pointers returned by previous calls to @link(al_get_config_string) and
    other related functions are invalidated when you call this function!  You
-   can call this function before @code(al_install) to change the configuration
-   file, but after @code(al_set_uformat) if you want to use a text encoding
-   format other than the default. *)
+   can call this function before @link(al_install) to change the configuration
+   file, but after @link(al_set_uformat) if you want to use a text encoding
+   format other than the default.
+   @seealso(al_set_config_data) @seealso(al_override_config_file)
+   @seealso(al_push_config_state) @seealso(al_set_config_string) *)
   PROCEDURE al_set_config_file (filename: STRING);
     INLINE;
 
@@ -335,8 +367,10 @@ VAR
    which you have already loaded from disk (eg. as part of some more
    complicated format of your own, or in a grabber datafile).  This routine
    makes a copy of the information, so you can safely free the data after
-   calling it. *)
-  PROCEDURE al_set_config_data (data: POINTER; lng: LONGINT); CDECL;
+   calling it.
+   @seealso(al_set_config_file) @seealso(al_override_config_data)
+   @seealso(al_push_config_state) @seealso(al_set_config_string) *)
+  PROCEDURE al_set_config_data (CONST data: AL_POINTER; lng: AL_INT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_data';
 
 (* Specifies a file containing config overrides.  These settings will be used
@@ -355,46 +389,51 @@ VAR
    current config file again.
 
    @bold(Note:) The override file is completely independent from the current
-   configuration.  You can e.g. call @code(al_set_config_file), and the
-   override file will still be active.  Also the @code(al_flush_config_file)
+   configuration.  You can e.g. call @link(al_set_config_file), and the
+   override file will still be active.  Also the @link(al_flush_config_file)
    function will only affect the current config file (which can be changed with
    @code(al_set_config_file)), never the overriding one specified with this
    function.  The modified override config is written back to disk whenever you
    call @code(al_override_config_file).
 
-    Note that this function and @code(al_override_config_data) are mutually
+    Note that this function and @link(al_override_config_data) are mutually
     exclusive, i.e. calling one will cancel the effects of the other. *)
   PROCEDURE al_override_config_file (filename: STRING);
     INLINE;
 
-(* Version of @code(al_override_config_file) which uses a block of data that
+(* Version of @link(al_override_config_file) which uses a block of data that
    has already been read into memory.  The length of the block has to be
    specified in bytes.
 
    Note that this function and @code(al_override_config_file) are mutually
    exclusive, i.e. calling one will cancel the effects of the other. *)
-  PROCEDURE al_override_config_data (data: POINTER; lng: LONGINT); CDECL;
+  PROCEDURE al_override_config_data (CONST data: AL_POINTER; lng: AL_INT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'override_config_data';
 
 (* Writes the current config file to disk if the contents have changed since
-   it was loaded or since the latest call to the function. *)
+   it was loaded or since the latest call to the function.
+   @seealso(al_set_config_file) @seealso(al_override_config_file)
+   @seealso(al_push_config_state) *)
   PROCEDURE al_flush_config_file; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'flush_config_file';
 
 (* Pushes the current configuration state (filename, variable values, etc).
    onto an internal stack, allowing you to select some other config source and
-   later restore the current settings by calling @code(al_pop_config_state).
+   later restore the current settings by calling @link(al_pop_config_state).
    This function is mostly intended for internal use by other library
    functions, for example when you specify a config filename to the
-   @code(al_save_joystick_data) function, it pushes the config state before
-   switching to the file you specified. *)
+   @link(al_save_joystick_data) function, it pushes the config state before
+   switching to the file you specified.
+   @seealso(al_set_config_file) *)
   PROCEDURE al_push_config_state; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'push_config_state';
 
-(* Pops a configuration state previously stored by @code(al_push_config_state),
+(* Pops a configuration state previously stored by @link(al_push_config_state),
    replacing the current config source with it. *)
   PROCEDURE al_pop_config_state; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pop_config_state';
+
+
 
 (* Retrieves a string variable from the current config file.  The section name
    may be set to an empty string to read variables from the root of the file,
@@ -409,31 +448,34 @@ VAR
 
    @returns(the string to the constant string found in the configuration file.
      If the named variable cannot be found, or its entry in the config file is
-     empty, the value of @code(def) is returned.) *)
+     empty, the value of @code(def) is returned.)
+  @seealso(al_set_config_file) @seealso(al_set_config_string)
+  @seealso(al_get_config_int) @seealso(al_get_config_hex)
+  @seealso(al_get_config_float) *)
   FUNCTION al_get_config_string (section, name, def: STRING): STRING;
     INLINE;
 
 (* Reads an integer variable from the current config file.  See the comments
-   about @code(al_get_config_string). *)
-  FUNCTION al_get_config_int (section, name: STRING; def: LONGINT): LONGINT;
+   about @link(al_get_config_string). *)
+  FUNCTION al_get_config_int (section, name: STRING; def: AL_INT): AL_INT;
     INLINE;
 
 (* Reads an integer variable from the current config file, in hexadecimal.
-   See the comments about @code(al_get_config_string). *)
-  FUNCTION al_get_config_hex (section, name: STRING; def: LONGINT): LONGINT;
+   See the comments about @link(al_get_config_string). *)
+  FUNCTION al_get_config_hex (section, name: STRING; def: AL_INT): AL_INT;
     INLINE;
 
 (* Reads a floating point variable from the current config file.  See the
-   comments about @code(al_get_config_string). *)
-  FUNCTION al_get_config_float (section, name: STRING; def: SINGLE): SINGLE;
+   comments about @link(al_get_config_string). *)
+  FUNCTION al_get_config_float (section, name: STRING; def: AL_FLOAT): AL_FLOAT;
     INLINE;
 
 (* Reads a 4-letter driver ID variable from the current config file.  See the
-   comments about @code(al_get_config_string). *)
-  FUNCTION al_get_config_id (section, name: STRING; def: LONGINT): LONGINT;
+   comments about @link(al_get_config_string). *)
+  FUNCTION al_get_config_id (section, name: STRING; def: AL_INT32): AL_INT32;
     INLINE;
 
-(* AFAIK this doesn't work.
+(* This is pretty complex.
   FUNCTION al_get_config_argv (section, name: STRING; argc: PLONGINT): PSTRING; *)
 
 (* Writes a string variable to the current config file, replacing any existing
@@ -441,54 +483,58 @@ VAR
    section name may be set to a empty string to write the variable to the root
    of the file, or used to control which section the variable is inserted into.
    The altered file will be cached in memory, and not actually written to disk
-   until you call @code(al_exit).  Note that you can only write to files in
+   until you call @link(al_exit).  Note that you can only write to files in
    this way, so the function will have no effect if the current config source
-   was specified with @code(al_set_config_data) rather than
-   @code(al_set_config_file).
+   was specified with @link(al_set_config_data) rather than
+   @link(al_set_config_file).
 
    As a special case, variable or section names that begin with a '#' character
    are treated specially and will not be read from or written to the disk.
    Addon packages can use this to store version info or other status
    information into the config module, from where it can be read with the
-   @code(al_get_config_string) function. *)
+   @code(al_get_config_string) function.
+   @seealso(al_set_config_file) @seealso(al_get_config_string)
+   @seealso(al_set_config_int) @seealso(al_set_config_hex)
+   @seealso(al_set_config_float) *)
   PROCEDURE al_set_config_string (section, name, val: STRING);
     INLINE;
 
 (* Writes an integer variable to the current config file.  See the comments
-   about @code(al_set_config_string). *)
-  PROCEDURE al_set_config_int (section, name: STRING; val: LONGINT);
+   about @link(al_set_config_string). *)
+  PROCEDURE al_set_config_int (section, name: STRING; val: AL_INT);
     INLINE;
 
 (* Writes an integer variable to the current config file, in hexadecimal
-   format.  See the comments about @code(al_set_config_string). *)
-  PROCEDURE al_set_config_hex (section, name: STRING; val: LONGINT);
+   format.  See the comments about @link(al_set_config_string). *)
+  PROCEDURE al_set_config_hex (section, name: STRING; val: AL_INT);
     INLINE;
 
 (* Writes a floating point variable to the current config file.  See the
-   comments about @code(al_set_config_string). *)
-  PROCEDURE al_set_config_float (section, name:STRING; val: SINGLE);
+   comments about @link(al_set_config_string). *)
+  PROCEDURE al_set_config_float (section, name:STRING; val: AL_FLOAT);
     INLINE;
 
 (* Writes a 4-letter driver ID variable to the current config file.  See the
-   comments about @code(al_set_config_string). *)
-  PROCEDURE al_set_config_id (section, name: STRING; val: LONGINT);
+   comments about @link(al_set_config_string). *)
+  PROCEDURE al_set_config_id (section, name: STRING; val: AL_INT32);
     INLINE;
 
-
+(******************************************************************************
+ ************)
 
 (******************
  * Timer routines *
  ******************)
 
 (* Give the number of seconds between each tick to @code(al_install_int_ex). *)
-  FUNCTION AL_SECS_TO_TIMER (x: LONGINT): LONGINT; INLINE;
+  FUNCTION AL_SECS_TO_TIMER (x: AL_LONG): AL_LONG; INLINE;
 (* Give the number of milliseconds between each tick to
    @code(al_install_int_ex). *)
-  FUNCTION AL_MSEC_TO_TIMER (x: LONGINT): LONGINT; INLINE;
+  FUNCTION AL_MSEC_TO_TIMER (x: AL_LONG): AL_LONG; INLINE;
 (* Give the number of ticks each second to @code(al_install_int_ex). *)
-  FUNCTION AL_BPS_TO_TIMER  (x: LONGINT): LONGINT; INLINE;
+  FUNCTION AL_BPS_TO_TIMER  (x: AL_LONG): AL_LONG; INLINE;
 (* Give the number of ticks each minute to @code(al_install_int_ex). *)
-  FUNCTION AL_BPM_TO_TIMER  (x: LONGINT): LONGINT; INLINE;
+  FUNCTION AL_BPM_TO_TIMER  (x: AL_LONG): AL_LONG; INLINE;
 
 
 
@@ -532,7 +578,7 @@ VAR
 
    @returns(@true on success, or @false if there is no room to add a new user
      timer.) *)
-  FUNCTION al_install_int_ex (proc: AL_SIMPLE_PROC; speed: LONGINT): BOOLEAN;
+  FUNCTION al_install_int_ex (proc: AL_SIMPLE_PROC; speed: AL_LONG): BOOLEAN;
     INLINE;
 
 (* Installs a user timer handler, with the speed given as the number of
@@ -544,7 +590,7 @@ VAR
 
    @returns(@true on success, or @false if there is no room to add a new user
      timer.) *)
-  FUNCTION al_install_int (proc: AL_SIMPLE_PROC; speed: LONGINT): BOOLEAN;
+  FUNCTION al_install_int (proc: AL_SIMPLE_PROC; speed: AL_LONG): BOOLEAN;
     INLINE;
 
 (* Removes a function from the list of user interrupt routines.
@@ -555,13 +601,13 @@ VAR
 (* Like @code(al_install_int_ex), but the callback routine will be passed a
    copy of the specified void pointer parameter.  To disable the handler, use
    @code(al_remove_param_int) instead of @code(al_remove_int). *)
-  FUNCTION al_install_param_int_ex (proc: AL_PARAM_PROC; speed: LONGINT): BOOLEAN;
+  FUNCTION al_install_param_int_ex (proc: AL_PARAM_PROC; speed: AL_LONG): BOOLEAN;
     INLINE;
 
 (* Like @code(al_install_int), but the callback routine will be passed a copy
    of the specified void pointer parameter.  To disable the handler, use
    @code(al_remove_param_int) instead of @code(al_remove_int). *)
-  FUNCTION al_install_param_int (proc: AL_PARAM_PROC; speed: LONGINT): BOOLEAN;
+  FUNCTION al_install_param_int (proc: AL_PARAM_PROC; speed: AL_LONG): BOOLEAN;
     INLINE;
 
 (* Like @code(al_remove_int), but for use with timer callbacks that have
@@ -585,14 +631,14 @@ VAR
     missing the vertical retrace and skipping frames.  On the other hand, on
     multitasking operating systems it is good form to give up the CPU for a
     while if you will not be using it. *)
-  PROCEDURE al_rest (time: LONGINT); CDECL;
+  PROCEDURE al_rest (tyme: AL_UINT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rest';
 
 (* Like @code(al_rest), but for non-zero values continually calls the
    specified function while it is waiting for the required time to elapse.  If
    the provided `callback' parameter is @nil, this function does exactly the
    same thing as calling @code(al_rest). *)
-  PROCEDURE al_rest_callback (time: LONGINT; callback: AL_PARAM_PROC); CDECL;
+  PROCEDURE al_rest_callback (tyme: AL_UINT; callback: AL_PARAM_PROC); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rest_callback';
 
 
@@ -603,7 +649,7 @@ VAR
    incremented at the same rate (ignoring retraces); otherwise, it is
    incremented 70 times a second.  This provides a way of controlling the speed
    of your program without installing user timer functions. *)
-  al_retrace_count: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'retrace_count';
+  al_retrace_count: AL_INT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'retrace_count';
 
 
 
@@ -3929,24 +3975,24 @@ TYPE
    to XOR every two bytes (i.e. every sample value) with 0x8000 to change the
    signedness. *)
   AL_SAMPLE = RECORD
-    bits : LONGINT;	 {< 8 or 16  }
-    stereo : LONGINT;	 {< sample type flag  }
-    freq : LONGINT;	 {< sample frequency  }
+    bits : AL_INT;	 {< 8 or 16  }
+    stereo : AL_INT;	 {< sample type flag  }
+    freq : AL_INT;	 {< sample frequency  }
   (* It is a value from 0 to 255 (by default set to 128) and controls how
      hardware voices on the sound card are allocated if you attempt to play
      more than the driver can handle.  This may be used to ensure that the less
      important sounds are cut off while the important ones are preserved. *)
-    priority : LONGINT;
-    len : DWORD;	 {< length (in samples)  }
-    loop_start : DWORD;	 {< loop start position  }
-    loop_end : DWORD;	 {< loop finish position  }
-    param : DWORD;	 {< @exclude  }
-    data : POINTER;	 {< sample data  }
+    priority : AL_INT;
+    len : AL_ULONG;	 {< length (in samples)  }
+    loop_start : AL_ULONG;	 {< loop start position  }
+    loop_end : AL_ULONG;	 {< loop finish position  }
+    param : AL_ULONG;	 {< @exclude  }
+    data : AL_POINTER;	 {< sample data  }
   END;
 
 (* Used by @code(al_register_sample_file_type). *)
-  AL_SAMPLE_LOAD_FUNC = FUNCTION (filename: PCHAR): AL_SAMPLEptr; CDECL;
-  AL_SAMPLE_SAVE_FUNC = FUNCTION (filename: PCHAR; spl: AL_SAMPLEptr): LONGINT; CDECL;
+  AL_SAMPLE_LOAD_FUNC = FUNCTION (filename: AL_CHARptr): AL_SAMPLEptr; CDECL;
+  AL_SAMPLE_SAVE_FUNC = FUNCTION (filename: AL_CHARptr; spl: AL_SAMPLEptr): AL_INT; CDECL;
 
 
 
@@ -3987,7 +4033,7 @@ TYPE
      buffer.)
    @returns(a pointer to the created sample, or @nil if the sample could not
      be created.) *)
-  FUNCTION al_create_sample (bits, stereo, freq, len: LONGINT): AL_SAMPLEptr; CDECL;
+  FUNCTION al_create_sample (bits, stereo, freq, len: AL_INT): AL_SAMPLEptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_sample';
 
 (* Writes a sample into a file.  The output format is determined from the
@@ -4016,7 +4062,7 @@ TYPE
 
    @returns(the voice number that was allocated for the sample or negative if
      no voices were available.) *)
-  FUNCTION al_play_sample (spl: AL_SAMPLEptr; vol, pan, freq, loop: LONGINT): LONGINT; CDECL;
+  FUNCTION al_play_sample (spl: AL_SAMPLEptr; vol, pan, freq, loop: AL_INT): AL_INT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'play_sample';
 
 (* Alters the parameters of a sample while it is playing (useful for
@@ -4026,7 +4072,7 @@ TYPE
    those of @code(al_play_sample).  If there are several copies of the same
    sample playing, this will adjust the first one it comes across.  If the
    sample is not playing it has no effect. *)
-  PROCEDURE al_adjust_sample (spl: AL_SAMPLEptr; vol, pan, freq, loop: LONGINT); CDECL;
+  PROCEDURE al_adjust_sample (spl: AL_SAMPLEptr; vol, pan, freq, loop: AL_INT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'adjust_sample';
 
 (* Stop a sample from playing, which is required if you have set a sample going
@@ -4042,7 +4088,7 @@ TYPE
    of a new sample file type, providing routines to read and write samples in
    this format (either function may be @nil).  Example:
    @longcode(#
-   FUNCTION LoadMP3 (filename: PCHAR): AL_SAMPLEptr; CDECL;
+   FUNCTION LoadMP3 (filename: AL_CHARptr): AL_SAMPLEptr; CDECL;
    BEGIN
      ...
    END;
@@ -4057,39 +4103,22 @@ TYPE
 
 IMPLEMENTATION
 
-(***************
- * Core system *
- ***************)
+  USES
+    sysutils,
+  (* Includes the system driver description. *)
+    aldrv;
 
-USES
-(* Includes the system driver description. *)
-  aldrv;
-
-
-
-VAR
-(* To know if Allegro was initialised. *)
-  IsAllegroUp: BOOLEAN;
-(* To be used as "errnum". *)
-  NumError: LONGINT;
-(* To access to stytem drivers. *)
-  system_driver: __AL_SYSTEM_DRIVER__PTR; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-(* Function for internal use. *)
-  FUNCTION _install_allegro_version_check (
-	system_id: LONGINT; errno_ptr: PLONGINT; atexit_ptr: POINTER;
-	version: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-(* Function for messages. *)
-  PROCEDURE _allegro_message (CONST msg: PCHAR); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_message';
-
-(* Function for close button handler. *)
-  FUNCTION _set_close_button_callback (proc: AL_SIMPLE_PROC): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_close_button_callback';
+  VAR
+  (* To know if Allegro was initialised. *)
+    IsAllegroUp: BOOLEAN;
+  (* To be used as "errnum". *)
+    NumError: AL_INT;
 
 
+
+(******************************************************************************
+ * base.h *
+ **********)
 
 (* Converts four 8 bit values to a packed 32 bit integer ID. *)
   FUNCTION AL_ID (str: SHORTSTRING): AL_INT;
@@ -4100,8 +4129,25 @@ VAR
 
 
 
+
+(******************************************************************************
+ * system.h *
+ ************)
+
+  VAR
+  (* To access to stytem drivers. *)
+    system_driver: __AL_SYSTEM_DRIVER__PTR; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+(* Function for internal use. *)
+  FUNCTION _install_allegro_version_check (
+	system_id: AL_INT; errno_ptr: AL_INTptr; atexit_ptr: AL_POINTER;
+	version: AL_INT): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+
+
 (* Initialises the Allegro library. *)
-  FUNCTION al_install (system_id: LONGINT): BOOLEAN;
+  FUNCTION al_install (system_id: AL_INT): BOOLEAN;
   BEGIN
     IsAllegroUp := _install_allegro_version_check (system_id, @NumError, NIL,
 		(4 SHL 16) OR (4 SHL 8) OR 0) = 0;
@@ -4135,13 +4181,21 @@ VAR
 
 
 
+(* Function for messages. *)
+  PROCEDURE _allegro_message (CONST msg: AL_STRptr); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_message';
+
 (* Outputs a message. *)
   PROCEDURE al_message (CONST msg: STRING);
   BEGIN
-    _allegro_message (PCHAR (msg));
+    _allegro_message (AL_STRptr (msg));
   END;
 
 
+
+(* Function for close button handler. *)
+  FUNCTION _set_close_button_callback (proc: AL_SIMPLE_PROC): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_close_button_callback';
 
 (* On platforms that have a close button, this routine installs a callback
    function to handle the close event. *)
@@ -4150,11 +4204,19 @@ VAR
     al_set_close_button_callback := (_set_close_button_callback (proc) = 0);
   END;
 
+(*
+ * system.inl
+ *)
 
-
+(* This routine alters the window title. *)
+  PROCEDURE al_set_window_title (CONST title: STRING);
+  BEGIN
+    IF system_driver^.set_window_title <> NIL THEN
+      system_driver^.set_window_title (AL_STRptr (title));
+  END;
 
 (* Finds out the currently selected desktop color depth. *)
-  FUNCTION al_desktop_color_depth: LONGINT;
+  FUNCTION al_desktop_color_depth: AL_INT;
   BEGIN
     IF system_driver^.desktop_color_depth <> NIL THEN
       al_desktop_color_depth := (system_driver^.desktop_color_depth ())
@@ -4162,10 +4224,8 @@ VAR
       al_desktop_color_depth := 0;
   END;
 
-
-
 (* Finds out the currently selected desktop resolution. *)
-  FUNCTION al_get_desktop_resolution (VAR w, h: LONGINT): BOOLEAN;
+  FUNCTION al_get_desktop_resolution (VAR w, h: AL_INT): BOOLEAN;
   BEGIN
     IF system_driver^.get_desktop_resolution <> NIL THEN
       al_get_desktop_resolution := (system_driver^.get_desktop_resolution (@w, @h) = 0)
@@ -4175,175 +4235,163 @@ VAR
 
 
 
-(* This routine alters the window title. *)
-  PROCEDURE al_set_window_title (CONST title: STRING);
-  BEGIN
-    IF system_driver^.set_window_title <> NIL THEN
-      system_driver^.set_window_title (PCHAR (title));
-  END;
+(******************************************************************************
+ * unicode.h *
+ *************)
 
-
-
-(*******************
- * UNICODE support *
- *******************)
-
-  FUNCTION ustrlen (s: PCHAR): LONGINT;
+  FUNCTION ustrlen (CONST s: AL_STRptr): AL_INT;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_ustrlen (s: STRING): LONGINT;
+  FUNCTION al_ustrlen (s: STRING): AL_INT;
   BEGIN
-    al_ustrlen := ustrlen (PCHAR (s));
+    al_ustrlen := ustrlen (AL_STRptr (s));
   END;
 
 
 
-(**********************
- * Configuration file *
- **********************)
 
-  PROCEDURE set_config_file (filename: PCHAR); CDECL;
+  FUNCTION uconvert (CONST s: AL_STRptr; _type: AL_INT; buf: AL_STRptr; newtype, size: AL_INT): AL_STRptr; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'uconvert';
+
+  FUNCTION al_uconvert (CONST s: STRING; _type, newtype: AL_INT): STRING;
+  VAR
+    Buffer: AL_STRptr;
+    StrLength: INTEGER;
+  BEGIN
+    StrLength := Length (s) + 1;
+    Buffer := StrAlloc (StrLength);
+    al_uconvert := uconvert (AL_STRptr (s), _type, Buffer, newtype, StrLength);
+    StrDispose (Buffer);
+  END;
+
+  FUNCTION al_uconvert_ascii (CONST s: STRING): STRING;
+  BEGIN
+    al_uconvert_ascii := al_uconvert (s, AL_U_ASCII, AL_U_CURRENT);
+  END;
+
+  FUNCTION al_uconvert_toascii (CONST s: STRING): STRING;
+  BEGIN
+    al_uconvert_toascii := al_uconvert (s, AL_U_CURRENT, AL_U_ASCII);
+  END;
+
+
+
+(******************************************************************************
+ * config.h *
+ ************)
+
+  PROCEDURE set_config_file (CONST filename: AL_STRptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_file';
 
   PROCEDURE al_set_config_file (filename: STRING);
   BEGIN
     IF filename <> '' THEN
-      set_config_file (PCHAR (filename))
+      set_config_file (AL_STRptr (filename))
     ELSE
       set_config_file (NIL);
   END;
 
-
-
-  PROCEDURE override_config_file (filename: PCHAR); CDECL;
+  PROCEDURE override_config_file (filename: AL_STRptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'override_config_file';
 
   PROCEDURE al_override_config_file (filename: STRING);
   BEGIN
     IF filename <> '' THEN
-      override_config_file (PCHAR (filename))
+      override_config_file (AL_STRptr (filename))
     ELSE
       override_config_file (NIL);
   END;
 
-
-
-  FUNCTION get_config_string (section, name, def: PCHAR): PCHAR; CDECL;
+  FUNCTION get_config_string (CONST section, name, def: AL_STRptr): AL_STRptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_string';
 
   FUNCTION al_get_config_string (section, name, def: STRING): STRING;
   BEGIN
-    al_get_config_string := get_config_string (PCHAR (section), PCHAR (name), PCHAR (def));
+    al_get_config_string := get_config_string (AL_STRptr (section), AL_STRptr (name), AL_STRptr (def));
   END;
 
-
-
-  FUNCTION get_config_int (section, name: PCHAR; def: LONGINT): LONGINT; CDECL;
+  FUNCTION get_config_int (CONST section, name: AL_STRptr; def: AL_INT): AL_INT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_int';
 
-  FUNCTION al_get_config_int (section, name: STRING; def: LONGINT): LONGINT;
+  FUNCTION al_get_config_int (section, name: STRING; def: AL_INT): AL_INT;
   BEGIN
-    al_get_config_int := get_config_int (PCHAR (section), PCHAR (name), def);
+    al_get_config_int := get_config_int (AL_STRptr (section), AL_STRptr (name), def);
   END;
 
-
-
-  FUNCTION get_config_hex (section, name: PCHAR; def: LONGINT): LONGINT; CDECL;
+  FUNCTION get_config_hex (CONST section, name: AL_STRptr; def: AL_INT): AL_INT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_hex';
 
-  FUNCTION al_get_config_hex (section, name:STRING; def: LONGINT): LONGINT;
+  FUNCTION al_get_config_hex (section, name:STRING; def: AL_INT): AL_INT;
   BEGIN
-    al_get_config_hex := get_config_hex (PCHAR (section), PCHAR (name), def);
+    al_get_config_hex := get_config_hex (AL_STRptr (section), AL_STRptr (name), def);
   END;
 
-
-
-  FUNCTION get_config_float (section, name: PCHAR; def: SINGLE): SINGLE; CDECL;
+  FUNCTION get_config_float (CONST section, name: AL_STRptr; def: AL_FLOAT): AL_FLOAT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_float';
 
-  FUNCTION al_get_config_float (section, name: STRING; def: SINGLE): SINGLE;
+  FUNCTION al_get_config_float (section, name: STRING; def: AL_FLOAT): AL_FLOAT;
   BEGIN
-    al_get_config_float := get_config_float (PCHAR (section), PCHAR (name), def);
+    al_get_config_float := get_config_float (AL_STRptr (section), AL_STRptr (name), def);
   END;
 
-
-
-  FUNCTION get_config_id (section, name: PCHAR; def: LONGINT): LONGINT; CDECL;
+  FUNCTION get_config_id (CONST section, name: AL_STRptr; def: AL_INT): AL_INT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_id';
 
-  FUNCTION al_get_config_id (section, name: STRING; def: LONGINT): LONGINT;
+  FUNCTION al_get_config_id (section, name: STRING; def: AL_INT32): AL_INT32;
   BEGIN
-    al_get_config_id := get_config_id (PCHAR (section), PCHAR (name), def);
+    al_get_config_id := get_config_id (AL_STRptr (section), AL_STRptr (name), def);
   END;
 
-
-
-{  FUNCTION get_config_argv (section, name: PCHAR; argc: PLONGINT): PSTRING; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_config_argv';
-
-  FUNCTION al_get_config_argv (section, name: STRING; argc: PLONGINT): STRINGptr;
-  BEGIN
-    al_get_config_argv := get_config_argv (PCHAR (section), PCHAR (name), argc);
-  END;
-}
-
-
-
-  PROCEDURE set_config_string (section, name, val: PCHAR); CDECL;
+  PROCEDURE set_config_string (CONST section, name, val: AL_STRptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_string';
 
   PROCEDURE al_set_config_string (section, name, val: STRING);
   BEGIN
-    set_config_string (PCHAR (section), PCHAR (name), PCHAR (val));
+    set_config_string (AL_STRptr (section), AL_STRptr (name), AL_STRptr (val));
   END;
 
-
-
-  PROCEDURE set_config_int (section, name: PCHAR; val: LONGINT); CDECL;
+  PROCEDURE set_config_int (CONST section, name: AL_STRptr; val: AL_INT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_int';
 
-  PROCEDURE al_set_config_int (section, name: STRING; val: LONGINT);
+  PROCEDURE al_set_config_int (section, name: STRING; val: AL_INT);
   BEGIN
-    set_config_int (PCHAR (section), PCHAR (name), val);
+    set_config_int (AL_STRptr (section), AL_STRptr (name), val);
   END;
 
-
-
-  PROCEDURE set_config_hex (section, name: PCHAR; val: LONGINT); CDECL;
+  PROCEDURE set_config_hex (CONST section, name: AL_STRptr; val: AL_INT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_hex';
 
-  PROCEDURE al_set_config_hex (section, name: STRING; val: LONGINT);
+  PROCEDURE al_set_config_hex (section, name: STRING; val: AL_INT);
   BEGIN
-    set_config_hex (PCHAR (section), PCHAR (name), val);
+    set_config_hex (AL_STRptr (section), AL_STRptr (name), val);
   END;
 
-
-
-  PROCEDURE set_config_float (section, name: PCHAR; val: SINGLE); CDECL;
+  PROCEDURE set_config_float (CONST section, name: AL_STRptr; val: AL_FLOAT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_float';
 
-  PROCEDURE al_set_config_float (section, name: STRING; val: SINGLE);
+  PROCEDURE al_set_config_float (section, name: STRING; val: AL_FLOAT);
   BEGIN
-    set_config_float (PCHAR (section), PCHAR (name), val);
+    set_config_float (AL_STRptr (section), AL_STRptr (name), val);
   END;
 
-
-
-  PROCEDURE set_config_id (section, name: PCHAR; val: LONGINT); CDECL;
+  PROCEDURE set_config_id (CONST section, name: AL_STRptr; val: AL_INT); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_id';
 
-  PROCEDURE al_set_config_id (section, name: STRING; val: LONGINT);
+  PROCEDURE al_set_config_id (section, name: STRING; val: AL_INT);
   BEGIN
-    set_config_id (PCHAR (section), PCHAR (name), val);
+    set_config_id (AL_STRptr (section), AL_STRptr (name), val);
   END;
 
 
+
+(******************************************************************************
+ ************)
 
 (******************
  * Timer routines *
  ******************)
 
-  FUNCTION install_timer: LONGINT; CDECL;
+  FUNCTION install_timer: AL_INT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_install_timer: BOOLEAN;
@@ -4353,40 +4401,40 @@ VAR
 
 
 
-  FUNCTION install_int_ex (proc: AL_SIMPLE_PROC; speed: LONGINT): LONGINT; CDECL;
+  FUNCTION install_int_ex (proc: AL_SIMPLE_PROC; speed: AL_LONG): AL_INT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_install_int_ex (proc: AL_SIMPLE_PROC; speed: LONGINT): BOOLEAN;
+  FUNCTION al_install_int_ex (proc: AL_SIMPLE_PROC; speed: AL_LONG): BOOLEAN;
   BEGIN
     al_install_int_ex := install_int_ex (proc, speed) = 0;
   END;
 
 
 
-  FUNCTION install_int (proc: AL_SIMPLE_PROC; speed: LONGINT): LONGINT; CDECL;
+  FUNCTION install_int (proc: AL_SIMPLE_PROC; speed: AL_LONG): AL_INT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_install_int (proc: AL_SIMPLE_PROC; speed: LONGINT): BOOLEAN;
+  FUNCTION al_install_int (proc: AL_SIMPLE_PROC; speed: AL_LONG): BOOLEAN;
   BEGIN
     al_install_int := install_int (proc, speed) = 0;
   END;
 
 
 
-  FUNCTION install_param_int_ex (proc: AL_PARAM_PROC; speed: LONGINT): LONGINT; CDECL;
+  FUNCTION install_param_int_ex (proc: AL_PARAM_PROC; speed: AL_LONG): AL_INT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_install_param_int_ex (proc: AL_PARAM_PROC; speed: LONGINT): BOOLEAN;
+  FUNCTION al_install_param_int_ex (proc: AL_PARAM_PROC; speed: AL_LONG): BOOLEAN;
   BEGIN
     al_install_param_int_ex := install_param_int_ex (proc, speed) = 0;
   END;
 
 
 
-  FUNCTION install_param_int (proc: AL_PARAM_PROC; speed: LONGINT): LONGINT; CDECL;
+  FUNCTION install_param_int (proc: AL_PARAM_PROC; speed: AL_LONG): AL_INT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_install_param_int (proc: AL_PARAM_PROC; speed: LONGINT): BOOLEAN;
+  FUNCTION al_install_param_int (proc: AL_PARAM_PROC; speed: AL_LONG): BOOLEAN;
   BEGIN
     al_install_param_int := install_param_int (proc, speed) = 0;
   END;
@@ -4399,28 +4447,28 @@ CONST
 
 
 
-  FUNCTION AL_SECS_TO_TIMER (x: LONGINT): LONGINT;
+  FUNCTION AL_SECS_TO_TIMER (x: AL_LONG): AL_LONG;
   BEGIN
     AL_SECS_TO_TIMER := x * AL_TIMERS_PER_SECOND;
   END;
 
 
 
-  FUNCTION AL_MSEC_TO_TIMER (x: LONGINT): LONGINT;
+  FUNCTION AL_MSEC_TO_TIMER (x: AL_LONG): AL_LONG;
   BEGIN
     AL_MSEC_TO_TIMER := x * (AL_TIMERS_PER_SECOND DIV 1000);
   END;
 
 
 
-  FUNCTION AL_BPS_TO_TIMER  (x: LONGINT): LONGINT;
+  FUNCTION AL_BPS_TO_TIMER  (x: AL_LONG): AL_LONG;
   BEGIN
     AL_BPS_TO_TIMER := AL_TIMERS_PER_SECOND DIV x;
   END;
 
 
 
-  FUNCTION AL_BPM_TO_TIMER  (x: LONGINT): LONGINT;
+  FUNCTION AL_BPM_TO_TIMER  (x: AL_LONG): AL_LONG;
   BEGIN
     AL_BPM_TO_TIMER := (60 * AL_TIMERS_PER_SECOND) DIV x;
   END;
@@ -5349,52 +5397,52 @@ END;
  * Digital samples *
  *******************)
 
-  FUNCTION load_sample (filename: PCHAR): AL_SAMPLEptr; CDECL;
+  FUNCTION load_sample (filename: AL_CHARptr): AL_SAMPLEptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_load_sample (filename: STRING): AL_SAMPLEptr;
   BEGIN
-    al_load_sample := load_sample (PCHAR (filename));
+    al_load_sample := load_sample (AL_CHARptr (filename));
   END;
 
 
 
-  FUNCTION load_wav (filename: PCHAR): AL_SAMPLEptr; CDECL;
+  FUNCTION load_wav (filename: AL_CHARptr): AL_SAMPLEptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_load_wav (filename: STRING): AL_SAMPLEptr;
   BEGIN
-    al_load_wav := load_wav (PCHAR (filename));
+    al_load_wav := load_wav (AL_CHARptr (filename));
   END;
 
 
 
-  FUNCTION load_voc (filename: PCHAR): AL_SAMPLEptr; CDECL;
+  FUNCTION load_voc (filename: AL_CHARptr): AL_SAMPLEptr; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_load_voc (filename: STRING): AL_SAMPLEptr;
   BEGIN
-    al_load_voc := load_voc (PCHAR (filename));
+    al_load_voc := load_voc (AL_CHARptr (filename));
   END;
 
 
 
-  FUNCTION save_sample (filename: PCHAR; spl: AL_SAMPLEptr): LONGINT; CDECL;
+  FUNCTION save_sample (filename: AL_CHARptr; spl: AL_SAMPLEptr): AL_INT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_save_sample (filename: STRING; spl: AL_SAMPLEptr): BOOLEAN;
   BEGIN
-    al_save_sample := (save_sample (PCHAR (filename), spl) = 0);
+    al_save_sample := (save_sample (AL_CHARptr (filename), spl) = 0);
   END;
 
 
 
-  PROCEDURE register_sample_file_type (ext: PCHAR; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC); CDECL;
+  PROCEDURE register_sample_file_type (ext: AL_CHARptr; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   PROCEDURE al_register_sample_file_type (ext: STRING; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC);
   BEGIN
-    register_sample_file_type (PCHAR (ext), load, save);
+    register_sample_file_type (AL_CHARptr (ext), load, save);
   END;
 
 

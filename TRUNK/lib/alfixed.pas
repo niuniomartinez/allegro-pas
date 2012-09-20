@@ -63,7 +63,7 @@ TYPE
   AL_FIXEDptr = ^AL_FIXED;
 (* This is a fixed point integer which can replace float with similar results
    and is faster than float on low end machines. *)
-  AL_FIXED	= AL_INT;
+  AL_FIXED	= AL_INT32;
 
 
 
@@ -82,11 +82,11 @@ TYPE
 (* Converts a floating point value to fixed point.  Unlike @code(al_itofix),
    this function clamps values which could overflow the type conversion,
    setting @code(al_errno) to non-zero in the process if this happens. *)
-  FUNCTION al_ftofix (x: REAL): AL_FIXED;
+  FUNCTION al_ftofix (x: AL_DOUBLE): AL_FIXED;
     INLINE;
 
 (* Converts fixed point to floating point. *)
-  FUNCTION al_fixtof (x: AL_FIXED): REAL;
+  FUNCTION al_fixtof (x: AL_FIXED): AL_DOUBLE;
     INLINE;
 
 
@@ -219,19 +219,25 @@ BEGIN
     al_fixtoi := x SHR 16;
 END;
 
-FUNCTION al_ftofix (x: REAL): AL_FIXED;
+FUNCTION al_ftofix (x: AL_DOUBLE): AL_FIXED;
 BEGIN
   IF x > 32767.0 THEN
+  BEGIN
+    al_errno^ := 34; { ERANGE }
     al_ftofix := $7FFFFFFF
+  END
   ELSE IF x < -32767.0 THEN
+  BEGIN
+    al_errno^ := 34; { ERANGE }
     al_ftofix := -$7FFFFFFF
+  END
   ELSE IF x < 0 THEN
     al_ftofix := TRUNC (x * 65536 - 0.5)
   ELSE
     al_ftofix := TRUNC (x * 65536 + 0.5);
 END;
 
-FUNCTION al_fixtof (x: AL_FIXED): REAL;
+FUNCTION al_fixtof (x: AL_FIXED): AL_DOUBLE;
 BEGIN
   al_fixtof := x / 65536.0;
 END;
@@ -286,7 +292,7 @@ END;
 FUNCTION al_fixmul (x, y: AL_FIXED): AL_FIXED;
 BEGIN
 { Martin Kalbfuss suggested this. }
-  al_fixmul := ( int64( x ) * y ) shr 16;
+  al_fixmul := ( AL_INT64 ( x ) * y ) shr 16;
 END;
 
 FUNCTION al_fixdiv (x, y: AL_FIXED): AL_FIXED;
