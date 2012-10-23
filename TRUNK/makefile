@@ -72,9 +72,9 @@ DEMODIR = demo/
 EXMDIR = examples/
 LIBDIR = lib/
 
-FLAGS = -O3 -Sh -Si -Xs -XX $(EFLAGS)
+#FLAGS = -O3 -Sh -Si -Xs -XX $(EFLAGS)
 # Use next line instead to activate debug.
-#FLAGS = Co -CO -Ct -gl -O- -pg -Sh $(EFLAGS)
+FLAGS = -Co -CO -Ct -gl -O- -pg -Sh -Si $(EFLAGS)
 
 # -- Source files list --
 include makefile.list

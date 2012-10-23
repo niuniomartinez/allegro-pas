@@ -128,7 +128,7 @@ VAR
     al_set_palette (Palette);
 
   { Build a rgb_map table.  Not needed, but speeds things up. }
-    al_create_rgb_table (@RGBTable, Palette, NIL);
+    al_create_rgb_table (RGBTable, Palette, NIL);
     al_rgb_table := @RGBTable;
   END;
 

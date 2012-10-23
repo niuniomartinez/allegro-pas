@@ -173,7 +173,7 @@ Write (''); { If you delete this line it doesn't run in some systems(?) [Xubuntu
     al_set_palette (Palette);
 
   { Build a rgb_map table.  Not needed, but speeds things up. }
-    al_create_rgb_table (@RGBTable, Palette, NIL);
+    al_create_rgb_table (RGBTable, Palette, NIL);
     al_rgb_table := @RGBTable;
     RESULT := TRUE;
   END;

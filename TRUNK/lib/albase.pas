@@ -140,6 +140,9 @@ TYPE
 (* Pointer to signed 32bit integer values. *)
   AL_INTptr = ^AL_INT;
 
+(* Pointer to float values. *)
+  AL_FLOATptr = ^AL_FLOAT;
+
 (* Pointer to text strings. *)
   AL_STRptr = PCHAR;
 
