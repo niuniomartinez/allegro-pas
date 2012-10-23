@@ -96,7 +96,7 @@ VAR
     I: INTEGER;
   BEGIN
   { First get some usual colors. }
-    al_generate_332_palette (@pal);
+    al_generate_332_palette (pal);
 
   { Now remap the first 64 for a perfect greyscale gradient. }
     FOR i := 0 TO 63 DO
@@ -137,7 +137,7 @@ BEGIN { The program starts here. }
   GenerateBackground;
 
 { This isn't needed, but it speeds up the color table calculations. }
-  al_create_rgb_table (@rgb_table, pal, NIL);
+  al_create_rgb_table (rgb_table, pal, NIL);
   al_color_table := @rgb_table;
 
 { Build a color lookup table for greyscale effect. }

@@ -27,6 +27,7 @@ PROGRAM exkeys;
  *)
 
 USES
+  albase,
   allegro, sysutils;
 
 
@@ -83,7 +84,7 @@ VAR
 
 (* Keyboard callback.  We are very evil and draw to the screen from within the
    callback.  Don't do this in your own programs. *)
-PROCEDURE KeypressHandler (Scancode: LONGINT); CDECL;
+PROCEDURE KeypressHandler (Scancode: AL_INT); CDECL;
 VAR
   i, x, y, Color: INTEGER;
 BEGIN

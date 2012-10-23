@@ -11,7 +11,7 @@ UNIT algui;
   of the interface while still using Allegro to handle input from the mouse,
   keyboard, joystick, etc.
 
-  A GUI dialog is stored as an array of @code(AL_DIALOG) objects.  The array
+  A GUI dialog is stored as an array of @link(AL_DIALOG) objects.  The array
   should end with an object which has the proc pointer set to @nil.  Each
   object has a flags field which may contain any combination of the bit flags:
   @unorderedList(
@@ -32,15 +32,14 @@ UNIT algui;
   Each object is controlled by a dialog procedure, which is stored in the
   @code(proc) pointer.  This will be called by the dialog manager whenever any
   action concerning the object is required, or you can call it directly with
-  the @code(al_object_message) function.  The dialog procedure should follow
+  the @link(al_object_message) function.  The dialog procedure should follow
   the form:
 @longcode(#
        FUNCTION foo (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
 #)
   It will be passed a flag (msg) indicating what action it should perform, a
   pointer to the object concerned (d), and if msg is @code(AL_MSG_CHAR) or
-  @code(AL_MSG_XCHAR), the key that was pressed (c).  Note that d is a pointer
-  to a specific object, and not to the entire dialog.
+  @code(AL_MSG_XCHAR), the key that was pressed (c).
 
   The dialog procedure should return one of the values:
   @unorderedList(
@@ -89,7 +88,7 @@ UNIT algui;
       focus.)
     @itemlabel(AL_MSG_CHAR)
     @item(When a key is pressed, this message is sent to the object that has
-      the input focus, with a @code(al_readkey) format character code (ASCII
+      the input focus, with a @link(al_readkey) format character code (ASCII
       value in the low byte, scancode in the high byte) as the @code(c)
       parameter.  If the object deals with the keypress it should return
       @code(AL_D_USED_CHAR), otherwise it should return @code(AL_D_O_K) to
@@ -116,7 +115,7 @@ UNIT algui;
       this message @(return @code(AL_D_O_K) rather than
       @code(AL_D_USED_CHAR)@), in which case Allegro will perform default
       actions such as moving the focus in response to the arrow keys and
-      closing the dialog if @code(ESC) is pressed.)
+      closing the dialog if @code(Esc) is pressed.)
     @itemlabel(AL_MSG_WANTFOCUS)
     @item(Queries whether an object is willing to accept the input focus.  It
       should return @code(AL_D_WANTFOCUS) if it does, or @code(AL_D_O_K) if it
@@ -129,7 +128,7 @@ UNIT algui;
       event, this will prevent your object from losing the focus when the mouse
       moves off it onto the screen background or some inert object, so it will
       only lose the input focus when some other object is ready to take over
-      the focus @(this trick is used by the @code(al_d_edit_proc) object@).)
+      the focus @(this trick is used by the @link(al_d_edit_proc) object@).)
     @itemlabel(AL_MSG_GOTMOUSE, ALMSG_LOSTMOUSE)
     @item(Sent when the mouse moves on top of or away from an object.  Unlike
       the focus messages, these are not followed by a @code(AL_MSG_DRAW), so if
@@ -162,7 +161,7 @@ UNIT algui;
   which calls @code(al_d_button_proc) for everything except drawing itself, so
   it would behave like a normal button but could look completely different.
 
-  Popup or pulldown menus are created as an array of @code(AL_MENU) structures.
+  Popup or pulldown menus are created as an array of @link(AL_MENU) structures.
   Each menu item contains a text string.  This can use the @code('&') character
   to indicate keyboard shortcuts, or can be an zero-length string to display
   the item as a non-selectable splitter bar.  If the string contains a
@@ -172,8 +171,8 @@ UNIT algui;
   selected, and @code(child) points to another menu, allowing you to create
   nested menus.  Both @code(proc) and @code(child) may be @nil.  The
   @code(proc) function returns an integer which is ignored if the menu was
-  brought up by calling @code(al_do_menu), but which is passed back to the
-  dialog manager if it was created by a @code(al_d_menu_proc) object.  The
+  brought up by calling @link(al_do_menu), but which is passed back to the
+  dialog manager if it was created by a @link(al_d_menu_proc) object.  The
   array of menu items is terminated by an entry with a @nil text pointer.
 
   Menu items can be disabled (greyed-out) by setting the @code(AL_D_DISABLED)
@@ -187,112 +186,115 @@ UNIT algui;
 
 INTERFACE
 
-USES
-  albase, allegro;
+  USES
+    albase, allegro;
 
 
 
-TYPE
-(* Pointer to @code(AL_DIALOG). *)
-  AL_DIALOGptr = ^AL_DIALOG;
+  TYPE
+  (* Pointer to @link(AL_DIALOG). *)
+    AL_DIALOGptr = ^AL_DIALOG;
 
-(* Dialog function object. *)
-  AL_DIALOG_PROC = FUNCTION (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
+  (* Dialog function object. @seealso(AL_DIALOG) *)
+    AL_DIALOG_PROC = FUNCTION (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
 
-(* This is the structure which contains a GUI object. *)
-  AL_DIALOG = RECORD
-    proc: AL_DIALOG_PROC; (*<Dialog procedure (message handler) *)
-    x, y, w, h: AL_INT;   (*<Position and size of the object *)
-    fg, bg: AL_INT;       (*<Foreground and background colors *)
-    key: AL_INT;          (*<Keyboard shortcut (ASCII code) *)
-    flags: AL_INT;        (*<Flags about the object state *)
-    d1, d2: AL_INT;       (*<Any data the object might require *)
-    dp, dp2, dp3: AL_POINTER;(*<Pointers to more object data *)
-  END;
-
-
-
-(* Pointer to @code(AL_MENU). *)
-  AL_MENUptr = ^AL_MENU;
-
-(* Structure used to hold an entry of a menu.
-   @seealso(al_do_menu) *)
-  AL_MENU = RECORD
-    txt: AL_CHARptr; (*<The text to display for the menu item. *)
-    proc: AL_SIMPLE_FUNC; (*<Called when menu item is clicked. *)
-    child: AL_MENUptr; (*<Nested child menu. *)
-    flags: AL_INT; (*<Disabled or checked state. *)
-    dp: AL_POINTER; (*<Pointer to any data you need. *)
-  END;
+  (* This is the structure which contains a GUI object.
+     @seealso(al_do_dialog) *)
+    AL_DIALOG = RECORD
+      proc: AL_DIALOG_PROC; (*<Dialog procedure (message handler) *)
+      x, y, w, h: AL_INT;   (*<Position and size of the object *)
+      fg, bg: AL_INT;       (*<Foreground and background colors *)
+      key: AL_INT;          (*<Keyboard shortcut (ASCII code) *)
+      flags: AL_INT;        (*<Flags about the object state *)
+      d1, d2: AL_INT;       (*<Any data the object might require *)
+      dp, dp2, dp3: AL_VOIDptr;(*<Pointers to more object data *)
+    END;
 
 
 
-(* A structure which holds GUI data used internally by Allegro.
-   @seealso(al_init_dialog) *)
-  AL_DIALOG_PLAYERptr = AL_POINTER;
+  (* Pointer to @link(AL_MENU). *)
+    AL_MENUptr = ^AL_MENU;
 
-(* A structure which holds GUI data used internally by Allegro.
-   @seealso(al_init_menu) *)
-  AL_MENU_PLAYERptr = AL_POINTER;
-
-(* Hoock function for @code(al_gui_menu_draw_menu). *)
-  AL_MENU_POS_PROC = PROCEDURE (x, y, w, h: AL_INT); CDECL;
-
-(* Hoock function for @code(al_gui_menu_draw_menu_item). *)
-  AL_MENU_ITEM_PROC = PROCEDURE (m: AL_MENUptr; x, y, w, h, bar, sel: AL_INT); CDECL;
-
+  (* Structure used to hold an entry of a menu.
+     @seealso(al_do_menu) *)
+    AL_MENU = RECORD
+      txt: AL_STRptr; (*<The text to display for the menu item. *)
+      proc: AL_SIMPLE_FUNC; (*<Called when menu item is clicked. *)
+      child: AL_MENUptr; (*<Nested child menu. *)
+      flags: AL_INT; (*<Disabled or checked state. *)
+      dp: AL_VOIDptr; (*<Pointer to any data you need. *)
+    END;
 
 
-CONST
-(* bits for the flags field *)
-  AL_D_EXIT     = 1;  (*<Object makes the dialog exit *)
-  AL_D_SELECTED = 2;  (*<Object is selected *)
-  AL_D_GOTFOCUS = 4;  (*<Object has the input focus *)
-  AL_D_GOTMOUSE = 8;  (*<Mouse is on top of object *)
-  AL_D_HIDDEN   = 16; (*<Object is not visible *)
-  AL_D_DISABLED = 32; (*<Object is visible but inactive *)
-  AL_D_DIRTY    = 64; (*<Object needs to be redrawn *)
-  AL_D_INTERNAL = 128;(*<Reserved for internal use *)
-  AL_D_USER     = 256;(*<From here on is free for your own use *)
+
+  (* A structure which holds GUI data used internally by Allegro.
+     @seealso(al_init_dialog) *)
+    AL_DIALOG_PLAYERptr = AL_POINTER;
+
+  (* A structure which holds GUI data used internally by Allegro.
+     @seealso(al_init_menu) *)
+    AL_MENU_PLAYERptr = AL_POINTER;
+
+  (* Hook function for @link(al_gui_menu_draw_menu). *)
+    AL_MENU_POS_PROC = PROCEDURE (x, y, w, h: AL_INT); CDECL;
+
+  (* Hook function for @link(al_gui_menu_draw_menu_item). *)
+    AL_MENU_ITEM_PROC = PROCEDURE (m: AL_MENUptr; x, y, w, h, bar, sel: AL_INT); CDECL;
 
 
-(* return values for the dialog procedures *)
-  AL_D_O_K           = 0;        (*<normal exit status *)
-  AL_D_CLOSE         = 1;        (*<request to close the dialog *)
-  AL_D_REDRAW        = 2;        (*<request to redraw the dialog *)
-  AL_D_REDRAWME      = 4;        (*<request to redraw this object *)
-  AL_D_WANTFOCUS     = 8;        (*<this object wants the input focus *)
-  AL_D_USED_CHAR     = 16;       (*<object has used the keypress *)
-  AL_D_REDRAW_ALL    = 32;       (*<request to redraw all active dialogs *)
-  AL_D_DONTWANTMOUSE = 64;       (*<this object does not want mouse focus *)
+
+  CONST
+  (* bits for the flags field *)
+    AL_D_EXIT     = 1;  (*<Object makes the dialog exit *)
+    AL_D_SELECTED = 2;  (*<Object is selected *)
+    AL_D_GOTFOCUS = 4;  (*<Object has the input focus *)
+    AL_D_GOTMOUSE = 8;  (*<Mouse is on top of object *)
+    AL_D_HIDDEN   = 16; (*<Object is not visible *)
+    AL_D_DISABLED = 32; (*<Object is visible but inactive *)
+    AL_D_DIRTY    = 64; (*<Object needs to be redrawn *)
+    AL_D_INTERNAL = 128;(*<Reserved for internal use *)
+    AL_D_USER     = 256;(*<From here on is free for your own use *)
 
 
-(* messages for the dialog procedures *)
-  AL_MSG_START       = 1;        (*<start the dialog, initialise *)
-  AL_MSG_END         = 2;        (*<dialog is finished - cleanup *)
-  AL_MSG_DRAW        = 3;        (*<draw the object *)
-  AL_MSG_CLICK       = 4;        (*<mouse click on the object *)
-  AL_MSG_DCLICK      = 5;        (*<double click on the object *)
-  AL_MSG_KEY         = 6;        (*<keyboard shortcut *)
-  AL_MSG_CHAR        = 7;        (*<other keyboard input *)
-  AL_MSG_UCHAR       = 8;        (*<unicode keyboard input *)
-  AL_MSG_XCHAR       = 9;        (*<broadcast character to all objects *)
-  AL_MSG_WANTFOCUS   = 10;       (*<does object want the input focus? *)
-  AL_MSG_GOTFOCUS    = 11;       (*<got the input focus *)
-  AL_MSG_LOSTFOCUS   = 12;       (*<lost the input focus *)
-  AL_MSG_GOTMOUSE    = 13;       (*<mouse on top of object *)
-  AL_MSG_LOSTMOUSE   = 14;       (*<mouse moved away from object *)
-  AL_MSG_IDLE        = 15;       (*<update any background stuff *)
-  AL_MSG_RADIO       = 16;       (*<clear radio buttons *)
-  AL_MSG_WHEEL       = 17;       (*<mouse wheel moved *)
-  AL_MSG_LPRESS      = 18;       (*<mouse left button pressed *)
-  AL_MSG_LRELEASE    = 19;       (*<mouse left button released *)
-  AL_MSG_MPRESS      = 20;       (*<mouse middle button pressed *)
-  AL_MSG_MRELEASE    = 21;       (*<mouse middle button released *)
-  AL_MSG_RPRESS      = 22;       (*<mouse right button pressed *)
-  AL_MSG_RRELEASE    = 23;       (*<mouse right button released *)
-  AL_MSG_WANTMOUSE   = 24;       (*<does object want the mouse? *)
-  AL_MSG_USER        = 25;       (*<from here on are free... *)
+
+  (* return values for the dialog procedures *)
+    AL_D_O_K           = 0;        (*<normal exit status *)
+    AL_D_CLOSE         = 1;        (*<request to close the dialog *)
+    AL_D_REDRAW        = 2;        (*<request to redraw the dialog *)
+    AL_D_REDRAWME      = 4;        (*<request to redraw this object *)
+    AL_D_WANTFOCUS     = 8;        (*<this object wants the input focus *)
+    AL_D_USED_CHAR     = 16;       (*<object has used the keypress *)
+    AL_D_REDRAW_ALL    = 32;       (*<request to redraw all active dialogs *)
+    AL_D_DONTWANTMOUSE = 64;       (*<this object does not want mouse focus *)
+
+
+
+  (* messages for the dialog procedures *)
+    AL_MSG_START       = 1;        (*<start the dialog, initialise *)
+    AL_MSG_END         = 2;        (*<dialog is finished - cleanup *)
+    AL_MSG_DRAW        = 3;        (*<draw the object *)
+    AL_MSG_CLICK       = 4;        (*<mouse click on the object *)
+    AL_MSG_DCLICK      = 5;        (*<double click on the object *)
+    AL_MSG_KEY         = 6;        (*<keyboard shortcut *)
+    AL_MSG_CHAR        = 7;        (*<other keyboard input *)
+    AL_MSG_UCHAR       = 8;        (*<unicode keyboard input *)
+    AL_MSG_XCHAR       = 9;        (*<broadcast character to all objects *)
+    AL_MSG_WANTFOCUS   = 10;       (*<does object want the input focus? *)
+    AL_MSG_GOTFOCUS    = 11;       (*<got the input focus *)
+    AL_MSG_LOSTFOCUS   = 12;       (*<lost the input focus *)
+    AL_MSG_GOTMOUSE    = 13;       (*<mouse on top of object *)
+    AL_MSG_LOSTMOUSE   = 14;       (*<mouse moved away from object *)
+    AL_MSG_IDLE        = 15;       (*<update any background stuff *)
+    AL_MSG_RADIO       = 16;       (*<clear radio buttons *)
+    AL_MSG_WHEEL       = 17;       (*<mouse wheel moved *)
+    AL_MSG_LPRESS      = 18;       (*<mouse left button pressed *)
+    AL_MSG_LRELEASE    = 19;       (*<mouse left button released *)
+    AL_MSG_MPRESS      = 20;       (*<mouse middle button pressed *)
+    AL_MSG_MRELEASE    = 21;       (*<mouse middle button released *)
+    AL_MSG_RPRESS      = 22;       (*<mouse right button pressed *)
+    AL_MSG_RRELEASE    = 23;       (*<mouse right button released *)
+    AL_MSG_WANTMOUSE   = 24;       (*<does object want the mouse? *)
+    AL_MSG_USER        = 25;       (*<from here on are free... *)
 
 
 
@@ -300,71 +302,72 @@ CONST
    system supports it) when the GUI has nothing to do but waiting for user
    actions.  You should put one instance of this object in each dialog array
    because it may be needed on systems with an unusual scheduling algorithm
-   (for instance QNX) in order to make the GUI fully responsive. *)
-  FUNCTION al_d_yield_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_yield_proc';
+   (for instance QNX) in order to make the GUI fully responsive.
+   @seealso(al_rest) *)
+  FUNCTION al_d_yield_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_yield_proc';
 (* This just clears the screen when it is drawn.  Useful as the first object in
    a dialog. *)
-  FUNCTION al_d_clear_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_clear_proc';
+  FUNCTION al_d_clear_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_clear_proc';
 (* Just draws a box. *)
-  FUNCTION al_d_box_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_box_proc';
+  FUNCTION al_d_box_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_box_proc';
 (* Just draws a box with a shadow. *)
-  FUNCTION al_d_shadow_box_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_shadow_box_proc';
+  FUNCTION al_d_shadow_box_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_shadow_box_proc';
 (* This draws a bitmap onto the screen, which should be pointed to by the
    @code(dp) field. *)
-  FUNCTION al_d_bitmap_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_bitmap_proc';
+  FUNCTION al_d_bitmap_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_bitmap_proc';
 (* Draws text onto the screen. The @code(dp) field should point to the string
    to display.  Any @code('&') characters in the string will be replaced with
    lines underneath the following character, for displaying keyboard shortcuts
    (as in MS Windows).  To display a single ampersand, put @code('&&').  To
    draw the text in something other than the default font, set the @code(dp2)
    field to point to your custom font data. *)
-  FUNCTION al_d_text_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_text_proc';
+  FUNCTION al_d_text_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_text_proc';
 (* Draws centered text onto the screen.  The @code(dp) field should point to
    the string to display.  Any @code('&') characters in the string will be
    replaced with lines underneath the following character, for displaying
    keyboard shortcuts (as in MS Windows).  To display a single ampersand, put
    @code('&&').  To draw the text in something other than the default font, set
    the @code(dp2) field to point to your custom font data. *)
-  FUNCTION al_d_ctext_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_ctext_proc';
+  FUNCTION al_d_ctext_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_ctext_proc';
 (* Draws text right aligned onto the screen.  The @code(dp) field should point
    to the string to display.  Any @code('&') characters in the string will be
    replaced with lines underneath the following character, for displaying
    keyboard shortcuts (as in MS Windows).  To display a single ampersand, put
    @code('&&').  To draw the text in something other than the default font, set
    the @code(dp2) field to point to your custom font data. *)
-  FUNCTION al_d_rtext_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_rtext_proc';
+  FUNCTION al_d_rtext_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_rtext_proc';
 (* A button object (the @code(dp) field points to the text string).  This
    object can be selected by clicking on it with the mouse or by pressing its
    keyboard shortcut.  If the @code(AL_D_EXIT) flag is set, selecting it will
    close the dialog, otherwise it will toggle on and off.  Like
-   @code(al_d_text_proc), ampersands can be used to display the keyboard
+   @link(al_d_text_proc), ampersands can be used to display the keyboard
    shortcut of the button. *)
-  FUNCTION al_d_button_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_button_proc';
+  FUNCTION al_d_button_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_button_proc';
 (* This is an example of how you can derive objects from other objects.  Most
-   of the functionality comes from @code(al_d_button_proc), but it displays
+   of the functionality comes from @link(al_d_button_proc), but it displays
    itself as a check box.  If the @code(d1) field is non-zero, the text will be
    printed to the right of the check, otherwise it will be on the left.
 
    @bold(Note:)  the object width should allow space for the text as well as
    the check box (which is square, with sides equal to the object height). *)
-  FUNCTION al_d_check_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_check_proc';
+  FUNCTION al_d_check_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_check_proc';
 (* A radio button object.  A dialog can contain any number of radio button
    groups:  selecting a radio button causes other buttons within the same group
    to be deselected.  The @code(dp) field points to the text string, @code(d1)
    specifies the group number, and @code(d2) is the button style (0=circle,
    1=square). *)
-  FUNCTION al_d_radio_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_radio_proc';
+  FUNCTION al_d_radio_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_radio_proc';
 (* A bitmap button.  The @code(fg) color is used for the dotted line showing
    focus, and the @code(bg) color for the shadow used to fill in the top and
    left sides of the button when @italic("pressed").  @code(d1) is the
@@ -374,8 +377,8 @@ CONST
    line showing focus is indented (default 2).  @code(dp) points to a bitmap
    for the icon, while @code(dp2) and @code(dp3) are the selected and disabled
    images respectively (optional, may be @nil). *)
-  FUNCTION al_d_icon_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_icon_proc';
+  FUNCTION al_d_icon_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_icon_proc';
 (* This is an invisible object for implementing keyboard shortcuts.  You can
    put an ASCII code in the key field of the dialog object (a character such as
   'a' to respond to a simple keypress, or a number 1-26 to respond to a control
@@ -384,8 +387,8 @@ CONST
   the function pointed to by @code(dp).  This should return an integer, which
   will be passed back to the dialog manager, so it can return @code(AL_D_O_K),
   @code(AL_D_REDRAW), @code(AL_D_CLOSE), etc. *)
-  FUNCTION al_d_keyboard_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_keyboard_proc';
+  FUNCTION al_d_keyboard_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_keyboard_proc';
 (* An editable text object (the @code(dp) field points to the space to store
    the string).  When it has the input focus (obtained by clicking on it with
    the mouse), text can be typed into this object.  The @code(d1) field
@@ -397,8 +400,8 @@ CONST
    character can occupy up to 4 bytes and room must be reserved for the
    terminating null character.  @bold(Be sure it finishes with a null
      character or it will fail!)*)
-  FUNCTION al_d_edit_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_edit_proc';
+  FUNCTION al_d_edit_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_edit_proc';
 (* A list box object.  This will allow the user to scroll through a list of
    items and to select one by clicking or with the arrow keys.  If the
    @code(AL_D_EXIT) flag is set, double clicking on a list item will close the
@@ -407,7 +410,7 @@ CONST
    @code(dp) field points to a function which will be called to obtain
    information about the contents of the list.  This should follow the form:
    @longcode(#
-FUNCTION foobar(index: AL_INT; list_size: AL_INTptr): AL_CHARptr; CDECL;
+FUNCTION foobar(index: AL_INT; list_size: AL_INTptr): AL_STRptr; CDECL;
    #)
    If @code(index) is zero or positive, the function should return a pointer to
    the string which is to be displayed at position index in the list.  If
@@ -418,13 +421,13 @@ FUNCTION foobar(index: AL_INT; list_size: AL_INTptr): AL_CHARptr; CDECL;
    first element of an @code(ARRAY OF BYTE) flags indicating the selection
    state of each list item (non-zero for selected entries).  This table must be
    at least as big as the number of objects in the list! *)
-  FUNCTION al_d_list_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_list_proc';
-(* Like @code(al_d_list_proc), but allows the user to type in the first few
+  FUNCTION al_d_list_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_list_proc';
+(* Like @link(al_d_list_proc), but allows the user to type in the first few
    characters of a listbox entry in order to select it.  Uses @code(dp3)
    internally, so you mustn't store anything important there yourself. *)
-  FUNCTION al_d_text_list_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_text_list_proc';
+  FUNCTION al_d_text_list_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_text_list_proc';
 (* A text box object.  The @code(dp) field points to the text which is to be
    displayed in the box.  If the text is long, there will be a vertical
    scrollbar on the right hand side of the object which can be used to scroll
@@ -433,8 +436,8 @@ FUNCTION foobar(index: AL_INT; list_size: AL_INTptr): AL_CHARptr; CDECL;
    character wrapping.  The @code(d1) field is used internally to store the
    number of lines of text, and @code(d2) is used to store how far it has
    scrolled through the text. *)
-  FUNCTION al_d_textbox_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_textbox_proc';
+  FUNCTION al_d_textbox_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_textbox_proc';
 (* A slider control object.  This object holds a value in @code(d2), in the
    range from 0 to @code(d1).  It will display as a vertical slider if height
    is greater than or equal to width, otherwise it will display as a horizontal
@@ -443,11 +446,11 @@ FUNCTION foobar(index: AL_INT; list_size: AL_INTptr): AL_CHARptr; CDECL;
    which is called each time @code(d2) changes.  The callback function should
    have the following prototype:
    @longcode(#
-FUNCTION foo (dp3: AL_INTptr; d2: AL_INT): AL_INT; CDECL;
+FUNCTION foo (dp3: AL_VOIDptr; d2: AL_INT): AL_INT; CDECL;
    #)
    The @code(al_d_slider_proc) object will return the value of the callback function.  *)
-  FUNCTION al_d_slider_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_slider_proc';
+  FUNCTION al_d_slider_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_slider_proc';
 (* This object is a menu bar which will drop down child menus when it is
    clicked or if an alt+key corresponding to one of the shortcuts in the menu
    is pressed.  It ignores a lot of the fields in the dialog structure, in
@@ -455,46 +458,213 @@ FUNCTION foo (dp3: AL_INTptr; d2: AL_INT): AL_INT; CDECL;
    the width and height are calculated automatically (the @code(w) and @code(h)
    fields from the @code(AL_DIALOG) are only used as a minimum size.)  The
    @code(dp) field points to an array of menu structures:  see
-   @code(al_do_menu) for more information.  The top level menu will be
+   @link(al_do_menu) for more information.  The top level menu will be
    displayed as a horizontal bar, but when child menus drop down from it they
    will be in the normal vertical format used by @code(al_do_menu).  When a
    menu item is selected, the return value from the menu callback function is
    passed back to the dialog manager, so your callbacks should return
-   @code(AL_D_O_K), @code(AL_D_REDRAW), or @code(AL_D_CLOSE). *)
-  FUNCTION al_d_menu_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_menu_proc';
+   @code(AL_D_O_K), @code(AL_D_REDRAW), or @code(AL_D_CLOSE).
+   @seealso(al_active_menu) @seealso(al_gui_menu_draw_menu) *)
+  FUNCTION al_d_menu_proc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'd_menu_proc';
+
+
+
+  VAR
+  (* If set, this function will be used by the standard Allegro dialogs.  This
+     allows you to customise the look and feel, much like @link(al_gui_fg_color)
+     and @link(al_gui_bg_color), but much more flexibly. *)
+    al_gui_shadow_box_proc: AL_DIALOG_PROC;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_shadow_box_proc';
+  (* If set, this function will be used by the standard Allegro dialogs.  This
+     allows you to customise the look and feel, much like @link(al_gui_fg_color)
+     and @link(al_gui_bg_color), but much more flexibly. *)
+    al_gui_ctext_proc: AL_DIALOG_PROC;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_ctext_proc';
+  (* If set, this function will be used by the standard Allegro dialogs.  This
+     allows you to customise the look and feel, much like @link(al_gui_fg_color)
+     and @link(al_gui_bg_color), but much more flexibly. *)
+    al_gui_button_proc: AL_DIALOG_PROC;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_button_proc';
+  (* If set, this function will be used by the standard Allegro dialogs.  This
+     allows you to customise the look and feel, much like @link(al_gui_fg_color)
+     and @link(al_gui_bg_color), but much more flexibly. *)
+    al_gui_edit_proc: AL_DIALOG_PROC;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_edit_proc';
+  (* If set, this function will be used by the standard Allegro dialogs.  This
+     allows you to customise the look and feel, much like @link(al_gui_fg_color)
+     and @link(al_gui_bg_color), but much more flexibly. *)
+    al_gui_list_proc: AL_DIALOG_PROC;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_list_proc';
+  (* If set, this function will be used by the standard Allegro dialogs.  This
+     allows you to customise the look and feel, much like @link(al_gui_fg_color)
+     and @link(al_gui_bg_color), but much more flexibly. *)
+    al_gui_text_list_proc: AL_DIALOG_PROC;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_text_list_proc';
+
+  (* If set, this function will be called whenever a menu needs to be drawn, so
+     you can change how menus look.
+
+     It should draw the background of the menu onto screen. *)
+    al_gui_menu_draw_menu: AL_MENU_POS_PROC;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_menu_draw_menu';
+  (* If set, this function will be called whenever a menu needs to be drawn, so
+     you can change how menus look.
+
+     It is called once for each menu item that is to be drawn.  @code(bar) will
+     be non-zero if the item is part of a top-level horizontal menu bar, and
+     @code(sel) will be non-zero if the menu item is selected.  It should also
+     draw onto screen. *)
+    al_gui_menu_draw_menu_item: AL_MENU_ITEM_PROC;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_menu_draw_item';
+
+  (* Global pointer to the most recent activated dialog.  This may be useful if
+     an object needs to iterate through a list of all its siblings. *)
+    al_active_dialog: AL_DIALOGptr;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'active_dialog';
+  (* When a menu callback procedure is triggered, this will be set to the menu
+     item that was selected, so your routine can determine where it was called from. *)
+    al_active_menu: AL_MENUptr;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'active_menu';
+
+  (* If non-zero, the input focus follows the mouse pointer around the dialog,
+     otherwise a click is required to move it. *)
+    al_gui_mouse_focus: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mouse_focus';
+
+  (* The foreground color for the standard dialogs (alerts, menus, and the file
+     selector).  Defaults to 255.
+     @seealso(al_gui_bg_color) @seealso(al_gui_mg_color)
+     @seealso(al_set_dialog_color) *)
+    al_gui_fg_color: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_fg_color';
+  (* The color used for displaying greyed-out dialog objects (with the
+     @code(AL_D_DISABLED) flag set). Defaults to 8.
+     @seealso(al_gui_fg_color) @seealso(al_gui_bg_color)
+     @seealso(al_set_dialog_color) *)
+    al_gui_mg_color: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mg_color';
+  (* The background color for the standard dialogs (alerts, menus, and the file
+     selector). Defaults to 0.
+     @seealso(al_gui_fg_color) @seealso(al_gui_mg_color)
+     @seealso(al_set_dialog_color) *)
+    al_gui_bg_color: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_bg_color';
+
+  (* If set to a non-zero value, adjusts the keyboard shortcut underscores to
+     account for the height of the descenders in your font. *)
+    al_gui_font_baseline: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_font_baseline';
+
+  (* Hook function, used by the GUI routines whenever they need to access the
+     mouse state.  By default it just returns a copy of the @code(al_mouse_x)
+     variable, but it could be used to offset or scale the mouse position, or
+     read input from a different source entirely. *)
+    al_gui_mouse_x: AL_SIMPLE_FUNC;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mouse_x';
+  (* Hook function, used by the GUI routines whenever they need to access the
+     mouse state.  By default it just returns a copy of the @code(al_mouse_y)
+     variable, but it could be used to offset or scale the mouse position, or
+     read input from a different source entirely. *)
+    al_gui_mouse_y: AL_SIMPLE_FUNC;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mouse_y';
+  (* Hook function, used by the GUI routines whenever they need to access the
+     mouse state.  By default it just returns a copy of the @code(al_mouse_z)
+     variable, but it could be used to offset or scale the mouse position, or
+     read input from a different source entirely. *)
+    al_gui_mouse_z: AL_SIMPLE_FUNC;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mouse_z';
+  (* Hook function, used by the GUI routines whenever they need to access the
+     mouse state.  By default it just returns a copy of the @code(al_mouse_b)
+     variable, but it could be used to offset or scale the mouse position, or
+     read input from a different source entirely. *)
+    al_gui_mouse_b: AL_SIMPLE_FUNC;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mouse_b';
+
 
 (* This function can be used to change the bitmap surface the GUI routines draw
    to.  This can be useful if you are using a double buffering or page flipping
-   system.  Passing @nil will cause the default surface (@code(al_screen)) to
-   be used again. *)
-  PROCEDURE al_gui_set_screen (bmp: AL_BITMAPptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_set_screen';
+   system.  Passing @nil will cause the default surface (@link(al_screen)) to
+   be used again. @seealso(al_gui_get_screen) *)
+  PROCEDURE al_gui_set_screen (bmp: AL_BITMAPptr);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_set_screen';
 (* This function returns the current bitmap surface the GUI routines will use
-   for drawing.  Note that this function will return @code(al_screen) if you
+   for drawing.  Note that this function will return @link(al_screen) if you
    have called @code(al_gui_set_screen @(@nil@)) previously, and will never
-   return @nil. *)
-  FUNCTION al_gui_get_screen: AL_BITMAPptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_get_screen';
+   return @nil. @seealso(al_gui_set_screen) *)
+  FUNCTION al_gui_get_screen: AL_BITMAPptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_get_screen';
+
+(* Helper function for use by the GUI routines.  Draws a text string onto the
+   screen, interpreting the @code('&') character as an underbar for displaying
+   keyboard shortcuts. @returns(The width of the output string in pixels.)
+   @seealso(al_gui_strlen) *)
+  FUNCTION al_gui_textout_ex (bmp: AL_BITMAPptr; s: STRING; x, y, color, bg: AL_INT; centre: BOOLEAN): AL_INT;
+    INLINE;
+(* Helper function for use by the GUI routines. @returns(The length of a string
+   in pixels, ignoring @code('&') characters.) *)
+  FUNCTION al_gui_strlen (s: STRING): AL_INT;
+    INLINE;
 
 (* Defines a dialog item.
    @param(dialog The dialog) @param(item Index to the dialog item)
-   @seealso(AL_DIALOG) *)
- PROCEDURE al_set_dialog_item (VAR dialog: ARRAY OF AL_DIALOG; index: INTEGER;
-   proc: AL_DIALOG_PROC; x, y, w, h, fg, bg, key, flags, d1, d2: AL_INT;
-   dp, dp2, dp3: AL_POINTER);
+   @seealso(AL_DIALOG) @seealso(al_do_dialog) *)
+  PROCEDURE al_set_dialog_item (VAR dialog: ARRAY OF AL_DIALOG; index: INTEGER;
+    proc: AL_DIALOG_PROC; x, y, w, h, fg, bg, key, flags, d1, d2: AL_INT;
+    dp, dp2, dp3: AL_POINTER);
 
 (* Moves an array of dialog objects to the specified screen position (specified
    as the top left corner of the dialog). @seealso(al_centre_dialog) *)
-  PROCEDURE al_position_dialog (dialog: AL_DIALOGptr; x, y: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'position_dialog';
+  PROCEDURE al_position_dialog (dialog: AL_DIALOGptr; x, y: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'position_dialog';
 (* Moves an array of dialog objects so that it is centered in the screen.
    @seealso(al_position_dialog) *)
-  PROCEDURE al_centre_dialog (dialog: AL_DIALOGptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'centre_dialog';
+  PROCEDURE al_centre_dialog (dialog: AL_DIALOGptr);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'centre_dialog';
 (* Sets the foreground and background colors of an array of dialog objects. *)
-  PROCEDURE al_set_dialog_color (dialog: AL_DIALOGptr; fg, bg: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_dialog_color';
+  PROCEDURE al_set_dialog_color (dialog: AL_DIALOGptr; fg, bg: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_dialog_color';
+
+(* Searches the dialog for the object which has the input focus, returning an
+   index or -1 if the focus is not set.  This is useful if you are calling
+   @link(al_do_dialog) several times in a row and want to leave the focus in
+   the same place it was when the dialog was last displayed, as you can call
+   @longcode(#
+al_do_dialog (dlg, al_find_dialog_focus (dlg));
+   #) @seealso(al_init_dialog) @seealso(al_offer_focus) *)
+  FUNCTION al_find_dialog_focus (dialog: AL_DIALOGptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'find_dialog_focus';
+(* Offers the input focus to a particular object.  Normally the function sends
+   the @code(AL_MSG_WANTFOCUS) message to query whether the object is willing
+   to accept the focus.  However, passing any non-zero value as @code(force)
+   argument instructs the function to authoritatively set the focus to the
+   object. *)
+  FUNCTION al_offer_focus (dialog: AL_DIALOGptr; obj: AL_INT; focus_obj: AL_INTptr; force: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'offer_focus';
+
+(* Sends a message to an object and returns the answer it has generated.
+   Remember that the first parameter is the dialog object (not a whole array)
+   that you wish to send the message to.  For example, to make the second
+   object in a dialog draw itself, you might write:@longcode(#
+al_object_message (@(dialog[1]), AL_MSG_DRAW, 0);
+   #)
+   The function will take care of scaring and unscaring the mouse if the
+   message is @code(AL_MSG_DRAW). @seealso(al_dialog_message)
+   @seealso(al_scare_mouse) @seealso(al_unscare_mouse) *)
+  FUNCTION al_object_message (dialog: AL_DIALOGptr; msg, c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'object_message';
+(* Sends a message to all the objects in an array.  If any of the dialog
+   procedures return values other than @code(AL_D_O_K), it returns the value
+   and sets @code(obj) to the index of the object which produced it.
+   @seealso(al_object_message) @seealso(al_broadcast_dialog_message) *)
+  FUNCTION al_dialog_message (dialog: AL_DIALOGptr; msg, c: AL_INT; obj: AL_INTptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'dialog_message';
+(* Broadcasts a message to all the objects in the active dialog.  If any of the
+   dialog procedures return values other than @code(AL_D_O_K), it returns that
+   value.
+   @seealso(al_dialog_message) *)
+  FUNCTION al_broadcast_dialog_message (msg, c: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'broadcast_dialog_message';
 
 (* The basic dialog manager function.  This displays a dialog (an array of
    dialog objects, terminated by one with a @nil dialog procedure), and sets
@@ -505,65 +675,49 @@ FUNCTION foo (dp3: AL_INTptr; d2: AL_INT): AL_INT; CDECL;
    exit, or until ESC is pressed, at which point it returns -1.
    @seealso(al_popup_dialog) @seealso(al_init_dialog)
    @seealso(al_find_dialog_focus) *)
-  FUNCTION al_do_dialog (dialog: AL_DIALOGptr; focus_obj: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_dialog';
-(* Like @code(al_do_dialog), but it stores the data on the screen before
+  FUNCTION al_do_dialog (dialog: AL_DIALOGptr; focus_obj: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_dialog';
+(* Like @link(al_do_dialog), but it stores the data on the screen before
    drawing the dialog and restores it when the dialog is closed.  The screen
    area to be stored is calculated from the dimensions of the first object in
    the dialog, so all the other objects should lie within this one.
    @seealso(al_init_dialog) *)
-  FUNCTION al_popup_dialog (dialog: AL_DIALOGptr; focus_obj: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'popup_dialog';
+  FUNCTION al_popup_dialog (dialog: AL_DIALOGptr; focus_obj: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'popup_dialog';
 
-(* Searches the dialog for the object which has the input focus, returning an
-   index or -1 if the focus is not set.  This is useful if you are calling
-   @code(al_do_dialog) several times in a row and want to leave the focus in
-   the same place it was when the dialog was last displayed, as you can call
+(* This function provides lower level access to the same functionality as
+   @code(al_do_dialog), but allows you to combine a dialog box with your own
+   program control structures.  It initialises a dialog, returning a pointer to
+   a player object that can be used with @link(al_update_dialog) and
+   @link(al_shutdown_dialog).  With these functions, you could implement your
+   own version of @link(al_do_dialog) with the lines:
    @longcode(#
-al_do_dialog (dlg, al_find_dialog_focus (dlg));
-   #) @seealso(al_init_dialog) @seealso(al_offer_focus) *)
-  FUNCTION al_find_dialog_focus (dialog: AL_DIALOGptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'find_dialog_focus';
-(* Offers the input focus to a particular object.  Normally the function sends
-   the @code(AL_MSG_WANTFOCUS) message to query whether the object is willing
-   to accept the focus.  However, passing any non-zero value as @code(force)
-   argument instructs the function to authoritatively set the focus to the
-   object. *)
-  FUNCTION al_offer_focus (dialog: AL_DIALOGptr; obj: AL_INT; focus_obj: AL_INTptr; force: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'offer_focus';
-(* Sends a message to an object and returns the answer it has generated.
-   Remember that the first parameter is the dialog object (not a whole array)
-   that you wish to send the message to.  For example, to make the second
-   object in a dialog draw itself, you might write:@longcode(#
-al_object_message (@(dialog[1]), AL_MSG_DRAW, 0);
+VAR
+  player: AL_DIALOG_PLAYERptr;
+BEGIN
+  player := al_init_dialog (dialog, focus_obj);
+  WHILE al_update_dialog (player)
+    ;
+  RESULT := al_shutdown_dialog (player);
+END;
    #)
-   The function will take care of scaring and unscaring the mouse if the
-   message is @code(AL_MSG_DRAW). @seealso(al_dialog_message)
-   @seealso(al_scare_mouse) @seealso(al_unscare_mouse) *)
-  FUNCTION al_object_message (dialog: AL_DIALOGptr; msg, c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'object_message';
-(* Sends a message to all the objects in an array.  If any of the dialog
-   procedures return values other than @code(AL_D_O_K), it returns the value
-   and sets @code(obj) to the index of the object which produced it.
-   @seealso(al_object_message) @seealso(al_broadcast_dialog_message) *)
-  FUNCTION al_dialog_message (dialog: AL_DIALOGptr; msg, c: AL_INT; obj: AL_INTptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'dialog_message';
-(* Broadcasts a message to all the objects in the active dialog.  If any of the
-   dialog procedures return values other than @code(AL_D_O_K), it returns that
-   value.
-   @seealso(al_dialog_message) *)
-  FUNCTION al_broadcast_dialog_message (msg, c: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'broadcast_dialog_message';
-
-(* Helper function for use by the GUI routines.  Draws a text string onto the
-   screen, interpreting the @code('&') character as an underbar for displaying
-   keyboard shortcuts. @returns(The width of the output string in pixels.)
-   @seealso(al_gui_strlen) *)
-  FUNCTION al_gui_textout_ex (bmp: AL_BITMAPptr; s: STRING; x, y, color, bg: AL_INT; centre: BOOLEAN): AL_INT;
-(* Helper function for use by the GUI routines. @returns(The length of a string
-   in pixels, ignoring @code('&') characters.) *)
-  FUNCTION al_gui_strlen (s: STRING): AL_INT;
-
+   Note that you are responsible for showing and hiding the mouse cursor, which
+   @code(al_do_dialog) would otherwise do for you, or saving and restoring the
+   screen contents, as @link(al_popup_dialog) would do for you. *)
+  FUNCTION al_init_dialog (dialog: AL_DIALOGptr; focus_obj: AL_INT): AL_DIALOG_PLAYERptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'init_dialog';
+(* Updates the status of a dialog object returned by @link(al_init_dialog).
+   @returns(@true if the dialog is still active, or @false if it has
+     terminated.  Upon a return value of @false, it is up to you whether to
+     call @code(al_shutdown_dialog) or to continue execution.)
+   @seealso(al_do_dialog) *)
+  FUNCTION al_update_dialog (player: AL_DIALOG_PLAYERptr): BOOLEAN;
+    INLINE;
+(* Destroys a dialog player object returned by @link(al_init_dialog), returning
+   the object that caused it to exit (this is the same as the return value from
+   @code(al_do_dialog)). *)
+  FUNCTION al_shutdown_dialog (player: AL_DIALOG_PLAYERptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'shutdown_dialog';
 
 (* Defines a menu item.
    @param(menu The menu) @param(item Index to the dialog item)
@@ -580,46 +734,14 @@ al_object_message (@(dialog[1]), AL_MSG_DRAW, 0);
      multi-level menus.)
      @seealso(al_d_menu_proc) @seealso(al_init_menu)
      @seealso(al_gui_menu_draw_menu) *)
-  FUNCTION al_do_menu (menu: AL_MENUptr; x, y: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_menu';
+  FUNCTION al_do_menu (menu: AL_MENUptr; x, y: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_menu';
 
 (* This function provides lower level access to the same functionality as
-   @code(al_do_dialog), but allows you to combine a dialog box with your own
-   program control structures.  It initialises a dialog, returning a pointer to
-   a player object that can be used with @code(al_update_dialog) and
-   @code(al_shutdown_dialog).  With these functions, you could implement your
-   own version of @code(al_do_dialog) with the lines:
-   @longcode(#
-VAR
-  player: AL_DIALOG_PLAYERptr;
-BEGIN
-  player := al_init_dialog (dialog, focus_obj);
-  WHILE al_update_dialog (player)
-    ;
-  RESULT := al_shutdown_dialog (player);
-END;
-   #)
-   Note that you are responsible for showing and hiding the mouse cursor, which
-   @code(al_do_dialog) would otherwise do for you, or saving and restoring the
-   screen contents, as @code(al_popup_dialog) would do for you. *)
-  FUNCTION al_init_dialog (dialog: AL_DIALOGptr; focus_obj: AL_INT): AL_DIALOG_PLAYERptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'init_dialog';
-(* Updates the status of a dialog object returned by @code(al_init_dialog).
-   @returns(@true if the dialog is still active, or @false if it has
-     terminated.  Upon a return value of @false, it is up to you whether to
-     call @code(al_shutdown_dialog) or to continue execution.)
-   @seealso(al_do_dialog) *)
-  FUNCTION al_update_dialog (player: AL_DIALOG_PLAYERptr): BOOLEAN;
-(* Destroys a dialog player object returned by @code(al_init_dialog), returning
-   the object that caused it to exit (this is the same as the return value from
-   @code(al_do_dialog)). *)
-  FUNCTION al_shutdown_dialog (player: AL_DIALOG_PLAYERptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'shutdown_dialog';
-(* This function provides lower level access to the same functionality as
-   @code(al_do_menu), but allows you to combine a popup menu with your own
+   @link(al_do_menu), but allows you to combine a popup menu with your own
    program control structures.  It initialises a menu, returning a pointer to a
-   menu player object that can be used with @code(al_update_menu) and
-   @code(al_shutdown_menu).  With these functions, you could implement your own
+   menu player object that can be used with @link(al_update_menu) and
+   @link(al_shutdown_menu).  With these functions, you could implement your own
    version of @code(al_do_menu) with the lines:
    @longcode(#
 VAR
@@ -631,134 +753,19 @@ BEGIN
   RESULT := al_shutdown_menu (player);
 END;
    #) *)
-  FUNCTION al_init_menu (menu: AL_MENUptr; x, y: AL_INT): AL_MENU_PLAYERptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'init_menu';
-(* Updates the status of a menu object returned by @code(al_init_menu).
+  FUNCTION al_init_menu (menu: AL_MENUptr; x, y: AL_INT): AL_MENU_PLAYERptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'init_menu';
+(* Updates the status of a menu object returned by @link(al_init_menu).
    @returns(@true if the menu is still active, or @false if it has terminated.
      Upon a return value of @false, it is up to you to call
-     @code(al_shutdown_menu) or to continue execution.) *)
+     @link(al_shutdown_menu) or to continue execution.) *)
   FUNCTION al_update_menu (player: AL_MENU_PLAYERptr): BOOLEAN;
-(* Destroys a menu player object returned by @code(al_init_menu), returning the
+    INLINE;
+(* Destroys a menu player object returned by @link(al_init_menu), returning the
    index of the menu item that was selected, or -1 if the menu was cancelled
-   (this is the same as the return value from @code(al_do_menu)). *)
-  FUNCTION al_shutdown_menu (player: AL_MENU_PLAYERptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'shutdown_menu';
-
-
-
-VAR
-(* If non-zero, the input focus follows the mouse pointer around the dialog,
-   otherwise a click is required to move it. *)
-  al_gui_mouse_focus: AL_INT;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mouse_focus';
-(* The foreground color for the standard dialogs (alerts, menus, and the file
-   selector).  Defaults to 255.
-   @seealso(al_gui_bg_color) @seealso(al_gui_mg_color)
-   @seealso(al_set_dialog_color) *)
-  al_gui_fg_color: AL_INT;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_fg_color';
-(* The color used for displaying greyed-out dialog objects (with the
-   @code(AL_D_DISABLED) flag set). Defaults to 8.
-   @seealso(al_gui_fg_color) @seealso(al_gui_bg_color)
-   @seealso(al_set_dialog_color) *)
-  al_gui_mg_color: AL_INT;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mg_color';
-(* The background color for the standard dialogs (alerts, menus, and the file
-   selector). Defaults to 0.
-   @seealso(al_gui_fg_color) @seealso(al_gui_mg_color)
-   @seealso(al_set_dialog_color) *)
-  al_gui_bg_color: AL_INT;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_bg_color';
-(* If set to a non-zero value, adjusts the keyboard shortcut underscores to
-   account for the height of the descenders in your font. *)
-  al_gui_font_baseline: AL_INT;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_font_baseline';
-
-(* Hook function, used by the GUI routines whenever they need to access the
-   mouse state.  By default it just returns a copy of the @code(al_mouse_x)
-   variable, but it could be used to offset or scale the mouse position, or
-   read input from a different source entirely. *)
-  al_gui_mouse_x: AL_SIMPLE_FUNC;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mouse_x';
-(* Hook function, used by the GUI routines whenever they need to access the
-   mouse state.  By default it just returns a copy of the @code(al_mouse_y)
-   variable, but it could be used to offset or scale the mouse position, or
-   read input from a different source entirely. *)
-  al_gui_mouse_y: AL_SIMPLE_FUNC;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mouse_y';
-(* Hook function, used by the GUI routines whenever they need to access the
-   mouse state.  By default it just returns a copy of the @code(al_mouse_z)
-   variable, but it could be used to offset or scale the mouse position, or
-   read input from a different source entirely. *)
-  al_gui_mouse_z: AL_SIMPLE_FUNC;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mouse_z';
-(* Hook function, used by the GUI routines whenever they need to access the
-   mouse state.  By default it just returns a copy of the @code(al_mouse_b)
-   variable, but it could be used to offset or scale the mouse position, or
-   read input from a different source entirely. *)
-  al_gui_mouse_b: AL_SIMPLE_FUNC;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mouse_b';
-
-
-
-(* If set, this function will be used by the standard Allegro dialogs.  This
-   allows you to customise the look and feel, much like @code(al_gui_fg_color)
-   and @code(al_gui_bg_color), but much more flexibly. *)
-  al_gui_shadow_box_proc: AL_DIALOG_PROC;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_shadow_box_proc';
-(* If set, this function will be used by the standard Allegro dialogs.  This
-   allows you to customise the look and feel, much like @code(al_gui_fg_color)
-   and @code(al_gui_bg_color), but much more flexibly. *)
-  al_gui_ctext_proc: AL_DIALOG_PROC;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_ctext_proc';
-(* If set, this function will be used by the standard Allegro dialogs.  This
-   allows you to customise the look and feel, much like @code(al_gui_fg_color)
-   and @code(al_gui_bg_color), but much more flexibly. *)
-  al_gui_button_proc: AL_DIALOG_PROC;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_button_proc';
-(* If set, this function will be used by the standard Allegro dialogs.  This
-   allows you to customise the look and feel, much like @code(al_gui_fg_color)
-   and @code(al_gui_bg_color), but much more flexibly. *)
-  al_gui_edit_proc: AL_DIALOG_PROC;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_edit_proc';
-(* If set, this function will be used by the standard Allegro dialogs.  This
-   allows you to customise the look and feel, much like @code(al_gui_fg_color)
-   and @code(al_gui_bg_color), but much more flexibly. *)
-  al_gui_list_proc: AL_DIALOG_PROC;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_list_proc';
-(* If set, this function will be used by the standard Allegro dialogs.  This
-   allows you to customise the look and feel, much like @code(al_gui_fg_color)
-   and @code(al_gui_bg_color), but much more flexibly. *)
-  al_gui_text_list_proc: AL_DIALOG_PROC;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_text_list_proc';
-
-(* If set, this function will be called whenever a menu needs to be drawn, so
-   you can change how menus look.
-
-   It should draw the background of the menu onto screen. *)
-  al_gui_menu_draw_menu: AL_MENU_POS_PROC;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_menu_draw_menu';
-(* If set, this function will be called whenever a menu needs to be drawn, so
-   you can change how menus look.
-
-   It is called once for each menu item that is to be drawn.  @code(bar) will
-   be non-zero if the item is part of a top-level horizontal menu bar, and
-   @code(sel) will be non-zero if the menu item is selected.  It should also
-   draw onto screen. *)
-  al_gui_menu_draw_menu_item: AL_MENU_ITEM_PROC;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_menu_draw_item';
-
-(* Global pointer to the most recent activated dialog.  This may be useful if
-   an object needs to iterate through a list of all its siblings. *)
-  al_active_dialog: AL_DIALOGptr;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'active_dialog';
-(* When a menu callback procedure is triggered, this will be set to the menu
-   item that was selected, so your routine can determine where it was called from. *)
-  al_active_menu: AL_MENUptr;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'active_menu';
-
-
-
+   (this is the same as the return value from @link(al_do_menu)). *)
+  FUNCTION al_shutdown_menu (player: AL_MENU_PLAYERptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'shutdown_menu';
 (* Displays a popup alert box, containing three lines of text (s1-s3), and with
    either one or two buttons.  The text for these buttons is passed in
    @code(b1) and @code(b2) (@code(b2) may be empty), and the keyboard shortcuts
@@ -766,9 +773,10 @@ VAR
    @returns(1 or 2 depending on which button was clicked.  If the alert is
      dismissed by pressing ESC when ESC is not one of the keyboard shortcuts,
      it treats it as a click on the second button @(this is consistent with the
-     common @italic("Ok"), @italic("Cancel") alert@).) *)
+     common @italic("Ok"), @italic("Cancel") alert@).)
+   @seealso(al_alert3) *)
   FUNCTION al_alert (s1, s2, s3, b1, b2: STRING; c1, c2: AL_INT): AL_INT;
-(* Like @code(al_alert), but with three buttons. @returns(1, 2, or 3) *)
+(* Like @link(al_alert), but with three buttons. @returns(1, 2, or 3) *)
   FUNCTION al_alert3 (s1, s2, s3, b1, b2, b3: STRING; c1, c2, c3: AL_INT): AL_INT;
 (* Displays the Allegro file selector, with the message as caption.  The path
    parameter contains the initial filename to display (this can be used to set
@@ -777,7 +785,7 @@ VAR
    whose maximum length is specified by the length parameter.  Note that it
    should have room for at least 80 characters (not bytes).  The list of files
    is filtered according to the file extensions in the ext parameter.  Passing
-   empty string includes all files; @italic("PCX;BMP") includes only files with
+   empty string includes all files; @italic('PCX;BMP') includes only files with
    .PCX or .BMP extensions.  If you wish to control files by their attributes,
    one of the fields in the extension list can begin with a slash, followed by
    a set of attribute characters.  Any attribute written on its own, or with a
@@ -806,6 +814,7 @@ VAR
    @true if it was @code(OK)'d.)
    @seealso(al_gfx_mode_select_ex) @seealso(al_gfx_mode_select_filter) *)
   FUNCTION al_gfx_mode_select (VAR card, w, h: AL_INT): BOOLEAN;
+    INLINE;
 (* Extended version of the graphics mode selection dialog, which allows the
    user to select the color depth as well as the resolution and hardware
    driver.  This version of the function reads the initial values from the
@@ -813,6 +822,7 @@ VAR
    fact, you should be sure not to pass in uninitialised values.
    @seealso(al_gfx_mode_select) @seealso(al_gfx_mode_select_filter) *)
   FUNCTION al_gfx_mode_select_ex (VAR card, w, h, color_depth: AL_INT): BOOLEAN;
+    INLINE;
 
 TYPE
 (* Callback to be used by @code(al_gfx_mode_select_filter). *)
@@ -829,72 +839,59 @@ TYPE
    modes.)
    @seealso(al_gfx_mode_select) @seealso(al_gfx_mode_select_ex) *)
   FUNCTION al_gfx_mode_select_filter (VAR card, w, h, color_depth: AL_INT; filter: AL_GFX_SELECT_FN): BOOLEAN;
+    INLINE;
 
 
 
 IMPLEMENTATION
 
-USES
-  sysutils;
+  USES
+    sysutils;
 
 
 
 (* Links to Allegro's functions. *)
-FUNCTION gui_textout_ex (bmp: AL_BITMAPptr; CONST s: AL_CHARptr; x, y, color, bg, centre: AL_INT): AL_INT; CDECL;
-  EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION gui_strlen (CONST s: AL_CHARptr): AL_INT; CDECL;
-  EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION update_dialog (player: AL_DIALOG_PLAYERptr): AL_INT; CDECL;
-  EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION update_menu (player: AL_MENU_PLAYERptr): AL_INT; CDECL;
-  EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION gui_textout_ex (bmp: AL_BITMAPptr; CONST s: AL_STRptr; x, y, color, bg, centre: AL_INT): AL_INT; CDECL;
+    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION gui_strlen (CONST s: AL_STRptr): AL_INT; CDECL;
+    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION update_dialog (player: AL_DIALOG_PLAYERptr): AL_INT; CDECL;
+    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION update_menu (player: AL_MENU_PLAYERptr): AL_INT; CDECL;
+    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
 
-FUNCTION alert (s1, s2, s3, b1, b2: AL_CHARptr; c1, c2: AL_INT): AL_INT; CDECL;
-  EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION alert3 (s1, s2, s3, b1, b2, b3: AL_CHARptr; c1, c2, c3: AL_INT): AL_INT; CDECL;
-  EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION file_select_ex (CONST message: AL_CHARptr; path: AL_CHARptr; CONST ext: AL_CHARptr; size, w, h: AL_INT): AL_INT; CDECL;
-  EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION gfx_mode_select (card, w, h: AL_INTptr): AL_INT; CDECL;
-  EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION gfx_mode_select_ex (card, w, h, color_depth: AL_INTptr): AL_INT; CDECL;
-  EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-FUNCTION gfx_mode_select_filter (card, w, h, color_depth: AL_INTptr; filter: AL_POINTER): AL_INT; CDECL;
-  EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-
-
-
-FUNCTION al_gui_textout_ex (bmp: AL_BITMAPptr; s: STRING; x, y, color, bg: AL_INT; centre: BOOLEAN): AL_INT;
-VAR
-  Ctr: AL_INT;
-BEGIN
-  IF centre THEN
-    Ctr := NOT 0
-  ELSE
-    Ctr := 0;
-  al_gui_textout_ex := gui_textout_ex (bmp, AL_CHARptr (s), x, y, color, bg, Ctr);
-END;
+  FUNCTION alert (CONST s1, s2, s3, b1, b2: AL_STRptr; c1, c2: AL_INT): AL_INT; CDECL;
+    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION alert3 (CONST s1, s2, s3, b1, b2, b3: AL_STRptr; c1, c2, c3: AL_INT): AL_INT; CDECL;
+    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION file_select_ex (CONST message: AL_STRptr; path: AL_STRptr; CONST ext: AL_STRptr; size, w, h: AL_INT): AL_INT; CDECL;
+    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION gfx_mode_select (card, w, h: AL_INTptr): AL_INT; CDECL;
+    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION gfx_mode_select_ex (card, w, h, color_depth: AL_INTptr): AL_INT; CDECL;
+    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION gfx_mode_select_filter (card, w, h, color_depth: AL_INTptr; filter: AL_POINTER): AL_INT; CDECL;
+    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
 
 
 
-FUNCTION al_gui_strlen (s: STRING): AL_INT;
-BEGIN
-  al_gui_strlen := gui_strlen (AL_CHARptr (s));
-END;
+  FUNCTION al_gui_textout_ex (bmp: AL_BITMAPptr; s: STRING; x, y, color, bg: AL_INT; centre: BOOLEAN): AL_INT;
+  VAR
+    Ctr: AL_INT;
+  BEGIN
+    IF centre THEN
+      Ctr := NOT 0
+    ELSE
+      Ctr := 0;
+    al_gui_textout_ex := gui_textout_ex (bmp, AL_STRptr (s), x, y, color, bg, Ctr);
+  END;
 
 
 
-FUNCTION al_update_dialog (player: AL_DIALOG_PLAYERptr): BOOLEAN;
-BEGIN
-  al_update_dialog := update_dialog (player) <> 0;
-END;
-
-
-
-FUNCTION al_update_menu (player: AL_MENU_PLAYERptr): BOOLEAN;
-BEGIN
-  al_update_menu := update_menu (player) <> 0;
-END;
+  FUNCTION al_gui_strlen (s: STRING): AL_INT;
+  BEGIN
+    al_gui_strlen := gui_strlen (AL_STRptr (s));
+  END;
 
 
 
@@ -920,11 +917,18 @@ END;
 
 
 
+  FUNCTION al_update_dialog (player: AL_DIALOG_PLAYERptr): BOOLEAN;
+  BEGIN
+    al_update_dialog := update_dialog (player) <> 0;
+  END;
+
+
+
   PROCEDURE al_set_menu_item (VAR menu: ARRAY OF AL_MENU; index: INTEGER;
     txt: STRING; proc: AL_SIMPLE_FUNC; child: AL_MENUptr; flags: AL_INT;
     dp: POINTER);
   BEGIN
-    menu[index].txt   := AL_CHARptr (txt);
+    menu[index].txt   := AL_STRptr (txt);
     menu[index].proc  := proc;
     menu[index].child := child;
     menu[index].flags := flags;
@@ -933,62 +937,67 @@ END;
 
 
 
+  FUNCTION al_update_menu (player: AL_MENU_PLAYERptr): BOOLEAN;
+  BEGIN
+    al_update_menu := update_menu (player) <> 0;
+  END;
+
+
+
 (* Helper funtion to get labels. *)
-FUNCTION GetPChar (LabelText: STRING): AL_CHARptr; INLINE;
-BEGIN
-  IF LabelText <> '' THEN
-    GetPChar := AL_CHARptr (LabelText)
-  ELSE
-    GetPChar := NIL;
-END;
+  FUNCTION GetPChar (LabelText: STRING): AL_STRptr; INLINE;
+  BEGIN
+    IF LabelText <> '' THEN
+      GetPChar := AL_STRptr (LabelText)
+    ELSE
+      GetPChar := NIL;
+  END;
 
-FUNCTION al_alert (s1, s2, s3, b1, b2: STRING; c1, c2: AL_INT): AL_INT;
-BEGIN
-  al_alert := alert (GetPChar (s1), GetPChar (s2), GetPChar (s3),
-		     GetPChar (b1), GetPChar (b2), c1, c2);
-END;
-
-
-
-FUNCTION al_alert3 (s1, s2, s3, b1, b2, b3: STRING; c1, c2, c3: AL_INT): AL_INT;
-BEGIN
-  al_alert3 := alert3 (GetPChar (s1), GetPChar (s2), GetPChar (s3),
-		       GetPChar (b1), GetPChar (b2), GetPChar (b3), c1, c2, c3);
-END;
-
-
-FUNCTION al_file_select_ex (message: STRING; VAR path: STRING; ext: STRING; length, w, h: AL_INT): BOOLEAN;
-VAR
-  Buffer: AL_CHARptr;
-BEGIN
-  Buffer := StrAlloc (length + 1);
-  StrPCopy (Buffer, path);
-  al_file_select_ex := file_select_ex (AL_CHARptr (message), Buffer, AL_CHARptr (ext), length, w, h) <> 0;
-  Path := StrPas (Buffer);
-  StrDispose (Buffer);
-END;
+  FUNCTION al_alert (s1, s2, s3, b1, b2: STRING; c1, c2: AL_INT): AL_INT;
+  BEGIN
+    al_alert := alert (GetPChar (s1), GetPChar (s2), GetPChar (s3),
+		       GetPChar (b1), GetPChar (b2), c1, c2);
+  END;
 
 
 
-FUNCTION al_gfx_mode_select (VAR card, w, h: AL_INT): BOOLEAN;
-BEGIN
-  al_gfx_mode_select := gfx_mode_select (@card, @w, @h) <> 0;
-END;
+  FUNCTION al_alert3 (s1, s2, s3, b1, b2, b3: STRING; c1, c2, c3: AL_INT): AL_INT;
+  BEGIN
+    al_alert3 := alert3 (GetPChar (s1), GetPChar (s2), GetPChar (s3),
+			 GetPChar (b1), GetPChar (b2), GetPChar (b3), c1, c2, c3);
+  END;
+
+
+  FUNCTION al_file_select_ex (message: STRING; VAR path: STRING; ext: STRING; length, w, h: AL_INT): BOOLEAN;
+  VAR
+    Buffer: AL_STRptr;
+  BEGIN
+    Buffer := StrAlloc (length + 1);
+    StrPCopy (Buffer, path);
+    al_file_select_ex := file_select_ex (AL_STRptr (message), Buffer, AL_STRptr (ext), length, w, h) <> 0;
+    Path := StrPas (Buffer);
+    StrDispose (Buffer);
+  END;
 
 
 
-FUNCTION al_gfx_mode_select_ex (VAR card, w, h, color_depth: AL_INT): BOOLEAN;
-BEGIN
-  al_gfx_mode_select_ex := gfx_mode_select_ex (@card, @w, @h, @color_depth) <> 0;
-END;
+  FUNCTION al_gfx_mode_select (VAR card, w, h: AL_INT): BOOLEAN;
+  BEGIN
+    al_gfx_mode_select := gfx_mode_select (@card, @w, @h) <> 0;
+  END;
 
 
 
-FUNCTION al_gfx_mode_select_filter (VAR card, w, h, color_depth: AL_INT; filter: AL_GFX_SELECT_FN): BOOLEAN;
-BEGIN
-  al_gfx_mode_select_filter := gfx_mode_select_filter (@card, @w, @h, @color_depth, filter) <> 0;
-END;
+  FUNCTION al_gfx_mode_select_ex (VAR card, w, h, color_depth: AL_INT): BOOLEAN;
+  BEGIN
+    al_gfx_mode_select_ex := gfx_mode_select_ex (@card, @w, @h, @color_depth) <> 0;
+  END;
 
 
+
+  FUNCTION al_gfx_mode_select_filter (VAR card, w, h, color_depth: AL_INT; filter: AL_GFX_SELECT_FN): BOOLEAN;
+  BEGIN
+    al_gfx_mode_select_filter := gfx_mode_select_filter (@card, @w, @h, @color_depth, filter) <> 0;
+  END;
 
 END.

@@ -4,17 +4,23 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   Errores corregidos
   ------------------
   * Corregida la definición de al_errno.
+  * Corregidas las funciones al_install_param_int, al_install_param_int_ex y
+    al_remove_param_int.
   * Pequeño cambio en el ejemplo exhsvrgb.
 
   Novedades
   ---------
   + Añadidas funciones de conversión entre codificaciones de texto.
+  + Añadidas algunas funciones de gestión de "clip".
+  + Añadida función al_mouse_on_screen.
   + Soporte para sistemas de 64bit.
 
   Otros
   -----
   * Errores en la documentación.
   * Ahora los archivos objeto los guarda en otro directorio.
+  * Modificados los parámetros de funciones de generación y obtención de
+    paletas para que use VAR en vez de punteros.
 
 
 

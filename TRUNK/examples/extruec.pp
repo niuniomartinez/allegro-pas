@@ -49,7 +49,7 @@ USES
   { In case this is a 256 color mode, we'd better make sure that the
     palette is set to something sensible. This function generates a
     standard palette with a nice range of different colors... }
-    al_generate_332_palette (@pal);
+    al_generate_332_palette (pal);
     al_set_palette (pal);
 
     al_acquire_screen;

@@ -99,7 +99,7 @@ BEGIN { The program starts here. }
   END;
 
 { This isn't needed, but it speeds up the color table calculations. }
-  al_create_rgb_table (@rgb_table, pal, NIL);
+  al_create_rgb_table (rgb_table, pal, NIL);
   al_rgb_table := @rgb_table;
 
 { Build a color lookup table for lighting effects. }
