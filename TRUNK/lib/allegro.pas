@@ -2468,13 +2468,6 @@ VAR
  *    Mouse routines.
  *)
 
-(******************************************************************************
- ************)
-
-(******************
- * Mouse routines *
- ******************)
-
 CONST
 (* Indicates that the mouse cursor is the default system cursor, not Allegro's
    custom cursor. @seealso(al_select_mouse_cursor) *)
@@ -2843,81 +2836,73 @@ VAR
     INLINE;
 
 
-(**
-    JARL
-  **)
 
+(******************************************************************************
+ * draw.h
+ *    Drawing and sprite routines.
+ *)
 
+  (* Drawing modes. *)
+  CONST
+  (* Flag for @link(al_drawing_mode).
 
+     The pixels of the bitmap being drawn onto are simply replaced by those
+     produced by the drawing function. *)
+    AL_DRAW_MODE_SOLID		= 0;
+  (* Flag for @link(al_drawing_mode).
 
-(**********************
- * Drawing primitives *
- **********************)
+     Pixels are written to the bitmap with an exclusive-or operation rather than
+     a simple copy, so drawing the same shape twice will erase it.  Because it
+     involves reading as well as writing the bitmap memory, xor drawing is a lot
+     slower than the normal replace mode. *)
+    AL_DRAW_MODE_XOR		= 1;
+  (* Flag for @link(al_drawing_mode).
 
+     Pixels are simply copied from the pattern bitmap onto the destination
+     bitmap.  This allows the use of multicolored patterns, and means that the
+     color you pass to the drawing routine is ignored.  This is the fastest of
+     the patterned modes. *)
+    AL_DRAW_MODE_COPY_PATTERN	= 2;
+  (* Flag for @link(al_drawing_mode).
 
+     Each pixel in the pattern bitmap is compared with the mask color, which is
+     zero in 256-color modes or bright pink for truecolor data (maximum red and
+     blue, zero green).  If the pattern pixel is solid, a pixel of the color you
+     passed to the drawing routine is written to the destination bitmap,
+     otherwise a zero is written.  The pattern is thus treated as a monochrome
+     bitmask, which lets you use the same pattern to draw different shapes in
+     different colors, but prevents the use of multicolored patterns. *)
+    AL_DRAW_MODE_SOLID_PATTERN	= 3;
+  (* Flag for @link(al_drawing_mode).
 
+     It is almost the same as @link(AL_DRAW_MODE_SOLID_PATTERN), but the masked
+     pixels are skipped rather than being written as zeros, so the background
+     shows through the gaps. *)
+    AL_DRAW_MODE_MASKED_PATTERN	= 4;
+  (* Flag for @link(al_drawing_mode).
 
-(* Drawing modes. *)
-CONST
-(* Flag for @code(al_drawing_mode).
-
-   The pixels of the bitmap being drawn onto are simply replaced by those
-   produced by the drawing function. *)
-  AL_DRAW_MODE_SOLID		= 0;
-(* Flag for @code(al_drawing_mode).
-
-   Pixels are written to the bitmap with an exclusive-or operation rather than
-   a simple copy, so drawing the same shape twice will erase it.  Because it
-   involves reading as well as writing the bitmap memory, xor drawing is a lot
-   slower than the normal replace mode. *)
-  AL_DRAW_MODE_XOR		= 1;
-(* Flag for @code(al_drawing_mode).
-
-   Pixels are simply copied from the pattern bitmap onto the destination
-   bitmap.  This allows the use of multicolored patterns, and means that the
-   color you pass to the drawing routine is ignored.  This is the fastest of
-   the patterned modes. *)
-  AL_DRAW_MODE_COPY_PATTERN	= 2;
-(* Flag for @code(al_drawing_mode).
-
-   Each pixel in the pattern bitmap is compared with the mask color, which is
-   zero in 256-color modes or bright pink for truecolor data (maximum red and
-   blue, zero green).  If the pattern pixel is solid, a pixel of the color you
-   passed to the drawing routine is written to the destination bitmap,
-   otherwise a zero is written.  The pattern is thus treated as a monochrome
-   bitmask, which lets you use the same pattern to draw different shapes in
-   different colors, but prevents the use of multicolored patterns. *)
-  AL_DRAW_MODE_SOLID_PATTERN	= 3;
-(* Flag for @code(al_drawing_mode).
-
-   It is almost the same as @code(AL_DRAW_MODE_SOLID_PATTERN), but the masked
-   pixels are skipped rather than being written as zeros, so the background
-   shows through the gaps. *)
-  AL_DRAW_MODE_MASKED_PATTERN	= 4;
-(* Flag for @code(al_drawing_mode).
-
-   The global @code(al_color_table) table or truecolor blender functions are
-   used to overlay pixels on top of the existing image.  This must only be used
-   after you have set up the color mapping table (for 256 color modes) or
-   blender functions (for truecolor modes).  Because it involves reading as
-   well as writing the bitmap memory, translucent drawing is very slow if you
-   draw directly to video RAM, so wherever possible you should use a memory
-   bitmap instead. *)
-  AL_DRAW_MODE_TRANS		= 5;
+     The global @link(al_color_table) table or truecolor blender functions are
+     used to overlay pixels on top of the existing image.  This must only be used
+     after you have set up the color mapping table (for 256 color modes) or
+     blender functions (for truecolor modes).  Because it involves reading as
+     well as writing the bitmap memory, translucent drawing is very slow if you
+     draw directly to video RAM, so wherever possible you should use a memory
+     bitmap instead. *)
+    AL_DRAW_MODE_TRANS		= 5;
 
 
 
 (* Sets the graphics drawing mode.  This only affects the geometric routines
-   like @code(al_putpixel), lines, rectangles, circles, polygons, floodfill,
+   like @link(al_putpixel), lines, rectangles, circles, polygons, floodfill,
    etc, not the text output, blitting, or sprite drawing functions.  The mode
    should be one of the following constants:
 @unorderedList(
-  @item(@code(AL_DRAW_MODE_SOLID))
-  @item(@code(AL_DRAW_MODE_XOR))
-  @item(@code(AL_DRAW_MODE_COPY_PATTERN))
-  @item(@code(AL_DRAW_MODE_SOLID_PATTERN))
-  @item(@code(AL_DRAW_MODE_MASKED_PATTERN))
-  @item(@code(AL_DRAW_MODE_TRANS))
+  @item(@link(AL_DRAW_MODE_SOLID))
+  @item(@link(AL_DRAW_MODE_XOR))
+  @item(@link(AL_DRAW_MODE_COPY_PATTERN))
+  @item(@link(AL_DRAW_MODE_SOLID_PATTERN))
+  @item(@link(AL_DRAW_MODE_MASKED_PATTERN))
+  @item(@link(AL_DRAW_MODE_TRANS))
 )
    With the patterned modes, you provide a pattern bitmap which is tiled across
    the surface of the shape.  Allegro stores a pointer to this bitmap rather
@@ -2930,26 +2915,33 @@ CONST
    meet up exactly along the shared edges.  Zero alignment may look peculiar if
    you are moving a patterned shape around the screen, however, because the
    shape will move but the pattern alignment will not, so in some situations
-   you may wish to alter the anchor position. *)
-  PROCEDURE al_drawing_mode (mode: LONGINT; pattern: AL_BITMAPptr;
-			     x_anchor, y_anchor: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'drawing_mode';
+   you may wish to alter the anchor position.
+   @seealso(al_xor_mode) @seealso(al_solid_mode) @seealso(al_set_trans_blender)
+   @seealso(al_color_table) *)
+  PROCEDURE al_drawing_mode (mode: AL_INT; pattern: AL_BITMAPptr;
+	x_anchor, y_anchor: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'drawing_mode';
 
 (* This is a shortcut for toggling xor drawing mode on and off.  Calling
-   @code(al_xor_mode @(1@)) is equivalent to @code(al_drawing_mode)
-   @code(@(AL_DRAW_MODE_XOR, NIL, 0, 0@)).  Calling @code(al_xor_mode @(0@)) is
-   equivalent to @code(al_drawing_mode @(A_DRAW_MODE_SOLID, NIL, 0, 0@)). *)
-  PROCEDURE al_xor_mode (aOn: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'xor_mode';
+   @code(al_xor_mode @(@true@)) is equivalent to @code(al_drawing_mode)
+   @code(@(AL_DRAW_MODE_XOR, @nil, 0, 0@)).  Calling @code(al_xor_mode @(@false@))
+   is equivalent to @code(al_drawing_mode @(A_DRAW_MODE_SOLID, @nil, 0, 0@)).
+   @seealso(al_drawing_mode) *)
+  PROCEDURE al_xor_mode (aOn: BOOLEAN);
+    INLINE;
 
 (* This is a shortcut for selecting solid drawing mode.  It is equivalent to
-   calling @code(al_drawing_mode) @code(@(AL_DRAW_MODE_XOR, NIL, 0, 0@)). *)
-  PROCEDURE al_solid_mode; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'solid_mode';
+   calling @code(al_drawing_mode) @code(@(AL_DRAW_MODE_XOR, NIL, 0, 0@)).
+   @seealso(al_drawing_mode) *)
+  PROCEDURE al_solid_mode;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'solid_mode';
 
 
 
-
+(******************************************************************************
+ * draw.inl
+ *    Draw inline functions.
+ *)
 
 (* Reads a pixel from point (x, y) in the bitmap.
 
@@ -2962,9 +2954,40 @@ CONST
      can't use the test against -1 as a predicate for such bitmaps.  In this
      cases, the only reliable predicate is check if it is inside the bitmap.
 
-     To extract the individual color components, use the getr() / getg() / getb() / geta() family of functions) *)
-  FUNCTION  al_getpixel (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+     To extract the individual color components, use the @link(al_getr) /
+     @link(al_getg) / @link(al_getb) / @link(al_geta) family of functions)
+   @seealso(al_putpixel) @seealso(_al_getpixel) *)
+  FUNCTION  al_getpixel (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
     INLINE;
+
+(* Writes a pixel to the specified position in the bitmap, using the current
+   drawing mode and the bitmap's clipping rectangle.
+   @seealso(al_getpixel) @seealso(_al_putpixel) @seealso(al_drawing_mode)
+   @seealso(al_makecol) *)
+  PROCEDURE al_putpixel (bmp: AL_BITMAPptr; x, y, color: AL_INT);
+    INLINE;
+
+(* Draws a vertical line onto the bitmap, from point (x, y1) to (x, y2).
+   @seealso(al_hline) @seealso(al_line) @seealso(al_drawing_mode)
+   @seealso(al_makecol) *)
+  PROCEDURE al_vline (bmp: AL_BITMAPptr; x, y1, y2, color: AL_INT);
+    INLINE;
+
+(* Draws a horizontal line onto the bitmap, from point (x1, y) to (x2, y). *)
+  PROCEDURE al_hline (bmp: AL_BITMAPptr; x1, y, x2, color: AL_INT);
+    INLINE;
+
+(**
+    JARL
+  **)
+
+
+
+
+(**********************
+ * Drawing primitives *
+ **********************)
+
 
 (* Faster inline version of @code(al_getpixel).  This is specific for 8 bits
    color depth and don't do any clipping, so you must make sure the point
@@ -2996,10 +3019,6 @@ CONST
   FUNCTION _al_getpixel32 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
     INLINE;
 
-(* Writes a pixel to the specified position in the bitmap, using the current
-   drawing mode and the bitmap's clipping rectangle. *)
-  PROCEDURE al_putpixel (bmp: AL_BITMAPptr; x, y, color: LONGINT);
-    INLINE;
 
 (* Like the regular @code(al_putpixel), but much faster because it's
    implemented as an inline functions for specific 8 bits color depth.  It
@@ -3036,13 +3055,6 @@ CONST
   PROCEDURE _al_putpixel32 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
     INLINE;
 
-(* Draws a vertical line onto the bitmap, from point (x, y1) to (x, y2). *)
-  PROCEDURE al_vline (bmp: AL_BITMAPptr; x, y1, y2, color: LONGINT);
-    INLINE;
-
-(* Draws a horizontal line onto the bitmap, from point (x1, y) to (x2, y). *)
-  PROCEDURE al_hline	   (bmp: AL_BITMAPptr; x1, y, x2, color: LONGINT);
-    INLINE;
 
 (* Draws a line onto the bitmap, from point (x1, y1) to (x2, y2).
    @seealso(al_fastline) @seealso(al_polygon) @seealso(al_do_line). *)
@@ -5098,6 +5110,50 @@ CONST
 
 
 (******************************************************************************
+ * draw.h *
+ **********)
+
+  PROCEDURE xor_mode (aOn: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  PROCEDURE al_xor_mode (aOn: BOOLEAN);
+  BEGIN
+    IF aOn THEN
+      xor_mode (1)
+    ELSE
+      xor_mode (0);
+  END;
+
+
+
+(******************************************************************************
+ * draw.inl *
+ ************)
+
+  FUNCTION  al_getpixel (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
+  BEGIN
+    al_getpixel := bmp^.vtable^.getpixel (bmp, x, y);
+  END;
+
+  PROCEDURE al_putpixel (bmp: AL_BITMAPptr; x, y, color: AL_INT);
+  BEGIN
+    bmp^.vtable^.putpixel (bmp, x, y, color);
+  END;
+
+
+  PROCEDURE al_vline (bmp: AL_BITMAPptr; x, y1, y2, color: AL_INT);
+  BEGIN
+    bmp^.vtable^.vline (bmp, x, y1, y2, color);
+  END;
+
+  PROCEDURE al_hline (bmp: AL_BITMAPptr; x1, y, x2, color: AL_INT);
+  BEGIN
+    bmp^.vtable^.hline (bmp, x1, y, x2, color);
+  END;
+
+
+
+(******************************************************************************
  ************)
 
 (**********************
@@ -5109,12 +5165,6 @@ TYPE
   BYTEPtr = ^BYTE;
 
 
-
-(* Drawing primitives. *)
-  FUNCTION al_getpixel (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
-  BEGIN
-    al_getpixel := bmp^.vtable^.getpixel (bmp, x, y);
-  END;
 
   FUNCTION _al_getpixel (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
   VAR
@@ -5177,10 +5227,6 @@ TYPE
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
-  PROCEDURE al_putpixel (bmp: AL_BITMAPptr; x, y, color: LONGINT);
-  BEGIN
-    bmp^.vtable^.putpixel (bmp, x, y, color);
-  END;
 
   PROCEDURE _al_putpixel (bmp: AL_BITMAPptr; x, y, color: LONGINT);
   VAR
@@ -5239,16 +5285,6 @@ TYPE
     addr := bmp^.write_bank (bmp, y);
     (PLONGINT (addr + (DWORD (x) * 4)))^ := color;
     bmp^.vtable^.unwrite_bank (bmp);
-  END;
-
-  PROCEDURE al_vline (bmp: AL_BITMAPptr; x, y1, y2, color: LONGINT);
-  BEGIN
-    bmp^.vtable^.vline (bmp, x, y1, y2, color);
-  END;
-
-  PROCEDURE al_hline (bmp: AL_BITMAPptr; x1, y, x2, color: LONGINT);
-  BEGIN
-    bmp^.vtable^.hline (bmp, x1, y, x2, color);
   END;
 
   PROCEDURE al_line (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
