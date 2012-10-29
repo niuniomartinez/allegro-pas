@@ -129,7 +129,7 @@ VAR
     X, Y, Ndx: INTEGER;
   BEGIN
   { Initialize example. }
-    al_xor_mode (1);
+    al_xor_mode (TRUE);
     al_clear_keybuf;
     Buffer := al_create_bitmap (320, 200);
     X := 160;

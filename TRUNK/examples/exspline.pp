@@ -296,7 +296,7 @@ VAR
     ox := -16;
     oy := -16;
 
-    al_xor_mode (-1);
+    al_xor_mode (TRUE);
 
     FOR n := 1 TO NodeCount - 3 DO
     BEGIN
@@ -326,7 +326,7 @@ VAR
       END;
     END;
 
-    al_xor_mode (0);
+    al_xor_mode (FALSE);
 
     ClearUserInput;
   END;

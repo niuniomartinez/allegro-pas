@@ -13,6 +13,7 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   + Añadidas funciones de conversión entre codificaciones de texto.
   + Añadidas algunas funciones de gestión de "clip".
   + Añadida función al_mouse_on_screen.
+  + Añadida función al_find_datafile_object.
   + Soporte para sistemas de 64bit.
 
   Otros
@@ -21,6 +22,8 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   * Ahora los archivos objeto los guarda en otro directorio.
   * Modificados los parámetros de funciones de generación y obtención de
     paletas para que use VAR en vez de punteros.
+* Changed parameter of al_xor_mode from INTEGER to BOOLEAN.
+* CHanged return values of al_save_*_pf from INTEGER to BOOLEAN.
 
 
 
