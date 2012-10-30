@@ -4,7 +4,7 @@ UNIT alblend;
   In truecolor video modes, translucency and lighting are implemented by a
   blender function of the form:
   @longcode(#
-       FUNCTION AL_BLENDER_FUNC (x, y, n: DWORD): DWORD;
+       FUNCTION AL_BLENDER_FUNC (x, y, n: AL_ULONG): AL_ULONG; CDECL;
   #)
   For each pixel to be drawn, this routine is passed two color parameters
   @code(x) and @code(y), decomposes them into their red, green and blue
@@ -38,135 +38,172 @@ UNIT alblend;
 
 INTERFACE
 
-USES
-  albase;
+  USES
+    albase;
 
-TYPE
-(* @code(alblend) @code(al_set_blender_mode) @code(al_set_blender_mode_ex) *)
-  AL_BLENDER_FUNC = FUNCTION (x, y, n: DWORD): DWORD; CDECL;
+(*****************************************************************************
+ * color.h
+ *     Color manipulation routines.
+ *)
+
+  TYPE
+  (* @seealso(alblend) @seealso(al_set_blender_mode) @seealso(al_set_blender_mode_ex) *)
+    AL_BLENDER_FUNC = FUNCTION (x, y, n: AL_ULONG): AL_ULONG; CDECL;
+
+
+
+(* Specifies a custom set of truecolor blender routines, which can be used to
+   implement whatever special interpolation modes you need.  This function
+   shares a single blender between the 24 and 32-bit modes.
+   @seealso(al_set_blender_mode_ex) @seealso(al_set_trans_blender)
+   @seealso(al_color_map) @seealso(al_draw_trans_sprite)
+   @seealso(al_draw_lit_sprite) @seealso(al_drawing_mode)
+ *)
+  PROCEDURE al_set_blender_mode (b15, b16, b24: AL_BLENDER_FUNC; r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_blender_mode';
+
+(* Like @link(al_set_blender_mode), but allows you to specify a more complete
+   set of blender routines.  The @code(b15), @code(b16), @code(b24), and
+   @code(b32) routines are used when drawing pixels onto destinations of the
+   same format, while @code(b15x), @code(b16x), and @code(b24x) are used by
+   @link(al_draw_trans_sprite) and @link(al_draw_trans_rle_sprite) when drawing
+   RGBA images onto destination bitmaps of another format.  These blenders will
+   be passed a 32-bit @code(x) parameter, along with a @code(y) value of a
+   different color depth, and must try to do something sensible in response.
+   @seealso(set_alpha_blender) *)
+  PROCEDURE al_set_blender_mode_ex (b15, b16, b24, b32, b15x, b16x, b24x: AL_BLENDER_FUNC;
+					r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_blender_mode_ex';
 
 
 
 (* Enables the special alpha-channel blending mode, which is used for drawing
    32-bit RGBA sprites.  After calling this function, you can use
-   @code(al_draw_trans_sprite) or @code(al_draw_trans_rle_sprite) to draw a
+   @link(al_draw_trans_sprite) or @link(al_draw_trans_rle_sprite) to draw a
    32-bit source image onto any hicolor or truecolor destination.  The alpha
    values will be taken directly from the source graphic, so you can vary the
    solidity of each part of the image.  You can't use any of the normal
    translucency functions while this mode is active, though, so you should
-   reset to one of the normal blender modes (eg. @code(al_set_trans_blender))
-   before drawing anything other than 32-bit RGBA sprites. *)
-  PROCEDURE al_set_alpha_blender; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_alpha_blender';
+   reset to one of the normal blender modes (eg. @link(al_set_trans_blender))
+   before drawing anything other than 32-bit RGBA sprites.
+   @seealso(al_set_write_alpha_blender) *)
+  PROCEDURE al_set_alpha_blender;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_alpha_blender';
 
 (* Enables the special alpha-channel editing mode, which is used for drawing
    alpha channels over the top of an existing 32-bit RGB sprite, to turn it
    into an RGBA format image.  After calling this function, you can set the
-   drawing mode to @code(AL_DRAW_MODE_TRANS) and then write draw color values
+   drawing mode to @link(AL_DRAW_MODE_TRANS) and then write draw color values
    (0-255) onto a 32-bit image.  This will leave the color values unchanged,
    but alter the alpha to whatever values you are writing.  After enabling this
-   mode you can also use @code(al_draw_trans_sprite) to superimpose an 8-bit
-   alpha mask over the top of an existing 32-bit sprite. *)
-  PROCEDURE al_set_write_alpha_blender; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_write_alpha_blender';
+   mode you can also use @link(al_draw_trans_sprite) to superimpose an 8-bit
+   alpha mask over the top of an existing 32-bit sprite.
+   @seealso(al_set_alpha_blender) @seealso(al_drawing_mode) *)
+  PROCEDURE al_set_write_alpha_blender;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_write_alpha_blender';
 
 (* Enables a linear interpolator blender mode for combining translucent or lit
-   truecolor pixels. *)
-  PROCEDURE al_set_trans_blender (r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_trans_blender';
+   truecolor pixels.
+   @seealso(al_set_blender_mode) @seealso(set_alpha_blender)
+   @seealso(set_write_alpha_blender) @seealso(color_map)
+   @seealso(draw_trans_sprite) @seealso(draw_lit_sprite) @seealso(drawing_mode)
+   @seealso(set_add_blender) @seealso(set_burn_blender)
+   @seealso(set_color_blender) @seealso(set_difference_blender)
+   @seealso(set_dissolve_blender) @seealso(set_dodge_blender)
+   @seealso(set_hue_blender) @seealso(set_invert_blender)
+   @seealso(set_luminance_blender) @seealso(set_multiply_blender)
+   @seealso(set_saturation_blender) @seealso(set_screen_blender)
+ *)
+  PROCEDURE al_set_trans_blender (r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_trans_blender';
 
 (* Enables an additive blender mode for combining translucent or lit truecolor
-   pixels. *)
-  PROCEDURE al_set_add_blender (r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_add_blender';
+   pixels.
+   @seealso(al_set_trans_blender) @seealso(al_drawing_mode) *)
+  PROCEDURE al_set_add_blender (r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_add_blender';
 
 (* Enables a burn blender mode for combining translucent or lit truecolor
    pixels.  Here the lightness values of the colours of the source image reduce
-   the lightness of the destination image, darkening the image. *)
-  PROCEDURE al_set_burn_blender (r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_burn_blender';
+   the lightness of the destination image, darkening the image.
+   @seealso(al_set_trans_blender) @seealso(al_drawing_mode) *)
+  PROCEDURE al_set_burn_blender (r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_burn_blender';
 
 (* Enables a color blender mode for combining translucent or lit truecolor
    pixels.  Applies only the hue and saturation of the source image to the
    destination image.  The luminance of the destination image is not
-   affected. *)
-  PROCEDURE al_set_color_blender (r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_color_blender';
+   affected.
+   @seealso(al_set_trans_blender) @seealso(al_drawing_mode) *)
+  PROCEDURE al_set_color_blender (r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_color_blender';
 
 (* Enables a difference blender mode for combining translucent or lit truecolor
    pixels.  This makes an image which has colours calculated by the difference
-   between the source and destination colours. *)
-  PROCEDURE al_set_difference_blender (r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_difference_blender';
+   between the source and destination colours.
+   @seealso(al_set_trans_blender) @seealso(al_drawing_mode) *)
+  PROCEDURE al_set_difference_blender (r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_difference_blender';
 
 (* Enables a dissolve blender mode for combining translucent or lit truecolor
    pixels.  Randomly replaces the colours of some pixels in the destination
    image with those of the source image.  The number of pixels replaced depends
    on the alpha value (higher value, more pixels replaced; you get the idea
-   :). *)
-  PROCEDURE al_set_dissolve_blender (r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_dissolve_blender';
+   :).
+   @seealso(al_set_trans_blender) @seealso(al_drawing_mode) *)
+  PROCEDURE al_set_dissolve_blender (r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_dissolve_blender';
 
 (* Enables a dodge blender mode for combining translucent or lit truecolor
     pixels.  The lightness of colours in the source lighten the colours of the
-    destination.  White has the most effect; black has none. *)
-  PROCEDURE al_set_dodge_blender (r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_dodge_blender';
+    destination.  White has the most effect; black has none.
+   @seealso(al_set_trans_blender) @seealso(al_drawing_mode) *)
+  PROCEDURE al_set_dodge_blender (r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_dodge_blender';
 
 (* Enables a hue blender mode for combining translucent or lit truecolor
-   pixels. This applies the hue of the source to the destination. *)
-  PROCEDURE al_set_hue_blender (r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_hue_blender';
+   pixels. This applies the hue of the source to the destination.
+   @seealso(al_set_trans_blender) @seealso(al_drawing_mode) *)
+  PROCEDURE al_set_hue_blender (r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_hue_blender';
 
 (* Enables an invert blender mode for combining translucent or lit truecolor
    pixels.  Blends the inverse (or negative) colour of the source with the
-   destination. *)
-  PROCEDURE al_set_invert_blender (r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_invert_blender';
+   destination.
+   @seealso(al_set_trans_blender) @seealso(al_drawing_mode) *)
+  PROCEDURE al_set_invert_blender (r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_invert_blender';
 
 (* Enables a luminance blender mode for combining translucent or lit truecolor
    pixels.  Applies the luminance of the source to the destination.  The colour
-   of the destination is not affected. *)
-  PROCEDURE al_set_luminance_blender (r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_luminance_blender';
+   of the destination is not affected.
+   @seealso(al_set_trans_blender) @seealso(al_drawing_mode) *)
+  PROCEDURE al_set_luminance_blender (r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_luminance_blender';
 
 (* Enables a multiply blender mode for combining translucent or lit truecolor
    pixels.  Combines the source and destination images, multiplying the colours
    to produce a darker colour.  If a colour is multiplied by white it remains
-   unchanged; when multiplied by black it also becomes black. *)
-  PROCEDURE al_set_multiply_blender (r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_multiply_blender';
+   unchanged; when multiplied by black it also becomes black.
+   @seealso(al_set_trans_blender) @seealso(al_drawing_mode) *)
+  PROCEDURE al_set_multiply_blender (r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_multiply_blender';
 
 (* Enables a saturation blender mode for combining translucent or lit truecolor
-   pixels.  Applies the saturation of the source to the destination image. *)
-  PROCEDURE al_set_saturation_blender (r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_saturation_blender';
+   pixels.  Applies the saturation of the source to the destination image.
+   @seealso(al_set_trans_blender) @seealso(al_drawing_mode) *)
+  PROCEDURE al_set_saturation_blender (r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_saturation_blender';
 
 (* Enables a screen blender mode for combining translucent or lit truecolor
    pixels.  This blender mode lightens the colour of the destination image by
    multiplying the inverse of the source and destination colours.  Sort of like
-   the opposite of the multiply blender mode. *)
-  PROCEDURE al_set_screen_blender (r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_screen_blender';
+   the opposite of the multiply blender mode.
+   @seealso(al_set_trans_blender) @seealso(al_drawing_mode) *)
+  PROCEDURE al_set_screen_blender (r, g, b, a: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_screen_blender';
 
-(* Specifies a custom set of truecolor blender routines, which can be used to
-   implement whatever special interpolation modes you need.  This function
-   shares a single blender between the 24 and 32-bit modes. *)
-  PROCEDURE al_set_blender_mode (b15, b16, b24: AL_BLENDER_FUNC;
-				 r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_blender_mode';
 
-(* Like @code(al_set_blender_mode), but allows you to specify a more complete
-   set of blender routines.  The @code(b15), @code(b16), @code(b24), and
-   @code(b32) routines are used when drawing pixels onto destinations of the
-   same format, while @code(b15x), @code(b16x), and @code(b24x) are used by
-   @code(al_draw_trans_sprite) and @code(al_draw_trans_rle_sprite) when drawing
-   RGBA images onto destination bitmaps of another format.  These blenders will
-   be passed a 32-bit @code(x) parameter, along with a @code(y) value of a
-   different color depth, and must try to do something sensible in response. *)
-  PROCEDURE al_set_blender_mode_ex (b15, b16, b24, b32, b15x, b16x, b24x:
-				  AL_BLENDER_FUNC; r, g, b, a: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_blender_mode_ex';
 
 
 

@@ -32,7 +32,7 @@ PROGRAM excolmap;
 {$ENDIF}
 
 USES
-  allegro,
+  albase, allegro,
   alvga;    { 8 bit paletted mode special effects. }
 
 
@@ -63,7 +63,7 @@ VAR
  * When you return the rgb value, you don't need to search the palette for
  * the nearest color, Allegro does this automatically.
  *)
-  PROCEDURE ReturnGreyColor (pal: AL_PALETTE; x, y: LONGINT; rgb: AL_RGBptr);
+  PROCEDURE ReturnGreyColor (CONST pal: AL_PALETTE; x, y: AL_INT; rgb: AL_RGBptr);
 	CDECL;
   VAR
     C: INTEGER;
@@ -80,7 +80,7 @@ VAR
 (* The negative_color function is quite the same like the grayscale one,
  * since we are ignoring the value of the drawn color (aka x).
  *)
-  PROCEDURE ReturnNegativeColor (pal: AL_PALETTE; x, y: LONGINT;
+  PROCEDURE ReturnNegativeColor (CONST pal: AL_PALETTE; x, y: AL_INT;
 				 rgb: AL_RGBptr); CDECL;
   BEGIN
   { To get the negative color, substract the color values of red, green
