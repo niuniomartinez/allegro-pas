@@ -1652,7 +1652,7 @@ END;
     AL_BITMAPptr = ^AL_BITMAP;
   (* @exclude
     These are for internal low-level access.  DO NOT USE IT IN YOUR GAMES. *)
-    _BMP_BANK_SWITCHER = FUNCTION (bmp: AL_BITMAPptr; lyne: AL_INT): AL_INT32; CDECL;
+    _BMP_BANK_SWITCHER = FUNCTION (bmp: AL_BITMAPptr; lyne: AL_INT): AL_UINTPTR_T; CDECL;
 
   (* Stores the contents of a bitmap.
 
@@ -2936,6 +2936,95 @@ VAR
   PROCEDURE al_solid_mode;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'solid_mode';
 
+(* Calculates all the points along a line from point (x1, y1) to (x2, y2),
+   calling the supplied function for each one.  This will be passed a copy of
+   the bmp parameter, the x and y position, and a copy of the d parameter.
+   Example:
+@longcode(#
+PROCEDURE DrawDustParticle (bmp: AL_BITMAPptr; x, y, d: AL_INT); CDECL;
+BEGIN
+   ...
+END;
+
+  al_do_line (al_screen, 0, 0, AL_SCREEN_W-1, AL_SCREEN_H-2,
+              DustStrength, @DrawDustParticle);
+#) @seealso(al_do_circle) @seealso(al_do_ellipse) @seealso(al_do_arc) *)
+  PROCEDURE al_do_line (bmp: AL_BITMAPptr; x1, y1, x2, y2, d: AL_INT; proc: AL_POINT_PROC);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_line';
+
+(* Calculates all the points in a circle around point (x, y) with radius r,
+   calling the supplied function for each one.  This will be passed a copy of
+   the bmp parameter, the x and y position, and a copy of the d parameter.
+   Example:
+@longcode(#
+PROCEDURE DrawExplosionRing (bmp: AL_BITMAPptr; x, y, d: AL_INT); CDECL;
+BEGIN
+   ...
+END;
+
+  al_do_circle (al_screen, AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
+                AL_SCREEN_H DIV 16, FlameColor, @DrawExplosionRing);
+#) @seealso(al_do_line) @seealso(al_do_ellipse) @seealso(al_do_arc) *)
+  PROCEDURE al_do_circle (bmp: AL_BITMAPptr; x, y, radius, d: AL_INT; proc: AL_POINT_PROC);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_circle';
+
+(* Calculates all the points in an ellipse around point (x, y) with radius rx
+   and ry, calling the supplied function for each one.  This will be passed a
+   copy of the bmp parameter, the x and y position, and a copy of the d
+   parameter. Example:
+@longcode(#
+PROCEDURE DrawExplosionRing (bmp: AL_BITMAPptr; x, y, d: AL_INT); CDECL;
+BEGIN
+   ...
+END;
+
+  al_do_ellipse (al_screen, AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
+                AL_SCREEN_H DIV 16, FlameColor, @DrawExplosionRing);
+#) @seealso(al_do_line) @seealso(al_do_circle) @seealso(al_do_arc) *)
+  PROCEDURE al_do_ellipse (bmp: AL_BITMAPptr; x, y, rx, ry, d: AL_INT; proc: AL_POINT_PROC);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_ellipse';
+
+(* Calculates all the points in a circular arc around point (x, y) with radius
+   r, calling the supplied function for each one.  This will be passed a copy
+   of the bmp parameter, the x and y position, and a copy of the d parameter.
+   The arc will be plotted in an anticlockwise direction starting from the
+   angle a1 and ending when it reaches a2.  These values are specified in 16.16
+   fixed point format, with 256 equal to a full circle, 64 a right angle, etc.
+   Zero is to the right of the centre point, and larger values rotate
+   anticlockwise from there.
+   Example:
+@longcode(#
+PROCEDURE DrawExplosionRing (bmp: AL_BITMAPptr; x, y, d: AL_INT); CDECL;
+BEGIN
+   ...
+END;
+
+  al_do_arc (al_screen, AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
+                AL_SCREEN_H DIV 16, FlameColor, @DrawExplosionRing);
+#) @seealso(al_do_line) @seealso(al_do_circle) @seealso(al_do_ellipse) *)
+  PROCEDURE al_do_arc (bmp: AL_BITMAPptr; x, y: AL_INT; ang1, ang2: AL_FIXED; r, d: AL_INT; proc: AL_POINT_PROC);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_arc';
+
+(* Calculates a series of npts values along a Bezier spline, storing them in
+   the output x and y arrays.
+
+   The Bezier curve is specified by the four x/y control points in the points
+   array:  points[0] and points[1] contain the coordinates of the first control
+   point, points[2] and points[3] are the second point, etc.  Control points 0
+   and 3 are the ends of the spline, and points 1 and 2 are guides.  The curve
+   probably won't pass through points 1 and 2, but they affect the shape of the
+   curve between points 0 and 3 @(the lines p0-p1 and p2-p3 are tangents to the
+   spline@).  The easiest way to think of it is that the curve starts at p0,
+   heading in the direction of p1, but curves round so that it arrives at p3
+   from the direction of p2.
+
+   In addition to their role as graphics primitives, spline curves can be
+   useful for constructing smooth paths around a series of control points, as
+   in exspline.pp.
+   @seealso(al_spline) *)
+  PROCEDURE al_calc_spline (CONST points: ARRAY OF AL_INT; npts: AL_INT; VAR x, y: ARRAY OF AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'calc_spline';
+
 
 
 (******************************************************************************
@@ -2973,126 +3062,68 @@ VAR
   PROCEDURE al_vline (bmp: AL_BITMAPptr; x, y1, y2, color: AL_INT);
     INLINE;
 
-(* Draws a horizontal line onto the bitmap, from point (x1, y) to (x2, y). *)
+(* Draws a horizontal line onto the bitmap, from point (x1, y) to (x2, y).
+   @seealso(al_vline) @seealso(al_line) @seealso(al_drawing_mode)
+   @seealso(al_makecol) *)
   PROCEDURE al_hline (bmp: AL_BITMAPptr; x1, y, x2, color: AL_INT);
     INLINE;
 
-(**
-    JARL
-  **)
-
-
-
-
-(**********************
- * Drawing primitives *
- **********************)
-
-
-(* Faster inline version of @code(al_getpixel).  This is specific for 8 bits
-   color depth and don't do any clipping, so you must make sure the point
-   lies inside the bitmap. @returns(the value of the pixel in 8bpp) *)
-  FUNCTION _al_getpixel (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
-    INLINE;
-
-(* Faster inline version of @code(al_getpixel).  This is specific for 15 bits
-   color depth and don't do any clipping, so you must make sure the point
-   lies inside the bitmap. @returns(the value of the pixel in 15bpp) *)
-  FUNCTION _al_getpixel15 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
-    INLINE;
-
-(* Faster inline version of @code(al_getpixel).  This is specific for 16 bits
-   color depth and don't do any clipping, so you must make sure the point
-   lies inside the bitmap. @returns(the value of the pixel in 16bpp) *)
-  FUNCTION _al_getpixel16 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
-    INLINE;
-
-(* Faster inline version of @code(al_getpixel).  This is specific for 24 bits
-   color depth and don't do any clipping, so you must make sure the point
-   lies inside the bitmap. @returns(the value of the pixel in 24bpp) *)
-  FUNCTION _al_getpixel24 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
-    INLINE;
-
-(* Faster inline version of @code(al_getpixel).  This is specific for 32 bits
-   color depth and don't do any clipping, so you must make sure the point
-   lies inside the bitmap. @returns(the value of the pixel in 32bpp) *)
-  FUNCTION _al_getpixel32 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
-    INLINE;
-
-
-(* Like the regular @code(al_putpixel), but much faster because it's
-   implemented as an inline functions for specific 8 bits color depth.  It
-   don't perform any clipping (they will crash if you try to draw outside the
-   bitmap!), and ignore the drawing mode. *)
-  PROCEDURE _al_putpixel (bmp: AL_BITMAPptr; x, y, color: LONGINT);
-    INLINE;
-
-(* Like the regular @code(al_putpixel), but much faster because it's
-   implemented as an inline functions for specific 15 bits color depth.  It
-   don't perform any clipping (they will crash if you try to draw outside the
-   bitmap!), and ignore the drawing mode. *)
-  PROCEDURE _al_putpixel15 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
-    INLINE;
-
-(* Like the regular @code(al_putpixel), but much faster because it's
-   implemented as an inline functions for specific 16 bits color depth.  It
-   don't perform any clipping (they will crash if you try to draw outside the
-   bitmap!), and ignore the drawing mode. *)
-  PROCEDURE _al_putpixel16 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
-    INLINE;
-
-(* Like the regular @code(al_putpixel), but much faster because it's
-   implemented as an inline functions for specific 24 bits color depth.  It
-   don't perform any clipping (they will crash if you try to draw outside the
-   bitmap!), and ignore the drawing mode. *)
-  PROCEDURE _al_putpixel24 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
-    INLINE;
-
-(* Like the regular @code(al_putpixel), but much faster because it's
-   implemented as an inline functions for specific 32 bits color depth.  It
-   don't perform any clipping (they will crash if you try to draw outside the
-   bitmap!), and ignore the drawing mode. *)
-  PROCEDURE _al_putpixel32 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
-    INLINE;
-
-
 (* Draws a line onto the bitmap, from point (x1, y1) to (x2, y2).
-   @seealso(al_fastline) @seealso(al_polygon) @seealso(al_do_line). *)
-  PROCEDURE al_line	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+   @seealso(al_fastline) @seealso(al_polygon) @seealso(al_do_line).
+   @seealso(al_drawing_mode) @seealso(al_makecol) *)
+  PROCEDURE al_line (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: AL_INT);
     INLINE;
 
 (* Faster version of the previous function.  Note that pixel correctness is not
    guaranteed for this function. @seealso(al_line) *)
-  PROCEDURE al_fastline	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
-    INLINE;
-
-(* Draws an outline rectangle with the two points as its opposite corners. *)
-  PROCEDURE al_rect	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+  PROCEDURE al_fastline (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: AL_INT);
     INLINE;
 
 (* Draws a solid, filled rectangle with the two points as its opposite
-   corners. *)
-  PROCEDURE al_rectfill	   (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
+   corners. @seealso(al_triangle) @seealso(al_polygon) @seealso(al_quad3d)
+   @seealso(al_drawing_mode) @seealso(al_makecol) *)
+  PROCEDURE al_rectfill (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: AL_INT);
+    INLINE;
+
+(* Draws a filled triangle between the three points.
+   @seealso(al_polygon) @seealso(al_triangle3d) @seealso(al_drawing_mode)
+   @seealso(al_makecol) *)
+  PROCEDURE al_triangle (bmp: AL_BITMAPptr; x1, y1, x2, y2, x3, y3, color: AL_INT);
+    INLINE;
+
+(* Draws a filled polygon with an arbitrary number of corners.  Pass the number
+   of vertices and an array containing a series of x, y points (a total of
+   vertices*2 values).
+   @seealso(al_triangle) @seealso(al_polygon3d) @seealso(al_drawing_mode)
+   @seealso(al_makecol) *)
+  PROCEDURE al_polygon (bmp: AL_BITMAPptr; vertices: AL_INT; CONST points: ARRAY OF AL_INT; color: AL_INT);
+    INLINE;
+
+(* Draws an outline rectangle with the two points as its opposite corners.
+   @seealso(al_rectfill) @seealso(al_drawing_mode) @seealso(al_makecol) *)
+  PROCEDURE al_rect (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: AL_INT);
     INLINE;
 
 (* Draws a circle with the specified centre and radius. @seealso(al_ellipse)
-   @seealso(al_circlefill) @seealso(al_do_circle) @seealso(al_arc) *)
-  PROCEDURE al_circle	   (bmp: AL_BITMAPptr; x, y, r, color: LONGINT);
+   @seealso(al_circlefill) @seealso(al_do_circle) @seealso(al_arc)
+   @seealso(al_drawing_mode) @seealso(al_makecol) *)
+  PROCEDURE al_circle (bmp: AL_BITMAPptr; x, y, r, color: AL_INT);
     INLINE;
 
 (* Draws a filled circle with the specified centre and radius.
-   @seealso(al_circle) *)
-  PROCEDURE al_circlefill  (bmp: AL_BITMAPptr; x, y, r, color: LONGINT);
+   @seealso(al_circle) @seealso(al_drawing_mode) @seealso(al_makecol) *)
+  PROCEDURE al_circlefill (bmp: AL_BITMAPptr; x, y, r, color: AL_INT);
     INLINE;
 
 (* Draws an ellipse with the specified centre and radius. @seealso(al_circle)
-   @seealso(al_ellipsefill) @seealso(al_arc) @seealso(al_do_ellipse) *)
-  PROCEDURE al_ellipse	   (bmp: AL_BITMAPptr; x, y, rx, ry, color: LONGINT);
+   @seealso(al_ellipsefill) @seealso(al_arc) @seealso(al_do_ellipse)
+   @seealso(al_drawing_mode) @seealso(al_makecol) *)
+  PROCEDURE al_ellipse (bmp: AL_BITMAPptr; x, y, rx, ry, color: AL_INT);
     INLINE;
 
 (* Draws a filled ellipse with the specified centre and radius.
-   @seealso(al_ellipse) *)
-  PROCEDURE al_ellipsefill (bmp: AL_BITMAPptr; x, y, rx, ry, color: LONGINT);
+   @seealso(al_ellipse) @seealso(al_drawing_mode) @seealso(al_makecol) *)
+  PROCEDURE al_ellipsefill (bmp: AL_BITMAPptr; x, y, rx, ry, color: AL_INT);
     INLINE;
 
 (* Draws a circular arc.
@@ -3102,124 +3133,94 @@ VAR
   values are specified in 16.16 fixed point format, with 256 equal to a full
   circle, 64 a right angle, etc.  Zero is to the right of the centre point, and
   larger values rotate anticlockwise from there.
-  @seealso(al_circle) @seealso(al_do_arc) *)
-  PROCEDURE al_arc (bmp: AL_BITMAPptr; x, y: LONGINT; ang1, ang2: AL_FIXED; r, color: LONGINT);
-    INLINE;
-
-(* Floodfills an enclosed area, starting at point (x, y), with the specified
-   color. *)
-  PROCEDURE al_floodfill   (bmp: AL_BITMAPptr; x, y, color: LONGINT);
-    INLINE;
-
-(* Draws a filled polygon with an arbitrary number of corners.  Pass the number
-   of vertices and an array containing a series of x, y points (a total of
-   vertices*2 values).
-   @seealso(al_triangle) @seealso(al_polygon3d) @seealso(al_drawing_mode) *)
-  PROCEDURE al_polygon (bmp: AL_BITMAPptr; vertices: LONGINT; CONST points: ARRAY OF LONGINT; color: LONGINT);
-    INLINE;
-
-(* Draws a filled triangle between the three points.
-   @seealso(al_polygon) @seealso(al_triangle3d) @seealso(al_drawing_mode) *)
-  PROCEDURE al_triangle (bmp: AL_BITMAPptr; x1, y1, x2, y2, x3, y3, color: LONGINT);
+  @seealso(al_circle) @seealso(al_do_arc) @seealso(al_drawing_mode)
+  @seealso(al_makecol) *)
+  PROCEDURE al_arc (bmp: AL_BITMAPptr; x, y: AL_INT; ang1, ang2: AL_FIXED; r, color: AL_INT);
     INLINE;
 
 (* Draws a Bezier spline using the four control points specified in the points
-   array.  Read the description of al_calc_spline for information on how to
-   build the points array.
-   @seealso(al_calc_spline) *)
-  PROCEDURE al_spline (bmp: AL_BITMAPptr; CONST points: ARRAY OF LONGINT; color: LONGINT);
+   array.  Read the description of @link(al_calc_spline) for information on how to
+   build the points array. @seealso(al_drawing_mode) @seealso(al_makecol) *)
+  PROCEDURE al_spline (bmp: AL_BITMAPptr; CONST points: ARRAY OF AL_INT; color: AL_INT);
     INLINE;
 
-(* Calculates all the points along a line from point (x1, y1) to (x2, y2),
-   calling the supplied function for each one.  This will be passed a copy of
-   the bmp parameter, the x and y position, and a copy of the d parameter, so
-   it is suitable for use with al_putpixel. Example:
-@longcode(#
-PROCEDURE DrawDustParticle (bmp: AL_BITMAPptr; x, y, d: LONGINT); CDECL;
-BEGIN
-   ...
-END;
-
-  al_do_line (al_screen, 0, 0, AL_SCREEN_W-1, AL_SCREEN_H-2,
-              DustStrength, @DrawDustParticle);
-#) @seealso(al_do_circle) @seealso(al_do_ellipse) @seealso(al_do_arc) *)
-  PROCEDURE al_do_line (bmp: AL_BITMAPptr; x1, y1, x2, y2, d: LONGINT; proc: AL_POINT_PROC); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_line';
-
-(* Calculates all the points in a circle around point (x, y) with radius r,
-   calling the supplied function for each one.  This will be passed a copy of
-   the bmp parameter, the x and y position, and a copy of the d parameter, so
-   it is suitable for use with al_putpixel. Example:
-@longcode(#
-PROCEDURE DrawExplosionRing (bmp: AL_BITMAPptr; x, y, d: LONGINT); CDECL;
-BEGIN
-   ...
-END;
-
-  al_do_circle (al_screen, AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
-                AL_SCREEN_H DIV 16, FlameColor, @DrawExplosionRing);
-#) @seealso(al_do_line) @seealso(al_do_ellipse) @seealso(al_do_arc) *)
-  PROCEDURE al_do_circle (bmp: AL_BITMAPptr; x, y, radius, d: LONGINT; proc: AL_POINT_PROC); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_circle';
-
-(* Calculates all the points in an ellipse around point (x, y) with radius rx
-   and ry, calling the supplied function for each one.  This will be passed a
-   copy of the bmp parameter, the x and y position, and a copy of the d
-   parameter, so it is suitable for use with al_putpixel. Example:
-@longcode(#
-PROCEDURE DrawExplosionRing (bmp: AL_BITMAPptr; x, y, d: LONGINT); CDECL;
-BEGIN
-   ...
-END;
-
-  al_do_ellipse (al_screen, AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
-                AL_SCREEN_H DIV 16, FlameColor, @DrawExplosionRing);
-#) @seealso(al_do_line) @seealso(al_do_circle) @seealso(al_do_arc) *)
-  PROCEDURE al_do_ellipse (bmp: AL_BITMAPptr; x, y, rx, ry, d: LONGINT; proc: AL_POINT_PROC); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_ellipse';
-
-(* Calculates all the points in a circular arc around point (x, y) with radius
-   r, calling the supplied function for each one.  This will be passed a copy
-   of the bmp parameter, the x and y position, and a copy of the d parameter,
-   so it is suitable for use with al_putpixel.  The arc will be plotted in an
-   anticlockwise direction starting from the angle a1 and ending when it
-   reaches a2.  These values are specified in 16.16 fixed point format, with
-   256 equal to a full circle, 64 a right angle, etc. Zero is to the right of
-   the centre point, and larger values rotate anticlockwise from there.
-   Example:
-@longcode(#
-PROCEDURE DrawExplosionRing (bmp: AL_BITMAPptr; x, y, d: LONGINT); CDECL;
-BEGIN
-   ...
-END;
-
-  al_do_arc (al_screen, AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
-                AL_SCREEN_H DIV 16, FlameColor, @DrawExplosionRing);
-#) @seealso(al_do_line) @seealso(al_do_circle) @seealso(al_do_ellipse) *)
-  PROCEDURE al_do_arc (bmp: AL_BITMAPptr; x, y: LONGINT; ang1, ang2: AL_FIXED; r, d: LONGINT; proc: AL_POINT_PROC); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_arc';
-
-(* Calculates a series of npts values along a Bezier spline, storing them in
-   the output x and y arrays.
-
-   The Bezier curve is specified by the four x/y control points in the points
-   array:  points[0] and points[1] contain the coordinates of the first control
-   point, points[2] and points[3] are the second point, etc.  Control points 0
-   and 3 are the ends of the spline, and points 1 and 2 are guides.  The curve
-   probably won't pass through points 1 and 2, but they affect the shape of the
-   curve between points 0 and 3 @(the lines p0-p1 and p2-p3 are tangents to the
-   spline@).  The easiest way to think of it is that the curve starts at p0,
-   heading in the direction of p1, but curves round so that it arrives at p3
-   from the direction of p2.
-
-   In addition to their role as graphics primitives, spline curves can be
-   useful for constructing smooth paths around a series of control points, as
-   in exspline.pp.
-   @seealso(al_spline) *)
-  PROCEDURE al_calc_spline (CONST points: ARRAY OF LONGINT; npts: LONGINT; VAR x, y: ARRAY OF LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'calc_spline';
+(* Floodfills an enclosed area, starting at point (x, y), with the specified
+   color. @seealso(al_drawing_mode) @seealso(al_makecol) *)
+  PROCEDURE al_floodfill (bmp: AL_BITMAPptr; x, y, color: AL_INT);
+    INLINE;
 
 
+
+(* Like the regular @link(al_putpixel), but much faster because it's
+   implemented as an inline functions for specific 8 bits color depth.  It
+   don't perform any clipping (they will crash if you try to draw outside the
+   bitmap!), and ignore the drawing mode. *)
+  PROCEDURE _al_putpixel (bmp: AL_BITMAPptr; x, y, color: AL_INT);
+    INLINE;
+
+(* Faster inline version of @link(al_getpixel).  This is specific for 8 bits
+   color depth and don't do any clipping, so you must make sure the point
+   lies inside the bitmap. @returns(the value of the pixel in 8bpp) *)
+  FUNCTION _al_getpixel (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
+    INLINE;
+
+(* Like the regular @link(al_putpixel), but much faster because it's
+   implemented as an inline function for specific 15 bits color depth.  It
+   don't perform any clipping (it may crash if you try to draw outside the
+   bitmap!), and ignore the drawing mode. *)
+  PROCEDURE _al_putpixel15 (bmp: AL_BITMAPptr; x, y, color: AL_INT);
+    INLINE;
+
+(* Faster inline version of @link(al_getpixel).  This is specific for 15 bits
+   color depth and don't do any clipping, so you must make sure the point
+   lies inside the bitmap. @returns(the value of the pixel in 15bpp) *)
+  FUNCTION _al_getpixel15 (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
+    INLINE;
+
+(* Like the regular @link(al_putpixel), but much faster because it's
+   implemented as an inline function for specific 16 bits color depth.  It
+   don't perform any clipping (it may crash if you try to draw outside the
+   bitmap!), and ignore the drawing mode. *)
+  PROCEDURE _al_putpixel16 (bmp: AL_BITMAPptr; x, y, color: AL_INT);
+    INLINE;
+
+(* Faster inline version of @link(al_getpixel).  This is specific for 16 bits
+   color depth and don't do any clipping, so you must make sure the point
+   lies inside the bitmap. @returns(the value of the pixel in 16bpp) *)
+  FUNCTION _al_getpixel16 (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
+    INLINE;
+
+(* Like the regular @link(al_putpixel), but much faster because it's
+   implemented as an inline function for specific 24 bits color depth.  It
+   don't perform any clipping (it may crash if you try to draw outside the
+   bitmap!), and ignore the drawing mode. *)
+  PROCEDURE _al_putpixel24 (bmp: AL_BITMAPptr; x, y, color: AL_INT);
+    INLINE;
+
+(* Faster inline version of @link(al_getpixel).  This is specific for 24 bits
+   color depth and don't do any clipping, so you must make sure the point
+   lies inside the bitmap. @returns(the value of the pixel in 24bpp) *)
+  FUNCTION _al_getpixel24 (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
+    INLINE;
+
+(* Like the regular @link(al_putpixel), but much faster because it's
+   implemented as an inline function for specific 32 bits color depth.  It
+   don't perform any clipping (it may crash if you try to draw outside the
+   bitmap!), and ignore the drawing mode. *)
+  PROCEDURE _al_putpixel32 (bmp: AL_BITMAPptr; x, y, color: AL_INT);
+    INLINE;
+
+(* Faster inline version of @link(al_getpixel).  This is specific for 32 bits
+   color depth and don't do any clipping, so you must make sure the point
+   lies inside the bitmap. @returns(the value of the pixel in 32bpp) *)
+  FUNCTION _al_getpixel32 (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
+    INLINE;
+
+
+
+(**
+    JARL
+  **)
 
 (*************
  * Text font *
@@ -5151,63 +5152,165 @@ CONST
     bmp^.vtable^.hline (bmp, x1, y, x2, color);
   END;
 
-
-
-(******************************************************************************
- ************)
-
-(**********************
- * Drawing primitives *
- **********************)
-
-(* These are for inline&low-level access. *)
-TYPE
-  BYTEPtr = ^BYTE;
-
-
-
-  FUNCTION _al_getpixel (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
-  VAR
-    addr: DWORD;
+  PROCEDURE al_line (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: AL_INT);
   BEGIN
-    addr := bmp^.read_bank (bmp, y);
-    _al_getpixel := (BYTEPtr (addr + DWORD (x)))^;
+    bmp^.vtable^.line (bmp, x1, y1, x2, y2, color);
+  END;
+
+  PROCEDURE al_fastline (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: AL_INT);
+  BEGIN
+    bmp^.vtable^.fastline (bmp, x1, y1, x2, y2, color);
+  END;
+
+  PROCEDURE al_rectfill (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: AL_INT);
+  BEGIN
+    bmp^.vtable^.rectfill (bmp, x1, y1, x2, y2, color);
+  END;
+
+  PROCEDURE al_triangle (bmp: AL_BITMAPptr; x1, y1, x2, y2, x3, y3, color: AL_INT);
+  BEGIN
+    bmp^.vtable^.triangle (bmp, x1, y1, x2, y2, x3, y3, color);
+  END;
+
+  PROCEDURE al_polygon (bmp: AL_BITMAPptr; vertices: AL_INT; CONST points: ARRAY OF AL_INT; color: AL_INT);
+  BEGIN
+    bmp^.vtable^.polygon (bmp, vertices, @points[0], color);
+  END;
+
+  PROCEDURE al_rect (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: AL_INT);
+  BEGIN
+    bmp^.vtable^.rect (bmp, x1, y1, x2, y2, color);
+  END;
+
+  PROCEDURE al_circle (bmp: AL_BITMAPptr; x, y, r, color: AL_INT);
+  BEGIN
+    bmp^.vtable^.circle (bmp, x, y, r, color);
+  END;
+
+  PROCEDURE al_circlefill (bmp: AL_BITMAPptr; x, y, r, color: AL_INT);
+  BEGIN
+    bmp^.vtable^.circlefill (bmp, x, y, r, color);
+  END;
+
+  PROCEDURE al_ellipse (bmp: AL_BITMAPptr; x, y, rx, ry, color: AL_INT);
+  BEGIN
+    bmp^.vtable^.ellipse (bmp, x, y, rx, ry, color);
+  END;
+
+  PROCEDURE al_ellipsefill (bmp: AL_BITMAPptr; x, y, rx, ry, color: AL_INT);
+  BEGIN
+    bmp^.vtable^.ellipsefill (bmp, x, y, rx, ry, color);
+  END;
+
+  PROCEDURE al_arc (bmp: AL_BITMAPptr; x, y: AL_INT; ang1, ang2: AL_FIXED; r, color: AL_INT);
+  BEGIN
+    bmp^.vtable^.arc (bmp, x, y, ang1, ang2, r, color);
+  END;
+
+  PROCEDURE al_spline (bmp: AL_BITMAPptr; CONST points: ARRAY OF AL_INT; color: AL_INT);
+  BEGIN
+    bmp^.vtable^.spline (bmp, @points[0], color);
+  END;
+
+  PROCEDURE al_floodfill (bmp: AL_BITMAPptr; x, y, color: AL_INT);
+  BEGIN
+    bmp^.vtable^.floodfill (bmp, x, y, color);
+  END;
+
+
+
+  PROCEDURE _al_putpixel (bmp: AL_BITMAPptr; x, y, color: AL_INT);
+  VAR
+    addr: AL_UINTPTR_T;
+  BEGIN
+    addr := bmp^.write_bank (bmp, y);
+    (AL_UINT8ptr (addr + AL_UINTPTR_T (x)))^ := color;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
-  FUNCTION _al_getpixel15 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  FUNCTION _al_getpixel (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
   VAR
-    addr: DWORD;
+    addr: AL_UINTPTR_T;
   BEGIN
     addr := bmp^.read_bank (bmp, y);
-    _al_getpixel15 := (PWORD (addr + (DWORD (x) * 2)))^;
+    _al_getpixel := (AL_UINT8ptr (addr + AL_UINTPTR_T (x)))^;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
-  FUNCTION _al_getpixel16 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  PROCEDURE _al_putpixel15 (bmp: AL_BITMAPptr; x, y, color: AL_INT);
   VAR
-    addr: DWORD;
+    addr: AL_UINTPTR_T;
   BEGIN
-    addr := bmp^.read_bank (bmp, y);
-    _al_getpixel16 := (PWORD (addr + (DWORD (x) * 2)))^;
+    addr := bmp^.write_bank (bmp, y);
+    (AL_UINT16ptr (addr + (AL_UINTPTR_T (x) * SizeOf (AL_SHORT))))^ := color;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
-  FUNCTION _al_getpixel24 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  FUNCTION _al_getpixel15 (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
   VAR
-    addr: DWORD;
+    addr: AL_UINTPTR_T;
+  BEGIN
+    addr := bmp^.read_bank (bmp, y);
+    _al_getpixel15 := (AL_UINT16ptr (addr + (AL_UINTPTR_T (x) * SizeOf (AL_SHORT))))^;
+    bmp^.vtable^.unwrite_bank (bmp);
+  END;
 
-    FUNCTION READ3BYTES: LONGINT; INLINE;
+  PROCEDURE _al_putpixel16 (bmp: AL_BITMAPptr; x, y, color: AL_INT);
+  VAR
+    addr: AL_UINTPTR_T;
+  BEGIN
+    addr := bmp^.write_bank (bmp, y);
+    (AL_UINT16ptr (addr + (AL_UINTPTR_T (x) * SizeOf (AL_SHORT))))^ := color;
+    bmp^.vtable^.unwrite_bank (bmp);
+  END;
+
+  FUNCTION _al_getpixel16 (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
+  VAR
+    addr: AL_UINTPTR_T;
+  BEGIN
+    addr := bmp^.read_bank (bmp, y);
+    _al_getpixel16 := (AL_UINT16ptr (addr + (AL_UINTPTR_T (x) * SizeOf (AL_SHORT))))^;
+    bmp^.vtable^.unwrite_bank (bmp);
+  END;
+
+  PROCEDURE _al_putpixel24 (bmp: AL_BITMAPptr; x, y, color: AL_INT);
+  VAR
+    addr: AL_UINTPTR_T;
+
+    PROCEDURE WRITE3BYTES; INLINE;
+    BEGIN
+    {$IFDEF ENDIAN_BIG}
+	(AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3)    ))^ := (color SHR 16) AND $FF;
+	(AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 1))^ := (color SHR  8) AND $FF;
+	(AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 2))^ :=  color         AND $FF;
+    {$ELSE}
+	(AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3)    ))^ :=  color         AND $FF;
+	(AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 1))^ := (color SHR  8) AND $FF;
+	(AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 2))^ := (color SHR 16) AND $FF;
+    {$ENDIF}
+    END;
+
+  BEGIN
+    addr := bmp^.write_bank (bmp, y);
+    WRITE3BYTES;
+    bmp^.vtable^.unwrite_bank (bmp);
+  END;
+
+  FUNCTION _al_getpixel24 (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
+  VAR
+    addr: AL_UINTPTR_T;
+
+    FUNCTION READ3BYTES: AL_INT; INLINE;
     BEGIN
       READ3BYTES :=
     {$IFDEF ENDIAN_BIG}
-	   ((PLONGINT (addr + (DWORD (x) * 3)    ))^ SHL 16)
-	OR ((PLONGINT (addr + (DWORD (x) * 3) + 1))^ SHL  8)
-	OR ((PLONGINT (addr + (DWORD (x) * 3) + 2))^       )
+	   ((AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3)    ))^ SHL 16)
+	OR ((AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 1))^ SHL  8)
+	OR ((AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 2))^       )
     {$ELSE}
-	   ((PLONGINT (addr + (DWORD (x) * 3)    ))^       )
-	OR ((PLONGINT (addr + (DWORD (x) * 3) + 1))^ SHL  8)
-	OR ((PLONGINT (addr + (DWORD (x) * 3) + 2))^ SHL 16)
+	   ((AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3)    ))^       )
+	OR ((AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 1))^ SHL  8)
+	OR ((AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 2))^ SHL 16)
     {$ENDIF}
       ;
     END;
@@ -5218,141 +5321,26 @@ TYPE
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
-  FUNCTION _al_getpixel32 (bmp: AL_BITMAPptr; x, y: LONGINT): LONGINT;
+  PROCEDURE _al_putpixel32 (bmp: AL_BITMAPptr; x, y, color: AL_INT);
   VAR
-    addr: DWORD;
+    addr: AL_UINTPTR_T;
+  BEGIN
+    addr := bmp^.write_bank (bmp, y);
+    (AL_UINT32ptr (addr + (AL_UINTPTR_T (x) * SizeOf (AL_INT32))))^ := color;
+    bmp^.vtable^.unwrite_bank (bmp);
+  END;
+
+  FUNCTION _al_getpixel32 (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
+  VAR
+    addr: AL_UINTPTR_T;
   BEGIN
     addr := bmp^.read_bank (bmp, y);
-    _al_getpixel32 := (PLONGINT (addr + (DWORD (x) * 4)))^;
+    _al_getpixel32 := (AL_UINT32ptr (addr + (AL_UINTPTR_T (x) * SizeOf (AL_INT32))))^;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
-
-  PROCEDURE _al_putpixel (bmp: AL_BITMAPptr; x, y, color: LONGINT);
-  VAR
-    addr: DWORD;
-  BEGIN
-    addr := bmp^.write_bank (bmp, y);
-    (BYTEPtr (addr + DWORD (x)))^ := color;
-    bmp^.vtable^.unwrite_bank (bmp);
-  END;
-
-  PROCEDURE _al_putpixel15 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
-  VAR
-    addr: DWORD;
-  BEGIN
-    addr := bmp^.write_bank (bmp, y);
-    (PWORD (addr + (DWORD (x) * 2)))^ := color;
-    bmp^.vtable^.unwrite_bank (bmp);
-  END;
-
-  PROCEDURE _al_putpixel16 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
-  VAR
-    addr: DWORD;
-  BEGIN
-    addr := bmp^.write_bank (bmp, y);
-    (PWORD (addr + (DWORD (x) * 2)))^ := color;
-    bmp^.vtable^.unwrite_bank (bmp);
-  END;
-
-  PROCEDURE _al_putpixel24 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
-  VAR
-    addr: DWORD;
-
-    PROCEDURE WRITE3BYTES; INLINE;
-    BEGIN
-    {$IFDEF ENDIAN_BIG}
-	(PLONGINT (addr + (DWORD (x) * 3)    ))^ := (color SHR 16) AND $FF;
-	(PLONGINT (addr + (DWORD (x) * 3) + 1))^ := (color SHR  8) AND $FF;
-	(PLONGINT (addr + (DWORD (x) * 3) + 2))^ :=  color         AND $FF;
-    {$ELSE}
-	(PLONGINT (addr + (DWORD (x) * 3)    ))^ :=  color         AND $FF;
-	(PLONGINT (addr + (DWORD (x) * 3) + 1))^ := (color SHR  8) AND $FF;
-	(PLONGINT (addr + (DWORD (x) * 3) + 2))^ := (color SHR 16) AND $FF;
-    {$ENDIF}
-    END;
-
-  BEGIN
-    addr := bmp^.write_bank (bmp, y);
-    WRITE3BYTES;
-    bmp^.vtable^.unwrite_bank (bmp);
-  END;
-
-  PROCEDURE _al_putpixel32 (bmp: AL_BITMAPptr; x, y, color: LONGINT);
-  VAR
-    addr: DWORD;
-  BEGIN
-    addr := bmp^.write_bank (bmp, y);
-    (PLONGINT (addr + (DWORD (x) * 4)))^ := color;
-    bmp^.vtable^.unwrite_bank (bmp);
-  END;
-
-  PROCEDURE al_line (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
-  BEGIN
-    bmp^.vtable^.line (bmp, x1, y1, x2, y2, color);
-  END;
-
-  PROCEDURE al_fastline (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
-  BEGIN
-    bmp^.vtable^.fastline (bmp, x1, y1, x2, y2, color);
-  END;
-
-  PROCEDURE al_rect (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
-  BEGIN
-    bmp^.vtable^.rect (bmp, x1, y1, x2, y2, color);
-  END;
-
-  PROCEDURE al_rectfill (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: LONGINT);
-  BEGIN
-    bmp^.vtable^.rectfill (bmp, x1, y1, x2, y2, color);
-  END;
-
-  PROCEDURE al_circle (bmp: AL_BITMAPptr; x, y, r, color: LONGINT);
-  BEGIN
-    bmp^.vtable^.circle (bmp, x, y, r, color);
-  END;
-
-  PROCEDURE al_circlefill (bmp: AL_BITMAPptr; x, y, r, color: LONGINT);
-  BEGIN
-    bmp^.vtable^.circlefill (bmp, x, y, r, color);
-  END;
-
-  PROCEDURE al_ellipse (bmp: AL_BITMAPptr; x, y, rx, ry, color: LONGINT);
-  BEGIN
-    bmp^.vtable^.ellipse (bmp, x, y, rx, ry, color);
-  END;
-
-  PROCEDURE al_ellipsefill (bmp: AL_BITMAPptr; x, y, rx, ry, color: LONGINT);
-  BEGIN
-    bmp^.vtable^.ellipsefill (bmp, x, y, rx, ry, color);
-  END;
-
-  PROCEDURE al_arc (bmp: AL_BITMAPptr; x, y: LONGINT; ang1, ang2: AL_FIXED; r, color: LONGINT);
-  BEGIN
-    bmp^.vtable^.arc (bmp, x, y, ang1, ang2, r, color);
-  END;
-
-  PROCEDURE al_floodfill (bmp: AL_BITMAPptr; x, y, color: LONGINT);
-  BEGIN
-    bmp^.vtable^.floodfill (bmp, x, y, color);
-  END;
-
-  PROCEDURE al_polygon (bmp: AL_BITMAPptr; vertices: LONGINT; CONST points: ARRAY OF LONGINT; color: LONGINT);
-  BEGIN
-    bmp^.vtable^.polygon (bmp, vertices, @points[0], color);
-  END;
-
-  PROCEDURE al_triangle (bmp: AL_BITMAPptr; x1, y1, x2, y2, x3, y3, color: LONGINT);
-  BEGIN
-    bmp^.vtable^.triangle (bmp, x1, y1, x2, y2, x3, y3, color);
-  END;
-
-  PROCEDURE al_spline (bmp: AL_BITMAPptr; CONST points: ARRAY OF LONGINT; color: LONGINT);
-  BEGIN
-    bmp^.vtable^.spline (bmp, @points[0], color);
-  END;
-
-
+(******************************************************************************
+ ************)
 
 (*************
  * Text font *

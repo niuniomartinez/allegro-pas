@@ -23,20 +23,50 @@ USES
 
 
 
-TYPE
-(* Pointer to @code(AL_COLOR_MAP). *)
-  AL_COLOR_MAPptr = ^AL_COLOR_MAP;
-(* Clolor map. *)
-  AL_COLOR_MAP = ARRAY [0..AL_PAL_SIZE-1, 0..AL_PAL_SIZE-1] OF BYTE;
-(* Call-back procedure to be ussed to create color tables using
-   @code(al_create_color_table).
-   This procedure must have the form:
-   @longcode(#
-     PROCEDURE (pal: AL_PALETTE; x, y: LONGINT; rgb: AL_RGBptr); CDECL;
-   #) *)
-  AL_256_BLEND_PROC = POINTER;
+  TYPE
+  (* Pointer to @link(AL_COLOR_MAP). *)
+    AL_COLOR_MAPptr = ^AL_COLOR_MAP;
+  (* Clolor map. @seealso(al_color_table) *)
+    AL_COLOR_MAP = ARRAY [0..AL_PAL_SIZE-1, 0..AL_PAL_SIZE-1] OF AL_UCHAR;
+  (* Call-back procedure to be ussed to create color tables using
+     @link(al_create_color_table).
+   *)
+    AL_256_BLEND_PROC = PROCEDURE (CONST pal: AL_PALETTE; x, y: AL_INT; rgb: AL_RGBptr); CDECL;
+
+  VAR
+  (* Pointer to the color mapping table.  You must allocate your own
+     @link(AL_COLOR_MAP) either statically or dynamically and set
+     @code(al_color_table) to it before using any translucent or lit drawing
+     functions in a 256-color video mode!
+     @seealso(al_create_color_table) @seealso(al_create_light_table)
+     @seealso(al_create_trans_table) @seealso(al_create_blender_table)
+     @seealso(al_set_trans_blender) @seealso(al_draw_trans_sprite)
+     @seealso(al_draw_lit_sprite) @seealso(al_draw_gouraud_sprite)
+     @seealso(al_drawing_mode) *)
+    al_color_table: AL_COLOR_MAPptr;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'color_map';
 
 
+
+(* Fills the specified color mapping table with lookup data for doing lighting
+   effects with the specified palette.  When combining the colors c1 and c2
+   with this table, c1 is treated as a light level from 0-255.  At light level
+   255 the table will output color c2 unchanged, at light level 0 it will
+   output the r, g, b value you specify to this function, and at intermediate
+   light levels it will output a color somewhere between the two extremes.  The
+   r, g, and b values are in the range 0-63.
+
+   This function will take advantage of the global @link(al_rgb_map) variable to
+   speed up color conversions.  If the callback function is not @nil, it will
+   be called 256 times during the calculation, allowing you to display a
+   progress indicator.
+   @seealso(al_color_table) @seealso(al_create_trans_table)
+   @seealso(al_create_color_table) @seealso(al_create_blender_table)
+   @seealso(al_draw_trans_sprite) @seealso(al_draw_lit_sprite)
+   @seealso(al_draw_gouraud_sprite) *)
+  PROCEDURE al_create_light_table (table: AL_COLOR_MAPptr; CONST pal: AL_PALETTE;
+				r, g, b: AL_INT; callback: AL_INT_PROC);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_light_table';
 
 (* Fills the specified color mapping table with lookup data for doing
    translucency effects with the specified palette.  When combining the colors
@@ -48,28 +78,16 @@ TYPE
    This function treats source color #0 as a special case, leaving the
    destination unchanged whenever a zero source pixel is encountered, so that
    masked sprites will draw correctly.  This function will take advantage of
-   the global @code(al_rgb_map) variable to speed up color conversions.  If the
+   the global @link(al_rgb_map) variable to speed up color conversions.  If the
    callback function is not @nil, it will be called 256 times during the
-   calculation, allowing you to display a progress indicator. *)
-  PROCEDURE al_create_trans_table (table: AL_COLOR_MAPptr; pal: AL_PALETTE;
-				r, g, b: LONGINT; callback: AL_INT_PROC); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_trans_table';
-
-(* Fills the specified color mapping table with lookup data for doing lighting
-   effects with the specified palette.  When combining the colors c1 and c2
-   with this table, c1 is treated as a light level from 0-255.  At light level
-   255 the table will output color c2 unchanged, at light level 0 it will
-   output the r, g, b value you specify to this function, and at intermediate
-   light levels it will output a color somewhere between the two extremes.  The
-   r, g, and b values are in the range 0-63.
-
-   This function will take advantage of the global @code(al_rgb_map) variable to
-   speed up color conversions.  If the callback function is not @nil, it will
-   be called 256 times during the calculation, allowing you to display a
-   progress indicator. *)
-  PROCEDURE al_create_light_table (table: AL_COLOR_MAPptr; pal: AL_PALETTE;
-				r, g, b: LONGINT; callback: AL_INT_PROC); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_light_table';
+   calculation, allowing you to display a progress indicator.
+   @seealso(al_color_table) @seealso(al_create_light_table)
+   @seealso(al_create_color_table) @seealso(al_create_blender_table)
+   @seealso(al_draw_trans_sprite) @seealso(al_draw_lit_sprite)
+   @seealso(al_draw_gouraud_sprite) *)
+  PROCEDURE al_create_trans_table (table: AL_COLOR_MAPptr; CONST pal: AL_PALETTE;
+				r, g, b: AL_INT; callback: AL_INT_PROC);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_trans_table';
 
 (* Fills the specified color mapping table with lookup data for doing
    customised effects with the specified palette, calling the blend function to
@@ -82,31 +100,32 @@ TYPE
    doesn't matter if the palette has no exact match for this color.
 
    If the callback function is not @nil, it will be called 256 times during the
-   calculation, allowing you to display a progress indicator. *)
-  PROCEDURE al_create_color_table (table: AL_COLOR_MAPptr; pal: AL_PALETTE;
-		blend: AL_256_BLEND_PROC; callback: AL_INT_PROC); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_color_table';
+   calculation, allowing you to display a progress indicator.
+   @seealso(al_color_table) @seealso(al_create_light_table)
+   @seealso(al_create_trans_table) @seealso(al_create_blender_table)
+   @seealso(al_draw_trans_sprite) @seealso(al_draw_lit_sprite)
+   @seealso(al_draw_gouraud_sprite) *)
+  PROCEDURE al_create_color_table (table: AL_COLOR_MAPptr; CONST pal: AL_PALETTE;
+		blend: AL_256_BLEND_PROC; callback: AL_INT_PROC);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_color_table';
 
 (* Fills the specified color mapping table with lookup data for doing a
    paletted equivalent of whatever truecolor blender mode is currently
-   selected.  After calling @code(al_set_trans_blender),
-   @code(al_set_blender_mode), or any of the other truecolor blender mode
+   selected.  After calling @link(al_set_trans_blender),
+   @link(al_set_blender_mode), or any of the other truecolor blender mode
    routines, you can use this function to create an 8-bit mapping table that
    will have the same results as whatever 24-bit blending mode you have
    enabled.
 
    If the callback function is not @nil, it will be called 256 times during the
-   calculation, allowing you to display a progress indicator. *)
-  PROCEDURE al_create_blender_table (table: AL_COLOR_MAPptr; pal: AL_PALETTE;
-				callback: AL_INT_PROC); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_blender_table';
-
-VAR
-(* Pointer to the color mapping table.  You must allocate your own
-   @code(AL_COLOR_MAP) either statically or dynamically and set
-   @code(al_color_table) to it before using any translucent or lit drawing
-   functions in a 256-color video mode! *)
-  al_color_table: AL_COLOR_MAPptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'color_map';
+   calculation, allowing you to display a progress indicator.
+   @seealso(al_color_table) @seealso(al_create_light_table)
+   @seealso(al_create_trans_table) @seealso(al_create_color_table)
+   @seealso(al_draw_trans_sprite) @seealso(al_draw_lit_sprite)
+   @seealso(al_draw_gouraud_sprite) *)
+  PROCEDURE al_create_blender_table (table: AL_COLOR_MAPptr; CONST pal: AL_PALETTE;
+				callback: AL_INT_PROC);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_blender_table';
 
 IMPLEMENTATION
 

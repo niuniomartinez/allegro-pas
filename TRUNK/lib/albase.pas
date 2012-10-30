@@ -109,6 +109,10 @@ TYPE
 (* size_t equivalent. *)
   AL_SIZE_T = AL_UINT64;
 
+(* Fake pointer type.  It's needed because the need of pointer arithmetics in
+  some inlined methods. *)
+  AL_UINTPTR_T = AL_UINT64;
+
 {$ELSE}
 (* Signed 32/64bit integer values. *)
   AL_LONG = AL_INT32;
@@ -118,6 +122,11 @@ TYPE
 
 (* size_t equivalent. *)
   AL_SIZE_T = AL_UINT32;
+
+(* Fake pointer type.  It's needed because the need of pointer arithmetics in
+  some inlined methods. *)
+  AL_UINTPTR_T = AL_UINT32;
+
 {$ENDIF}
 
 (* Float value. *)
@@ -131,14 +140,29 @@ TYPE
 (* Pointer. *)
   AL_VOIDptr = AL_POINTER;
 
+(* Special 8bit integer pointer. *)
+  AL_UINT8ptr = ^AL_UINT8;
+
 (* Pointer to signed 8bit integer values. *)
   AL_CHARptr = ^AL_CHAR;
+
+(* Pointer to unsigned 8bit integer values. *)
+  AL_UCHARptr = ^AL_UCHAR;
 
 (* Pointer to unsigned 16bit integer values. *)
   AL_USHORTptr = ^AL_USHORT;
 
+(* Special 16bit integer pointer. *)
+  AL_UINT16ptr = ^AL_UINT16;
+
+(* Special 32bit integer pointer. *)
+  AL_UINT32ptr = ^AL_UINT32;
+
 (* Pointer to signed 32bit integer values. *)
   AL_INTptr = ^AL_INT;
+
+(* Pointer to signed 32bit integer values. *)
+  AL_UINTptr = ^AL_UINT;
 
 (* Pointer to float values. *)
   AL_FLOATptr = ^AL_FLOAT;
