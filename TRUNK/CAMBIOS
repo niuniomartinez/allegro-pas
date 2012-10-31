@@ -6,6 +6,7 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   * Corregida la definición de al_errno.
   * Corregidas las funciones al_install_param_int, al_install_param_int_ex y
     al_remove_param_int.
+  * Corregidas las funciones al_save_bmp_pf, al_save_pcx_pf y al_save_tga_pf.
   * Pequeño cambio en el ejemplo exhsvrgb.
 
   Novedades
@@ -14,6 +15,10 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   + Añadidas algunas funciones de gestión de "clip".
   + Añadida función al_mouse_on_screen.
   + Añadida función al_find_datafile_object.
+  + Añadidas funciones al_load_txt_font, al_is_trans_font, al_font_has_alpha
+    al_make_trans_font, al_get_font_ranges, al_get_font_range_begin,
+    al_get_font_range_end, al_extract_font_range, al_merge_fonts y
+    al_transpose_font, y el ejemplo exfont.
   + Soporte para sistemas de 64bit.
 
   Otros

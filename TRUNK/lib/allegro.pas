@@ -3025,6 +3025,231 @@ END;
   PROCEDURE al_calc_spline (CONST points: ARRAY OF AL_INT; npts: AL_INT; VAR x, y: ARRAY OF AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'calc_spline';
 
+(* Copies a rectangular area of the source bitmap to the destination bitmap.
+   The @code(source_x) and @code(source_y) parameters are the top left corner
+   of the area to copy from the source bitmap, and @code(dest_x) and
+   @code(dest_y) are the corresponding position in the destination bitmap. This
+   routine respects the destination clipping rectangle, and it will also clip
+   if you try to blit from areas outside the source bitmap.
+
+   You can blit between any parts of any two bitmaps, even if the two memory
+   areas overlap (ie. source and dest are the same, or one is sub-bitmap of the
+   other).  You should be aware, however, that a lot of SVGA cards don't
+   provide separate read and write banks, which means that blitting from one
+   part of the screen to another requires the use of a temporary bitmap in
+   memory, and is therefore extremely slow.  As a general rule you should avoid
+   blitting from the screen onto itself in SVGA modes.
+
+   If the @link(AL_GFX_HW_VRAM_BLIT) bit in the @link(al_gfx_capabilities)
+   flag is set, the current driver supports hardware accelerated blits from one
+   part of the screen onto another.  This is extremely fast, so when this flag
+   is set it may be worth storing some of your more frequently used graphics in
+   an offscreen portion of the video memory.
+
+   Unlike most of the graphics routines, @code(al_blit) allows the source and
+   destination bitmaps to be of different color depths, so it can be used to
+   convert images from one pixel format to another.  In this case, the behavior
+   is affected by the @code(AL_COLORCONV_KEEP_TRANS)
+   and @code(AL_COLORCONV_DITHER* ) flags of the current color conversion mode.
+   @seealso(al_masked_blit) @seealso(al_stretch_blit,) @seealso(al_raw_sprite)
+   @seealso(al_set_color_conversion) *)
+  PROCEDURE al_blit (source, dest: AL_BITMAPptr; source_x, source_y, dest_x, dest_y, width, height: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'blit';
+
+(* Like @link(al_blit), but skips transparent pixels, which are marked by a
+   zero in 256-color modes or bright pink for truecolor data (maximum red and
+   blue, zero green), and requires the source and destination bitmaps to be of
+   the same color depth.  The source and destination regions must not overlap.
+
+   If the @link(AL_GFX_HW_VRAM_BLIT_MASKED) bit in the
+   @link(al_gfx_capabilities) flag is set, the current driver supports hardware
+   accelerated masked blits from one part of the screen onto another.  This is
+   extremely fast, so when this flag is set it may be worth storing some of
+   your more frequently used sprites in an offscreen portion of the video
+   memory.
+
+   @bold(Warning:)  if the hardware acceleration flag is not set,
+   @code(al_masked_blit) will not work correctly when used with a source image
+   in system or video memory so the latter must be a memory bitmap.
+   @seealso(al_masked_stretch_blit) @seealso(al_draw_sprite)
+   @seealso(al_bitmap_mask_color) *)
+  PROCEDURE al_masked_blit (source, dest: AL_BITMAPptr; source_x, source_y, dest_x, dest_y, width, height: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'masked_blit';
+
+(* Like @link(al_blit), except it can scale images (so the source and
+   destination rectangles don't need to be the same size) and requires the
+   source and destination bitmaps to be of the same color depth.  This routine
+   doesn't do as much safety checking as the regular @code(al_blit):  in
+   particular you must take care not to copy from areas outside the source
+   bitmap, and you cannot blit between overlapping regions, ie. you must use
+   different bitmaps for the source and the destination.  Moreover, the source
+   must be a memory bitmap.
+   @seealso(al_masked_stretch_blit) @seealso(al_stretch_sprite) *)
+  PROCEDURE al_stretch_blit (source, dest: AL_BITMAPptr; source_x, source_y, source_width, source_height, dest_x, dest_y, dest_width, dest_height: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stretch_blit';
+
+(* Like @link(al_masked_blit), except it can scale images (so the source and
+   destination rectangles don't need to be the same size).  This routine
+   doesn't do as much safety checking as the regular @code(al_masked_blit):
+   in particular you must take care not to copy from areas outside the source
+   bitmap.  Moreover, the source must be a memory bitmap.
+   @seealso(al_blit) @seealso(al_stretch_sprite) *)
+  PROCEDURE al_masked_stretch_blit (source, dest: AL_BITMAPptr; source_x, source_y, source_width, source_height, dest_x, dest_y, dest_width, dest_height: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'masked_stretch_blit';
+
+(* Like @link(al_draw_sprite), except it can stretch the sprite image to the
+   specified width and height and requires the sprite image and destination
+   bitmap to be of the same color depth.  Moreover, the sprite image must be a
+   memory bitmap.
+   @seealso(al_stretch_blit) @seealso(al_bitmap_mask_color) *)
+  PROCEDURE al_stretch_sprite (bmp, sprite: AL_BITMAPptr; x, y, w, h: AL_INT); CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stretch_sprite';
+
+
+
+(* rotate+trans *)
+
+(* Rotates a sprite.
+
+  Draws the sprite image onto the bitmap.  It is placed with its top left
+  corner at the specified position, then rotated by the specified angle around
+  its centre.  The angle is a fixed point 16.16 number in the same format used
+  by the fixed point trig routines, with 256 equal to a full circle, 64 a right
+  angle, etc.  All rotation functions can draw between any two bitmaps, even
+  screen bitmaps or bitmaps of different color depth.
+
+  Positive increments of the angle will make the sprite rotate clockwise on the
+  screen, as demonstrated by the Allegro example.
+  @seealso(al_draw_trans_sprite) @seealso(al_rotate_scaled_sprite_trans)
+  @seealso(al_rotate_sprite_v_flip_trans)
+  @seealso(al_rotate_scaled_sprite_v_flip_trans) *)
+  PROCEDURE al_rotate_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_trans';
+
+(* Rotates and flips a sprite.
+
+  Like al_rotate_sprite_trans, but flips the image vertically before rotating
+  it.  To flip horizontally, use this routine but add @code(al_itofix @(128@))
+  to the angle.  To flip in both directions, use @seealso(al_rotate_sprite) and
+  add @code(al_itofix (128)) to its angle. *)
+  PROCEDURE al_rotate_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_v_flip_trans';
+
+(* Rotates and stretches a sprite.
+
+  Like @link(al_rotate_sprite_trans), but stretches or shrinks the image at the
+  same time as rotating it. *)
+  PROCEDURE al_rotate_scaled_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle, scale: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_trans';
+
+(* Rotates and stretches a sprite.
+
+  Like @link(al_rotate_scaled_sprite_trans), except that it flips the sprite
+  vertically first. *)
+  PROCEDURE al_rotate_scaled_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle, scale: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_v_flip_trans';
+
+(* Rotates a sprite around a specified point.
+
+  Like @link(al_rotate_sprite_trans), but aligns the point in the sprite given
+  by @code(cx, cy) to @code(x, y) in the bitmap, then rotates around this
+  point. *)
+
+  PROCEDURE al_pivot_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_trans';
+
+(* Rotates and flips a sprite around a specified point.
+
+  Like @link(al_rotate_sprite_trans), but aligns the point in the sprite given
+  by @code(cx, cy) to @code(x, y) in the bitmap, then rotates around this
+  point. *)
+  PROCEDURE al_pivot_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_v_flip_trans';
+
+(* Rotates and stretches a sprite.
+
+  Like @link(al_rotate_scaled_sprite_trans), but aligns the point in the sprite
+  given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates and scales
+  around this point. *)
+  PROCEDURE al_pivot_scaled_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle, scale: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_trans';
+
+(* Rotates and stretches a sprite.
+
+  Like @link(al_rotate_scaled_sprite_v_flip_trans), but aligns the point in the
+  sprite given by (cx, cy) to (x, y) in the bitmap, then rotates and scales
+  around this point. *)
+  PROCEDURE al_pivot_scaled_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle, scale: AL_FIXED);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_v_flip_trans';
+
+
+
+(* rotate+lit *)
+
+(* Rotates a sprite.
+
+  Draws the sprite image onto the bitmap.  It is placed with its top left
+  corner at the specified position, then rotated by the specified angle around
+  its centre.  The angle is a fixed point 16.16 number in the same format used
+  by the fixed point trig routines, with 256 equal to a full circle, 64 a right
+  angle, etc.  All rotation functions can draw between any two bitmaps, even
+  screen bitmaps or bitmaps of different color depth. *)
+  PROCEDURE al_rotate_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle: AL_FIXED; color: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_lit';
+
+(* Rotates a sprite.
+
+   Like @seealso(al_rotate_sprite_lit), but flips the image vertically before
+   rotating it.  To flip horizontally, use this routine but add
+   @link(itofix@(128@)) to the angle.  To flip in both directions, use
+   @code(al_rotate_sprite_lit) and add @code(itofix@(128@)) to its angle. *)
+  PROCEDURE al_rotate_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle: AL_FIXED; color: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_v_flip_lit';
+
+(* Rotates and stretches a sprite.
+
+  Like @link(al_rotate_sprite_lit), but stretches or shrinks the image at the
+  same time as rotating it. *)
+  PROCEDURE al_rotate_scaled_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle, scale: AL_FIXED; color: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_lit';
+
+(* Rotates and stretches a sprite.
+
+  Draws the sprite, similar to @link(al_rotate_scaled_sprite_lit) except that
+  it flips the sprite vertically first. *)
+  PROCEDURE al_rotate_scaled_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle, scale: AL_FIXED; color: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_v_flip_lit';
+
+(* Rotates a sprite.
+
+  Like @link(al_rotate_sprite_lit), but aligns the point in the sprite given by
+  (cx, cy) to (x, y) in the bitmap, then rotates around this point. *)
+  PROCEDURE al_pivot_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle: AL_FIXED; color: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_lit';
+
+(* Rotates a sprite.
+
+  Like @link(al_rotate_sprite_v_flip_lit), but aligns the point in the sprite
+  given by (cx, cy) to (x, y) in the bitmap, then rotates around this point. *)
+  PROCEDURE al_pivot_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle: AL_FIXED; color: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_v_flip_lit';
+
+(* Rotates and stretches a sprite.
+
+  Like @link(al_rotate_scaled_sprite_lit), but aligns the point in the sprite
+  given by (cx, cy) to (x, y) in the bitmap, then rotates and scales around
+  this point. *)
+  PROCEDURE al_pivot_scaled_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle, scale: AL_FIXED; color: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_lit';
+
+(* Rotates and stretches a sprite.
+
+  Like @link(al_rotate_scaled_sprite_v_flip_lit), but aligns the point in the
+  sprite given by (cx, cy) to (x, y) in the bitmap, then rotates and scales
+  around this point. *)
+  PROCEDURE al_pivot_scaled_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle, scale: AL_FIXED; color: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_v_flip_lit';
+
 
 
 (******************************************************************************
@@ -3151,6 +3376,207 @@ END;
 
 
 
+(* Draws a copy of the sprite bitmap onto the destination bitmap at the
+   specified position.  This is almost the same as @link(al_blit)
+   @code(@(sprite, bmp, 0, 0, x, y, sprite^.w, sprite^.h@)), but it uses a
+   masked drawing mode where transparent pixels are skipped, so the background
+   image will show through the masked parts of the sprite.  Transparent pixels
+   are marked by a zero in 256-color modes or bright pink for truecolor data
+   (maximum red and blue, zero green). Example:
+@longcode(#
+VAR
+  SpaceShip: AL_BITMAPptr;
+
+          ...
+  al_draw_sprite (al_screen, SpaceShip, x, y);
+  #)
+
+  If the @link(AL_GFX_HW_VRAM_BLIT_MASKED) bit in the
+  @link(al_gfx_capabilities) flag is set, the current driver supports hardware
+  accelerated sprite drawing when the source image is a video memory bitmap or
+  a sub-bitmap of the screen.  This is extremely fast, so when this flag is set
+  it may be worth storing some of your more frequently used sprites in an
+  offscreen portion of the video memory.
+
+  @bold(Warning:)  if the hardware acceleration flag is not set,
+  @code(al_draw_sprite) will not work correctly when used with a sprite image
+  in system or video memory so the latter must be a memory bitmap.
+
+  Although generally not supporting graphics of mixed color depths, as a
+  special case this function can be used to draw 256-color source images onto
+  truecolor destination bitmaps, so you can use palette effects on specific
+  sprites within a truecolor program.
+  @seealso(al_draw_sprite_v_flip) @seealso(al_draw_trans_sprite)
+  @seealso(al_draw_lit_sprite) @seealso(al_draw_gouraud_sprite)
+  @seealso(al_rotate_sprite) @seealso(al_draw_rle_sprite) *)
+  PROCEDURE al_draw_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+    INLINE;
+
+
+(* Draws the sprite image onto the destination bitmap using the specified
+   @code(mode) argument, optionally flipping the sprite in the orientation
+   specified by @code(flip) argument.
+   @param(mode defines how is sprite going to be drawn on the destination
+     bitmap:
+@unorderedList(
+  @item(@code(AL_DRAW_SPRITE_NORMAL) draws a masked sprite, like
+    @link(al_draw_sprite).)
+  @item(@code (AL_DRAW_SPRITE_LIT) draws a tinted sprite, like
+    @link(al_draw_lit_sprite).)
+  @item(@code (AL_DRAW_SPRITE_TRANS) draws a blended sprite, like
+    @link(al_draw_trans_sprite). )
+)
+   )
+   @param(flip defines the flipping orientation:
+@unorderedList(
+  @item(@code(AL_DRAW_SPRITE_NO_FLIP) do not perform flipping.)
+  @item(@code(AL_DRAW_SPRITE_H_FLIP) flip horizontally.)
+  @item(@code(AL_DRAW_SPRITE_V_FLIP) flip vertically.)
+  @item(@code(AL_DRAW_SPRITE_VH_FLIP) flip both vertically and horizontally-)
+)
+   ) *)
+  PROCEDURE al_draw_sprite_ex (bmp, sprite: AL_BITMAPptr; x, y, mode, flip: AL_INT);
+    INLINE;
+
+(* This is like @link(al_draw_sprite), but it additionally flip the image
+   vertically.  Flipping vertically means that the y-axis is reversed,
+   between the source and the destination.  This produces exact mirror images,
+   which is not the same as rotating the sprite (and it is a lot faster than
+   the rotation routine).  The sprite must be a memory bitmap. *)
+  PROCEDURE al_draw_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+    INLINE;
+
+(* This is like @link(al_draw_sprite), but it additionally flip the image
+   horizontally.  Flipping horizontally means that the x-axis is reversed,
+   between the source and the destination.  This produces exact mirror images,
+   which is not the same as rotating the sprite (and it is a lot faster than
+   the rotation routine).  The sprite must be a memory bitmap. *)
+  PROCEDURE al_draw_sprite_h_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+    INLINE;
+
+(* This is like @link(al_draw_sprite), but it additionally flip the image
+   vertically and horizontally.  Flipping vertically means that the y-axis is
+   reversed, while flipping horizontally means that de x-axis is reversed,
+   between the source and the destination.  This produces exact mirror images,
+   which is not the same as rotating the sprite (and it is a lot faster than
+   the rotation routine).  The sprite must be a memory bitmap. *)
+  PROCEDURE al_draw_sprite_vh_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+    INLINE;
+
+(* Uses the global @link(al_color_table) table or truecolor blender functions
+   to overlay the sprite on top of the existing image.  This must only be used
+   after you have set up the color mapping table (for 256-color modes) or
+   blender functions (for truecolor modes).  Because it involves reading as
+   well as writing the bitmap memory, translucent drawing is very slow if you
+   draw directly to video RAM, so wherever possible you should use a memory
+   bitmap instead. Example:
+@longcode(#
+VAR
+  global_trans_table: AL_COLOR_MAP;
+
+          ...
+   al_create_trans_table (@global_trans_table, my_palette,
+                             128, 128, 128, NIL);
+          ...
+   IF al_get_color_depth = 8
+     al_color_table := @global_trans_table
+   ELSE
+     al_set_trans_blender (128, 128, 128, 128);
+   al_draw_trans_sprite (buffer, ghost_sprite, x, y);
+#)
+
+   The bitmap and sprite must normally be in the same color depth, but as a
+   special case you can draw 32 bit RGBA format sprites onto any hicolor or
+   truecolor bitmap, as long as you call @code(al_set_alpha_blender) first,
+   and you can draw 8-bit alpha images onto a 32-bit RGBA destination, as long
+   as you call @link(al_set_write_alpha_blender) first.  As
+   @link(al_draw_sprite) this function skips transparent pixels, except if the
+   source sprite is an 8-bit image;  if this is the case, you should pay
+   attention to properly set up your color map table for index 0.
+   @seealso(al_draw_lit_sprite) @seealso(al_color_table) *)
+  PROCEDURE al_draw_trans_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+    INLINE;
+
+(* In 256-color modes, uses the global @link(al_color_table) table to tint the
+   sprite image to the specified color or to light it to the level specified by
+   'color', depending on the function which was used to build the table
+   (@link(al_create_trans_table) or @link(al_create_light_table)), and draws
+   the resulting image to the destination bitmap.  In truecolor modes, uses the
+   blender functions to light the sprite image using the alpha level specified
+   by 'color' (the alpha level which was passed to the blender functions is
+   ignored) and draws the resulting image to the destination bitmap.
+
+   @param(c must be in the range [0..255] whatever its actual meaning is.
+     This must only be used after you have set up the color mapping table @(for
+     256-color modes@) or blender functions @(for truecolor modes@).)
+   @seealso(al_draw_sprite) @seealso(al_draw_gouraud_sprite)
+   @seealso(al_color_table) *)
+  PROCEDURE al_draw_lit_sprite (bmp, sprite: AL_BITMAPptr; x, y, c: AL_INT);
+    INLINE;
+
+(* More sophisticated version of @link(al_draw_lit_sprite):  the @code(color)
+   parameter is not constant across the sprite image anymore but interpolated
+   between the four specified corner colors.  The corner values passed to this
+   function indicate the strength of the color applied on them, ranging from 0
+   (no strength) to 255 (full strength).
+   @seealso(al_draw_sprite) @seealso(al_color_table) *)
+  PROCEDURE al_draw_gouraud_sprite (bmp, sprite: AL_BITMAPptr; x, y, c1, c2, c3, c4: AL_INT);
+    INLINE;
+
+(* Draws the sprite image onto the bitmap.  It is placed with its top left
+   corner at the specified position, then rotated by the specified angle around
+   its centre.  The angle is a fixed point 16.16 number in the same format used
+   by the fixed point trig routines, with 256 equal to a full circle, 64 a
+   right angle, etc.  All rotation functions can draw between any two bitmaps,
+   even screen bitmaps or bitmaps of different color depth.
+
+   Positive increments of the angle will make the sprite rotate clockwise. *)
+  PROCEDURE al_rotate_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle: AL_FIXED);
+    INLINE;
+
+(* Like @link(al_rotate_sprite), but flips the image vertically before
+   rotating it.  To flip horizontally, use this routine but add
+   @code(al_itofix @(128@)) to the angle.  To flip in both directions, use
+   @link(al_rotate_sprite) and add @code(al_itofix @(128@)) to its angle. *)
+  PROCEDURE al_rotate_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle: AL_FIXED);
+    INLINE;
+
+(* Like @link(al_rotate_sprite), but stretches or shrinks the image at the
+   same time as rotating it. *)
+  PROCEDURE al_rotate_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle, scale: AL_FIXED);
+    INLINE;
+
+(* Draws the sprite, similar to @link(al_rotate_scaled_sprite) except that it
+  flips the sprite vertically first. *)
+  PROCEDURE al_rotate_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle, scale: AL_FIXED);
+    INLINE;
+
+(* Like @link(al_rotate_sprite), but aligns the point in the sprite given by
+   @code(cx, cy) to @code(x, y) in the bitmap, then rotates around this
+   point. *)
+  PROCEDURE al_pivot_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle: AL_FIXED);
+    INLINE;
+
+(* Like @link(al_rotate_sprite_v_flip), but aligns the point in the sprite
+   given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates around
+   this point. *)
+  PROCEDURE al_pivot_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle: AL_FIXED);
+    INLINE;
+
+(* Like @link(al_rotate_scaled_sprite), but aligns the point in the sprite
+   given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates around
+   this point. *)
+  PROCEDURE al_pivot_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle, scale: AL_FIXED);
+    INLINE;
+
+(* Like @link(al_rotate_scaled_sprite_v_flip), but aligns the point in the
+   sprite given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates
+   and scales around this point. *)
+  PROCEDURE al_pivot_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle, scale: AL_FIXED);
+    INLINE;
+
+
+
 (* Like the regular @link(al_putpixel), but much faster because it's
    implemented as an inline functions for specific 8 bits color depth.  It
    don't perform any clipping (they will crash if you try to draw outside the
@@ -3218,43 +3644,100 @@ END;
 
 
 
-(**
-    JARL
-  **)
+(******************************************************************************
+ * font.h
+ *     Font loading routines.
+ *)
 
-(*************
- * Text font *
- *************)
+  TYPE
+  (* A pointer to a structure holding an Allegro font, usually created beforehand
+     with the grabber tool or Allegro's default font.  Read introduction of
+     @link(text) for a description on how to load/destroy fonts, and how to
+     show text. *)
+    AL_FONTptr = AL_POINTER;
 
-TYPE
-(* A pointer to a structure holding an Allegro font, usually created beforehand
-   with the grabber tool or Allegro's default font.  Read introduction of
-   @code(alfont) unit for a description on how to load/destroy fonts, and unit
-   @code(altext) for a description on how to show text. *)
-  AL_FONTptr = POINTER;
+(* Search all pixels of a font for alpha values. @seealso(al_is_trans_font) *)
+  FUNCTION al_font_has_alpha (f: AL_FONTptr): BOOLEAN;
+    INLINE;
+
+(* Makes a font use transparency.   That is, each glyph in the font will be
+   drawn with @seealso(al_draw_trans_sprite), so you can use the same blenders
+   as with @code(al_draw_trans_sprite) to draw the font.  One common use of
+   this is to load a bitmap font with an alpha channel, and therefore get
+   anti-aliased text output by using Allegro's alpha blender.  Here's an
+   example how to do that:
+@longcode(#
+VAR
+  f: AL_FONTptr;
+BEGIN
+  f := al_load_font ('alphafont.tga', NIL, NIL);
+  al_make_trans_font (f);
+  al_set_alpha_blender;
+  al_textout_centre_ex (al_screen, f, 'Anti-aliased Font!', 320, 240, -1, -1);
+  al_destroy_font (f);
+END;
+#)
+   @seealso(al_is_trans_font) @seealso(al_set_alpha_blender) @seealso(al_load_font)
+  *)
+  PROCEDURE al_make_trans_font (f: AL_FONTptr);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'make_trans_font';
+
+
+
+(* This function checks if the given font is a color font using
+   @link(al_draw_trans_sprite) to render glyphs.
+   @seealso(al_make_trans_font) @seealso(al_is_color_font)
+   @seealso(al_is_mono_font) *)
+  FUNCTION al_is_trans_font (f: AL_FONTptr): BOOLEAN;
+    INLINE;
+
+(* This function checks if the given font is a color font, as opposed to a
+   monochrome font.
+   @returns(@true if the font is a color font, @false if it is not.)
+   @seealso(is_mono_font) @seealso(al_is_trans_font) *)
+  FUNCTION al_is_color_font (f: AL_FONTptr): BOOLEAN;
+    INLINE;
+
+(* This function checks if the given font is a mono font, as opposed to a
+   color font.
+   @returns(@true if the font is a monochrome font, @false if it is not.)
+   @seealso(is_color_font) @seealso(al_is_trans_font) *)
+  FUNCTION al_is_mono_font (f: AL_FONTptr): BOOLEAN;
+    INLINE;
+
+(* This function compares the two fonts, which you can use to find out if
+   Allegro is capable of merging them.
+
+   @returns(@true if the two fonts are of the same general type @(both are
+     color fonts or both are monochrome fonts, for instance@).) *)
+  FUNCTION al_is_compatible_font (f1, f2: AL_FONTptr): BOOLEAN;
+    INLINE;
 
 
 
 (* Loads a font from a file.  At present, this supports loading fonts from a
    GRX format .fnt file, a 8x8 or 8x16 BIOS format .fnt file, a datafile or any
-   bitmap format that can be loaded by @code(al_load_bitmap).
+   bitmap format that can be loaded by @link(al_load_bitmap).
 
    If the font contains palette information, then the palette is returned in
-   the second parameter, which should be an array of 256 @code(AL_RGB)
-   structures (a @code(AL_PALETTE)).  The @code(pal) argument may be @nil.
-   In this case, the palette data, if present, is simply not returned.
+   the second parameter, which should be a pointer to an @link(AL_PALETTE).
+   The @code(palette) argument may be @nil.  In this case, the palette data,
+   if present, is simply not returned.
 
-   Note that another way of loading fonts is embedding them into a datafile and
-   using the datafile related functions.
-
+   The third parameter can be used to pass specific information to a custom
+   loader routine.  Normally, you can just leave this as @nil.  Note that
+   another way of loading fonts is embedding them into a datafile and using the
+   datafile related functions.
    @returns(a pointer to the font or @nil on error.  Remember that you are
      responsible for destroying the font when you are finished with it to avoid
-     memory leaks.) *)
-  FUNCTION al_load_font (filename: STRING; palette: AL_PALETTEptr; p: POINTER)
-	: AL_FONTptr;
+     memory leaks.)
+   @seealso(al_load_bitmap_font) @seealso(al_grab_font_from_bitmap)
+   @seealso(alfile) @seealso(al_destroy_font) *)
+  FUNCTION al_load_font (filename: STRING; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
+    INLINE;
 
 (* Tries to grab a font from a bitmap.  The bitmap can be in any format that
-   @code(al_load_bitmap) understands.
+   @link(al_load_bitmap) understands.
 
    The size of each character is determined by the layout of the image, which
    should be a rectangular grid containing all the ASCII characters from space
@@ -3273,9 +3756,9 @@ TYPE
    should align and have the same height.
 
    Probably the easiest way to get to grips with how this works is to load up
-   the `demo.dat' file and export the TITLE_FONT into a PCX file.  Have a look
-   at the resulting picture in your paint program:  that is the format a font
-   should be in.
+   the @code(demo.dat) file and export the @code(TITLE_FONT) into a PCX file.
+   Have a look at the resulting picture in your paint program:  that is the
+   format a font should be in.
 
    Take care with high and true color fonts:  Allegro will convert these to the
    current color depth when you load the font.  If you try to use a font on a
@@ -3286,65 +3769,191 @@ TYPE
    @returns(a pointer to the font or @nil on error.  Remember that you are
      responsible for destroying the font when you are finished with it to avoid
      memory leaks.)
-   @seealso(al_load_bmp_pf) *)
-  FUNCTION al_load_bitmap_font (filename: STRING; palette: AL_PALETTEptr;
-    p: POINTER): POINTER;
+   @seealso(al_load_font) @seealso(al_destroy_font) *)
+  FUNCTION al_load_bitmap_font (filename: STRING; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
+    INLINE;
 
+(* Loads a font script.  The script file contains a number of lines in the
+   format @code(filename start end), which specify the source file for that
+   range of characters, the Unicode value of the first character in the range,
+   and the end character in the range (optional, if left out, the entire input
+   file will be grabbed). If the filename is replaced by a hyphen, more
+   characters will be grabbed from the previous input file. For example, the script:
+@longcode(#
+          ascii.fnt 0x20 0x7F
+          - 0xA0 0xFF
+          dingbats.fnt 0x1000
+#)
+   would import the first 96 characters from ascii.fnt as the range 0x20-0x7F,
+   the next 96 characters from ascii.fnt as the range 0xA0-0xFF, and the entire
+   contents of dingbats.fnt starting at Unicode position 0x1000.
+   @returns(A pointer to the font or @nil on error. Remember that you are
+     responsible for destroying the font when you are finished with it to avoid
+     memory leaks.)
+   @seealso(al_load_font) @seealso(al_destroy_font) *)
+  FUNCTION al_load_txt_font (CONST filename: STRING; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
+    INLINE;
 
-(* This function is the work-horse of @code(al_load_bitmap_font), and can be
+(* This function is the work-horse of @link(al_load_bitmap_font), and can be
    used to grab a font from a bitmap in memory.  You can use this if you want
    to generate or modify a font at runtime.  The bitmap should follow the
    layout described for @code(al_load_bitmap_font).
 
    @returns(a pointer to the font or @nil on error.  Remember that you are
      responsible for destroying the font when you are finished with it to avoid
-     memory leaks.) *)
-  FUNCTION al_grab_font_from_bitmap (bmp: AL_BITMAPptr): AL_FONTptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'grab_font_from_bitmap';
-
-(* This function checks if the given font is a color font, as opposed to a
-   monochrome font.
-   @returns(@true if the font is a color font, @false if it is not.) *)
-  FUNCTION al_is_color_font (f: AL_FONTptr): BOOLEAN;
-    INLINE;
-
-(* This function checks if the given font is a mono font, as opposed to a
-   color font.
-   @returns(@true if the font is a monochrome font, @false if it is not.) *)
-  FUNCTION al_is_mono_font (f: AL_FONTptr): BOOLEAN;
-    INLINE;
-
-(* This function compares the two fonts, which you can use to find out if
-   Allegro is capable of merging them.
-
-   @returns(@true if the two fonts are of the same general type @(both are
-     color fonts or both are monochrome fonts, for instance@).) *)
-  FUNCTION al_is_compatible_font (f1, f2: AL_FONTptr): BOOLEAN;
-    INLINE;
-
-(* Frees the memory being used by a font structure.  Don't use this on the
-   default global Allegro font or any text routines using it could crash.  You
-   should use this only on fonts you have loaded manually after you are done
-   with them, to prevent memory leaks in your program. *)
-  PROCEDURE al_destroy_font (f: AL_FONTptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_font';
+     memory leaks.)
+   @seealso(al_destroy_font) *)
+  FUNCTION al_grab_font_from_bitmap (bmp: AL_BITMAPptr): AL_FONTptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'grab_font_from_bitmap';
 
 
 
-(****************
- * Text drawing *
- ****************)
-
+(* Returns the number of character ranges in a font.  You should query each of
+   these ranges with @link(al_get_font_range_begin) and
+   @link(al_get_font_range_end) to find out what characters are available in
+   the font. Example:
+@longcode(#
 VAR
-(* A simple 8x8 fixed size font (the mode 13h BIOS default).  This font
-   contains the standard ASCII (U+20 to U+7F), Latin-1 (U+A1 to U+FF), and
-   Latin Extended-A (U+0100 to U+017F) character ranges. *)
-  al_font: AL_FONTptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'font';
-(* When Allegro cannot find a glyph it needs in a font, it will instead output
-   the character given in this variable.  By default, this is set to the caret
-   symbol, @code(^), but you can change this global to use any other character
-   instead.*)
-  al_404_char: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_404_char';
+  f: AL_FONTptr;
+  Range, n: INTEGER;
+BEGIN
+  ...
+  Range := al_get_font_ranges (f);
+  WriteLn ('The font has ', Range, ' character ranges:');
+  FOR N := 0 TO Range - 1 DO
+    WriteLn ('Range ',n
+      ' from 0x', IntToHex (al_get_font_range_begin (f, n), 3),
+      ' to 0x0, IntToHex (al_get_font_range_end (f, n), 3));
+END;
+#)
+  @returns(the number of continuous character ranges in a font, or -1 if that
+    information is not available.)
+  @seealso(al_transpose_font) *)
+  FUNCTION al_get_font_ranges (f: AL_FONTptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_font_ranges';
+
+(* Returns the start of a character range in a font.  You can pass -1 for the
+   @code(range) parameter if you want to know the start of the whole font
+   range, or a number from 0 to (but not including) @link(al_get_font_ranges)
+   @code(@(f@)) to get the start of a specific character range in the font.
+   @seealso(al_get_font_range_end) @seealso(al_transpose_font) *)
+  FUNCTION al_get_font_range_begin (f: AL_FONTptr; range: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_font_range_begin';
+
+(* Returns the last character of a character range in a font.  You can pass -1
+   for the range parameter if you want to know the start of the whole font
+   range, or a number from 0 to (but not including) @link(al_get_font_ranges)
+   @code(@(f@)) to get the start of a specific character range in the font.
+   You should check the start and end of all font ranges to see if a specific
+   character is actually available in the font.  Not all characters in the
+   range returned by @code(al_get_font_range_begin @(f, -1@)) and
+   @code(al_get_font_range_end @(f, -1@)) need to be available!
+   @seealso(al_get_font_range_begin) @seealso(al_transpose_font) *)
+  FUNCTION al_get_font_range_end (f: AL_FONTptr; range: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_font_range_end';
+
+(* Extracts a range of characters from a font.  This function extracts a
+   character range from a font and returns a new font that contains only the
+   range of characters selected by this function.  You can pass -1 for either
+   the lower or upper bound if you want to select all characters from the start
+   or to the end of the font. Example:
+@longcode(#
+VAR
+  MyFont, Capitals, FontCopy: AL_FONTptr;
+BEGIN
+...
+  Capitals := al_extract_font_range (MyFont, Ord ('A'), Ord ('Z'));
+  FontCopy := al_extract_font_range (MyFont, -1, -1);
+...
+  al_destroy_font (Capitals);
+  al_destroy_font (FontCopy);
+#)
+  @returns(a pointer to the new font or @nil on error.  Remember that you are
+    responsible for destroying the font when you are finished with it to avoid
+    memory leaks.)
+  @seealso(al_get_font_range_begin) @seealso(al_get_font_range_end)
+  @seealso(al_merge_fonts) @seealso(al_transpose_font) *)
+  FUNCTION al_extract_font_range (f: AL_FONTptr; start, finish: AL_INT): AL_FONTptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'extract_font_range';
+
+(* Merges two fonts into one font.  This function merges the character ranges
+   from two fonts and returns a new font containing all characters in the old
+   fonts.  In general, you cannot merge fonts of different types (eg, TrueType
+   fonts and bitmapped fonts), but as a special case, this function can promote
+   a monochrome bitmapped font to a color font and merge those. Example:
+@longcode(#
+VAR
+  MyFont, MyFancyFont: AL_FONTptr;
+  LowerRange, UpperRange, Capitals, TmpFont: AL_FONTptr;
+  CombinedFont: AL_FONTptr;
+BEGIN
+...
+// Create a font that contains the capitals from
+// the fancy font but other characters from MyFont.
+  LowerRange := al_extract_font_range (MyFont, -1, Ord ('A') - 1);
+  UpperRange := al_extract_font_range (MyFont, Ord ('Z') + 1, -1);
+  Capitals   := al_extract_font_range (MyFancyFont, Ord ('A'), Ord ('Z'));
+
+  TmpFont := al_merge_fonts (LowerRange, Capitals);
+  CombinedFont := al_merge_fonts (TmpFont, UpperRange);
+
+// Clean up temporary fonts.
+  al_destroy_font (LowerRange);
+  al_destroy_font (UpperRange);
+  al_destroy_font (Capitals);
+  al_destroy_font (TmpFont);
+END;
+#)
+  @returns(a pointer to the new font or @nil on error.  Remember that you are
+    responsible for destroying the font when you are finished with it to avoid
+    memory leaks.)
+
+  @seealso(al_extract_font_range) @seealso(al_is_trans_font)
+  @seealso(al_is_color_font) @seealso(al_is_mono_font)
+ *)
+  FUNCTION al_merge_fonts (f1, f2: AL_FONTptr): AL_FONTptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'merge_fonts';
+
+(* Transposes all characters in a font.  Example:
+VAR
+  MyFont, Capitals: AL_FONTptr;
+BEGIN
+  ...
+// Create a font of only capital letters.
+  Capitals := al_extract_font_range (MyFont, Ord ('A'), Ord ('Z'));
+
+// Now transpose the characters in the font so that they will be used
+//  for the lower case letters a-z.
+  al_transpose_font (Capitals, Ord ('a') - Ord ('A'));
+  al_textout_ex (al_screen, Capitals, 'allcaps',
+             100, 100, al_makecol (255,255,25), 0);
+END;
+#)
+  @return(@true on success, @false on failure.)
+  @seealso(al_get_font_range_begin) @seealso(al_get_font_range_end)
+  @seealso(al_merge_fonts) @seealso(al_extract_font_range) *)
+  FUNCTION al_transpose_font (f: AL_FONTptr; drange: AL_INT): BOOLEAN;
+    INLINE;
+
+
+
+(******************************************************************************
+ * text.h
+ *     Text output routines.
+ *)
+
+  VAR
+  (* A simple 8x8 fixed size font (the mode 13h BIOS default).  This font
+     contains the standard ASCII (U+20 to U+7F), Latin-1 (U+A1 to U+FF), and
+     Latin Extended-A (U+0100 to U+017F) character ranges.
+     @seealso(al_textout_ex) *)
+    al_font: AL_FONTptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'font';
+
+  (* When Allegro cannot find a glyph it needs in a font, it will instead output
+     the character given in this variable.  By default, this is set to the caret
+     symbol, @code(^), but you can change this global to use any other character
+     instead. @seealso(al_font) *)
+    al_404_char: AL_INT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_404_char';
 
 
 
@@ -3361,405 +3970,51 @@ VAR
    @param(color Foreground color.  Set to -1 to use multicolor fonts.)
    @param(bg Background color.  Set to -1 to use transparent background.)
    @seealso(al_textout_centre_ex) @seealso(al_textout_right_ex) @seealso(al_textout_justify_ex)*)
-  PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+  PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x, y, color, bg: AL_INT);
     INLINE;
+
 (* Like @code(al_textout_ex), but interprets the @code(x) coordinate as the
    centre rather than the left edge of the string.
    @seealso(al_textout_ex) @seealso(al_textout_right_ex) @seealso(al_textout_justify_ex)*)
-  PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+  PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x, y, color, bg: AL_INT);
     INLINE;
+
 (* Like @code(al_textout_ex), but interprets the @code(x) coordinate as the
    right rather than the left edge of the string.
    @seealso(al_textout_ex) @seealso(al_textout_centre_ex) @seealso(al_textout_justify_ex)*)
-  PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+  PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x, y, color, bg: AL_INT);
     INLINE;
+
 (* Draws justified text within the region @code(x1-x2).  If the amount of spare
    space is greater than the @code(diff) value, it will give up and draw
    regular left justified text instead.
    @seealso(al_textout_ex) @seealso(al_textout_centre_ex) @seealso(al_textout_right_ex)*)
-  PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x1, x2, y, diff, color, bg: LONGINT);
+  PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x1, x2, y, diff, color, bg: AL_INT);
     INLINE;
 
-
-
-(* Returns the length (in pixels) of a string in the specified font. *)
-  FUNCTION al_text_length (f: AL_FONTptr; str: STRING): LONGINT;
-    INLINE;
-(* Returns the height (in pixels) of the specified font. *)
-  FUNCTION al_text_height (f: AL_FONTptr): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'text_height';
-
-
-
-(*******************************
- * Blitting and sprite drawing *
- *******************************)
-
-
-
-
-(* Copies a rectangular area of the source bitmap to the destination bitmap.
-   The @code(source_x) and @code(source_y) parameters are the top left corner
-   of the area to copy from the source bitmap, and @code(dest_x) and
-   @code(dest_y) are the corresponding position in the destination bitmap. This
-   routine respects the destination clipping rectangle, and it will also clip
-   if you try to blit from areas outside the source bitmap.
-
-   You can blit between any parts of any two bitmaps, even if the two memory
-   areas overlap (ie. source and dest are the same, or one is sub-bitmap of the
-   other).  You should be aware, however, that a lot of SVGA cards don't
-   provide separate read and write banks, which means that blitting from one
-   part of the screen to another requires the use of a temporary bitmap in
-   memory, and is therefore extremely slow.  As a general rule you should avoid
-   blitting from the screen onto itself in SVGA modes.
-
-   If the @code(AL_GFX_HW_VRAM_BLIT) bit in the @code(al_gfx_capabilities)
-   flag is set, the current driver supports hardware accelerated blits from one
-   part of the screen onto another.  This is extremely fast, so when this flag
-   is set it may be worth storing some of your more frequently used graphics in
-   an offscreen portion of the video memory.
-
-   Unlike most of the graphics routines, @code(al_blit) allows the source and
-   destination bitmaps to be of different color depths, so it can be used to
-   convert images from one pixel format to another.  In this case, the behavior
-   is affected by the @code(AL_COLORCONV_KEEP_TRANS)
-   and @code(AL_COLORCONV_DITHER* ) flags of the current color conversion mode.
-   @seealso(al_set_color_conversion) *)
-  PROCEDURE al_blit (source, dest: AL_BITMAPptr; source_x, source_y, dest_x, dest_y, width, height: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'blit';
-
-(* Like @code(al_blit), except it can scale images (so the source and
-   destination rectangles don't need to be the same size) and requires the
-   source and destination bitmaps to be of the same color depth.  This routine
-   doesn't do as much safety checking as the regular @code(al_blit):  in
-   particular you must take care not to copy from areas outside the source
-   bitmap, and you cannot blit between overlapping regions, ie. you must use
-   different bitmaps for the source and the destination.  Moreover, the source
-   must be a memory bitmap. *)
-  PROCEDURE al_stretch_blit (source, dest: AL_BITMAPptr; source_x, source_y, source_width, source_height, dest_x, dest_y, dest_width, dest_height: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stretch_blit';
-
-(* Like @code(al_blit), but skips transparent pixels, which are marked by a
-   zero in 256-color modes or bright pink for truecolor data (maximum red and
-   blue, zero green), and requires the source and destination bitmaps to be of
-   the same color depth.  The source and destination regions must not overlap.
-
-   If the @code(AL_GFX_HW_VRAM_BLIT_MASKED) bit in the
-   @code(al_gfx_capabilities) flag is set, the current driver supports hardware
-   accelerated masked blits from one part of the screen onto another.  This is
-   extremely fast, so when this flag is set it may be worth storing some of
-   your more frequently used sprites in an offscreen portion of the video
-   memory.
-
-   @bold(Warning:)  if the hardware acceleration flag is not set,
-   @code(masked_blit) will not work correctly when used with a source image in
-   system or video memory so the latter must be a memory bitmap. *)
-  PROCEDURE al_masked_blit (source, dest: AL_BITMAPptr; source_x, source_y, dest_x, dest_y, width, height: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'masked_blit';
-
-(* Like @code(al_masked_blit), except it can scale images (so the source and
-   destination rectangles don't need to be the same size).  This routine
-   doesn't do as much safety checking as the regular @code(al_masked_blit):
-   in particular you must take care not to copy from areas outside the source
-   bitmap.  Moreover, the source must be a memory bitmap. *)
-  PROCEDURE al_masked_stretch_blit (source, dest: AL_BITMAPptr; source_x, source_y, source_width, source_height, dest_x, dest_y, dest_width, dest_height: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'masked_stretch_blit';
-
-
-
-(* Draws a copy of the sprite bitmap onto the destination bitmap at the
-   specified position.  This is almost the same as @code(al_blit)
-   @code(@(sprite, bmp, 0, 0, x, y, sprite^.w, sprite^.h@)), but it uses a
-   masked drawing mode where transparent pixels are skipped, so the background
-   image will show through the masked parts of the sprite.  Transparent pixels
-   are marked by a zero in 256-color modes or bright pink for truecolor data
-   (maximum red and blue, zero green). Example:
-@longcode(#
-VAR
-  SpaceShip: AL_BITMAPptr;
-
-          ...
-  al_draw_sprite (al_screen, SpaceShip, x, y);
-  #)
-
-  If the @code(AL_GFX_HW_VRAM_BLIT_MASKED) bit in the
-  @code(al_gfx_capabilities) flag is set, the current driver supports hardware
-  accelerated sprite drawing when the source image is a video memory bitmap or
-  a sub-bitmap of the screen.  This is extremely fast, so when this flag is set
-  it may be worth storing some of your more frequently used sprites in an
-  offscreen portion of the video memory.
-
-  @bold(Warning:)  if the hardware acceleration flag is not set,
-  @code(al_draw_sprite) will not work correctly when used with a sprite image
-  in system or video memory so the latter must be a memory bitmap.
-
-  Although generally not supporting graphics of mixed color depths, as a
-  special case this function can be used to draw 256-color source images onto
-  truecolor destination bitmaps, so you can use palette effects on specific
-  sprites within a truecolor program.
-  @seealso(al_draw_sprite_v_flip) @seealso(al_draw_trans_sprite)
-  @seealso(al_draw_lit_sprite) @seealso(al_draw_gouraud_sprite)
-  @seealso(al_rotate_sprite) @seealso(al_draw_rle_sprite) *)
-  PROCEDURE al_draw_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
+(* Returns the length (in pixels) of a string in the specified font.
+  @seealso(al_text_height) *)
+  FUNCTION al_text_length (CONST f: AL_FONTptr; CONST str: STRING): AL_INT;
     INLINE;
 
-(* Like @code(al_draw_sprite), except it can stretch the sprite image to the
-   specified width and height and requires the sprite image and destination
-   bitmap to be of the same color depth.  Moreover, the sprite image must be a
-   memory bitmap. *)
-  PROCEDURE al_stretch_sprite (bmp, sprite: AL_BITMAPptr; x, y, w, h: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stretch_sprite';
+(* Returns the height (in pixels) of the specified font.
+  @seealso(al_text_length) *)
+  FUNCTION al_text_height (CONST f: AL_FONTptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'text_height';
 
-(* Draws the sprite image onto the destination bitmap using the specified
-   @code(mode) argument, optionally flipping the sprite in the orientation
-   specified by @code(flip) argument.
-
-   @param(mode defines how is sprite going to be drawn on the destination
-     bitmap:
-@unorderedList(
-  @item(@code(AL_DRAW_SPRITE_NORMAL) draws a masked sprite, like
-    @code(al_draw_sprite).)
-  @item(@code (AL_DRAW_SPRITE_LIT) draws a tinted sprite, like
-    @code(al_draw_lit_sprite).)
-  @item(@code (AL_DRAW_SPRITE_TRANS) draws a blended sprite, like
-    @code(al_draw_trans_sprite). )
-)
-   )
-   @param(flip defines the flipping orientation:
-@unorderedList(
-  @item(@code(AL_DRAW_SPRITE_NO_FLIP) do not perform flipping.)
-  @item(@code(AL_DRAW_SPRITE_H_FLIP) flip horizontally.)
-  @item(@code(AL_DRAW_SPRITE_V_FLIP) flip vertically.)
-  @item(@code(AL_DRAW_SPRITE_VH_FLIP) flip both vertically and horizontally-)
-)
-   ) *)
-  PROCEDURE al_draw_sprite_ex (bmp, sprite: AL_BITMAPptr; x, y, mode, flip: LONGINT);
-    INLINE;
-
-(* This is like @code(al_draw_sprite), but it additionally flip the image
-   horizontally.  Flipping horizontally means that the x-axis is reversed,
-   between the source and the destination.  This produces exact mirror images,
-   which is not the same as rotating the sprite (and it is a lot faster than
-   the rotation routine).  The sprite must be a memory bitmap. *)
-  PROCEDURE al_draw_sprite_h_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
-    INLINE;
-
-(* This is like @code(al_draw_sprite), but it additionally flip the image
-   vertically.  Flipping vertically means that the y-axis is reversed,
-   between the source and the destination.  This produces exact mirror images,
-   which is not the same as rotating the sprite (and it is a lot faster than
-   the rotation routine).  The sprite must be a memory bitmap. *)
-  PROCEDURE al_draw_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
-    INLINE;
-
-(* This is like @code(al_draw_sprite), but it additionally flip the image
-   vertically and horizontally.  Flipping vertically means that the y-axis is
-   reversed, while flipping horizontally means that de x-axis is reversed,
-   between the source and the destination.  This produces exact mirror images,
-   which is not the same as rotating the sprite (and it is a lot faster than
-   the rotation routine).  The sprite must be a memory bitmap. *)
-  PROCEDURE al_draw_sprite_vh_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
-    INLINE;
-
-(* Uses the global @code(al_color_table) table or truecolor blender functions
-   to overlay the sprite on top of the existing image.  This must only be used
-   after you have set up the color mapping table (for 256-color modes) or
-   blender functions (for truecolor modes).  Because it involves reading as
-   well as writing the bitmap memory, translucent drawing is very slow if you
-   draw directly to video RAM, so wherever possible you should use a memory
-   bitmap instead. Example:
-@longcode(#
-VAR
-  global_trans_table: AL_COLOR_MAP;
-
-          ...
-   al_create_trans_table (@global_trans_table, my_palette,
-                             128, 128, 128, NIL);
-          ...
-   IF al_get_color_depth = 8
-     al_color_table := @global_trans_table
-   ELSE
-     al_set_trans_blender (128, 128, 128, 128);
-   al_draw_trans_sprite (buffer, ghost_sprite, x, y);
-#)
-
-   The bitmap and sprite must normally be in the same color depth, but as a
-   special case you can draw 32 bit RGBA format sprites onto any hicolor or
-   truecolor bitmap, as long as you call @code(al_set_alpha_blender) first,
-   and you can draw 8-bit alpha images onto a 32-bit RGBA destination, as long
-   as you call @code(al_set_write_alpha_blender) first.  As
-   @code(al_draw_sprite) this function skips transparent pixels, except if the
-   source sprite is an 8-bit image;  if this is the case, you should pay
-   attention to properly set up your color map table for index 0.
-   @seealso(al_draw_lit_sprite) @seealso(al_color_table) *)
-  PROCEDURE al_draw_trans_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
-    INLINE;
-
-(* In 256-color modes, uses the global @code(al_color_table) table to tint the
-   sprite image to the specified color or to light it to the level specified by
-   'color', depending on the function which was used to build the table
-   (@code(al_create_trans_table) or @code(al_create_light_table)), and draws
-   the resulting image to the destination bitmap.  In truecolor modes, uses the
-   blender functions to light the sprite image using the alpha level specified
-   by 'color' (the alpha level which was passed to the blender functions is
-   ignored) and draws the resulting image to the destination bitmap.
-
-   @param(c must be in the range [0..255] whatever its actual meaning is.
-     This must only be used after you have set up the color mapping table @(for
-     256-color modes@) or blender functions @(for truecolor modes@).)
-   @seealso(al_draw_sprite) @seealso(al_draw_gouraud_sprite)
-   @seealso(al_color_table) *)
-  PROCEDURE al_draw_lit_sprite (bmp, sprite: AL_BITMAPptr; x, y, c: LONGINT);
-    INLINE;
-
-(* More sophisticated version of @code(al_draw_lit_sprite):  the 'color'
-   parameter is not constant across the sprite image anymore but interpolated
-   between the four specified corner colors.  The corner values passed to this
-   function indicate the strength of the color applied on them, ranging from 0
-   (no strength) to 255 (full strength).
-   @seealso(al_draw_sprite) @seealso(al_color_table) *)
-  PROCEDURE al_draw_gouraud_sprite (bmp, sprite: AL_BITMAPptr; x, y, c1, c2, c3, c4: LONGINT); INLINE;
-
-(* Draws the sprite image onto the bitmap.  It is placed with its top left
-   corner at the specified position, then rotated by the specified angle around
-   its centre.  The angle is a fixed point 16.16 number in the same format used
-   by the fixed point trig routines, with 256 equal to a full circle, 64 a
-   right angle, etc.  All rotation functions can draw between any two bitmaps,
-   even screen bitmaps or bitmaps of different color depth.
-
-   Positive increments of the angle will make the sprite rotate clockwise. *)
-  PROCEDURE al_rotate_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
-    INLINE;
-
-(* Like @code(al_rotate_sprite), but flips the image vertically before
-   rotating it.  To flip horizontally, use this routine but add
-   @code(al_itofix @(128@)) to the angle.  To flip in both directions, use
-   @code(al_rotate_sprite) and add @code(al_itofix @(128@)) to its angle. *)
-  PROCEDURE al_rotate_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
-    INLINE;
-
-(* Like @code(al_rotate_sprite), but stretches or shrinks the image at the
-   same time as rotating it. *)
-  PROCEDURE al_rotate_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED);
-    INLINE;
-
-(* Draws the sprite, similar to @code(al_rotate_scaled_sprite) except that it
-  flips the sprite vertically first. *)
-  PROCEDURE al_rotate_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED);
-    INLINE;
-
-(* Like @code(al_rotate_sprite), but aligns the point in the sprite given by
-   @code(cx, cy) to @code(x, y) in the bitmap, then rotates around this
-   point. *)
-  PROCEDURE al_pivot_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
-    INLINE;
-
-(* Like @code(al_rotate_sprite_v_flip), but aligns the point in the sprite
-   given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates around
-   this point. *)
-  PROCEDURE al_pivot_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
-    INLINE;
-
-(* Like @code(al_rotate_scaled_sprite), but aligns the point in the sprite
-   given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates around
-   this point. *)
-  PROCEDURE al_pivot_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED);
-    INLINE;
-
-(* Like @code(al_rotate_scaled_sprite_v_flip), but aligns the point in the
-   sprite given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates
-   and scales around this point. *)
-  PROCEDURE al_pivot_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED);
-    INLINE;
+(* Frees the memory being used by a font structure.  Don't use this on the
+   default global Allegro font or any text routines using it could crash.  You
+   should use this only on fonts you have loaded manually after you are done
+   with them, to prevent memory leaks in your program.
+   @seealso(al_load_font) *)
+  PROCEDURE al_destroy_font (f: AL_FONTptr);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_font';
 
 
 
-(* Rotates a sprite.
-
-  Draws the sprite image onto the bitmap. It is placed with its top left corner at the specified position, then rotated by the specified angle around its centre. The angle is a fixed point 16.16 number in the same format used by the fixed point trig routines, with 256 equal to a full circle, 64 a right angle, etc. All rotation functions can draw between any two bitmaps, even screen bitmaps or bitmaps of different color depth.
-
-  Positive increments of the angle will make the sprite rotate clockwise on the screen, as demonstrated by the Allegro example.
-  @seealso(al_draw_trans_sprite) @seealso(al_rotate_scaled_sprite_trans) @seealso(al_rotate_sprite_v_flip_trans) @seealso(al_rotate_scaled_sprite_v_flip_trans) *)
-  PROCEDURE al_rotate_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_trans';
-(* Rotates and flips a sprite.
-
-  Like al_rotate_sprite_trans, but flips the image vertically before rotating it.  To flip horizontally, use this routine but add @code(all_itofix (128)) to the angle.  To flip in both directions, use al_rotate_sprite and add @code(al_itofix (128)) to its angle. *)
-  PROCEDURE al_rotate_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_v_flip_trans';
-(* Rotates and stretches a sprite.
-
-  Like al_rotate_sprite_trans, but stretches or shrinks the image at the same time as rotating it. *)
-  PROCEDURE al_rotate_scaled_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_trans';
-(* Rotates and stretches a sprite.
-
-  Like al_rotate_scaled_sprite_trans, except that it flips the sprite vertically first. *)
-  PROCEDURE al_rotate_scaled_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_v_flip_trans';
-(* Rotates a sprite around a specified point.
-
-  Like al_rotate_sprite_trans, but aligns the point in the sprite given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates around this point. *)
-  PROCEDURE al_pivot_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_trans';
-(* Rotates and flips a sprite around a specified point.
-
-  Like al_rotate_sprite_trans, but aligns the point in the sprite given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates around this point. *)
-  PROCEDURE al_pivot_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_v_flip_trans';
-(* Rotates and stretches a sprite.
-
-  Like al_rotate_scaled_sprite_trans, but aligns the point in the sprite given by @code(cx, cy) to @code(x, y) in the bitmap, then rotates and scales around this point. *)
-  PROCEDURE al_pivot_scaled_sprite_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_trans';
-
-(* Rotates and stretches a sprite.
-
-  Like al_rotate_scaled_sprite_v_flip_trans, but aligns the point in the sprite given by (cx, cy) to (x, y) in the bitmap, then rotates and scales around this point. *)
-  PROCEDURE al_pivot_scaled_sprite_v_flip_trans (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_v_flip_trans';
-(* Rotates a sprite.
-
-  Draws the sprite image onto the bitmap.  It is placed with its top left corner at the specified position, then rotated by the specified angle around its centre.  The angle is a fixed point 16.16 number in the same format used by the fixed point trig routines, with 256 equal to a full circle, 64 a right angle, etc.  All rotation functions can draw between any two bitmaps, even screen bitmaps or bitmaps of different color depth. *)
-  PROCEDURE al_rotate_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED; color: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_lit';
-(* Rotates a sprite.
-
-   Like al_rotate_sprite_lit, but flips the image vertically before rotating it.  To flip horizontally, use this routine but add itofix(128) to the angle. To flip in both directions, use al_rotate_sprite and add itofix(128) to its angle. *)
-  PROCEDURE al_rotate_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED; color: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_v_flip_lit';
-(* Rotates and stretches a sprite.
-
-  Like al_rotate_sprite_lit, but stretches or shrinks the image at the same time as rotating it. *)
-  PROCEDURE al_rotate_scaled_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED; color: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_lit';
-(* Rotates and stretches a sprite.
-
-  Draws the sprite, similar to al_rotate_scaled_sprite_lit except that it flips the sprite vertically first. *)
-  PROCEDURE al_rotate_scaled_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED; color: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_scaled_sprite_v_flip_lit';
-(* Rotates a sprite.
-
-  Like al_rotate_sprite_lit, but aligns the point in the sprite given by (cx, cy) to (x, y) in the bitmap, then rotates around this point. *)
-  PROCEDURE al_pivot_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED; color: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_lit';
-(* Rotates a sprite.
-
-  Like al_rotate_sprite_v_flip_lit, but aligns the point in the sprite given by (cx, cy) to (x, y) in the bitmap, then rotates around this point. *)
-  PROCEDURE al_pivot_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED; color: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_sprite_v_flip_lit';
-(* Rotates and stretches a sprite.
-
-  Like al_rotate_scaled_sprite_lit, but aligns the point in the sprite given by (cx, cy) to (x, y) in the bitmap, then rotates and scales around this point. *)
-  PROCEDURE al_pivot_scaled_sprite_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED; color: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_lit';
-(* Rotates and stretches a sprite.
-
-  Like al_rotate_scaled_sprite_v_flip_lit(), but aligns the point in the sprite given by (cx, cy) to (x, y) in the bitmap, then rotates and scales around this point. *)
-  PROCEDURE al_pivot_scaled_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED; color: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pivot_scaled_sprite_v_flip_lit';
-
-
+(**
+    JARL
+  **)
 
 (********************************
  * Run-lenth compressed sprites *
@@ -5219,6 +5474,114 @@ CONST
 
 
 
+  PROCEDURE al_draw_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+  BEGIN
+    IF sprite^.vtable^.color_depth = 8 THEN
+      bmp^.vtable^.draw_256_sprite (bmp, sprite, x, y)
+    ELSE
+      bmp^.vtable^.draw_sprite (bmp, sprite, x, y);
+  END;
+
+  PROCEDURE al_draw_sprite_ex (bmp, sprite: AL_BITMAPptr; x, y, mode, flip: AL_INT);
+  BEGIN
+    bmp^.vtable^.draw_sprite_ex (bmp, sprite, x, y, mode, flip);
+  END;
+
+  PROCEDURE al_draw_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+  BEGIN
+    bmp^.vtable^.draw_sprite_v_flip (bmp, sprite, x, y);
+  END;
+
+  PROCEDURE al_draw_sprite_h_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+  BEGIN
+    bmp^.vtable^.draw_sprite_h_flip (bmp, sprite, x, y);
+  END;
+
+  PROCEDURE al_draw_sprite_vh_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+  BEGIN
+    bmp^.vtable^.draw_sprite_vh_flip (bmp, sprite, x, y);
+  END;
+
+  PROCEDURE al_draw_trans_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT);
+  BEGIN
+    IF sprite^.vtable^.color_depth = 32 THEN
+      bmp^.vtable^.draw_trans_rgba_sprite (bmp, sprite, x, y)
+    ELSE
+      bmp^.vtable^.draw_trans_sprite (bmp, sprite, x, y);
+  END;
+
+  PROCEDURE al_draw_lit_sprite (bmp, sprite: AL_BITMAPptr; x, y, c: AL_INT);
+  BEGIN
+    bmp^.vtable^.draw_lit_sprite (bmp, sprite, x, y, c);
+  END;
+
+  PROCEDURE al_draw_gouraud_sprite (bmp, sprite: AL_BITMAPptr; x, y, c1, c2, c3, c4: AL_INT);
+  BEGIN
+    bmp^.vtable^.draw_gouraud_sprite (bmp, sprite, x, y, c1, c2, c3, c4);
+  END;
+
+  PROCEDURE al_rotate_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle: AL_FIXED);
+  BEGIN
+    bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * $10000) DIV 2,
+							(y SHL 16) + (sprite^.h * $10000) DIV 2,
+							sprite^.w SHL 15, sprite^.h SHL 15,
+							angle, $10000, 0);
+  END;
+
+  PROCEDURE al_rotate_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle: AL_FIXED);
+  BEGIN
+    bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * $10000) DIV 2,
+							(y SHL 16) + (sprite^.h * $10000) DIV 2,
+							sprite^.w SHL 15, sprite^.h SHL 15,
+							angle, $10000, NOT 0);
+  END;
+
+  PROCEDURE al_rotate_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle, scale: AL_FIXED);
+  BEGIN
+    bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * scale) DIV 2,
+							(y SHL 16) + (sprite^.h * scale) DIV 2,
+							sprite^.w SHL 15, sprite^.h SHL 15,
+							angle, scale, 0);
+  END;
+
+  PROCEDURE al_rotate_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle, scale: AL_FIXED);
+  BEGIN
+    bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * scale) DIV 2,
+							(y SHL 16) + (sprite^.h * scale) DIV 2,
+							sprite^.w SHL 15, sprite^.h SHL 15,
+							angle, scale, NOT 0);
+  END;
+
+  PROCEDURE al_pivot_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle: AL_FIXED);
+  BEGIN
+    bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
+							cx SHL 16, cy SHL 16,
+							angle, $10000, 0);
+  END;
+
+  PROCEDURE al_pivot_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle: AL_FIXED);
+  BEGIN
+    bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
+							cx SHL 16, cy SHL 16,
+							angle, $10000, NOT 0);
+  END;
+
+  PROCEDURE al_pivot_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle, scale: AL_FIXED);
+  BEGIN
+    bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
+							cx SHL 16, cy SHL 16,
+							angle, scale, 0);
+  END;
+
+  PROCEDURE al_pivot_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: AL_INT; angle, scale: AL_FIXED);
+  BEGIN
+    bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
+							cx SHL 16, cy SHL 16,
+							angle, scale, NOT 0);
+  END;
+
+
+
   PROCEDURE _al_putpixel (bmp: AL_BITMAPptr; x, y, color: AL_INT);
   VAR
     addr: AL_UINTPTR_T;
@@ -5339,39 +5702,34 @@ CONST
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
+
+
 (******************************************************************************
- ************)
+ * font.h *
+ **********)
 
-(*************
- * Text font *
- *************)
+  FUNCTION font_has_alpha (f: AL_FONTptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION load_font (filename: PCHAR; palette: AL_PALETTEptr; p: POINTER)
-	   : AL_FONTptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_load_font (filename: STRING; palette: AL_PALETTEptr; p: POINTER)
-	: AL_FONTptr;
+  FUNCTION al_font_has_alpha (f: AL_FONTptr): BOOLEAN;
   BEGIN
-    al_load_font := load_font (PCHAR (filename), palette, p);
+    al_font_has_alpha := font_has_alpha (f) <> 0;
   END;
 
 
 
-  FUNCTION load_bitmap_font (filename: PCHAR; palette: AL_PALETTEptr;
-	p: POINTER): POINTER; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION is_trans_font (f: AL_FONTptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_load_bitmap_font (filename: STRING; palette: AL_PALETTEptr;
-    p: POINTER): POINTER;
+  FUNCTION al_is_trans_font (f: AL_FONTptr): BOOLEAN;
   BEGIN
-    al_load_bitmap_font := load_bitmap_font (PCHAR (filename), palette, p);
+    al_is_trans_font := is_trans_font (f) <> 0;
   END;
 
 
 
-  FUNCTION is_color_font (f: AL_FONTptr): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION is_color_font (f: AL_FONTptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_is_color_font (f: AL_FONTptr): BOOLEAN;
   BEGIN
@@ -5380,8 +5738,8 @@ CONST
 
 
 
-  FUNCTION is_mono_font (f: AL_FONTptr): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION is_mono_font (f: AL_FONTptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_is_mono_font (f: AL_FONTptr): BOOLEAN;
   BEGIN
@@ -5390,8 +5748,8 @@ CONST
 
 
 
-  FUNCTION is_compatible_font (f1, f2: AL_FONTptr): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION is_compatible_font (f1, f2: AL_FONTptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_is_compatible_font (f1, f2: AL_FONTptr): BOOLEAN;
   BEGIN
@@ -5400,198 +5758,100 @@ CONST
 
 
 
-(****************
- * Text drawing *
- ****************)
+  FUNCTION load_font (CONST filename: AL_STRptr; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  PROCEDURE textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+  FUNCTION al_load_font (filename: STRING; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
   BEGIN
-    textout_ex (bmp, f, PCHAR (str), x, y, color, bg);
+    al_load_font := load_font (AL_STRptr (filename), palette, param);
   END;
 
 
 
-  PROCEDURE textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION load_bitmap_font (CONST filename: AL_STRptr; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
+  FUNCTION al_load_bitmap_font (filename: STRING; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
   BEGIN
-    textout_centre_ex (bmp, f, PCHAR (str), x, y, color, bg);
-  END;
-
-
-  PROCEDURE textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x, y, color, bg: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x, y, color, bg: LONGINT);
-  BEGIN
-    textout_right_ex (bmp, f, PCHAR (str), x, y, color, bg);
+    al_load_bitmap_font := load_bitmap_font (AL_STRptr (filename), palette, param);
   END;
 
 
 
-  PROCEDURE textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: PCHAR; x1, x2, y, diff, color, bg: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION load_txt_font (CONST filename: AL_STRptr; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; f: AL_FONTptr; str: STRING; x1, x2, y, diff, color, bg: LONGINT);
+  FUNCTION al_load_txt_font (CONST filename: STRING; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
   BEGIN
-    textout_justify_ex (bmp, f, PCHAR (str), x1, x2, y, diff, color, bg);
+    al_load_txt_font := load_txt_font (AL_STRptr (filename), palette, param);
   END;
 
 
 
-  FUNCTION text_length (f: AL_FONTptr; str: PCHAR): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION transpose_font (f: AL_FONTptr; drange: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_text_length (f: AL_FONTptr; str: STRING): LONGINT;
+  FUNCTION al_transpose_font (f: AL_FONTptr; drange: AL_INT): BOOLEAN;
   BEGIN
-    al_text_length := text_length (f, PCHAR (str));
+    al_transpose_font := transpose_font (f, drange) = 0;
   END;
 
 
 
-(*******************************
- * Blitting and sprite drawing *
- *******************************)
+(******************************************************************************
+ * text.h *
+ **********)
 
-(* Sprites. *)
-PROCEDURE al_draw_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
-BEGIN
-  IF sprite^.vtable^.color_depth = 8 THEN
-    bmp^.vtable^.draw_256_sprite (bmp, sprite, x, y)
-  ELSE
-    bmp^.vtable^.draw_sprite (bmp, sprite, x, y);
-END;
+  PROCEDURE textout_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: AL_STRptr; x, y, color, bg: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-
-
-PROCEDURE al_draw_sprite_ex (bmp, sprite: AL_BITMAPptr;
-			     x, y, mode, flip: LONGINT);
-BEGIN
-  bmp^.vtable^.draw_sprite_ex (bmp, sprite, x, y, mode, flip);
-END;
+  PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x, y, color, bg: AL_INT);
+  BEGIN
+    textout_ex (bmp, f, AL_STRptr (str), x, y, color, bg);
+  END;
 
 
 
-PROCEDURE al_draw_sprite_h_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
-BEGIN
-  bmp^.vtable^.draw_sprite_h_flip (bmp, sprite, x, y);
-END;
+  PROCEDURE textout_centre_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: AL_STRptr; x, y, color, bg: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x, y, color, bg: AL_INT);
+  BEGIN
+    textout_centre_ex (bmp, f, AL_STRptr (str), x, y, color, bg);
+  END;
+
+
+  PROCEDURE textout_right_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: AL_STRptr; x, y, color, bg: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x, y, color, bg: AL_INT);
+  BEGIN
+    textout_right_ex (bmp, f, AL_STRptr (str), x, y, color, bg);
+  END;
 
 
 
-PROCEDURE al_draw_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
-BEGIN
-  bmp^.vtable^.draw_sprite_v_flip (bmp, sprite, x, y);
-END;
+  PROCEDURE textout_justify_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: PCHAR; x1, x2, y, diff, color, bg: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-PROCEDURE al_draw_sprite_vh_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
-BEGIN
-  bmp^.vtable^.draw_sprite_vh_flip (bmp, sprite, x, y);
-END;
+  PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x1, x2, y, diff, color, bg: AL_INT);
+  BEGIN
+    textout_justify_ex (bmp, f, AL_STRptr (str), x1, x2, y, diff, color, bg);
+  END;
 
+  FUNCTION text_length (CONST f: AL_FONTptr; CONST str: AL_STRptr): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-
-PROCEDURE al_draw_trans_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT);
-BEGIN
-  IF sprite^.vtable^.color_depth = 32 THEN
-    bmp^.vtable^.draw_trans_rgba_sprite (bmp, sprite, x, y)
-  ELSE
-    bmp^.vtable^.draw_trans_sprite (bmp, sprite, x, y);
-END;
+  FUNCTION al_text_length (CONST f: AL_FONTptr; CONST str: STRING): AL_INT;
+  BEGIN
+    al_text_length := text_length (f, AL_STRptr (str));
+  END;
 
 
 
-PROCEDURE al_draw_lit_sprite (bmp, sprite: AL_BITMAPptr; x, y, c: LONGINT);
-BEGIN
-  bmp^.vtable^.draw_lit_sprite (bmp, sprite, x, y, c);
-END;
 
-
-
-PROCEDURE al_draw_gouraud_sprite (bmp, sprite: AL_BITMAPptr; x, y, c1, c2, c3, c4: LONGINT);
-BEGIN
-  bmp^.vtable^.draw_gouraud_sprite (bmp, sprite, x, y, c1, c2, c3, c4);
-END;
-
-PROCEDURE al_rotate_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
-BEGIN
-  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * $10000) DIV 2,
-						      (y SHL 16) + (sprite^.h * $10000) DIV 2,
-						      sprite^.w SHL 15, sprite^.h SHL 15,
-						      angle, $10000, 0);
-END;
-
-
-
-PROCEDURE al_rotate_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle: AL_FIXED);
-BEGIN
-  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * $10000) DIV 2,
-						      (y SHL 16) + (sprite^.h * $10000) DIV 2,
-						      sprite^.w SHL 15, sprite^.h SHL 15,
-						      angle, $10000, NOT 0);
-END;
-
-
-
-PROCEDURE al_rotate_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED);
-BEGIN
-  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * scale) DIV 2,
-						      (y SHL 16) + (sprite^.h * scale) DIV 2,
-						      sprite^.w SHL 15, sprite^.h SHL 15,
-						      angle, scale, 0);
-END;
-
-
-
-PROCEDURE al_rotate_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y: LONGINT; angle, scale: AL_FIXED);
-BEGIN
-  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, (x SHL 16) + (sprite^.w * scale) DIV 2,
-						      (y SHL 16) + (sprite^.h * scale) DIV 2,
-						      sprite^.w SHL 15, sprite^.h SHL 15,
-						      angle, scale, NOT 0);
-END;
-
-
-
-PROCEDURE al_pivot_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
-BEGIN
-  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
-						      cx SHL 16, cy SHL 16,
-						      angle, $10000, 0);
-END;
-
-
-
-PROCEDURE al_pivot_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle: AL_FIXED);
-BEGIN
-  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
-						      cx SHL 16, cy SHL 16,
-						      angle, $10000, NOT 0);
-END;
-
-
-
-PROCEDURE al_pivot_scaled_sprite (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED);
-BEGIN
-  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
-						      cx SHL 16, cy SHL 16,
-						      angle, scale, 0);
-END;
-
-
-
-PROCEDURE al_pivot_scaled_sprite_v_flip (bmp, sprite: AL_BITMAPptr; x, y, cx, cy: LONGINT; angle, scale: AL_FIXED);
-BEGIN
-  bmp^.vtable^.pivot_scaled_sprite_flip (bmp, sprite, x SHL 16, y SHL 16,
-						      cx SHL 16, cy SHL 16,
-						      angle, scale, NOT 0);
-END;
-
-
+(******************************************************************************
+ ************)
 
 (********************************
  * Run-lenth compressed sprites *
