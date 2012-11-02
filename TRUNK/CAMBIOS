@@ -19,6 +19,7 @@ Cambios entre las versiones 4.4.3 y 4.4.4
     al_make_trans_font, al_get_font_ranges, al_get_font_range_begin,
     al_get_font_range_end, al_extract_font_range, al_merge_fonts y
     al_transpose_font, y el ejemplo exfont.
+  + Añadido ejemplos exsample y exmidi.
   + Soporte para sistemas de 64bit.
 
   Otros
