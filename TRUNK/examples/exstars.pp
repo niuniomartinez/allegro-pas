@@ -203,7 +203,7 @@ VAR
     v2.y := (pts[aFace^.v3].y - pts[aFace^.v1].y);
     v2.z := (pts[aFace^.v3].z - pts[aFace^.v1].z);
     al_cross_product (v1.x, v1.y, v1.z, v2.x, v2.y, v2.z,
-		@aFace^.normal.x, @aFace^.normal.y, @aFace^.normal.z);
+		aFace^.normal.x, aFace^.normal.y, aFace^.normal.z);
 
     Ship.faces[2].v1 := 3;
     Ship.faces[2].v2 := 1;
@@ -216,7 +216,7 @@ VAR
     v2.y := (pts[aFace^.v3].y - pts[aFace^.v1].y);
     v2.z := (pts[aFace^.v3].z - pts[aFace^.v1].z);
     al_cross_product (v1.x, v1.y, v1.z, v2.x, v2.y, v2.z,
-		@aFace^.normal.x, @aFace^.normal.y, @aFace^.normal.z);
+		aFace^.normal.x, aFace^.normal.y, aFace^.normal.z);
 
     Ship.faces[3].v1 := 2;
     Ship.faces[3].v2 := 1;
@@ -229,7 +229,7 @@ VAR
     v2.y := (pts[aFace^.v3].y - pts[aFace^.v1].y);
     v2.z := (pts[aFace^.v3].z - pts[aFace^.v1].z);
     al_cross_product (v1.x, v1.y, v1.z, v2.x, v2.y, v2.z,
-		@aFace^.normal.x, @aFace^.normal.y, @aFace^.normal.z);
+		aFace^.normal.x, aFace^.normal.y, aFace^.normal.z);
 
     Ship.faces[4].v1 := 3;
     Ship.faces[4].v2 := 4;
@@ -242,14 +242,14 @@ VAR
     v2.y := (pts[aFace^.v3].y - pts[aFace^.v1].y);
     v2.z := (pts[aFace^.v3].z - pts[aFace^.v1].z);
     al_cross_product (v1.x, v1.y, v1.z, v2.x, v2.y, v2.z,
-		@aFace^.normal.x, @aFace^.normal.y, @aFace^.normal.z);
+		aFace^.normal.x, aFace^.normal.y, aFace^.normal.z);
 
     FOR Ndx := 1 TO NUM_FACES DO
     BEGIN;
       Ship.faces[Ndx].colour := 32;
       Ship.faces[Ndx].range := 15;
-      al_normalize_vector(@Ship.faces[Ndx].normal.x, @Ship.faces[Ndx].normal.y,
-			  @Ship.faces[Ndx].normal.z);
+      al_normalize_vector(Ship.faces[Ndx].normal.x, Ship.faces[Ndx].normal.y,
+			  Ship.faces[Ndx].normal.z);
       Ship.faces[Ndx].rnormal.x := Ship.faces[Ndx].normal.x;
       Ship.faces[Ndx].rnormal.y := Ship.faces[Ndx].normal.y;
       Ship.faces[Ndx].rnormal.z := Ship.faces[Ndx].normal.z;
