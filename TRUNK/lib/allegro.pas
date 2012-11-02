@@ -197,9 +197,111 @@ END;
   FUNCTION al_set_close_button_callback (proc: AL_SIMPLE_PROC): BOOLEAN;
     INLINE;
 
-(*
+
+
+(* Detects the CPU type, setting the following global variables. You don't
+   normally need to call this, because @link(allegro_init) will do it for you.
+   @seealso(al_cpu_vendor) @seealso(al_cpu_family,) @seealso(al_pu_model,)
+   @seealso(al_pu_capabilities) *)
+  PROCEDURE al_check_cpu;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'check_cpu';
+
+(* CPU identifiers. *)
+  {$INCLUDE alcpuid.inc}
+
+  VAR
+  (* On Intel PCs, contains the CPU vendor name if known.  On Mac OSX systems
+     this contains the PPC subtype name.  On other platforms, this may be an
+     empty string.  You can read this variable after you have called
+     @link(al_check_cpu) (which is automatically called by @link(al_init)).
+     @seealso(al_cpu_family) @seealso(al_cpu_model)
+     @seealso(al_cpu_capabilities) *)
+    al_cpu_vendor: AL_STRptr;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'cpu_vendor';
+
+  (* Contains the CPU type, where applicable.  Allegro defines the following
+     CPU family types:
+@unorderedList(
+  @item(AL_CPU_FAMILY_UNKNOWN  - The type of processor is unknown)
+  @item(AL_CPU_FAMILY_I386     - The processor is an Intel-compatible 386)
+  @item(AL_CPU_FAMILY_I486     - The processor is an Intel-compatible 486)
+  @item(AL_CPU_FAMILY_I586     - The processor is a Pentium or equivalent)
+  @item(AL_CPU_FAMILY_I686     - The processor is a Pentium Pro, II, III
+                                or equivalent)
+  @item(AL_CPU_FAMILY_ITANIUM  - The processor is an Itanium processor)
+  @item(AL_CPU_FAMILY_POWERPC  - The processor is a PowerPC processor)
+  @item(AL_CPU_FAMILY_EXTENDED - The processor type needs to be read
+                                from the cpu_model))
+     You can read this variable after you have called @link(al_check_cpu)
+     (which is automatically called by @link(al_init)).
+     @seealso(al_cpu_vendor) @seealso(al_cpu_model)
+     @seealso(al_cpu_capabilities) *)
+    al_cpu_family: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'cpu_family';
+
+  (* Contains the CPU submodel, where applicable. Allegro defines at least the
+     following CPU family types (see lib/alcpu.inc for a more complete list):
+@longcode(#
+  AL_CPU_FAMILY_I586:
+     AL_CPU_MODEL_PENTIUM, AL_CPU_MODEL_K5, AL_CPU_MODEL_K6
+
+  AL_CPU_FAMILY_I686:
+     AL_CPU_MODEL_PENTIUMPRO, AL_CPU_MODEL_PENTIUMII,
+     AL_CPU_MODEL_PENTIUMIIIKATMAI, AL_CPU_MODEL_PENTIUMIIICOPPERMINE,
+     AL_CPU_MODEL_ATHLON, AL_CPU_MODEL_DURON
+
+  AL_CPU_FAMILY_EXTENDED:
+     AL_CPU_MODEL_PENTIUMIV, AL_CPU_MODEL_XEON,
+     AL_CPU_MODEL_ATHLON64, AL_CPU_MODEL_OPTERON
+
+  AL_CPU_FAMILY_POWERPC:
+     AL_CPU_MODEL_POWERPC_x, for x=601-604, 620, 750, 7400, 7450
+#)
+     You can read this variable after you have called @link(al_check_cpu)
+     (which is automatically called by @link(al_init).  Make sure you check the
+     @link(al_cpu_family) and @link(al_cpu_vendor) so you know which models
+     make sense to check.
+     @seealso(al_cpu_capabilities) *)
+    al_cpu_model: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'cpu_model';
+
+  (* Contains CPU flags indicating what features are available on the current
+     CPU. The flags can be any combination of these:
+     @unorderedList(
+       @item(@bold(AL_CPU_ID:) Indicates that the "cpuid" instruction is
+         available. If this is set, then all Allegro CPU variables are 100%
+	 reliable, otherwise there may be some mistakes.)
+       @item(@bold(AL_CPU_FPU:) An FPU is available.)
+       @item(@bold(AL_CPU_IA64:) Running on Intel 64 bit CPU)
+       @item(@bold(AL_CPU_AMD64:) Running on AMD 64 bit CPU)
+       @item(@bold(AL_CPU_MMX:) Intel MMX  instruction set is available.)
+       @item(@bold(AL_CPU_MMXPLUS:) Intel MMX+ instruction set is available.)
+       @item(@bold(AL_CPU_SSE:) Intel SSE  instruction set is available.)
+       @item(@bold(AL_CPU_SSE2:) Intel SSE2 instruction set is available.)
+       @item(@bold(AL_CPU_SSE3:) Intel SSE3 instruction set is available.)
+       @item(@bold(AL_CPU_3DNOW:) AMD 3DNow! instruction set is available.)
+       @item(@bold(AL_CPU_ENH3DNOW:) AMD Enhanced 3DNow! instruction set is
+         available.)
+       @item(@bold(AL_CPU_CMOV:) Pentium Pro "cmov" instruction is available.)
+     )
+     You can check for multiple features by OR-ing the flags together.  For
+     example, to check if the CPU has an FPU and MMX instructions available,
+     you'd do:
+@longcode(#
+  IF (al_cpu_capabilities AND (AL_CPU_FPU OR AL_CPU_MMX) = (AL_CPU_FPU OR AL_CPU_MMX) THEN
+    WriteLn ('CPU has both an FPU and MMX instructions!');
+#)
+     You can read this variable after you have called @link(al_check_cpu)
+     (which is automatically called by @link(al_init).
+     @seealso(al_cpu_vendor) @seealso(al_cpu_family) @seealso(al_cpu_model) *)
+    al_cpu_capabilities: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'cpu_capabilities';
+
+
+
+(******************************************************************************
  * system.inl
- *)
+ **************)
 
 (* On platforms that are capable of it, this routine alters the window title
    for your Allegro program.
@@ -3297,7 +3399,6 @@ END;
    @seealso(al_fastline) @seealso(al_polygon) @seealso(al_do_line).
    @seealso(al_drawing_mode) @seealso(al_makecol) *)
   PROCEDURE al_line (bmp: AL_BITMAPptr; x1, y1, x2, y2, color: AL_INT);
-    INLINE;
 
 (* Faster version of the previous function.  Note that pixel correctness is not
    guaranteed for this function. @seealso(al_line) *)
@@ -3322,7 +3423,6 @@ END;
    @seealso(al_triangle) @seealso(al_polygon3d) @seealso(al_drawing_mode)
    @seealso(al_makecol) *)
   PROCEDURE al_polygon (bmp: AL_BITMAPptr; vertices: AL_INT; CONST points: ARRAY OF AL_INT; color: AL_INT);
-    INLINE;
 
 (* Draws an outline rectangle with the two points as its opposite corners.
    @seealso(al_rectfill) @seealso(al_drawing_mode) @seealso(al_makecol) *)
@@ -3367,7 +3467,6 @@ END;
    array.  Read the description of @link(al_calc_spline) for information on how to
    build the points array. @seealso(al_drawing_mode) @seealso(al_makecol) *)
   PROCEDURE al_spline (bmp: AL_BITMAPptr; CONST points: ARRAY OF AL_INT; color: AL_INT);
-    INLINE;
 
 (* Floodfills an enclosed area, starting at point (x, y), with the specified
    color. @seealso(al_drawing_mode) @seealso(al_makecol) *)
@@ -4882,8 +4981,8 @@ IMPLEMENTATION
     al_install_timer := install_timer = 0;
   END;
 
-  FUNCTION install_int_ex (proc: AL_SIMPLE_PROC; speed: AL_LONG): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION install_int_ex (proc: AL_SIMPLE_PROC; speed: AL_LONG): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_install_int_ex (proc: AL_SIMPLE_PROC; speed: AL_LONG): BOOLEAN;
   BEGIN
@@ -5147,8 +5246,8 @@ CONST
 
 
 
-  FUNCTION set_gfx_mode (card, w, h, v_w, v_h: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION set_gfx_mode (card, w, h, v_w, v_h: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: AL_INT): BOOLEAN;
   VAR

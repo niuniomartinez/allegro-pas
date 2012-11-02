@@ -8,6 +8,8 @@ Cambios entre las versiones 4.4.3 y 4.4.4
     al_remove_param_int.
   * Corregidas las funciones al_save_bmp_pf, al_save_pcx_pf y al_save_tga_pf.
   * Pequeño cambio en el ejemplo exhsvrgb.
+  * Corregido aviso '"open array" not yet supported inside inline
+    procedure/function'.
 
   Novedades
   ---------
@@ -20,6 +22,9 @@ Cambios entre las versiones 4.4.3 y 4.4.4
     al_get_font_range_end, al_extract_font_range, al_merge_fonts y
     al_transpose_font, y el ejemplo exfont.
   + Añadido ejemplos exsample y exmidi.
+  + Añadidas procedimiento al_check_cpu, variables al_cpu_family, al_cpu_model,
+    al_cpu_vendor y al_cpu_capabilities, y constantes relacionadas.
+  * Añadida implementación de "quaternions".
   + Soporte para sistemas de 64bit.
 
   Otros
