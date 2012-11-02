@@ -203,10 +203,6 @@ INTERFACE
   PROCEDURE al_set_screen_blender (r, g, b, a: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_screen_blender';
 
-
-
-
-
 IMPLEMENTATION
 
 END.

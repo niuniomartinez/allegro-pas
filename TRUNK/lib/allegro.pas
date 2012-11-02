@@ -4012,105 +4012,89 @@ END;
 
 
 
-(**
-    JARL
-  **)
+(******************************************************************************
+ * rle.h
+ *     RLE sprites.
+ *)
 
-(********************************
- * Run-lenth compressed sprites *
- ********************************)
-
-TYPE
-(* Ponter to @code(AL_RLE_SPRITE). *)
-  AL_RLE_SPRITEptr = ^AL_RLE_SPRITE;
-(* An RLE compressed sprite. @seealso(al_get_rle_sprite) *)
-  AL_RLE_SPRITE = RECORD
-    w, h: LONGINT;	 (*< width and height in pixels *)
-    color_depth: LONGINT; (*< color depth of the image *)
-    size: LONGINT;	 (*< size of sprite data in bytes *)
-    dat: POINTER;
-  END;
-
-
+  TYPE
+  (* Ponter to @code(AL_RLE_SPRITE). *)
+    AL_RLE_SPRITEptr = ^AL_RLE_SPRITE;
+  (* An RLE compressed sprite. @seealso(al_get_rle_sprite) *)
+    AL_RLE_SPRITE = RECORD
+      w, h: AL_INT;	 (*< width and height in pixels *)
+      color_depth: AL_INT; (*< color depth of the image *)
+      size: AL_INT;	 (*< size of sprite data in bytes *)
+      dat: AL_POINTER;
+    END;
 
 (* Creates an RLE sprite based on the specified bitmap (which must be a memory
    bitmap).  Remember to free this RLE sprite later to avoid memory leaks.
-   @param(bitmap Pointer to the @link(bitmap) used to create the
-     sprite.)
+   @param(bitmap Pointer to the bitmap used to create the sprite.)
    @returns(A pointer to the created RLE sprite, or @nil if it could not be
      created.  Remember to free this RLE sprite later to avoid memory
      leaks.)
    @seealso(al_destroy_rle_sprite) @seealso(al_draw_rle_sprite) *)
-  FUNCTION al_get_rle_sprite (bitmap: AL_BITMAPptr): AL_RLE_SPRITEptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_rle_sprite';
+  FUNCTION al_get_rle_sprite (bitmap: AL_BITMAPptr): AL_RLE_SPRITEptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_rle_sprite';
 
 (* Destroys an RLE sprite structure previously returned by
    @code(al_get_rle_sprite).  If you pass a @nil pointer this function won't do
    anything.  Use this once you are done with an RLE sprite to avoid memory
    leaks in your program.
    @param(sprite The RLE sprite to destroy.) *)
-  PROCEDURE al_destroy_rle_sprite (sprite: AL_RLE_SPRITEptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_rle_sprite';
+  PROCEDURE al_destroy_rle_sprite (sprite: AL_RLE_SPRITEptr);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_rle_sprite';
+
+
+
+(******************************************************************************
+ * rle.inl
+ *     RLE sprite inline functions (generic C).
+ *)
 
 (* Draws an RLE sprite onto a bitmap at the specified position.
    @param(bmp Bitmap where the sprite will be draw.)
    @param(spr Sprite to draw.)
    @param(x Horizontal coordinate.) @param(y Vertical coordinate.)
-   @seealso(al_draw_sprite) *)
-  PROCEDURE al_draw_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
-				x, y: LONGINT);
+   @seealso(al_draw_sprite) @seealso(al_get_rle_sprite) *)
+  PROCEDURE al_draw_rle_sprite (bmp: AL_BITMAPptr; CONST spr: AL_RLE_SPRITEptr; x, y: AL_INT);
     INLINE;
 
-(* Translucent version of @code(al_draw_rle_sprite).  This must only be used
+(* Translucent version of @link(al_draw_rle_sprite).  This must only be used
    after you have set up the color mapping table (for 256-color modes) or
    blender functions (for truecolor modes).  The bitmap and sprite must
    normally be in the same color depth, but as a special case you can draw
    32-bit RGBA format sprites onto any hicolor or truecolor bitmap, as long as
-   you call @code(al_set_alpha_blender) first.
+   you call @link(al_set_alpha_blender) first.
    @param(bmp Bitmap where the sprite will be draw.)
    @param(spr Sprite to draw.)
    @param(x Horizontal coordinate.) @param(y Vertical coordinate.)
-   @seealso(al_draw_rle_sprite) @seealso(al_color_table)
-   @seealso(al_set_trans_blender) *)
-  PROCEDURE al_draw_trans_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
-					x, y: LONGINT);
+   @seealso(al_color_table) @seealso(al_set_trans_blender) *)
+  PROCEDURE al_draw_trans_rle_sprite (bmp: AL_BITMAPptr; CONST spr: AL_RLE_SPRITEptr; x, y: AL_INT);
     INLINE;
 
-(* Tinted version of @code(al_draw_rle_sprite).  This must only be used after
+(* Tinted version of @link(al_draw_rle_sprite).  This must only be used after
    you have set up the color mapping table (for 256-color modes) or blender
    functions (for truecolor modes).
    @param(bmp Bitmap where the sprite will be draw.)
    @param(spr Sprite to draw.)
    @param(x Horizontal coordinate.) @param(y Vertical coordinate.)
    @param(color Tint color.)
-   @seealso(al_draw_rle_sprite) @seealso(al_color_table) *)
-  PROCEDURE al_draw_lit_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
-					x, y, color: LONGINT);
+   @seealso(al_color_table) *)
+  PROCEDURE al_draw_lit_rle_sprite (bmp: AL_BITMAPptr; CONST spr: AL_RLE_SPRITEptr; x, y, color: AL_INT);
     INLINE;
 
 
 
-(******************************************
- * Sound initialization and configuration *
- ******************************************)
-
-CONST
-(* Identifier to pass to @code(al_install_sound). *)
-  AL_DIGI_AUTODETECT	= -1;
-(* Identifier to pass to @code(al_install_sound). *)
-  AL_DIGI_NONE		= 0;
-(* Identifier to pass to @code(al_install_sound). *)
-  AL_MIDI_AUTODETECT	= -1;
-(* Identifier to pass to @code(al_install_sound). *)
-  AL_MIDI_NONE		=  0;
-(* Identifier to pass to @code(al_install_sound). *)
-  AL_MIDI_DIGMID	= $44494749; { AL_ID ('DIGI'); }
-
-
+(******************************************************************************
+ * sound.h
+ *     Sound support routines.
+ *)
 
 (* Call this function to specify the number of voices that are to be used by
    the digital and MIDI sound drivers respectively.  This must be done
-   @bold(before) calling @code(al_install_sound).  If you reserve too many
+   @bold(before) calling @link(al_install_sound).  If you reserve too many
    voices, subsequent calls to @code(al_install_sound) will fail.  How many
    voices are available depends on the driver, and in some cases you will
    actually get more than you reserve (eg. the FM synth drivers will always
@@ -4118,9 +4102,10 @@ CONST
    will round the number of voices up to the nearest power of two).  Pass
    negative values to restore the default settings.  You should be aware that
    the sound quality is usually inversely related to how many voices you use,
-   so don't reserve any more than you really need. *)
-  PROCEDURE al_reserve_voices (digi_voices, midi_voices: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'reserve_voices';
+   so don't reserve any more than you really need.
+   @seealso(al_set_volume_per_voice) @seealso(al_get_mixer_voices) *)
+  PROCEDURE al_reserve_voices (digi_voices, midi_voices: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'reserve_voices';
 
 (* By default, Allegro will play a centered sample at half volume on both the
    left and right channel.  A sample panned to the far right or left will be
@@ -4133,7 +4118,7 @@ CONST
    If clipping is a problem - or if the output is too quiet - this function can
    be used to adjust the volume of each voice.  You should first check that
    your speakers are at a reasonable volume, Allegro's global volume is at
-   maximum (see @code(al_set_volume)), and any other mixers such as the Volume
+   maximum (see @link(al_set_volume)), and any other mixers such as the Volume
    Control are set reasonably.  Once you are sure that Allegro's output level
    is unsuitable for your application, use this function to adjust it.
 
@@ -4148,19 +4133,22 @@ CONST
    distortion, you should pass 1 to this function.
 
    Of course this function does not override the volume you specify with
-   @code(al_play_sample) or @code(al_set_volume).  It simply alters the
+   @link(al_play_sample) or @code(al_set_volume).  It simply alters the
    overall output of the program.  If you play samples at lower volumes, or if
    they are not normalised, then you can play more of them without distortion.
 
    It is recommended that you hard-code the parameter into your program, rather
    than offering it to the user.  The user can alter the volume with the
    configuration file instead, or you can provide for this with
-   @code(al_set_volume). *)
-  PROCEDURE al_set_volume_per_voice (scale: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_volume_per_voice';
+   @code(al_set_volume).
+   @seealso(al_reserve_voices) @seealso(al_install_sound) *)
+  PROCEDURE al_set_volume_per_voice (scale: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_volume_per_voice';
+
+
 
 (* Initialises the sound module.  You should normally pass
-   @code(AL_DIGI_AUTODETECT) and @code(AL_MIDI_AUTODETECT) as the driver
+   @link(AL_DIGI_AUTODETECT) and @link(AL_MIDI_AUTODETECT) as the driver
    parameters to this function, in which case Allegro will read hardware
    settings from the current configuration file.  This allows the user to
    select different values with the setup utility:  see the @link(configuration
@@ -4168,13 +4156,18 @@ CONST
 
    @returns (@true if the sound is successfully installed, and @false on
      failure.  If it fails it will store a description of the problem in
-     @code(al_error).) *)
-  FUNCTION al_install_sound (digi, midi: LONGINT): BOOLEAN;
+     @link(al_error).)
+   @seealso(al_remove_sound) @seealso(al_reserve_voices)
+   @seealso(al_set_volume) @seealso(al_play_sample) @seealso(al_play_midi)
+   @seealso(al_set_mixer_quality) *)
+  FUNCTION al_install_sound (digi, midi: AL_INT): BOOLEAN;
+    INLINE;
 
 (* Cleans up after you are finished with the sound routines.  You don't
-   normally need to call this, because @code(al_exit) will do it for you. *)
-  PROCEDURE al_remove_sound; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_sound';
+   normally need to call this, because @link(al_exit) will do it for you.
+   @seealso(al_install_sound) *)
+  PROCEDURE al_remove_sound;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_sound';
 
 
 
@@ -4182,28 +4175,34 @@ CONST
    samples and MIDI playback, as integers from 0 to 255, or pass a negative
    value to leave one of the settings unchanged.  Values bigger than 255 will
    be reduced to 255.  This routine will not alter the volume of the hardware
-   mixer if it exists (i.e. only your application will be affected). *)
-  PROCEDURE al_set_volume (digi, midi: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_volume';
+   mixer if it exists (i.e. only your application will be affected).
+   @seealso(al_install_sound) @seealso(al_set_hardware_volume) *)
+  PROCEDURE al_set_volume (digi, midi: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_volume';
 
 (* Alters the hardware sound output volume.  Specify volumes for both digital
    samples and MIDI playback, as integers from 0 to 255, or pass a negative
    value to leave one of the settings unchanged.  Values bigger than 255 will
    be reduced to 255.  This routine will use the hardware mixer to control the
    volume if it exists (i.e. the volume of all the applications on your machine
-   will be affected), otherwise do nothing. *)
-  PROCEDURE al_set_hardware_volume (digi, midi: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_hardware_volume';
+   will be affected), otherwise do nothing.
+   @seealso(al_install_sound) @seealso(al_set_volume) *)
+  PROCEDURE al_set_hardware_volume (digi, midi: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_hardware_volume';
+
+
 
 (* Retrieves the global sound output volume, both for digital samples and MIDI
-   playback, as integers from 0 to 255. *)
-  PROCEDURE al_get_volume (VAR digi, midi: LONGINT);
+   playback, as integers from 0 to 255.
+   @seealso(al_set_volume) @seealso(al_get_hardware_volume) *)
+  PROCEDURE al_get_volume (VAR digi, midi: AL_INT);
     INLINE;
 
 (* Retrieves the hardware sound output volume, both for digital samples and
    MIDI playback, as integers from 0 to 255, or -1 if the information is not
-   available. *)
-  PROCEDURE al_get_hardware_volume (VAR digi, midi: LONGINT);
+   available.
+   @seealso(al_set_hardware_volume) @seealso(al_get_volume) *)
+  PROCEDURE al_get_hardware_volume (VAR digi, midi: AL_INT);
     INLINE;
 
 
@@ -4211,99 +4210,119 @@ CONST
 (* Sets the resampling quality of the mixer.  Valid values are the same as the
   @code(quality) config variable.  Please read chapter "Standard config
   variables" for details.  You can call this function at any point in your
-  program, even before @code(al_init). *)
-  PROCEDURE al_set_mixer_quality (quality: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_mixer_quality';
+  program, even before @link(al_init). @seealso(al_get_mixer_quality) *)
+  PROCEDURE al_set_mixer_quality (quality: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_mixer_quality';
 
 (* Returns the current mixing quality, as specified by the @code(quality)
-   config variable, or a previous call to @code(al_set_mixer_quality). *)
-  FUNCTION al_get_mixer_quality: LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_quality';
+   config variable, or a previous call to @link(al_set_mixer_quality). *)
+  FUNCTION al_get_mixer_quality: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_quality';
 
 (* Returns the mixer frequency, in Hz. *)
-  FUNCTION al_get_mixer_frequency: LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_frequency';
+  FUNCTION al_get_mixer_frequency: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_frequency';
 
 (* Returns the mixer bit depth (8 or 16). *)
-  FUNCTION al_get_mixer_bits: LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_bits';
+  FUNCTION al_get_mixer_bits: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_bits';
 
 (* Returns the number of output channels. 2 for stereo, 1 for mono, 0 if the
    mixer isn't active. *)
-  FUNCTION al_get_mixer_channels: LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_channels';
+  FUNCTION al_get_mixer_channels: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_channels';
 
-(* Returns the number of voices allocated to the mixer. *)
-  FUNCTION al_get_mixer_voices: LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_voices';
+(* Returns the number of voices allocated to the mixer.
+   @seealso(al_reserve_voices) *)
+  FUNCTION al_get_mixer_voices: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_voices';
 
 (* Returns the number of samples per channel in the mixer buffer. *)
-  FUNCTION al_get_mixer_buffer_length: LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_buffer_length';
-
-
-(********
- * MIDI *
- ********)
-
-CONST
-(* Max number of MIDI voices. *)
-  AL_MIDI_VOICES = 64;
-(* Max number of MIDI tracks. *)
-  AL_MIDI_TRACKS = 32;
+  FUNCTION al_get_mixer_buffer_length: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mixer_buffer_length';
 
 
 
-TYPE
-(* Pointer to @code(AL_MIDI). *)
-  AL_MIDIptr = ^AL_MIDI;
-(* A structure holding MIDI data.
-   @seealso(al_load_midi) @seealso(al_play_midi) @seealso(al_destroy_midi) *)
-  AL_MIDI = RECORD
-    divisions : LONGINT;		{< number of ticks per quarter note  }
-    track : ARRAY[0..(AL_MIDI_TRACKS)-1] OF RECORD
-      data : PBYTE;	{< MIDI message stream  }
-      len : LONGINT;	{< length of the track data  }
+(******************************************************************************
+ * midi.h
+ *     MIDI music routines.
+ *)
+
+  CONST
+  (* Identifier to pass to @link(al_install_sound). *)
+    AL_MIDI_AUTODETECT	= -1;
+  (* Identifier to pass to @link(al_install_sound). *)
+    AL_MIDI_NONE		=  0;
+  (* Identifier to pass to @link(al_install_sound). *)
+    AL_MIDI_DIGMID	= $44494749; { AL_ID ('DIGI'); }
+  (* Max number of MIDI voices. *)
+    AL_MIDI_VOICES = 64;
+  (* Max number of MIDI tracks. *)
+    AL_MIDI_TRACKS = 32;
+
+  TYPE
+  (* Pointer to @code(AL_MIDI). *)
+    AL_MIDIptr = ^AL_MIDI;
+  (* A structure holding MIDI data.
+     @seealso(al_load_midi) @seealso(al_play_midi) @seealso(al_destroy_midi) *)
+    AL_MIDI = RECORD
+      divisions : AL_INT;		{< number of ticks per quarter note  }
+      track : ARRAY[0..(AL_MIDI_TRACKS)-1] OF RECORD
+        data : AL_UCHARptr;	{< MIDI message stream  }
+        len : AL_INT;	{< length of the track data  }
+      END;
     END;
-  END;
 
-
-
-VAR
-(* Stores the current position (beat number) in the MIDI file, or contains a
-   negative number if no music is currently playing.  Useful for synchronising
-   animations with the music, and for checking whether a MIDI file has finished
-   playing. *)
-  al_midi_pos: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_pos';
-(* Contains the position in seconds in the currently playing midi.  This is
-   useful if you want to display the current song position in seconds, not as
-   beat number. *)
-  al_midi_time: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_time';
-(* The loop start and end points, set by the @code(al_play_looped_midi)
-   function.  These may safely be altered while the music is playing, but you
-   should be sure they are always set to sensible values (start < end).  If you
-   are changing them both at the same time, make sure to alter them in the
-   right order in case a MIDI interrupt happens to occur in between your two
-   writes!  Setting these values to -1 represents the start and end of the file
-   respectively. *)
-  al_midi_loop_start: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_loop_start';
-  al_midi_loop_end  : LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_loop_end';
+  VAR
+  (* Stores the current position (beat number) in the MIDI file, or contains a
+     negative number if no music is currently playing.  Useful for synchronising
+     animations with the music, and for checking whether a MIDI file has finished
+     playing. @seealso(al_play_midi) @seealso(al_midi_msg_callback) *)
+    al_midi_pos: AL_LONG;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_pos';
+  (* Contains the position in seconds in the currently playing midi.  This is
+     useful if you want to display the current song position in seconds, not as
+     beat number. @seealso(al_play_midi) @seealso(al_midi_pos)
+     @seealso(al_get_midi_length) *)
+    al_midi_time: AL_LONG;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_time';
+  (* The loop start point, set by the @link(al_play_looped_midi) function.  It
+     may safely be altered while the music is playing, but you should be sure
+     it's always set to sensible values (start < end).  If you are changing
+     both start and end points at the same time, make sure to alter them in the
+     right order in case a MIDI interrupt happens to occur in between your two
+     writes!  Setting these values to -1 represents the start and end of the file
+     respectively. @seealso(al_midi_loop_end) *)
+    al_midi_loop_start: AL_LONG;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_loop_start';
+  (* The loop end point, set by the @link(al_play_looped_midi) function.  It
+     may safely be altered while the music is playing, but you should be sure
+     it's always set to sensible values (start < end).  If you are changing
+     both start and end points at the same time, make sure to alter them in the
+     right order in case a MIDI interrupt happens to occur in between your two
+     writes!  Setting these values to -1 represents the start and end of the file
+     respectively. @seealso(al_midi_loop_end) *)
+    al_midi_loop_end: AL_LONG;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_loop_end';
 
 
 
 (* Loads a MIDI file (handles both format 0 and format 1).
-   @returns(a pointer to a @code(AL_MIDI) structure, or @nil on error.
-     Remember to free this MIDI file later to avoid memory leaks.) *)
-  FUNCTION al_load_midi (filename: STRING): AL_MIDIptr;
+   @returns(a pointer to a @link(AL_MIDI) structure, or @nil on error.
+     Remember to free this MIDI file later to avoid memory leaks.)
+   @seealso(al_destroy_midi) @seealso(al_play_midi)
+   @seealso(al_get_midi_length) *)
+  FUNCTION al_load_midi (CONST filename: STRING): AL_MIDIptr;
+    INLINE;
 
-(* Destroys a @code(AL_MIDI) structure when you are done with it.  It is safe
+(* Destroys a @link(AL_MIDI) structure when you are done with it.  It is safe
    to call this even when the MIDI file might be playing, because it checks and
    will kill it off if it is active.  Use this to avoid memory leaks in your
-   program. *)
-  PROCEDURE al_destroy_midi (midi: AL_MIDIptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_midi';
+   program. @seealso(al_load_midi) *)
+  PROCEDURE al_destroy_midi (midi: AL_MIDIptr);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_midi';
 
-(* Starts playing the specified @code(AL_MIDI) file, first stopping whatever
+(* Starts playing the specified @link(AL_MIDI) file, first stopping whatever
    music was previously playing.  If the @code(loop) flag is set to @true,
    the data will be repeated until replaced with something else, otherwise it
    will stop at the end of the file.  Passing a @nil pointer will stop whatever
@@ -4312,7 +4331,10 @@ VAR
    @returns(@false if an error occurs @(this may happen if a patch-caching
      wavetable driver is unable to load the required samples, or at least it
      might in the future when somebody writes some patch-caching wavetable
-     drivers :-@)) *)
+     drivers :-@))
+   @seealso(al_install_sound) @seealso(al_load_midi) @seealso(al_stop_midi)
+   @seealso(al_play_looped_midi) @seealso(al_midi_pause) @seealso(al_midi_seek)
+   @seealso(al_midi_pos) @seealso(al_midi_time) @seealso(al_midi_msg_callback) *)
   FUNCTION al_play_midi (midi: AL_MIDIptr; loop: BOOLEAN): BOOLEAN;
     INLINE;
 
@@ -4320,140 +4342,152 @@ VAR
    player reaches the @code(loop_end) position or the end of the file
    (@code(loop_end) may be -1 to only loop at EOF), it will wind back to the
    @code(loop_start) point.  Both positions are specified in the same beat
-   number format as the @code(al_midi_pos) variable.
+   number format as the @link(al_midi_pos) variable.
 
-   @returns(@false if an error occurs, @true otherwise.) *)
-  FUNCTION al_play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: LONGINT): BOOLEAN;
+   @returns(@false if an error occurs, @true otherwise.)
+   @seealso(al_play_midi) @seealso(al_midi_pos) @seealso(al_midi_loop_start) *)
+  FUNCTION al_play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: AL_INT): BOOLEAN;
     INLINE;
 
 (* Stops whatever music is currently playing. This is the same thing as calling
    @code(al_play_midi @(@nil, @false@)).
-   @seealso(al_play_midi)*)
-  PROCEDURE al_stop_midi; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stop_midi';
+   @seealso(al_play_midi) @seealso(al_midi_pause) *)
+  PROCEDURE al_stop_midi;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stop_midi';
 
-(* Pauses the MIDI player. @seealso(al_midi_resume) @seealso(al_play_midi) *)
-  PROCEDURE al_midi_pause; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_pause';
+(* Pauses the MIDI player.
+   @seealso(al_stop_midi) @seealso(al_midi_resume) @seealso(al_play_midi) *)
+  PROCEDURE al_midi_pause;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_pause';
 
 (* Resumes playback of a paused MIDI file. @seealso(al_midi_pause) *)
-  PROCEDURE al_midi_resume; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_resume';
+  PROCEDURE al_midi_resume;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_resume';
 
-(* Seeks to the given @code(al_midi_pos) in the current MIDI file.  If the
+(* Seeks to the given @link(al_midi_pos) in the current MIDI file.  If the
    target is earlier in the file than the current @code(al_midi_pos) it seeks
    from the beginning; otherwise it seeks from the current position.
-
    @returns(zero if it could successfully seek to the requested position.
      Otherwise, a return value of 1 means it stopped playing, and
      @code(al_midi_pos) is set to the negative length of the MIDI file @(so you
      can use this function to determine the length of a MIDI file@).  A return
-   value of 2 means the MIDI file looped back to the start.) *)
-  FUNCTION al_midi_seek(target: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_seek';
+     value of 2 means the MIDI file looped back to the start.)
+   @seek(al_play_midi) *)
+  FUNCTION al_midi_seek(target: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_seek';
 
 (* This function will simulate playing the given MIDI, from start to end, to
    determine how long it takes to play.  After calling this function,
-   @code(al_midi_pos) will contain the negative number of beats, and
-   @code(al_midi_time) the length of the midi, in seconds.
+   @link(al_midi_pos) will contain the negative number of beats, and
+   @link(al_midi_time) the length of the midi, in seconds.
 
    Note that any currently playing midi is stopped when you call this function.
-   Usually you would call it before @code(al_play_midi), to get the length of
+   Usually you would call it before @link(al_play_midi), to get the length of
    the midi to be played.
-
    @returns(the value of al_midi_time, the length of the midi.)
-   @seealso(al_load_midi) @seealso(al_midi_time) @seealso(al_midi_pos)
- *)
-  FUNCTION al_get_midi_length (midi: AL_MIDIptr): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_midi_length';
+   @seealso(al_load_midi) *)
+  FUNCTION al_get_midi_length (midi: AL_MIDIptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_midi_length';
 
 (* Streams a block of MIDI commands into the player in real-time, allowing you
    to trigger notes, jingles, etc, over the top of whatever MIDI file is
-   currently playing. *)
-  PROCEDURE al_midi_out (data: POINTER; length: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_out';
+   currently playing.
+   @seealso(al_install_sound) @seealso(al_load_midi_patches) *)
+  PROCEDURE al_midi_out (data: AL_UCHARptr; length: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_out';
 
 (* Forces the MIDI driver to load the entire set of patches ready for use.  You
    will not normally need to call this, because Allegro automatically loads
    whatever data is required for the current MIDI file, but you must call it
-   before sending any program change messages via the @code(al_midi_out)
+   before sending any program change messages via the @link(al_midi_out)
    command.
-
-   @returns(@false if an error occurred.) *)
+   @returns(@false if an error occurred.) @seealso(al_install_sound) *)
   FUNCTION al_load_midi_patches: BOOLEAN;
     INLINE;
 
 
 
-TYPE
-(* Used by @code(al_midi_msg_callback). *)
-  AL_MIDI_MSG_CALLBACK_PROC = PROCEDURE (msg, b1, b2: LONGINT); CDECL;
-VAR
-(* Hook function allowing you to intercept MIDI player events.  If set to
-   anything other than @nil, this routine will be called for each MIDI message.
-   It will execute in an interrupt handler context, so all the code and data
-   they use should be locked, and they must not call any operating system
-   functions.  In general you just use these routines to set some flags and
-   respond to them later in your mainline code.
-   @seealso(al_play_midi) *)
-  al_midi_msg_callback: AL_MIDI_MSG_CALLBACK_PROC;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_msg_callback';
+  TYPE
+  (* Used by @link(al_midi_msg_callback). *)
+    AL_MIDI_MSG_CALLBACK_PROC = PROCEDURE (msg, b1, b2: AL_INT); CDECL;
+
+  VAR
+  (* Hook function allowing you to intercept MIDI player events.  If set to
+     anything other than @nil, this routine will be called for each MIDI message.
+     It will execute in an interrupt handler context, so all the code and data
+     they use should be locked, and they must not call any operating system
+     functions.  In general you just use these routines to set some flags and
+     respond to them later in your mainline code. @seealso(al_play_midi) *)
+    al_midi_msg_callback: AL_MIDI_MSG_CALLBACK_PROC;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_msg_callback';
 
 
 
-(*******************
- * Digital samples *
- *******************)
+(******************************************************************************
+ * digi.h
+ *     Digital sound routines.
+ *)
 
-TYPE
-(* Pointer to @code(AL_SAMPLE). *)
-  AL_SAMPLEptr = ^AL_SAMPLE;
+  CONST
+  (* Identifier to pass to @link(al_install_sound). *)
+    AL_DIGI_AUTODETECT	= -1;
+  (* Identifier to pass to @link(al_install_sound). *)
+    AL_DIGI_NONE	= 0;
+  (* Max number of digital voices. *)
+    AL_DIGI_VOICES = 64;
 
-(* A sample structure, which holds sound data, used by the digital sample
-   routines.  You can consider all of these fields as read only except
-   @code(priority), @code(loop_start) and @code(loop_end), which you can
-   change them for example after loading a sample from disk.
+  TYPE
+  (* Pointer to @link(AL_SAMPLE). *)
+    AL_SAMPLEptr = ^AL_SAMPLE;
+  (* A sample structure, which holds sound data, used by the digital sample
+     routines.  You can consider all of these fields as read only except
+     @code(priority), @code(loop_start) and @code(loop_end), which you can
+     change them for example after loading a sample from disk.
 
-   The variables @code(loop_start) and @code(loop_end) specify the loop
-   position in sample units, and are set by default to the start and end of the
-   sample.
+     The variables @code(loop_start) and @code(loop_end) specify the loop
+     position in sample units, and are set by default to the start and end of the
+     sample.
 
-   If you are creating your own samples on the fly, you might also want to
-   modify the raw data of the sample pointed by the @code(data) field.  The
-   sample data are always in unsigned format.  This means that if you are
-   loading a PCM encoded sound file with signed 16-bit samples, you would have
-   to XOR every two bytes (i.e. every sample value) with 0x8000 to change the
-   signedness. *)
-  AL_SAMPLE = RECORD
-    bits : AL_INT;	 {< 8 or 16  }
-    stereo : AL_INT;	 {< sample type flag  }
-    freq : AL_INT;	 {< sample frequency  }
-  (* It is a value from 0 to 255 (by default set to 128) and controls how
-     hardware voices on the sound card are allocated if you attempt to play
-     more than the driver can handle.  This may be used to ensure that the less
-     important sounds are cut off while the important ones are preserved. *)
-    priority : AL_INT;
-    len : AL_ULONG;	 {< length (in samples)  }
-    loop_start : AL_ULONG;	 {< loop start position  }
-    loop_end : AL_ULONG;	 {< loop finish position  }
-    param : AL_ULONG;	 {< @exclude  }
-    data : AL_POINTER;	 {< sample data  }
-  END;
+     If you are creating your own samples on the fly, you might also want to
+     modify the raw data of the sample pointed by the @code(data) field.  The
+     sample data are always in unsigned format.  This means that if you are
+     loading a PCM encoded sound file with signed 16-bit samples, you would have
+     to XOR every two bytes (i.e. every sample value) with 0x8000 to change the
+     signedness.
+     @seealso(al_load_sample) @seealso(al_create_sample) *)
+    AL_SAMPLE = RECORD
+      bits : AL_INT;	 {< 8 or 16  }
+      stereo : AL_INT;	 {< sample type flag  }
+      freq : AL_INT;	 {< sample frequency  }
+    (* It is a value from 0 to 255 (by default set to 128) and controls how
+       hardware voices on the sound card are allocated if you attempt to play
+       more than the driver can handle.  This may be used to ensure that the less
+       important sounds are cut off while the important ones are preserved. *)
+      priority : AL_INT;
+      len : AL_ULONG;	 {< length (in samples)  }
+      loop_start : AL_ULONG;	 {< loop start position  }
+      loop_end : AL_ULONG;	 {< loop finish position  }
+      param : AL_ULONG;	 {< @exclude  }
+      data : AL_VOIDptr;	 {< sample data  }
+    END;
 
-(* Used by @code(al_register_sample_file_type). *)
-  AL_SAMPLE_LOAD_FUNC = FUNCTION (filename: AL_CHARptr): AL_SAMPLEptr; CDECL;
-  AL_SAMPLE_SAVE_FUNC = FUNCTION (filename: AL_CHARptr; spl: AL_SAMPLEptr): AL_INT; CDECL;
-
+  (* Used by @link(al_register_sample_file_type). *)
+    AL_SAMPLE_LOAD_FUNC = FUNCTION (CONST filename: AL_STRptr): AL_SAMPLEptr; CDECL;
+  (* Used by @link(al_register_sample_file_type). *)
+    AL_SAMPLE_SAVE_FUNC = FUNCTION (CONST filename: AL_STRptr; spl: AL_SAMPLEptr): AL_INT; CDECL;
 
 
 (* Loads a sample from a file, supporting both mono and stereo WAV and mono VOC
    files, in 8 or 16-bit formats, as well as formats handled by functions
-   registered using @code(al_register_sample_file_type).
+   registered using @link(al_register_sample_file_type).
 
    Remember to free this sample later to avoid memory leaks.
 
-   @returns(a pointer to the @code(AL_SAMPLE) or @nil on error.) *)
-  FUNCTION al_load_sample (filename: STRING): AL_SAMPLEptr;
+   @returns(a pointer to the @link(AL_SAMPLE) or @nil on error.)
+   @seealso(al_destroy_sample) @seealso(al_load_voc) @seealso(al_load_wav)
+   @seealso(al_play_sample) @seealso(al_save_sample) *)
+  FUNCTION al_load_sample (CONST filename: STRING): AL_SAMPLEptr;
+    INLINE;
 
 (* Loads a sample from a RIFF WAV file.
 
@@ -4461,7 +4495,8 @@ TYPE
 
    @returns(a pointer to the @code(AL_SAMPLE) or @nil on error.)
    @seealso(al_load_wav_pf) *)
-  FUNCTION al_load_wav (filename: STRING): AL_SAMPLEptr;
+  FUNCTION al_load_wav (CONST filename: STRING): AL_SAMPLEptr;
+    INLINE;
 
 (* Loads a sample from a Creative Labs VOC file.
 
@@ -4469,9 +4504,18 @@ TYPE
 
    @returns(a pointer to the @code(AL_SAMPLE) or @nil on error.)
    @seealso(al_load_voc_pf) *)
-  FUNCTION al_load_voc (filename: STRING): AL_SAMPLEptr;
+  FUNCTION al_load_voc (CONST filename: STRING): AL_SAMPLEptr;
+    INLINE;
 
+(* Writes a sample into a file.  The output format is determined from the
+   @code(filename) extension.  At present Allegro does not natively support
+   the writing of any sample formats, so you must register a custom saver
+   routine with @link(al_register_sample_file_type).
 
+   @returns(@true on success, @false otherwise.)
+   @seealso(al_create_sample) @seealso(al_destroy_sample) *)
+  FUNCTION al_save_sample (CONST filename: STRING; spl: AL_SAMPLEptr): BOOLEAN;
+    INLINE;
 
 (* Constructs a new sample structure of the specified type.
 
@@ -4482,23 +4526,17 @@ TYPE
    @param(len is the number of samples you want to allocate for the full sound
      buffer.)
    @returns(a pointer to the created sample, or @nil if the sample could not
-     be created.) *)
-  FUNCTION al_create_sample (bits, stereo, freq, len: AL_INT): AL_SAMPLEptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_sample';
-
-(* Writes a sample into a file.  The output format is determined from the
-   @code(filename) extension.  At present Allegro does not natively support
-   the writing of any sample formats, so you must register a custom saver
-   routine with @code(al_register_sample_file_type).
-
-   @returns(@true on success, @false otherwise.) *)
-  FUNCTION al_save_sample (filename: STRING; spl: AL_SAMPLEptr): BOOLEAN;
+     be created.)
+   @seealso(al_load_sample) @seealso(al_destroy_sample) *)
+  FUNCTION al_create_sample (bits, stereo, freq, len: AL_INT): AL_SAMPLEptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_sample';
 
 (* Destroys a sample structure when you are done with it.  It is safe to call
    this even when the sample might be playing, because it checks and will kill
-   it off if it is active.  Use this to avoid memory leaks in your program. *)
-  PROCEDURE al_destroy_sample (spl: AL_SAMPLEptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_sample';
+   it off if it is active.  Use this to avoid memory leaks in your program.
+   @seealso(al_load_sample) @seealso(al_create_sample) *)
+  PROCEDURE al_destroy_sample (spl: AL_SAMPLEptr);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_sample';
 
 
 
@@ -4507,49 +4545,47 @@ TYPE
    (max/right).  Frequency is relative rather than absolute:  1000 represents
    the frequency that the sample was recorded at, 2000 is twice this, etc.  If
    @code(loop) is not zero, the sample will repeat until you call
-   @code(al_stop_sample), and can be manipulated while it is playing by calling
+   @link(al_stop_sample), and can be manipulated while it is playing by calling
    @code(al_adjust_sample).
-
    @returns(the voice number that was allocated for the sample or negative if
      no voices were available.) *)
-  FUNCTION al_play_sample (spl: AL_SAMPLEptr; vol, pan, freq, loop: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'play_sample';
+  FUNCTION al_play_sample (CONST spl: AL_SAMPLEptr; vol, pan, freq, loop: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'play_sample';
+
+(* Stop a sample from playing, which is required if you have set a sample going
+   in looped mode.  If there are several copies of the sample playing, it will
+   stop them all. You must still destroy the sample using
+   @link(al_destroy_sample). @seealso(al_play_sample) *)
+  PROCEDURE al_stop_sample (CONST spl: AL_SAMPLEptr);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stop_sample';
 
 (* Alters the parameters of a sample while it is playing (useful for
    manipulating looped sounds).  You can alter the volume, pan, and frequency,
    and can also clear the loop flag, which will stop the sample when it next
    reaches the end of its loop.  The values of the parameters are just like
-   those of @code(al_play_sample).  If there are several copies of the same
+   those of @link(al_play_sample).  If there are several copies of the same
    sample playing, this will adjust the first one it comes across.  If the
    sample is not playing it has no effect. *)
-  PROCEDURE al_adjust_sample (spl: AL_SAMPLEptr; vol, pan, freq, loop: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'adjust_sample';
-
-(* Stop a sample from playing, which is required if you have set a sample going
-   in looped mode.  If there are several copies of the sample playing, it will
-   stop them all. You must still destroy the sample using
-   @code(al_destroy_sample). *)
-  PROCEDURE al_stop_sample (spl: AL_SAMPLEptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stop_sample';
+  PROCEDURE al_adjust_sample (CONST spl: AL_SAMPLEptr; vol, pan, freq, loop: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'adjust_sample';
 
 
 
-(* Informs the @code(al_load_sample) and the @code(al_save_sample) functions
+(* Informs the @link(al_load_sample) and the @link(al_save_sample) functions
    of a new sample file type, providing routines to read and write samples in
    this format (either function may be @nil).  Example:
    @longcode(#
-   FUNCTION LoadMP3 (filename: AL_CHARptr): AL_SAMPLEptr; CDECL;
+   FUNCTION LoadMP3 (CONST filename: AL_CHARptr): AL_SAMPLEptr; CDECL;
    BEGIN
      ...
    END;
 
    ...
 
-   al_register_sample_file_type ('mp3', LoadMPT, NIL);
+   al_register_sample_file_type ('mp3', @LoadMPT, NIL);
    #) *)
-  PROCEDURE al_register_sample_file_type (ext: STRING; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC);
-
-
+  PROCEDURE al_register_sample_file_type (CONST ext: STRING; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC);
+    INLINE;
 
 IMPLEMENTATION
 
@@ -5360,7 +5396,7 @@ CONST
 
   FUNCTION al_mouse_on_screen: BOOLEAN;
   BEGIN
-    al_mouse_on_screen := mouse_on_screen = 0;
+    al_mouse_on_screen := mouse_on_screen <> 0;
   END;
 
 
@@ -5849,22 +5885,16 @@ CONST
 
 
 
-
 (******************************************************************************
- ************)
+ * rle.inl *
+ ***********)
 
-(********************************
- * Run-lenth compressed sprites *
- ********************************)
-
-  PROCEDURE al_draw_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
-				x, y: LONGINT);
+  PROCEDURE al_draw_rle_sprite (bmp: AL_BITMAPptr; CONST spr: AL_RLE_SPRITEptr; x, y: AL_INT);
   BEGIN
     bmp^.vtable^.draw_rle_sprite (bmp, spr, x, y);
   END;
 
-  PROCEDURE al_draw_trans_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
-					x, y: LONGINT);
+  PROCEDURE al_draw_trans_rle_sprite (bmp: AL_BITMAPptr; CONST spr: AL_RLE_SPRITEptr; x, y: AL_INT);
   BEGIN
     IF spr^.color_depth = 32 THEN
       bmp^.vtable^.draw_trans_rgba_rle_sprite (bmp, spr, x, y)
@@ -5872,64 +5902,63 @@ CONST
       bmp^.vtable^.draw_trans_rle_sprite (bmp, spr, x, y)
   END;
 
-  PROCEDURE al_draw_lit_rle_sprite (bmp: AL_BITMAPptr; spr: AL_RLE_SPRITEptr;
-					x, y, color: LONGINT);
+  PROCEDURE al_draw_lit_rle_sprite (bmp: AL_BITMAPptr; CONST spr: AL_RLE_SPRITEptr; x, y, color: AL_INT);
   BEGIN
     bmp^.vtable^.draw_lit_rle_sprite (bmp, spr, x, y, color);
   END;
 
 
 
-(******************************************
- * Sound initialization and configuration *
- ******************************************)
+(******************************************************************************
+ * sound.h *
+ ***********)
 
-  FUNCTION install_sound (digi, midi: LONGINT; c: POINTER): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION install_sound (digi, midi: AL_INT; CONST c: AL_STRptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_install_sound (digi, midi: LONGINT): BOOLEAN;
+  FUNCTION al_install_sound (digi, midi: AL_INT): BOOLEAN;
   BEGIN
     al_install_sound := install_sound (digi, midi, NIL) = 0;
   END;
 
 
 
-  PROCEDURE get_volume (digi, midi: PLONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  PROCEDURE get_volume (digi, midi: AL_INTptr);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  PROCEDURE al_get_volume (VAR digi, midi: LONGINT);
+  PROCEDURE al_get_volume (VAR digi, midi: AL_INT);
   BEGIN
     get_volume (@digi, @midi);
   END;
 
 
 
-  PROCEDURE get_hardware_volume (digi, midi: PLONGINT); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  PROCEDURE get_hardware_volume (digi, midi: AL_INTptr);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  PROCEDURE al_get_hardware_volume (VAR digi, midi: LONGINT);
+  PROCEDURE al_get_hardware_volume (VAR digi, midi: AL_INT);
   BEGIN
     get_hardware_volume (@digi, @midi);
   END;
 
 
 
-(********
- * MIDI *
- ********)
+(******************************************************************************
+ * midi.h *
+ **********)
 
-  FUNCTION load_midi (filename: PCHAR): AL_MIDIptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION load_midi (CONST filename: AL_STRptr): AL_MIDIptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_load_midi (filename: STRING): AL_MIDIptr;
+  FUNCTION al_load_midi (CONST filename: STRING): AL_MIDIptr;
   BEGIN
-    al_load_midi := load_midi (PCHAR (filename));
+    al_load_midi := load_midi (AL_STRptr (filename));
   END;
 
 
 
-  FUNCTION play_midi (midi: AL_MIDIptr; loop: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION play_midi (midi: AL_MIDIptr; loop: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_play_midi (midi: AL_MIDIptr; loop: BOOLEAN): BOOLEAN;
   BEGIN
@@ -5941,18 +5970,18 @@ CONST
 
 
 
-  FUNCTION play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: LONGINT): BOOLEAN;
+  FUNCTION al_play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: AL_INT): BOOLEAN;
   BEGIN
     al_play_looped_midi := play_looped_midi (midi, loop_start, loop_end) = 0
   END;
 
 
 
-  FUNCTION load_midi_patches: LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION load_midi_patches: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_load_midi_patches: BOOLEAN;
   BEGIN
@@ -5961,59 +5990,57 @@ CONST
 
 
 
-(*******************
- * Digital samples *
- *******************)
+(******************************************************************************
+ * digi.h *
+ **********)
 
-  FUNCTION load_sample (filename: AL_CHARptr): AL_SAMPLEptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION load_sample (CONST filename: AL_STRptr): AL_SAMPLEptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_load_sample (filename: STRING): AL_SAMPLEptr;
+  FUNCTION al_load_sample (CONST filename: STRING): AL_SAMPLEptr;
   BEGIN
-    al_load_sample := load_sample (AL_CHARptr (filename));
+    al_load_sample := load_sample (AL_STRptr (filename));
   END;
 
 
 
-  FUNCTION load_wav (filename: AL_CHARptr): AL_SAMPLEptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION load_wav (CONST filename: AL_CHARptr): AL_SAMPLEptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_load_wav (filename: STRING): AL_SAMPLEptr;
+  FUNCTION al_load_wav (CONST filename: STRING): AL_SAMPLEptr;
   BEGIN
     al_load_wav := load_wav (AL_CHARptr (filename));
   END;
 
 
 
-  FUNCTION load_voc (filename: AL_CHARptr): AL_SAMPLEptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION load_voc (CONST filename: AL_CHARptr): AL_SAMPLEptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_load_voc (filename: STRING): AL_SAMPLEptr;
+  FUNCTION al_load_voc (CONST filename: STRING): AL_SAMPLEptr;
   BEGIN
     al_load_voc := load_voc (AL_CHARptr (filename));
   END;
 
 
 
-  FUNCTION save_sample (filename: AL_CHARptr; spl: AL_SAMPLEptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION save_sample (CONST filename: AL_STRptr; spl: AL_SAMPLEptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_save_sample (filename: STRING; spl: AL_SAMPLEptr): BOOLEAN;
+  FUNCTION al_save_sample (CONST filename: STRING; spl: AL_SAMPLEptr): BOOLEAN;
   BEGIN
-    al_save_sample := (save_sample (AL_CHARptr (filename), spl) = 0);
+    al_save_sample := (save_sample (AL_STRptr (filename), spl) = 0);
   END;
 
 
 
-  PROCEDURE register_sample_file_type (ext: AL_CHARptr; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  PROCEDURE register_sample_file_type (CONST ext: AL_STRptr; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  PROCEDURE al_register_sample_file_type (ext: STRING; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC);
+  PROCEDURE al_register_sample_file_type (CONST ext: STRING; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC);
   BEGIN
-    register_sample_file_type (AL_CHARptr (ext), load, save);
+    register_sample_file_type (AL_STRptr (ext), load, save);
   END;
-
-
 
 INITIALIZATION
 { Create identifiers. }

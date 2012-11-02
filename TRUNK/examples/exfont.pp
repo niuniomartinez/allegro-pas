@@ -8,12 +8,11 @@ PROGRAM exfont;
      \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                     /\____/               \ \_\
                                     \_/__/                 \/_/
-
-    Example program for the Allegro library.
-
-    This is a very simple program showing how to load and manipulate fonts.
-
-    Translated from the original example by Evert Glebbeek.
+ *
+ *	This is a very simple program showing how to load and manipulate fonts.
+ *
+ *	by Ñuño Martínez <>
+ *	from an example of Allegro Game Library by Evert Glebbeek.
  *)
 
   USES
