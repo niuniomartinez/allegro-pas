@@ -4989,24 +4989,24 @@ IMPLEMENTATION
     al_install_int_ex := install_int_ex (proc, speed) = 0;
   END;
 
-  FUNCTION install_int (proc: AL_SIMPLE_PROC; speed: AL_LONG): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION install_int (proc: AL_SIMPLE_PROC; speed: AL_LONG): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_install_int (proc: AL_SIMPLE_PROC; speed: AL_LONG): BOOLEAN;
   BEGIN
     al_install_int := install_int (proc, speed) = 0;
   END;
 
-  FUNCTION install_param_int_ex (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION install_param_int_ex (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_install_param_int_ex (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): BOOLEAN;
   BEGIN
     al_install_param_int_ex := install_param_int_ex (proc, param, speed) = 0;
   END;
 
-  FUNCTION install_param_int (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION install_param_int (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_install_param_int (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): BOOLEAN;
   BEGIN
@@ -5044,16 +5044,16 @@ IMPLEMENTATION
  * keyboard.h *
  **************)
 
-  FUNCTION install_keyboard: AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION install_keyboard: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_install_keyboard: BOOLEAN;
   BEGIN
     al_install_keyboard := install_keyboard = 0;
   END;
 
-  FUNCTION keyboard_needs_poll: AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION keyboard_needs_poll: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_keyboard_needs_poll: BOOLEAN;
   BEGIN
