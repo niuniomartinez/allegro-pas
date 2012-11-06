@@ -1,6 +1,5 @@
 UNIT albase;
-(*< Base definitions to interface with Allegro and the Allegro.pas dynamic
- * modules. *)
+(*< Base definitions to interface with Allegro dynamic module. *)
 
 {$INCLUDE allegro.cfg}
 

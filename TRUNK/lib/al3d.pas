@@ -235,7 +235,7 @@ USES
 (*****************************************************************************
  * matrix.h
  *     Matrix math routines.
- ***********)
+ *)
 
   TYPE
   (* Pointer to @link(AL_MATRIX). *)
@@ -443,8 +443,7 @@ USES
 
 (*****************************************************************************
  * matrix.inl
- *     Matrix math inline functions (generic C).
- *************)
+ *)
 
 (* Multiplies the point (x, y, z) by the transformation matrix m, storing the
    result in (xout, yout, zout).
@@ -457,7 +456,7 @@ USES
 (*****************************************************************************
  * quat.h
  *     Quaternion routines.
- *********)
+ *)
 
   CONST
     AL_QUAT_SHORT = 0; {<@exclude }
@@ -555,7 +554,7 @@ USES
 (*****************************************************************************
  * 3dmaths.h
  *     3D oriented math routines.
- ***********)
+ *)
 
 (* Calculates the length of the vector (x, y, z), using that good 'ole
    Pythagoras theorem.
@@ -627,8 +626,7 @@ USES
 
 (*****************************************************************************
  * 3dmaths.inl
- *     3D maths inline functions (generic C).
- ***********)
+ *)
 
 (* Calculates the dot product (x1, y1, z1) . (x2, y2, z2), returning the
    result.
@@ -667,7 +665,7 @@ USES
 (*****************************************************************************
  * 3d.h
  *     3D polygon drawing routines.
- ********)
+ *)
 
   TYPE
   (* Pointer to @link(AL_V3D). *)
@@ -1027,8 +1025,7 @@ USES
 
 (*****************************************************************************
  * draw.inl
- *     Draw inline functions (generic C).
- ********)
+ *)
 
 (* Draw 3d polygons onto the specified bitmap, using the specified rendering
   mode.  This routine don't support concave or self-intersecting shapes, and
@@ -1118,8 +1115,8 @@ USES
 IMPLEMENTATION
 
 (*****************************************************************************
- * matrix.h *
- ************)
+ * matrix.h
+ *)
 
   PROCEDURE apply_matrix_f (m: AL_MATRIX_fptr; x, y, z: AL_FLOAT; xout, yout, zout: AL_FLOATptr);
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -1144,8 +1141,8 @@ IMPLEMENTATION
   END;
 
 (*****************************************************************************
- * matrix.inl *
- **************)
+ * matrix.inl
+ *)
 
   PROCEDURE al_apply_matrix (m: AL_MATRIXptr;
 		x, y, z: AL_FIXED; VAR xout, yout, zout: AL_FIXED);
@@ -1167,8 +1164,8 @@ IMPLEMENTATION
 
 
 (*****************************************************************************
- * quat.h *
- **********)
+ * quat.h
+ *)
 
   PROCEDURE apply_quat (CONST q: AL_QUATptr; x, y, z: AL_FLOAT; xout, yout, zout: AL_FLOATptr);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -1188,8 +1185,8 @@ IMPLEMENTATION
 
 
 (*****************************************************************************
- * 3dmaths.h *
- *************)
+ * 3dmaths.h
+*)
 
   PROCEDURE normalize_vector (x, y, z: AL_FIXEDptr);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -1245,8 +1242,8 @@ IMPLEMENTATION
 
 
 (*****************************************************************************
- * 3dmaths.inl *
- ***************)
+ * 3dmaths.inl
+ *)
 
   FUNCTION al_dot_product (x1, y1, z1, x2, y2, z2: AL_FIXED): AL_FIXED;
   BEGIN
@@ -1282,8 +1279,8 @@ IMPLEMENTATION
 
 
 (*****************************************************************************
- * 3d.h *
- ********)
+ * 3d.h
+ *)
 
 { Direct implementation.  Was used in previous versions.
   FUNCTION al_polygon_z_normal (v1, v2, v3: AL_V3Dptr): AL_FIXED;
@@ -1332,8 +1329,8 @@ IMPLEMENTATION
 
 
 (*****************************************************************************
- * draw.inl *
- ************)
+ * draw.inl
+ *)
 
   PROCEDURE al_polygon3d (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: AL_V3D_LIST);
   BEGIN

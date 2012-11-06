@@ -301,7 +301,7 @@ END;
 
 (******************************************************************************
  * system.inl
- **************)
+ *)
 
 (* On platforms that are capable of it, this routine alters the window title
    for your Allegro program.
@@ -2295,7 +2295,6 @@ END.
 
 (******************************************************************************
  * gfx.inl
- *     Graphics inline functions.
  *)
 
 (* Clears the bitmap to the specified color. @seealso(al_clear_bitmap)
@@ -3356,7 +3355,6 @@ END;
 
 (******************************************************************************
  * draw.inl
- *    Draw inline functions.
  *)
 
 (* Reads a pixel from point (x, y) in the bitmap.
@@ -4149,7 +4147,6 @@ END;
 
 (******************************************************************************
  * rle.inl
- *     RLE sprite inline functions (generic C).
  *)
 
 (* Draws an RLE sprite onto a bitmap at the specified position.
@@ -4702,8 +4699,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * base.h *
- **********)
+ * base.h
+ *)
 
 (* Converts four 8 bit values to a packed 32 bit integer ID. *)
   FUNCTION AL_ID (str: SHORTSTRING): AL_INT;
@@ -4716,8 +4713,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * system.h *
- ************)
+ * system.h
+ *)
 
   VAR
   (* To access to stytem drivers. *)
@@ -4821,8 +4818,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * unicode.h *
- *************)
+ * unicode.h
+ *)
 
   FUNCTION ustrlen (CONST s: AL_STRptr): AL_INT;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -4862,8 +4859,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * config.h *
- ************)
+ * config.h
+ *)
 
   PROCEDURE set_config_file (CONST filename: AL_STRptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_file';
@@ -4970,8 +4967,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * timer.h *
- ***********)
+ * timer.h
+ *)
 
   FUNCTION install_timer: AL_INT; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -4980,6 +4977,8 @@ IMPLEMENTATION
   BEGIN
     al_install_timer := install_timer = 0;
   END;
+
+
 
   FUNCTION install_int_ex (proc: AL_SIMPLE_PROC; speed: AL_LONG): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -5041,8 +5040,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * keyboard.h *
- **************)
+ * keyboard.h
+ *)
 
   FUNCTION install_keyboard: AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -5087,8 +5086,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * joystick.h *
- **************)
+ * joystick.h
+ *)
 
   FUNCTION install_joystick (atype: AL_INT): AL_INT;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -5142,8 +5141,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * color.h *
- ***********)
+ * color.h
+ *)
 
   PROCEDURE get_color (idx: AL_INT; p: AL_RGBptr);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -5230,8 +5229,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * gfx.h *
- *********)
+ * gfx.h
+ *)
 
 CONST
 (* Identify bitmap type *)
@@ -5269,8 +5268,8 @@ CONST
 
 
 (******************************************************************************
- * gfx.inl *
- ***********)
+ * gfx.inl
+ *)
 
 (* Clears the bitmap to the specified color. @seealso(al_clear_bitmap)*)
   PROCEDURE al_clear_to_color (bitmap: AL_BITMAPptr; color: AL_INT);
@@ -5377,8 +5376,8 @@ CONST
 
 
 (******************************************************************************
- * datafile.h *
- **************)
+ * datafile.h
+ *)
 
   FUNCTION load_bitmap (CONST filename: AL_STRptr; pal: AL_PALETTEptr): AL_BITMAPptr;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -5457,8 +5456,8 @@ CONST
 
 
 (******************************************************************************
- * mouse.h *
- ***********)
+ * mouse.h
+ *)
 
   FUNCTION mouse_needs_poll: AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -5501,8 +5500,8 @@ CONST
 
 
 (******************************************************************************
- * draw.h *
- **********)
+ * draw.h
+ *)
 
   PROCEDURE xor_mode (aOn: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -5518,8 +5517,8 @@ CONST
 
 
 (******************************************************************************
- * draw.inl *
- ************)
+ * draw.inl
+ *)
 
   FUNCTION  al_getpixel (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
   BEGIN
@@ -5840,8 +5839,8 @@ CONST
 
 
 (******************************************************************************
- * font.h *
- **********)
+ * font.h
+ *)
 
   FUNCTION font_has_alpha (f: AL_FONTptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -5934,8 +5933,8 @@ CONST
 
 
 (******************************************************************************
- * text.h *
- **********)
+ * text.h
+ *)
 
   PROCEDURE textout_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: AL_STRptr; x, y, color, bg: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -5985,8 +5984,8 @@ CONST
 
 
 (******************************************************************************
- * rle.inl *
- ***********)
+ * rle.inl
+ *)
 
   PROCEDURE al_draw_rle_sprite (bmp: AL_BITMAPptr; CONST spr: AL_RLE_SPRITEptr; x, y: AL_INT);
   BEGIN
@@ -6009,8 +6008,8 @@ CONST
 
 
 (******************************************************************************
- * sound.h *
- ***********)
+ * sound.h
+ *)
 
   FUNCTION install_sound (digi, midi: AL_INT; CONST c: AL_STRptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -6043,8 +6042,8 @@ CONST
 
 
 (******************************************************************************
- * midi.h *
- **********)
+ * midi.h
+ *)
 
   FUNCTION load_midi (CONST filename: AL_STRptr): AL_MIDIptr;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -6090,8 +6089,8 @@ CONST
 
 
 (******************************************************************************
- * digi.h *
- **********)
+ * digi.h
+ *)
 
   FUNCTION load_sample (CONST filename: AL_STRptr): AL_SAMPLEptr;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
