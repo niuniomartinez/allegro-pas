@@ -2,8 +2,8 @@ UNIT alflic;
 (*<FLIC movie routines.
 
   There are two high level functions for playing FLI/FLC animations:
-  @code(al_play_fli), which reads the data directly from disk, and
-  @code(al_play_memory_fli), which uses data that has already been loaded into
+  @link(al_play_fli), which reads the data directly from disk, and
+  @link(al_play_memory_fli), which uses data that has already been loaded into
   RAM.  Apart from the different sources of the data, these two functions
   behave identically.  They draw the animation onto the specified bitmap, which
   should normally be the screen.  Frames will be aligned with the top left
@@ -40,7 +40,7 @@ USES
 
 
 CONST
-(* Values returnded by FLIC player functions. *)
+(* @exclude Values returnded by FLIC player functions. *)
   AL_FLI_OK	  =  0;
   AL_FLI_EOF	  = -1;
   AL_FLI_ERROR	  = -2;
@@ -49,131 +49,154 @@ CONST
 
 
 (* Plays an Autodesk Animator FLI or FLC animation file on the specified
-   @code(AL_BITMAP), reading the data from disk as it is required.  If
+   @link(AL_BITMAP), reading the data from disk as it is required.  If
    @code(loop) is @true, the player will cycle when it reaches the end of the
    file, otherwise it will play through the animation once and then return.
-   Read the introduction for @code(alflic) unit for a description of the
+   Read the introduction for @link(alflic) unit for a description of the
    @code(callback) parameter.
    @returns(@code(AL_FLI_OK) if it reached the end of the file,
     @code(AL_FLI_ERROR) if something went wrong, or the value returned by the
-    @code(callback) function if that was what stopped it.) *)
-  FUNCTION al_play_fli (filename: STRING; bmp: AL_BITMAPptr; loop: BOOLEAN; callback: AL_SIMPLE_FUNC): LONGINT;
+    @code(callback) function if that was what stopped it.)
+   @seealso(al_play_memory_fli) @link(al_install_timer) @link(al_fli_frame) *)
+  FUNCTION al_play_fli (CONST filename: STRING; bmp: AL_BITMAPptr; loop: BOOLEAN; callback: AL_SIMPLE_FUNC): AL_INT;
     INLINE;
 
 (* Plays an Autodesk Animator FLI or FLC animation on the specified
-   @code(AL_BITMAP), reading the data from a copy of the file which is held in
+   @link(AL_BITMAP), reading the data from a copy of the file which is held in
    memory.  You can obtain the @code(fli_data) pointer by allocating a block
    of memory and reading an FLI file into it, or by importing an FLI into a
    grabber datafile.  If @code(loop) is @true, the player will cycle when it
    reaches the end of the file, otherwise it will play through the animation
-   once and then return.  Read the introduction for @code(alflic) unit for a
+   once and then return.  Read the introduction for @link(alflic) unit for a
    description of the @code(callback) parameter.
 
    Playing animations from memory is obviously faster than cuing them directly
    from disk, and is particularly useful with short, looped FLI's.  Animations
    can easily get very large, though, so in most cases you will probably be
-   better just using @code(al_play_fli).  You can think of this function as a
-   wrapper on top of @code(al_open_memory_fli), @code(al_next_fli_frame) and
-   @code(al_close_fli).
+   better just using @link(al_play_fli).  You can think of this function as a
+   wrapper on top of @link(al_open_memory_fli), @link(al_next_fli_frame) and
+   @link(al_close_fli).
    @returns(@code(AL_FLI_OK) if it reached the end of the file,
     @code(AL_FLI_ERROR) if something went wrong, or the value returned by the
-    @code(callback) function if that was what stopped it.) *)
+    @code(callback) function if that was what stopped it.)
+   @seealso(al_install_timer) @seealso(al_fli_frame) *)
   FUNCTION al_play_memory_fli (fli_data: POINTER; bmp: AL_BITMAPptr; loop: BOOLEAN; callback: AL_SIMPLE_FUNC): LONGINT;
     INLINE;
 
 
 
-(* Advanced FLIC player *)
-VAR
-(* Contains the current frame of the FLI/FLC animation.  If there is no open
-   animation, its value will be @nil. *)
-  al_fli_bitmap: AL_BITMAPptr; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_bitmap';
-(* Contains the current FLI palette. *)
-  al_fli_palette: AL_PALETTE; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_palette';
-(* These variables are set by @code(al_next_fli_frame) to indicate which part
-   of the @code(al_fli_bitmap) has changed since the last call to
-   @code(al_reset_fli_variables).  If @code(fli_bmp_dirty_from) is greater than
-   @code(al_fli_bmp_dirty_to), the bitmap has not changed, otherwise lines
-   @code(al_fli_bmp_dirty_from) to @code(al_fli_bmp_dirty_to) (inclusive)
-   have altered.  You can use these when copying the @code(al_fli_bitmap) onto
-   the screen, to avoid moving data unnecessarily. *)
-  al_fli_bmp_dirty_from: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_bmp_dirty_from';
-  al_fli_bmp_dirty_to: LONGINT;   EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_bmp_dirty_to';
-(* These variables are set by @code(al_next_fli_frame) to indicate which part
-   of the @code(al_fli_palette) has changed since the last call to
-   @code(al_reset_fli_variables).  If @code(al_fli_pal_dirty_from) is greater
-   than @code(al_fli_pal_dirty_to), the palette has not changed, otherwise
-   colors @code(al_fli_pal_dirty_from) to @code(al_fli_pal_dirty_to)
-   (inclusive) have altered.  You can use these when updating the hardware
-   palette, to avoid unnecessary calls to @code(al_set_palette). *)
-  al_fli_pal_dirty_from: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_pal_dirty_from';
-  al_fli_pal_dirty_to: LONGINT;   EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_pal_dirty_to';
-(* Global variable for timing FLI playback.  When you open an FLI file, a timer
-   interrupt is installed which increments this variable every time a new frame
-   should be displayed.  Calling @code(al_next_fli_frame) decrements it, so
-   you can test it and know that it is time to display a new frame if it is
-   greater than zero. *)
-  al_fli_timer: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_timer';
-(* Global variable containing the current frame number in the FLI file.  This
-   is useful for synchronising other events with the animation, for instance
-   you could check it in a @code(al_play_fli) callback function and use it to
-   trigger a sample at a particular point. *)
-  al_fli_frame: LONGINT; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_frame';
-
 (* Open FLI files ready for playing, reading the data from disk.  Information
-   about the current FLI is held in the global variables @code(al_fli_bitmap)
-   and @code(al_fli_palette), which you can use if this function succeeds.
+   about the current FLI is held in the global variables @link(al_fli_bitmap)
+   and @link(al_fli_palette), which you can use if this function succeeds.
    However, you can only have one animation open at a time.
    @returns(@code(AL_FLI_OK) on success, @code(AL_FLI_ERROR) if something went
      wrong, like trying to open another FLI file without closing the previous
-     one.) *)
-  FUNCTION al_open_fli (filename: STRING): LONGINT;
+     one.)
+   @seealso(al_close_fli) @seealso(al_next_fli_frame) @link(al_open_memory_fli)
+  *)
+  FUNCTION al_open_fli (CONST filename: STRING): AL_INT;
     INLINE;
 
 (* Open FLI files ready for playing, reading the data from memory.  Information
-   about the current FLI is held in the global variables @code(al_fli_bitmap)
-   and @code(al_fli_palette), which you can use if this function succeeds.
+   about the current FLI is held in the global variables @link(al_fli_bitmap)
+   and @link(al_fli_palette), which you can use if this function succeeds.
    However, you can only have one animation open at a time.
    @returns(@code(AL_FLI_OK) on success, @code(AL_FLI_ERROR) if something
      went wrong, like trying to open another FLI file without closing the
-     previous one.) *)
-  FUNCTION al_open_memory_fli (fli_data: POINTER): LONGINT;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'open_memory_fli';
+     previous one.)
+   @seealso(al_close_fli) @seealso(al_next_fli_frame) @link(al_open_fli) *)
+  FUNCTION al_open_memory_fli (fli_data: AL_VOIDptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'open_memory_fli';
 
 (* Closes an FLI file when you have finished reading from it.  Remember to do
-   this to avoid having memory leaks in your program. *)
-  PROCEDURE al_close_fli; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'close_fli';
+   this to avoid having memory leaks in your program. @seealso(al_open_fli) *)
+  PROCEDURE al_close_fli;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'close_fli';
 
 (* Reads the next frame of the current animation file.  If @code(loop) is
    @true, the player will cycle when it reaches the end of the file, otherwise
    it will return @code(AL_FLI_EOF).  The frame is read into the global
-   variables @code(al_fli_bitmap) and @code(al_fli_palette).
+   variables @link(al_fli_bitmap) and @link(al_fli_palette).
    @returns(@code(AL_FLI_OK) on success, @code(AL_FLI_ERROR) or
-   @code(AL_FLI_NOT_OPEN) on error, and @code(AL_FLI_EOF) on reaching the end
-   of the file.) *)
-  FUNCTION al_next_fli_frame (loop: BOOLEAN): LONGINT;
+    @code(AL_FLI_NOT_OPEN) on error, and @code(AL_FLI_EOF) on reaching the end
+    of the file.)
+   @seealso(al_open_fli) @seealso(al_fli_timer) @seealso(al_fli_frame) *)
+  FUNCTION al_next_fli_frame (loop: BOOLEAN): AL_INT;
     INLINE;
 
 (* Once you have done whatever you are going to do with the
-   @code(al_fli_bitmap) and @code(al_fli_palette), call this function to reset
-   the @code (al_fli_bmp_dirty_* )and @code(al_fli_pal_dirty_* )variables. *)
-  PROCEDURE al_reset_fli_variables; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'reset_fli_variables';
+   @link(al_fli_bitmap) and @link(al_fli_palette), call this function to reset
+   the @code (al_fli_bmp_dirty_* )and @code(al_fli_pal_dirty_* )variables.
+   @seealso(al_fli_bmp_dirty_from) @seealso(al_fli_pal_dirty_from) *)
+  PROCEDURE al_reset_fli_variables;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'reset_fli_variables';
 
 
+
+  (* Advanced FLIC player *)
+  VAR
+  (* Contains the current frame of the FLI/FLC animation.  If there is no open
+     animation, its value will be @nil. @seealso(al_next_fli_frame)
+     @seealso(al_fli_bmp_dirty_from) @seealso(al_fli_pal_dirty_from) *)
+    al_fli_bitmap: AL_BITMAPptr;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_bitmap';
+  (* Contains the current FLI palette. @seealso(al_next_fli_frame)
+     @seealso(al_fli_pal_dirty_from) @seealso(al_fli_bitmap) *)
+    al_fli_palette: AL_PALETTE;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_palette';
+
+  (* These variables are set by @code(al_next_fli_frame) to indicate which part
+     of the @link(al_fli_bitmap) has changed since the last call to
+     @link(al_reset_fli_variables).  If @link(fli_bmp_dirty_from) is greater than
+     @link(al_fli_bmp_dirty_to), the bitmap has not changed, otherwise lines
+     @code(al_fli_bmp_dirty_from) to @code(al_fli_bmp_dirty_to) (inclusive)
+     have altered.  You can use these when copying the @code(al_fli_bitmap) onto
+     the screen, to avoid moving data unnecessarily. *)
+    al_fli_bmp_dirty_from: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_bmp_dirty_from';
+  (* @seealso(al_fli_bmp_dirty_from) *)
+    al_fli_bmp_dirty_to: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_bmp_dirty_to';
+  (* These variables are set by @link(al_next_fli_frame) to indicate which part
+     of the @link(al_fli_palette) has changed since the last call to
+     @link(al_reset_fli_variables).  If @link(al_fli_pal_dirty_from) is greater
+     than @link(al_fli_pal_dirty_to), the palette has not changed, otherwise
+     colors @code(al_fli_pal_dirty_from) to @code(al_fli_pal_dirty_to)
+     (inclusive) have altered.  You can use these when updating the hardware
+     palette, to avoid unnecessary calls to @link(al_set_palette). *)
+    al_fli_pal_dirty_from: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_pal_dirty_from';
+  (* @seealso(al_fli_pal_dirty_from) *)
+    al_fli_pal_dirty_to: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_pal_dirty_to';
+
+  (* Global variable containing the current frame number in the FLI file.  This
+     is useful for synchronising other events with the animation, for instance
+     you could check it in a @link(al_play_fli) callback function and use it to
+     trigger a sample at a particular point.
+     @seealso(al_play_memory_fli) @seealso(al_next_fli_frame) *)
+    al_fli_frame: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_frame';
+
+  (* Global variable for timing FLI playback.  When you open an FLI file, a timer
+     interrupt is installed which increments this variable every time a new frame
+     should be displayed.  Calling @link(al_next_fli_frame) decrements it, so
+     you can test it and know that it is time to display a new frame if it is
+     greater than zero. @seealso(al_install_timer) *)
+    al_fli_timer: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_timer';
 
 IMPLEMENTATION
 
-  FUNCTION play_fli (filename: PCHAR; bmp: AL_BITMAPptr; loop: LONGINT; callback: AL_SIMPLE_FUNC): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION play_fli (CONST filename: AL_STRptr; bmp: AL_BITMAPptr; loop: AL_INT; callback: AL_SIMPLE_FUNC): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_play_fli (filename: STRING; bmp: AL_BITMAPptr; loop: BOOLEAN; callback: AL_SIMPLE_FUNC): LONGINT;
+  FUNCTION al_play_fli (CONST filename: STRING; bmp: AL_BITMAPptr; loop: BOOLEAN; callback: AL_SIMPLE_FUNC): AL_INT;
   VAR
-    DoLoop: LONGINT;
+    DoLoop: AL_INT;
   BEGIN
     IF loop THEN DoLoop := -1 ELSE DoLoop := 0;
-    al_play_fli := play_fli (PCHAR (filename), bmp, DoLoop, callback);
+    al_play_fli := play_fli (AL_STRptr (filename), bmp, DoLoop, callback);
   END;
 
 
@@ -192,22 +215,22 @@ IMPLEMENTATION
 
 
 
-  FUNCTION open_fli (filename: PCHAR): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION open_fli (CONST filename: AL_STRptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_open_fli (filename: STRING): LONGINT;
+  FUNCTION al_open_fli (CONST filename: STRING): AL_INT;
   BEGIN
-    al_open_fli := open_fli (PCHAR (filename));
+    al_open_fli := open_fli (AL_STRptr (filename));
   END;
 
 
 
-  FUNCTION next_fli_frame (loop: LONGINT): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION next_fli_frame (loop: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_next_fli_frame (loop: BOOLEAN): LONGINT;
+  FUNCTION al_next_fli_frame (loop: BOOLEAN): AL_INT;
   VAR
-    DoLoop: LONGINT;
+    DoLoop: AL_INT;
   BEGIN
     IF loop THEN DoLoop := -1 ELSE DoLoop := 0;
     al_next_fli_frame := next_fli_frame (DoLoop);

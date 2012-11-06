@@ -71,8 +71,7 @@ INTERFACE
    be passed a 32-bit @code(x) parameter, along with a @code(y) value of a
    different color depth, and must try to do something sensible in response.
    @seealso(set_alpha_blender) *)
-  PROCEDURE al_set_blender_mode_ex (b15, b16, b24, b32, b15x, b16x, b24x: AL_BLENDER_FUNC;
-					r, g, b, a: AL_INT);
+  PROCEDURE al_set_blender_mode_ex (b15, b16, b24, b32, b15x, b16x, b24x: AL_BLENDER_FUNC; r, g, b, a: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_blender_mode_ex';
 
 

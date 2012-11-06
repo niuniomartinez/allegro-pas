@@ -14,6 +14,11 @@ USES
 {$ENDIF}
   albase;
 
+(*****************************************************************************
+ * system.h
+ *     System level: initialization, cleanup, etc.
+ *)
+
 TYPE
   __AL_SYSTEM_DRIVER__ptr = ^__AL_SYSTEM_DRIVER__;
 (* Defines methods and stuff for system initialization and management.
@@ -56,25 +61,33 @@ TYPE
 
 
 
+(*****************************************************************************
+ * winalleg.h
+ *     Windows header file for the Allegro library.
+ *
+ *     It must be included by Allegro programs that need to use
+ *     direct Win32 API calls and by Win32 programs that need to
+ *     interface with Allegro.
+ *)
 {$IFDEF MSWINDOWS}
 TYPE
   __AL_WIN_CREATE_PROC__ = FUNCTION (p: WNDPROC): HWND; CDECL;
-  __AL_WIN_MESSAGE_PROC__ = FUNCTION (w: HWND; m: UINT; wp: WPARAM; lp: LPARAM; p: PLONGINT): LONGINT; CDECL;
+  __AL_WIN_MESSAGE_PROC__ = FUNCTION (w: HWND; m: UINT; wp: WPARAM; lp: LPARAM; p: AL_INTptr): AL_INT; CDECL;
 
 (* Returns the window handler. *)
-  FUNCTION al_win_get_window: HWND; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_get_window';
+  FUNCTION al_win_get_window: HWND;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_get_window';
 
 (* Sets the window handler. *)
-  PROCEDURE al_win_set_window (wnd: HWND); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_set_window';
+  PROCEDURE al_win_set_window (wnd: HWND);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_set_window';
 
 (* Set the window creation procedure. *)
-  PROCEDURE al_win_set_wnd_create_proc (proc: __AL_WIN_CREATE_PROC__); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_set_wnd_create_proc';
+  PROCEDURE al_win_set_wnd_create_proc (proc: __AL_WIN_CREATE_PROC__);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_set_wnd_create_proc';
 
-  PROCEDURE al_win_set_msg_pre_proc (proc: __AL_WIN_MESSAGE_PROC__); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_set_msg_pre_proc';
+  PROCEDURE al_win_set_msg_pre_proc (proc: __AL_WIN_MESSAGE_PROC__);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_set_msg_pre_proc';
 {$ENDIF}
 
 IMPLEMENTATION

@@ -584,8 +584,8 @@ IMPLEMENTATION
 
 
 (*****************************************************************************
- * file.h *
- **********)
+ * file.h
+ *)
 
   PROCEDURE packfile_password (CONST password: AL_STRptr);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
@@ -668,8 +668,8 @@ IMPLEMENTATION
 
 
 (*****************************************************************************
- * datafile.h *
- **************)
+ * datafile.h
+ *)
 
   FUNCTION load_datafile (CONST filename: AL_STRptr): AL_DATAFILEptr;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_datafile';
