@@ -10,6 +10,9 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   * Pequeño cambio en el ejemplo exhsvrgb.
   * Corregido aviso '"open array" not yet supported inside inline
     procedure/function'.
+  * Corregidos varios errores del ejemplo exscn3d.
+  * Uso de "Low" y "High" en varios bucles y otros lugares para determinar los
+    límites de las listas (ARRAY) en lugar de "adivinarlos".
 
   Novedades
   ---------
@@ -17,14 +20,14 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   + Añadidas algunas funciones de gestión de "clip".
   + Añadida función al_mouse_on_screen.
   + Añadida función al_find_datafile_object.
-  + Añadidas funciones al_load_txt_font, al_is_trans_font, al_font_has_alpha
-    al_make_trans_font, al_get_font_ranges, al_get_font_range_begin,
-    al_get_font_range_end, al_extract_font_range, al_merge_fonts y
-    al_transpose_font, y el ejemplo exfont.
+  + Añadidas multitud de funciones para manejo de fuentes tipográficas
+    y el ejemplo exfont.
   + Añadido ejemplos exsample y exmidi.
-  + Añadidas procedimiento al_check_cpu, variables al_cpu_family, al_cpu_model,
-    al_cpu_vendor y al_cpu_capabilities, y constantes relacionadas.
+  + Añadidas funciones, constantes y variables para la identificación del
+    microprocesador y sus capacidades.
   * Añadida implementación de "quaternions".
+  + Añadidas funciones para desplazamiento de pantalla y "triple buffer",
+    y ejemplo ex3buf.
   + Soporte para sistemas de 64bit.
 
   Otros
@@ -33,6 +36,8 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   * Ahora los archivos objeto los guarda en otro directorio.
   * Modificados los parámetros de funciones de generación y obtención de
     paletas para que use VAR en vez de punteros.
+  * Modificados los parámetros de cálculo y dibujo 3D para que use ARRAY
+    en lugar de punteros.
 * Changed parameter of al_xor_mode from INTEGER to BOOLEAN.
 * CHanged return values of al_save_*_pf from INTEGER to BOOLEAN.
 

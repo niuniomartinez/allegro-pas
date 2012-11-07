@@ -228,8 +228,8 @@ UNIT al3d;
 
 INTERFACE
 
-USES
-  albase, allegro, alfixed;
+  USES
+    albase, allegro, alfixed;
 
 
 (*****************************************************************************
@@ -680,8 +680,6 @@ USES
     (* Color. *)
       c: AL_INT;
     END;
-  (* List of pointers to @link(AL_V3D). *)
-    AL_V3D_LIST = ^AL_V3Dptr;
 
   (* Pointer to @link(AL_V3D_F). *)
     AL_V3D_Fptr = ^AL_V3D_F;
@@ -695,8 +693,6 @@ USES
     (* Color. *)
       c: AL_INT;
     END;
-  (* List of pointers to @link(AL_V3D_F). *)
-    AL_V3D_LIST_F = ^AL_V3D_Fptr;
 
   CONST
   (* A simple flat shaded polygon, taking the color from the `c' value of the
@@ -835,13 +831,13 @@ USES
    high chance of rounding errors:  the floating point code is better for most
    situations. @returns(the number of vertices after clipping is done.)
    @seealso(al_clip3d_f) @seealso(al_polygon3d) *)
-  FUNCTION al_clip3d (_type: AL_INT; min_z, max_z: AL_FIXED; vc: AL_INT; vtx, vout, vtmp: AL_V3D_LIST; out: AL_INTptr): AL_INT;
+  FUNCTION al_clip3d (_type: AL_INT; min_z, max_z: AL_FIXED; vc: AL_INT; CONST vtx: ARRAY OF AL_V3Dptr; vout, vtmp: ARRAY OF AL_V3Dptr; out: ARRAY OF AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clip3d';
 
 (* Clips the polygon given in @code(vtx).  The number of vertices is @code(vc),
    the result goes in @code(vout), and @code(vtmp) and @code(out) are needed
    for internal purposes.  The pointers in @code(vtx), @code(vout) and
-   @code(vtmp) must point to valid @link(AL_V3D_f) structures.
+   @code(vtmp) must point to valid @link(AL_V3D_F) structures.
 
    As additional vertices may appear in the process of clipping, so the size
    of @code(vout), @code(vtmp) and @code(out) should be at least @code(vc *
@@ -857,7 +853,7 @@ USES
    @link(AL_POLYTYPE_GCOL).
    @returns(the number of vertices after clipping is done.)
    @seealso(al_clip3d) @seealso(al_polygon3d_f) *)
-  FUNCTION al_clip3d_f (_type: AL_INT; min_z, max_z: AL_FLOAT; vc: AL_INT; vtx, vout, vtmp: AL_V3D_LIST_F; out: AL_INTptr): AL_INT;
+  FUNCTION al_clip3d_f (_type: AL_INT; min_z, max_z: AL_FLOAT; vc: AL_INT; CONST vtx: ARRAY OF AL_V3D_Fptr; vout, vtmp: ARRAY OF AL_V3D_Fptr; out: ARRAY OF AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clip3d_f';
 
 
@@ -1001,12 +997,10 @@ USES
     lack of a rendering routine.)
    @seealso(al_create_scene) @seealso(al_clear_scene) @seealso(al_render_scene)
    @seealso(al_polygon3d) *)
-  FUNCTION al_scene_polygon3d (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: AL_V3D_LIST): BOOLEAN;
-    INLINE;
+  FUNCTION al_scene_polygon3d (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: ARRAY OF AL_V3Dptr): BOOLEAN;
 
 (* Floating point version of @link(al_scene_polygon3d). *)
-  FUNCTION al_scene_polygon3d_f (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: AL_V3D_LIST_F): BOOLEAN;
-    INLINE;
+  FUNCTION al_scene_polygon3d_f (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: ARRAY OF AL_V3D_Fptr): BOOLEAN;
 
 (* Renders all the specified @link(al_scene_polygon3d)'s on the bitmap passed
    to @link(al_clear_scene).  Rendering is done one scanline at a time, with no
@@ -1081,11 +1075,11 @@ USES
   constants for details.
   @seealso(al_polygon3d_f) @seealso(al_triangle3d) @seealso(al_quad3d)
   @seealso(al_gfx_capabilities). *)
-  PROCEDURE al_polygon3d (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: AL_V3D_LIST);
+  PROCEDURE al_polygon3d (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: ARRAY OF AL_V3Dptr);
     INLINE;
 
 (* Same as @link(al_polygon3d) but using floats instead than fixed. *)
-  PROCEDURE al_polygon3d_f (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: AL_V3D_LIST_F);
+  PROCEDURE al_polygon3d_f (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: ARRAY OF AL_V3D_Fptr);
     INLINE;
 
 (* Draw 3D triangles, using fixed point vertex structures.  Unlike
@@ -1308,20 +1302,20 @@ IMPLEMENTATION
 
 
 
-  FUNCTION scene_polygon3d (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: AL_V3D_LIST): AL_INT;
+  FUNCTION scene_polygon3d (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: ARRAY OF AL_V3Dptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_scene_polygon3d (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: AL_V3D_LIST): BOOLEAN;
+  FUNCTION al_scene_polygon3d (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: ARRAY OF AL_V3Dptr): BOOLEAN;
   BEGIN
     al_scene_polygon3d := scene_polygon3d (_type, texture, vx, vtx) = 0;
   END;
 
 
 
-  FUNCTION scene_polygon3d_f (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: AL_V3D_LIST_F): AL_INT;
+  FUNCTION scene_polygon3d_f (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: ARRAY OF AL_V3D_Fptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_scene_polygon3d_f (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: AL_V3D_LIST_F): BOOLEAN;
+  FUNCTION al_scene_polygon3d_f (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: ARRAY OF AL_V3D_Fptr): BOOLEAN;
   BEGIN
     al_scene_polygon3d_f := scene_polygon3d_f (_type, texture, vx, vtx) = 0;
   END;
@@ -1332,16 +1326,16 @@ IMPLEMENTATION
  * draw.inl
  *)
 
-  PROCEDURE al_polygon3d (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: AL_V3D_LIST);
+  PROCEDURE al_polygon3d (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: ARRAY OF AL_V3Dptr);
   BEGIN
-    bmp^.vtable^.polygon3d (bmp, _type, texture, vc, vtx);
+    bmp^.vtable^.polygon3d (bmp, _type, texture, vc, @(vtx[0]));
   END;
 
 
 
-  PROCEDURE al_polygon3d_f (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: AL_V3D_LIST_F);
+  PROCEDURE al_polygon3d_f (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: ARRAY OF AL_V3D_Fptr);
   BEGIN
-    bmp^.vtable^.polygon3d_f (bmp, _type, texture, vc, vtx);
+    bmp^.vtable^.polygon3d_f (bmp, _type, texture, vc, @(vtx[0]));
   END;
 
 

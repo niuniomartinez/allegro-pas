@@ -9,59 +9,49 @@ PROGRAM exscn3d;
                                     /\____/               \ \_\
                                     \_/__/                 \/_/
 
-  This program demonstrates how to use scanline sorting algorithm in Allegro
-  (al_create_scene, al_clear_scene, ... functions).  It also provides an
-  example of how to use the 3D clipping function.  The example consists of a
-  flyby through a lot of rotating 3d cubes.
+*	This program demonstrates how to use scanline sorting algorithm in
+*	Allegro (al_create_scene, al_clear_scene, ... functions).  It also
+*	provides an example of how to use the 3D clipping function.  The
+*	example consists of a flyby through a lot of rotating 3d cubes.
+*
+*	by Ñuño Martínez <niunio(at)users.sourceforge.net>
+*	from an example program for the Allegro library, by Bertrand Coconnier. *)
 
-  by Ñuño Martínez <niunio(at)users.sourceforge.net>
-  from an example program for the Allegro library, by Bertrand Coconnier. *)
+  USES
+    allegro, algui, al3d,
+    sysutils;
 
-{$IFDEF FPC}
-{ Free Pascal. }
-  {$MODE OBJFPC}
-  {$LONGSTRINGS ON}
-{$ENDIF}
+  CONST
+    CUBE_CUBES = 4;
 
-USES
-  allegro, algui, al3d,
-  sysutils;
+  TYPE
+    QUAD = RECORD
+      v: ARRAY [1..4] OF LONGINT;
+    END;
 
-
-
-CONST
-  CUBE_CUBES = 4;
-
-
-TYPE
-  QUAD = RECORD
-    v: ARRAY [1..4] OF LONGINT;
-  END;
-
-
-VAR
-  Vertex: ARRAY [1..8] OF AL_V3D_F = (
-    (x: -10; y: -10; z: -10; u: 0; v: 0; c: 72),
-    (x: -10; y:  10; z: -10; u: 0; v: 0; c: 80),
-    (x:  10; y:  10; z: -10; u: 0; v: 0; c: 95),
-    (x:  10; y: -10; z: -10; u: 0; v: 0; c: 88),
-    (x: -10; y: -10; z:  10; u: 0; v: 0; c: 72),
-    (x: -10; y:  10; z:  10; u: 0; v: 0; c: 80),
-    (x:  10; y:  10; z:  10; u: 0; v: 0; c: 95),
-    (x:  10; y: -10; z:  10; u: 0; v: 0; c: 88)
-  );
-  Cube: ARRAY [1..6] OF QUAD = (
-    (v: (3, 2, 1, 4)),
-    (v: (5, 6, 7, 8)),
-    (v: (1, 2, 6, 5)),
-    (v: (3, 4, 8, 7)),
-    (v: (5, 8, 4, 1)),
-    (v: (2, 3, 7, 6))
-  );
-  V: ARRAY [1..4] OF AL_V3D_f;
-  Vout, Vtmp: ARRAY [1..12] OF AL_V3D_f;
-  pV: ARRAY [1..4] OF AL_V3D_fptr;
-  pVout, pVtmp: ARRAY [1..12] OF AL_V3D_fptr;
+  VAR
+    Vertex: ARRAY [1..8] OF AL_V3D_F = (
+      (x: -10; y: -10; z: -10; u: 0; v: 0; c: 72),
+      (x: -10; y:  10; z: -10; u: 0; v: 0; c: 80),
+      (x:  10; y:  10; z: -10; u: 0; v: 0; c: 95),
+      (x:  10; y: -10; z: -10; u: 0; v: 0; c: 88),
+      (x: -10; y: -10; z:  10; u: 0; v: 0; c: 72),
+      (x: -10; y:  10; z:  10; u: 0; v: 0; c: 80),
+      (x:  10; y:  10; z:  10; u: 0; v: 0; c: 95),
+      (x:  10; y: -10; z:  10; u: 0; v: 0; c: 88)
+    );
+    Cube: ARRAY [1..6] OF QUAD = (
+      (v: (3, 2, 1, 4)),
+      (v: (5, 6, 7, 8)),
+      (v: (1, 2, 6, 5)),
+      (v: (3, 4, 8, 7)),
+      (v: (5, 8, 4, 1)),
+      (v: (2, 3, 7, 6))
+    );
+    V: ARRAY [1..4] OF AL_V3D_f;
+    Vout, Vtmp: ARRAY [1..12] OF AL_V3D_f;
+    pV: ARRAY [1..4] OF AL_V3D_fptr;
+    pVout, pVtmp: ARRAY [1..12] OF AL_V3D_fptr;
 
 
 
@@ -75,10 +65,10 @@ VAR
 
 
 
-VAR
-  Texture: AL_BITMAPptr;
-  Palette: AL_PALETTE;
-  RGBTable: AL_RGB_MAP;
+  VAR
+    Texture: AL_BITMAPptr;
+    Palette: AL_PALETTE;
+    RGBTable: AL_RGB_MAP;
 
 
 
@@ -89,23 +79,23 @@ VAR
   BEGIN
     Filename := ExtractFilePath (ParamStr (0)) + 'allegro.pcx';
     Pic := al_load_bitmap (Filename, @Palette);
-Write (''); { If you delete this line it doesn't run in some systems(?) [Xubuntu 10.04] }
     IF Pic = NIL THEN
     BEGIN
       al_message ('Can''t load allegro.pcx.');
-      RESULT := FALSE;
+      LoadTexture := FALSE;
       EXIT;
     END;
   { Texture size must be power of two. }
     Texture := al_create_bitmap (128, 128);
     al_stretch_blit (Pic, Texture, 0, 0, Pic^.w, Pic^.h, 0, 0, 128, 128);
     al_destroy_bitmap (Pic);
+    LoadTexture := TRUE;
   END;
 
 
 
 (* Set up the graphic mode and creates the color palette. *)
-  FUNCTION IntitGfx: BOOLEAN;
+  FUNCTION InitGfx: BOOLEAN;
   VAR
     Cnt: INTEGER;
     c, w, h, bpp: LONGINT;
@@ -141,7 +131,7 @@ Write (''); { If you delete this line it doesn't run in some systems(?) [Xubuntu
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
       al_message (al_error);
-      RESULT := FALSE;
+      InitGfx := FALSE;
       EXIT;
     END;
     al_set_palette (al_desktop_palette);
@@ -150,7 +140,7 @@ Write (''); { If you delete this line it doesn't run in some systems(?) [Xubuntu
     w := AL_SCREEN_W; h := AL_SCREEN_H; bpp := al_bitmap_color_depth (al_screen);
     IF NOT al_gfx_mode_select_ex (c, w, h, bpp) THEN
     BEGIN
-      RESULT := FALSE;
+      InitGfx := FALSE;
       EXIT;
     END;
 
@@ -160,14 +150,14 @@ Write (''); { If you delete this line it doesn't run in some systems(?) [Xubuntu
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
       al_message (al_error);
-      RESULT := FALSE;
+      InitGfx := FALSE;
       EXIT;
     END;
     IF NOT LoadTexture THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
-      RESULT := FALSE;
+      InitGfx := FALSE;
       EXIT;
     END;
     al_set_palette (Palette);
@@ -175,21 +165,7 @@ Write (''); { If you delete this line it doesn't run in some systems(?) [Xubuntu
   { Build a rgb_map table.  Not needed, but speeds things up. }
     al_create_rgb_table (RGBTable, Palette, NIL);
     al_rgb_table := @RGBTable;
-    RESULT := TRUE;
-  END;
-
-
-
-(* Returns true if facet is facing the camera.  Vertices should be in Visual
-   Coordinate System. *)
-  FUNCTION FacetIsVisible (P1, P2, P3: AL_V3D_f): BOOLEAN;
-  VAR
-    S1, S2, S3: SINGLE;
-  BEGIN
-    S1 := P1.x * ((P2.y * P3.z) - (P3.y * P2.z));
-    S2 := P2.x * ((P3.y * P1.z) - (P1.y * P3.z));
-    S3 := P3.x * ((P1.y * P2.z) - (P2.y * P1.z));
-    RESULT := ((-S1 - S2 - S3) <= 0);
+    InitGfx := TRUE;
   END;
 
 
@@ -213,16 +189,15 @@ Write (''); { If you delete this line it doesn't run in some systems(?) [Xubuntu
       v[3].u :=   0; v[3].v :=   0;
       v[4].u := 128; v[4].v :=   0;
     (* nv: number of vertices after clipping is done. *)
-      nv := al_clip3d_f (AL_POLYTYPE_PTEX, 0.24, 1000, 4, @pV[1], @pVout[1],
-			@pVtmp[1], @Out[0]);
+      nv := al_clip3d_f (AL_POLYTYPE_PTEX, 0.24, 1000, 4, pV, pVout, pVtmp, Out);
       IF nv > 0 THEN
-	IF al_polygon_z_normal_f (@vout[1], @vout[2], @vout[3]) <= 0 THEN
-	BEGIN
-	  FOR J := 1 TO nv DO
-	    al_persp_project_f (Vout[j].x, Vout[j].y, Vout[j].z,
+      BEGIN
+	FOR J := 1 TO nv DO
+	  al_persp_project_f (Vout[j].x, Vout[j].y, Vout[j].z,
 				Vout[j].x, Vout[j].y);
-	  al_scene_polygon3d_f (AL_POLYTYPE_PTEX, Texture, nv, @pVout[1]);
-	END;
+	IF al_polygon_z_normal_f (@vout[1], @vout[2], @vout[3]) > 0 THEN
+	  al_scene_polygon3d_f (AL_POLYTYPE_PTEX, Texture, nv, pVout);
+      END;
     END;
   END;
 
@@ -235,6 +210,7 @@ VAR
   tz, i, j, k: LONGINT;
   Frame: LONGINT;
   FPS: SINGLE;
+  FrameLabel: STRING;
 BEGIN (* The program starts here. *)
 
   rx := 0; ry := 0; tz := 40;
@@ -251,10 +227,10 @@ BEGIN (* The program starts here. *)
   al_install_keyboard;
   al_install_mouse;
   al_install_timer;
-  al_install_int (@Timer, 11);
+  al_install_int (@Timer, 10);
 
 { Set up graphics mode. }
-  IF NOT IntitGfx THEN
+  IF NOT InitGfx THEN
   BEGIN
     EXIT;
   END;
@@ -275,7 +251,9 @@ BEGIN (* The program starts here. *)
     pVtmp[j] := @Vtmp[j];
     pVout[j] := @Vout[j];
   END;
-  Tick := 1;
+
+  Tick := 0;
+  FrameLabel := '(0.0 fps)';
   WHILE al_key[AL_KEY_ESC] = 0 DO
   BEGIN
     al_clear_bitmap (Buffer);
@@ -305,8 +283,7 @@ BEGIN (* The program starts here. *)
 	END;
   { Sorts and renders polys }
     al_render_scene;
-    al_textout_ex (Buffer, al_font, '('+FloatToStr (FPS)+' fps)',
-		   1, 1, -1, -1);
+    al_textout_ex (Buffer, al_font, FrameLabel, 1, 1, -1, -1);
     al_blit (Buffer, al_screen, 0, 0, 0, 0, AL_SCREEN_W, AL_SCREEN_H);
     Frame := Frame + 1;
 
@@ -322,7 +299,8 @@ BEGIN (* The program starts here. *)
     IF Tick > 100 THEN
     BEGIN
       FPS := (100.0 * Frame) / Tick;
-      tick := 0;
+      FrameLabel := '('+FloatToStr (FPS)+' fps)';
+      Tick := 0;
       Frame := 0;
     END;
   END;
