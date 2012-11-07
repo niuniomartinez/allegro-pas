@@ -1872,9 +1872,13 @@ END.
 
 
   CONST
-  (* @exclude Graphic capabilities *)
+  (* Indicates that the @link(al_scroll_screen) function may be used with this
+     driver. @seealso(al_gfx_capabilities) *)
     AL_GFX_CAN_SCROLL			= $00000001;
-  { @exclude }
+  (* Indicates that the @link(al_request_scroll) and @link(al_poll_scroll)
+     functions may be used with this driver.  If this flag is not set, it is
+     possible that the @link(al_enable_triple_buffer) function may be able to
+     activate it. @seealso(al_gfx_capabilities) *)
     AL_GFX_CAN_TRIPLE_BUFFER		= $00000002;
   (* Indicates that a hardware mouse cursor is in use. When this flag is set, it
      is safe to draw onto the screen without hiding the mouse pointer first.
@@ -2142,6 +2146,51 @@ END.
    @seealso(al_gfx_capabilities) @seealso(al_get_desktop_resolution) *)
   FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: AL_INT): BOOLEAN;
 
+(* Requests a hardware scroll request.  Attempts to scroll the hardware screen
+   to display a different part of the virtual screen (initially it will be
+   positioned at 0, 0, which is the top left corner).  You can use this to move
+   the screen display around in a large virtual screen space, or to page flip
+   back and forth between two non-overlapping areas of the virtual screen.
+   Note that to draw outside the original position in the screen bitmap you
+   will have to alter the clipping rectangle with @link(al_set_clip_rect).
+
+   Mode-X scrolling is reliable and will work on any card, other drivers may not
+   work or not work reliably.  See the platform-specific section of the docs for
+   more information.
+
+   Allegro will handle any necessary vertical retrace synchronisation when
+   scrolling the screen, so you don't need to call @link(al_vsync) before it.
+   This means that @code(al_scroll_screen) has the same time delay effects as
+   @code(al_vsync).
+   @return(@true on success, @false if the graphics driver can't handle
+     hardware scrolling or the virtual screen is not large enough.)
+   @seealso(al_set_gfx_mode) @seealso(al_show_video_bitmap)
+   @seealso(al_request_scroll) @seealso(al_request_video_bitmap) *)
+  FUNCTION al_scroll_screen (x, y: AL_INT): BOOLEAN;
+    INLINE;
+
+(* Queues a hardware scroll request with triple buffering.  It requests a
+   hardware scroll to the specified position, but returns immediately rather
+   than waiting for a retrace.  The scroll will then take place during the next
+   vertical retrace, but you can carry on running other code in the meantime
+   and use the @link(al_poll_scroll) routine to detect when the flip has
+   actually taken place.
+
+   Triple buffering is only possible with certain drivers:  you can look at the
+   @link_AL_GFX_CAN_TRIPLE_BUFFER) bit in the @link(al_gfx_capabilities) flag
+   to see if it will work with the current driver.
+   @return(@true on success, @false Otherwise.)
+   @seealso(al_request_video_bitmap) @seealso(al_scroll_screen) *)
+  FUNCTION al_request_scroll (x, y: AL_INT): BOOLEAN;
+    INLINE;
+
+(* Checks the status of a scroll request with triple buffering.
+   @returns(@true if it is still waiting to take place, or @false if the
+     requested scroll has already happened.)
+   @seealso(al_request_scroll) @seealso(al_request_video_bitmap) *)
+  FUNCTION al_poll_scroll: BOOLEAN;
+    INLINE;
+
 (* Attempts to page flip the hardware screen to display the specified video
    bitmap object, which must be the same size as the physical screen, and
    should have been obtained by calling the @link(al_create_video_bitmap)
@@ -2156,6 +2205,49 @@ END.
    @returns(zero on success and non-zero on failure.) *)
   FUNCTION al_show_video_bitmap (bmp: AL_BITMAPptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'show_video_bitmap';
+
+(* Requests a page flip to display the specified video bitmap object, but
+   returns immediately rather than waiting for a retrace.  The flip will then
+   take place during the next vertical retrace, but you can carry on running
+   other code in the meantime and use the @link(al_poll_scroll) routine to
+   detect when the flip has actually taken place.  Triple buffering is only
+   possible on certain hardware: see the comments about
+   @link(al_request_scroll). Example:
+@longcode(#
+VAR
+  CurrentPage: INTEGER;
+  VideoPage: ARRAY [0..2] OF AL_BITMAPptr;
+BEGIN
+  ...
+// Create pages for page flipping
+  FOR CurrentPage := Low (VideoPage) TO High (VideoPage) DO
+    VideoPage[CurrentPage] := al_create_video_bitmap(SCREEN_W, SCREEN_H);
+  CurrentPage := Low (VideoPage);
+  ...
+// draw the screen and flip pages
+  DrawScreen (VideoPage[CurrentPage]);
+  WHILE al_poll_scroll DO
+    ;
+  al_request_video_bitmap (VideoPage[CurrentPage]);
+  CurrentPage := (CurrentPage + 1) MOD 3;
+  ...
+END;
+#)
+   @returns(@true on success or @false on failure.)
+   @seealso(al_gfx_capabilities) @seealso(al_create_video_bitmap)
+   @seealso(al_scroll_screen) *)
+  FUNCTION al_request_video_bitmap (bitmap: AL_BITMAPptr): BOOLEAN;
+    INLINE;
+
+(* Enables triple buffering.  If the @link(AL_GFX_CAN_TRIPLE_BUFFER) bit of the
+   @link(al_gfx_capabilities) field is not set, you can attempt to enable it by
+   calling this function.  In particular if you are running in mode-X in a
+   clean DOS environment, this routine will enable the timer retrace simulator,
+   which will activate the triple buffering functions.
+   @returns(@true if triple buffering is enabled, @false otherwise.)
+   @seealso(al_request_scroll) @seealso(al_request_video_bitmap) *)
+  FUNCTION al_enable_triple_buffer: BOOLEAN;
+    INLINE;
 
 (* Creates a memory bitmap sized @code(w) by @code(h).  The bitmap will have
    clipping turned on, and the clipping rectangle set to the full size of the
@@ -5263,6 +5355,54 @@ CONST
         AL_VIRTUAL_H := al_screen^.h;
       END;
     END;
+  END;
+
+
+
+  FUNCTION scroll_screen (x, y: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_scroll_screen (x, y: AL_INT): BOOLEAN;
+  BEGIN
+    al_scroll_screen := scroll_screen (x, y) = 0;
+  END;
+
+
+
+  FUNCTION request_scroll (x, y: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_request_scroll (x, y: AL_INT): BOOLEAN;
+  BEGIN
+    al_request_scroll := request_scroll (x, y) = 0;
+  END;
+
+
+
+  FUNCTION poll_scroll: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_poll_scroll: BOOLEAN;
+  BEGIN
+    al_poll_scroll := poll_scroll <> 0;
+  END;
+
+
+
+  FUNCTION request_video_bitmap (bitmap: AL_BITMAPptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_request_video_bitmap (bitmap: AL_BITMAPptr): BOOLEAN;
+  BEGIN
+    al_request_video_bitmap := request_video_bitmap (bitmap) = 0;
+  END;
+
+  FUNCTION enable_triple_buffer: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_enable_triple_buffer: BOOLEAN;
+  BEGIN
+    al_enable_triple_buffer := enable_triple_buffer = 0;
   END;
 
 

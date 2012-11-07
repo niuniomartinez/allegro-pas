@@ -26,62 +26,62 @@ USES
 
 
 
-(* Star field system. *)
-TYPE
-  VECTOR = RECORD
-    x, y, z: AL_FIXED;
-  END;
+  (* Star field system. *)
+  TYPE
+    VECTOR = RECORD
+      x, y, z: AL_FIXED;
+    END;
 
-CONST
-  NUM_STARS   = 512;
-  Z_NEAR      = 24;
-  Z_FAR       = 1024;
-  XY_CUBE     = 2048;
-  SPEED_LIMIT = 20;
+  CONST
+    NUM_STARS   = 512;
+    Z_NEAR      = 24;
+    Z_FAR       = 1024;
+    XY_CUBE     = 2048;
+    SPEED_LIMIT = 20;
 
-VAR
-  Stars: ARRAY [1..NUM_STARS] OF VECTOR;
-  StarX, StarY: ARRAY [1..NUM_STARS] OF AL_FIXED;
-  Delta: VECTOR;
-
-
-
-(* Polygonal models. *)
-CONST
-  NUM_VERTS = 4;
-  NUM_FACES = 4;
-
-  ENGINE = 3;  { Which face is the engine. }
-  ENGINE_ON  = 64; { Color index. }
-  ENGINE_OFF = 32;
-
-TYPE
-(* For triangular models. *)
-  FACE = RECORD
-    v1, v2, v3: INTEGER;
-    colour, range: INTEGER;
-    normal, rnormal: VECTOR;
-  END;
+  VAR
+    Stars: ARRAY [1..NUM_STARS] OF VECTOR;
+    StarX, StarY: ARRAY [1..NUM_STARS] OF AL_FIXED;
+    Delta: VECTOR;
 
 
 
-  MODEL = RECORD
-    points: ARRAY [1..NUM_VERTS] OF VECTOR;
-    faces: ARRAY  [1..NUM_FACES] OF FACE;
-    x, y, z: AL_FIXED;
-    rx, ry, rz: AL_FIXED;
-    minx, miny, maxx, maxy: INTEGER;
-    aim: VECTOR;
-    velocity: INTEGER;
-  END;
+  (* Polygonal models. *)
+  CONST
+    NUM_VERTS = 4;
+    NUM_FACES = 4;
+
+    ENGINE = 4;  { Which face is the engine. }
+    ENGINE_ON  = 64; { Color index. }
+    ENGINE_OFF = 32;
+
+  TYPE
+  (* For triangular models. *)
+    FACE = RECORD
+      v1, v2, v3: INTEGER;
+      colour, range: INTEGER;
+      normal, rnormal: VECTOR;
+    END;
 
 
 
-VAR
-  Ship: MODEL;
-  Direction: VECTOR;
+    MODEL = RECORD
+      points: ARRAY [1..NUM_VERTS] OF VECTOR;
+      faces: ARRAY  [1..NUM_FACES] OF FACE;
+      x, y, z: AL_FIXED;
+      rx, ry, rz: AL_FIXED;
+      minx, miny, maxx, maxy: INTEGER;
+      aim: VECTOR;
+      velocity: INTEGER;
+    END;
 
-  Buffer: AL_BITMAPptr;
+
+
+  VAR
+    Ship: MODEL;
+    Direction: VECTOR;
+
+    Buffer: AL_BITMAPptr;
 
 
 
@@ -90,7 +90,7 @@ VAR
   VAR
     Ndx: INTEGER;
   BEGIN
-    FOR Ndx := 1 TO NUM_STARS DO
+    FOR Ndx := Low (Stars) TO High (Stars) DO
     BEGIN
       Stars[Ndx].x := al_itofix (random (XY_CUBE) - (XY_CUBE SHR 1));
       Stars[Ndx].y := al_itofix (random (XY_CUBE) - (XY_CUBE SHR 1));
@@ -110,7 +110,7 @@ VAR
     Matrix: AL_MATRIX;
     Outs: ARRAY [1..NUM_STARS] OF VECTOR;
   BEGIN
-    FOR Ndx := 1 TO NUM_STARS DO
+    FOR Ndx := Low (Stars) TO High (Stars) DO
     BEGIN
       al_get_translation_matrix (@Matrix, Delta.x, Delta.y, Delta.z);
       al_apply_matrix (@Matrix, Stars[Ndx].x, Stars[Ndx].y, Stars[Ndx].z,
@@ -130,7 +130,7 @@ VAR
   VAR
     Ndx: INTEGER;
   BEGIN
-    FOR Ndx := 1 TO NUM_STARS DO
+    FOR Ndx := Low (StarX) TO High (StarX) DO
       al_putpixel (Buffer, al_fixtoi (StarX[Ndx]), al_fixtoi (StarY[Ndx]),
 		   al_palette_color^[0]);
   END;
@@ -142,7 +142,7 @@ VAR
   VAR
     Ndx: INTEGER;
   BEGIN
-    FOR Ndx := 1 TO NUM_STARS DO
+    FOR Ndx := Low (Stars) TO High (Stars) DO
     BEGIN
       INC (Stars[Ndx].x, Delta.x);
       INC (Stars[Ndx].y, Delta.y);
@@ -244,7 +244,7 @@ VAR
     al_cross_product (v1.x, v1.y, v1.z, v2.x, v2.y, v2.z,
 		aFace^.normal.x, aFace^.normal.y, aFace^.normal.z);
 
-    FOR Ndx := 1 TO NUM_FACES DO
+    FOR Ndx := Low (Ship.faces) TO High (Ship.faces) DO
     BEGIN;
       Ship.faces[Ndx].colour := 32;
       Ship.faces[Ndx].range := 15;
@@ -276,7 +276,7 @@ VAR
 (* Draws the ship model. *)
   PROCEDURE DrawShip;
   VAR
-    Outs: ARRAY [1..NUM_VERTS] OF AL_V3D;
+    Outs: ARRAY [1..NUM_VERTS] OF VECTOR;
     Matrix: AL_MATRIX;
     Ndx, Col: INTEGER;
   BEGIN
@@ -288,11 +288,11 @@ VAR
     al_get_rotation_matrix (@Matrix, Ship.rx, Ship.ry, Ship.rz);
     al_apply_matrix (@Matrix, Ship.aim.x, Ship.aim.y, Ship.aim.z,
 		     Outs[1].x, Outs[1].y, Outs[1].z);
-    Direction.x := outs[1].x;
-    Direction.y := outs[1].y;
-    Direction.z := outs[1].z;
+    Direction.x := Outs[1].x;
+    Direction.y := Outs[1].y;
+    Direction.z := Outs[1].z;
 
-    FOR Ndx := 1 TO NUM_FACES DO
+    FOR Ndx := Low (Ship.faces) TO High (Ship.faces) DO
       al_apply_matrix (@Matrix,
 			Ship.faces[Ndx].normal.x, Ship.faces[Ndx].normal.y,
 			Ship.faces[Ndx].normal.z,
@@ -303,7 +303,7 @@ VAR
 				  Ship.rx, Ship.ry, Ship.rz,
 				  Ship.x, Ship.y, Ship.z);
 
-    FOR Ndx := 1 TO NUM_VERTS DO
+    FOR Ndx := Low (Ship.points) TO High (Ship.points) DO
     BEGIN
       al_apply_matrix (@Matrix,
 		Ship.points[Ndx].x, Ship.points[Ndx].y, Ship.points[Ndx].z,
@@ -320,7 +320,7 @@ VAR
 	 Ship.maxy := al_fixtoi (Outs[Ndx].y);
     END;
 
-    FOR Ndx := 1 TO NUM_FACES DO
+    FOR Ndx := Low (Ship.faces) TO High (Ship.faces) DO
     BEGIN
       IF al_fixtof (Ship.faces[Ndx].rnormal.z) < 0.0 THEN
       BEGIN

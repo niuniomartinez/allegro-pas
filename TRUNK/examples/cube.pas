@@ -27,85 +27,85 @@ UNIT cube;
 
 INTERFACE
 
-USES
-  allegro, alfixed, al3d;
+  USES
+    allegro, alfixed, al3d;
 
 
 
-TYPE
-(* A simple vector. *)
-  TVector = CLASS
-  PRIVATE
-    fx, fy, fz: AL_FIXED;
-  PUBLIC
-    CONSTRUCTOR Create (ax, ay, az: AL_FIXED);
-  (* Adds the given vector. *)
-    PROCEDURE Add (Vector: TVector);
+  TYPE
+  (* A simple vector. *)
+    TVector = CLASS
+    PRIVATE
+      fx, fy, fz: AL_FIXED;
+    PUBLIC
+      CONSTRUCTOR Create (ax, ay, az: AL_FIXED);
+    (* Adds the given vector. *)
+      PROCEDURE Add (Vector: TVector);
 
-    PROPERTY x: AL_FIXED READ fx WRITE fx;
-    PROPERTY y: AL_FIXED READ fy WRITE fY;
-    PROPERTY z: AL_FIXED READ fz WRITE fz;
-  END;
-
-
-
-(* A face. *)
-  TFace = RECORD
-    Point: ARRAY [1..4] OF AL_V3D;
-  END;
+      PROPERTY x: AL_FIXED READ fx WRITE fx;
+      PROPERTY y: AL_FIXED READ fy WRITE fY;
+      PROPERTY z: AL_FIXED READ fz WRITE fz;
+    END;
 
 
 
-(* A simple cube. *)
-  TCube = CLASS
-  PRIVATE
-    fPosition, fAngle, fRotate: TVector;
-    fSize: AL_FIXED;
-    fVertexColor: ARRAY [1..4] OF INTEGER;
-    fUseZbuff: BOOLEAN;
-    fZbuff: INTEGER;
-    fDrawmode: LONGINT;
-    fTexture: AL_BITMAPptr;
-    fTexWidth, fTexHeight: AL_FIXED;
-    fFaces: ARRAY [1..6] OF TFace;
-    fVisibleFaces: INTEGER; (* Number of faces to draw. *)
+  (* A face. *)
+    TFace = RECORD
+      Point: ARRAY [1..4] OF AL_V3D;
+    END;
 
-    PROCEDURE SetUseZbuff (UseIt: BOOLEAN);
-  PUBLIC
-  (* Creates the cube. *)
-    CONSTRUCTOR Create (px, py, pz, aSize: AL_FIXED; aTexture: AL_BITMAPptr);
+
+
+  (* A simple cube. *)
+    TCube = CLASS
+    PRIVATE
+      fPosition, fAngle, fRotate: TVector;
+      fSize: AL_FIXED;
+      fVertexColor: ARRAY [1..4] OF INTEGER;
+      fUseZbuff: BOOLEAN;
+      fZbuff: INTEGER;
+      fDrawmode: LONGINT;
+      fTexture: AL_BITMAPptr;
+      fTexWidth, fTexHeight: AL_FIXED;
+      fFaces: ARRAY [1..6] OF TFace;
+      fVisibleFaces: INTEGER; (* Number of faces to draw. *)
+
+      PROCEDURE SetUseZbuff (UseIt: BOOLEAN);
+    PUBLIC
+    (* Creates the cube. *)
+      CONSTRUCTOR Create (px, py, pz, aSize: AL_FIXED; aTexture: AL_BITMAPptr);
 	VIRTUAL;
-  (* Destroys the cube. *)
-    DESTRUCTOR Destroy; OVERRIDE;
-  (* Sets a color for the cube. *)
-    PROCEDURE SetColor (aR, aG, aB: INTEGER);
-  (* Updates cube. *)
-    PROCEDURE Update; VIRTUAL;
-  (* Draws the cube. *)
-    PROCEDURE Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIXptr); VIRTUAL;
+    (* Destroys the cube. *)
+      DESTRUCTOR Destroy; OVERRIDE;
+    (* Sets a color for the cube. *)
+      PROCEDURE SetColor (aR, aG, aB: INTEGER);
+    (* Updates cube. *)
+      PROCEDURE Update; VIRTUAL;
+    (* Draws the cube. *)
+      PROCEDURE Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIXptr); VIRTUAL;
 
-  (* Cube position. *)
-    PROPERTY Pos: TVector READ fPosition WRITE fPosition;
-  (* Cube angle. *)
-    PROPERTY Ang: TVector READ fAngle WRITE fAngle;
-  (* Cube size. *)
-    PROPERTY Size: AL_FIXED READ fSize WRITE fSize;
-  (* Polygon draw mode. *)
-    PROPERTY DrawMode: LONGINT READ fDrawmode WRITE fDrawmode;
-  (* Cube texture.  Note it isn't destroyed by the cube. *)
-    PROPERTY Texture: AL_BITMAPptr READ fTexture WRITE fTexture;
-  (* To use Z-buffer if available.  Don't use it by default. *)
-    PROPERTY UseZbuff: BOOLEAN READ fUseZbuff WRITE SetUseZbuff;
-  PRIVATE
-  (* Draws the faces. *)
-    PROCEDURE DrawFaces (aBitmap: AL_BITMAPptr);
-  END;
+    (* Cube position. *)
+      PROPERTY Pos: TVector READ fPosition WRITE fPosition;
+    (* Cube angle. *)
+      PROPERTY Ang: TVector READ fAngle WRITE fAngle;
+    (* Cube size. *)
+      PROPERTY Size: AL_FIXED READ fSize WRITE fSize;
+    (* Polygon draw mode. *)
+      PROPERTY DrawMode: LONGINT READ fDrawmode WRITE fDrawmode;
+    (* Cube texture.  Note it isn't destroyed by the cube. *)
+      PROPERTY Texture: AL_BITMAPptr READ fTexture WRITE fTexture;
+    (* To use Z-buffer if available.  Don't use it by default. *)
+      PROPERTY UseZbuff: BOOLEAN READ fUseZbuff WRITE SetUseZbuff;
+    PRIVATE
+    (* Draws the faces. *)
+      PROCEDURE DrawFaces (aBitmap: AL_BITMAPptr);
+    END;
 
 
 
-CONST
-(* A custom polytype.  Used to draw a wired cube. *)
-  POLYTYPE_WIRED = -1;
+  CONST
+  (* A custom polytype.  Used to draw a wired cube. *)
+    POLYTYPE_WIRED = -1;
 
 
 
@@ -139,19 +139,19 @@ IMPLEMENTATION
  * TCube *
  *********)
 
-VAR
-(* Coordinates for each vertex of the cube. *)
-  PointCoordinates: ARRAY [0..7] OF TVector;
-(* Dictionary to know the vertex for each face. *)
-  VertexIndex: ARRAY [0..23] OF INTEGER = (
-  { Each line is a face. }
-    2, 1, 0, 3,
-    4, 5, 6, 7,
-    0, 1, 5, 4,
-    2, 3, 7, 6,
-    4, 7, 3, 0,
-    1, 2, 6, 5
-  );
+  VAR
+  (* Coordinates for each vertex of the cube. *)
+    PointCoordinates: ARRAY [0..7] OF TVector;
+  (* Dictionary to know the vertex for each face. *)
+    VertexIndex: ARRAY [0..23] OF INTEGER = (
+    { Each line is a face. }
+      2, 1, 0, 3,
+      4, 5, 6, 7,
+      0, 1, 5, 4,
+      2, 3, 7, 6,
+      4, 7, 3, 0,
+      1, 2, 6, 5
+    );
 
 
 

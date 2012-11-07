@@ -9,20 +9,19 @@ PROGRAM ex3d;
                                     /\____/               \ \_\
                                     \_/__/                 \/_/
 
-   Example for Allegro.pas that displays a 3D cube and rotates it.
-
-   by Ñuño Martínez <niunio(at)users.sourceforge.net> *)
+ *   Example for Allegro.pas that displays a 3D cube and rotates it.
+ *
+ *   by Ñuño Martínez <niunio(at)users.sourceforge.net> *)
 
 {$IFDEF FPC}
-{ Free Pascal. }
+{ This example uses Object Pascal language. }
   {$MODE OBJFPC}
-  {$LONGSTRINGS ON}
 {$ENDIF}
 
-USES
-  cube,
-  allegro, algui, al3d, alfixed, alvga, alblend,
-  sysutils;
+  USES
+    cube,
+    allegro, algui, al3d, alfixed, alvga, alblend,
+    sysutils;
 
 
 
@@ -36,12 +35,12 @@ USES
 
 
 
-TYPE
-(* Extends the basic cube. *)
-  TRotableCube = CLASS (TCube)
-  PUBLIC
-    CONSTRUCTOR Create (aTexture: AL_BITMAPptr); OVERLOAD;
-  END;
+  TYPE
+  (* Extends the basic cube. *)
+    TRotableCube = CLASS (TCube)
+    PUBLIC
+      CONSTRUCTOR Create (aTexture: AL_BITMAPptr); OVERLOAD;
+    END;
 
 
 
