@@ -17,19 +17,13 @@ PROGRAM exhsvrgb;
  *	See readme.txt for license and copyright information.
  *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
-  {$LONGSTRINGS ON}
-{$ENDIF}
-
-USES
-  sysutils,
-  allegro;
+  USES
+    sysutils,
+    allegro;
 
 
 
-  (* test:
-   *   Does the color test. *)
+(*   Does the color test. *)
   PROCEDURE test (colordepth: INTEGER);
   VAR
     pal: AL_PALETTE;
@@ -40,7 +34,7 @@ USES
   { Set the screen mode }
     al_set_color_depth (colordepth);
 
-    IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
       IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
 	EXIT;
 
@@ -93,7 +87,7 @@ USES
     al_release_screen;
 
     al_readkey();
-END;
+  END;
 
 
 

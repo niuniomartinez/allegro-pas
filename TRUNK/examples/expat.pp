@@ -17,11 +17,6 @@ PROGRAM expal;
  *	See readme.txt for license and copyright information.
  *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
-  {$LONGSTRINGS ON}
-{$ENDIF}
-
 USES
   allegro;
 
@@ -58,12 +53,12 @@ BEGIN { The program starts here. }
   END;
   al_install_keyboard;
 
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Shows an error message. }
-      al_message (al_error);
+      al_message ('Unable to set any graphic mode'#10+al_error+''#10);
       EXIT;
     END;
   al_set_palette (al_desktop_palette);

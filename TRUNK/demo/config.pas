@@ -6,11 +6,6 @@ UNIT config;
  * Author: Ñuño Martínez <niunio@users.sourceforge.net>
  *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
-  {$LONGSTRINGS ON}
-{$ENDIF}
-
 INTERFACE
 
 

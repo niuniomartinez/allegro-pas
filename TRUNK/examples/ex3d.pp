@@ -168,7 +168,7 @@ BEGIN (* The program starts here. *)
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
-      al_message (al_error);
+      al_message ('Unable to set any graphic mode'#10+al_error+''#10);
       EXIT;
     END;
   al_set_palette (al_desktop_palette);
@@ -185,7 +185,7 @@ BEGIN (* The program starts here. *)
   BEGIN
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
   { Show an error message. }
-    al_message (al_error);
+    al_message ('Unable to set any graphic mode'#10+al_error+''#10);
     EXIT;
   END;
 

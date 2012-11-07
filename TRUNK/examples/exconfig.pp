@@ -21,11 +21,6 @@ PROGRAM exconfig;
    by Ñuño Martínez <niunio(at)users.sourceforge.net>
    from an example of Allegro Game Library by Lennart Steinke. *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
-  {$LONGSTRINGS ON}
-{$ENDIF}
-
 USES
   allegro, sysutils;
 

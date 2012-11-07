@@ -15,9 +15,8 @@ PROGRAM exzbuf;
    inspired in an example for the Allegro library by Bertrand Coconnier. *)
 
 {$IFDEF FPC}
-{ Free Pascal. }
+{ This example uses Object Pascal language. }
   {$MODE OBJFPC}
-  {$LONGSTRINGS ON}
 {$ENDIF}
 
 USES
@@ -29,7 +28,7 @@ USES
 
 (* Frame control. *)
   VAR
-    Tick: LONGINT;
+    Tick: INTEGER;
   PROCEDURE Timer; CDECL;
   BEGIN
     INC (Tick);
@@ -37,12 +36,12 @@ USES
 
 
 
-TYPE
-(* Extends the basic cube. *)
-  TZCube = CLASS (TCube)
-  PUBLIC
-    CONSTRUCTOR Create (px, py, pz: AL_FIXED); OVERLOAD;
-  END;
+  TYPE
+  (* Extends the basic cube. *)
+    TZCube = CLASS (TCube)
+    PUBLIC
+      CONSTRUCTOR Create (px, py, pz: AL_FIXED); OVERLOAD;
+    END;
 
 
 (* Cube constructor. *)
@@ -55,18 +54,18 @@ TYPE
 
 
 
-VAR
-  Buffer: AL_BITMAPptr;
-(* Input. *)
-  Key: LONGINT;
-  Paused: BOOLEAN;
-(* The cubes. *)
-  Cube1, Cube2: TCube;
-  Palette: AL_PALETTE;
-(* Color management. *)
-  RGBTable: AL_RGB_MAP;
-(* The Z-buffer. *)
-  Zbuf: AL_ZBUFFERptr;
+  VAR
+    Buffer: AL_BITMAPptr;
+  (* Input. *)
+    Key: INTEGER;
+    Paused: BOOLEAN;
+  (* The cubes. *)
+    Cube1, Cube2: TCube;
+    Palette: AL_PALETTE;
+  (* Color management. *)
+    RGBTable: AL_RGB_MAP;
+  (* The Z-buffer. *)
+    Zbuf: AL_ZBUFFERptr;
 
 
 
@@ -115,6 +114,9 @@ VAR
 
 
 
+VAR
+(* Graphics mode selection. *)
+  c, w, h, bpp: INTEGER;
 BEGIN (* The program starts here. *)
 
 { You should always do this at the start of Allegro programs. }
@@ -129,15 +131,29 @@ BEGIN (* The program starts here. *)
   al_install_int_ex (@Timer, AL_BPS_TO_TIMER (50));
 
 { Set a graphics mode. }
-  al_set_color_depth (8);
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 240, 0, 0) THEN
-    IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 240, 0, 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
-      al_message (al_error);
+      al_message ('Unable to set any graphic mode'#10+al_error+''#10);
       EXIT;
     END;
+  al_set_palette (al_desktop_palette);
+
+  c := AL_GFX_AUTODETECT;
+  w := AL_SCREEN_W; h := AL_SCREEN_H; bpp := al_bitmap_color_depth (al_screen);
+  IF NOT al_gfx_mode_select_ex (c, w, h, bpp) THEN
+    EXIT;
+
+  al_set_color_depth (bpp);
+  IF NOT al_set_gfx_mode (c, w, h, 0, 0) THEN
+  BEGIN
+    al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
+  { Show an error message. }
+    al_message (al_error);
+    EXIT;
+  END;
 
 { Double buffer the animation and create the Z-buffer. }
   Buffer := al_create_bitmap (AL_SCREEN_W, AL_SCREEN_H);

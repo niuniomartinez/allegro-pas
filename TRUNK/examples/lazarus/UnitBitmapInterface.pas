@@ -51,7 +51,7 @@ USES
      The 8bpp coponent is 0..63 while TColor component is 0..255. *)
     FUNCTION ValRGB (Value: INTEGER): INTEGER; INLINE;
     BEGIN
-      RESULT := Value * 4;
+      ValRGB := Value * 4;
     END;
 
   VAR

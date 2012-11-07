@@ -6,11 +6,6 @@ UNIT tilemap;
  *	   Translated from a game by Ken Silverman <http://www.advsys.net/ken/>
  *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
-  {$LONGSTRINGS ON}
-{$ENDIF}
-
 INTERFACE
 
 USES

@@ -27,37 +27,28 @@ PROGRAM extrans;
  *	See readme.txt for license and copyright information.
  *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
-  {$LONGSTRINGS ON}
-{$ENDIF}
-
-USES
-  sysutils,
-{ It needs some Allegro.pas units. }
-  allegro,
-  alblend, { True color transparency and lighting. }
-  alvga;   { 8 bit paletted mode special effects. }
+  USES
+    sysutils,
+  { It needs some Allegro.pas units. }
+    allegro,
+    alblend, { True color transparency and lighting. }
+    alvga;   { 8 bit paletted mode special effects. }
 
 
 
-VAR
-(* RGB -> color mapping table. Not needed, but speeds things up. *)
-  rgb_table: AL_RGB_MAP;
-(* Lighting color mapping table. *)
-  light_table: AL_COLOR_MAP;
-(* Translucency color mapping table. *)
-  trans_table: AL_COLOR_MAP;
+  VAR
+  (* RGB -> color mapping table. Not needed, but speeds things up. *)
+    rgb_table: AL_RGB_MAP;
+  (* Lighting color mapping table. *)
+    light_table: AL_COLOR_MAP;
+  (* Translucency color mapping table. *)
+    trans_table: AL_COLOR_MAP;
 
-
-
-VAR
-  pal: AL_PALETTE;
-  s,
-  spotlight, truecolor_spotlight,
-  background: AL_BITMAPptr;
-  i, x, y: INTEGER;
-  filename: ANSISTRING;
+    pal: AL_PALETTE;
+    s, spotlight, truecolor_spotlight,
+    background: AL_BITMAPptr;
+    i, x, y: INTEGER;
+    filename: ANSISTRING;
 
 BEGIN { The program starts here. }
 
@@ -72,17 +63,15 @@ BEGIN { The program starts here. }
 
 { We can set the color depth by command line. }
   IF ParamCount > 0 THEN
-    al_set_color_depth (StrToInt (ParamStr (1)))
-  ELSE IF al_desktop_color_depth <> 0 THEN
-    al_set_color_depth (al_desktop_color_depth);
+    al_set_color_depth (StrToInt (ParamStr (1)));
 { Otherwhise it will use 8bpp. }
 
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
-      al_message (al_error);
+      al_message ('Unable to set any graphic mode'#10+al_error+''#10);
       EXIT;
     END;
 

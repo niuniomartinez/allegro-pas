@@ -17,11 +17,6 @@ PROGRAM exfixed;
   by Guillermo "Ñuño" Martínez
   from an example of Allegro Game Library by Shawn Hargreaves. *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
-  {$LONGSTRINGS ON}
-{$ENDIF}
-
 USES
   sysutils,
 { It needs some Allegro.pas units. }
