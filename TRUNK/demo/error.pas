@@ -5,11 +5,6 @@ UNIT error;
  * Author: Ñuño Martínez <>
  *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
-  {$LONGSTRINGS ON}
-{$ENDIF}
-
 INTERFACE
 
 (* Shows a simple error message. *)

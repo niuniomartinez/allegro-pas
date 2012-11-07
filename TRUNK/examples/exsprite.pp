@@ -47,11 +47,6 @@ PROGRAM exsprite;
  *	this.
  *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
-  {$LONGSTRINGS ON}
-{$ENDIF}
-
 USES
   sysutils,
 { It needs some Allegro.pas units. }
@@ -154,12 +149,12 @@ BEGIN { The program starts here. }
   al_install_timer;
   al_install_int_ex (@ticker, AL_BPS_TO_TIMER (30));
 
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Shows an error message. }
-      al_message (al_error);
+      al_message ('Unable to set any graphic mode'#10+al_error+''#10);
       EXIT;
     END;
 

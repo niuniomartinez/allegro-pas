@@ -21,11 +21,6 @@ PROGRAM exblend;
  *	See readme.txt for license and copyright information.
  *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
-  {$LONGSTRINGS ON}
-{$ENDIF}
-
 USES
   sysutils,
 { It needs some Allegro.pas units. }
@@ -99,7 +94,7 @@ BEGIN { The program starts here. }
   BEGIN
   { Set a user-requested color depth. }
     al_set_color_depth (bpp);
-    ret := al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0);
+    ret := al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0);
   END
   ELSE BEGIN
   { Autodetect what color depths are available. }
@@ -107,7 +102,7 @@ BEGIN { The program starts here. }
     REPEAT
       bpp := color_depths[a];
       al_set_color_depth (bpp);
-      ret := al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0);
+      ret := al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0);
       IF ret THEN BREAK;
       INC (a);
     UNTIL color_depths[a] < 1;
@@ -118,7 +113,7 @@ BEGIN { The program starts here. }
   BEGIN
     al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
   { Show an error message. }
-    al_message (al_error);
+    al_message ('Unable to set any graphic mode'#10+al_error+''#10);
     EXIT;
   END;
 

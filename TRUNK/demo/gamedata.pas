@@ -6,11 +6,6 @@ UNIT gamedata;
  * Author: Ñuño Martínez <niunio at users.sourceforge.net>
  *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
-  {$LONGSTRINGS ON}
-{$ENDIF}
-
 INTERFACE
 
 USES

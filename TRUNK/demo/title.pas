@@ -4,11 +4,6 @@ UNIT title;
  * Author: Ñuño Martínez <niunio@users.sourceforge.net>
  *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
-  {$LONGSTRINGS ON}
-{$ENDIF}
-
 INTERFACE
 
 (* Shows the title sequence.  Returns TRUE if player wants to play or FALSE

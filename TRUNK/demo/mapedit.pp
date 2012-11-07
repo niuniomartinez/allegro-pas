@@ -6,11 +6,6 @@ PROGRAM mapedit;
  *	   Ñuño Martínez <niunio at users.sourceforge.net>
  *)
 
-{$IFDEF FPC}
-{ Free Pascal. }
-  {$LONGSTRINGS ON}
-{$ENDIF}
-
 USES
   allegro,
   algui,    { To use the Allegro's GUI. }

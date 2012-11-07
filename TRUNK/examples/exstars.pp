@@ -20,13 +20,13 @@ PROGRAM exstars;
  *	See readme.txt for license and copyright information.
  *)
 
-USES
-  allegro, al3d, alfixed,
-  sysutils;
+  USES
+    allegro, al3d, alfixed,
+    sysutils;
 
 
 
-  (* Star field system. *)
+(* Star field system. *)
   TYPE
     VECTOR = RECORD
       x, y, z: AL_FIXED;
@@ -46,7 +46,7 @@ USES
 
 
 
-  (* Polygonal models. *)
+(* Polygonal models. *)
   CONST
     NUM_VERTS = 4;
     NUM_FACES = 4;
@@ -62,8 +62,6 @@ USES
       colour, range: INTEGER;
       normal, rnormal: VECTOR;
     END;
-
-
 
     MODEL = RECORD
       points: ARRAY [1..NUM_VERTS] OF VECTOR;
@@ -379,7 +377,7 @@ BEGIN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
-      al_message (al_error);
+      al_message ('Unable to set any graphic mode'#10+al_error+''#10);
       EXIT;
     END;
   END;

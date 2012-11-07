@@ -5341,8 +5341,6 @@ CONST
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: AL_INT): BOOLEAN;
-  VAR
-    R: BOOLEAN;
   BEGIN
     al_set_gfx_mode := set_gfx_mode (card, w, h, v_w, v_h) = 0;
     IF al_set_gfx_mode THEN

@@ -130,7 +130,7 @@ PROGRAM exscn3d;
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
-      al_message (al_error);
+      al_message ('Unable to set any graphic mode'#10+al_error+''#10);
       InitGfx := FALSE;
       EXIT;
     END;

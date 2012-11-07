@@ -122,7 +122,7 @@ BEGIN
   al_install_keyboard;
   al_install_timer;
 
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_SAFE, 640, 480, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
