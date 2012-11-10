@@ -1,4 +1,4 @@
-PROGRAM exhello;
+PROGRAM exmem;
 (*______   ___    ___
  /\  _  \ /\_ \  /\_ \
  \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___        __    ___      ____
@@ -9,8 +9,9 @@ PROGRAM exhello;
                                     /\____/               \ \_\
                                     \_/__/                 \/_/
  *
- *	Example for Allegro.pas that displays the text "Hello, world!" in the
- *	screen.
+ *	This program demonstrates the use of memory bitmaps. It creates
+ *	a small temporary bitmap in memory, draws some circles onto it,
+ *	and then blits lots of copies of it onto the screen.
  *
  *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
@@ -21,9 +22,11 @@ PROGRAM exhello;
   USES
     allegro;
 
+VAR
+  MemoryBitmap: AL_BITMAPptr;
+  x, y: INTEGER;
 BEGIN { The program starts here. }
 
-{ You should always do this at the start of Allegro programs. }
   IF NOT al_init THEN
   BEGIN
     WriteLn ('Can''t initialize Allegro!');
@@ -43,27 +46,27 @@ BEGIN { The program starts here. }
       EXIT;
     END;
 
-{ Set the color palette. }
   al_set_palette (al_desktop_palette);
 
-{ Clear the screen to white. }
-  al_clear_to_color (al_screen, al_makecol (255, 255, 255));
+{ make a memory bitmap sized 20x20 }
+  MemoryBitmap := al_create_bitmap (20, 20);
 
-{ You don't need to do this, but on some platforms (eg. Windows) things will be
-  drawn more quickly if you always acquire the screen before trying to draw
-  onto it. }
+{ draw some circles onto it }
+  al_clear_bitmap (MemoryBitmap);
+  FOR x := 0 TO 15 DO
+    al_circle (MemoryBitmap, 10, 10, x, al_palette_color^[x]);
+
+{ blit lots of copies of it onto the screen }
   al_acquire_screen;
 
-{ Write some text to the screen with black letters and transparent background. }
-  al_textout_centre_ex (al_screen, al_font, 'Hello, world!',
-			al_SCREEN_W DIV 2, al_SCREEN_H DIV 2,
-			al_makecol (0, 0, 0), -1);
-
-{ You must always release bitmaps before calling any input functions. }
+  FOR y := AL_SCREEN_H DIV 20 DOWNTO 0 DO
+    FOR x := AL_SCREEN_W DIV 20 DOWNTO 0 DO
+      al_blit (MemoryBitmap, al_screen, 0, 0, x * 20, y * 20, 20, 20);
+ 
   al_release_screen;
 
-{ Wait until a key is pressed. }
-  al_readkey;
+{ free the memory bitmap }
+  al_destroy_bitmap (MemoryBitmap);
 
-{ End of the program. }
+  al_readkey;
 END.

@@ -8,10 +8,13 @@ PROGRAM ex3d;
      \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                     /\____/               \ \_\
                                     \_/__/                 \/_/
-
- *   Example for Allegro.pas that displays a 3D cube and rotates it.
  *
- *   by Ñuño Martínez <niunio(at)users.sourceforge.net> *)
+ *	Example for Allegro.pas that displays a 3D cube and rotates it.
+ *
+ *	By Guillermo "Ñuño" Martínez
+ *
+ *	See README file for license and copyright information.
+ *)
 
 {$IFDEF FPC}
 { This example uses Object Pascal language. }

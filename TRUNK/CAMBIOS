@@ -13,6 +13,7 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   * Corregidos varios errores del ejemplo exscn3d.
   * Uso de "Low" y "High" en varios bucles y otros lugares para determinar los
     límites de las listas (ARRAY) en lugar de "adivinarlos".
+  * Corregido error de definición de al_quat_to_matrix.
 
   Novedades
   ---------
@@ -28,6 +29,8 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   * Añadida implementación de "quaternions".
   + Añadidas funciones para desplazamiento de pantalla y "triple buffer",
     y ejemplo ex3buf.
+  + Nuevos ejemplos exalpha, excustom, exmem, exquat, exscale, exscroll,
+    exstars, extrans2 y exxfade.
   + Soporte para sistemas de 64bit.
 
   Otros

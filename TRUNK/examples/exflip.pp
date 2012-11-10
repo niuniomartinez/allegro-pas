@@ -13,10 +13,10 @@ PROGRAM exflip;
  *	This program moves a circle across the screen, first with a
  *	double buffer and then using page flips.
  *
- *	by Ñuño Martínez <>
- *	from an example of Allegro Game Library by  Shawn Hargreaves.
+ *	By Guillermo "Ñuño" Martínez
+ *	from an example of Allegro Game Library by Shawn Hargreaves.
  *
- *	See readme.txt for license and copyright information.
+ *	See README file for license and copyright information.
  *)
 
 USES

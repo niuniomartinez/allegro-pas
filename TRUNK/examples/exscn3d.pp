@@ -8,14 +8,17 @@ PROGRAM exscn3d;
      \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                     /\____/               \ \_\
                                     \_/__/                 \/_/
-
-*	This program demonstrates how to use scanline sorting algorithm in
-*	Allegro (al_create_scene, al_clear_scene, ... functions).  It also
-*	provides an example of how to use the 3D clipping function.  The
-*	example consists of a flyby through a lot of rotating 3d cubes.
-*
-*	by Ñuño Martínez <niunio(at)users.sourceforge.net>
-*	from an example program for the Allegro library, by Bertrand Coconnier. *)
+ *
+ *	This program demonstrates how to use scanline sorting algorithm in
+ *	Allegro (al_create_scene, al_clear_scene, ... functions).  It also
+ *	provides an example of how to use the 3D clipping function.  The
+ *	example consists of a flyby through a lot of rotating 3d cubes.
+ *
+ *	By Guillermo "Ñuño" Martínez
+ *	from an example of Allegro Game Library, by Bertrand Coconnier.
+ *
+ *	See README file for license and copyright information.
+ *)
 
   USES
     allegro, algui, al3d,

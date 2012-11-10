@@ -21,10 +21,10 @@ PROGRAM extrans;
  *	because additive drawing mode uses a different set of routines for
  *	truecolor modes.
  *
- *	by Ñuño Martínez <>
- *	from an example of Allegro Game Library by Owen Embury.
+ *	By Guillermo "Ñuño" Martínez
+ *	from an example of the Allegro Game Library, by Owen Embury.
  *
- *	See readme.txt for license and copyright information.
+ *	See README file for license and copyright information.
  *)
 
   USES
@@ -48,7 +48,7 @@ PROGRAM extrans;
     s, spotlight, truecolor_spotlight,
     background: AL_BITMAPptr;
     i, x, y: INTEGER;
-    filename: ANSISTRING;
+    filename: STRING;
 
 BEGIN { The program starts here. }
 

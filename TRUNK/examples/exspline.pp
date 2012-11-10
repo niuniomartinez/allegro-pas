@@ -44,10 +44,10 @@ PROGRAM exspline;
  *    at each guide point, the effect can be quite nice because it makes
  *    the object slow down for the curve.
  *
- *	by Ñuño Martínez <>
+ *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
  *
- *	See readme.txt for license and copyright information.
+ *	See README file for license and copyright information.
  *)
 
 USES

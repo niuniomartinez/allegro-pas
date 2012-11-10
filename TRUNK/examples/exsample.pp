@@ -17,8 +17,10 @@ PROGRAM exsample;
  *	arrow keys to modify the panning of the sound. You can also
  *	use the up and down arrow keys to modify the pitch.
  *
- *	by Ñuño Martínez <>
+ *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
+ *
+ *	See README file for license and copyright information.
  *)
 
   USES

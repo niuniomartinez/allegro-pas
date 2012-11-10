@@ -11,8 +11,8 @@ PROGRAM exhsvrgb;
                                     \_/__/                 \/_/
  *
  *	This program shows how to convert HSV values on to RGB ones.
- *	
- *	by Ñuño Martínez <>
+ *
+ *	By Guillermo "Ñuño" Martínez
  *
  *	See readme.txt for license and copyright information.
  *)

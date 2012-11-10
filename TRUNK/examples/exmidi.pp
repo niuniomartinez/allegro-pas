@@ -11,8 +11,10 @@ PROGRAM exmidi;
  *
  *	This program demonstrates how to play MIDI files.
  *
- *	by Ñuño Martínez <>
+ *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
+ *
+ *	See README file for license and copyright information.
  *)
 
   USES

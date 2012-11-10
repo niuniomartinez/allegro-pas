@@ -19,10 +19,10 @@ PROGRAM exmouse;
  *	so you can still see bits of what's behind when you move the
  *	cursor over the printed text message.
  *
- *	by Ñuño Martínez <>
+ *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
  *
- *	See readme.txt for license and copyright information.
+ *	See README file for license and copyright information.
  *)
 
 USES

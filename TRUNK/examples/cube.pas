@@ -16,9 +16,12 @@ UNIT cube;
    structure and rendering pipeline:  after all, the best way to do that sort
    of stuff varies hugely from one game to another.
 
-   by Ñuño Martínez <niunio(at)users.sourceforge.net>
+   By Guillermo "Ñuño" Martínez
    Some parts are inspired or ported from an example of the Allegro library
-   by Shawn Hargreaves. *)
+   by Shawn Hargreaves.
+
+	See README file for license and copyright information.
+ *)
 
 {$IFDEF FPC}
 { Free Pascal. }
