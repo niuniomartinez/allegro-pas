@@ -194,12 +194,13 @@ PROGRAM exstars;
     Ship.faces[1].v3 := 2;
     pts := @Ship.points[1];
     aFace := @Ship.faces[1];
+  { NOTE: Next lines should build the facet normal, but they don't! }
     v1.x := (pts[aFace^.v2].x - pts[aFace^.v1].x);
     v1.y := (pts[aFace^.v2].y - pts[aFace^.v1].y);
     v1.z := (pts[aFace^.v2].z - pts[aFace^.v1].z);
-    v2.x := (pts[aFace^.v3].x - pts[aFace^.v1].x);
-    v2.y := (pts[aFace^.v3].y - pts[aFace^.v1].y);
-    v2.z := (pts[aFace^.v3].z - pts[aFace^.v1].z);
+    v2.x := (pts[aFace^.v3].x - pts[aFace^.v2].x);
+    v2.y := (pts[aFace^.v3].y - pts[aFace^.v2].y);
+    v2.z := (pts[aFace^.v3].z - pts[aFace^.v2].z);
     al_cross_product (v1.x, v1.y, v1.z, v2.x, v2.y, v2.z,
 		aFace^.normal.x, aFace^.normal.y, aFace^.normal.z);
 
@@ -207,12 +208,13 @@ PROGRAM exstars;
     Ship.faces[2].v2 := 1;
     Ship.faces[2].v3 := 4;
     aFace := @Ship.faces[2];
+  { NOTE: Next lines should build the facet normal, but they don't! }
     v1.x := (pts[aFace^.v2].x - pts[aFace^.v1].x);
     v1.y := (pts[aFace^.v2].y - pts[aFace^.v1].y);
     v1.z := (pts[aFace^.v2].z - pts[aFace^.v1].z);
-    v2.x := (pts[aFace^.v3].x - pts[aFace^.v1].x);
-    v2.y := (pts[aFace^.v3].y - pts[aFace^.v1].y);
-    v2.z := (pts[aFace^.v3].z - pts[aFace^.v1].z);
+    v2.x := (pts[aFace^.v3].x - pts[aFace^.v2].x);
+    v2.y := (pts[aFace^.v3].y - pts[aFace^.v2].y);
+    v2.z := (pts[aFace^.v3].z - pts[aFace^.v2].z);
     al_cross_product (v1.x, v1.y, v1.z, v2.x, v2.y, v2.z,
 		aFace^.normal.x, aFace^.normal.y, aFace^.normal.z);
 
@@ -220,12 +222,13 @@ PROGRAM exstars;
     Ship.faces[3].v2 := 1;
     Ship.faces[3].v3 := 3;
     aFace := @Ship.faces[3];
+  { NOTE: Next lines should build the facet normal, but they don't! }
     v1.x := (pts[aFace^.v2].x - pts[aFace^.v1].x);
     v1.y := (pts[aFace^.v2].y - pts[aFace^.v1].y);
     v1.z := (pts[aFace^.v2].z - pts[aFace^.v1].z);
-    v2.x := (pts[aFace^.v3].x - pts[aFace^.v1].x);
-    v2.y := (pts[aFace^.v3].y - pts[aFace^.v1].y);
-    v2.z := (pts[aFace^.v3].z - pts[aFace^.v1].z);
+    v2.x := (pts[aFace^.v3].x - pts[aFace^.v2].x);
+    v2.y := (pts[aFace^.v3].y - pts[aFace^.v2].y);
+    v2.z := (pts[aFace^.v3].z - pts[aFace^.v2].z);
     al_cross_product (v1.x, v1.y, v1.z, v2.x, v2.y, v2.z,
 		aFace^.normal.x, aFace^.normal.y, aFace^.normal.z);
 
@@ -233,12 +236,13 @@ PROGRAM exstars;
     Ship.faces[4].v2 := 4;
     Ship.faces[4].v3 := 2;
     aFace := @Ship.faces[4];
+  { NOTE: Next lines should build the facet normal, but they don't! }
     v1.x := (pts[aFace^.v2].x - pts[aFace^.v1].x);
     v1.y := (pts[aFace^.v2].y - pts[aFace^.v1].y);
     v1.z := (pts[aFace^.v2].z - pts[aFace^.v1].z);
-    v2.x := (pts[aFace^.v3].x - pts[aFace^.v1].x);
-    v2.y := (pts[aFace^.v3].y - pts[aFace^.v1].y);
-    v2.z := (pts[aFace^.v3].z - pts[aFace^.v1].z);
+    v2.x := (pts[aFace^.v3].x - pts[aFace^.v2].x);
+    v2.y := (pts[aFace^.v3].y - pts[aFace^.v2].y);
+    v2.z := (pts[aFace^.v3].z - pts[aFace^.v2].z);
     al_cross_product (v1.x, v1.y, v1.z, v2.x, v2.y, v2.z,
 		aFace^.normal.x, aFace^.normal.y, aFace^.normal.z);
 
@@ -320,7 +324,15 @@ PROGRAM exstars;
 
     FOR Ndx := Low (Ship.faces) TO High (Ship.faces) DO
     BEGIN
+    { Since it isn't able to build the normal of faces, this is useless.
       IF al_fixtof (Ship.faces[Ndx].rnormal.z) < 0.0 THEN
+      Better to use next:
+    }
+      IF al_polygon_z_normal (
+	@Outs[Ship.faces[Ndx].v1],
+	@Outs[Ship.faces[Ndx].v2],
+	@Outs[Ship.faces[Ndx].v3]
+      ) < 0 THEN
       BEGIN
 	Col := al_fixtoi (al_fixmul (al_dot_product (
 					Ship.faces[Ndx].rnormal.x,
