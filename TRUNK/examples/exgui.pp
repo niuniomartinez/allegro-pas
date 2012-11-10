@@ -9,13 +9,15 @@ PROGRAM exgui;
                                     /\____/               \ \_\
                                     \_/__/                 \/_/
  *
- *    This program demonstrates how to use the GUI routines. From
- *    the simple dialog controls that display a text or a bitmap to
- *    more complex multiple choice selection lists, Allegro provides
- *    a framework which can be customised to suit your needs.
+ *	This program demonstrates how to use the GUI routines. From
+ *	the simple dialog controls that display a text or a bitmap to
+ *	more complex multiple choice selection lists, Allegro provides
+ *	a framework which can be customised to suit your needs.
  *
- *	by Ñuño Martínez <niunio(at)users.sourceforge.net>
+ *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro Game Library by Elias Pschernig.
+ *
+ *	See README file for license and copyright information.
  *)
 
 USES

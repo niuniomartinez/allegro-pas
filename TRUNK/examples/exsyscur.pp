@@ -11,10 +11,11 @@ PROGRAM exsyscur;
  *
  *    This program demonstrates the use of hardware accelerated mouse cursors.
  *
- *    By Guillermo "Ñuño" Martínez <niunio(at)users.sourceforge.net>
- *    From an example program for the Allegro library, by Peter Wang and
+ *    By Guillermo "Ñuño" Martínez
+ *    From an example of Allegro Game Library, by Peter Wang and
  *    Evert Glebbeek.
  *
+ *	See README file for license and copyright information.
  *)
 
   USES

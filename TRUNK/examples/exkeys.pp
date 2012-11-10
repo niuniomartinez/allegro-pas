@@ -9,21 +9,22 @@ PROGRAM exkeys;
                                     /\____/               \ \_\
                                     \_/__/                 \/_/
  *
- *    This program demonstrates how to access the keyboard. The
- *    first part shows the basic use of readkey(). The second part
- *    shows how to extract the ASCII value. Next come the scan codes.
- *    The fourth test detects modifier keys like alt or shift. The
- *    fifth test requires some focus to be passed. The final step
- *    shows how to use the global key array to read simultaneous
- *    key presses.
- *    The last method to detect key presses are keyboard callbacks.
- *    This is demonstrated by installing a keyboard callback,
- *    which marks all pressed keys by drawing to a grid.
+ *	This program demonstrates how to access the keyboard. The
+ *	first part shows the basic use of al_readkey(). The second part
+ *	shows how to extract the ASCII value. Next come the scan codes.
+ *	The fourth test detects modifier keys like alt or shift. The
+ *	fifth test requires some focus to be passed. The final step
+ *	shows how to use the global key array to read simultaneous
+ *	key presses.
  *
- *	by Ñuño Martínez <niunio(at)users.sourceforge.net>
+ *	The last method to detect key presses are keyboard callbacks.
+ *	This is demonstrated by installing a keyboard callback,
+ *	which marks all pressed keys by drawing to a grid.
+ *
+ *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
  *
- *	See readme.txt for license and copyright information.
+ *	See README file for license and copyright information.
  *)
 
 USES

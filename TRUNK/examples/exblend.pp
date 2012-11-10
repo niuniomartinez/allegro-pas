@@ -15,10 +15,10 @@ PROGRAM exblend;
  *	tinted to different colors.  The other image will be faded out with a
  *	varying alpha strength, and drawn on top of the other image.
  *
- *	by Ñuño Martínez <>
+ *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
  *
- *	See readme.txt for license and copyright information.
+ *	See README file for license and copyright information.
  *)
 
 USES

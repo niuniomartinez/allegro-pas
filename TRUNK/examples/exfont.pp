@@ -11,8 +11,10 @@ PROGRAM exfont;
  *
  *	This is a very simple program showing how to load and manipulate fonts.
  *
- *	by Ñuño Martínez <>
+ *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro Game Library by Evert Glebbeek.
+ *
+ *	See README file for license and copyright information.
  *)
 
   USES

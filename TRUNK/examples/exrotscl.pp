@@ -11,8 +11,10 @@ PROGRAM exsprite;
  *
  *	This example demonstrates al_rotate_scaled_sprite functions.
  *
- *	by Ñuño Martínez <>
+ *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro Game Library by Trent Gamblin.
+ *
+ *	See README file for license and copyright information.
  *)
 
 USES

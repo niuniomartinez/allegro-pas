@@ -10,14 +10,14 @@ PROGRAM exstars;
                                     \_/__/                 \/_/
  *
  *
- *    This program draws a 3D star field (depth-cued) and a polygon
- *    starship (controllable with the keyboard cursor keys), using
- *    the Allegro math functions.
+ *	This program draws a 3D star field (depth-cued) and a polygon
+ *	starship (controllable with the keyboard cursor keys), using
+ *	the Allegro math functions.
  *
- *	by Ñuño Martínez <>
+ *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro library, by Dave Thomson.
  *
- *	See readme.txt for license and copyright information.
+ *	See README file for license and copyright information.
  *)
 
   USES

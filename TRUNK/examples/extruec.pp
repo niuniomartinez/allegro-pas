@@ -15,10 +15,10 @@ PROGRAM extruec;
  *	modes supported by your video card. The more color depth you have,
  *	the less banding you will see in the gradients.
  *	
- *	by Ñuño Martínez <>
+ *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
  *
- *	See readme.txt for license and copyright information.
+ *	See README file for license and copyright information.
  *)
 
 USES

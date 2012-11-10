@@ -9,17 +9,19 @@ PROGRAM exshade;
                                     /\____/               \ \_\
                                     \_/__/                 \/_/
  *
- *    This program demonstrates how to draw Gouraud shaded (lit)
- *    sprites.  In an apparently black screen, a planet like sprite
- *    is drawn close to the middle of the screen. In a similar
- *    way to how the first test of extrans works, you move the
- *    cursor on the screen with the mouse. Attached to this mouse
- *    you can imagine a virtual spotlight illuminating the scene
- *    around. Depending on where the mouse is, the Gouraud shaded
- *    sprite will show the direction of the light.
+ *	This program demonstrates how to draw Gouraud shaded (lit)
+ *	sprites.  In an apparently black screen, a planet like sprite
+ *	is drawn close to the middle of the screen. In a similar
+ *	way to how the first test of extrans works, you move the
+ *	cursor on the screen with the mouse. Attached to this mouse
+ *	you can imagine a virtual spotlight illuminating the scene
+ *	around. Depending on where the mouse is, the Gouraud shaded
+ *	sprite will show the direction of the light.
  *
- *    by Ñuño Martínez <>
- *    from an example program for the Allegro library, by Patrick Hogan
+ *	By Guillermo "Ñuño" Martínez
+ *	from an example of Allegro Game Library, by Patrick Hogan.
+ *
+ *	See README file for license and copyright information.
  *)
 
 USES

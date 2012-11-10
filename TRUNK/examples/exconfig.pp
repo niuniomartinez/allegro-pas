@@ -8,18 +8,21 @@ PROGRAM exconfig;
      \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                     /\____/               \ \_\
                                     \_/__/                 \/_/
-
-   This is a very simple program showing how to use the Allegro
-   configuration (ini file) routines.  A first look at the example
-   shows nothing more than a static graphic and the wait for
-   a key press.  However, the way this graphic is displayed is
-   configured through a custom exconfig.ini file which is loaded
-   manually.  From this file the example obtains parameters like
-   fullscreen/windowed mode, a specific graphic resolution to set
-   up, which graphic to show, how to blit it on the screen, etc.
-
-   by Ñuño Martínez <niunio(at)users.sourceforge.net>
-   from an example of Allegro Game Library by Lennart Steinke. *)
+ *
+ *	This is a very simple program showing how to use the Allegro
+ *	configuration (ini file) routines.  A first look at the example
+ *	shows nothing more than a static graphic and the wait for
+ *	a key press.  However, the way this graphic is displayed is
+ *	configured through a custom exconfig.ini file which is loaded
+ *	manually.  From this file the example obtains parameters like
+ *	fullscreen/windowed mode, a specific graphic resolution to set
+ *	up, which graphic to show, how to blit it on the screen, etc.
+ *
+ *	By Guillermo "Ñuño" Martínez
+ *	from an example of Allegro Game Library by Lennart Steinke.
+ *
+ *	See README file for license and copyright information.
+ *)
 
 USES
   allegro, sysutils;

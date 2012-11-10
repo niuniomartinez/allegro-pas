@@ -13,11 +13,11 @@ PROGRAM exdata;
  *	datafile (created by the grabber utility).  The example loads the file
  *	`example.dat', then blits a bitmap and shows a font, both from this
  *	datafile.
- *	
- *	by Ñuño Martínez <>
+ *
+ *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
  *
- *	See readme.txt for license and copyright information.
+ *	See README file for license and copyright information.
  *)
 
 USES

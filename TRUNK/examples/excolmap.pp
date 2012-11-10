@@ -20,10 +20,10 @@ PROGRAM excolmap;
  *	inverse table, meaning that any pixel drawn will be shown as its color
  *	values had been inverted.
  *
- *	by Ñuño Martínez <>
+ *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro Game Library by Grzegorz Ludorowski.
  *
- *	See readme.txt for license and copyright information.
+ *	See README file for license and copyright information.
  *)
 
 USES

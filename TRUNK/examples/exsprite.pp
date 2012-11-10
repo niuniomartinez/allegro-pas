@@ -12,10 +12,10 @@ PROGRAM exsprite;
  *	This example demonstrates how to use datafiles, various sprite drawing
  *	routines and flicker-free animation.
  *
- *	by Ñuño Martínez <>
+ *	By Guillermo "Ñuño" Martínez
  *	from an example of Allegro Game Library by Grzegorz Ludorowski.
  *
- *	See readme.txt for license and copyright information.
+ *	See README file for license and copyright information.
  *
  *	Why is the animate() routine coded in that way?  As you probably know,
  *	VIDEO RAM is much slower than "normal" RAM, so it's advisable to reduce

@@ -8,17 +8,19 @@ PROGRAM ex3buf;
      \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                     /\____/               \ \_\
                                     \_/__/                 \/_/
-
- *    This program demonstrates the use of triple buffering. Several
- *    triangles are displayed rotating and bouncing on the screen
- *    until you press a key. Note that on some platforms you
- *    can't get real hardware triple buffering.  The Allegro code
- *    remains the same, but most likely the graphic driver will
- *    emulate it. Unfortunately, in these cases you can't expect
- *    the animation to be completely smooth and flicker free.
  *
- *    by Ñuño Martínez'<niunio(at)users.sourceforge.net> from an example
- *    by Shawn Hargreaves.
+ *	This program demonstrates the use of triple buffering.  Several
+ *	triangles are displayed rotating and bouncing on the screen
+ *	until you press a key.  Note that on some platforms you
+ *	can't get real hardware triple buffering.  The Allegro code
+ *	remains the same, but most likely the graphic driver will
+ *	emulate it.  Unfortunately, in these cases you can't expect
+ *	the animation to be completely smooth and flicker free.
+ *
+ *	By Guillermo "Ñuño" Martínez
+ *	from an example of Allegro Game Library by Shawn Hargreaves.
+ *
+ *	See README file for license and copyright information.
  *)
 
   USES

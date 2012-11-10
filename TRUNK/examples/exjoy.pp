@@ -8,15 +8,17 @@ PROGRAM exjoy;
      \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                     /\____/               \ \_\
                                     \_/__/                 \/_/
-
-
-   This program uses the Allegro library to detect and read the value of a
-   joystick.  The output of the program is a small target sight on the screen
-   which you can move.  At the same time the program will tell you what you are
-   doing with the joystick (moving or firing).
-
-   By Ñuño Martínez <niunio(at)users.sourceforge.net>, inspired by an
-   example program for the Allegro library, by Grzegorz Adam Hankiewicz. *)
+ *
+ *	This program uses the Allegro library to detect and read the value of a
+ *	joystick.  The output of the program is a small target sight on the screen
+ *	which you can move.  At the same time the program will tell you what you are
+ *	doing with the joystick (moving or firing).
+ *
+ *	By Guillermo "Ñuño" Martínez
+ *	from an example of Allegro Game Library by Grzegorz Adam Hankiewicz.
+ *
+ *	See README file for license and copyright information.
+ *)
 
 
 USES

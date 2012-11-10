@@ -8,11 +8,14 @@ PROGRAM exzbuf;
      \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                     /\____/               \ \_\
                                     \_/__/                 \/_/
-
-   Example for Allegro.pas that displays a 3D cube and rotates it.
-
-   by Ñuño Martínez <niunio(at)users.sourceforge.net>
-   inspired in an example for the Allegro library by Bertrand Coconnier. *)
+ *
+ *	Example for Allegro.pas that displays a 3D cube and rotates it.
+ *
+ *	By Guillermo "Ñuño" Martínez
+ *	from an example of Allegro Game Library by Bertrand Coconnier.
+ *
+ *	See README file for license and copyright information.
+ *)
 
 {$IFDEF FPC}
 { This example uses Object Pascal language. }

@@ -613,8 +613,8 @@ INTERFACE
 
 (* Constructs a rotation matrix from a quaternion.
    @seealso(al_matrix_to_quad) *)
-  PROCEDURE al_quad_to_matrix (CONST q: AL_QUATptr; m: AL_MATRIX_Fptr);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'quad_to_matrix';
+  PROCEDURE al_quat_to_matrix (CONST q: AL_QUATptr; m: AL_MATRIX_Fptr);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'quat_to_matrix';
 
 (* Constructs a quaternion from a rotation matrix.  Translation is discarded
    during the conversion.  Use @link(al_get_align_matrix_f) if the matrix is

@@ -15,8 +15,10 @@ PROGRAM excustom;
  *	dialogs.  A more simple option shows how to dynamically change
  *	the font used by all GUI elements.
  *
- *	by Ñuño Martínez'<niunio(at)users.sourceforge.net> from an example
- *	by Shawn Hargreaves.
+ *	By Guillermo "Ñuño" Martínez
+ *	from an example of Allegro Game Library by Shawn Hargreaves.
+ *
+ *	See README file for license and copyright information.
  *)
 
   USES
