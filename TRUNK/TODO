@@ -1,15 +1,18 @@
-* Check polygon checking in 3D examples.  Fix all them, modifying "normal-z"
-  calculation.
+* Some examples work correctly on 64bit but don't on 32bit:
+ - ex3d (fails on 1024 x 768)
+ - exkeys
+ - exscn3d
+ - exstars (press [Ctr] for a while without turning the ship)
+ - extrans2
+ - exzbuf (face culling only works on 320x240 or less)
 
-* Revise list of examples.
-
-+ Add triple-buffer example, if available.
+* Some functions don't return the correct value:
+ - al_getpixel (see exalpha and compare with the original C version).
+ - al_apply_matrix_f (currently with a work-araund that seems to fix it).
 
 * Check Windows alleg44.dll build parameters.  Be sure it's optimised.
 
 + Complete explanation of Joystick. i.e. problems with configuration file.
-
-* Change some parameters from "POINTER" to "VAR ARRAY OF..." (i.e: polygons).  I've checked it passes data correctly to C.
 
 * MIDI:
   + load_ibk
