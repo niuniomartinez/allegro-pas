@@ -1076,11 +1076,11 @@ INTERFACE
   @seealso(al_polygon3d_f) @seealso(al_triangle3d) @seealso(al_quad3d)
   @seealso(al_gfx_capabilities). *)
   PROCEDURE al_polygon3d (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: ARRAY OF AL_V3Dptr);
-    INLINE;
+  {  INLINE; }
 
 (* Same as @link(al_polygon3d) but using floats instead than fixed. *)
   PROCEDURE al_polygon3d_f (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: ARRAY OF AL_V3D_Fptr);
-    INLINE;
+  {  INLINE; }
 
 (* Draw 3D triangles, using fixed point vertex structures.  Unlike
   @link(al_quad3d), this procedure is not a wrapper of @link(al_polygon3d).
@@ -1112,13 +1112,18 @@ IMPLEMENTATION
  * matrix.h
  *)
 
+  { For some reason, it doesn't assign the "out" parameters correctly on 32bit systems (?).
+    They're 0, at least on Xubuntu. }
+{$IFDEF CPU64}
   PROCEDURE apply_matrix_f (m: AL_MATRIX_fptr; x, y, z: AL_FLOAT; xout, yout, zout: AL_FLOATptr);
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+{$ENDIF}
 
   PROCEDURE al_apply_matrix_f (m: AL_MATRIX_fptr; x, y, z: AL_FLOAT; VAR xout, yout, zout: AL_FLOAT);
   BEGIN
+{$IFDEF CPU64}
     apply_matrix_f (m, x, y, z, @xout, @yout, @zout);
-{
+{$ELSE}
     xout := (x * m^.v[0, 0]) +
 	    (y * m^.v[0, 1]) +
 	    (z * m^.v[0, 2]) +
@@ -1131,8 +1136,10 @@ IMPLEMENTATION
 	    (y * m^.v[2, 1]) +
 	    (z * m^.v[2, 2]) +
 	    m^.t[2];
-}
+{$ENDIF}
   END;
+
+
 
 (*****************************************************************************
  * matrix.inl

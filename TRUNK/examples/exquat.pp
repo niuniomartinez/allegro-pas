@@ -68,9 +68,6 @@ PROGRAM exquat;
   (* matrix to transform world coordinates into normalized eye coordinates *)
     Camera, Rotation: AL_MATRIX_f;
 
-  (* the parts of the screen that display the demo boxes *)
-    EulerScreen, QuatScreen: AL_BITMAPptr;
-
   (* these are backbuffers, drawing is done here before updating the screen *)
     EulerBuffer, QuatBuffer: AL_BITMAPptr;
 
@@ -224,7 +221,7 @@ PROGRAM exquat;
 
 
 VAR
-  Index, Key: INTEGER;
+  Index: INTEGER;
   t: SINGLE;
 BEGIN
   IF NOT al_init THEN
@@ -283,6 +280,9 @@ BEGIN
 { initialize the first destination orientation }
   RANDOMIZE;
 
+  eFrom.x := 0;
+  eFrom.y := 0;
+  eFrom.z := 0;
   eTo.x := RANDOM (256);
   eTo.y := RANDOM (256);
   eTo.z := RANDOM (256);
