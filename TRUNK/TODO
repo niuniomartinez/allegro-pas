@@ -1,14 +1,9 @@
 * Some examples work correctly on 64bit but don't on 32bit:
  - ex3d (fails on 1024 x 768)
- - exkeys
- - exscn3d
- - exstars (press [Ctr] for a while without turning the ship)
- - extrans2
  - exzbuf (face culling only works on 320x240 or less)
 
 * Some functions don't return the correct value:
  - al_getpixel (see exalpha and compare with the original C version).
- - al_apply_matrix_f (currently with a work-araund that seems to fix it).
 
 * Check Windows alleg44.dll build parameters.  Be sure it's optimised.
 

@@ -91,7 +91,7 @@ TYPE
     quad3d: PROCEDURE (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; v1, v2, v3, v4: AL_POINTER); CDECL;
     quad3d_f: PROCEDURE (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; v1, v2, v3, v4: AL_POINTER); CDECL;
 
-    draw_sprite_ex: PROCEDURE (bmp, sprite: AL_BITMAPptr; x, y, mode, flip: AL_INT);
+    draw_sprite_ex: PROCEDURE (bmp, sprite: AL_BITMAPptr; x, y, mode, flip: AL_INT); CDECL;
   END;
 
 IMPLEMENTATION

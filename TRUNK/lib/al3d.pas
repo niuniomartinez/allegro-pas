@@ -263,7 +263,7 @@ INTERFACE
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'identity_matrix';
   (* Global variable containing the @italic(do nothing) identity matrix.
      Multiplying by the identity matrix has no effect. *)
-    al_identity_matrix_f: AL_MATRIX;
+    al_identity_matrix_f: AL_MATRIX_F;
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'identity_matrix_f';
 
 
@@ -429,10 +429,10 @@ INTERFACE
    commutative, ie. @code(al_matrix_mul @(m1, m2@) <> al_matrix_mul @(m2,
    m1@)).
    @seealso(al_apply_matrix) @seealso(al_matrix_mul_f) *)
-  PROCEDURE al_matrix_mul (m1, m2, out: AL_MATRIXptr);
+  PROCEDURE al_matrix_mul (m1, m2, _out: AL_MATRIXptr);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'matrix_mul';
 (* Same as @link(al_matrix_mul) but using floats instead than fixed. *)
-  PROCEDURE al_matrix_mul_f (m1, m2, out: AL_MATRIX_Fptr);
+  PROCEDURE al_matrix_mul_f (m1, m2, _out: AL_MATRIX_Fptr);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'matrix_mul_f';
 
 (* Same as @link(al_apply_matrix) but using floats instead than fixed. *)
@@ -486,7 +486,7 @@ INTERFACE
    number of rotations can be concatenated in this way.  Note that quaternion
    multiplication is not commutative, ie.
    @code(al_quat_mul @(p, q@) != al_quat_mul @(q, p@)). *)
-    PROCEDURE al_quat_mul (CONST p, q: AL_QUATptr; out: AL_QUATptr);
+    PROCEDURE al_quat_mul (CONST p, q: AL_QUATptr; _out: AL_QUATptr);
       CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'quat_mul';
 
 (* Construct axis rotation quaternion, storing it in q. When applied to a
@@ -831,7 +831,7 @@ INTERFACE
    high chance of rounding errors:  the floating point code is better for most
    situations. @returns(the number of vertices after clipping is done.)
    @seealso(al_clip3d_f) @seealso(al_polygon3d) *)
-  FUNCTION al_clip3d (_type: AL_INT; min_z, max_z: AL_FIXED; vc: AL_INT; CONST vtx: ARRAY OF AL_V3Dptr; vout, vtmp: ARRAY OF AL_V3Dptr; out: ARRAY OF AL_INT): AL_INT;
+  FUNCTION al_clip3d (_type: AL_INT; min_z, max_z: AL_FIXED; vc: AL_INT; CONST vtx: ARRAY OF AL_V3Dptr; vout, vtmp: ARRAY OF AL_V3Dptr; _out: ARRAY OF AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clip3d';
 
 (* Clips the polygon given in @code(vtx).  The number of vertices is @code(vc),
@@ -853,7 +853,7 @@ INTERFACE
    @link(AL_POLYTYPE_GCOL).
    @returns(the number of vertices after clipping is done.)
    @seealso(al_clip3d) @seealso(al_polygon3d_f) *)
-  FUNCTION al_clip3d_f (_type: AL_INT; min_z, max_z: AL_FLOAT; vc: AL_INT; CONST vtx: ARRAY OF AL_V3D_Fptr; vout, vtmp: ARRAY OF AL_V3D_Fptr; out: ARRAY OF AL_INT): AL_INT;
+  FUNCTION al_clip3d_f (_type: AL_INT; min_z, max_z: AL_FLOAT; vc: AL_INT; CONST vtx: ARRAY OF AL_V3D_Fptr; vout, vtmp: ARRAY OF AL_V3D_Fptr; _out: ARRAY OF AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clip3d_f';
 
 
@@ -1112,18 +1112,13 @@ IMPLEMENTATION
  * matrix.h
  *)
 
-  { For some reason, it doesn't assign the "out" parameters correctly on 32bit systems (?).
-    They're 0, at least on Xubuntu. }
-{$IFDEF CPU64}
   PROCEDURE apply_matrix_f (m: AL_MATRIX_fptr; x, y, z: AL_FLOAT; xout, yout, zout: AL_FLOATptr);
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-{$ENDIF}
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   PROCEDURE al_apply_matrix_f (m: AL_MATRIX_fptr; x, y, z: AL_FLOAT; VAR xout, yout, zout: AL_FLOAT);
   BEGIN
-{$IFDEF CPU64}
     apply_matrix_f (m, x, y, z, @xout, @yout, @zout);
-{$ELSE}
+{
     xout := (x * m^.v[0, 0]) +
 	    (y * m^.v[0, 1]) +
 	    (z * m^.v[0, 2]) +
@@ -1136,7 +1131,7 @@ IMPLEMENTATION
 	    (y * m^.v[2, 1]) +
 	    (z * m^.v[2, 2]) +
 	    m^.t[2];
-{$ENDIF}
+}
   END;
 
 

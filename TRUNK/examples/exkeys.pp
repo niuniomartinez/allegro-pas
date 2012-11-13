@@ -85,29 +85,29 @@ VAR
 
 (* Keyboard callback.  We are very evil and draw to the screen from within the
    callback.  Don't do this in your own programs. *)
-PROCEDURE KeypressHandler (Scancode: AL_INT); CDECL;
-VAR
-  i, x, y, Color: INTEGER;
-BEGIN
-   i := Scancode AND $7F;
-   x := AL_SCREEN_W - 100 * 3 + (i MOD 3) * 100;
-   y := AL_SCREEN_H DIV 2 + TRUNC (i / 3 - 21) * 10;
-   IF (Scancode AND $80) <> 0 THEN
-     Color := al_makecol (255, 255, 0)
-   ELSE
-     Color := al_makecol(128, 0, 0);
-   al_rectfill (al_screen, x, y, x + 95, y + 8, Color);
-   al_textout_ex (al_screen, al_font, al_scancode_to_name (i), x + 1, y +1, al_makecol (0, 0, 0), -1);
-END;
+  PROCEDURE KeypressHandler (Scancode: AL_INT); CDECL;
+  VAR
+    i, x, y, Color: INTEGER;
+  BEGIN
+     i := Scancode AND $7F;
+     x := AL_SCREEN_W - 100 * 3 + (i MOD 3) * 100;
+     y := AL_SCREEN_H DIV 2 + (i DIV 3 - 21) * 10;
+     IF (Scancode AND $80) <> 0 THEN
+       Color := al_makecol (255, 255, 0)
+     ELSE
+       Color := al_makecol(128, 0, 0);
+     al_rectfill (al_screen, x, y, x + 95, y + 8, Color);
+     al_textout_ex (al_screen, al_font, al_scancode_to_name (i), x + 1, y +1, al_makecol (0, 0, 0), -1);
+  END;
 
 
 
 (* Helper function for making more room on the screen *)
-PROCEDURE Scroll;
-BEGIN
-   al_blit (al_screen, al_screen, 0, 32, 0, 24, AL_SCREEN_W DIV 2, AL_SCREEN_H-32);
-   al_rectfill (al_screen, 0, AL_SCREEN_H-16, AL_SCREEN_W DIV 2, AL_SCREEN_H-1, al_makecol (255, 255, 255));
-END;
+  PROCEDURE Scroll;
+  BEGIN
+     al_blit (al_screen, al_screen, 0, 32, 0, 24, AL_SCREEN_W DIV 2, AL_SCREEN_H-32);
+     al_rectfill (al_screen, 0, AL_SCREEN_H-16, AL_SCREEN_W DIV 2, AL_SCREEN_H-1, al_makecol (255, 255, 255));
+  END;
 
 
 
