@@ -11,9 +11,8 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   * Corregido aviso '"open array" not yet supported inside inline
     procedure/function'.
   * Corregidos varios errores del ejemplo exscn3d.
-  * Uso de "Low" y "High" en varios bucles y otros lugares para determinar los
-    límites de las listas (ARRAY) en lugar de "adivinarlos".
-  * Corregido error de definición de al_quat_to_matrix.
+  * Corregida definición de matriz identidad en punto flotante.
+  * Corregida función al_draw_sprite_ex.
 
   Novedades
   ---------
@@ -41,6 +40,8 @@ Cambios entre las versiones 4.4.3 y 4.4.4
     paletas para que use VAR en vez de punteros.
   * Modificados los parámetros de cálculo y dibujo 3D para que use ARRAY
     en lugar de punteros.
+  * Uso de "Low" y "High" en varios bucles y otros lugares para determinar los
+    límites de las listas (ARRAY) en lugar de "adivinarlos".
 * Changed parameter of al_xor_mode from INTEGER to BOOLEAN.
 * CHanged return values of al_save_*_pf from INTEGER to BOOLEAN.
 

@@ -178,9 +178,12 @@ Usar Allegro.pas en sus programas
   en conflicto con algunas opciones del compilador Free Pascal, en especial en
   lo referente al manejo de la memoria.  Por ejemplo, se ha comprobado que la
   opción "-Ct" parece interpretar erróneamente el uso que hace de las pilas las
-  interrupciones (al_install_int y asociadas) generando un error en tiempo de
+  interrupciones (por ejemplo, al_install_int) generando un error en tiempo de
   ejecución "202" ("Desbordamiento de pila o corrupción de pila") aun cuando
-  esto no sea así.
+  esto no sea así.  Lo mejor es usar las opciones que desee y, si se produce un
+  error, comprobar si este se encuentra dentro o fuera de Allegro (por ejemplo,
+  usando la herramienta GDB), y si se genera dentro de Allegro desactive la
+  opción que de problemas.
 
   De la misma forma, algunos modos de dibujo de polígonos 3D no funcionan
   correctamente en los modos gráficos de 15, 16, 24 y 32 bits por punto, aunque

@@ -174,14 +174,14 @@ PROGRAM exscn3d;
 
 
 (*  Translates, rotates, clips, projects, culls backfaces and draws a cube. *)
-  PROCEDURE DrawCube (Matrix: AL_MATRIX_fptr; NumPolys: INTEGER);
+  PROCEDURE DrawCube (Matrix: AL_MATRIX_fptr);
   VAR
     i, j, nv: LONGINT;
     Out: ARRAY [0..12] OF LONGINT;
   BEGIN
-    FOR I := 1 TO NumPolys DO
+    FOR I := LOW (Cube) TO HIGH (Cube) DO
     BEGIN
-      FOR J := 1 TO 4 DO
+      FOR J := LOW (QUAD.v) TO HIGH (QUAD.v) DO
       BEGIN
 	v[j] := Vertex[Cube[i].v[j]];
 	al_apply_matrix_f (Matrix, v[j].x, v[j].y, v[j].z,
@@ -195,7 +195,7 @@ PROGRAM exscn3d;
       nv := al_clip3d_f (AL_POLYTYPE_PTEX, 0.24, 1000, 4, pV, pVout, pVtmp, Out);
       IF nv > 0 THEN
       BEGIN
-	FOR J := 1 TO nv DO
+	FOR J := LOW (Vout) TO nv DO
 	  al_persp_project_f (Vout[j].x, Vout[j].y, Vout[j].z,
 				Vout[j].x, Vout[j].y);
 	IF al_polygon_z_normal_f (@vout[1], @vout[2], @vout[3]) > 0 THEN
@@ -246,10 +246,10 @@ BEGIN (* The program starts here. *)
   al_set_projection_viewport (0, 0, AL_SCREEN_W, AL_SCREEN_H);
 
 { Initialize pointers. }
-  FOR J := 1 TO 4 DO
+  FOR J := LOW (pV) TO HIGH (pV) DO
     pV[j] := @v[j];
 
-  FOR J := 1 TO 12 DO
+  FOR J := LOW (pVout) TO HIGH (pVout) DO
   BEGIN
     pVtmp[j] := @Vtmp[j];
     pVout[j] := @Vout[j];
@@ -282,7 +282,7 @@ BEGIN (* The program starts here. *)
 
 	{ Cubes are just added to the scene.
 	  No sorting is done at this stage. }
-	  DrawCube (@matrix, 6);
+	  DrawCube (@matrix);
 	END;
   { Sorts and renders polys }
     al_render_scene;
