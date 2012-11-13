@@ -100,7 +100,7 @@ BEGIN (* The program starts here. *)
   { alter the pitch? }
     IF (al_key[AL_KEY_UP] <> 0) AND (Pitch < 16384) THEN
       Pitch := ((Pitch * 513) DIV 512) + 1
-    ELSE IF (al_key[AL_KEY_UP] <> 0) AND (Pitch > 64) THEN
+    ELSE IF (al_key[AL_KEY_DOWN] <> 0) AND (Pitch > 64) THEN
       Pitch := ((Pitch * 511) DIV 512) - 1;
 
   { adjust the sample }

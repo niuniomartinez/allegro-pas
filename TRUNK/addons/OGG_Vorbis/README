@@ -1,0 +1,6 @@
+  This addon allows to load an OGG/Vorbis sound file as an AL_SAMPLE.
+
+  You'll need all unit in the "lib" directory, but the Allegro.pas interface
+  is in al_ogg.pas.
+
+  The "win32" directory contains DLL files needed.

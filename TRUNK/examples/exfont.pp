@@ -78,10 +78,13 @@ BEGIN (* The program starts here. *)
 
 { write some text to the screen with black letters and transparent
   background }
-  al_textout_centre_ex (al_screen, MyFont, 'Hello, world!',
+  al_textout_centre_ex (al_screen, MyFont, 'Hello, World!',
 	AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 2,
 	al_makecol (0,0,0), -1);
 
 { wait for a key press }
   al_readkey;
+
+{ Release resources before exit. }
+  al_destroy_font (MyFont);
 END.
