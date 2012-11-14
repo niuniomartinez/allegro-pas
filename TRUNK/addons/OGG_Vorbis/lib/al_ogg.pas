@@ -8,7 +8,7 @@ uses
   allegro, albase;
 
 
-(* OGG/Vorbis loader.  You can call it directly or regiter it using
+(* OGG/Vorbis loader.  You can call it directly or register it using
   al_register_sample_file_type ('ogg', @LoadOGGVorbis, NIL); *)
   function LoadOGGVorbis (filename: AL_STRptr): AL_SAMPLEptr; CDECL;
 
