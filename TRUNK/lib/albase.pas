@@ -1,5 +1,9 @@
 UNIT albase;
-(*< Base definitions to interface with Allegro dynamic module. *)
+(*< Base definitions to interface with Allegro dynamic module.
+
+  This unit includes definitions of data types used by Allegro.  They're used
+  internally to be sure they're the correct in any platform (i.e. 32bit or
+  64bit).  You may use them if you wish. *)
 
 {$INCLUDE allegro.cfg}
 
@@ -166,7 +170,8 @@ TYPE
 (* Pointer to float values. *)
   AL_FLOATptr = ^AL_FLOAT;
 
-(* Pointer to text strings. *)
+(* Pointer to text strings.  Used to convert Pascal's @code(STRING) to C
+  @code(char * ) *)
   AL_STRptr = PCHAR;
 
 

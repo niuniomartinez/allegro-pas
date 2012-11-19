@@ -2,7 +2,7 @@ UNIT algui;
 (*<GUI routines
 
   Allegro contains an object-oriented dialog manager, which was originally
-  based on the Atari GEM system (form_do(), objc_draw(), etc: old ST
+  based on the Atari GEM system (@code(form_do()), @code(objc_draw()), etc: old ST
   programmers will know what we are talking about :-)  You can use the GUI
   as-is to knock out simple interfaces for things like the test program and
   setup utility, or you can use it as a basis for more complicated systems of
@@ -35,7 +35,7 @@ UNIT algui;
   the @link(al_object_message) function.  The dialog procedure should follow
   the form:
 @longcode(#
-       FUNCTION foo (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
+  FUNCTION foo (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT;
 #)
   It will be passed a flag (msg) indicating what action it should perform, a
   pointer to the object concerned (d), and if msg is @code(AL_MSG_CHAR) or
@@ -258,43 +258,43 @@ INTERFACE
 
 
   (* return values for the dialog procedures *)
-    AL_D_O_K           = 0;        (*<normal exit status *)
-    AL_D_CLOSE         = 1;        (*<request to close the dialog *)
-    AL_D_REDRAW        = 2;        (*<request to redraw the dialog *)
-    AL_D_REDRAWME      = 4;        (*<request to redraw this object *)
-    AL_D_WANTFOCUS     = 8;        (*<this object wants the input focus *)
-    AL_D_USED_CHAR     = 16;       (*<object has used the keypress *)
-    AL_D_REDRAW_ALL    = 32;       (*<request to redraw all active dialogs *)
-    AL_D_DONTWANTMOUSE = 64;       (*<this object does not want mouse focus *)
+    AL_D_O_K           = 0;  (*<normal exit status *)
+    AL_D_CLOSE         = 1;  (*<request to close the dialog *)
+    AL_D_REDRAW        = 2;  (*<request to redraw the dialog *)
+    AL_D_REDRAWME      = 4;  (*<request to redraw this object *)
+    AL_D_WANTFOCUS     = 8;  (*<this object wants the input focus *)
+    AL_D_USED_CHAR     = 16; (*<object has used the keypress *)
+    AL_D_REDRAW_ALL    = 32; (*<request to redraw all active dialogs *)
+    AL_D_DONTWANTMOUSE = 64; (*<this object does not want mouse focus *)
 
 
 
   (* messages for the dialog procedures *)
-    AL_MSG_START       = 1;        (*<start the dialog, initialise *)
-    AL_MSG_END         = 2;        (*<dialog is finished - cleanup *)
-    AL_MSG_DRAW        = 3;        (*<draw the object *)
-    AL_MSG_CLICK       = 4;        (*<mouse click on the object *)
-    AL_MSG_DCLICK      = 5;        (*<double click on the object *)
-    AL_MSG_KEY         = 6;        (*<keyboard shortcut *)
-    AL_MSG_CHAR        = 7;        (*<other keyboard input *)
-    AL_MSG_UCHAR       = 8;        (*<unicode keyboard input *)
-    AL_MSG_XCHAR       = 9;        (*<broadcast character to all objects *)
-    AL_MSG_WANTFOCUS   = 10;       (*<does object want the input focus? *)
-    AL_MSG_GOTFOCUS    = 11;       (*<got the input focus *)
-    AL_MSG_LOSTFOCUS   = 12;       (*<lost the input focus *)
-    AL_MSG_GOTMOUSE    = 13;       (*<mouse on top of object *)
-    AL_MSG_LOSTMOUSE   = 14;       (*<mouse moved away from object *)
-    AL_MSG_IDLE        = 15;       (*<update any background stuff *)
-    AL_MSG_RADIO       = 16;       (*<clear radio buttons *)
-    AL_MSG_WHEEL       = 17;       (*<mouse wheel moved *)
-    AL_MSG_LPRESS      = 18;       (*<mouse left button pressed *)
-    AL_MSG_LRELEASE    = 19;       (*<mouse left button released *)
-    AL_MSG_MPRESS      = 20;       (*<mouse middle button pressed *)
-    AL_MSG_MRELEASE    = 21;       (*<mouse middle button released *)
-    AL_MSG_RPRESS      = 22;       (*<mouse right button pressed *)
-    AL_MSG_RRELEASE    = 23;       (*<mouse right button released *)
-    AL_MSG_WANTMOUSE   = 24;       (*<does object want the mouse? *)
-    AL_MSG_USER        = 25;       (*<from here on are free... *)
+    AL_MSG_START       = 1;  (*<start the dialog, initialise *)
+    AL_MSG_END         = 2;  (*<dialog is finished - cleanup *)
+    AL_MSG_DRAW        = 3;  (*<draw the object *)
+    AL_MSG_CLICK       = 4;  (*<mouse click on the object *)
+    AL_MSG_DCLICK      = 5;  (*<double click on the object *)
+    AL_MSG_KEY         = 6;  (*<keyboard shortcut *)
+    AL_MSG_CHAR        = 7;  (*<other keyboard input *)
+    AL_MSG_UCHAR       = 8;  (*<unicode keyboard input *)
+    AL_MSG_XCHAR       = 9;  (*<broadcast character to all objects *)
+    AL_MSG_WANTFOCUS   = 10; (*<does object want the input focus? *)
+    AL_MSG_GOTFOCUS    = 11; (*<got the input focus *)
+    AL_MSG_LOSTFOCUS   = 12; (*<lost the input focus *)
+    AL_MSG_GOTMOUSE    = 13; (*<mouse on top of object *)
+    AL_MSG_LOSTMOUSE   = 14; (*<mouse moved away from object *)
+    AL_MSG_IDLE        = 15; (*<update any background stuff *)
+    AL_MSG_RADIO       = 16; (*<clear radio buttons *)
+    AL_MSG_WHEEL       = 17; (*<mouse wheel moved *)
+    AL_MSG_LPRESS      = 18; (*<mouse left button pressed *)
+    AL_MSG_LRELEASE    = 19; (*<mouse left button released *)
+    AL_MSG_MPRESS      = 20; (*<mouse middle button pressed *)
+    AL_MSG_MRELEASE    = 21; (*<mouse middle button released *)
+    AL_MSG_RPRESS      = 22; (*<mouse right button pressed *)
+    AL_MSG_RRELEASE    = 23; (*<mouse right button released *)
+    AL_MSG_WANTMOUSE   = 24; (*<does object want the mouse? *)
+    AL_MSG_USER        = 25; (*<from here on are free... *)
 
 
 
@@ -748,7 +748,7 @@ VAR
   player: AL_MENU_PLAYERptr;
 BEGIN
   player := al_init_menu (menu, x, y);
-  WHILE al_pdate_menu (player)
+  WHILE al_update_menu (player)
     ;
   RESULT := al_shutdown_menu (player);
 END;
@@ -825,7 +825,7 @@ END;
     INLINE;
 
 TYPE
-(* Callback to be used by @code(al_gfx_mode_select_filter). *)
+(* Callback to be used by @link(al_gfx_mode_select_filter). *)
   AL_GFX_SELECT_FN = FUNCTION(c, w, h, d: AL_INT): AL_INT; CDECL;
 (* Even more extended version of the graphics mode selection dialog, which
    allows the programmer to customize the contents of the dialog and the user

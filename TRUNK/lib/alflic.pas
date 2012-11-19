@@ -147,11 +147,12 @@ CONST
 
   (* These variables are set by @code(al_next_fli_frame) to indicate which part
      of the @link(al_fli_bitmap) has changed since the last call to
-     @link(al_reset_fli_variables).  If @link(fli_bmp_dirty_from) is greater than
-     @link(al_fli_bmp_dirty_to), the bitmap has not changed, otherwise lines
-     @code(al_fli_bmp_dirty_from) to @code(al_fli_bmp_dirty_to) (inclusive)
-     have altered.  You can use these when copying the @code(al_fli_bitmap) onto
-     the screen, to avoid moving data unnecessarily. *)
+     @link(al_reset_fli_variables).  If @code(al_fli_bmp_dirty_from) is greater
+     than @link(al_fli_bmp_dirty_to), the bitmap has not changed, otherwise
+     lines @code(al_fli_bmp_dirty_from) to @code(al_fli_bmp_dirty_to)
+     (inclusive) have altered.  You can use these when copying the
+     @code(al_fli_bitmap) onto the screen, to avoid moving data
+     unnecessarily. *)
     al_fli_bmp_dirty_from: AL_INT;
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_bmp_dirty_from';
   (* @seealso(al_fli_bmp_dirty_from) *)
@@ -159,7 +160,7 @@ CONST
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_bmp_dirty_to';
   (* These variables are set by @link(al_next_fli_frame) to indicate which part
      of the @link(al_fli_palette) has changed since the last call to
-     @link(al_reset_fli_variables).  If @link(al_fli_pal_dirty_from) is greater
+     @link(al_reset_fli_variables).  If @code(al_fli_pal_dirty_from) is greater
      than @link(al_fli_pal_dirty_to), the palette has not changed, otherwise
      colors @code(al_fli_pal_dirty_from) to @code(al_fli_pal_dirty_to)
      (inclusive) have altered.  You can use these when updating the hardware

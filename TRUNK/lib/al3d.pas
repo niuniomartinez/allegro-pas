@@ -73,10 +73,10 @@ UNIT al3d;
 
   All the 3d functions that accept a @code(type) parameter are asking for a
   polygon rendering mode, which can be any of the @code(POLYTYPE_* ) values.
-  If the AL_CPU_MMX flag of the @link(al_cpu_capabilities) global variable is
-  set, the GRGB and truecolor *LIT routines will be optimised using MMX
-  instructions.  If the AL_CPU_3DNOW flag is set, the truecolor PTEX*LIT
-  routines will take advantage of the 3DNow! CPU extensions.
+  If the @code(AL_CPU_MMX) flag of the @link(al_cpu_capabilities) global
+  variable is set, the GRGB and truecolor *LIT routines will be optimised using
+  MMX instructions.  If the @code(AL_CPU_3DNOW) flag is set, the truecolor
+  PTEX*LIT routines will take advantage of the 3DNow! CPU extensions.
 
   Using MMX for *LIT routines has a side effect:  normally (without MMX), these
   routines use the blender functions used also for other lighting functions,
@@ -111,7 +111,9 @@ UNIT al3d;
   z-buffered polygons.
 
   Example:
-  @longcode(#al_polygon3d (bmp, AL_POLYTYPE_ATEX OR AL_POLYTYPE_ZBUF, tex, vc, vtx);#)
+  @longcode(#
+    al_polygon3d (bmp, AL_POLYTYPE_ATEX OR AL_POLYTYPE_ZBUF, tex, vc, vtx);
+  #)
   Of course, the z coordinates have to be valid regardless of rendering style.
 
   A Z-buffered rendering procedure looks like a double-buffered rendering
@@ -221,6 +223,7 @@ UNIT al3d;
   You will have lots of fun figuring out what these numbers actually mean, but
   that is beyond the scope of this documentation. Quaternions do work -- trust
   me.
+
   @bold(See also) @link(al_get_rotation_quat) @link(al_apply_quat)
  *)
 
@@ -485,7 +488,7 @@ INTERFACE
    applied to a point, @code(@(point * out@) = @(@(point * p@) * q@)).  Any
    number of rotations can be concatenated in this way.  Note that quaternion
    multiplication is not commutative, ie.
-   @code(al_quat_mul @(p, q@) != al_quat_mul @(q, p@)). *)
+   @code(al_quat_mul @(p, q@) <> al_quat_mul @(q, p@)). *)
     PROCEDURE al_quat_mul (CONST p, q: AL_QUATptr; _out: AL_QUATptr);
       CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'quat_mul';
 
@@ -612,7 +615,7 @@ INTERFACE
 
 
 (* Constructs a rotation matrix from a quaternion.
-   @seealso(al_matrix_to_quad) *)
+   @seealso(al_matrix_to_quat) *)
   PROCEDURE al_quat_to_matrix (CONST q: AL_QUATptr; m: AL_MATRIX_Fptr);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'quat_to_matrix';
 
@@ -894,8 +897,8 @@ INTERFACE
 
 (* Creates a Z-buffer using the size of the @link(AL_BITMAP) you are planning
    to draw on.  Several Z-buffers can be defined but only one can be used at
-   the same time, so you must call @code(al_set_zbuffer) to make this Z-buffer
-   active.
+   the same time, so you must call @link(al_set_zbuffer) to make this Z-buffer
+   active
    @returns(the pointer to the @link(AL_ZBUFFER) or @nil if there was an error.
      Remember to destroy the @code(AL_ZBUFFER) once you are done with it, to
      avoid having memory leaks.)
@@ -989,7 +992,7 @@ INTERFACE
    this mode will be stored for the rendering moment, and also all the other
    related variables (color-map, pattern pointer, anchor, blender values).
 
-   The settings of the @link(AL_CPU_MMX) and @link(AL_CPU_3DNOW) flags of the
+   The settings of the @code(AL_CPU_MMX) and @code(AL_CPU_3DNOW) flags of the
    @link(al_cpu_capabilities) global variable on entry in this routine affect
    the choice of low-level asm routine that will be used by
    @code(al_render_scene) for this polygon.
@@ -1097,7 +1100,7 @@ INTERFACE
     INLINE;
 
 (* Draw 3D quads, using fixed point vertex structures.  This is equivalent to
-   calling @code(al_polygon3d)@code(@(bmp, type, tex, 4, v@)).
+   calling @code(al_polygon3d @(bmp, type, tex, 4, v@)).
    @seealso(al_triangle3d) @seealso(al_quad3d_f) *)
   PROCEDURE al_quad3d (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; v1, v2, v3, v4: AL_V3Dptr);
     INLINE;

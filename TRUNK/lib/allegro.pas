@@ -3,7 +3,7 @@ UNIT allegro;
 
   This is the main module of the Allegro library.  There are very different
   stuff on this unit, but procedures, functions, types, variables and constants
-  are grouped to make it easer to find them.  Read the @bold(Introduction)
+  are grouped to make it easer to find them.  Read the @link(intro Introduction)
   section for a brief description of this unit. *)
 
 {$INCLUDE allegro.cfg }
@@ -200,9 +200,9 @@ END;
 
 
 (* Detects the CPU type, setting the following global variables. You don't
-   normally need to call this, because @link(allegro_init) will do it for you.
-   @seealso(al_cpu_vendor) @seealso(al_cpu_family,) @seealso(al_pu_model,)
-   @seealso(al_pu_capabilities) *)
+   normally need to call this, because @link(al_init) will do it for you.
+   @seealso(al_cpu_vendor) @seealso(al_cpu_family) @seealso(al_cpu_model)
+   @seealso(al_cpu_capabilities) *)
   PROCEDURE al_check_cpu;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'check_cpu';
 
@@ -288,7 +288,7 @@ END;
      example, to check if the CPU has an FPU and MMX instructions available,
      you'd do:
 @longcode(#
-  IF (al_cpu_capabilities AND (AL_CPU_FPU OR AL_CPU_MMX) = (AL_CPU_FPU OR AL_CPU_MMX) THEN
+  IF al_cpu_capabilities AND (AL_CPU_FPU OR AL_CPU_MMX = AL_CPU_FPU OR AL_CPU_MMX) THEN
     WriteLn ('CPU has both an FPU and MMX instructions!');
 #)
      You can read this variable after you have called @link(al_check_cpu)
@@ -306,7 +306,7 @@ END;
 (* On platforms that are capable of it, this routine alters the window title
    for your Allegro program.
    @param(title Title string.)
-   @seealso(al_set_close_button_callback) @seealso((al_set_uformat) *)
+   @seealso(al_set_close_button_callback) @seealso(al_set_uformat) *)
   PROCEDURE al_set_window_title (CONST title: STRING);
     INLINE;
 
@@ -423,8 +423,8 @@ END;
   PROCEDURE al_set_ucodepage (CONST table, extras: AL_USHORTptr);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_ucodepage';
 
-(* Returns the number of characters in the string.  Note that this doesn't have
-   to equal the string's size in bytes. *)
+(* @returns(The number of characters in the string.  Note that this doesn't have
+   to equal the string's size in bytes.) *)
   FUNCTION al_ustrlen (s: STRING): AL_INT;
     INLINE;
 
@@ -433,16 +433,17 @@ END;
    formats are already the same @(either both types are equal, or one is
    ASCII, the other is UTF-8, and the string contains only 7-bit ASCII
    characters@).
-   @seealso(al_set_uformat) @seealso(uconvert_ascii)
+   @seealso(al_set_uformat) @seealso(al_uconvert_ascii)
    @seealso(al_uconvert_toascii) *)
   FUNCTION al_uconvert (CONST s: STRING; _type, newtype: AL_INT): STRING;
+    INLINE;
 
-(* Converts sgrings from ASCII into the current encoding format.
+(* Converts strings from ASCII into the current encoding format.
    @seealso (al_uconvert) @seealso(al_uconvert_toascii) *)
   FUNCTION al_uconvert_ascii (CONST s: STRING): STRING;
     INLINE;
 
-(* Converts sgrings from the current encoding format into ASCII.
+(* Converts strings from the current encoding format into ASCII.
    @seealso (al_uconvert) @seealso(al_uconvert_ascii) *)
   FUNCTION al_uconvert_toascii (CONST s: STRING): STRING;
     INLINE;
@@ -755,10 +756,10 @@ VAR
   PROCEDURE al_rest (tyme: AL_UINT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rest';
 
-(* Like @code(al_rest), but for non-zero values continually calls the
+(* Like @link(al_rest), but for non-zero values continually calls the
   specified function while it is waiting for the required time to elapse.  If
-  the provided `callback' parameter is @nil, this function does exactly the
-  same thing as calling @code(al_rest). *)
+  the provided @code(callback) parameter is @nil, this function does exactly
+  the same thing as calling @code(al_rest). *)
   PROCEDURE al_rest_callback (tyme: AL_UINT; callback: AL_PARAM_PROC);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rest_callback';
 
@@ -1234,13 +1235,13 @@ VAR
    functions, and you should make sure that all joysticks are in the middle
    position at the time.  Example:
    @longcode(#
-al_textout_centre_ex (al_screen, al_font,
-		      'Center the joystick and press a key.',
-		      AL_SCREEN_W DIV 2, SCREEN_H DIV 2, red_color, -1);
-al_readkey;
-IF NOT al_install_joystick (AL_JOY_TYPE_AUTODETECT) THEN
-  abort_on_error ('Error initialising joystick!');
-   #);
+  al_textout_centre_ex (al_screen, al_font,
+			'Center the joystick and press a key.',
+			AL_SCREEN_W DIV 2, SCREEN_H DIV 2, red_color, -1);
+  al_readkey;
+  IF NOT al_install_joystick (AL_JOY_TYPE_AUTODETECT) THEN
+    abort_on_error ('Error initialising joystick!');
+   #)
    @returns(@true on success.  As soon as you have installed the joystick
      module, you will be able to read the button state and digital @(on/off
      toggle@) direction information, which may be enough for some games.  If
@@ -1842,7 +1843,7 @@ END.
      that fails, it will fall back upon whatever mode is known to be reliable on
      the current platform (this is 640x480 resolution under Windows, the actual
      framebuffer's resolution under Linux if it's supported, etc).  If it
-     absolutely cannot set any graphics mode at all, it will return negative as
+     absolutely cannot set any graphics mode at all, it will return @false as
      usual, meaning that there's no possible video output on the machine, and
      that you should abort your program immediately, possibly after notifying
      this to the user with @link(al_message).  This fake driver is useful for
@@ -2177,7 +2178,7 @@ END.
    actually taken place.
 
    Triple buffering is only possible with certain drivers:  you can look at the
-   @link_AL_GFX_CAN_TRIPLE_BUFFER) bit in the @link(al_gfx_capabilities) flag
+   @link(AL_GFX_CAN_TRIPLE_BUFFER) bit in the @link(al_gfx_capabilities) flag
    to see if it will work with the current driver.
    @return(@true on success, @false Otherwise.)
    @seealso(al_request_video_bitmap) @seealso(al_scroll_screen) *)
@@ -2200,7 +2201,7 @@ END.
    flipping, so you don't need to call @link(al_vsync) before it.  This means
    that @code(al_show_video_bitmap) has the same time delay effects as
    @code(al_vsync) by default.  This can be adjusted with the "disable_vsync"
-   config key in the @code(@link(graphics)) section of allegro.cfg.
+   config key in the @code(graphics) section of allegro.cfg.
 
    @returns(zero on success and non-zero on failure.) *)
   FUNCTION al_show_video_bitmap (bmp: AL_BITMAPptr): AL_INT;
@@ -2231,7 +2232,7 @@ BEGIN
   al_request_video_bitmap (VideoPage[CurrentPage]);
   CurrentPage := (CurrentPage + 1) MOD 3;
   ...
-END;
+END.
 #)
    @returns(@true on success or @false on failure.)
    @seealso(al_gfx_capabilities) @seealso(al_create_video_bitmap)
@@ -2568,7 +2569,7 @@ VAR
           ...
   bmp := al_load_bitmap ('image.pcx', @palette);
   IF bmp = NIL THEN
-    abort_on_error ('Couldn''t load image.pcx!');
+    abort_on_error ('Could not load image.pcx!');
           ...
    al_destroy_bitmap (bmp);
 #)
@@ -2588,7 +2589,7 @@ VAR
 (* Loads a 256-color IFF ILBM/PBM file.  Remember that you are responsible for
    destroying the bitmap when you are finished with it to avoid memory leaks.
    @returns(a pointer to the bitmap or @nil on error.)
-   @seealso(al_load_bitmap) @seealso(al_load_lbm_pf) *)
+   @seealso(al_load_bitmap) *)
   FUNCTION al_load_lbm (CONST filename: STRING; palette: AL_PALETTEptr): AL_BITMAPptr;
     INLINE;
 
@@ -3244,7 +3245,7 @@ END;
    convert images from one pixel format to another.  In this case, the behavior
    is affected by the @code(AL_COLORCONV_KEEP_TRANS)
    and @code(AL_COLORCONV_DITHER* ) flags of the current color conversion mode.
-   @seealso(al_masked_blit) @seealso(al_stretch_blit,) @seealso(al_raw_sprite)
+   @seealso(al_masked_blit) @seealso(al_stretch_blit)
    @seealso(al_set_color_conversion) *)
   PROCEDURE al_blit (source, dest: AL_BITMAPptr; source_x, source_y, dest_x, dest_y, width, height: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'blit';
@@ -3394,8 +3395,8 @@ END;
 
    Like @seealso(al_rotate_sprite_lit), but flips the image vertically before
    rotating it.  To flip horizontally, use this routine but add
-   @link(itofix@(128@)) to the angle.  To flip in both directions, use
-   @code(al_rotate_sprite_lit) and add @code(itofix@(128@)) to its angle. *)
+   @code(al_itofix@(128@)) to the angle.  To flip in both directions, use
+   @code(al_rotate_sprite_lit) and add @code(al_itofix@(128@)) to its angle. *)
   PROCEDURE al_rotate_sprite_v_flip_lit (bmp, sprite: AL_BITMAPptr; x, y: AL_INT; angle: AL_FIXED; color: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rotate_sprite_v_flip_lit';
 
@@ -3663,15 +3664,15 @@ VAR
 VAR
   global_trans_table: AL_COLOR_MAP;
 
-          ...
-   al_create_trans_table (@global_trans_table, my_palette,
+    ...
+  al_create_trans_table (@global_trans_table, my_palette,
                              128, 128, 128, NIL);
-          ...
-   IF al_get_color_depth = 8
-     al_color_table := @global_trans_table
-   ELSE
-     al_set_trans_blender (128, 128, 128, 128);
-   al_draw_trans_sprite (buffer, ghost_sprite, x, y);
+    ...
+  IF al_get_color_depth = 8
+    al_color_table := @global_trans_table
+  ELSE
+    al_set_trans_blender (128, 128, 128, 128);
+  al_draw_trans_sprite (buffer, ghost_sprite, x, y);
 #)
 
    The bitmap and sprite must normally be in the same color depth, but as a
@@ -3883,14 +3884,14 @@ END;
 (* This function checks if the given font is a color font, as opposed to a
    monochrome font.
    @returns(@true if the font is a color font, @false if it is not.)
-   @seealso(is_mono_font) @seealso(al_is_trans_font) *)
+   @seealso(al_is_mono_font) @seealso(al_is_trans_font) *)
   FUNCTION al_is_color_font (f: AL_FONTptr): BOOLEAN;
     INLINE;
 
 (* This function checks if the given font is a mono font, as opposed to a
    color font.
    @returns(@true if the font is a monochrome font, @false if it is not.)
-   @seealso(is_color_font) @seealso(al_is_trans_font) *)
+   @seealso(al_is_color_font) @seealso(al_is_trans_font) *)
   FUNCTION al_is_mono_font (f: AL_FONTptr): BOOLEAN;
     INLINE;
 
@@ -4012,7 +4013,7 @@ BEGIN
   FOR N := 0 TO Range - 1 DO
     WriteLn ('Range ',n
       ' from 0x', IntToHex (al_get_font_range_begin (f, n), 3),
-      ' to 0x0, IntToHex (al_get_font_range_end (f, n), 3));
+      ' to 0x', IntToHex (al_get_font_range_end (f, n), 3));
 END;
 #)
   @returns(the number of continuous character ranges in a font, or -1 if that
@@ -4049,7 +4050,6 @@ END;
 @longcode(#
 VAR
   MyFont, Capitals, FontCopy: AL_FONTptr;
-BEGIN
 ...
   Capitals := al_extract_font_range (MyFont, Ord ('A'), Ord ('Z'));
   FontCopy := al_extract_font_range (MyFont, -1, -1);
@@ -4454,10 +4454,11 @@ END;
   (* A structure holding MIDI data.
      @seealso(al_load_midi) @seealso(al_play_midi) @seealso(al_destroy_midi) *)
     AL_MIDI = RECORD
-      divisions : AL_INT;		{< number of ticks per quarter note  }
+      divisions : AL_INT;	{< number of ticks per quarter note  }
+    { Track data and length. }
       track : ARRAY[0..(AL_MIDI_TRACKS)-1] OF RECORD
-        data : AL_UCHARptr;	{< MIDI message stream  }
-        len : AL_INT;	{< length of the track data  }
+	data : AL_UCHARptr;	{ MIDI message stream }
+	len : AL_INT;		{ length of the track data }
       END;
     END;
 
@@ -4510,11 +4511,11 @@ END;
   PROCEDURE al_destroy_midi (midi: AL_MIDIptr);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_midi';
 
-(* Starts playing the specified @link(AL_MIDI) file, first stopping whatever
-   music was previously playing.  If the @code(loop) flag is set to @true,
-   the data will be repeated until replaced with something else, otherwise it
-   will stop at the end of the file.  Passing a @nil pointer will stop whatever
-   music is currently playing.
+(* Starts playing the specified MIDI file, first stopping whatever music was
+   previously playing.  If the @code(loop) flag is set to @true, the data will
+   be repeated until replaced with something else, otherwise it will stop at
+   the end of the file.  Passing a @nil pointer will stop whatever music is
+   currently playing.
 
    @returns(@false if an error occurs @(this may happen if a patch-caching
      wavetable driver is unable to load the required samples, or at least it
@@ -4560,8 +4561,8 @@ END;
      @code(al_midi_pos) is set to the negative length of the MIDI file @(so you
      can use this function to determine the length of a MIDI file@).  A return
      value of 2 means the MIDI file looped back to the start.)
-   @seek(al_play_midi) *)
-  FUNCTION al_midi_seek(target: AL_INT): AL_INT;
+   @seealso(al_play_midi) *)
+  FUNCTION al_midi_seek (target: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'midi_seek';
 
 (* This function will simulate playing the given MIDI, from start to end, to

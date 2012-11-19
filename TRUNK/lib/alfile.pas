@@ -152,22 +152,22 @@ INTERFACE
        it is written to the file, and automatically uncompressed during read
        operations.  Files created in this mode will produce garbage if they are
        read without this flag being set.)
-     @item(@code (!) - open file for writing in normal, unpacked mode, but add
+     @item(@code(!) - open file for writing in normal, unpacked mode, but add
        the value @link(AL_F_NOPACK_MAGIC) to the start of the file, so that it
        can later be opened in packed mode and Allegro will automatically detect
        that the data does not need to be decompressed.)
    )
 
-  Instead of these flags, one of the constants @link(AL_F_READ),
-  @link(AL_F_WRITE), @link(AL_F_READ_PACKED), @link(AL_F_WRITE_PACKED) or
-  @link(AL_F_WRITE_NOPACK) may be used as the @code(mode) parameter.
+  Instead of these flags, one of the constants @code(AL_F_READ),
+  @code(AL_F_WRITE), @code(AL_F_READ_PACKED), @code(AL_F_WRITE_PACKED) or
+  @code(AL_F_WRITE_NOPACK) may be used as the @code(mode) parameter.
 
   The packfile functions also understand several @italic("magic") filenames
-  that are used for special purposes.  These are
-  @bold(filename.dat#object_name) - open a specific object from a datafile, and
-  read from it as if it was a regular file.  You can treat nested datafiles
+  that are used for special purposes.  These are in the form
+  @bold(filename.dat#object_name) and opens a specific object from a datafile,
+  and read from it as if it was a regular file.  You can treat nested datafiles
   exactly like a normal directory structure, for example you could open
-  @code(filename.dat#graphics/level1/mapdata).)
+  @code('filename.dat#graphics/level1/mapdata').
 
   With these special filenames, the contents of a datafile object or appended
   file can be read in an identical way to a normal disk file, so any of the
@@ -592,7 +592,10 @@ IMPLEMENTATION
 
   PROCEDURE al_packfile_password (CONST aPassword: STRING);
   BEGIN
-    packfile_password (AL_STRptr (aPassword));
+    IF aPassword <> '' THEN
+      packfile_password (AL_STRptr (aPassword))
+    ELSE
+      packfile_password (NIL)
   END;
 
 

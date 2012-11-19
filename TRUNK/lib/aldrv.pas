@@ -1,5 +1,7 @@
 UNIT aldrv;
-(*<Defines structs and variables used internally by Allegro and the add-ons. 
+(*<Defines structs and variables used internally by Allegro and the add-ons.
+
+  Note that this unit is FOR INTERNAL USE ONLY.
 
   Note that some parts of this unit are platform-dependent so they aren't
   available in all platforms. *)
@@ -20,6 +22,7 @@ USES
  *)
 
 TYPE
+(* Pointer to @link(__AL_SYSTEM_DRIVER__). *)
   __AL_SYSTEM_DRIVER__ptr = ^__AL_SYSTEM_DRIVER__;
 (* Defines methods and stuff for system initialization and management.
    This is used internally by Allegro and Allegro add-ons.
@@ -61,6 +64,7 @@ TYPE
 
 
 
+{$IFDEF MSWINDOWS}
 (*****************************************************************************
  * winalleg.h
  *     Windows header file for the Allegro library.
@@ -69,7 +73,6 @@ TYPE
  *     direct Win32 API calls and by Win32 programs that need to
  *     interface with Allegro.
  *)
-{$IFDEF MSWINDOWS}
 TYPE
   __AL_WIN_CREATE_PROC__ = FUNCTION (p: WNDPROC): HWND; CDECL;
   __AL_WIN_MESSAGE_PROC__ = FUNCTION (w: HWND; m: UINT; wp: WPARAM; lp: LPARAM; p: AL_INTptr): AL_INT; CDECL;
