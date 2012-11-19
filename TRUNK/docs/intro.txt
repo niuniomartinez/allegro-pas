@@ -15,13 +15,19 @@
   Allegro.pas is a wrapper to allow Pascal compilers (such as Free Pascal or
   Delphi) to use the Allegro library.
 
-  Read @link(use_allegro section "How to use Allegro.pas") for a description of the
-  main module of the library.
+  Read @link(use_allegro section "How to use Allegro.pas") for a description of
+  the main module of the library.
+
+  There are a few add-ons that adds some functionality to the original Allegro.
+  They came with their own documentation and makefiles at the @code(addons)
+  directory.
+
+  There are a wiki at Allegro.pas website (http://allegro-pas.sf.net/) which
+  may include additional documentation and tutorials.
 
   If you want to collaborate please join the main Allegro.pas mailing list
-  (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main)
-  or the Allegro.pas public forum
-  (http://sourceforge.net/apps/phpbb/allegro-pas/).
+  or ask at Pascal Game Development forum.  Read @link(contact section "Contact
+  info").
 
 
 @section(1 use_allegro How to use Allegro.pas)
@@ -31,7 +37,7 @@
   documentation.  That examples are fully commented and should be easy to
   understand.
 
-  Anyway, here you have a brief description of the @link(allegro) unit:
+  Anyway, here you have a brief description of the Allegro library:
 
   @unorderedList(
     @item(@bold(@link(init Initialization and finalization)))
@@ -45,7 +51,7 @@
     @item(@bold(@link(mouse Mouse routines)))
     @item(@bold(@link(graphmode Graphics modes initialization)))
     @item(@bold(@link(draw_primitives Drawing primitives)))
-    @item(@bold(@link(text text drawing)))
+    @item(@bold(@link(text Text drawing)))
     @item(@bold(@link(bltspr Bitting and sprite drawing)))
     @item(@bold(@link(rlespr Run-length compressed sprites)))
     @item(@bold(@link(sound Sound and music routines)))
@@ -71,8 +77,8 @@
   stored and how Allegro interprets strings that you pass to it, using the
   @link(al_set_uformat) procedure.  This setting affects all aspects of the
   system:  whenever you see a function that returns a @code(STRING) or
-  @code(PCHAR) type, or that takes the same as an argument, that text will be
-  in whatever format you have told Allegro to use.
+  @code(AL_STRptr) type, or that takes the same as an argument, that text will
+  be in whatever format you have told Allegro to use.
 
   By default, Allegro uses UTF-8 encoded text (@code(AL_U_UTF8)).  This is a
   variable-width format, where characters can occupy anywhere from one to four
@@ -89,8 +95,8 @@
   There are a few editing programs that understand UTF-8 format text files.
   Alternatively, you can write your strings in plain ASCII or 16-bit Unicode
   formats, and then use the Allegro @code(textconv) program to convert them
-  into UTF-8.  The textconv program is included with the original Allegro
-  release.
+  into UTF-8.  The @code(textconv) program is included with the original
+  Allegro release.
 
   If you prefer to use some other text format, you can set Allegro to work with
   normal 8-bit ASCII (@code(AL_U_ASCII)), or 16-bit Unicode
@@ -114,7 +120,7 @@
   is best to set it with @link(al_set_uformat) just before you call these.
 
   @bold(Note:)  While UNICODE is almost supported by Free Pascal and Lazarus,
-  you might have bad results using it with Allegro.pas.  See the TODO.txt file
+  you might have bad results using it with Allegro.pas.  See the TODO file
   for more information.
 
 
@@ -148,14 +154,14 @@
   (which could for example be loaded from a @link(al_load_datafile datafile)).
 
   You can store whatever custom information you like in the config file, along
-  with the standard variables that are used by Allegro.  Allegro comes with a
-  @code(tools/setup) directory where you can find configuration programs.  The
-  standalone setup program is likely to be of interest to final users.  It
-  allows any user to create an @code(allegro.cfg) file without the need to
-  touch a text editor and enter values by hand.  It also provides a few basic
-  tests like sound playing for sound card testing.  You are welcome to include
-  the setup program with your game, either as is or with modified graphics to
-  fit better your game.
+  with the standard variables that are used by Allegro.  Allegro (but not
+  Allegro.pas) comes with a @code(tools/setup) directory where you can find
+  configuration programs.  The standalone setup program is likely to be of
+  interest to final users.  It allows any user to create an @code(allegro.cfg)
+  file without the need to touch a text editor and enter values by hand.  It
+  also provides a few basic tests like sound playing for sound card testing.
+  You are welcome to include the setup program with your game, either as is or
+  with modified graphics to fit better your game.
 
 @section(2 timer Timer routines)
 
@@ -181,8 +187,8 @@
   ignored (exactly which combinations are possible seems to vary from one
   keyboard to another).
 
-  Allegro comes with a prepackaged @code(keyboard.dat) file at the
-  @code(tools/setup) directory which you can put along with your binary.  If
+  Allegro.pas comes with a prepackaged @code(keyboard.dat) file at the
+  @code(resources) directory which you can put along with your binary.  If
   this file is present, Allegro will be able to extract the keyboard mapping
   information stored there.  However, the end user still needs to select which
   keyboard mapping to use.  This can be accomplished through the keyboard
@@ -198,7 +204,7 @@
   interrupts by Allegro, joystick input functions have to be polled because
   there are no hardware interrupts for them on most platforms.  This doesn't
   mean that you have to poll the joysticks on each line of code you want to
-
+  read their values, but you should make sure to poll them at least once per
   frame in your game loop.  Otherwise you face the possibility of reading stale
   incorrect data.
 
@@ -214,7 +220,7 @@
 
   Palette entries are stored in an @link(AL_RGB) structure, which contains red,
   green and blue intensities in the VGA hardware format, ranging from 0-63.
-  The full palette is an @link(AL_PALETTE), a list of f256 @code(AL_RGB)
+  The full palette is an @link(AL_PALETTE), a list of 256 @code(AL_RGB)
   values.  You can set the palette using the @link(al_set_palette) procedure.
 
   In a truecolor video mode the red, green, and blue components for each pixel
@@ -227,6 +233,8 @@
   Since the layout is not known until you select the video mode you will be
   using, you must call @link(al_set_gfx_mode) before using any of the color
   routines!
+
+  @bold(See also) @link(alvga) @link(alblend)
 
 @section(2 bitmap Bitmaps)
 
@@ -419,10 +427,10 @@
 
 @section(2 draw_primitives Drawing primitives)
 
-  All these routines are affected by the current drawing mode and the clipping
-  rectangle of the destination bitmap.  Unless specified otherwise, all
-  coordinates for drawing operations are inclusive, and they, as well as
-  lengths, are specified in pixel units.
+  Except for @link(_al_putpixel), all these routines are affected by the
+  current drawing mode and the clipping rectangle of the destination bitmap.
+  Unless specified otherwise, all coordinates for drawing operations are
+  inclusive, and they, as well as lengths, are specified in pixel units.
 
   @bold(See also) @link(al_set_clip_rect) @link(al_drawing_mode)
 
@@ -517,7 +525,7 @@
 
   Therefore, the act of calling the BitBlt function came to be known as
   @italic("doing a blit").  The obvious next step was to rename the function
-  itself to @code (blit), which generally took place at the same time as people
+  itself to @code(blit), which generally took place at the same time as people
   decided to simplify the original, removing the different ROP modes on the
   grounds that they aren't needed for games coding and don't work well with
   anything higher than monochrome images in any case.  This leaves us with a
@@ -605,9 +613,10 @@
   The disadvantage of the @code(AL_MIDI_DIGMID) driver is that it uses more CPU
   than simple MIDI playback, and it steals some hardware voices from the sound
   card, which might be more critical for the end user experience than the
-  background music . At the Allegro homepage (http://alleg.sourceforge.net/)
-  you can find more information about @code(AL_MIDI_DIGMID) and where to
-  download digital samples for your MIDI files.
+  background music . At the Allegro.pas wiki
+  (http://allegro-pas.sourceforge.net/) you can find more information about
+  @code(AL_MIDI_DIGMID) and where to download and create digital samples for
+  your MIDI files.
 
   Allegro also allows the use of digital samples.
 
@@ -615,8 +624,10 @@
 
 
 
-@section(1 contact Contact)
+@section(1 contact Contact info)
 
-  You can ask, comment or make suggestions about Allegro.pas just visiting
-  http://allegro-pas.sourceforge.net/.  It includes mailing-list and
-  interactive forums.
+  If you want to ask, comment or make suggestions about Allegro.pas you can do
+  it by joining the Allegro.pas mailing list
+  (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main),
+  or at the Pascal Game Development forums
+  (http://www.pascalgamedevelopment.com/).

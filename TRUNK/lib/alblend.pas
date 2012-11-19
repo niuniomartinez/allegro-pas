@@ -70,7 +70,7 @@ INTERFACE
    RGBA images onto destination bitmaps of another format.  These blenders will
    be passed a 32-bit @code(x) parameter, along with a @code(y) value of a
    different color depth, and must try to do something sensible in response.
-   @seealso(set_alpha_blender) *)
+   @seealso(al_set_alpha_blender) *)
   PROCEDURE al_set_blender_mode_ex (b15, b16, b24, b32, b15x, b16x, b24x: AL_BLENDER_FUNC; r, g, b, a: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_blender_mode_ex';
 
@@ -103,15 +103,16 @@ INTERFACE
 
 (* Enables a linear interpolator blender mode for combining translucent or lit
    truecolor pixels.
-   @seealso(al_set_blender_mode) @seealso(set_alpha_blender)
-   @seealso(set_write_alpha_blender) @seealso(color_map)
-   @seealso(draw_trans_sprite) @seealso(draw_lit_sprite) @seealso(drawing_mode)
-   @seealso(set_add_blender) @seealso(set_burn_blender)
-   @seealso(set_color_blender) @seealso(set_difference_blender)
-   @seealso(set_dissolve_blender) @seealso(set_dodge_blender)
-   @seealso(set_hue_blender) @seealso(set_invert_blender)
-   @seealso(set_luminance_blender) @seealso(set_multiply_blender)
-   @seealso(set_saturation_blender) @seealso(set_screen_blender)
+   @seealso(al_set_blender_mode) @seealso(al_set_alpha_blender)
+   @seealso(al_set_write_alpha_blender) @seealso(al_color_map)
+   @seealso(al_draw_trans_sprite) @seealso(al_draw_lit_sprite)
+   @seealso(al_drawing_mode) @seealso(al_set_add_blender)
+   @seealso(al_set_burn_blender)
+   @seealso(al_set_color_blender) @seealso(al_set_difference_blender)
+   @seealso(al_set_dissolve_blender) @seealso(al_set_dodge_blender)
+   @seealso(al_set_hue_blender) @seealso(al_set_invert_blender)
+   @seealso(al_set_luminance_blender) @seealso(al_set_multiply_blender)
+   @seealso(al_set_saturation_blender) @seealso(al_set_screen_blender)
  *)
   PROCEDURE al_set_trans_blender (r, g, b, a: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_trans_blender';
