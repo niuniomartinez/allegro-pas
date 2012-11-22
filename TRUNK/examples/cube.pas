@@ -37,7 +37,7 @@ INTERFACE
 
   TYPE
   (* A simple vector. *)
-    TVector = CLASS
+    TVector = CLASS (TObject)
     PRIVATE
       fx, fy, fz: AL_FIXED;
     PUBLIC
@@ -60,7 +60,7 @@ INTERFACE
 
 
   (* A simple cube. *)
-    TCube = CLASS
+    TCube = CLASS (TObject)
     PRIVATE
       fPosition, fAngle, fRotate: TVector;
       fSize: AL_FIXED;
@@ -74,6 +74,8 @@ INTERFACE
       fVisibleFaces: INTEGER; (* Number of faces to draw. *)
 
       PROCEDURE SetUseZbuff (UseIt: BOOLEAN);
+    (* Draws the faces. *)
+      PROCEDURE DrawFaces (aBitmap: AL_BITMAPptr);
     PUBLIC
     (* Creates the cube. *)
       CONSTRUCTOR Create (px, py, pz, aSize: AL_FIXED; aTexture: AL_BITMAPptr);
@@ -99,9 +101,6 @@ INTERFACE
       PROPERTY Texture: AL_BITMAPptr READ fTexture WRITE fTexture;
     (* To use Z-buffer if available.  Don't use it by default. *)
       PROPERTY UseZbuff: BOOLEAN READ fUseZbuff WRITE SetUseZbuff;
-    PRIVATE
-    (* Draws the faces. *)
-      PROCEDURE DrawFaces (aBitmap: AL_BITMAPptr);
     END;
 
 
@@ -166,6 +165,37 @@ IMPLEMENTATION
       fZbuff := AL_POLYTYPE_ZBUF
     ELSE
       fZbuff := 0;
+  END;
+
+
+
+(* Draws faces. *)
+  PROCEDURE TCube.DrawFaces (aBitmap: AL_BITMAPptr);
+  VAR
+    Cnt: INTEGER;
+  BEGIN
+    FOR Cnt := 1 TO fVisibleFaces DO
+    WITH SELF.fFaces[Cnt] DO
+    BEGIN
+      IF fDrawmode <> POLYTYPE_WIRED THEN
+      BEGIN
+	al_quad3d (aBitmap, fDrawmode OR fZbuff, fTexture, @Point[1], @Point[2], @Point[3], @Point[4])
+      END
+      ELSE BEGIN
+	al_line (aBitmap, Point[1].x SHR 16, Point[1].y SHR 16,
+			Point[2].x SHR 16, Point[2].y SHR 16,
+			al_palette_color^[255]);
+	al_line (aBitmap, Point[2].x SHR 16, Point[2].y SHR 16,
+			Point[3].x SHR 16, Point[3].y SHR 16,
+			al_palette_color^[255]);
+	al_line (aBitmap, Point[3].x SHR 16, Point[3].y SHR 16,
+			Point[4].x SHR 16, Point[4].y SHR 16,
+			al_palette_color^[255]);
+	al_line (aBitmap, Point[4].x SHR 16, Point[4].y SHR 16,
+			Point[1].x SHR 16, Point[1].y SHR 16,
+			al_palette_color^[255]);
+      END;
+    END;
   END;
 
 
@@ -349,37 +379,6 @@ IMPLEMENTATION
     END;
   { Draw it. }
     SELF.DrawFaces (aBitmap);
-  END;
-
-
-
-(* Draws a simple face.  It's virtual so it can be changed. *)
-  PROCEDURE TCube.DrawFaces (aBitmap: AL_BITMAPptr);
-  VAR
-    Cnt: INTEGER;
-  BEGIN
-    FOR Cnt := 1 TO fVisibleFaces DO
-    WITH SELF.fFaces[Cnt] DO
-    BEGIN
-      IF fDrawmode <> POLYTYPE_WIRED THEN
-      BEGIN
-	al_quad3d (aBitmap, fDrawmode OR fZbuff, fTexture, @Point[1], @Point[2], @Point[3], @Point[4])
-      END
-      ELSE BEGIN
-	al_line (aBitmap, Point[1].x SHR 16, Point[1].y SHR 16,
-			Point[2].x SHR 16, Point[2].y SHR 16,
-			al_palette_color^[255]);
-	al_line (aBitmap, Point[2].x SHR 16, Point[2].y SHR 16,
-			Point[3].x SHR 16, Point[3].y SHR 16,
-			al_palette_color^[255]);
-	al_line (aBitmap, Point[3].x SHR 16, Point[3].y SHR 16,
-			Point[4].x SHR 16, Point[4].y SHR 16,
-			al_palette_color^[255]);
-	al_line (aBitmap, Point[4].x SHR 16, Point[4].y SHR 16,
-			Point[1].x SHR 16, Point[1].y SHR 16,
-			al_palette_color^[255]);
-      END;
-    END;
   END;
 
 
