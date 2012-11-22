@@ -121,64 +121,50 @@ PROGRAM excamera;
   FUNCTION TCamera.GetMatrix: AL_MATRIXptr;
   VAR
     Roller: AL_MATRIX;
-{ Unfortunatelly the "get_camera_matrix" funtions doesn't work.
-  You can try just removing comments.
-
-  If you find the bug, please tell me.
-
     XFront, YFront, ZFront,
     XUp, YUp, ZUp: AL_FIXED;
-}
   BEGIN
     { calculate the in-front vector }
-  {
       XFront := al_fixmul (al_fixsin (fAngle.y),  al_fixcos (fAngle.x));
       YFront := al_fixsin (fAngle.x);
       ZFront := al_fixmul (al_fixcos (fAngle.y), al_fixcos (fAngle.x));
-  }
 
     { rotate the up vector around the in-front vector by the roll angle }
-  {
       al_get_vector_rotation_matrix (@Roller, XFront, YFront, ZFront, fAngle.z);
       al_apply_matrix (
 	@Roller,
 	0, al_itofix (-1), 0,
 	XUp, YUp, ZUp
       );
-  }
 
     { build the camera matrix }
-{
       al_get_camera_matrix (
 	@fMatrix,
-}
-{	fPosition.x, fPosition.y, fPosition.z,} { camera position }
-{	XFront, YFront, ZFront,}                { in-front vector }
-{	XUp, YUp, ZUp,}                         { up vector }
-{	fFOV,}                                  { field of view }
-{	fAspect}                                { aspect ratio }
-{      );
+	fPosition.x, fPosition.y, fPosition.z, { camera position }
+	XFront, YFront, ZFront,                { in-front vector }
+	XUp, YUp, ZUp,                         { up vector }
+	al_itofix (fFOV),                      { field of view }
+	fAspect                                { aspect ratio }
+      );
 
       fFront.X := XFront; fFront.Y := YFront; fFront.Z := ZFront;
-      fUp.X := XUp; fUp.Y := YUp; fUp.Z := ZUp; }
+      fUp.X := XUp; fUp.Y := YUp; fUp.Z := ZUp;
 
 { Next is a hack that implements a working camera matrix using rotation instead
   of Front/Up matrices.  FOV an Aspect can be simulated by scaling.
 
-  If you want to test the al_get_camera_matrix function you should remove the
-  hack.
-}
-al_get_translation_matrix (@fMatrix, -fPosition.x, -fPosition.y, -fPosition.z);
+  al_get_translation_matrix (@fMatrix, -fPosition.x, -fPosition.y, -fPosition.z);
 
-al_get_y_rotate_matrix (@Roller, -fAngle.y);
-al_matrix_mul (@fMatrix, @Roller, @fMatrix);
+  al_get_y_rotate_matrix (@Roller, -fAngle.y);
+  al_matrix_mul (@fMatrix, @Roller, @fMatrix);
 
-al_get_x_rotate_matrix (@Roller, -fAngle.x);
-al_matrix_mul (@fMatrix, @Roller, @fMatrix);
+  al_get_x_rotate_matrix (@Roller, -fAngle.x);
+  al_matrix_mul (@fMatrix, @Roller, @fMatrix);
 
-al_get_z_rotate_matrix (@Roller, -fAngle.z);
-al_matrix_mul (@fMatrix, @Roller, @fMatrix);
-{ End of hack. }
+  al_get_z_rotate_matrix (@Roller, -fAngle.z);
+  al_matrix_mul (@fMatrix, @Roller, @fMatrix);
+
+  End of hack. }
 
     GetMatrix := @fMatrix;
   END;
@@ -503,7 +489,9 @@ al_matrix_mul (@fMatrix, @Roller, @fMatrix);
       BEGIN
 	IF Camera.FOV < 96 THEN
 	  Camera.FOV := Camera.FOV + 1
-	ELSE
+      END
+      ELSE BEGIN
+	IF Camera.FOV > 16 THEN
 	  Camera.FOV := Camera.FOV - 1;
       END;
 
