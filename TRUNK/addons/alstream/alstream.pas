@@ -13,14 +13,8 @@ INTERFACE
     (* The PACKFILE. *)
       fPackfile: AL_PACKFILEptr;
     (* To know who created the packfile. *)
-      fOwnedPackfile: BOOLEAN;
+      fPackfileOwner: BOOLEAN;
     PROTECTED
-    (* Returns stream size. *)
-      FUNCTION GetSize: Int64; OVERRIDE;
-    (* Returns current stream position. *)
-      FUNCTION GetPosition: Int64; OVERRIDE;
-    (* Sets stream position. *)
-      PROCEDURE SetPosition (CONST Pos: Int64); OVERRIDE;
     (* Returns EOF state. *)
       FUNCTION GetEOF: BOOLEAN;
     PUBLIC
@@ -63,6 +57,8 @@ INTERFACE
       PROPERTY Packfile: AL_PACKFILEptr READ fPackfile;
     (* Returns EOF state. *)
       PROPERTY EOF: BOOLEAN READ GetEOF;
+    (* If set to @true it closes the AL_PACKFILE when destroyed. *)
+      PROPERTY PackfileOwner: BOOLEAN READ fPackfileOwner WRITE fPackfileOwner;
     END;
 
 IMPLEMENTATION
@@ -74,34 +70,10 @@ IMPLEMENTATION
  * TAllegroStream *
  ******************)
 
-(* Returns current stream position. *)
-  FUNCTION TAllegroStream.GetPosition: Int64;
-  BEGIN
-    RAISE EStreamError.Create ('Allegro''s PACKFILE doesn''t implements "GetPosition".');
-  END;
-
-
-
-(* Sets stream position. *)
-  PROCEDURE TAllegroStream.SetPosition (CONST Pos: Int64);
-  BEGIN
-    RAISE EStreamError.Create ('Allegro''s PACKFILE doesn''t implements "SetPosition".');
-  END;
-
-
-
 (* Returns EOF state. *)
   FUNCTION TAllegroStream.GetEOF: BOOLEAN;
   BEGIN
     GetEOF := al_pack_feof (fPackfile);
-  END;
-
-
-
-(* Returns stream size. *)
-  FUNCTION TAllegroStream.GetSize: Int64;
-  BEGIN
-    RAISE EStreamError.Create ('Allegro''s PACKFILE doesn''t implements "GetSize".');
   END;
 
 
@@ -113,7 +85,7 @@ IMPLEMENTATION
     fPackfile := al_pack_fopen (Filename, Mode);
     IF fPackfile = NIL THEN
       RAISE EStreamError.Create (al_error);
-    fOwnedPackfile := TRUE;
+    fPackfileOwner := TRUE;
   END;
 
 
@@ -123,7 +95,7 @@ IMPLEMENTATION
   BEGIN
     INHERITED Create;
     fPackfile := aPackfile;
-    fOwnedPackfile := FALSE;
+    fPackfileOwner := FALSE;
   END;
 
 
@@ -131,7 +103,7 @@ IMPLEMENTATION
 (* Destructor.  If file was created by the stream, it's closed. *)
   DESTRUCTOR TAllegroStream.Destroy;
   BEGIN
-    IF fOwnedPackfile THEN
+    IF fPackfileOwner THEN
       al_pack_fclose (fPackfile);
     INHERITED Destroy;
   END;

@@ -113,16 +113,19 @@ VAR
       PlaySoundSample (ALEX_SPR, Data^[SND_JUMP].dat);
     END;
 
-  (* Checks if there's a ground to walk over. *)
-    FUNCTION CheckGround: BOOLEAN;
+    PROCEDURE StartWalk (SpriteDir: INTEGER); INLINE;
     BEGIN
-      CheckGround := TRUE;
-      IF NOT CheckGroundCollision (ALEX_SPR) THEN
-      BEGIN
+      AlexState := WALKING;
+      AlexSpr ^.Index := SpriteDir;
+    END;
+
+  (* Checks if there's a ground to walk over. *)
+    FUNCTION CheckGround: BOOLEAN; INLINE;
+    BEGIN
+      CheckGround := CheckGroundCollision (ALEX_SPR);
+      IF NOT CheckGround THEN
       { Alex will fall or is falling. }
 	StartFall;
-	CheckGround := FALSE;
-      END;
     END;
 
   VAR
@@ -141,10 +144,12 @@ VAR
 	ELSE
 	    AlexSpr^.Index := BMP_MAIN_R0;
       { Checks keyboard. }
-	IF (al_key[AL_KEY_LEFT] <> 0) OR (al_key[AL_KEY_RIGHT] <> 0)
-	OR (al_joy[0].stick[0].axis[0].d1 <> 0)
+	IF (al_key[AL_KEY_RIGHT] <> 0)
 	OR (al_joy[0].stick[0].axis[0].d2 <> 0) THEN
-	  AlexState := WALKING;
+	  StartWalk (BMP_MAIN_R0)
+	ELSE IF (al_key[AL_KEY_LEFT] <> 0)
+	OR (al_joy[0].stick[0].axis[0].d1 <> 0) THEN
+	  StartWalk (BMP_MAIN_L0);
 	IF (al_key[AL_KEY_SPACE] <> 0) OR (al_joy[0].button[0].b <> 0) THEN
 	  StartJump;
       END;
@@ -161,16 +166,16 @@ VAR
 	BEGIN
 	{ Moves Alex. }
 	  DEC (AlexSpr^.x);
-	  { Checks if the sprite should be changed.  Without this, Alex will move
+	{ Checks if the sprite should be changed.  Without this, Alex will move
 	  their legs too fast. }
 	  INC (AlexCount);
 	  IF AlexCount > 10 THEN
 	  BEGIN
 	    AlexCount := 0;
-	    IF AlexSpr^.Index = BMP_MAIN_L1 THEN
-	      AlexSpr^.Index := BMP_MAIN_L2
-	    ELSE
-	      AlexSpr^.Index := BMP_MAIN_L1;
+	  { Next sprite of walking motion. }
+	    INC (AlexSpr^.Index);
+	    IF AlexSpr^.Index > BMP_MAIN_L3 THEN
+	      AlexSpr^.Index := BMP_MAIN_L0;
 	  END;
 	END
 	ELSE
@@ -186,10 +191,19 @@ VAR
 	  IF AlexCount > 10 THEN
 	  BEGIN
 	    AlexCount := 0;
-	    IF AlexSpr^.Index = BMP_MAIN_R1 THEN
-	      AlexSpr^.Index := BMP_MAIN_R2
-	    ELSE
-	      AlexSpr^.Index := BMP_MAIN_R1;
+	  { Checks if Alex changed his direction.  Otherwise it would do
+	    "moon-walks".  Walking to the left side doesn't needs this check
+	    because the "to the right animation" is beyond the last "to the
+	    left animation" bitmap (BMP_MAIN_L3).  See demo.inc file to see the
+	    indexes of each bitmap. }
+	    IF AlexSpr^.Index < BMP_MAIN_R0 THEN
+	      AlexSpr^.Index := BMP_MAIN_R0
+	    ELSE BEGIN
+	    { Next sprite of walking motion. }
+	      INC (AlexSpr^.Index);
+	      IF AlexSpr^.Index > BMP_MAIN_R3 THEN
+		AlexSpr^.Index := BMP_MAIN_R0;
+	    END;
 	  END;
 	END
 	ELSE

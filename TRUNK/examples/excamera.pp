@@ -12,13 +12,16 @@ PROGRAM excamera;
  *    This program demonstrates how to use the ex_get_camera_matrix
  *    function to view a 3d world from any position and angle.
  *
- *    The example draws a checkered floor and some cubes through a viewport
- *    region on the screen. You can use the keyboard to move around the
- *    camera or modify the size of the viewport. The keys that can be used with
- *    this example are displayed between brackets at the top of the screen.
+ *    The example draws a checkered floor through a viewport region on the
+ *    screen. You can use the keyboard to move around the camera or modify the
+ *    size of the viewport. The keys that can be used with this example are
+ *    displayed between brackets at the top of the screen.
+ *
+ *	It uses fixed point values, that are less exact than floating point,
+ *	so there are few glitches depending on angle and distance.
  *
  *	By Guillermo "Ñuño" Martínez
- *	Some parts translated from Shawn Hargreaves example.
+ *	From Shawn Hargreaves' example.
  *
  *	See README file for license and copyright information.
  *)
@@ -29,11 +32,24 @@ PROGRAM excamera;
 {$ENDIF}
 
   USES
-    cube,
     allegro, al3d, alfixed,
     sysutils;
 
   TYPE
+  (* A vector. *)
+    TVector = CLASS (TObject)
+    PRIVATE
+      fx, fy, fz: AL_FIXED;
+    PUBLIC
+      CONSTRUCTOR Create (ax, ay, az: AL_FIXED);
+
+      PROPERTY x: AL_FIXED READ fx WRITE fx;
+      PROPERTY y: AL_FIXED READ fy WRITE fY;
+      PROPERTY z: AL_FIXED READ fz WRITE fz;
+    END;
+
+
+
   (* The camera. *)
     TCamera = CLASS (TObject)
     PRIVATE
@@ -89,10 +105,6 @@ PROGRAM excamera;
 
 
 
-  (* Expands basic cube so it can use al_clip3d to clip its faces inside camera
-    frustum and z-Buffer for depth sorting. *)
-    TNiceCube = CLASS (TCube)
-    END;
 
   CONST
   (* Times we check frames. *)
@@ -100,16 +112,27 @@ PROGRAM excamera;
   VAR
   (* Frame count. *)
     FPS, FrameCount: INTEGER;
-  (* The z-buffer. *)
-    ZBuffer: AL_ZBUFFERptr;
-  (* Camera, grid and cubes. *)
+  (* Camera and  grid. *)
     Camera: TCamera;
     Grid: TChessBoard;
-    Cubes: ARRAY [1..5] OF TCube;
   (* Backbuffer. *)
     Backbuffer: AL_BITMAPptr;
   (* Use or not to use... *)
     UseVSync: BOOLEAN;
+  (* Used colours. *)
+    ClrGreen, ClrYellow, ClrRed, ClrWhite, ClrBlack: INTEGER;
+
+
+
+(***********
+ * TVector *
+ ***********)
+  CONSTRUCTOR TVector.Create (ax, ay, az: AL_FIXED);
+  BEGIN
+    fx := ax;
+    fy := ay;
+    fz := az;
+  END;
 
 
 
@@ -300,15 +323,11 @@ PROGRAM excamera;
 
   { set the color }
     IF ((X + Z) AND 1) <> 0 THEN
-      VOut[1]^.c := al_makecol (0, 255, 0)
+      VOut[1]^.c := ClrGreen
     ELSE
-      VOut[1]^.c := al_makecol(255, 255, 0);
+      VOut[1]^.c := ClrYellow;
 
-  { render the polygon
-
-    Note that we don't use z-buffer here because we know that all cubes are
-    above the grid, so we can check camera position and decide when to draw
-    the grid for a correct rendering.  See procedure Render to see how! }
+  { render the polygon }
     al_polygon3d (OutBmp, AL_POLYTYPE_FLAT, NIL, VCnt, VOut);
   END;
 
@@ -333,11 +352,10 @@ PROGRAM excamera;
 (* Draws everithing. *)
   PROCEDURE Render (OutBmp: AL_BITMAPptr);
   VAR
-    Ndx, X, Y, W, H: INTEGER;
+    X, Y, W, H: INTEGER;
   BEGIN
   { Clear the background and the z-buffer. }
-    al_clear_to_color (OutBmp, al_makecol (255, 255, 255));
-    al_clear_zbuffer (ZBuffer, 0);
+    al_clear_to_color (OutBmp, ClrWhite);
 
   { set up the viewport region }
     x := (AL_SCREEN_W - Camera.ViewportW) DIV 2;
@@ -346,75 +364,63 @@ PROGRAM excamera;
     h := Camera.ViewportH;
 
     al_set_projection_viewport (x, y, w, h);
-    al_rect (OutBmp, x - 1, y - 1, x + w, y + h, al_makecol (255, 0, 0));
+    al_rect (OutBmp, x - 1, y - 1, x + w, y + h, ClrRed);
     al_set_clip_rect  (OutBmp, x, y, x + w - 1, y + h - 1);
 
-  { Draws objects. }
-    IF Camera.Position.Y <= 0 THEN
-    BEGIN
-    { If camera is over the grid, draw grid first, so cubes will overlap it. }
-      Grid.Draw (OutBmp, Camera.Matrix);
-      FOR Ndx := LOW (Cubes) TO HIGH (Cubes) DO
-	Cubes[Ndx].Draw (OutBmp, Camera.Matrix);
-    END
-    ELSE BEGIN
-    { If camera is below the grid, draw cubes first, so grid will overlap them. }
-      FOR Ndx := LOW (Cubes) TO HIGH (Cubes) DO
-	Cubes[Ndx].Draw (OutBmp, Camera.Matrix);
-      Grid.Draw (OutBmp, Camera.Matrix);
-    END;
+  { Draw grid. }
+    Grid.Draw (OutBmp, Camera.Matrix);
 
   { overlay some text }
     al_set_clip_rect (OutBmp, 0, 0, OutBmp^.w, OutBmp^.h);
     al_textout_ex (
       OutBmp, al_font,
       Format ('Viewport width: %d (w/W changes)', [Camera.ViewportW]),
-      0,  0, al_makecol (0, 0, 0), -1
+      0,  0, ClrBlack, -1
     );
     al_textout_ex (
       OutBmp, al_font,
       Format ('Viewport height: %d (h/H changes)', [Camera.ViewportH]),
-      0,  8, al_makecol (0, 0, 0), -1
+      0,  8, ClrBlack, -1
     );
     al_textout_ex (
       OutBmp, al_font,
       Format ('Field of view: %d (f/F changes)', [Camera.FOV]),
-      0, 16, al_makecol (0, 0, 0), -1
+      0, 16, ClrBlack, -1
     );
     al_textout_ex (
       OutBmp, al_font,
       Format ('Aspect ratio: %.2f (a/A changes)', [al_fixtof (Camera.Aspect)]),
-      0, 24, al_makecol (0, 0, 0), -1
+      0, 24, ClrBlack, -1
     );
     al_textout_ex (
       OutBmp, al_font,
       Format ('X position: %.2f (x/X changes)', [al_fixtof (Camera.Position.X)]),
-      0, 32, al_makecol (0, 0, 0), -1
+      0, 32, ClrBlack, -1
     );
     al_textout_ex (
       OutBmp, al_font,
       Format ('Y position: %.2f (y/Y changes)', [al_fixtof (Camera.Position.Y)]),
-      0, 40, al_makecol (0, 0, 0), -1
+      0, 40, ClrBlack, -1
     );
     al_textout_ex (
       OutBmp, al_font,
       Format ('Z position: %.2f (z/Z changes)', [al_fixtof (Camera.Position.Z)]),
-      0, 48, al_makecol (0, 0, 0), -1
+      0, 48, ClrBlack, -1
     );
     al_textout_ex (
       OutBmp, al_font,
       Format ('Heading: %.2f (left/right changes)', [al_fixtof (Camera.Angle.Y)]),
-      0, 56, al_makecol (0, 0, 0), -1
+      0, 56, ClrBlack, -1
     );
     al_textout_ex (
       OutBmp, al_font,
       Format ('Pitch: %.2f (pgup/pgdn changes)', [al_fixtof (Camera.Angle.X)]),
-      0, 64, al_makecol (0, 0, 0), -1
+      0, 64, ClrBlack, -1
     );
     al_textout_ex (
       OutBmp, al_font,
       Format ('Roll: %.2f (r/R changes)', [al_fixtof (Camera.Angle.Z)]),
-      0, 72, al_makecol (0, 0, 0), -1
+      0, 72, ClrBlack, -1
     );
     al_textout_ex (
       OutBmp, al_font,
@@ -422,7 +428,7 @@ PROGRAM excamera;
 	'Front vector: %.2f, %.2f, %.2f',
 	[al_fixtof (Camera.Front.X), al_fixtof (Camera.Front.Y), al_fixtof (Camera.Front.Z)]
       ),
-      0, 80, al_makecol (0, 0, 0), -1
+      0, 80, ClrBlack, -1
     );
     al_textout_ex (
       OutBmp, al_font,
@@ -430,24 +436,24 @@ PROGRAM excamera;
 	'Up vector: %.2f, %.2f, %.2f',
 	[al_fixtof (Camera.Up.X), al_fixtof (Camera.Up.Y), al_fixtof (Camera.Up.Z)]
       ),
-      0, 88, al_makecol (0, 0, 0), -1
+      0, 88, ClrBlack, -1
     );
     al_textout_ex (
       OutBmp, al_font,
-      Format ('Frames per second: %d)', [FPS]),
-      0, 96, al_makecol (0, 0, 0), -1
+      Format ('Frames per second: %d', [FPS]),
+      0, 96, ClrBlack, -1
     );
     IF UseVSync THEN
       al_textout_ex (
 	OutBmp, al_font,
 	'Using vsync (v changes)',
-	0, 104, al_makecol (0, 0, 0), -1
+	0, 104, ClrBlack, -1
       )
     ELSE
       al_textout_ex (
 	OutBmp, al_font,
 	'Don''t using vsync (V changes)',
-	0, 104, al_makecol (0, 0, 0), -1
+	0, 104, ClrBlack, -1
       );
   END;
 
@@ -585,8 +591,6 @@ PROGRAM excamera;
 
 
 
-VAR
-  Ndx: INTEGER;
 BEGIN { The program starts here. }
 
   IF NOT al_init THEN
@@ -597,7 +601,7 @@ BEGIN { The program starts here. }
   al_install_timer;
   al_install_keyboard;
 
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_SAFE, 640, 480, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
@@ -608,15 +612,16 @@ BEGIN { The program starts here. }
   UseVSync := TRUE;
 
   al_set_palette (al_desktop_palette);
+  ClrBlack := al_makecol (0, 0, 0);
+  ClrGreen := al_makecol (0, 255, 0);
+  ClrRed   := al_makecol (255, 0, 0);
+  ClrYellow:= al_makecol (255, 255, 0);
+  ClrWhite := al_makecol (255, 255, 255);
+
   Backbuffer := al_create_bitmap (AL_SCREEN_W, AL_SCREEN_H);
-  ZBuffer := al_create_zbuffer (Backbuffer);
-  al_set_zbuffer (ZBuffer);
 
   Camera := TCamera.Create;
   Grid := TChessBoard.Create;
-
-  FOR Ndx := LOW (Cubes) TO HIGH (Cubes) DO
-    Cubes[Ndx] := TCube.Create (al_itofix ((Ndx * 2) - GRID_SIZE), al_ftofix (-0.5), 0, al_ftofix (0.5), NIL);
 
   al_install_int_ex (@FPSCheck, AL_BPS_TO_TIMER (FPS_INT));
 
@@ -634,11 +639,8 @@ BEGIN { The program starts here. }
       ProcessInput;
     END
   FINALLY
-    FOR Ndx := LOW (Cubes) TO HIGH (Cubes) DO
-      Cubes[Ndx].Free;
     Grid.Free;
     Camera.Free;
     al_destroy_bitmap (Backbuffer);
-    al_destroy_zbuffer (ZBuffer);
   END;
 END.

@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 4.4.3                 \_/__/                 \/_/
+     Version 4.4.4                 \_/__/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Ñuño Martínez, September 4, 2011.
+  by Ñuño Martínez, November 28, 2012.
 
 
 
@@ -133,8 +133,9 @@ The Allegro library
 The Pascal compiler
 -------------------
 
-  NOTE: Current version ISN'T compatible with Delphi, but compatibility should
-        be back in Allegro.pas version 5.
+  NOTE: Current version ISN'T compatible with Delphi because it can't share
+	variables with dynamic libraries (at least not hte versions I use),
+	but compatibility should be back in Allegro.pas version 5.
 
   The best compiler to use Allegro.pas is Free Pascal (AKA: FPC) which can be
   installed separately or with the Lazarus IDE.
@@ -167,11 +168,21 @@ Use Allegro.pas in your programs
   Use "-FuUnitPath" and "-FiIncludePath" parameters for the Allegro.pas' "lib"
   directores.  Example: fpc -FuD:\allegro.pas\lib -FiD:\allegro.pas\lib
 
+  Note that Allegro uses C and Assembler and it's optimised in a very low
+  level.  So some parts of Allegro might conflict with some FPC options.  For
+  example, a known issue is option "-Ct" that conflicts with interruption
+  functions generating a run-time error 202 ("Stack overflow error") but it
+  isn't true.  Just don't use such options as they're not necessary in most
+  cases.
+
+  Also there are some 3D polygon drawing modes that doesn't work on 15, 16, 24
+  nor 32 bits per pixel.  See unit "al3d" documentation for more information.
+
 More information
 ----------------
 
   There's an updated copy of the full installation process at the Allegro.pas'
-  wiki page at http://allegro-pas.sourceforge.net/wiki/doku.php?id=install
+  wiki page at http://allegro-pas.sourceforge.net/wiki/
 
 
 
@@ -218,7 +229,7 @@ Contact info
 ============
 
   You'll find more information at http://allegro-pas.sourceforge.net.  There
-  are forums, a mailing-list and "wiki" pages in that site.
+  are mailing-list and "wiki" pages in that site.
 
   Another nice forum I visit is "Pascal Game Development"
   (http://www.pascalgamedevelopment.com/).
