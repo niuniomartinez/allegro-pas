@@ -66,14 +66,13 @@ INTERFACE
       fSize: AL_FIXED;
       fVertexColor: ARRAY [1..4] OF INTEGER;
       fUseZbuff: BOOLEAN;
-      fZbuff: INTEGER;
       fDrawmode: LONGINT;
       fTexture: AL_BITMAPptr;
       fTexWidth, fTexHeight: AL_FIXED;
+    PROTECTED
       fFaces: ARRAY [1..6] OF TFace;
       fVisibleFaces: INTEGER; (* Number of faces to draw. *)
 
-      PROCEDURE SetUseZbuff (UseIt: BOOLEAN);
     (* Draws the faces. *)
       PROCEDURE DrawFaces (aBitmap: AL_BITMAPptr);
     PUBLIC
@@ -87,7 +86,7 @@ INTERFACE
     (* Updates cube. *)
       PROCEDURE Update; VIRTUAL;
     (* Draws the cube. *)
-      PROCEDURE Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIXptr); VIRTUAL;
+      PROCEDURE Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIXptr);
 
     (* Cube position. *)
       PROPERTY Pos: TVector READ fPosition WRITE fPosition;
@@ -100,7 +99,7 @@ INTERFACE
     (* Cube texture.  Note it isn't destroyed by the cube. *)
       PROPERTY Texture: AL_BITMAPptr READ fTexture WRITE fTexture;
     (* To use Z-buffer if available.  Don't use it by default. *)
-      PROPERTY UseZbuff: BOOLEAN READ fUseZbuff WRITE SetUseZbuff;
+      PROPERTY UseZbuff: BOOLEAN READ fUseZbuff WRITE fUseZbuff;
     END;
 
 
@@ -157,23 +156,15 @@ IMPLEMENTATION
 
 
 
-(* Set or clear the use of Z-buffer. *)
-  PROCEDURE TCube.SetUseZbuff (UseIt: BOOLEAN);
-  BEGIN
-    fUseZbuff := UseIt;
-    IF UseIt THEN
-      fZbuff := AL_POLYTYPE_ZBUF
-    ELSE
-      fZbuff := 0;
-  END;
-
-
-
 (* Draws faces. *)
   PROCEDURE TCube.DrawFaces (aBitmap: AL_BITMAPptr);
   VAR
-    Cnt: INTEGER;
+    fZbuff, Cnt: INTEGER;
   BEGIN
+    IF UseZbuff THEN
+      fZbuff := AL_POLYTYPE_ZBUF
+    ELSE
+      fZbuff := 0;
     FOR Cnt := 1 TO fVisibleFaces DO
     WITH SELF.fFaces[Cnt] DO
     BEGIN
@@ -211,7 +202,6 @@ IMPLEMENTATION
     fSize := aSize;
     fTexture := aTexture;
     fUseZbuff := FALSE;
-    fZbuff := 0;
     IF fTexture <> NIL THEN
     BEGIN
       fDrawmode  := AL_POLYTYPE_PTEX;

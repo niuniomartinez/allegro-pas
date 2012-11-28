@@ -1,3 +1,52 @@
+Changes between versions 4.4.3 y 4.4.4
+======================================
+
+  Bugfixing
+  ---------
+  * Fixed al_errno definition.
+  * Fixed functions al_install_param_int, al_install_param_int_ex and
+    al_remove_param_int.
+  * Fixed functions al_save_bmp_pf, al_save_pcx_pf and al_save_tga_pf.
+  * Small change in exhsvrgb example.
+  * Removed warning '"open array" not yet supported inside inline
+    procedure/function'.
+  * Fixed several bugs in exscn3d example.
+  * Fixed definition of float point identity matrix.
+  * Fixed function al_draw_sprite_ex.
+
+  News
+  ----
+  + Added text-coding conversion functions.
+  + Added some clipping functions.
+  + Added al_mouse_on_screen.
+  + Addea al_find_datafile_object.
+  + Added a lot of text fotn manipulation functions and exfont example.
+  + Added exsample & exmidi examples.
+  + Added functions, constants and variables for CPU identification.
+  * Added quaternions implementation.
+  + Added scrool and triple buffer functions and ex3d example.
+  + Added new aexamples: exalpha, excustom, exmem, exquat, exscale, exscroll,
+    exstars, extrans2 and exxfade.
+  + Support for 64bit systems.
+  + Add-ons.
+
+  Other
+  -----
+  * Documentation fixes.
+  * Now object files are stored in its own directory.
+  * Now palette generation functions use VAR parameters instead of pointers.
+  * Now 3D calculation functions and 3D drawing procedures use ARRAY instead of
+    pointers.
+  * Use of "Low" y "High" in for loops and other places to get ARRAY limits.
+  * Changed parameter of al_xor_mode from INTEGER to BOOLEAN.
+  * Changed return values of al_save_*_pf from INTEGER to BOOLEAN.
+  + Added a frame to Alex's walking motion to show better how to do sprite
+    animation.  Also I've added a block to the 3th map to make it less
+    impossible ;) .
+  * Se ha "optimizado" la propiedad "UseZBuff" del objeto "Cube".
+
+
+
 Changes between versions 4.4.2 y 4.4.3
 ======================================
 
