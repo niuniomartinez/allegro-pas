@@ -39,55 +39,79 @@ PROGRAM ex3d;
 
 
   TYPE
-  (* Extends the basic cube. *)
-    TRotableCube = CLASS (TCube)
+  (* Extends the basic cube to make it bounce. *)
+    TBouncingCube = CLASS (TCube)
+    PRIVATE
+      fDeltaz: AL_FIXED;
     PUBLIC
       CONSTRUCTOR Create (aTexture: AL_BITMAPptr); OVERLOAD;
+      PROCEDURE Update; OVERRIDE;
     END;
 
 
 
 (* Creates the cube. *)
-  CONSTRUCTOR TRotableCube.Create (aTexture: AL_BITMAPptr);
+  CONSTRUCTOR TBouncingCube.Create (aTexture: AL_BITMAPptr);
   BEGIN
-    INHERITED Create (0, 0, al_itofix (5), al_itofix (1), aTexture);
-    DrawMode := POLYTYPE_WIRED;
+    INHERITED Create (
+      al_itofix (Random (256) - 128),
+      al_itofix (Random (256) - 128),
+      al_itofix (768),
+      al_itofix (32),
+      aTexture
+    );
+    SELF.DrawMode := POLYTYPE_WIRED;
+    REPEAT
+      fDeltaz := al_itofix (Random (32) - 16)
+    UNTIL fDeltaz <> 0;
+
   END;
 
 
 
-VAR
-(* Graphics mode selection. *)
-  c, w, h, bpp: LONGINT;
-  Buffer: AL_BITMAPptr;
-(* Input. *)
-  Key: LONGINT;
-(* The cube. *)
-  TheCube: TRotableCube;
-  Palette: AL_PALETTE;
-  Texture: AL_BITMAPptr;
-(* Color management. *)
-  RGBTable: AL_RGB_MAP;
-  LightTable, TransTable: AL_COLOR_MAP;
-(* Name of modes. *)
-  DrawModeName: ARRAY[0..15] OF STRING = (
-   'Wireframe',
-   'Flat shaded',
-   'Single color Gouraud shaded',
-   'Gouraud shaded',
-   'Texture mapped',
-   'Perspective correct texture mapped',
-   'Masked texture mapped',
-   'Masked persp. correct texture mapped',
-   'Lit texture map',
-   'Lit persp. correct texture map',
-   'Masked lit texture map',
-   'Masked lit persp. correct texture map',
-   'Transparent texture mapped',
-   'Transparent perspective correct texture mapped',
-   'Transparent masked texture mapped',
-   'Transparent masked persp. correct texture mapped'
-  );
+(* Updates the cube. *)
+  PROCEDURE TBouncingCube.Update;
+  BEGIN
+    INHERITED Update;
+    SELF.Pos.Z := SELF.Pos.Z + fDeltaz;
+    IF ((192 SHL 16) > SELF.Pos.Z) OR (SELF.Pos.Z > (1024 SHL 16)) THEN
+      fDeltaz := fDeltaz * (-1);
+  END;
+
+
+
+  VAR
+  (* Graphics mode selection. *)
+    c, w, h, bpp: LONGINT;
+    Buffer: AL_BITMAPptr;
+  (* Input. *)
+    Key: LONGINT;
+  (* The cubes. *)
+    TheCubes: ARRAY [1..8] OF TBouncingCube;
+    Palette: AL_PALETTE;
+    Texture: AL_BITMAPptr;
+  (* Color management. *)
+    RGBTable: AL_RGB_MAP;
+    LightTable, TransTable: AL_COLOR_MAP;
+  (* Name of modes. *)
+    DrawModeName: ARRAY [0..15] OF STRING = (
+     'Wireframe',
+     'Flat shaded',
+     'Single color Gouraud shaded',
+     'Gouraud shaded',
+     'Texture mapped',
+     'Perspective correct texture mapped',
+     'Masked texture mapped',
+     'Masked persp. correct texture mapped',
+     'Lit texture map',
+     'Lit persp. correct texture map',
+     'Masked lit texture map',
+     'Masked lit persp. correct texture map',
+     'Transparent texture mapped',
+     'Transparent perspective correct texture mapped',
+     'Transparent masked texture mapped',
+     'Transparent masked persp. correct texture mapped'
+    );
 
 
 
@@ -152,6 +176,32 @@ VAR
 
 
 
+(* Orders cubes by Z axis. *)
+  PROCEDURE OrderCubes;
+
+    PROCEDURE SwapCubes (C1, C2: INTEGER); INLINE;
+    VAR
+      Tmp: TBouncingCube;
+    BEGIN
+      Tmp := TheCubes[C1];
+      TheCubes[C1] := TheCubes[C2];
+      TheCubes[C2] := Tmp;
+    END;
+
+  VAR
+    Cnt: INTEGER;
+  BEGIN
+  { It uses simple bubble ordering.  This is because cubes are almost ordered
+    (except at start) and it is fastest than QSort in that cases! }
+    FOR Cnt := LOW (TheCubes) TO (HIGH (TheCubes) - 1) DO
+      IF TheCubes[Cnt].Pos.z < TheCubes[Cnt + 1].Pos.z THEN
+        SwapCubes (Cnt, Cnt + 1);
+  END;
+
+
+
+VAR
+  Cnt, DrawMode: INTEGER;
 BEGIN (* The program starts here. *)
 
 { You should always do this at the start of Allegro programs. }
@@ -210,46 +260,48 @@ BEGIN (* The program starts here. *)
 { Set up truecolor blending function (25% transparent). }
   al_set_trans_blender (0, 0, 0, 192);
 
-{ Initialise the cube. }
+{ Initialise the cubes. }
+  DrawMode := POLYTYPE_WIRED;
   CreateTexture;
   Randomize;
-  TheCube := TRotableCube.Create (Texture);
+  FOR Cnt := LOW (TheCubes) TO HIGH (TheCubes) DO
+    TheCubes[Cnt] := TBouncingCube.Create (Texture);
 
   Tick := 1;
   REPEAT
   { Update. }
     WHILE Tick > 0 DO
     BEGIN
-      TheCube.Update;
     { User input. }
       IF al_keypressed THEN
       BEGIN
 	Key := al_readkey SHR 8;
 	IF Key <> AL_KEY_ESC THEN
 	BEGIN
-	  IF Key = AL_KEY_PGDN THEN
-	    TheCube.Pos.z := TheCube.Pos.z + (1 SHL 14)
-	  ELSE IF Key = AL_KEY_PGUP THEN
-	    TheCube.Pos.z := TheCube.Pos.z - (1 SHL 14)
-	  ELSE BEGIN
-	    TheCube.DrawMode := TheCube.DrawMode + 1;
-	    IF TheCube.DrawMode >= AL_POLYTYPE_MAX THEN
-	    BEGIN
-	      TheCube.DrawMode := POLYTYPE_WIRED;
-	      al_color_table := @LightTable;
-	    END;
-	    IF TheCube.DrawMode >= AL_POLYTYPE_ATEX_TRANS THEN
-	      al_color_table := @TransTable;
+	  INC (DrawMode);
+	  IF DrawMode >= AL_POLYTYPE_MAX THEN
+	  BEGIN
+	    DrawMode := POLYTYPE_WIRED;
+	    al_color_table := @LightTable;
 	  END;
+	  IF DrawMode >= AL_POLYTYPE_ATEX_TRANS THEN
+	    al_color_table := @TransTable;
 	END;
       END;
+      FOR Cnt := LOW (TheCubes) TO HIGH (TheCubes) DO
+      BEGIN
+	TheCubes[Cnt].Update;
+	TheCubes[Cnt].DrawMode := DrawMode;
+      END;
+      OrderCubes;
     { Next tick. }
       DEC (Tick);
     END;
   { Draw. }
     al_clear_bitmap (Buffer);
-    TheCube.Draw (Buffer, @al_identity_matrix);
-    al_textout_ex (Buffer, al_font, 'Poly type: '+DrawModeName[TheCube.DrawMode + 1],
+    FOR Cnt := LOW (TheCubes) TO HIGH (TheCubes) DO
+      TheCubes[Cnt].Draw (Buffer, @al_identity_matrix);
+    al_textout_ex (Buffer, al_font, 'Poly type: '+DrawModeName[DrawMode + 1],
 		   1, 1, -1, -1);
     al_textout_ex (Buffer, al_font, 'Color depth: '+IntToStr (bpp)+'bpp',
 		   1, 9, -1, -1);
@@ -260,7 +312,8 @@ BEGIN (* The program starts here. *)
   UNTIL Key = AL_KEY_ESC;
 
 { Release resources. }
-  TheCube.Free;
+  FOR Cnt := LOW (TheCubes) TO HIGH (TheCubes) DO
+    TheCubes[Cnt].Free;
   al_destroy_bitmap (Buffer);
   al_destroy_bitmap (Texture);
 
