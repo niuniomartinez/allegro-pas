@@ -112,6 +112,34 @@ INTERFACE
 
 IMPLEMENTATION
 
+(* Returns max value. *)
+  FUNCTION MyMax (x, y: LONGINT): LONGINT; INLINE;
+  BEGIN
+    IF x > y THEN
+      MyMax := x
+    ELSE
+      MyMax := y;
+  END;
+
+
+
+(* Returns min value. *)
+  FUNCTION MyMin (x, y: LONGINT): LONGINT; INLINE;
+  BEGIN
+    IF x < y THEN
+      MyMin := x
+    ELSE
+      MyMin := y;
+  END;
+
+
+
+(* Returns mid value.  Use only when x < z. *)
+  FUNCTION MyClamp (x, y, z: LONGINT): LONGINT; INLINE;
+  BEGIN
+    MyClamp := MyMax (x, MyMin (y, z));
+  END;
+
 
 
 (***********
@@ -159,7 +187,7 @@ IMPLEMENTATION
 (* Draws faces. *)
   PROCEDURE TCube.DrawFaces (aBitmap: AL_BITMAPptr);
   VAR
-    fZbuff, Cnt: INTEGER;
+    fZbuff, Cnt, Clr: INTEGER;
   BEGIN
     IF UseZbuff THEN
       fZbuff := AL_POLYTYPE_ZBUF
@@ -173,18 +201,19 @@ IMPLEMENTATION
 	al_quad3d (aBitmap, fDrawmode OR fZbuff, fTexture, @Point[1], @Point[2], @Point[3], @Point[4])
       END
       ELSE BEGIN
+	Clr := MyClamp (128, 255 - al_fixtoi (Point[1].z + Point[3].z) DIV 16, 255);
 	al_line (aBitmap, Point[1].x SHR 16, Point[1].y SHR 16,
 			Point[2].x SHR 16, Point[2].y SHR 16,
-			al_palette_color^[255]);
+			al_palette_color^[Clr]);
 	al_line (aBitmap, Point[2].x SHR 16, Point[2].y SHR 16,
 			Point[3].x SHR 16, Point[3].y SHR 16,
-			al_palette_color^[255]);
+			al_palette_color^[Clr]);
 	al_line (aBitmap, Point[3].x SHR 16, Point[3].y SHR 16,
 			Point[4].x SHR 16, Point[4].y SHR 16,
-			al_palette_color^[255]);
+			al_palette_color^[Clr]);
 	al_line (aBitmap, Point[4].x SHR 16, Point[4].y SHR 16,
 			Point[1].x SHR 16, Point[1].y SHR 16,
-			al_palette_color^[255]);
+			al_palette_color^[Clr]);
       END;
     END;
   END;
@@ -266,6 +295,8 @@ IMPLEMENTATION
 
   (* Helper procedure to define a face. *)
     PROCEDURE SetFace (Ndx: INTEGER); INLINE;
+    VAR
+      Clr: INTEGER;
     BEGIN
       WITH fFaces[Ndx] DO
       BEGIN
@@ -284,7 +315,17 @@ IMPLEMENTATION
 	END;
 	CASE fDrawmode OF
 	AL_POLYTYPE_FLAT:
-	  Point[1].c := al_palette_color^[Cnt+1];
+	  BEGIN
+	    Clr := MyClamp (128, 255 - al_fixtoi (Point[1].z + Point[3].z) DIV 16, 255);
+	    Point[1].c := al_palette_color^[Clr];
+	  END;
+	AL_POLYTYPE_GCOL:
+	  BEGIN
+	    Point[1].c := al_palette_color^[$D0];
+	    Point[2].c := al_palette_color^[$80];
+	    Point[3].c := al_palette_color^[$B0];
+	    Point[4].c := al_palette_color^[$FF];
+	  END;
 	AL_POLYTYPE_GRGB:
 	  BEGIN
 	    Point[1].c := fVertexColor[1];
@@ -293,10 +334,10 @@ IMPLEMENTATION
 	    Point[4].c := fVertexColor[4];
 	  END;
 	  ELSE BEGIN
-	    Point[1].c := al_palette_color^[$D0];
-	    Point[2].c := al_palette_color^[$80];
-	    Point[3].c := al_palette_color^[$B0];
-	    Point[4].c := al_palette_color^[$FF];
+	    Point[1].c := MyClamp (0, 255 - al_fixtoi (Point[1].z) DIV 4, 255);
+	    Point[2].c := MyClamp (0, 255 - al_fixtoi (Point[2].z) DIV 4, 255);
+	    Point[3].c := MyClamp (0, 255 - al_fixtoi (Point[3].z) DIV 4, 255);
+	    Point[4].c := MyClamp (0, 255 - al_fixtoi (Point[4].z) DIV 4, 255);
 	  END;
 	END;
       END;
