@@ -25,17 +25,17 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   + Añadido ejemplos exsample y exmidi.
   + Añadidas funciones, constantes y variables para la identificación del
     microprocesador y sus capacidades.
-  * Añadida implementación de "quaternions".
+  + Añadida implementación de "quaternions".
   + Añadidas funciones para desplazamiento de pantalla y "triple buffer",
     y ejemplo ex3buf.
   + Nuevos ejemplos exalpha, excustom, exmem, exquat, exscale, exscroll,
-    exstars, extrans2 excamera y exxfade.
+    exstars, extrans2, extimer, excamera y exxfade.
   + Soporte para sistemas de 64bit.
   + Añadidos "Add-ons".
 
   Otros
   -----
-  * Errores en la documentación.
+  * Corregida y ampliada la documentación.
   * Ahora los archivos objeto los guarda en otro directorio.
   * Modificados los parámetros de funciones de generación y obtención de
     paletas para que use VAR en vez de punteros.
@@ -49,6 +49,9 @@ Cambios entre las versiones 4.4.3 y 4.4.4
     más fluída y muestra una mejor técnica para hacer animaciones de sprites.
     También se ha añadido un bloque en el tercer mapa para hacerlo menos
     imposible ;) .
+  * Se ha "optimizado" la propiedad "UseZBuff" del objeto "Cube".
+  * Ahora el ejemplo "ex3d" muestra varios cubos y cambia la iluminación
+    dependiendo del eje Z.
 
 
 

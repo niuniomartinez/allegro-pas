@@ -20,19 +20,19 @@ Changes between versions 4.4.3 y 4.4.4
   + Added some clipping functions.
   + Added al_mouse_on_screen.
   + Addea al_find_datafile_object.
-  + Added a lot of text fotn manipulation functions and exfont example.
+  + Added a lot of text font manipulation functions and exfont example.
   + Added exsample & exmidi examples.
   + Added functions, constants and variables for CPU identification.
-  * Added quaternions implementation.
+  + Added quaternions implementation.
   + Added scrool and triple buffer functions and ex3d example.
   + Added new aexamples: exalpha, excustom, exmem, exquat, exscale, exscroll,
-    exstars, extrans2 and exxfade.
+    exstars, extrans2, extimer, excamera, and exxfade.
   + Support for 64bit systems.
   + Add-ons.
 
   Other
   -----
-  * Documentation fixes.
+  * Documentation fixed and updated.
   * Now object files are stored in its own directory.
   * Now palette generation functions use VAR parameters instead of pointers.
   * Now 3D calculation functions and 3D drawing procedures use ARRAY instead of
@@ -43,7 +43,8 @@ Changes between versions 4.4.3 y 4.4.4
   + Added a frame to Alex's walking motion to show better how to do sprite
     animation.  Also I've added a block to the 3th map to make it less
     impossible ;) .
-  * Se ha "optimizado" la propiedad "UseZBuff" del objeto "Cube".
+  * Optimised property "UseZBuff" of "TCube".
+  * Now example "ex3d" sows several cubes and shows how to create fog.
 
 
 
