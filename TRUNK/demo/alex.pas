@@ -100,7 +100,7 @@ VAR
     PROCEDURE StartJump;
     BEGIN
     { Checks if Alex can jump (there's no ceiling). }
-      IF CheckCeilCollision (ALEX_SPR) THEN
+      IF CheckUpCollisionWith (ALEX_SPR, T_BLK1, T_BLK3) THEN
 	EXIT;
       AlexState := JUMPING;
       AlexCount := 0;
@@ -122,7 +122,7 @@ VAR
   (* Checks if there's a ground to walk over. *)
     FUNCTION CheckGround: BOOLEAN; INLINE;
     BEGIN
-      CheckGround := CheckGroundCollision (ALEX_SPR);
+      CheckGround := CheckDownCollisionWith (ALEX_SPR, T_BLK1, T_BLK3);
       IF NOT CheckGround THEN
       { Alex will fall or is falling. }
 	StartFall;
@@ -162,7 +162,7 @@ VAR
 	ELSE
       { Checks walking left. }
 	IF ((al_key[AL_KEY_LEFT]<>0) OR (al_joy[0].stick[0].axis[0].d1<>0))
-	AND NOT CheckLeftCollision (ALEX_SPR) THEN
+	AND NOT CheckLeftCollisionWith (ALEX_SPR, T_BLK1, T_BLK3) THEN
 	BEGIN
 	{ Moves Alex. }
 	  DEC (AlexSpr^.x);
@@ -181,7 +181,7 @@ VAR
 	ELSE
       { Checks Walking right. }
 	IF ((al_key[AL_KEY_RIGHT] <> 0) OR (al_joy[0].stick[0].axis[0].d2<>0))
-	AND NOT CheckRightCollision (ALEX_SPR) THEN
+	AND NOT CheckRightCollisionWith (ALEX_SPR, T_BLK1, T_BLK3) THEN
 	BEGIN
 	{ Moves Alex. }
 	  INC (AlexSpr^.x);
@@ -214,7 +214,7 @@ VAR
       { Dont check ground. }
       BEGIN
       { Checks if we can jump. }
-	IF (AlexCount < 32) AND NOT CheckCeilCollision (ALEX_SPR) THEN
+	IF (AlexCount < 32) AND NOT CheckUpCollisionWith (ALEX_SPR, T_BLK1, T_BLK3) THEN
 	BEGIN
 	  DEC (AlexSpr^.y, 2);
 	  INC (AlexCount);
@@ -222,13 +222,13 @@ VAR
 	    INC (AlexSpr^.y);
 	  { Can move while jumping. }
 	  IF ((al_key[AL_KEY_LEFT]<>0) OR (al_joy[0].stick[0].axis[0].d1<>0))
-	  AND NOT CheckLeftCollision (ALEX_SPR) THEN
+	  AND NOT CheckLeftCollisionWith (ALEX_SPR, T_BLK1, T_BLK3) THEN
 	  BEGIN
 	    AlexSpr^.Index := BMP_MAIN_LJ;
 	    DEC (AlexSpr^.x);
 	  END;
 	  IF ((al_key[AL_KEY_RIGHT]<>0) OR (al_joy[0].stick[0].axis[0].d2<>0))
-	  AND NOT CheckRightCollision (ALEX_SPR) THEN
+	  AND NOT CheckRightCollisionWith (ALEX_SPR, T_BLK1, T_BLK3) THEN
 	  BEGIN
 	    AlexSpr^.Index := BMP_MAIN_RJ;
 	    INC (AlexSpr^.x);
@@ -243,19 +243,19 @@ VAR
 	INC (AlexSpr^.y, 2);
       { Can move while falling. }
 	IF ((al_key[AL_KEY_LEFT] <> 0) OR (al_joy[0].stick[0].axis[0].d1<>0))
-	AND NOT CheckLeftCollision (ALEX_SPR) THEN
+	AND NOT CheckLeftCollisionWith (ALEX_SPR, T_BLK1, T_BLK3) THEN
 	BEGIN
 	  AlexSpr^.Index := BMP_MAIN_LJ;
 	  DEC (AlexSpr^.x);
 	END;
 	IF ((al_key[AL_KEY_RIGHT] <> 0) OR (al_joy[0].stick[0].axis[0].d2<>0))
-	AND NOT CheckRightCollision (ALEX_SPR) THEN
+	AND NOT CheckRightCollisionWith (ALEX_SPR, T_BLK1, T_BLK3) THEN
 	BEGIN
 	  AlexSpr^.Index := BMP_MAIN_RJ;
 	  INC (AlexSpr^.x);
 	END;
       { If Alex reaches the bottom of the map, he deads. }
-	IF AlexSpr^.y >= (BoardHeight * TSIZE) THEN
+	IF AlexSpr^.y >= (MapHeight * TSIZE) THEN
 	  KillAlex;
       END
       ELSE
@@ -282,7 +282,7 @@ VAR
 	  INC (AlexSpr^.y, 2);
 	  IF AlexCount > 86 THEN
 	    INC (AlexSpr^.y);
-	  IF AlexSpr^.y > (BoardHeight * TSIZE) THEN
+	  IF AlexSpr^.y > (MapHeight * TSIZE) THEN
 	    AlexDead := TRUE;
 	END;
 	INC (AlexCount);
@@ -291,7 +291,7 @@ VAR
   { Checks if Alex gets coins. }
     IF AlexState <> DEAD THEN
     BEGIN
-      Tmp := CheckCollisionWith (ALEX_SPR, T_COIN);
+      Tmp := CheckCollision (ALEX_SPR, T_COIN);
       IF Tmp <> 0 THEN
       BEGIN
 	PlaySoundSample (ALEX_SPR, Data^[SND_COIN].dat);
@@ -300,22 +300,22 @@ VAR
 	IF (Tmp AND 1) <> 0 THEN
 	  BEGIN
 	  INC (NumCoins);
-	  Board[Tx, Ty] := T_VOID;
+	  Map[Tx, Ty] := T_VOID;
 	END;
 	IF (Tmp AND 2) <> 0 THEN
 	BEGIN
 	  INC (NumCoins);
-	  Board[Tx + 1, Ty] := T_VOID;
+	  Map[Tx + 1, Ty] := T_VOID;
 	END;
 	IF (Tmp AND 4) <> 0 THEN
 	BEGIN
 	  INC (NumCoins);
-	  Board[Tx, Ty + 1] := T_VOID;
+	  Map[Tx, Ty + 1] := T_VOID;
 	END;
 	IF (Tmp AND 8) <> 0 THEN
 	BEGIN
 	  INC (NumCoins);
-	  Board[Tx + 1, Ty + 1] := T_VOID;
+	  Map[Tx + 1, Ty + 1] := T_VOID;
 	END;
       END;
     END;

@@ -34,7 +34,7 @@ USES
   tilemap;  { Tilemap management. }
 
 VAR
-  BoardNum: INTEGER;
+  MapNum: INTEGER;
 
 
 
@@ -51,29 +51,29 @@ VAR
     AlexLifes, PreAlexLifes: INTEGER; { Number of Alex' lifes. }
 
   (* Helper function to set up the board. *)
-    FUNCTION NewBoard (BoardNum: INTEGER): BOOLEAN;
+    FUNCTION NewMap (MapNum: INTEGER): BOOLEAN;
     BEGIN
-      NewBoard := FALSE;
+      NewMap := FALSE;
     { Load the board. }
-      IF LoadBoard (BoardNum) THEN
+      IF LoadMap (MapNum) THEN
       BEGIN
       { Check the start point and the end point. }
 	IF StartX = -1 THEN
 	BEGIN
-	  ErrorMessage ('No start point in board '+IntToStr (BoardNum)+'!');
+	  ErrorMessage ('No start point in board '+IntToStr (MapNum)+'!');
 	  EXIT;
 	END;
 	IF EndX = -1 THEN
 	BEGIN
-	  ErrorMessage ('Not end point in board '+IntToStr (BoardNum)+'!');
+	  ErrorMessage ('Not end point in board '+IntToStr (MapNum)+'!');
 	  EXIT;
 	END;
       { Initialize game objects. }
-	InitSprites;
+	InitSprites (10);
 	InitAlex;
 	InitBombs;
       { Everything is 0k. }
-	NewBoard := TRUE;
+	NewMap := TRUE;
       END;
     END;
 
@@ -112,7 +112,7 @@ VAR
   { Set up the play. }
     al_play_sample (Data^[GAME_MUSIC].dat, 127, 127, 1000, -1);
     EndLoop := FALSE;
-    BoardNum := 1;
+    MapNum := 1;
     Palette := Data^[GAME_PAL].dat;
     al_clear_to_color (al_screen, 1);
     al_set_palette (Palette^);
@@ -133,7 +133,7 @@ VAR
   { The game loop. }
     REPEAT
     {  Load a map. }
-      IF NOT NewBoard (BoardNum) THEN
+      IF NOT NewMap (MapNum) THEN
       BEGIN
 	EndGame (TRUE);
 	EndLoop := TRUE;
@@ -176,7 +176,7 @@ VAR
 	      END
 	      ELSE BEGIN
 	      { More lifes, so restart the level. }
-		InitSprites;
+		InitSprites (10);
 		InitAlex;
 		InitBombs;
 		Tick := 1;
@@ -199,7 +199,7 @@ VAR
 	{ Graphics. }
 	  FixScroll (DBuffer, ScrollX, ScrollY, ScrollX, ScrollY);
 	  al_clear_to_color (DBuffer, al_makecol (0, 255, 255));
-	  DrawBoard (DBuffer, ScrollX, ScrollY);
+	  DrawMap (DBuffer, ScrollX, ScrollY);
 	  DrawSprites (DBuffer, ScrollX, ScrollY);
 	  al_vsync;
 	  IF SCREENW <> SizeW THEN
@@ -223,7 +223,7 @@ VAR
 	  END;
 	UNTIL EndPlayLoop;
       END;
-      INC (BoardNum);
+      INC (MapNum);
     UNTIL EndLoop;
   { Release resources. }
     al_destroy_bitmap (DBuffer);

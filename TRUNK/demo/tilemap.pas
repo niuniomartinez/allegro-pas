@@ -1,4 +1,4 @@
-UNIT tilemap;
+UNIT Tilemap;
 (* Program: Demo game for the Allegro.pas library.
  * File: tilemap.pas
  * Description: Functions and procedures to load and render tilemaps.
@@ -8,40 +8,51 @@ UNIT tilemap;
 
 INTERFACE
 
-USES
-  allegro; { Bitmap manipulation. }
+  USES
+    allegro; { Bitmap manipulation. }
 
-CONST
-  BoardHeight = 15;	{ Height of the board. }
+  CONST
+    MapHeight = 15;	{ Height of the tilemap. }
 
-VAR
-(* The tilemap. *)
-  Board: ARRAY [1..150, 1..15] OF BYTE;
-  BoardLength: INTEGER;	     { Length of the board. }
-(* Starting and ending coordinates. *)
-  StartX, StartY, EndX, EndY: INTEGER;
+  VAR
+  (* The tilemap. *)
+    Map: ARRAY [1..150, 1..15] OF BYTE;
+    MapWidth: INTEGER;	     { Length of the tilemap. }
+  (* Starting and ending coordinates. *)
+    StartX, StartY, EndX, EndY: INTEGER;
+  (* The tileset is the list of bitmaps used to draw the map.
 
-CONST
-(* The tile values. *)
-  T_VOID  = 0;
-  T_START = 1;
-  T_END   = 2;
-  T_COIN  = 3;
-  T_BLK1  = 4;
-  T_BLK2  = 5;
-  T_BLK3  = 6;
+    You must set them before to draw the tilemap.  DrawMap assumes that
+    everything in this array is correct, so be sure to set all tiles or you may
+    get SIGSEGV runtime errors.  Also, tile number 0 (zero) is never drawn so
+    you don't need to set it.  Tiles 254 and 255 are used as markers for start
+    and end points so you don't need to set them except you want to mark them
+    in a special way (i. e. as map editor does.)
+  *)
+    TileSet: ARRAY OF AL_BITMAPptr;
 
-  TSIZE = 16; { Size of the tiles in pixels. }
-  SMALL_TSIZE =  4;	{ Size of 'small board tiles'. }
+  CONST
+  (* The tile values. *)
+    T_VOID  = 0;
+    T_START = 1;
+    T_END   = 2;
+  (* Next one should be removed from this module. *)
+    T_COIN  = 3;
+    T_BLK1  = 4;
+    T_BLK2  = 5;
+    T_BLK3  = 6;
+
+    TSIZE = 16; { Size of the tiles in pixels. }
+    SMALL_TSIZE =  4;	{ Size of 'small board tiles'. }
 
 
 
 (* Gets the map information from a file.  The name of the map is
    "boardN.brd".  Returns TRUE on success or FALSE on failure. *)
-  FUNCTION LoadBoard (N: INTEGER): BOOLEAN;
+  FUNCTION LoadMap (N: INTEGER): BOOLEAN;
 
 (* Draws an small version of the map in the given bitmap. *)
-  PROCEDURE DrawBoardMiniature (Bmp: AL_BITMAPptr);
+  PROCEDURE DrawMapMiniature (Bmp: AL_BITMAPptr);
 
 (* Be sure that the scroll isn't out of the edges of the board.  Should be
    used before draw anything. *)
@@ -49,21 +60,20 @@ CONST
 			VAR Ox, Oy: INTEGER);
 
 (* Draws the board in the given bitmap at the given scroll coordinates. *)
-  PROCEDURE DrawBoard (Bmp: AL_BITMAPptr; ScrollX, ScrollY: INTEGER);
+  PROCEDURE DrawMap (Bmp: AL_BITMAPptr; ScrollX, ScrollY: INTEGER);
 
 
 
 IMPLEMENTATION
 
 USES
-  gamedata, { To acces to de game datafile. }
   sysutils; { For string manipulation. }
 
 
 
 (* Gets the map information from a file.  The name of the map is
    "boardN.brd".  Returns TRUE on success or FALSE on failure. *)
-  FUNCTION LoadBoard (N: INTEGER): BOOLEAN;
+  FUNCTION LoadMap (N: INTEGER): BOOLEAN;
 
   (* Translates the value loaded from file to the actual tile value. *)
     FUNCTION TranslateTile (Tile: CHAR): BYTE;
@@ -90,7 +100,7 @@ USES
     Column: STRING;	     { To read the file. }
     x, y, ry: INTEGER;
   BEGIN
-    LoadBoard := FALSE;
+    LoadMap := FALSE;
   { Builds the file name.
     First, gets the path where the execubable is. }
     Path :=  ExtractFilePath (PARAMSTR (0));
@@ -104,22 +114,22 @@ USES
     IF IOResult <> 0 THEN
       EXIT;
   { First line is the length of the board. }
-    ReadLN (F, BoardLength);
+    ReadLN (F, MapWidth);
   { Marks the starting and ending points: they aren't defined. }
     StartX := -1; StartY := -1;
     EndX := -1; EndY := -1;
   { Reads the columns. }
-    FOR x := 1 TO BoardLength DO
+    FOR x := 1 TO MapWidth DO
     BEGIN
       ReadLN (F, Column);
     { Parses the columns. }
-      FOR y := 1 TO BoardHeight DO
+      FOR y := 1 TO MapHeight DO
       BEGIN
       { Needed because the y coordinate is inverted at the file. }
-	ry := (BoardHeight + 1) - y;
-	Board [x, ry] := TranslateTile (Column [y]);
+	ry := (MapHeight + 1) - y;
+	Map [x, ry] := TranslateTile (Column [y]);
       { Look for the starting point. }
-	IF Board[x, ry] = T_START THEN
+	IF Map[x, ry] = T_START THEN
 	BEGIN
 	  IF StartX = -1 THEN
 	  BEGIN
@@ -127,11 +137,11 @@ USES
 	    StartX := x;
 	    StartY := ry;
 	  { Deletes the starting point tile. }
-	    Board[x, ry] := T_VOID;
+	    Map[x, ry] := T_VOID;
 	  END;
 	END
       { Looks for the ending point. }
-	ELSE IF Board[x, ry] = T_END THEN
+	ELSE IF Map[x, ry] = T_END THEN
 	{ Stores the right-most exit point. }
 	  IF EndX <= x THEN
 	  BEGIN
@@ -139,7 +149,7 @@ USES
 	    EndX := x;
 	    EndY := ry;
 	  { Deletes the ending point tile. }
-	    Board[x, ry] := T_VOID;
+	    Map[x, ry] := T_VOID;
 	  END;
 	END;
       END;
@@ -150,22 +160,22 @@ USES
     IF IOResult <> 0 THEN
       EXIT
     ELSE
-      LoadBoard := TRUE;
+      LoadMap := TRUE;
   END;
 
 
 
 (* Draws an small version of the map in the given bitmap. *)
-  PROCEDURE DrawBoardMiniature (Bmp: AL_BITMAPptr);
+  PROCEDURE DrawMapMiniature (Bmp: AL_BITMAPptr);
   CONST
     W = SMALL_TSIZE - 1;   { Width of the tile. }
     C = W DIV 2; { Circle radius. }
   VAR
     x, y: INTEGER;
   BEGIN
-    FOR x := 1 TO BoardLength DO
+    FOR x := 1 TO MapWidth DO
       FOR y := 1 TO 15 DO
-	CASE Board[x, y] OF
+	CASE Map[x, y] OF
 	T_VOID:
 	  al_rectfill (Bmp, x * SMALL_TSIZE, y * SMALL_TSIZE,
 		(x * SMALL_TSIZE) + W, (y * SMALL_TSIZE) + W,
@@ -218,15 +228,15 @@ USES
   BEGIN
     IF Ix < 0 THEN
       Ox := 0
-    ELSE IF Ix > (BoardLength * TSIZE) - Bmp^.w THEN
-      Ox := (BoardLength * TSIZE) - Bmp^.w
+    ELSE IF Ix > (MapWidth * TSIZE) - Bmp^.w THEN
+      Ox := (MapWidth * TSIZE) - Bmp^.w
     ELSE
       Ox := Ix;
 
     IF Iy < 0 THEN
       Oy := 0
-    ELSE IF Iy > (BoardHeight * TSIZE) - Bmp^.h THEN
-      Oy := (BoardHeight * TSIZE) - Bmp^.h
+    ELSE IF Iy > (MapHeight * TSIZE) - Bmp^.h THEN
+      Oy := (MapHeight * TSIZE) - Bmp^.h
     ELSE
       Oy := Iy;
   END;
@@ -236,7 +246,7 @@ USES
 (* Draws the board in the given bitmap at the given scroll coordinates.
  * I'm sure it can be optimized a lot (and it should be) but I try to keep
  * it simple and understandable. *)
-  PROCEDURE DrawBoard (Bmp: AL_BITMAPptr; ScrollX, ScrollY: INTEGER);
+  PROCEDURE DrawMap (Bmp: AL_BITMAPptr; ScrollX, ScrollY: INTEGER);
   VAR
     NumTilesW, NumTilesH: INTEGER; { Number of tiles to draw. }
     FirstTileX, FirstTileY: INTEGER; { First tile to draw. }
@@ -247,7 +257,7 @@ USES
   { Calculates how many tiles can be drawn in the bitmap. }
     NumTilesW  := (Bmp^.w DIV TSIZE) + 1; { Adds one for the edges. }
     NumTilesH  := (Bmp^.h DIV TSIZE) + 1;
-    IF NumTilesH > BoardHeight THEN NumTilesH := BoardHeight;
+    IF NumTilesH > MapHeight THEN NumTilesH := MapHeight;
   { Calculates the first tile to be drawn. }
     FirstTileX := (ScrollX DIV TSIZE) + 1;
     FirstTileY := (ScrollY DIV TSIZE) + 1;
@@ -263,9 +273,9 @@ USES
       PosX := OffsetX;
       FOR X := FirstTileX TO FirstTileX + NumTilesW DO
       BEGIN
-	IF (X <= BoardLength) AND (Y <= BoardHeight)
-	AND (Board[X, Y] > T_VOID) THEN
-	  al_blit (Data^[Board[X, Y] - 1].dat, Bmp, 0, 0, PosX, PosY, TSIZE, TSIZE);
+	IF (X <= MapWidth) AND (Y <= MapHeight)
+	AND (Map[X, Y] > T_VOID) THEN
+	  al_blit (TileSet[Map[X, Y]], Bmp, 0, 0, PosX, PosY, TSIZE, TSIZE);
       { Next tile position. }
 	INC (PosX, TSIZE);
       END;
