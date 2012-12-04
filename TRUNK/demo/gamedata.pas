@@ -37,6 +37,7 @@ VAR
 IMPLEMENTATION
 
 USES
+  Tilemap, { To assign tileset bitmaps. }
   sysutils;
 
 
@@ -46,12 +47,17 @@ USES
   FUNCTION LoadData: BOOLEAN;
   VAR
     buf: STRING;
+    Ndx: INTEGER;
   BEGIN
   { Load the datafile into memory. }
     buf :=  ExtractFilePath (PARAMSTR (0)) + 'demo.dat';
     Data := al_load_datafile (buf);
   { Check if it was loaded. }
     LoadData := (Data <> NIL);
+  { Assigns tileset. }
+    SetLength (TileSet, 7);
+    FOR Ndx := 3 TO 6 DO
+      TileSet[Ndx] := Data^[Ndx - BMP_COIN + 1].dat;
   END;
 
 

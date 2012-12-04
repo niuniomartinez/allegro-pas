@@ -74,8 +74,8 @@ VAR
 	IF BombI < BMP_EXPLOSION1 THEN
 	BEGIN
 	{ Check if it reaches the ground. }
-	  IF (CheckGroundCollision (Cnt))
-	  OR (SpritePlane[Cnt].y > BoardHeight * TSIZE) THEN
+	  IF (CheckDownCollisionWith (Cnt, T_BLK1, T_BLK3))
+	  OR (SpritePlane[Cnt].y > MapHeight * TSIZE) THEN
 	  { Explode. }
 	    StartExploding
 	  ELSE BEGIN
@@ -133,7 +133,7 @@ VAR
 	  SpritePlane[Cnt].y := -10;
 	  SpritePlane[Cnt].x := ((((RANDOM (SCREENW) * 2) + SpritePlane[ALEX_SPR].x) - SCREENW) DIV TSIZE);
 	{ Check if there are ground tiles in the tile where the bomb appears. }
-	  IF Board[SpritePlane[Cnt].x + 1, 1] < T_BLK1 THEN
+	  IF Map[SpritePlane[Cnt].x + 1, 1] < T_BLK1 THEN
 	  BEGIN
 	    SpritePlane[Cnt].x := SpritePlane[Cnt].x * TSIZE;
 	    SPritePlane[Cnt].Index := BMP_BOMB1;
