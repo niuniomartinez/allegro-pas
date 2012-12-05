@@ -29,18 +29,18 @@ INTERFACE
     and end points so you don't need to set them except you want to mark them
     in a special way (i. e. as map editor does.)
   *)
-    TileSet: ARRAY OF AL_BITMAPptr;
+    Tileset: ARRAY OF AL_BITMAPptr;
 
   CONST
   (* The tile values. *)
     T_VOID  = 0;
-    T_START = 1;
-    T_END   = 2;
+    T_START = 254;
+    T_END   = 255;
   (* Next one should be removed from this module. *)
-    T_COIN  = 3;
-    T_BLK1  = 4;
-    T_BLK2  = 5;
-    T_BLK3  = 6;
+    T_COIN  = 1;
+    T_BLK1  = 2;
+    T_BLK2  = 3;
+    T_BLK3  = 4;
 
     TSIZE = 16; { Size of the tiles in pixels. }
     SMALL_TSIZE =  4;	{ Size of 'small board tiles'. }
@@ -275,7 +275,7 @@ USES
       BEGIN
 	IF (X <= MapWidth) AND (Y <= MapHeight)
 	AND (Map[X, Y] > T_VOID) THEN
-	  al_blit (TileSet[Map[X, Y]], Bmp, 0, 0, PosX, PosY, TSIZE, TSIZE);
+	  al_blit (Tileset[Map[X, Y]], Bmp, 0, 0, PosX, PosY, TSIZE, TSIZE);
       { Next tile position. }
 	INC (PosX, TSIZE);
       END;
