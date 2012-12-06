@@ -11,13 +11,16 @@ INTERFACE
   USES
     allegro; { Bitmap manipulation. }
 
-  CONST
-    MapHeight = 15;	{ Height of the tilemap. }
 
   VAR
-  (* The tilemap. *)
-    Map: ARRAY [1..150, 1..15] OF BYTE;
-    MapWidth: INTEGER;	     { Length of the tilemap. }
+  (* The tilemap.
+
+     To access to the <X, Y> tile do "Map[Y][X]" or "Map[Y, X]".
+     @seealso(LoadMap)
+   *)
+    Map: ARRAY OF ARRAY OF BYTE;
+    MapHeight,		{ Height of the tilemap. }
+    MapWidth: INTEGER;	{ Length of the tilemap. }
   (* Starting and ending coordinates. *)
     StartX, StartY, EndX, EndY: INTEGER;
   (* The tileset is the list of bitmaps used to draw the map.
@@ -47,20 +50,22 @@ INTERFACE
 
 
 
+(* Creates an empty map.  You don't need to do it except you're
+   createing the map "on the fly".
+   @seealso(LoadMap) *)
+  PROCEDURE CreateMap (CONST Height, Width: INTEGER);
+
 (* Gets the map information from a file.  The name of the map is
    "boardN.brd".  Returns TRUE on success or FALSE on failure. *)
   FUNCTION LoadMap (N: INTEGER): BOOLEAN;
 
-(* Draws an small version of the map in the given bitmap. *)
-  PROCEDURE DrawMapMiniature (Bmp: AL_BITMAPptr);
-
 (* Be sure that the scroll isn't out of the edges of the board.  Should be
    used before draw anything. *)
-  PROCEDURE FixScroll (CONST Bmp: AL_BITMAPptr; CONST Ix, Iy: INTEGER;
-			VAR Ox, Oy: INTEGER);
+  PROCEDURE FixScroll (CONST Bmp: AL_BITMAPptr; CONST Iy, Ix: INTEGER;
+			VAR Oy, Ox: INTEGER);
 
 (* Draws the board in the given bitmap at the given scroll coordinates. *)
-  PROCEDURE DrawMap (Bmp: AL_BITMAPptr; ScrollX, ScrollY: INTEGER);
+  PROCEDURE DrawMap (Bmp: AL_BITMAPptr; ScrollY, ScrollX: INTEGER);
 
 
 
@@ -68,6 +73,24 @@ IMPLEMENTATION
 
 USES
   sysutils; { For string manipulation. }
+
+
+
+(* Creates an empty map.  You don't need to do it except you're
+   createing the map "on the fly".
+   @seealso(LoadMap) *)
+  PROCEDURE CreateMap (CONST Height, Width: INTEGER);
+  VAR
+    Y, X: INTEGER;
+  BEGIN
+    SetLength (Map, Height);
+    FOR Y := LOW (Map) TO HIGH (Map) DO
+    BEGIN
+      SetLength (Map[Y], Width);
+      FOR X := LOW (Map[Y]) TO HIGH (Map[Y]) DO
+	Map[Y, X] := T_VOID;
+    END;
+  END;
 
 
 
@@ -115,6 +138,8 @@ USES
       EXIT;
   { First line is the length of the board. }
     ReadLN (F, MapWidth);
+    MapHeight := 15; { TODO: Current format don't allows different. }
+    CreateMap (MapHeight, MapWidth);
   { Marks the starting and ending points: they aren't defined. }
     StartX := -1; StartY := -1;
     EndX := -1; EndY := -1;
@@ -127,29 +152,29 @@ USES
       BEGIN
       { Needed because the y coordinate is inverted at the file. }
 	ry := (MapHeight + 1) - y;
-	Map [x, ry] := TranslateTile (Column [y]);
+	Map [ry - 1, x - 1] := TranslateTile (Column [y]);
       { Look for the starting point. }
-	IF Map[x, ry] = T_START THEN
+	IF Map[ry - 1, x - 1] = T_START THEN
 	BEGIN
 	  IF StartX = -1 THEN
 	  BEGIN
 	  { Stores the coordinates. }
-	    StartX := x;
-	    StartY := ry;
+	    StartX := x - 1;
+	    StartY := ry - 1;
 	  { Deletes the starting point tile. }
-	    Map[x, ry] := T_VOID;
+	    Map[StartY, StartX] := T_VOID;
 	  END;
 	END
       { Looks for the ending point. }
-	ELSE IF Map[x, ry] = T_END THEN
+	ELSE IF Map[ry - 1, x - 1] = T_END THEN
 	{ Stores the right-most exit point. }
 	  IF EndX <= x THEN
 	  BEGIN
 	  { Stores the coordinates. }
-	    EndX := x;
-	    EndY := ry;
+	    EndX := x - 1;
+	    EndY := ry - 1;
 	  { Deletes the ending point tile. }
-	    Map[x, ry] := T_VOID;
+	    Map[EndY, EndX] := T_VOID;
 	  END;
 	END;
       END;
@@ -165,66 +190,10 @@ USES
 
 
 
-(* Draws an small version of the map in the given bitmap. *)
-  PROCEDURE DrawMapMiniature (Bmp: AL_BITMAPptr);
-  CONST
-    W = SMALL_TSIZE - 1;   { Width of the tile. }
-    C = W DIV 2; { Circle radius. }
-  VAR
-    x, y: INTEGER;
-  BEGIN
-    FOR x := 1 TO MapWidth DO
-      FOR y := 1 TO 15 DO
-	CASE Map[x, y] OF
-	T_VOID:
-	  al_rectfill (Bmp, x * SMALL_TSIZE, y * SMALL_TSIZE,
-		(x * SMALL_TSIZE) + W, (y * SMALL_TSIZE) + W,
-		al_makecol (0, 255, 255));
-	T_START:
-	  BEGIN
-	    al_rectfill (Bmp, x * SMALL_TSIZE, y * SMALL_TSIZE,
-			(x * SMALL_TSIZE) + W, (y * SMALL_TSIZE) + W,
-			al_makecol (0, 0, 0));
-	    al_circlefill (Bmp, (x * SMALL_TSIZE) + C, (y * SMALL_TSIZE) + C, C, al_makecol (0, 255, 0));
-	  END;
-	T_END:
-	  BEGIN
-	      al_rectfill (Bmp, x * SMALL_TSIZE, y * SMALL_TSIZE,
-			  (x * SMALL_TSIZE) + W, (y * SMALL_TSIZE) + W,
-			  al_makecol (0, 0, 0));
-	    al_circlefill (Bmp, (x * SMALL_TSIZE) + C, (y * SMALL_TSIZE) + C, C, al_makecol (255, 0, 255));
-	  END;
-	T_COIN:
-	  BEGIN
-	    al_rectfill (Bmp, x * SMALL_TSIZE, y * SMALL_TSIZE,
-			(x * SMALL_TSIZE) + W, (y * SMALL_TSIZE) + W,
-			al_makecol (0, 0, 0));
-	    al_circlefill (Bmp, (x * SMALL_TSIZE) + C, (y * SMALL_TSIZE) + C, C, al_makecol (255, 255, 0));
-	  END;
-        T_BLK1:
-	  al_rectfill (Bmp, x * SMALL_TSIZE, y * SMALL_TSIZE, (x * SMALL_TSIZE) + W, (y * SMALL_TSIZE) + W,
-			al_makecol (216, 216, 0));
-        T_BLK2:
-	  BEGIN
-	    al_rectfill (Bmp, x * SMALL_TSIZE, y * SMALL_TSIZE, (x * SMALL_TSIZE) + W, (y * SMALL_TSIZE) + 2,
-			al_makecol (0, 136, 0));
-	    al_rectfill (Bmp,
-			x * SMALL_TSIZE,       (y * SMALL_TSIZE) + 2,
-			(x * SMALL_TSIZE) + W, (y * SMALL_TSIZE) + W,
-			al_makecol (216, 216, 0));
-	  END;
-	T_BLK3:
-	  al_rectfill (Bmp, x * SMALL_TSIZE, y * SMALL_TSIZE, (x * SMALL_TSIZE) + W, (y * SMALL_TSIZE) + W,
-			al_makecol (136, 136, 136));
-	END;
-  END;
-
-
-
 (* Fixes the scroll values so it isn't out of the edges of the board.  Should be
    used before to draw anything. *)
-  PROCEDURE FixScroll (CONST Bmp: AL_BITMAPptr; CONST Ix, Iy: INTEGER;
-			VAR Ox, Oy: INTEGER);
+  PROCEDURE FixScroll (CONST Bmp: AL_BITMAPptr; CONST Iy, Ix: INTEGER;
+			VAR Oy, Ox: INTEGER);
   BEGIN
     IF Ix < 0 THEN
       Ox := 0
@@ -246,7 +215,7 @@ USES
 (* Draws the board in the given bitmap at the given scroll coordinates.
  * I'm sure it can be optimized a lot (and it should be) but I try to keep
  * it simple and understandable. *)
-  PROCEDURE DrawMap (Bmp: AL_BITMAPptr; ScrollX, ScrollY: INTEGER);
+  PROCEDURE DrawMap (Bmp: AL_BITMAPptr; ScrollY, ScrollX: INTEGER);
   VAR
     NumTilesW, NumTilesH: INTEGER; { Number of tiles to draw. }
     FirstTileX, FirstTileY: INTEGER; { First tile to draw. }
@@ -259,8 +228,8 @@ USES
     NumTilesH  := (Bmp^.h DIV TSIZE) + 1;
     IF NumTilesH > MapHeight THEN NumTilesH := MapHeight;
   { Calculates the first tile to be drawn. }
-    FirstTileX := (ScrollX DIV TSIZE) + 1;
-    FirstTileY := (ScrollY DIV TSIZE) + 1;
+    FirstTileX := (ScrollX DIV TSIZE);
+    FirstTileY := (ScrollY DIV TSIZE);
   { Calculates the offset of that first tile.  They are the coordinates where the
     first tile will be drawn.  The tile offset is the pixel of the tile that is in
     the upper left pixel of the output bitmap. }
@@ -273,9 +242,9 @@ USES
       PosX := OffsetX;
       FOR X := FirstTileX TO FirstTileX + NumTilesW DO
       BEGIN
-	IF (X <= MapWidth) AND (Y <= MapHeight)
-	AND (Map[X, Y] > T_VOID) THEN
-	  al_blit (Tileset[Map[X, Y]], Bmp, 0, 0, PosX, PosY, TSIZE, TSIZE);
+	IF (X < MapWidth) AND (Y < MapHeight)
+	AND (Map[Y, X] > T_VOID) THEN
+	  al_blit (Tileset[Map[Y, X]], Bmp, 0, 0, PosX, PosY, TSIZE, TSIZE);
       { Next tile position. }
 	INC (PosX, TSIZE);
       END;

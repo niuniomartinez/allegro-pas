@@ -2,8 +2,8 @@ UNIT algui;
 (*<GUI routines
 
   Allegro contains an object-oriented dialog manager, which was originally
-  based on the Atari GEM system (@code(form_do()), @code(objc_draw()), etc: old ST
-  programmers will know what we are talking about :-)  You can use the GUI
+  based on the Atari GEM system (@code(form_do()), @code(objc_draw()), etc: old
+  ST programmers will know what we are talking about :-)  You can use the GUI
   as-is to knock out simple interfaces for things like the test program and
   setup utility, or you can use it as a basis for more complicated systems of
   your own.  Allegro lets you define your own object types by writing new
@@ -606,7 +606,7 @@ FUNCTION foo (dp3: AL_VOIDptr; d2: AL_INT): AL_INT; CDECL;
   FUNCTION al_gui_strlen (s: STRING): AL_INT;
     INLINE;
 
-(* Defines a dialog item.
+(* Helper function to define a dialog item.
    @param(dialog The dialog) @param(item Index to the dialog item)
    @seealso(AL_DIALOG) @seealso(al_do_dialog) *)
   PROCEDURE al_set_dialog_item (VAR dialog: ARRAY OF AL_DIALOG; index: INTEGER;
