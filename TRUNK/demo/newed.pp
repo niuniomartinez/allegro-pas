@@ -42,7 +42,7 @@ PROGRAM newd;
     ConfigMenu: ARRAY [0..1] OF AL_MENU;
     MainMenu: ARRAY [0..3] OF AL_MENU;
   (* Main dialog.  This is the editor itself. *)
-    MainDialog: ARRAY [0..10] OF AL_DIALOG;
+    MainDialog: ARRAY [0..13] OF AL_DIALOG;
   (* Index of map scroll bar controls. *)
     NdxScrollBarW, NdxScrollBarH: INTEGER;
   (* Flag to know if map was modified. *)
@@ -220,8 +220,10 @@ PROGRAM newd;
       al_drawing_mode (AL_DRAW_MODE_COPY_PATTERN, d^.dp2, 0, 0);
       al_rectfill (d^.dp, 0, 0, d^.w, d^.h, 0);
       al_solid_mode;
-    { Now, draws the map using scrollbars. }
-      FixScroll (d^.dp, MainDialog[NdxScrollBarH].d2, MainDialog[NdxScrollBarW].d2, SY, SX);
+    { TODO: If map smaller than editor area, clean border to not confuse user. }
+    { Now, draws the map using scrollbars.  Heigh scrollbar runs "backwards". }
+      SY := MainDialog[NdxScrollBarH].d1 - MainDialog[NdxScrollBarH].d2;
+      FixScroll (d^.dp, MainDialog[NdxScrollBarW].d2, sY, SX, SY);
     { If map is smaller than editing space, then SX and/or SY became negative,
       so it will draw it wrong.
 
@@ -229,7 +231,7 @@ PROGRAM newd;
 		 should be same size or bigger than your maps. }
       IF SX < 0 THEN SX := 0;
       IF SY < 0 THEN SY := 0;
-      DrawMap  (d^.dp, SY, SX);
+      DrawMap  (d^.dp, SX, SY);
     END;
 
   BEGIN
@@ -493,13 +495,55 @@ PROGRAM newd;
 	  )
 	ELSE BEGIN
 	  CreateMap (NewHeight, NewWidth);
+	  ResetMapModified;
 	  CanDrawMap := TRUE;
 	  Option := -1; { To exit loop. }
-	  ResetMapModified;
 	END;
       END;
     UNTIL Option = -1;
     NewMap := AL_D_REDRAW;
+  END;
+
+
+
+(* Shows a dialog to get map name and loads it. *)
+  FUNCTION LoadMap: AL_INT; CDECL;
+  VAR
+    FileName: STRING;
+  BEGIN
+  { Warns if map was modified. }
+    IF MapModified THEN
+      IF NOT AskYesNo ('The map was changed.', 'Load without saving?') THEN
+        EXIT;
+    IF al_file_select_ex ('Select map file', FileName, 'MAP;/-h', 512, 320, 240) THEN
+    BEGIN
+      IF NOT Tilemap.LoadMap (FileName) THEN
+	ErrorMessage ('Can''t load map from file', FileName)
+      ELSE
+      BEGIN
+        ResetMapModified;
+	CanDrawMap := TRUE;
+      END;
+    END;
+    LoadMap := AL_D_REDRAW;
+  END;
+
+
+
+(* Shows a dialog to get map name and loads it. *)
+  FUNCTION SaveMap: AL_INT; CDECL;
+  VAR
+    FileName: STRING;
+  BEGIN
+    IF al_file_select_ex ('Save map in file', FileName, 'MAP;/-h', 512, 320, 240) THEN
+    BEGIN
+      IF NOT Tilemap.SaveMap (FileName) THEN
+	ErrorMessage ('Can''t Save map in file', FileName)
+      ELSE
+	ResetMapModified;
+    END;
+    al_alert ('', 'Map saved in file', FileName, 'Read', '', scINTRO, 0);
+    SaveMap := AL_D_O_K;
   END;
 
 
@@ -581,11 +625,10 @@ PROGRAM newd;
       al_set_menu_item (ProgMenu, 2, '--------------',   NIL,       NIL, AL_D_DISABLED, NIL);
       al_set_menu_item (ProgMenu, 3, '&Quit       Esc',  @Quitting, NIL,             0, NIL);
 
-      al_set_menu_item (MapMenu, 0, '&New    Ctrl+N', @NewMap,NIL,             0, NIL);
-      al_set_menu_item (MapMenu, 1, '&Load        L', NIL,    NIL,             0, NIL);
+      al_set_menu_item (MapMenu, 0, '&New    Ctrl+N', @NewMap, NIL,            0, NIL);
+      al_set_menu_item (MapMenu, 1, '&Load   Ctrl+L', @LoadMap, NIL,           0, NIL);
       al_set_menu_item (MapMenu, 2, '-------------',  NIL,    NIL, AL_D_DISABLED, NIL);
-      al_set_menu_item (MapMenu, 3, '&Save        S', NIL,    NIL,             0, NIL);
-      al_set_menu_item (MapMenu, 4, 'Save &as...',    NIL,    NIL,        0, NIL);
+      al_set_menu_item (MapMenu, 3, '&Save   Ctrl+S', @SaveMap, NIL,         0, NIL);
 
       al_set_menu_item (ConfigMenu, 0, '&Fullscreen', NIL,    NIL,             0, NIL);
    { Put all together. }
@@ -630,8 +673,10 @@ PROGRAM newd;
     { Key shortcuts. }
       al_set_dialog_item (MainDialog, 8, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, @Help, NIL, NIL);
       al_set_dialog_item (MainDialog, 9, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, @NewMap, NIL, NIL);
+      al_set_dialog_item (MainDialog, 10, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, @LoadMap, NIL, NIL);
+      al_set_dialog_item (MainDialog, 11, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 19, 0, @SaveMap, NIL, NIL);
     { End of dialog. }
-      al_set_dialog_item (MainDialog, 10, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
+      al_set_dialog_item (MainDialog, 12, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
     { Configures GUI. }
       al_gui_fg_color := CBlack;
       al_gui_mg_color := al_makecol (51, 51, 51);
@@ -696,7 +741,10 @@ BEGIN
 { Initializes the program. }
   IF NOT InitProgram THEN EXIT;
 
-  al_do_dialog (@MainDialog[0], -1);
+  REPEAT
+    al_do_dialog (@MainDialog[0], -1);
+  UNTIL NOT MapModified
+  OR AskYesNo ('The map was changed.', 'Exit anyway?');
 
 { End of the program. }
   EndProgram;
