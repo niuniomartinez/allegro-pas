@@ -1,0 +1,64 @@
+Instrucciones
+=============
+
+  Ayude a Álex, el "Allegator", a obtener monedas y encontrar la salida del
+  nivel.
+
+  Use las teclas de cursor o un mando de juego para mover a Álex.  Use la barra
+  espaciadora o el botón 'A' del mando de juego para saltar.
+
+
+
+Acerca de esta demostración
+===========================
+
+  Este juego es una demostración de la biblioteca Allegro.pas.  Su objetivo es
+  ofrecer un buen ejemplo de cómo crear tus propios juegos usando Allegro.pas.
+
+  Vea los archivos fuente y lea la documentación.  Al final de este mismo
+  archivo LEEME hay una sección que explica cómo puede aprovechar el motor de
+  este juego en sus propios proyectos.
+
+
+
+
+
+Créditos
+========
+
+  Concepto original del juego:
+    Ken Silverman (http://www.advsys.net/ken/)
+
+  Programación:
+    Ñuño Martínez (http://pagina.de/niunio/)
+
+  "Alex the Allegator" usado por cortesía de:
+    Johan Peitz (http://www.freelunchdesign.com/)
+
+  Música del título (provisional):
+    Garret Thomsom (g@sirsonic.com)(ripped from the original Allegro demo game)
+
+  Música de juego:
+    Partners In Rhyme (http://www.partnersinrhyme.com/)
+
+  Efectos de sonido:
+    Extraidos de juegos de Shawn Hargreaves y Johan Peitz.
+
+  Allegro creado por Shawn Hargreaves (http://talula.demon.co.uk/)
+  actualmente mantenido por el Equipo de Desarrollo de Allegro
+  (http://alleg.sourceforge.net)
+
+  Allegro.pas:
+    Ñuño Martínez (de nuevo...)
+
+  Gracias a:
+    la comunidad hispana de usuarios de Delphi (http://www.clubdelphi.net/),
+    la comunidad de desarrollo de Free Pascal (http://www.freepascal.org/)
+    y la comunidad Allegro (http://www.allegro.cc/)
+
+
+
+Usar el motor de juego
+======================
+
+  

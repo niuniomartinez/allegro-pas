@@ -9,13 +9,14 @@ UNIT Tilemap;
 INTERFACE
 
   USES
-    allegro; { Bitmap manipulation. }
+    allegro, { Bitmap manipulation. }
+    alfile;  { File access. }
 
 
   VAR
   (* The tilemap.
 
-     To access to the <X, Y> tile do "Map[Y][X]" or "Map[Y, X]".
+     To access to the <X, Y> tile do "Map[X][Y]" or "Map[X, Y]".
      @seealso(LoadMap)
    *)
     Map: ARRAY OF ARRAY OF BYTE;
@@ -53,21 +54,30 @@ INTERFACE
 (* Creates an empty map.  You don't need to do it except you're
    createing the map "on the fly".
    @seealso(LoadMap) *)
-  PROCEDURE CreateMap (CONST Height, Width: INTEGER);
+  PROCEDURE CreateMap (CONST Width, Height: INTEGER);
 
-(* Gets the map information from a file.  The name of the map is
-   "boardN.brd".  Returns TRUE on success or FALSE on failure. *)
-  FUNCTION LoadMap (N: INTEGER): BOOLEAN;
+(* Gets the map information from a file.
+  @returns(@true on success or @false on failure.) *)
+  FUNCTION LoadMap (FileName: STRING): BOOLEAN;
+
+(* Like @link(LoadMap), but reads from a packfile. *)
+  FUNCTION LoadMapPf (PackFile: AL_PACKFILEptr): BOOLEAN;
 
 (* Be sure that the scroll isn't out of the edges of the board.  Should be
    used before draw anything. *)
-  PROCEDURE FixScroll (CONST Bmp: AL_BITMAPptr; CONST Iy, Ix: INTEGER;
-			VAR Oy, Ox: INTEGER);
+  PROCEDURE FixScroll (CONST Bmp: AL_BITMAPptr; CONST Ix, Iy: INTEGER;
+			VAR Ox, Oy: INTEGER);
 
 (* Draws the board in the given bitmap at the given scroll coordinates. *)
-  PROCEDURE DrawMap (Bmp: AL_BITMAPptr; ScrollY, ScrollX: INTEGER);
+  PROCEDURE DrawMap (Bmp: AL_BITMAPptr; ScrollX, ScrollY: INTEGER);
 
+(* Saves the map information to a file.  It's used by the map editor.
+  @seealso(LoadMap) @seealso(SaveMapPf)
+ *)
+  FUNCTION SaveMap (FileName: STRING): BOOLEAN;
 
+(* Like @link(SaveMap), but reads from a packfile. *)
+  FUNCTION SaveMapPf (PackFile: AL_PACKFILEptr): BOOLEAN;
 
 IMPLEMENTATION
 
@@ -79,121 +89,68 @@ USES
 (* Creates an empty map.  You don't need to do it except you're
    createing the map "on the fly".
    @seealso(LoadMap) *)
-  PROCEDURE CreateMap (CONST Height, Width: INTEGER);
+  PROCEDURE CreateMap (CONST Width, Height: INTEGER);
   VAR
     Y, X: INTEGER;
   BEGIN
-    SetLength (Map, Height);
-    FOR Y := LOW (Map) TO HIGH (Map) DO
+    SetLength (Map, Width);
+    FOR X := LOW (Map) TO HIGH (Map) DO
     BEGIN
-      SetLength (Map[Y], Width);
-      FOR X := LOW (Map[Y]) TO HIGH (Map[Y]) DO
-	Map[Y, X] := T_VOID;
+      SetLength (Map[X], Height);
+      FOR Y := LOW (Map[X]) TO HIGH (Map[X]) DO
+	Map[X][Y] := T_VOID;
+    END;
+    MapWidth := Width;
+    MapHeight := Height;
+  END;
+
+
+
+(* Gets the map information from a file.
+  @returns(@true on success or @false on failure.) *)
+  FUNCTION LoadMap (FileName: STRING): BOOLEAN;
+  VAR
+    PackFile: AL_PACKFILEptr;
+  BEGIN
+    LoadMap := FALSE;
+    PackFile := al_pack_fopen (FileName, 'r');
+    IF PackFile <> NIL THEN
+    BEGIN
+      LoadMap := LoadMapPf (PackFile);
+      al_pack_fclose (PackFile);
     END;
   END;
 
 
 
-(* Gets the map information from a file.  The name of the map is
-   "boardN.brd".  Returns TRUE on success or FALSE on failure. *)
-  FUNCTION LoadMap (N: INTEGER): BOOLEAN;
-
-  (* Translates the value loaded from file to the actual tile value. *)
-    FUNCTION TranslateTile (Tile: CHAR): BYTE;
-    BEGIN
-      TranslateTile := BYTE (ORD (Tile) - ORD ('A'));
-      CASE TranslateTile OF
-      3: { D }
-	TranslateTile := T_START;
-      4: { E }
-	TranslateTile := T_END;
-      1: { B }
-	TranslateTile := T_COIN;
-      11:{ L }
-	TranslateTile := T_BLK1;
-      12:{ M }
-	TranslateTile := T_BLK2;
-      13:{ N }
-	TranslateTile := T_BLK3;
-      END;
-    END;
-
+(* Like @link(LoadMap), but reads from a packfile. *)
+  FUNCTION LoadMapPf (PackFile: AL_PACKFILEptr): BOOLEAN;
   VAR
-    Path, FileName: STRING; F: TEXT; { File definition. }
-    Column: STRING;	     { To read the file. }
-    x, y, ry: INTEGER;
+    X, Y: INTEGER;
   BEGIN
-    LoadMap := FALSE;
-  { Builds the file name.
-    First, gets the path where the execubable is. }
-    Path :=  ExtractFilePath (PARAMSTR (0));
-  { Creates the file name. }
-    Filename :=  'board' + IntToStr (N) + '.brd';
-  { Builds the final name with path. }
-    FileName := Path + Filename;
-  { Opens the file. }
-    {$I-} { To save file errors in IOResult. }
-    Assign (F, FileName); Reset (F);
-    IF IOResult <> 0 THEN
+    LoadMapPf := FALSE;
+  { First, loads map size. }
+    MapWidth := al_pack_mgetw (PackFile); MapHeight := al_pack_mgetw (PackFile);
+    IF al_pack_ferror (PackFile) <> 0 THEN
       EXIT;
-  { First line is the length of the board. }
-    ReadLN (F, MapWidth);
-    MapHeight := 15; { TODO: Current format don't allows different. }
-    CreateMap (MapHeight, MapWidth);
-  { Marks the starting and ending points: they aren't defined. }
-    StartX := -1; StartY := -1;
-    EndX := -1; EndY := -1;
-  { Reads the columns. }
-    FOR x := 1 TO MapWidth DO
-    BEGIN
-      ReadLN (F, Column);
-    { Parses the columns. }
-      FOR y := 1 TO MapHeight DO
-      BEGIN
-      { Needed because the y coordinate is inverted at the file. }
-	ry := (MapHeight + 1) - y;
-	Map [ry - 1, x - 1] := TranslateTile (Column [y]);
-      { Look for the starting point. }
-	IF Map[ry - 1, x - 1] = T_START THEN
-	BEGIN
-	  IF StartX = -1 THEN
-	  BEGIN
-	  { Stores the coordinates. }
-	    StartX := x - 1;
-	    StartY := ry - 1;
-	  { Deletes the starting point tile. }
-	    Map[StartY, StartX] := T_VOID;
-	  END;
-	END
-      { Looks for the ending point. }
-	ELSE IF Map[ry - 1, x - 1] = T_END THEN
-	{ Stores the right-most exit point. }
-	  IF EndX <= x THEN
-	  BEGIN
-	  { Stores the coordinates. }
-	    EndX := x - 1;
-	    EndY := ry - 1;
-	  { Deletes the ending point tile. }
-	    Map[EndY, EndX] := T_VOID;
-	  END;
-	END;
-      END;
-    {$I+} { End storing file errors in IOResult. }
-  { Closes the file. }
-    Close (F);
-  { Checks errors. }
-    IF IOResult <> 0 THEN
-      EXIT
-    ELSE
-      LoadMap := TRUE;
+    CreateMap (MapWidth, MapHeight);
+  { Now, map start and map end. }
+    StartX := al_pack_mgetw (PackFile); StartY := al_pack_mgetw (PackFile);
+    EndX := al_pack_mgetw (PackFile); EndY := al_pack_mgetw (PackFile);
+  { Now, the map. }
+    FOR Y := 0 TO MapHeight - 1 DO
+      FOR X := 0 TO MapWidth - 1 DO
+	Map[X][Y] := al_pack_getc (PackFile);
+  { Check for errors. }
+    loadMapPf := al_pack_ferror (PackFile) = 0;
   END;
 
 
 
 (* Fixes the scroll values so it isn't out of the edges of the board.  Should be
    used before to draw anything. *)
-  PROCEDURE FixScroll (CONST Bmp: AL_BITMAPptr; CONST Iy, Ix: INTEGER;
-			VAR Oy, Ox: INTEGER);
+  PROCEDURE FixScroll (CONST Bmp: AL_BITMAPptr; CONST Ix, Iy: INTEGER;
+			VAR Ox, Oy: INTEGER);
   BEGIN
     IF Ix < 0 THEN
       Ox := 0
@@ -215,7 +172,7 @@ USES
 (* Draws the board in the given bitmap at the given scroll coordinates.
  * I'm sure it can be optimized a lot (and it should be) but I try to keep
  * it simple and understandable. *)
-  PROCEDURE DrawMap (Bmp: AL_BITMAPptr; ScrollY, ScrollX: INTEGER);
+  PROCEDURE DrawMap (Bmp: AL_BITMAPptr; ScrollX, ScrollY: INTEGER);
   VAR
     NumTilesW, NumTilesH: INTEGER; { Number of tiles to draw. }
     FirstTileX, FirstTileY: INTEGER; { First tile to draw. }
@@ -236,21 +193,60 @@ USES
     OffsetX := -(ScrollX MOD TSIZE);
     OffsetY := -(ScrollY MOD TSIZE);
   { Draws. }
-    PosY := OffsetY;
-    FOR Y := FirstTileY TO FirstTileY + NumTilesH DO
+    PosX := OffsetX;
+    FOR X := FirstTileX TO FirstTileX + NumTilesW DO
     BEGIN
-      PosX := OffsetX;
-      FOR X := FirstTileX TO FirstTileX + NumTilesW DO
+      PosY := OffsetY;
+      FOR Y := FirstTileY TO FirstTileY + NumTilesH DO
       BEGIN
 	IF (X < MapWidth) AND (Y < MapHeight)
-	AND (Map[Y, X] > T_VOID) THEN
-	  al_blit (Tileset[Map[Y, X]], Bmp, 0, 0, PosX, PosY, TSIZE, TSIZE);
+	AND (Map[X][Y] > T_VOID)
+	AND (Tileset[Map[x, y]] <> NIL) THEN
+	  al_blit (Tileset[Map[X][Y]], Bmp, 0, 0, PosX, PosY, TSIZE, TSIZE);
       { Next tile position. }
-	INC (PosX, TSIZE);
+	INC (PosY, TSIZE);
       END;
     { Next tile position. }
-      INC (PosY, TSIZE);
+      INC (PosX, TSIZE);
     END;
+  END;
+
+
+
+(* Saves the map information to a file.  It's used by the map editor.
+  @seealso(LoadMap) @seealso(SaveMapPf)
+ *)
+  FUNCTION SaveMap (FileName: STRING): BOOLEAN;
+  VAR
+    PackFile: AL_PACKFILEptr;
+  BEGIN
+    SaveMap := FALSE;
+    PackFile := al_pack_fopen (FileName, 'w');
+    IF PackFile <> NIL THEN
+    BEGIN
+      SaveMap := SaveMapPf (PackFile);
+      al_pack_fclose (PackFile);
+    END;
+  END;
+
+
+
+(* Like @link(SaveMap), but reads from a packfile. *)
+  FUNCTION SaveMapPf (PackFile: AL_PACKFILEptr): BOOLEAN;
+  VAR
+    X, Y: INTEGER;
+  BEGIN
+  { First, saves map size. }
+    al_pack_mputw (MapWidth, PackFile); al_pack_mputw (MapHeight, PackFile);
+  { Now, map start and map end. }
+    al_pack_mputw (StartX, PackFile); al_pack_mputw (StartY, PackFile);
+    al_pack_mputw (EndX, PackFile); al_pack_mputw (EndY, PackFile);
+  { Now, the map. }
+    FOR Y := 0 TO MapHeight - 1 DO
+      FOR X := 0 TO MapWidth - 1 DO
+	al_pack_putc (Map[X][Y], PackFile);
+  { Check for errors. }
+    SaveMapPf := al_pack_ferror (PackFile) = 0;
   END;
 
 END.
