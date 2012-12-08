@@ -12,17 +12,16 @@ PROGRAM newd;
     albase,   { We need allegro's types. }
     algui,    { To use the Allegro's GUI. }
     alfile,   { To access to Allegro's data files. }
-    sysutils, { For string manipulation. }
+    sysutils,
     tilemap;  { Tilemap management. }
 
   CONST
   (* Window captions. *)
-    CAPTION = 'Allegro.pas Demo Game Map Editor';
-    CAPTION_MODIFIED = CAPTION + ' [Modified]';
+    CAPTION = 'Allegro.pas Demo Game Map Editor - ';
   (* Size of tile buttons. *)
     BTN_SIZE = 32;
-  (* Minimun and maximun size of map. *)
-    MIN_SIZE = 10; MAX_SIZE = 500;
+  (* Minimun size of map.  Maximun is defined at Tilemap. *)
+    MIN_SIZE = 10;
   (* Key shortcuts to use in dialog definition. *)
     scINTRO = 13;
 
@@ -39,12 +38,15 @@ PROGRAM newd;
   (* Main menu description. *)
     ProgMenu: ARRAY [0..4] OF AL_MENU;
     MapMenu: ARRAY [0..5] OF AL_MENU;
-    ConfigMenu: ARRAY [0..1] OF AL_MENU;
+    ConfigMenu: ARRAY [0..2] OF AL_MENU;
+    CfgBgMenu: ARRAY [0..3] OF AL_MENU;
     MainMenu: ARRAY [0..3] OF AL_MENU;
   (* Main dialog.  This is the editor itself. *)
-    MainDialog: ARRAY [0..13] OF AL_DIALOG;
+    MainDialog: ARRAY [0..19] OF AL_DIALOG;
   (* Index of map scroll bar controls. *)
     NdxScrollBarW, NdxScrollBarH: INTEGER;
+  (* Name of the last map loaded/saved. *)
+    MapName: STRING;
   (* Flag to know if map was modified. *)
     MapModified,
   (* This flag tells to dlgMapEditor if it can draw the map. *)
@@ -135,10 +137,8 @@ PROGRAM newd;
   PROCEDURE SetMapModified;
   BEGIN
     IF NOT MapModified THEN
-    BEGIN
       MapModified := TRUE;
-      al_set_window_title (CAPTION_MODIFIED);
-    END;
+    al_set_window_title (CAPTION + ExtractFilename (MapName)+' [modified]');
   END;
 
 
@@ -147,10 +147,8 @@ PROGRAM newd;
   PROCEDURE ResetMapModified;
   BEGIN
     IF MapModified THEN
-    BEGIN
       MapModified := FALSE;
-      al_set_window_title (CAPTION);
-    END;
+    al_set_window_title (CAPTION + ExtractFilename (MapName));
   END;
 
 
@@ -208,6 +206,35 @@ PROGRAM newd;
 
 
 
+(* Extends Allegro radio button to build the "brush selector".
+
+  Difference is that uses a bitmap (in dp) to draw itself and shows selection
+  with inverted colors. *)
+  FUNCTION dlgSelectorProc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
+  VAR
+    Bmp: AL_BITMAPptr;
+  BEGIN
+    IF msg = AL_MSG_DRAW THEN
+    BEGIN
+      Bmp := d^.dp;
+      al_blit (Bmp, al_gui_get_screen, 0, 0, d^.x, d^.y, Bmp^.w, Bmp^.h);
+      IF (d^.flags AND AL_D_SELECTED) = AL_D_SELECTED THEN
+      BEGIN
+	al_xor_mode (TRUE);
+	al_rectfill (al_gui_get_screen, d^.x, d^.y, d^.x + Bmp^.w - 1, d^.y +Bmp^.h - 1, CWhite);
+	al_xor_mode (FALSE);
+      END;
+      IF (d^.flags AND AL_D_GOTFOCUS) = AL_D_GOTFOCUS THEN
+	DrawDottedRect (d^.x, d^.y, d^.x + Bmp^.w - 1, d^.y +Bmp^.h - 1);
+      dlgSelectorProc := AL_D_O_K;
+    END
+    ELSE
+    { Any else, radio button. }
+      dlgSelectorProc := al_d_radio_proc (msg, d, c);
+  END;
+
+
+
 (* Creates a custom GUI object to show and edit the map. *)
   FUNCTION dlgMapEditorProc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
 
@@ -221,7 +248,7 @@ PROGRAM newd;
       al_rectfill (d^.dp, 0, 0, d^.w, d^.h, 0);
       al_solid_mode;
     { TODO: If map smaller than editor area, clean border to not confuse user. }
-    { Now, draws the map using scrollbars.  Heigh scrollbar runs "backwards". }
+    { Draws map.  Height scroll bar goes "backwards". }
       SY := MainDialog[NdxScrollBarH].d1 - MainDialog[NdxScrollBarH].d2;
       FixScroll (d^.dp, MainDialog[NdxScrollBarW].d2, sY, SX, SY);
     { If map is smaller than editing space, then SX and/or SY became negative,
@@ -495,6 +522,7 @@ PROGRAM newd;
 	  )
 	ELSE BEGIN
 	  CreateMap (NewHeight, NewWidth);
+	  MapName := '<noname>';
 	  ResetMapModified;
 	  CanDrawMap := TRUE;
 	  Option := -1; { To exit loop. }
@@ -515,13 +543,17 @@ PROGRAM newd;
     IF MapModified THEN
       IF NOT AskYesNo ('The map was changed.', 'Load without saving?') THEN
         EXIT;
+  { The file selector. }
+    IF MapName <> '<noname>' THEN
+      FileName := MapName;
     IF al_file_select_ex ('Select map file', FileName, 'MAP;/-h', 512, 320, 240) THEN
     BEGIN
       IF NOT Tilemap.LoadMap (FileName) THEN
 	ErrorMessage ('Can''t load map from file', FileName)
       ELSE
       BEGIN
-        ResetMapModified;
+	MapName := FileName;
+	ResetMapModified;
 	CanDrawMap := TRUE;
       END;
     END;
@@ -535,14 +567,19 @@ PROGRAM newd;
   VAR
     FileName: STRING;
   BEGIN
+    IF MapName <> '<noname>' THEN
+      FileName := MapName;
     IF al_file_select_ex ('Save map in file', FileName, 'MAP;/-h', 512, 320, 240) THEN
     BEGIN
       IF NOT Tilemap.SaveMap (FileName) THEN
 	ErrorMessage ('Can''t Save map in file', FileName)
       ELSE
+      BEGIN
+	al_alert ('', 'Map saved in file', FileName, 'Read', '', scINTRO, 0);
+	MapName := FileName;
 	ResetMapModified;
+      END;
     END;
-    al_alert ('', 'Map saved in file', FileName, 'Read', '', scINTRO, 0);
     SaveMap := AL_D_O_K;
   END;
 
@@ -594,7 +631,6 @@ PROGRAM newd;
 	    al_message (al_error);
 	    EXIT;
 	  END;
-      al_set_window_title (CAPTION);
     { Calculate few common colors. }
       CWhite := al_makecol (255, 255, 255);
       CBlack := al_makecol (  0,   0,   0);
@@ -630,11 +666,16 @@ PROGRAM newd;
       al_set_menu_item (MapMenu, 2, '-------------',  NIL,    NIL, AL_D_DISABLED, NIL);
       al_set_menu_item (MapMenu, 3, '&Save   Ctrl+S', @SaveMap, NIL,         0, NIL);
 
+      al_set_menu_item (CfgBgMenu, 0, '&Default', NIL,    NIL,     AL_D_SELECTED, NIL);
+      al_set_menu_item (CfgBgMenu, 1, '&Solid color', NIL,    NIL, 0, NIL);
+      al_set_menu_item (CfgBgMenu, 2, '&Bitmap', NIL,    NIL,      0, NIL);
+
       al_set_menu_item (ConfigMenu, 0, '&Fullscreen', NIL,    NIL,             0, NIL);
+      al_set_menu_item (ConfigMenu, 1, 'Background',  NIL,    @CfgBgMenu,             0, NIL);
    { Put all together. }
-      al_set_menu_item (MainMenu,  0, '&Program',      NIL,       @ProgMenu,      0, NIL);
-      al_set_menu_item (MainMenu,  1, '&Map',          NIL,       @MapMenu,       0, NIL);
-      al_set_menu_item (MainMenu,  2, '&Config',       NIL,       @ConfigMenu,    0, NIL);
+      al_set_menu_item (MainMenu,  0, '&Program', NIL,       @ProgMenu,      0, NIL);
+      al_set_menu_item (MainMenu,  1, '&Map',     NIL,       @MapMenu,       0, NIL);
+      al_set_menu_item (MainMenu,  2, '&Config',  NIL,       @ConfigMenu,    0, NIL);
     END;
 
   (* Helper funciton to setup the GUI and define the main dialog. *)
@@ -661,27 +702,34 @@ PROGRAM newd;
       SetMainMenu;
 
       al_set_dialog_item (MainDialog, 0, @al_d_yield_proc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
-      al_set_dialog_item (MainDialog, 1, @al_d_box_proc, 0, 0, AL_SCREEN_W, 50, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
+      al_set_dialog_item (MainDialog, 1, @al_d_box_proc, 0, 0, AL_SCREEN_W, AL_SCREEN_H, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
       al_set_dialog_item (MainDialog, 2, @al_d_menu_proc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, @MainMenu[0], NIL, NIL);
-      al_set_dialog_item (MainDialog, 3, @dlgMapEditorProc, 0, 46, AL_SCREEN_W - BTN_SIZE, AL_SCREEN_H - BTN_SIZE * 2 - 47, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
+      al_set_dialog_item (MainDialog, 3, @dlgSelectorProc, 1, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, AL_D_SELECTED, 0, 0, Data^[BMP_1x1].dat, NIL, NIL);
+      al_set_dialog_item (MainDialog, 4, @dlgSelectorProc, 1+BTN_SIZE+2, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, 0, Data^[BMP_1x2].dat, NIL, NIL);
+      al_set_dialog_item (MainDialog, 5, @dlgSelectorProc, 1+(BTN_SIZE+2) * 2, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, 0, Data^[BMP_2x1].dat, NIL, NIL);
+      al_set_dialog_item (MainDialog, 6, @dlgSelectorProc, 1+(BTN_SIZE+2) * 3, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, 0, Data^[BMP_2x2].dat, NIL, NIL);
+      al_set_dialog_item (MainDialog, 7, @dlgSelectorProc, 1+(BTN_SIZE+2) * 4, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, 0, Data^[BMP_O_1X2].dat, NIL, NIL);
+      al_set_dialog_item (MainDialog, 8, @dlgSelectorProc, 1+(BTN_SIZE+2) * 5, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, 0, Data^[BMP_O_2x1].dat, NIL, NIL);
+      al_set_dialog_item (MainDialog, 9, @dlgSelectorProc, 1+(BTN_SIZE+2) * 6, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, 0, Data^[BMP_O_2x2].dat, NIL, NIL);
+      al_set_dialog_item (MainDialog, 10, @dlgMapEditorProc, 0, 47, AL_SCREEN_W - BTN_SIZE, AL_SCREEN_H - BTN_SIZE * 2 - 48, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
       NdxScrollBarH := 4;
-      al_set_dialog_item (MainDialog, 4, @al_d_slider_proc, AL_SCREEN_W - BTN_SIZE, 46, BTN_SIZE - 1, AL_SCREEN_H - BTN_SIZE * 2 - 48, 0, 0, 0, 0, 1024, 1024, NIL, @ScrollBarHandler, NIL);
+      al_set_dialog_item (MainDialog, 11, @al_d_slider_proc, AL_SCREEN_W - BTN_SIZE, 47, BTN_SIZE - 1, AL_SCREEN_H - BTN_SIZE * 2 - 48, 0, 0, 0, 0, 1024, 1024, NIL, @ScrollBarHandler, NIL);
       NdxScrollBarW := 5;
-      al_set_dialog_item (MainDialog, 5, @al_d_slider_proc, 1, AL_SCREEN_H - BTN_SIZE * 2 - 1, AL_SCREEN_W - BTN_SIZE - 2, BTN_SIZE - 1, 0, 0, 0, 0, 1024, 0, NIL, @ScrollBarHandler, NIL);
-      al_set_dialog_item (MainDialog, 6, @dlgTileSelectorProc, 0, AL_SCREEN_H - BTN_SIZE - 2, AL_SCREEN_W, BTN_SIZE + 2, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
-      al_set_dialog_item (MainDialog, 7, @al_d_box_proc, AL_SCREEN_W - BTN_SIZE - 1, AL_SCREEN_H - BTN_SIZE * 2 - 2, BTN_SIZE + 1, BTN_SIZE + 1, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
+      al_set_dialog_item (MainDialog, 12, @al_d_slider_proc, 1, AL_SCREEN_H - BTN_SIZE * 2 - 1, AL_SCREEN_W - BTN_SIZE - 2, BTN_SIZE - 1, 0, 0, 0, 0, 1024, 0, NIL, @ScrollBarHandler, NIL);
+      al_set_dialog_item (MainDialog, 13, @dlgTileSelectorProc, 0, AL_SCREEN_H - BTN_SIZE - 2, AL_SCREEN_W, BTN_SIZE + 2, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
     { Key shortcuts. }
-      al_set_dialog_item (MainDialog, 8, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, @Help, NIL, NIL);
-      al_set_dialog_item (MainDialog, 9, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, @NewMap, NIL, NIL);
-      al_set_dialog_item (MainDialog, 10, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, @LoadMap, NIL, NIL);
-      al_set_dialog_item (MainDialog, 11, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 19, 0, @SaveMap, NIL, NIL);
+      al_set_dialog_item (MainDialog, 14, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, @Help, NIL, NIL);
+      al_set_dialog_item (MainDialog, 15, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, @NewMap, NIL, NIL);
+      al_set_dialog_item (MainDialog, 16, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, @LoadMap, NIL, NIL);
+      al_set_dialog_item (MainDialog, 17, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 19, 0, @SaveMap, NIL, NIL);
     { End of dialog. }
-      al_set_dialog_item (MainDialog, 12, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
+      al_set_dialog_item (MainDialog, 18, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
     { Configures GUI. }
       al_gui_fg_color := CBlack;
       al_gui_mg_color := al_makecol (51, 51, 51);
       al_gui_bg_color := CWhite;
       al_set_dialog_color (@MainDialog[0], CBlack, CButton);
+      al_gui_mouse_focus := 0;
 
       InitGUI := TRUE;
     END;
@@ -708,6 +756,8 @@ PROGRAM newd;
       EXIT;
   { Sets the default tileset. }
     SetTileset ('');
+    MapName := '<noname>';
+    ResetMapModified;
   { Sets the edition buttons. }
     CreateEditionButtons;
   { Set up the GUI system. }
