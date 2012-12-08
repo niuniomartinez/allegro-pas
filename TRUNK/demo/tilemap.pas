@@ -17,12 +17,12 @@ INTERFACE
   (* The tilemap.
 
      To access to the <X, Y> tile do "Map[X][Y]" or "Map[X, Y]".
-     @seealso(LoadMap)
+     @seealso(LoadMap) @seealso(MapHeight) @seealso(MapWidth)
    *)
     Map: ARRAY OF ARRAY OF BYTE;
-    MapHeight,		{ Height of the tilemap. }
-    MapWidth: INTEGER;	{ Length of the tilemap. }
-  (* Starting and ending coordinates. *)
+    MapHeight,		{<Height of the tilemap. }
+    MapWidth: INTEGER;	{<Length of the tilemap. }
+  (* Starting and ending coordinates.  If not set, they're negative (<0). *)
     StartX, StartY, EndX, EndY: INTEGER;
   (* The tileset is the list of bitmaps used to draw the map.
 
@@ -36,6 +36,10 @@ INTERFACE
     Tileset: ARRAY OF AL_BITMAPptr;
 
   CONST
+  (* Max map size in tiles. *)
+    MAX_SIZE = $7FFF;
+  (* Tile size in pixels. *)
+    TSIZE = 16;
   (* The tile values. *)
     T_VOID  = 0;
     T_START = 254;
@@ -46,25 +50,24 @@ INTERFACE
     T_BLK2  = 3;
     T_BLK3  = 4;
 
-    TSIZE = 16; { Size of the tiles in pixels. }
-    SMALL_TSIZE =  4;	{ Size of 'small board tiles'. }
-
 
 
 (* Creates an empty map.  You don't need to do it except you're
-   createing the map "on the fly".
-   @seealso(LoadMap) *)
+   creating the map "on the fly".  @seealso(LoadMap)
+ *)
   PROCEDURE CreateMap (CONST Width, Height: INTEGER);
 
 (* Gets the map information from a file.
-  @returns(@true on success or @false on failure.) *)
+  @returns(@true on success or @false on failure.)
+ *)
   FUNCTION LoadMap (FileName: STRING): BOOLEAN;
 
 (* Like @link(LoadMap), but reads from a packfile. *)
   FUNCTION LoadMapPf (PackFile: AL_PACKFILEptr): BOOLEAN;
 
 (* Be sure that the scroll isn't out of the edges of the board.  Should be
-   used before draw anything. *)
+   used before draw anything.
+ *)
   PROCEDURE FixScroll (CONST Bmp: AL_BITMAPptr; CONST Ix, Iy: INTEGER;
 			VAR Ox, Oy: INTEGER);
 
@@ -72,6 +75,8 @@ INTERFACE
   PROCEDURE DrawMap (Bmp: AL_BITMAPptr; ScrollX, ScrollY: INTEGER);
 
 (* Saves the map information to a file.  It's used by the map editor.
+  @returns(@true on success or @false on failure.  Note that it will fail if
+    map sizes are negative or if they're bigger than the @link(MAX_SIZE).
   @seealso(LoadMap) @seealso(SaveMapPf)
  *)
   FUNCTION SaveMap (FileName: STRING): BOOLEAN;
@@ -81,14 +86,10 @@ INTERFACE
 
 IMPLEMENTATION
 
-USES
-  sysutils; { For string manipulation. }
-
-
-
 (* Creates an empty map.  You don't need to do it except you're
-   createing the map "on the fly".
-   @seealso(LoadMap) *)
+   creating the map "on the fly".
+   @seealso(LoadMap)
+ *)
   PROCEDURE CreateMap (CONST Width, Height: INTEGER);
   VAR
     Y, X: INTEGER;
@@ -98,10 +99,12 @@ USES
     BEGIN
       SetLength (Map[X], Height);
       FOR Y := LOW (Map[X]) TO HIGH (Map[X]) DO
-	Map[X][Y] := T_VOID;
+	Map[X, Y] := T_VOID;
     END;
     MapWidth := Width;
     MapHeight := Height;
+    StartX := -1; StartY := -1;
+    EndX := -1; EndY := -1;
   END;
 
 
@@ -126,21 +129,37 @@ USES
 (* Like @link(LoadMap), but reads from a packfile. *)
   FUNCTION LoadMapPf (PackFile: AL_PACKFILEptr): BOOLEAN;
   VAR
+    mId: LONGINT;
     X, Y: INTEGER;
   BEGIN
     LoadMapPf := FALSE;
-  { First, loads map size. }
+  { First, the file ID. }
+    mId := al_pack_mgetl (PackFile);
+    IF mId <> AL_ID ('MAP ') THEN
+      EXIT;
+  { Second, load map size. }
     MapWidth := al_pack_mgetw (PackFile); MapHeight := al_pack_mgetw (PackFile);
     IF al_pack_ferror (PackFile) <> 0 THEN
       EXIT;
     CreateMap (MapWidth, MapHeight);
-  { Now, map start and map end. }
-    StartX := al_pack_mgetw (PackFile); StartY := al_pack_mgetw (PackFile);
-    EndX := al_pack_mgetw (PackFile); EndY := al_pack_mgetw (PackFile);
   { Now, the map. }
+    StartX := -1; StartY := -1;
+    EndX := -1; EndY := -1;
     FOR Y := 0 TO MapHeight - 1 DO
       FOR X := 0 TO MapWidth - 1 DO
-	Map[X][Y] := al_pack_getc (PackFile);
+      BEGIN
+	Map[X, Y] := al_pack_getc (PackFile);
+	IF Map[X, Y] = T_START THEN
+	BEGIN
+	  StartX := X; StartY := Y;
+	  Map[X, Y] := T_VOID;
+	END
+	ELSE IF Map[X, Y] = T_END THEN
+	BEGIN
+	  EndX := X; EndY := Y;
+	  Map[X, Y] := T_VOID;
+	END;
+      END;
   { Check for errors. }
     loadMapPf := al_pack_ferror (PackFile) = 0;
   END;
@@ -200,9 +219,8 @@ USES
       FOR Y := FirstTileY TO FirstTileY + NumTilesH DO
       BEGIN
 	IF (X < MapWidth) AND (Y < MapHeight)
-	AND (Map[X][Y] > T_VOID)
-	AND (Tileset[Map[x, y]] <> NIL) THEN
-	  al_blit (Tileset[Map[X][Y]], Bmp, 0, 0, PosX, PosY, TSIZE, TSIZE);
+	AND (Map[X, Y] > T_VOID) THEN
+	  al_blit (Tileset[Map[X, Y]], Bmp, 0, 0, PosX, PosY, TSIZE, TSIZE);
       { Next tile position. }
 	INC (PosY, TSIZE);
       END;
@@ -236,11 +254,21 @@ USES
   VAR
     X, Y: INTEGER;
   BEGIN
-  { First, saves map size. }
+    SaveMapPf := FALSE;
+  { Check map sizes. }
+    IF (0 >= MapWidth) OR (MapWidth > MAX_SIZE)
+    OR (0 >= MapHeight) OR (MapHeight > MAX_SIZE)
+    THEN
+      EXIT;
+  { Set start and end markers. }
+    IF StartX >= 0 THEN
+      Map[StartX, StartY] := T_START;
+    IF EndX >= 0 THEN
+      Map[EndX, EndY] := T_END;
+  { First, the file ID. }
+    al_pack_mputl (AL_ID ('MAP '), PackFile);
+  { Second, save map size. }
     al_pack_mputw (MapWidth, PackFile); al_pack_mputw (MapHeight, PackFile);
-  { Now, map start and map end. }
-    al_pack_mputw (StartX, PackFile); al_pack_mputw (StartY, PackFile);
-    al_pack_mputw (EndX, PackFile); al_pack_mputw (EndY, PackFile);
   { Now, the map. }
     FOR Y := 0 TO MapHeight - 1 DO
       FOR X := 0 TO MapWidth - 1 DO
