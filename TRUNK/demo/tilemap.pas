@@ -40,6 +40,8 @@ INTERFACE
     MAX_SIZE = $7FFF;
   (* Tile size in pixels. *)
     TSIZE = 16;
+  (* Max number of tiles.  Tiles 254 and 255 are used as markers. *)
+    MAX_TILES = 253;
   (* The tile values. *)
     T_VOID  = 0;
     T_START = 254;

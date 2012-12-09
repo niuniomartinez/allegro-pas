@@ -1,7 +1,7 @@
 PROGRAM newd;
 (* This is the map editor for the Allegro.pas demo game.
 
-  It's designed in a way that should be ease to expand and upgrade, so you can
+  It's designed in a way that should be easy to expand and upgrade, so you can
   use it in your projects.
 
   By Ñuño Martínez.
@@ -9,14 +9,14 @@ PROGRAM newd;
 
   USES
     allegro,
-    albase,   { We need allegro's types. }
+    albase,   { We need Allegro's types. }
     algui,    { To use the Allegro's GUI. }
     alfile,   { To access to Allegro's data files. }
     sysutils,
     tilemap;  { Tilemap management. }
 
   CONST
-  (* Window captions. *)
+  (* Window caption. *)
     CAPTION = 'Allegro.pas Demo Game Map Editor - ';
   (* Size of tile buttons. *)
     BTN_SIZE = 32;
@@ -44,18 +44,24 @@ PROGRAM newd;
   (* Main dialog.  This is the editor itself. *)
     MainDialog: ARRAY [0..19] OF AL_DIALOG;
   (* Index of map scroll bar controls. *)
-    NdxScrollBarW, NdxScrollBarH: INTEGER;
+    NdxScrollBarW, NdxScrollBarH,
+  (* Index of the map editor control. *)
+    NdxMapedit: INTEGER;
   (* Name of the last map loaded/saved. *)
     MapName: STRING;
   (* Flag to know if map was modified. *)
     MapModified,
-  (* This flag tells to dlgMapEditor if it can draw the map. *)
+  (* This flag tells to dlgMapEditor if its safe to draw the map. *)
     CanDrawMap: BOOLEAN;
+  (* Active brush.  Uses the CONST defined in mapedit.inc. *)
+    ActiveBrush,
+  (* The selected tile. *)
+    ActiveTile: INTEGER;
 
 
 
 (***************************
-  Next data is needed to edit maps of the Allegro.pas' Demo Game.
+  Next data is needed to get the tiles used by the Allegro.pas' Demo Game.
   If you are modifying the editor to use it in other projects then
   you should remove or modify this block of code.
  *)
@@ -160,8 +166,9 @@ PROGRAM newd;
 (* Callback for map scrollbars. *)
   FUNCTION ScrollBarHandler (dp3: AL_VOIDptr; d2: AL_INT): AL_INT; CDECL;
   BEGIN
-  { Just redraw everything to do the scroll. }
-    ScrollBarHandler := AL_D_REDRAW;
+  { Just redraw map editor to do the scroll. }
+    al_object_message (@MainDialog[NdxMapedit], AL_MSG_DRAW, 0);
+    ScrollBarHandler := AL_D_O_K;
   END;
 
 
@@ -206,11 +213,35 @@ PROGRAM newd;
 
 
 
+(* Helper procedure to fix scroll bar ranges. *)
+  PROCEDURE FixScrollBarsRange;
+  VAR
+    SX, SY: INTEGER;
+  BEGIN
+  { Get maximun scroll range. }
+    SX := MapWidth * TSIZE; SY := MapHeight * TSIZE;
+    FixScroll (MainDialog[NdxMapedit].dp, SX, SY, SX, SY);
+  { If map is smaller than editing space, then SX and/or SY became negative,
+    so it will draw it wrong.
+
+    Hack note: You don't should do this in your games, as your output bitmap
+		should be same size or bigger than your maps. }
+    IF SX < 0 THEN SX := 1;
+    IF SY < 0 THEN SY := 1;
+  { Now, update scroll bar ranges. }
+    MainDialog[NdxScrollBarW].d1 := SX;
+    MainDialog[NdxScrollBarW].d2 := 0;
+    MainDialog[NdxScrollBarH].d1 := SY;
+    MainDialog[NdxScrollBarH].d2 := SY;
+  END;
+
+
+
 (* Extends Allegro radio button to build the "brush selector".
 
   Difference is that uses a bitmap (in dp) to draw itself and shows selection
   with inverted colors. *)
-  FUNCTION dlgSelectorProc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
+  FUNCTION dlgBrushSelProc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
   VAR
     Bmp: AL_BITMAPptr;
   BEGIN
@@ -226,11 +257,15 @@ PROGRAM newd;
       END;
       IF (d^.flags AND AL_D_GOTFOCUS) = AL_D_GOTFOCUS THEN
 	DrawDottedRect (d^.x, d^.y, d^.x + Bmp^.w - 1, d^.y +Bmp^.h - 1);
-      dlgSelectorProc := AL_D_O_K;
+      dlgBrushSelProc := AL_D_O_K;
     END
-    ELSE
+    ELSE BEGIN
     { Any else, radio button. }
-      dlgSelectorProc := al_d_radio_proc (msg, d, c);
+      dlgBrushSelProc := al_d_radio_proc (msg, d, c);
+    { Check if selected. }
+      IF (d^.flags AND AL_D_SELECTED) = AL_D_SELECTED THEN
+	ActiveBrush := d^.d2;
+    END;
   END;
 
 
@@ -243,12 +278,12 @@ PROGRAM newd;
     VAR
       SX, SY: INTEGER;
     BEGIN
-    { Draws a pattern to show transparent tiles. }
+    { Draw a pattern to show transparent tiles. }
       al_drawing_mode (AL_DRAW_MODE_COPY_PATTERN, d^.dp2, 0, 0);
       al_rectfill (d^.dp, 0, 0, d^.w, d^.h, 0);
       al_solid_mode;
     { TODO: If map smaller than editor area, clean border to not confuse user. }
-    { Draws map.  Height scroll bar goes "backwards". }
+    { Draw map.  Height scroll bar goes "backwards". }
       SY := MainDialog[NdxScrollBarH].d1 - MainDialog[NdxScrollBarH].d2;
       FixScroll (d^.dp, MainDialog[NdxScrollBarW].d2, sY, SX, SY);
     { If map is smaller than editing space, then SX and/or SY became negative,
@@ -268,7 +303,7 @@ PROGRAM newd;
     CASE msg OF
       AL_MSG_START: { Object initialization. }
 	BEGIN
-	{ Creates a sub-bitmpap, storing it in AL_DIALOG.dp field.  It will be
+	{ Create a sub-bitmpap, storing it in AL_DIALOG.dp field.  It will be
 	  used to draw the map. }
 	  d^.dp := al_create_sub_bitmap (
 	    al_gui_get_screen,
@@ -283,7 +318,7 @@ PROGRAM newd;
 	END;
       AL_MSG_END: { Object destruction. }
 	BEGIN
-	{ Releases resources. }
+	{ Release resources. }
 	  DestroyBmp (d^.dp);
 	  DestroyBmp (d^.dp2);
 	END;
@@ -306,6 +341,12 @@ PROGRAM newd;
  *)
   FUNCTION dlgTileSelectorProc (msg: AL_INT; d: AL_DIALOGptr; c: AL_INT): AL_INT; CDECL;
 
+  (* Helper function to know how many tiles fits in the selector. *)
+    FUNCTION NumOfTiles: INTEGER;
+    BEGIN
+      NumOfTiles := (d^.w DIV BTN_SIZE) - Length (EditButtons) - 2;
+    END;
+
   (* Helper procedure to draw the object. *)
     PROCEDURE DrawControl;
     CONST
@@ -327,14 +368,13 @@ PROGRAM newd;
 	  X, d^.y + 1, BTN_SIZE, BTN_SIZE
 	);
       { Selected tile. }
-	IF -d^.d1 = Ndx THEN
+	IF -d^.d1 = 2 - Ndx THEN
 	  DrawDottedRect (
 	    X, d^.y + 1, X + BTN_SIZE - 1, d^.y + BTN_SIZE
 	  );
       END;
     { Left and right arrows. }
       X := BTN_SIZE * 3; { Space for edition buttons. }
-      al_vline (al_gui_get_screen, X, d^.y, d^.y + d^.w, CBlack);
       al_triangle (
 	al_gui_get_screen,
 	d^.x + X +   BTN_SIZE DIV 8      , d^.y +   BTN_SIZE DIV 2,
@@ -351,28 +391,183 @@ PROGRAM newd;
       );
     { Draw the tiles.  Draw them from right to left.
       "2" is the room for arrows. }
-      FOR Ndx := (d^.w DIV BTN_SIZE) - Length (EditButtons) - 2 DOWNTO 0 DO
+      FOR Ndx := NumOfTiles DOWNTO 0 DO
       BEGIN
       { Calculates X coordinate. }
 	X := FB_X + d^.x + (BTN_SIZE * Ndx);
       { Be sure we don't try to draw a non existent tile. }
 	IF (d^.d2 + Ndx < Length (Tileset) - 2)
 	AND (Tileset[d^.d2 + Ndx] <> NIL)
-	THEN BEGIN
+	THEN
 	  al_stretch_blit (
 	    Tileset[d^.d2 + Ndx], al_gui_get_screen,
 	    0, 0, Tileset[d^.d2 + Ndx]^.w, Tileset[d^.d2 + Ndx]^.h,
 	    X, d^.y + 1, BTN_SIZE, BTN_SIZE
-	  );
-	{ Selected tile. }
-	  IF d^.d1 = d^.d2 + Ndx THEN
-	    DrawDottedRect (
-	      X, d^.y + 1, X + BTN_SIZE - 1, d^.y + BTN_SIZE
-	    );
-	END
+	  )
 	ELSE
 	{ If tile doesn't exist, draw a "X". }
 	  DrawNilObject (X , d^.y + 1, X + BTN_SIZE, d^.y + BTN_SIZE, d^.bg);
+      { Selected tile. }
+	IF d^.d1 = d^.d2 + Ndx THEN
+	  DrawDottedRect (
+	    X, d^.y + 1, X + BTN_SIZE - 1, d^.y + BTN_SIZE
+	  );
+      END;
+      IF (d^.flags AND AL_D_GOTFOCUS) = AL_D_GOTFOCUS THEN
+        DrawDottedRect (d^.x, d^.y, d^.x + d^.w - 1, d^.y + d^.h - 1);
+    END;
+
+  (* Helper procedure for key input. *)
+    PROCEDURE KeyInput;
+    BEGIN
+    { Key input. }
+      CASE c SHR 8 OF
+	AL_KEY_LEFT:
+	  BEGIN
+	    DEC (d^.d1);
+	    dlgTileSelectorProc := AL_D_USED_CHAR;
+	  END;
+	AL_KEY_RIGHT:
+	  BEGIN
+	    INC (d^.d1);
+	    dlgTileSelectorProc := AL_D_USED_CHAR;
+	  END;
+	AL_KEY_PGUP:
+	  IF d^.d1 > 0 THEN
+	  BEGIN
+	    DEC (d^.d1, NumOfTiles);
+	    IF d^.d1 < 1 THEN
+	      d^.d1 := 1;
+	    DEC (d^.d2, NumOfTiles);
+	    dlgTileSelectorProc := AL_D_USED_CHAR;
+	  END;
+	AL_KEY_PGDN:
+	  IF d^.d1 > 0 THEN
+	  BEGIN
+	    INC (d^.d1, NumOfTiles);
+	    INC (d^.d2, NumOfTiles);
+	    dlgTileSelectorProc := AL_D_USED_CHAR;
+	  END;
+      END;
+    { If key was used, do some extra work. }
+      IF dlgTileSelectorProc = AL_D_USED_CHAR THEN
+      BEGIN
+      { Check limits. }
+	IF d^.d1 < -2 THEN
+	  d^.d1 := -2
+	ELSE IF d^.d1 > MAX_TILES THEN
+	  d^.d1 := MAX_TILES;
+
+	IF d^.d2 > d^.d1 THEN
+	  d^.d2 := d^.d1
+	ELSE IF d^.d1 > d^.d2 + NumOfTiles THEN
+	  d^.d2 := d^.d1 - NumOfTiles;
+
+	IF d^.d2 < 1 THEN
+	  d^.d2 := 1
+	ELSE IF d^.d2 + NumOfTiles > MAX_TILES THEN
+	  d^.d2 := MAX_TILES - NumOfTiles;
+      { Selected tile. }
+	IF d^.d1 > 0 THEN
+	  ActiveTile := d^.d1
+	ELSE CASE d^.d1 OF
+	   0:
+	    ActiveTile := T_END;
+	  -1:
+	    ActiveTile := T_START;
+	  -2:
+	    ActiveTile := T_VOID;
+	END;
+      { Redraw component. }
+	al_object_message (d, AL_MSG_DRAW, 0);
+      END;
+    END;
+
+  (* Helper procedure for mouse input. *)
+    PROCEDURE MouseInput;
+    VAR
+      MousePos, mX, mY: LONGINT;
+    BEGIN
+    { NOTE: Here we should use al_gui_mouse_* stuff, but for some reason the
+      FPC compiler insists that it's not possible. }
+      IF al_mouse_needs_poll THEN al_poll_mouse;
+    { Wait until user releases the mouse button. }
+      WHILE al_mouse_b <> 0 DO
+      BEGIN
+        MousePos := al_mouse_pos;
+	mX := MousePos SHR 16;
+	mY := MousePos AND $0000FFFF;
+        IF al_mouse_needs_poll THEN al_poll_mouse;
+      END;
+    { Check where the mouse cursor is when button was released. }
+      IF (d^.y < my) AND (my < d^.h + d^.w) THEN
+      BEGIN
+      { Edition buttons. }
+	IF mX <= BTN_SIZE * 3 THEN
+	BEGIN
+	  CASE mX DIV BTN_SIZE OF
+	    0:
+	      BEGIN
+		ActiveTile := T_VOID;
+		d^.d1 := -2;
+	      END;
+	    1:
+	      BEGIN
+		ActiveTile := T_START;
+		d^.d1 := -1;
+	      END;
+	    2:
+	      BEGIN
+		ActiveTile := T_END;
+		d^.d1 := 0;
+	      END;
+	  END;
+	END
+      { Tiles. }
+	ELSE IF ((BTN_SIZE * 7) DIV 2 <= mX) AND (mX < d^.w - (BTN_SIZE DIV 2)) THEN
+	BEGIN
+	  ActiveTile := ((mX - ((BTN_SIZE * 7) DIV 2)) DIV BTN_SIZE) + d^.d2;
+	  d^.d1 := ActiveTile;
+	END
+      { Arrow buttons. }
+	ELSE BEGIN
+	  IF mX < d^.w DIV 2 THEN
+	  BEGIN
+	    IF d^.d1 > 0 THEN
+	    BEGIN
+	      DEC (d^.d1, NumOfTiles DIV 2);
+	      IF d^.d1 < 1 THEN
+		d^.d1 := 1;
+	      DEC (d^.d2, NumOfTiles DIV 2);
+	    END;
+	  END
+	  ELSE BEGIN
+	    IF d^.d1 > 0 THEN
+	    BEGIN
+	      INC (d^.d1, NumOfTiles DIV 2);
+	      INC (d^.d2, NumOfTiles DIV 2);
+	    END;
+	  END;
+	{ Check limits. }
+	  IF d^.d1 < -2 THEN
+	    d^.d1 := -2
+	  ELSE IF d^.d1 > MAX_TILES THEN
+	    d^.d1 := MAX_TILES;
+
+	  IF d^.d2 > d^.d1 THEN
+	    d^.d2 := d^.d1
+	  ELSE IF d^.d1 > d^.d2 + NumOfTiles THEN
+	    d^.d2 := d^.d1 - NumOfTiles;
+
+	  IF d^.d2 < 1 THEN
+	    d^.d2 := 1
+	  ELSE IF d^.d2 + NumOfTiles > MAX_TILES THEN
+	    d^.d2 := MAX_TILES - NumOfTiles;
+	{ Selected tile. }
+	  ActiveTile := d^.d1;
+	END;
+      { In any case, redraw it. }
+        al_object_message (d, AL_MSG_DRAW, 0);
       END;
     END;
 
@@ -389,6 +584,12 @@ PROGRAM newd;
 	{ Uses d2 to store the index of the first tile to draw. }
 	  d^.d2 := 1;
 	END;
+      AL_MSG_WANTFOCUS:
+	dlgTileSelectorProc := AL_D_WANTFOCUS;
+      AL_MSG_CHAR:
+	KeyInput;
+      AL_MSG_CLICK:
+	MouseInput;
       AL_MSG_DRAW: { Draws the object. }
 	DrawControl;
     END;
@@ -478,33 +679,37 @@ PROGRAM newd;
 (* Shows a dialog to get new map size and creates it. *)
   FUNCTION NewMap: AL_INT; CDECL;
   VAR
+    HeightInput, WidthInput: PCHAR;
     DlgMapSize: ARRAY [0..12] OF AL_DIALOG;
-    HeightInput, WidthInput: STRING[10];
     NewWidth, NewHeight, Option: INTEGER;
   BEGIN
   { Warns if map was modified. }
     IF MapModified THEN
       IF NOT AskYesNo ('The map was changed.', 'Create without saving?') THEN
         EXIT;
-    HeightInput := IntToStr (MapHeight)+''#0;
-    WidthInput  := IntToStr (MapWidth)+''#0;
+  { Reserve space for input. }
+    WidthInput := StrAlloc (10); HeightInput := StrAlloc (10);
+  { Now, copy the last map size as default. }
+    StrPCopy (HeightInput, IntToStr (MapHeight));
+    StrPCopy (WidthInput, IntToStr (MapWidth));
   { Create a dialog to get new map size. }
-    al_set_dialog_item (DlgMapSize, 0, @al_d_shadow_box_proc, 0, 0, 174, 120, CBlack, CButton, 0, 0, 0, 0, NIL, NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 0, @al_d_shadow_box_proc, 0, 0, 188, 120, CBlack, CButton, 0, 0, 0, 0, NIL, NIL, NIL);
     al_set_dialog_item (DlgMapSize, 1, @al_d_yield_proc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 2, @al_d_box_proc, 0, 0, 173, 16, CBlack, CBlue, 0, 0, 0, 0, NIL, NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 2, @al_d_box_proc, 0, 0, 187, 16, CBlack, CBlue, 0, 0, 0, 0, NIL, NIL, NIL);
     al_set_dialog_item (DlgMapSize, 3, @al_d_ctext_proc, 0, 4, 174, 8, CWhite, -1, 0, 0, 0, 0, AL_STRptr ('Create new map'), NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 4, @al_d_rtext_proc, 16, 28, 88, 8, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Map height:'), NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 5, @al_d_box_proc, 108, 24, 50, 16, CBlack, CWhite, 0, 0, 0, 0, NIL, NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 6, @al_d_edit_proc, 116, 28, 34, 16, CBlack, CWhite, 0, 0, 3, 0, @HeightInput[1], NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 7, @al_d_rtext_proc, 16, 51, 88, 16, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Map width:'), NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 8, @al_d_box_proc, 108, 47, 50, 16, CBlack, CWhite, 0, 0, 0, 0, NIL, NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 9, @al_d_edit_proc, 116, 51, 34, 16, CBlack, CWhite, 0, 0, 3, 0, @WidthInput[1], NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 10, @al_d_button_proc, 16, 72, 142, 16, CBlack, CButton, scINTRO, AL_D_EXIT, 0, 0, AL_STRptr ('Create &new map'), NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 11, @al_d_button_proc, 16, 96, 142, 16, CBlack, CButton, 0, AL_D_EXIT, 0, 0, AL_STRptr ('&Cancel'), NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 4, @al_d_rtext_proc, 16, 28, 88, 16, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Map width:'), NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 5, @al_d_box_proc, 108, 24, 64, 16, CBlack, CWhite, 0, 0, 0, 0, NIL, NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 6, @al_d_edit_proc, 116, 28, 48, 16, CBlack, CWhite, 0, 0, 5, 0, WidthInput, NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 7, @al_d_rtext_proc, 16, 51, 88, 8, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Map height:'), NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 8, @al_d_box_proc, 108, 47, 64, 16, CBlack, CWhite, 0, 0, 0, 0, NIL, NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 9, @al_d_edit_proc, 116, 51, 48, 16, CBlack, CWhite, 0, 0, 5, 0, HeightInput, NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 10, @al_d_button_proc, 16, 72, 156, 16, CBlack, CButton, scINTRO, AL_D_EXIT, 0, 0, AL_STRptr ('Create &new map'), NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 11, @al_d_button_proc, 16, 96, 156, 16, CBlack, CButton, 0, AL_D_EXIT, 0, 0, AL_STRptr ('&Cancel'), NIL, NIL);
   { End of dialog. }
     al_set_dialog_item (DlgMapSize, 12, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
-  { Centers the dialog. }
+  { Center the dialog. }
     al_centre_dialog (@DlgMapSize);
+
     REPEAT
       Option := al_do_dialog (@DlgMapSize[0], -1);
       IF Option = 11 THEN
@@ -521,7 +726,8 @@ PROGRAM newd;
 	    IntToStr (MIN_SIZE)+' and '+IntToStr (MAX_SIZE)
 	  )
 	ELSE BEGIN
-	  CreateMap (NewHeight, NewWidth);
+	  CreateMap (NewWidth, NewHeight);
+	  FixScrollBarsRange;
 	  MapName := '<noname>';
 	  ResetMapModified;
 	  CanDrawMap := TRUE;
@@ -530,6 +736,8 @@ PROGRAM newd;
       END;
     UNTIL Option = -1;
     NewMap := AL_D_REDRAW;
+  { Release strings. }
+    StrDispose (WidthInput); StrDispose (HeightInput);
   END;
 
 
@@ -552,9 +760,13 @@ PROGRAM newd;
 	ErrorMessage ('Can''t load map from file', FileName)
       ELSE
       BEGIN
+	FixScrollBarsRange;
 	MapName := FileName;
 	ResetMapModified;
 	CanDrawMap := TRUE;
+      { To show start and end points. }
+	Map[StartX, StartY] := T_START;
+	Map[EndX, EndY] := T_END;
       END;
     END;
     LoadMap := AL_D_REDRAW;
@@ -704,18 +916,19 @@ PROGRAM newd;
       al_set_dialog_item (MainDialog, 0, @al_d_yield_proc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
       al_set_dialog_item (MainDialog, 1, @al_d_box_proc, 0, 0, AL_SCREEN_W, AL_SCREEN_H, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
       al_set_dialog_item (MainDialog, 2, @al_d_menu_proc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, @MainMenu[0], NIL, NIL);
-      al_set_dialog_item (MainDialog, 3, @dlgSelectorProc, 1, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, AL_D_SELECTED, 0, 0, Data^[BMP_1x1].dat, NIL, NIL);
-      al_set_dialog_item (MainDialog, 4, @dlgSelectorProc, 1+BTN_SIZE+2, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, 0, Data^[BMP_1x2].dat, NIL, NIL);
-      al_set_dialog_item (MainDialog, 5, @dlgSelectorProc, 1+(BTN_SIZE+2) * 2, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, 0, Data^[BMP_2x1].dat, NIL, NIL);
-      al_set_dialog_item (MainDialog, 6, @dlgSelectorProc, 1+(BTN_SIZE+2) * 3, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, 0, Data^[BMP_2x2].dat, NIL, NIL);
-      al_set_dialog_item (MainDialog, 7, @dlgSelectorProc, 1+(BTN_SIZE+2) * 4, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, 0, Data^[BMP_O_1X2].dat, NIL, NIL);
-      al_set_dialog_item (MainDialog, 8, @dlgSelectorProc, 1+(BTN_SIZE+2) * 5, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, 0, Data^[BMP_O_2x1].dat, NIL, NIL);
-      al_set_dialog_item (MainDialog, 9, @dlgSelectorProc, 1+(BTN_SIZE+2) * 6, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, 0, Data^[BMP_O_2x2].dat, NIL, NIL);
+      al_set_dialog_item (MainDialog, 3, @dlgBrushSelProc, 1, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, AL_D_SELECTED, 0, BMP_1x1, Data^[BMP_1x1].dat, NIL, NIL);
+      al_set_dialog_item (MainDialog, 4, @dlgBrushSelProc, 1+BTN_SIZE+2, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, BMP_1x2, Data^[BMP_1x2].dat, NIL, NIL);
+      al_set_dialog_item (MainDialog, 5, @dlgBrushSelProc, 1+(BTN_SIZE+2) * 2, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, BMP_2x1, Data^[BMP_2x1].dat, NIL, NIL);
+      al_set_dialog_item (MainDialog, 6, @dlgBrushSelProc, 1+(BTN_SIZE+2) * 3, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, BMP_2x2, Data^[BMP_2x2].dat, NIL, NIL);
+      al_set_dialog_item (MainDialog, 7, @dlgBrushSelProc, 1+(BTN_SIZE+2) * 4, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, BMP_O_2x1, Data^[BMP_O_1X2].dat, NIL, NIL);
+      al_set_dialog_item (MainDialog, 8, @dlgBrushSelProc, 1+(BTN_SIZE+2) * 5, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, BMP_O_2x1, Data^[BMP_O_2x1].dat, NIL, NIL);
+      al_set_dialog_item (MainDialog, 9, @dlgBrushSelProc, 1+(BTN_SIZE+2) * 6, 15, BTN_SIZE, BTN_SIZE, 0, 0, 0, 0, 0, BMP_O_2x2, Data^[BMP_O_2x2].dat, NIL, NIL);
+      NdxMapedit := 10;
       al_set_dialog_item (MainDialog, 10, @dlgMapEditorProc, 0, 47, AL_SCREEN_W - BTN_SIZE, AL_SCREEN_H - BTN_SIZE * 2 - 48, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
-      NdxScrollBarH := 4;
-      al_set_dialog_item (MainDialog, 11, @al_d_slider_proc, AL_SCREEN_W - BTN_SIZE, 47, BTN_SIZE - 1, AL_SCREEN_H - BTN_SIZE * 2 - 48, 0, 0, 0, 0, 1024, 1024, NIL, @ScrollBarHandler, NIL);
-      NdxScrollBarW := 5;
-      al_set_dialog_item (MainDialog, 12, @al_d_slider_proc, 1, AL_SCREEN_H - BTN_SIZE * 2 - 1, AL_SCREEN_W - BTN_SIZE - 2, BTN_SIZE - 1, 0, 0, 0, 0, 1024, 0, NIL, @ScrollBarHandler, NIL);
+      NdxScrollBarH := 11;
+      al_set_dialog_item (MainDialog, 11, @al_d_slider_proc, AL_SCREEN_W - BTN_SIZE, 47, BTN_SIZE - 1, AL_SCREEN_H - BTN_SIZE * 2 - 48, 0, 0, 0, 0, 1, 0, NIL, @ScrollBarHandler, NIL);
+      NdxScrollBarW := 12;
+      al_set_dialog_item (MainDialog, 12, @al_d_slider_proc, 1, AL_SCREEN_H - BTN_SIZE * 2 - 1, AL_SCREEN_W - BTN_SIZE - 2, BTN_SIZE - 1, 0, 0, 0, 0, 1, 0, NIL, @ScrollBarHandler, NIL);
       al_set_dialog_item (MainDialog, 13, @dlgTileSelectorProc, 0, AL_SCREEN_H - BTN_SIZE - 2, AL_SCREEN_W, BTN_SIZE + 2, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
     { Key shortcuts. }
       al_set_dialog_item (MainDialog, 14, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, @Help, NIL, NIL);
@@ -754,12 +967,14 @@ PROGRAM newd;
     IF NOT InitGraphics THEN
     { InitGraphics shows its own messages. }
       EXIT;
-  { Sets the default tileset. }
+  { Set the default tileset. }
     SetTileset ('');
     MapName := '<noname>';
     ResetMapModified;
-  { Sets the edition buttons. }
+  { Set the edition buttons. }
     CreateEditionButtons;
+  { Set default size, to show if select NewMap first. }
+    MapWidth := 100; MapHeight := 100;
   { Set up the GUI system. }
     IF NOT InitGUI THEN
       EXIT;
