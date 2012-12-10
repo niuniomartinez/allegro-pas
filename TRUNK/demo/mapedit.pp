@@ -1,8 +1,8 @@
-PROGRAM newd;
+PROGRAM mapedit;
 (* This is the map editor for the Allegro.pas demo game.
 
   It's designed in a way that should be easy to expand and upgrade, so you can
-  use it in your projects.
+  use it in your own projects.
 
   By Ñuño Martínez.
  *)
@@ -32,7 +32,7 @@ PROGRAM newd;
   (* Some data used by the editor. *)
     Data: AL_DATAFILEptr;
   (* Some colors. *)
-    CWhite, CBlack, CRed, CBlue, CButton: LONGINT;
+    CWhite, CBlack, CRed, CBlue, CGreen, CButton: LONGINT;
   (* The special edition buttons:  Delete, Start and End. *)
     EditButtons: ARRAY [0..2] OF AL_BITMAPptr;
   (* Main menu description. *)
@@ -739,8 +739,35 @@ PROGRAM newd;
 
 (* Shows help. *)
   FUNCTION Help: AL_INT; CDECL;
+  VAR
+    HelpFile: FILE OF CHAR;
+    HelpText: ANSISTRING;
+    C: CHAR;
+    DlgHelp: ARRAY [0..5] OF AL_DIALOG;
   BEGIN
-    al_alert ('* mapedit *', CAPTION, 'Aquí iría la ayuda o dos', 'Ok', '', 0, 0);
+  { Load help text. }
+    HelpText := '';
+    Assign (HelpFile, './mapedit.txt');
+    Reset (HelpFile);
+    WHILE NOT EOF (HelpFile) DO
+    BEGIN
+      Read (HelpFile, C);
+      HelpText := HelpText + C;
+    END;
+    Close (HelpFile);
+  { Create help viewer. }
+    al_set_dialog_item (DlgHelp, 0, @al_d_shadow_box_proc, 0, 0, 532, 252, CBlack, CButton, 0, 0, 0, 0, NIL, NIL, NIL);
+    al_set_dialog_item (DlgHelp, 1, @al_d_ctext_proc, 0, 4, 532, 8, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Help text'), NIL, NIL);
+    al_set_dialog_item (DlgHelp, 2, @al_d_textbox_proc, 16, 16, 500, 208, CBlack, CWhite, 0, 0, 0, 0, AL_STRptr (HelpText), NIL, NIL);
+    al_set_dialog_item (DlgHelp, 3, @al_d_button_proc, 16, 228, 156, 16, CBlack, CButton, scINTRO, AL_D_EXIT, 0, 0, AL_STRptr ('Read'), NIL, NIL);
+    al_set_dialog_item (DlgHelp, 4, @al_d_yield_proc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
+  { End of dialog. }
+    al_set_dialog_item (DlgHelp, 5, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
+  { Center the dialog. }
+    al_centre_dialog (@DlgHelp);
+
+    al_popup_dialog (@DlgHelp[0], -1);
+
     Help := AL_D_O_K;
   END;
 
@@ -786,6 +813,105 @@ PROGRAM newd;
       ELSE BEGIN
 	FullscreenCheck := AL_D_REDRAW;
 	al_show_mouse (al_screen);
+      END;
+    END;
+  END;
+
+
+
+(* Restores default map background. *)
+  FUNCTION mnuRestoreBackground: AL_INT; CDECL;
+  BEGIN
+  { Restores background. }
+    DestroyBmp (MainDialog[NdxMapedit].dp2);
+    MainDialog[NdxMapedit].dp2 := al_create_bitmap (TSIZE * 4, TSIZE * 4);
+    al_clear_to_color (MainDialog[NdxMapedit].dp2, MainDialog[NdxMapedit].bg);
+    al_rectfill (MainDialog[NdxMapedit].dp2, TSIZE * 2, 0, TSIZE * 4 - 1, TSIZE * 2 - 1, al_gui_mg_color);
+    al_rectfill (MainDialog[NdxMapedit].dp2, 0, TSIZE * 2, TSIZE * 2 - 1, TSIZE * 4 - 1, al_gui_mg_color);
+  { Change selection. }
+    CfgBgMenu[0].flags := CfgBgMenu[0].flags OR AL_D_SELECTED;
+    CfgBgMenu[1].flags := CfgBgMenu[1].flags AND NOT AL_D_SELECTED;
+    CfgBgMenu[2].flags := CfgBgMenu[2].flags AND NOT AL_D_SELECTED;
+
+    mnuRestoreBackground := AL_D_REDRAW;
+  END;
+
+
+
+(* Selects a solid color as map background. *)
+  VAR
+    dlgColor: ARRAY [0..9] OF AL_DIALOG;
+
+(* Slider handler. *)
+  FUNCTION RgbScrollBarHandler (dp3: AL_VOIDptr; d2: AL_INT): AL_INT; CDECL;
+  BEGIN
+    dlgColor[5].bg := al_makecol (
+      dlgColor[2].d2, dlgColor[3].d2, dlgColor[4].d2
+    );
+    al_object_message (@dlgColor[5], AL_MSG_DRAW, 0);
+    RgbScrollBarHandler := AL_D_O_K;
+  END;
+
+  FUNCTION mnuSelectSolidBackground: AL_INT; CDECL;
+  BEGIN
+  { Creates dialog. }
+    al_set_dialog_item (dlgColor, 0, @al_d_shadow_box_proc, 0, 0, 352, 112, CBlack, CButton, 0, 0, 0, 0, NIL, NIL, NIL);
+    al_set_dialog_item (dlgColor, 1, @al_d_ctext_proc, 0, 4, 352, 8, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Select background color'), NIL, NIL);
+    al_set_dialog_item (dlgColor, 2, @al_d_slider_proc, 18, 24, 256, 16, CRed, CButton, 0, 0, 255, 0, NIL, @RgbScrollBarHandler, NIL);
+    al_set_dialog_item (dlgColor, 3, @al_d_slider_proc, 18, 42, 256, 16, CGreen, CButton, 0, 0, 255, 0, NIL, @RgbScrollBarHandler, NIL);
+    al_set_dialog_item (dlgColor, 4, @al_d_slider_proc, 18, 60, 256, 16, CBlue, CButton, 0, 0, 255, 0, NIL, @RgbScrollBarHandler, NIL);
+    al_set_dialog_item (dlgColor, 5, @al_d_box_proc,    280, 24, 54, 54, CBlack, CBlack, 0, 0, 0, 0, NIL, NIL, NIL);
+    al_set_dialog_item (dlgColor, 6, @al_d_button_proc, 16, 88, 156, 16, CBlack, CButton, scINTRO, AL_D_EXIT, 0, 0, AL_STRptr ('&Ok'), NIL, NIL);
+    al_set_dialog_item (dlgColor, 7, @al_d_button_proc, 180, 88, 156, 16, CBlack, CButton, 0, AL_D_EXIT, 0, 0, AL_STRptr ('&Cancel'), NIL, NIL);
+    al_set_dialog_item (dlgColor, 8, @al_d_yield_proc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
+  { End of dialog. }
+    al_set_dialog_item (dlgColor, 9, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
+  { Center the dialog. }
+    al_centre_dialog (@dlgColor);
+
+    IF al_popup_dialog (@dlgColor[0], -1) = 6 THEN
+    BEGIN
+    { Changes background. }
+      al_clear_to_color (MainDialog[NdxMapedit].dp2, al_makecol (
+        dlgColor[2].d2, dlgColor[3].d2, dlgColor[4].d2
+      ));
+    { Change selection. }
+      CfgBgMenu[0].flags := CfgBgMenu[0].flags AND NOT AL_D_SELECTED;
+      CfgBgMenu[1].flags := CfgBgMenu[1].flags OR AL_D_SELECTED;
+      CfgBgMenu[2].flags := CfgBgMenu[2].flags AND NOT AL_D_SELECTED;
+    END;
+    mnuSelectSolidBackground := AL_D_REDRAW;
+  END;
+
+
+
+(* Selects a bitmap as map background. *)
+  FUNCTION mnuSelectBitmapBackground: AL_INT; CDECL;
+  VAR
+    Filename: STRING;
+    Bmp: AL_BITMAPptr;
+    Palette: AL_PALETTE;
+  BEGIN
+    mnuSelectBitmapBackground := AL_D_O_K;
+  { The file selector. }
+    IF al_file_select_ex ('Select bitmap file', FileName, 'BMP;LBM;PCX;TGA;/-h', 512, 320, 240) THEN
+    BEGIN
+      Bmp := al_load_bitmap (FileName, @Palette);
+      IF Bmp = NIL THEN
+	ErrorMessage ('Can''t load bitmap from file', FileName)
+      ELSE
+      BEGIN
+      { Clones the bitmap. }
+	DestroyBmp (MainDialog[NdxMapedit].dp2);
+	al_set_palette (Palette);
+	MainDialog[NdxMapedit].dp2 := CloneBitmap (Bmp, Bmp^.w, Bmp^.h);
+	DestroyBmp (Bmp);
+      { Change selection. }
+	CfgBgMenu[0].flags := CfgBgMenu[0].flags AND NOT AL_D_SELECTED;
+	CfgBgMenu[1].flags := CfgBgMenu[1].flags AND NOT AL_D_SELECTED;
+	CfgBgMenu[2].flags := CfgBgMenu[2].flags OR AL_D_SELECTED;
+
+	mnuSelectBitmapBackground := AL_D_REDRAW;
       END;
     END;
   END;
@@ -853,7 +979,7 @@ PROGRAM newd;
   FUNCTION NewMap: AL_INT; CDECL;
   VAR
     HeightInput, WidthInput: PCHAR;
-    DlgMapSize: ARRAY [0..12] OF AL_DIALOG;
+    DlgMapSize: ARRAY [0..11] OF AL_DIALOG;
     NewWidth, NewHeight, Option: INTEGER;
   BEGIN
   { Warns if map was modified. }
@@ -868,26 +994,25 @@ PROGRAM newd;
   { Create a dialog to get new map size. }
     al_set_dialog_item (DlgMapSize, 0, @al_d_shadow_box_proc, 0, 0, 188, 120, CBlack, CButton, 0, 0, 0, 0, NIL, NIL, NIL);
     al_set_dialog_item (DlgMapSize, 1, @al_d_yield_proc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 2, @al_d_box_proc, 0, 0, 187, 16, CBlack, CBlue, 0, 0, 0, 0, NIL, NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 3, @al_d_ctext_proc, 0, 4, 174, 8, CWhite, -1, 0, 0, 0, 0, AL_STRptr ('Create new map'), NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 4, @al_d_rtext_proc, 16, 28, 88, 16, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Map width:'), NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 5, @al_d_box_proc, 108, 24, 64, 16, CBlack, CWhite, 0, 0, 0, 0, NIL, NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 6, @al_d_edit_proc, 116, 28, 48, 16, CBlack, CWhite, 0, 0, 5, 0, WidthInput, NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 7, @al_d_rtext_proc, 16, 51, 88, 8, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Map height:'), NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 8, @al_d_box_proc, 108, 47, 64, 16, CBlack, CWhite, 0, 0, 0, 0, NIL, NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 9, @al_d_edit_proc, 116, 51, 48, 16, CBlack, CWhite, 0, 0, 5, 0, HeightInput, NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 10, @al_d_button_proc, 16, 72, 156, 16, CBlack, CButton, scINTRO, AL_D_EXIT, 0, 0, AL_STRptr ('Create &new map'), NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 11, @al_d_button_proc, 16, 96, 156, 16, CBlack, CButton, 0, AL_D_EXIT, 0, 0, AL_STRptr ('&Cancel'), NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 2, @al_d_ctext_proc, 0, 4, 174, 8, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Create new map'), NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 3, @al_d_rtext_proc, 16, 28, 88, 16, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Map width:'), NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 4, @al_d_box_proc, 108, 24, 64, 16, CBlack, CWhite, 0, 0, 0, 0, NIL, NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 5, @al_d_edit_proc, 116, 28, 48, 16, CBlack, CWhite, 0, 0, 5, 0, WidthInput, NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 6, @al_d_rtext_proc, 16, 51, 88, 8, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Map height:'), NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 7, @al_d_box_proc, 108, 47, 64, 16, CBlack, CWhite, 0, 0, 0, 0, NIL, NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 8, @al_d_edit_proc, 116, 51, 48, 16, CBlack, CWhite, 0, 0, 5, 0, HeightInput, NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 9, @al_d_button_proc, 16, 72, 156, 16, CBlack, CButton, scINTRO, AL_D_EXIT, 0, 0, AL_STRptr ('Create &new map'), NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 10, @al_d_button_proc, 16, 96, 156, 16, CBlack, CButton, 0, AL_D_EXIT, 0, 0, AL_STRptr ('&Cancel'), NIL, NIL);
   { End of dialog. }
-    al_set_dialog_item (DlgMapSize, 12, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 11, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
   { Center the dialog. }
     al_centre_dialog (@DlgMapSize);
 
     REPEAT
       Option := al_do_dialog (@DlgMapSize[0], -1);
-      IF Option = 11 THEN
+      IF Option = 10 THEN
 	Option := -1
-      ELSE IF Option = 10 THEN
+      ELSE IF Option = 9 THEN
       BEGIN
 	NewHeight := StrToIntDef (HeightInput, -1);
 	NewWidth := StrToIntDef (WidthInput, -1);
@@ -1020,6 +1145,7 @@ PROGRAM newd;
       CWhite := al_makecol (255, 255, 255);
       CBlack := al_makecol (  0,   0,   0);
       CRed   := al_makecol (255,   0,   0);
+      CGreen := al_makecol (  0, 255,   0);
       CBlue  := al_makecol (  0,   0, 255);
       CButton:= al_makecol (153, 153, 153);
 
@@ -1051,12 +1177,12 @@ PROGRAM newd;
       al_set_menu_item (MapMenu, 2, '-------------',  NIL,    NIL, AL_D_DISABLED, NIL);
       al_set_menu_item (MapMenu, 3, '&Save   Ctrl+S', @SaveMap, NIL,         0, NIL);
 
-      al_set_menu_item (CfgBgMenu, 0, '&Default', NIL,    NIL,     AL_D_SELECTED, NIL);
-      al_set_menu_item (CfgBgMenu, 1, '&Solid color', NIL,    NIL, 0, NIL);
-      al_set_menu_item (CfgBgMenu, 2, '&Bitmap', NIL,    NIL,      0, NIL);
+      al_set_menu_item (CfgBgMenu, 0, '&Default', @mnuRestoreBackground,    NIL,     AL_D_SELECTED, NIL);
+      al_set_menu_item (CfgBgMenu, 1, '&Solid color', @mnuSelectSolidBackground,    NIL, 0, NIL);
+      al_set_menu_item (CfgBgMenu, 2, '&Bitmap', @mnuSelectBitmapBackground,    NIL,      0, NIL);
 
       al_set_menu_item (ConfigMenu, 0, '&Fullscreen', @FullscreenCheck,    NIL,             0, NIL);
-      al_set_menu_item (ConfigMenu, 1, 'Background',  NIL,    @CfgBgMenu,             0, NIL);
+      al_set_menu_item (ConfigMenu, 1, '&Background',  NIL,    @CfgBgMenu,             0, NIL);
    { Put all together. }
       al_set_menu_item (MainMenu,  0, '&Program', NIL,       @ProgMenu,      0, NIL);
       al_set_menu_item (MainMenu,  1, '&Map',     NIL,       @MapMenu,       0, NIL);
