@@ -8,17 +8,25 @@ UNIT gamedata;
 
 INTERFACE
 
-USES
-  allegro, alfile;
+  USES
+    allegro, alfile;
 
-VAR
-{ This allows to acess all game graphics and sound. }
-  Data: AL_DATAFILEptr;
-
-
+  VAR
+  { This allows to acess all game graphics and sound. }
+    Data: AL_DATAFILEptr;
 
 { Indexes for each object stored in the datafile. }
 {$I demo.inc}
+
+  CONST
+  (* Identifiers of blocks.  They're tiles, not bitmaps. *)
+    T_COIN = 1;
+    T_BLK1 = 2;
+    T_BLK2 = 3;
+    T_BLK3 = 4;
+    T_ROWR = 5;
+    T_ROWL = 6;
+    T_ROWD = 7;
 
 
 
@@ -26,21 +34,15 @@ VAR
    on success. *)
   FUNCTION LoadData: BOOLEAN;
 
-
-
 (* Releases all resources used by the data.  Should be called before uninstall
    Allegro. *)
   PROCEDURE ReleaseData;
 
-
-
 IMPLEMENTATION
 
-USES
-  Tilemap, { To assign tileset bitmaps. }
-  sysutils;
-
-
+  USES
+    Tilemap, { To assign tileset bitmaps. }
+    sysutils;
 
 (* Loads the datafile and stores it in the "Data" pointer.  Returns TRUE
    on success. *)
@@ -55,9 +57,9 @@ USES
   { Check if it was loaded. }
     LoadData := (Data <> NIL);
   { Assigns tileset. }
-    SetLength (TileSet, 7);
-    FOR Ndx := 3 TO 6 DO
-      TileSet[Ndx] := Data^[Ndx - BMP_COIN + 1].dat;
+    SetLength (TileSet, T_ROWD + 1);
+    FOR Ndx := T_COIN TO T_ROWD DO
+      TileSet[Ndx] := Data^[Ndx - 1].dat;
   END;
 
 

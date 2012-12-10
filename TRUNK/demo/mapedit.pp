@@ -60,21 +60,6 @@ PROGRAM mapedit;
 
 
 
-(***************************
-  Next data is needed to get the tiles used by the Allegro.pas' Demo Game.
-  If you are modifying the editor to use it in other projects then
-  you should remove or modify this block of code.
- *)
-
-{ Indexes for tiles in the datafile. }
-{$I demo.inc}
-
-(*
-  End of data needed to edit maps of Allegro.pas' Demo Game.
- ***************************)
-
-
-
 (*****************************************************************************
  * Low level stuff like bitmap management, error handling, etc.
  *)
@@ -294,6 +279,14 @@ PROGRAM mapedit;
       al_drawing_mode (AL_DRAW_MODE_COPY_PATTERN, d^.dp2, 0, 0);
       al_rectfill (d^.dp, 0, 0, MW, MH, 0);
       al_solid_mode;
+    { Use flag AL_D_SELECTED if background is a bitmap.  Then redraw the bitmap
+      using blit because AL_DRAW_MODE_COPY_PATTERN cuts bitmap size if it's not
+      power of two.  It still uses pattern to be sure it fills background. }
+      IF d^.flags AND AL_D_SELECTED = AL_D_SELECTED THEN
+	al_blit (
+	  d^.dp2, d^.dp, 0, 0, 0, 0,
+	  AL_BITMAPptr (d^.dp)^.w, AL_BITMAPptr (d^.dp)^.h
+	);
     { Draw map.  Height scroll bar goes "backwards". }
       SY := MainDialog[NdxScrollBarH].d1 - MainDialog[NdxScrollBarH].d2;
       FixScroll (d^.dp, MainDialog[NdxScrollBarW].d2, sY, SX, SY);
@@ -623,7 +616,7 @@ PROGRAM mapedit;
   (* Helper procedure for mouse input. *)
     PROCEDURE MouseInput;
     VAR
-      MousePos, mX, mY: LONGINT;
+      mX, mY: LONGINT;
     BEGIN
     { NOTE: Here we should use al_gui_mouse_* stuff, but for some reason the
       FPC compiler insists that it's not possible. }
@@ -825,6 +818,7 @@ PROGRAM mapedit;
   { Restores background. }
     DestroyBmp (MainDialog[NdxMapedit].dp2);
     MainDialog[NdxMapedit].dp2 := al_create_bitmap (TSIZE * 4, TSIZE * 4);
+    MainDialog[NdxMapedit].flags := MainDialog[NdxMapedit].flags AND NOT AL_D_SELECTED;
     al_clear_to_color (MainDialog[NdxMapedit].dp2, MainDialog[NdxMapedit].bg);
     al_rectfill (MainDialog[NdxMapedit].dp2, TSIZE * 2, 0, TSIZE * 4 - 1, TSIZE * 2 - 1, al_gui_mg_color);
     al_rectfill (MainDialog[NdxMapedit].dp2, 0, TSIZE * 2, TSIZE * 2 - 1, TSIZE * 4 - 1, al_gui_mg_color);
@@ -875,6 +869,7 @@ PROGRAM mapedit;
       al_clear_to_color (MainDialog[NdxMapedit].dp2, al_makecol (
         dlgColor[2].d2, dlgColor[3].d2, dlgColor[4].d2
       ));
+      MainDialog[NdxMapedit].flags := MainDialog[NdxMapedit].flags AND NOT AL_D_SELECTED;
     { Change selection. }
       CfgBgMenu[0].flags := CfgBgMenu[0].flags AND NOT AL_D_SELECTED;
       CfgBgMenu[1].flags := CfgBgMenu[1].flags OR AL_D_SELECTED;
@@ -906,6 +901,7 @@ PROGRAM mapedit;
 	al_set_palette (Palette);
 	MainDialog[NdxMapedit].dp2 := CloneBitmap (Bmp, Bmp^.w, Bmp^.h);
 	DestroyBmp (Bmp);
+	MainDialog[NdxMapedit].flags := MainDialog[NdxMapedit].flags OR AL_D_SELECTED;
       { Change selection. }
 	CfgBgMenu[0].flags := CfgBgMenu[0].flags AND NOT AL_D_SELECTED;
 	CfgBgMenu[1].flags := CfgBgMenu[1].flags AND NOT AL_D_SELECTED;
@@ -950,7 +946,7 @@ PROGRAM mapedit;
       EXIT;
     END;
   { Select the palette which was loaded from the datafile. }
-    Palette := DemoData^[GAME_PAL].dat;
+    Palette := DemoData^[25].dat;
     al_set_palette (Palette^);
   { Map editor needs all 256 tiles because uses the last ones (254 and 255) as
     markers of "map startpoint" and "map endpoint". }
@@ -960,7 +956,7 @@ PROGRAM mapedit;
   { Copy the tiles to convert them to the current color depth.  It's necessary
     because dlgTileSelector uses al_stretch_blit to draw the tiles, and it
     doesn't convert color depth of bitmaps. }
-    FOR Ndx := BMP_COIN TO BMP_BLK3 DO
+    FOR Ndx := 0 TO 6 DO
       Tileset[Ndx + 1] := CloneBitmap (DemoData^[Ndx].dat,TSIZE, TSIZE);
   { Unload data, because we don't need it. }
     al_unload_datafile (DemoData);

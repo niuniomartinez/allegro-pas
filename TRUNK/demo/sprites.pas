@@ -129,16 +129,17 @@ VAR
       IF SpritePlane[SprNdx].y < (MapHeight - 1) * TSiZE THEN
       BEGIN
       { Checks the tile just below the sprite. }
-	IF Map[(SpritePlane[SprNdx].x DIV TSIZE) + 1,
-		(SpritePlane[SprNdx].y DIV TSIZE) + 2] = TileNdx
+	IF Map[(SpritePlane[SprNdx].x DIV TSIZE),
+		(SpritePlane[SprNdx].y DIV TSIZE) + 1] = TileNdx
 	THEN
 	  CheckDownCollision := TRUE
 	ELSE
 	{ Checks if the sprite is in the middle of two tiles. }
 	  IF SpritePlane[SprNdx].x MOD TSIZE <> 0 THEN
 	  { It is, so checks again with the other tile. }
-	    IF Map[(SpritePlane[SprNdx].x DIV TSIZE) + 2,
-		   (SpritePlane[SprNdx].y DIV TSIZE) + 2] = TileNdx
+	    IF (SpritePlane[SprNdx].x DIV TSIZE < MapWidth - 1)
+	    AND (Map[(SpritePlane[SprNdx].x DIV TSIZE) + 1,
+		   (SpritePlane[SprNdx].y DIV TSIZE) + 1] = TileNdx)
 	    THEN
 	      CheckDownCollision := TRUE
       END;
@@ -160,18 +161,19 @@ VAR
       IF SpritePlane[SprNdx].y < (MapHeight - 1) * TSiZE THEN
       BEGIN
       { Checks the tile just below the sprite. }
-        Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE) + 1,
-		    (SpritePlane[SprNdx].y DIV TSIZE) + 2];
+        Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE),
+		    (SpritePlane[SprNdx].y DIV TSIZE) + 1];
       { Check if tile is inside the interval. }
 	IF (FromTile <= Tile) AND (Tile <= ToTile) THEN
 	  CheckDownCollisionWith := TRUE
 	ELSE
-	{ Checks if the sprite is in the middle of two tiles. }
-	  IF SpritePlane[SprNdx].x MOD TSIZE <> 0 THEN
-	  BEGIN
+	{ Checks if the sprite is in the middle of two tiles and inside map. }
+	  IF (SpritePlane[SprNdx].x MOD TSIZE <> 0)
+	  AND (SpritePlane[SprNdx].x DIV TSIZE < MapWidth - 1)
+	  THEN BEGIN
 	  { It is, so checks again with the other tile. }
-	    Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE) + 2,
-			(SpritePlane[SprNdx].y DIV TSIZE) + 2];
+	    Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE) + 1,
+			(SpritePlane[SprNdx].y DIV TSIZE) + 1];
 	    CheckDownCollisionWith := (FromTile <= Tile) AND (Tile <= ToTile);
 	  END;
       END;
@@ -191,16 +193,17 @@ VAR
       IF SpritePlane[SprNdx].y DIV TSIZE > 0 THEN
       BEGIN
       { Checks the tile just above the sprite. }
-	IF Map[(SpritePlane[SprNdx].x DIV TSIZE) + 1,
-		(SpritePlane[SprNdx].y DIV TSIZE)] = TileNdx
+	IF Map[(SpritePlane[SprNdx].x DIV TSIZE),
+		(SpritePlane[SprNdx].y DIV TSIZE) - 1] = TileNdx
 	THEN
 	  CheckUpCollision := TRUE
 	ELSE
 	{ Checks if the sprite is in the middle of two tiles. }
 	  IF SpritePlane[SprNdx].x MOD TSIZE <> 0 THEN
 	  { It is, so checks again with the other tile. }
-	    IF Map[(SpritePlane[SprNdx].x DIV TSIZE) + 2,
-		   (SpritePlane[SprNdx].y DIV TSIZE)] = TileNdx
+	    IF (SpritePlane[SprNdx].x DIV TSIZE < MapWidth - 1)
+	    AND (Map[(SpritePlane[SprNdx].x DIV TSIZE) + 1,
+		   (SpritePlane[SprNdx].y DIV TSIZE) - 1] = TileNdx)
 	    THEN
 	      CheckUpCollision := TRUE
       END;
@@ -222,18 +225,19 @@ VAR
       IF SpritePlane[SprNdx].y DIV TSIZE > 0 THEN
       BEGIN
       { Checks the tile just above the sprite. }
-        Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE) + 1,
-		    (SpritePlane[SprNdx].y DIV TSIZE)];
+        Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE),
+		    (SpritePlane[SprNdx].y DIV TSIZE) - 1];
       { Check if tile is inside the interval. }
 	IF (FromTile <= Tile) AND (Tile <= ToTile) THEN
 	  CheckUpCollisionWith := TRUE
 	ELSE
 	{ Checks if the sprite is in the middle of two tiles. }
-	  IF SpritePlane[SprNdx].x MOD TSIZE <> 0 THEN
-	  BEGIN
+	  IF (SpritePlane[SprNdx].x MOD TSIZE <> 0)
+	  AND (SpritePlane[SprNdx].x DIV TSIZE < MapWidth - 1)
+	  THEN BEGIN
 	  { It is, so checks again with the other tile. }
-	    Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE) + 2,
-			(SpritePlane[SprNdx].y DIV TSIZE)];
+	    Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE) + 1,
+			(SpritePlane[SprNdx].y DIV TSIZE) - 1];
 	    CheckUpCollisionWith := (FromTile <= Tile) AND (Tile <= ToTile);
 	  END;
       END;
@@ -253,16 +257,17 @@ VAR
       IF SpritePlane[SprNdx].x DIV TSIZE > 0 THEN
       BEGIN
       { Checks the tile on the left of the sprite. }
-	IF Map[(SpritePlane[SprNdx].x DIV TSIZE),
-		(SpritePlane[SprNdx].y DIV TSIZE) + 1] = TileNdx
+	IF Map[(SpritePlane[SprNdx].x DIV TSIZE) - 1,
+		(SpritePlane[SprNdx].y DIV TSIZE)] = TileNdx
 	THEN
 	  CheckLeftCollision := TRUE
 	ELSE
 	{ Checks if the sprite is in the middle of two tiles. }
 	  IF SpritePlane[SprNdx].y MOD TSIZE <> 0 THEN
 	  { It is, so checks again with the other tile. }
-	    IF Map[(SpritePlane[SprNdx].x DIV TSIZE),
-		   (SpritePlane[SprNdx].y DIV TSIZE) + 2] = TileNdx
+	    IF (SpritePlane[SprNdx].y DIV TSIZE < MapHeight - 1)
+	    AND (Map[(SpritePlane[SprNdx].x DIV TSIZE) - 1,
+		   (SpritePlane[SprNdx].y DIV TSIZE) + 1] = TileNdx)
 	    THEN
 	      CheckLeftCollision := TRUE
       END;
@@ -284,17 +289,18 @@ VAR
       IF SpritePlane[SprNdx].x DIV TSIZE > 0 THEN
       BEGIN
       { Checks the tile on the left of the sprite. }
-	Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE),
-		    (SpritePlane[SprNdx].y DIV TSIZE) + 1];
+	Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE) - 1,
+		    (SpritePlane[SprNdx].y DIV TSIZE)];
 	IF (FromTile <= Tile) AND (Tile <= ToTile) THEN
 	  CheckLeftCollisionWith := TRUE
 	ELSE
 	{ Checks if the sprite is in the middle of two tiles. }
-	  IF SpritePlane[SprNdx].y MOD TSIZE <> 0 THEN
-	  BEGIN
+	  IF (SpritePlane[SprNdx].y MOD TSIZE <> 0)
+	  AND (SpritePlane[SprNdx].y DIV TSIZE < MapHeight - 1)
+	  THEN BEGIN
 	  { It is, so checks again with the other tile. }
-	    Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE),
-			(SpritePlane[SprNdx].y DIV TSIZE) + 2];
+	    Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE) - 1,
+			(SpritePlane[SprNdx].y DIV TSIZE) + 1];
 	    CheckLeftCollisionWith := (FromTile <= Tile) AND (Tile <= ToTile);
 	  END;
       END;
@@ -311,19 +317,20 @@ VAR
     IF SpritePlane[SprNdx].x MOD TSIZE = 0 THEN
     BEGIN
     { Now, Checks if the tile is inside the map. }
-      IF SpritePlane[SprNdx].x < (MapWidth - 2) * TSiZE THEN
+      IF SpritePlane[SprNdx].x < (MapWidth - 1) * TSiZE THEN
       BEGIN
       { Checks the tile on the left of the sprite. }
-	IF Map[(SpritePlane[SprNdx].x DIV TSIZE + 2),
-		(SpritePlane[SprNdx].y DIV TSIZE) + 1] = TileNdx
+	IF Map[(SpritePlane[SprNdx].x DIV TSIZE + 1),
+		(SpritePlane[SprNdx].y DIV TSIZE)] = TileNdx
 	THEN
 	  CheckRightCollision := TRUE
 	ELSE
 	{ Checks if the sprite is in the middle of two tiles. }
 	  IF SpritePlane[SprNdx].y MOD TSIZE <> 0 THEN
 	  { It is, so checks again with the other tile. }
-	    IF Map[(SpritePlane[SprNdx].x DIV TSIZE + 2),
-		   (SpritePlane[SprNdx].y DIV TSIZE) + 2] = TileNdx
+	    IF (SpritePlane[SprNdx].y DIV TSIZE < MapHeight - 1)
+	    AND (Map[(SpritePlane[SprNdx].x DIV TSIZE + 1),
+		  (SpritePlane[SprNdx].y DIV TSIZE) + 1] = TileNdx)
 	    THEN
 	      CheckRightCollision := TRUE
       END;
@@ -342,20 +349,23 @@ VAR
     IF SpritePlane[SprNdx].x MOD TSIZE = 0 THEN
     BEGIN
     { Now, Checks if the tile is inside the map. }
-      IF SpritePlane[SprNdx].x < (MapWidth - 2) * TSiZE THEN
+      IF SpritePlane[SprNdx].x < (MapWidth - 1) * TSiZE THEN
       BEGIN
       { Checks the tile on the left of the sprite. }
-	Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE + 2),
-		    (SpritePlane[SprNdx].y DIV TSIZE) + 1];
+	Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE + 1),
+		    (SpritePlane[SprNdx].y DIV TSIZE)];
 	IF (FromTile <= Tile) AND (Tile <= ToTile) THEN
 	  CheckRightCollisionWith := TRUE
 	ELSE
 	{ Checks if the sprite is in the middle of two tiles. }
-	  IF SpritePlane[SprNdx].y MOD TSIZE <> 0 THEN
+	  IF (SpritePlane[SprNdx].y MOD TSIZE <> 0)
+	  AND (SpritePlane[SprNdx].y DIV TSIZE < MapHeight - 1)
+	  THEN BEGIN
 	  { It is, so checks again with the other tile. }
-	    Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE + 2),
-			(SpritePlane[SprNdx].y DIV TSIZE) + 2];
+	    Tile := Map[(SpritePlane[SprNdx].x DIV TSIZE + 1),
+			(SpritePlane[SprNdx].y DIV TSIZE) + 1];
 	    CheckRightCollisionWith := (FromTile <= Tile) AND (Tile <= ToTile);
+	  END;
       END;
     END;
   END;
@@ -378,26 +388,26 @@ VAR
   BEGIN
     Tmp := 0;
   { Gets the tile coordinates of the top left pixel of the sprite. }
-    Tx := (SpritePlane[SprNdx].x DIV TSIZE) + 1;
-    Ty := (SpritePlane[SprNdx].y DIV TSIZE) + 1;
+    Tx := SpritePlane[SprNdx].x DIV TSIZE;
+    Ty := SpritePlane[SprNdx].y DIV TSIZE;
   { Checks only if where inside the map and the tile. }
-    IF (0 < Tx) AND (Tx <= MapWidth) AND (0 < Ty) AND (Ty <= MapHeight) THEN
+    IF (0 <= Tx) AND (Tx < MapWidth) AND (0 <= Ty) AND (Ty < MapHeight) THEN
       IF Map[Tx, Ty] = TileVal THEN
 	Tmp := 1;
     INC (Tx);
     IF (SpritePlane[SprNdx].x MOD TSIZE <> 0)
-    AND (0 < Tx) AND (Tx <= MapWidth) AND (0 < Ty) AND (Ty <= MapHeight) THEN
+    AND (0 <= Tx) AND (Tx < MapWidth) AND (0 <= Ty) AND (Ty < MapHeight) THEN
       IF Map[Tx, Ty] = TileVal THEN
 	Tmp := Tmp OR 2;
     INC (Ty);
     IF (SpritePlane[SprNdx].x MOD TSIZE <> 0)
     AND (SpritePlane[SprNdx].y MOD TSIZE <> 0)
-    AND (0 < Tx) AND (Tx <= MapWidth) AND (0 < Ty) AND (Ty <= MapHeight) THEN
+    AND (0 <= Tx) AND (Tx < MapWidth) AND (0 <= Ty) AND (Ty < MapHeight) THEN
       IF Map[Tx, Ty] = TileVal THEN
 	Tmp := Tmp OR 8;
     DEC (Tx);
     IF (SpritePlane[SprNdx].y MOD TSIZE <> 0)
-    AND (0 < Tx) AND (Tx <= MapWidth) AND (0 < Ty) AND (Ty <= MapHeight) THEN
+    AND (0 <= Tx) AND (Tx < MapWidth) AND (0 <= Ty) AND (Ty < MapHeight) THEN
       IF Map[Tx, Ty] = TileVal THEN
 	Tmp := Tmp OR 4;
   { Result. }
@@ -413,26 +423,26 @@ VAR
   BEGIN
     Tmp := 0;
   { Gets the tile coordinates of the top left pixel of the sprite. }
-    Tx := (SpritePlane[SprNdx].x DIV TSIZE) + 1;
-    Ty := (SpritePlane[SprNdx].y DIV TSIZE) + 1;
+    Tx := SpritePlane[SprNdx].x DIV TSIZE;
+    Ty := SpritePlane[SprNdx].y DIV TSIZE;
   { Checks only if where inside the map and the tile. }
-    IF (0 < Tx) AND (Tx <= MapWidth) AND (0 < Ty) AND (Ty <= MapHeight) THEN
+    IF (0 <= Tx) AND (Tx < MapWidth) AND (0 <= Ty) AND (Ty < MapHeight) THEN
       IF (FromTile <= Map[Tx, Ty]) AND (Map[Tx, Ty] <= ToTile) THEN
 	Tmp := 1;
     INC (Tx);
     IF (SpritePlane[SprNdx].x MOD TSIZE <> 0)
-    AND (0 < Tx) AND (Tx <= MapWidth) AND (0 < Ty) AND (Ty <= MapHeight) THEN
+    AND (0 <= Tx) AND (Tx < MapWidth) AND (0 <= Ty) AND (Ty < MapHeight) THEN
       IF (FromTile <= Map[Tx, Ty]) AND (Map[Tx, Ty] <= ToTile) THEN
 	Tmp := Tmp OR 2;
     INC (Ty);
     IF (SpritePlane[SprNdx].x MOD TSIZE <> 0)
     AND (SpritePlane[SprNdx].y MOD TSIZE <> 0)
-    AND (0 < Tx) AND (Tx <= MapWidth) AND (0 < Ty) AND (Ty <= MapHeight) THEN
+    AND (0 <= Tx) AND (Tx < MapWidth) AND (0 <= Ty) AND (Ty < MapHeight) THEN
       IF (FromTile <= Map[Tx, Ty]) AND (Map[Tx, Ty] <= ToTile) THEN
 	Tmp := Tmp OR 8;
     DEC (Tx);
     IF (SpritePlane[SprNdx].y MOD TSIZE <> 0)
-    AND (0 < Tx) AND (Tx <= MapWidth) AND (0 < Ty) AND (Ty <= MapHeight) THEN
+    AND (0 <= Tx) AND (Tx < MapWidth) AND (0 <= Ty) AND (Ty < MapHeight) THEN
       IF (FromTile <= Map[Tx, Ty]) AND (Map[Tx, Ty] <= ToTile) THEN
 	Tmp := Tmp OR 4;
   { Result. }

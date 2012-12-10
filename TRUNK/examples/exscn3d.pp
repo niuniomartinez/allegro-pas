@@ -177,7 +177,7 @@ PROGRAM exscn3d;
   PROCEDURE DrawCube (Matrix: AL_MATRIX_fptr);
   VAR
     i, j, nv: LONGINT;
-    Out: ARRAY [0..12] OF LONGINT;
+    iOut: ARRAY [0..12] OF LONGINT;
   BEGIN
     FOR I := LOW (Cube) TO HIGH (Cube) DO
     BEGIN
@@ -192,7 +192,7 @@ PROGRAM exscn3d;
       v[3].u :=   0; v[3].v :=   0;
       v[4].u := 128; v[4].v :=   0;
     (* nv: number of vertices after clipping is done. *)
-      nv := al_clip3d_f (AL_POLYTYPE_PTEX, 0.24, 1000, 4, pV, pVout, pVtmp, Out);
+      nv := al_clip3d_f (AL_POLYTYPE_PTEX, 0.24, 1000, 4, pV, pVout, pVtmp, iOut);
       IF nv > 0 THEN
       BEGIN
 	FOR J := LOW (Vout) TO nv DO

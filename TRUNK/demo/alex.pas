@@ -6,19 +6,19 @@ UNIT alex;
 
 INTERFACE
 
-CONST
-{ The index of the spriteplane used by Alex. }
-  ALEX_SPR = 9;
+  CONST
+  { The index of the spriteplane used by Alex. }
+    ALEX_SPR = 9;
 
-VAR
-(* The scroll position is related with Alex position. *)
-  ScrollX, ScrollY: INTEGER;
-(* If true, then Alex reaches end. *)
-  AlexWin: BOOLEAN;
-(* If true, then Alex is dead. *)
-  AlexDead: BOOLEAN;
-(* Number of collected coins. *)
-  NumCoins: INTEGER;
+  VAR
+  (* The scroll position is related with Alex position. *)
+    ScrollX, ScrollY: INTEGER;
+  (* If true, then Alex reaches end. *)
+    AlexWin: BOOLEAN;
+  (* If true, then Alex is dead. *)
+    AlexDead: BOOLEAN;
+  (* Number of collected coins. *)
+    NumCoins: INTEGER;
 
 
 
@@ -60,8 +60,8 @@ VAR
   BEGIN
     AlexSpr := @(SpritePlane[ALEX_SPR]);
   { Puts Alex at the startpoint. }
-    AlexSpr^.x := (StartX * TSIZE) - TSIZE;
-    AlexSpr^.y := (StartY * TSIZE) - TSIZE;
+    AlexSpr^.x := (StartX * TSIZE);
+    AlexSpr^.y := (StartY * TSIZE);
   { Initial frame. }
     AlexSpr^.Index := BMP_MAIN_R0;
   { Initial State. }
@@ -288,6 +288,11 @@ VAR
 	INC (AlexCount);
       END;
     END;
+  { Controls map limits. }
+    IF AlexSpr^.x < 0 THEN
+      AlexSpr^.x := 0;
+    IF AlexSpr^.x > (MapWidth - 1) * TSIZE THEN
+      AlexSpr^.x := (MapWidth - 1) * TSIZE;
   { Checks if Alex gets coins. }
     IF AlexState <> DEAD THEN
     BEGIN
@@ -295,8 +300,8 @@ VAR
       IF Tmp <> 0 THEN
       BEGIN
 	PlaySoundSample (ALEX_SPR, Data^[SND_COIN].dat);
-	Tx := (AlexSpr^.x DIV TSIZE) + 1;
-	Ty := (AlexSpr^.y DIV TSIZE) + 1;
+	Tx := AlexSpr^.x DIV TSIZE;
+	Ty := AlexSpr^.y DIV TSIZE;
 	IF (Tmp AND 1) <> 0 THEN
 	  BEGIN
 	  INC (NumCoins);
@@ -321,7 +326,7 @@ VAR
     END;
   { Checks if Alex reaches the end of the map. }
     IF NOT AlexDead
-    AND (AlexSpr^.x DIV TSIZE = EndX-1) AND (AlexSpr^.y DIV TSIZE = EndY-1) THEN
+    AND (AlexSpr^.x DIV TSIZE = EndX) AND (AlexSpr^.y DIV TSIZE = EndY) THEN
     BEGIN
       PlaySoundSample (ALEX_SPR, Data^[SND_WIN].dat);
       AlexWin := TRUE;
