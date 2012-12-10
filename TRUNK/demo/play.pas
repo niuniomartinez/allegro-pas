@@ -7,10 +7,10 @@ UNIT play;
 
 INTERFACE
 
-CONST
-(* Size of the output without scaling. *)
-  SCREENW = 256;
-  SCREENH = 192;
+  CONST
+  (* Size of the output without scaling. *)
+    SCREENW = 256;
+    SCREENH = 192;
 
 
 
@@ -21,20 +21,20 @@ CONST
 
 IMPLEMENTATION
 
-USES
-  allegro,
-  alex,     { Alex the Allegator. }
-  config,   { Management of the game configuration. }
-  bombs,    { Bombs. }
-  error,    { To show nice error messages. }
-  framectr, { The frame speed controller. }
-  gamedata, { Management of the game data: graphics, sound, etc. }
-  sprites,  { Sprites management. }
-  sysutils, { For string manipulation. }
-  tilemap;  { Tilemap management. }
+  USES
+    allegro,
+    alex,     { Alex the Allegator. }
+    config,   { Management of the game configuration. }
+    bombs,    { Bombs. }
+    error,    { To show nice error messages. }
+    framectr, { The frame speed controller. }
+    gamedata, { Management of the game data: graphics, sound, etc. }
+    sprites,  { Sprites management. }
+    sysutils, { For string manipulation. }
+    tilemap;  { Tilemap management. }
 
-VAR
-  MapNum: INTEGER;
+  VAR
+    MapNum: INTEGER;
 
 
 
@@ -55,17 +55,17 @@ VAR
     BEGIN
       NewMap := FALSE;
     { Load the board. }
-      IF LoadMap (MapNum) THEN
+      IF LoadMap ('level'+IntToStr (MapNum)+'.map') THEN
       BEGIN
       { Check the start point and the end point. }
 	IF StartX = -1 THEN
 	BEGIN
-	  ErrorMessage ('No start point in board '+IntToStr (MapNum)+'!');
+	  ErrorMessage ('No start point in map "level'+IntToStr (MapNum)+'.map"!');
 	  EXIT;
 	END;
 	IF EndX = -1 THEN
 	BEGIN
-	  ErrorMessage ('Not end point in board '+IntToStr (MapNum)+'!');
+	  ErrorMessage ('Not end point in map "level'+IntToStr (MapNum)+'.map"!');
 	  EXIT;
 	END;
       { Initialize game objects. }

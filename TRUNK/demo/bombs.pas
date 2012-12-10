@@ -16,21 +16,21 @@ INTERFACE
 
 IMPLEMENTATION
 
-USES
-  alex,     { Alex the Allegator. }
-  gamedata, { To acces to de game datafile. }
-  play,     { To know the size of the output screen. }
-  sprites,  { Sprites management. }
-  tilemap;  { Tilemap management. }
+  USES
+    alex,     { Alex the Allegator. }
+    gamedata, { To acces to de game datafile. }
+    play,     { To know the size of the output screen. }
+    sprites,  { Sprites management. }
+    tilemap;  { Tilemap management. }
 
-CONST
-{ Number of bombs. }
-  NUM_BOMBS = 6;
+  CONST
+  { Number of bombs. }
+    NUM_BOMBS = 6;
 
-VAR
-(* If the bomb is falling it is used to know how many time a sprite was used.
- * If the bomb is exploding it is used to know how many time was exploding. *)
-  BombCount: ARRAY [0..NUM_BOMBS-1] OF INTEGER;
+  VAR
+  (* If the bomb is falling it is used to know how many time a sprite was used.
+   * If the bomb is exploding it is used to know how many time was exploding. *)
+    BombCount: ARRAY [0..NUM_BOMBS-1] OF INTEGER;
 
 
 
@@ -133,7 +133,8 @@ VAR
 	  SpritePlane[Cnt].y := -10;
 	  SpritePlane[Cnt].x := ((((RANDOM (SCREENW) * 2) + SpritePlane[ALEX_SPR].x) - SCREENW) DIV TSIZE);
 	{ Check if there are ground tiles in the tile where the bomb appears. }
-	  IF Map[SpritePlane[Cnt].x + 1, 1] < T_BLK1 THEN
+	  IF (0 <= SpritePlane[Cnt].x) AND (SpritePlane[Cnt].x < MapWidth)
+	  AND (Map[SpritePlane[Cnt].x, 1] < T_BLK1) THEN
 	  BEGIN
 	    SpritePlane[Cnt].x := SpritePlane[Cnt].x * TSIZE;
 	    SPritePlane[Cnt].Index := BMP_BOMB1;

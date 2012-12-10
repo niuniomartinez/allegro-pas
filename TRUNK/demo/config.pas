@@ -10,25 +10,21 @@ INTERFACE
 
 
 
-VAR
-(* Variables containing the configuration. *)
-  DoIntro: BOOLEAN; { Shows the intro animation? }
-  ScaleSc: DOUBLE; { Scale factor of the game screen. }
-  Cheat: BOOLEAN;  { If true, the game is too much easy. }
-  FullScreen: BOOLEAN; { If false, windowed. }
-
-
+  VAR
+  (* Variables containing the configuration. *)
+    DoIntro: BOOLEAN; { Shows the intro animation? }
+    ScaleSc: DOUBLE; { Scale factor of the game screen. }
+    Cheat: BOOLEAN;  { If true, the game is too much easy. }
+    FullScreen: BOOLEAN; { If false, windowed. }
 
 (* Gets the configuration values and puts them in its variables. *)
   PROCEDURE GetConfiguration;
 
-
-
 IMPLEMENTATION
 
-USES
-  sysutils,
-  allegro;
+  USES
+    sysutils,
+    allegro;
 
 
 

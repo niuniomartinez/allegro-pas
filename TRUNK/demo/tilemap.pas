@@ -46,11 +46,6 @@ INTERFACE
     T_VOID  = 0;
     T_START = 254;
     T_END   = 255;
-  (* Next one should be removed from this module. *)
-    T_COIN  = 1;
-    T_BLK1  = 2;
-    T_BLK2  = 3;
-    T_BLK3  = 4;
 
 
 

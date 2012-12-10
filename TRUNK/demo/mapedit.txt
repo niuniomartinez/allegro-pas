@@ -4,7 +4,7 @@
 This program allows you to create and modify maps for the
 Allegro's Demo Game.  It's designed in a way that should be
 easy to modify, so you can use it in your own projects.
-Read the "hack.txt" file to know how.
+Read the "README" file to know how.
 
 
 Menu description
@@ -116,16 +116,12 @@ Configuration
   - Solid color:  Allows to select a solid color.
 
   - Bitmap:  Allows to load a PCX, BMP, TGA or LBM bitmap
-	     to use as background.  Note that the routine
-	     used spects that size of this bitmap should be
-	     power of two (8, 32, 512, 1024, etc.).  If it
-	     isn't then it will cut it to make it fit the
-	     size.
+	     to use as background.
 
 
 Adapt it to your projects
 =========================
 
-  Read the file "hack.txt".  If you can't find it, then
+  Read the file "README".  If you can't find it, then
   visit http://allegro-pas.sf.net/ and download the full
   Allegro.pas package.
