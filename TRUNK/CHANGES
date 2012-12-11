@@ -45,6 +45,8 @@ Changes between versions 4.4.3 y 4.4.4
     impossible ;) .
   * Optimised property "UseZBuff" of "TCube".
   * Now example "ex3d" sows several cubes and shows how to create fog.
+  * Demonstration mapedit and tile/sprite engine almost redone.  Now they're
+    really re-usable.
 
 
 

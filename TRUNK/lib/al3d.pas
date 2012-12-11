@@ -85,9 +85,10 @@ UNIT al3d;
   the linear interpolation themselves.  Therefore a new set of blender
   functions passed to @link(al_set_blender_mode) is ignored.
 
-  @bold(Note:) *LIT polygon types don't work correctly in high color and real
-  color graphic modes (i.e. 15, 16, 24 and 32 bits per pixel).  This is a
-  problem with Allegro not Allegro.pas.  8bpp paletted mode works correctly.
+  @bold(Note:) *LIT polygon types might not work correctly in high color and
+  real color graphic modes (i.e. 15, 16, 24 and 32 bits per pixel), when
+  iterpolating colors across the polygon.  This is a problem with Allegro, not
+  Allegro.pas.  8bpp paletted mode works correctly in all cases.
 
   @bold(See also) @link(al_polygon3d)
 

@@ -36,9 +36,7 @@ USES
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, UnitMainForm, LResources
-  { you can add units after this }
-  , Allegro, LCLType;
+  Forms, UnitMainForm, Allegro, LCLType;
 
 {$IFDEF WINDOWS}{$R example.rc}{$ENDIF}
 
@@ -47,9 +45,11 @@ USES
 VAR
 (* Result of Allegro initialisation. *)
   RS: BOOLEAN;
+
+{$R *.res}
+
 BEGIN
-  Application.Title := 'The Allegro''s Lazarus example';
-  {$I example.lrs}
+  Application.Title := 'The Allegro.pas'' Lazarus Example';
 { Initialises Allegro, avoiding interferences.
   As we call al_install using "AL_SYSTEM_NONE" we can't use timers, keyboard,
   graphics modes, joysticks, sound, etc.  If you try to initialize them then

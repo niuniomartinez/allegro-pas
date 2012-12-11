@@ -749,10 +749,10 @@ PROGRAM mapedit;
     END;
     Close (HelpFile);
   { Create help viewer. }
-    al_set_dialog_item (DlgHelp, 0, @al_d_shadow_box_proc, 0, 0, 532, 252, CBlack, CButton, 0, 0, 0, 0, NIL, NIL, NIL);
+    al_set_dialog_item (DlgHelp, 0, @al_d_shadow_box_proc, 0, 0, 532, 252, CBlack, CWhite, 0, 0, 0, 0, NIL, NIL, NIL);
     al_set_dialog_item (DlgHelp, 1, @al_d_ctext_proc, 0, 4, 532, 8, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Help text'), NIL, NIL);
     al_set_dialog_item (DlgHelp, 2, @al_d_textbox_proc, 16, 16, 500, 208, CBlack, CWhite, 0, 0, 0, 0, AL_STRptr (HelpText), NIL, NIL);
-    al_set_dialog_item (DlgHelp, 3, @al_d_button_proc, 16, 228, 156, 16, CBlack, CButton, scINTRO, AL_D_EXIT, 0, 0, AL_STRptr ('Read'), NIL, NIL);
+    al_set_dialog_item (DlgHelp, 3, @al_d_button_proc, 16, 228, 156, 16, CBlack, CWhite, scINTRO, AL_D_EXIT, 0, 0, AL_STRptr ('Read'), NIL, NIL);
     al_set_dialog_item (DlgHelp, 4, @al_d_yield_proc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
   { End of dialog. }
     al_set_dialog_item (DlgHelp, 5, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
@@ -849,14 +849,14 @@ PROGRAM mapedit;
   FUNCTION mnuSelectSolidBackground: AL_INT; CDECL;
   BEGIN
   { Creates dialog. }
-    al_set_dialog_item (dlgColor, 0, @al_d_shadow_box_proc, 0, 0, 352, 112, CBlack, CButton, 0, 0, 0, 0, NIL, NIL, NIL);
+    al_set_dialog_item (dlgColor, 0, @al_d_shadow_box_proc, 0, 0, 352, 112, CBlack, CWhite, 0, 0, 0, 0, NIL, NIL, NIL);
     al_set_dialog_item (dlgColor, 1, @al_d_ctext_proc, 0, 4, 352, 8, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Select background color'), NIL, NIL);
-    al_set_dialog_item (dlgColor, 2, @al_d_slider_proc, 18, 24, 256, 16, CRed, CButton, 0, 0, 255, 0, NIL, @RgbScrollBarHandler, NIL);
-    al_set_dialog_item (dlgColor, 3, @al_d_slider_proc, 18, 42, 256, 16, CGreen, CButton, 0, 0, 255, 0, NIL, @RgbScrollBarHandler, NIL);
-    al_set_dialog_item (dlgColor, 4, @al_d_slider_proc, 18, 60, 256, 16, CBlue, CButton, 0, 0, 255, 0, NIL, @RgbScrollBarHandler, NIL);
+    al_set_dialog_item (dlgColor, 2, @al_d_slider_proc, 18, 24, 256, 16, CRed, CWhite, 0, 0, 255, 0, NIL, @RgbScrollBarHandler, NIL);
+    al_set_dialog_item (dlgColor, 3, @al_d_slider_proc, 18, 42, 256, 16, CGreen, CWhite, 0, 0, 255, 0, NIL, @RgbScrollBarHandler, NIL);
+    al_set_dialog_item (dlgColor, 4, @al_d_slider_proc, 18, 60, 256, 16, CBlue, CWhite, 0, 0, 255, 0, NIL, @RgbScrollBarHandler, NIL);
     al_set_dialog_item (dlgColor, 5, @al_d_box_proc,    280, 24, 54, 54, CBlack, CBlack, 0, 0, 0, 0, NIL, NIL, NIL);
-    al_set_dialog_item (dlgColor, 6, @al_d_button_proc, 16, 88, 156, 16, CBlack, CButton, scINTRO, AL_D_EXIT, 0, 0, AL_STRptr ('&Ok'), NIL, NIL);
-    al_set_dialog_item (dlgColor, 7, @al_d_button_proc, 180, 88, 156, 16, CBlack, CButton, 0, AL_D_EXIT, 0, 0, AL_STRptr ('&Cancel'), NIL, NIL);
+    al_set_dialog_item (dlgColor, 6, @al_d_button_proc, 16, 88, 156, 16, CBlack, CWhite, scINTRO, AL_D_EXIT, 0, 0, AL_STRptr ('&Ok'), NIL, NIL);
+    al_set_dialog_item (dlgColor, 7, @al_d_button_proc, 180, 88, 156, 16, CBlack, CWhite, 0, AL_D_EXIT, 0, 0, AL_STRptr ('&Cancel'), NIL, NIL);
     al_set_dialog_item (dlgColor, 8, @al_d_yield_proc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
   { End of dialog. }
     al_set_dialog_item (dlgColor, 9, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
@@ -988,7 +988,7 @@ PROGRAM mapedit;
     StrPCopy (HeightInput, IntToStr (MapHeight));
     StrPCopy (WidthInput, IntToStr (MapWidth));
   { Create a dialog to get new map size. }
-    al_set_dialog_item (DlgMapSize, 0, @al_d_shadow_box_proc, 0, 0, 188, 120, CBlack, CButton, 0, 0, 0, 0, NIL, NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 0, @al_d_shadow_box_proc, 0, 0, 188, 120, CBlack, CWhite, 0, 0, 0, 0, NIL, NIL, NIL);
     al_set_dialog_item (DlgMapSize, 1, @al_d_yield_proc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
     al_set_dialog_item (DlgMapSize, 2, @al_d_ctext_proc, 0, 4, 174, 8, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Create new map'), NIL, NIL);
     al_set_dialog_item (DlgMapSize, 3, @al_d_rtext_proc, 16, 28, 88, 16, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Map width:'), NIL, NIL);
@@ -997,8 +997,8 @@ PROGRAM mapedit;
     al_set_dialog_item (DlgMapSize, 6, @al_d_rtext_proc, 16, 51, 88, 8, CBlack, -1, 0, 0, 0, 0, AL_STRptr ('Map height:'), NIL, NIL);
     al_set_dialog_item (DlgMapSize, 7, @al_d_box_proc, 108, 47, 64, 16, CBlack, CWhite, 0, 0, 0, 0, NIL, NIL, NIL);
     al_set_dialog_item (DlgMapSize, 8, @al_d_edit_proc, 116, 51, 48, 16, CBlack, CWhite, 0, 0, 5, 0, HeightInput, NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 9, @al_d_button_proc, 16, 72, 156, 16, CBlack, CButton, scINTRO, AL_D_EXIT, 0, 0, AL_STRptr ('Create &new map'), NIL, NIL);
-    al_set_dialog_item (DlgMapSize, 10, @al_d_button_proc, 16, 96, 156, 16, CBlack, CButton, 0, AL_D_EXIT, 0, 0, AL_STRptr ('&Cancel'), NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 9, @al_d_button_proc, 16, 72, 156, 16, CBlack, CWhite, scINTRO, AL_D_EXIT, 0, 0, AL_STRptr ('Create &new map'), NIL, NIL);
+    al_set_dialog_item (DlgMapSize, 10, @al_d_button_proc, 16, 96, 156, 16, CBlack, CWhite, 0, AL_D_EXIT, 0, 0, AL_STRptr ('&Cancel'), NIL, NIL);
   { End of dialog. }
     al_set_dialog_item (DlgMapSize, 11, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
   { Center the dialog. }
@@ -1226,10 +1226,10 @@ PROGRAM mapedit;
       al_set_dialog_item (MainDialog, 12, @al_d_slider_proc, 1, AL_SCREEN_H - BTN_SIZE * 2 - 1, AL_SCREEN_W - BTN_SIZE - 2, BTN_SIZE - 1, 0, 0, 0, 0, 1, 0, NIL, @ScrollBarHandler, NIL);
       al_set_dialog_item (MainDialog, 13, @dlgTileSelectorProc, 0, AL_SCREEN_H - BTN_SIZE - 2, AL_SCREEN_W, BTN_SIZE + 2, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
     { Key shortcuts. }
-      al_set_dialog_item (MainDialog, 14, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, @Help, NIL, NIL);
-      al_set_dialog_item (MainDialog, 15, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, @NewMap, NIL, NIL);
-      al_set_dialog_item (MainDialog, 16, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, @LoadMap, NIL, NIL);
-      al_set_dialog_item (MainDialog, 17, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, 19, 0, @SaveMap, NIL, NIL);
+      al_set_dialog_item (MainDialog, 14, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 0, 0, AL_KEY_F1, 0, @Help, NIL, NIL);
+      al_set_dialog_item (MainDialog, 15, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, @NewMap, NIL, NIL);
+      al_set_dialog_item (MainDialog, 16, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, @LoadMap, NIL, NIL);
+      al_set_dialog_item (MainDialog, 17, @al_d_keyboard_proc, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, @SaveMap, NIL, NIL);
     { End of dialog. }
       al_set_dialog_item (MainDialog, 18, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
     { Configures GUI. }
