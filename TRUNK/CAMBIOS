@@ -52,6 +52,8 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   * Se ha "optimizado" la propiedad "UseZBuff" del objeto "Cube".
   * Ahora el ejemplo "ex3d" muestra varios cubos y cambia la iluminación
     dependiendo del eje Z.
+  * Rehecho el editor de mapas y buena parte del motor del juego de
+    demostración.  Ahora sí es reutilizable.
 
 
 

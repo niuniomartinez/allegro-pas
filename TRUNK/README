@@ -9,7 +9,7 @@
      Version 4.4.4                 \_/__/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Ñuño Martínez, November 28, 2012.
+  by Ñuño Martínez, December 11th, 2012.
 
 
 
@@ -45,9 +45,9 @@ Introduction
 Features
 ========
 
-  Cross-platform support for Windows and GNU/Linux.  Should be easy to use on
-  POSIX systems as MacOS and BSD but this wasn't tested yet.  If you do it
-  please tell us your experience.
+  Cross-platform support for Windows and GNU/Linux, both 32 and 64 bit.  Should
+  be easy to use on POSIX systems as MacOS and BSD but this wasn't tested yet.
+  If you do it please tell us your experience.
 
   Drawing functions including putpixel, line, rectangles, sprites, etc.
   Supports clipping, translucency, lighting and can draw directly to the
@@ -112,9 +112,9 @@ The Allegro library
 -------------------
 
   You should remember: "Allegro.pas is a wrapper to use the Allegro library
-  with Pascal compilers".  Allegro and Allegro.pas are different and
-  independent projects and it's important to not mix them.  So you need the
-  original Allegro library to make Allegro.pas works.
+  with Pascal compilers".  Allegro and Allegro.pas are different projects and
+  it's important to not mix them.  So you need the original Allegro library to
+  make Allegro.pas works.
 
   Current Allegro.pas version is compatible with the 4.4 branch of the Allegro
   library.  That means it can link with any version that starts with numbers 4.4
@@ -134,7 +134,7 @@ The Pascal compiler
 -------------------
 
   NOTE: Current version ISN'T compatible with Delphi because it can't share
-	variables with dynamic libraries (at least not hte versions I use),
+	variables with dynamic libraries (at least not the versions I use),
 	but compatibility should be back in Allegro.pas version 5.
 
   The best compiler to use Allegro.pas is Free Pascal (AKA: FPC) which can be
@@ -175,8 +175,9 @@ Use Allegro.pas in your programs
   isn't true.  Just don't use such options as they're not necessary in most
   cases.
 
-  Also there are some 3D polygon drawing modes that doesn't work on 15, 16, 24
-  nor 32 bits per pixel.  See unit "al3d" documentation for more information.
+  Also there are some 3D polygon drawing modes that might not work correctly on
+  15, 16, 24 nor 32 bits per pixel graphics modes.  See unit "al3d"
+  documentation for more information.
 
 More information
 ----------------
@@ -215,7 +216,7 @@ Release programs
 Help needed
 ===========
 
-  You can help to finish Allegro.pas and add your name to the author's list.
+  You can help to improve Allegro.pas and add your name to the author's list.
   We need people to test the library, to complete the documentation, to
   translate it to other languages or to write more wrapper functions, develop
   demos and examples.

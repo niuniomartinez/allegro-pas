@@ -9,7 +9,7 @@
      Versión 4.4.4                 \_/__/                 \/_/
 
   Un envoltorio para utilizar la biblioteca Allegro en Pascal
-  por Ñuño Martínez, 28 de Noviembre de 2012.
+  por Ñuño Martínez, 11 de Diciembre de 2012.
 
 
 
@@ -46,10 +46,10 @@ Introducción
 Características
 ===============
 
-  Preparada para ser utilizada en sistemas Windows y GNU/Linux.  Debería ser
-  sencillo de utilizar en otros sistemas POSIX tales como MacOS o BSD, y se
-  agradecerán los informes del éxito o fracaso en estos sistemas y cualquier
-  otro así como cualquier ayuda que pueda facilitar.
+  Preparada para ser utilizada en sistemas Windows y GNU/Linux, tanto 32bit
+  como 64 bit.  Debería ser sencillo de utilizar en otros sistemas POSIX tales
+  como MacOS o BSD, y se agradecerán los informes del éxito o fracaso en estos
+  sistemas y cualquier otro así como cualquier ayuda que pueda facilitar.
 
   Funciones de dibujo, incluyendo puntos, líneas, rectángulos, 'sprites', etc.
   Soporta recorte, transparencia, efectos de iluminación y puede dibujarse
@@ -117,8 +117,8 @@ La biblioteca Allegro
 
   Recuerde que Allegro.pas es un envoltorio para usar la biblioteca Allegro con
   compiladores Pascal.  Allegro y Allegro.pas son dos bibliotecas y proyectos
-  independientes, por lo que no debe confundirlos entre sí.  Por tanto,
-  necesita la biblioteca Allegro "original" para que Allegro.pas funcione.
+  diferentes, por lo que no debe confundirlos entre sí.  Por tanto, necesita la
+  biblioteca Allegro "original" para que Allegro.pas funcione.
 
   Esta versión de Allegro.pas es compatible con la rama 4.4 de la biblioteca
   Allegro.  Esto significa que puede utilizar cualquier versión de Allegro que
@@ -144,7 +144,7 @@ El compilador de Pascal
 	biblioteca intermedia, pero obligaba al uso de punteros y más funciones
 	de una forma muy poco natural y cómoda, por lo que se avandonó.
 	La versión 5.0 de Allegro, al no usar variables, volverá a ser
-	utilizable junto con Allegro.
+	utilizable junto con Delphi.
 
 
   Puede obtener el compilador Free Pascal desde su página web sita en
@@ -159,7 +159,7 @@ Compilar la demostración y los ejemplos de Allegro.pas
   comandos y sitúese en el directorio donde ha descomprimido el paquete de
   distribución de Allegro.pas, por ejemplo ejecutando el comando
   "cd allegro.pas".  Ejecute el guión "fix.bat", si utiliza Windows, o
-  "./fix.sh" si utiliza GNU/Linux o similar y siga las instrucciones de la
+  "./fix.sh", si utiliza GNU/Linux o similar, y siga las instrucciones de la
   pantalla.  Finalmente ejecute el comando "make";  esto debería ser suficiente
   para compilar los ejemplos y el juego de demostración.  Si se produce algún
   error, asegúrese que tanto el compilador como la biblioteca Allegro y
@@ -184,15 +184,15 @@ Usar Allegro.pas en sus programas
   en conflicto con algunas opciones del compilador Free Pascal, en especial en
   lo referente al manejo de la memoria.  Por ejemplo, se ha comprobado que la
   opción "-Ct" parece interpretar erróneamente el uso que se hace de las pilas
-  en las functions de interrupción (por ejemplo, al_install_int) generando un
+  en las funciones de interrupción (por ejemplo, al_install_int) generando un
   error en tiempo de ejecución "202" ("Desbordamiento de pila o corrupción de
   pila") aun cuando esto no es así.  Lo mejor es usar las opciones que desee y,
   si se produce un error, comprobar si este se encuentra dentro o fuera de
   Allegro (por ejemplo, usando la herramienta GDB), y si se genera dentro de
   Allegro desactive la opción que de problemas.
 
-  De la misma forma, algunos modos de dibujo de polígonos 3D no funcionan
-  correctamente en los modos gráficos de 15, 16, 24 y 32 bits por punto, aunque
+  De la misma forma, algunos modos de dibujo de polígonos 3D pueden dar
+  problemas en los modos gráficos de 15, 16, 24 y 32 bits por punto, aunque
   el resto sí lo hacen a la perfección.  Lea la documentación de la unidad al3d
   para más información al respecto.
 
@@ -268,7 +268,7 @@ Información de contacto
   Si quiere obtener el máximo provecho, le recomendamos que siga las siguientes
   indicaciones:
 
-    * Antes de hacer cualquier pregunta sobre la biblioteca lea la
+    * Antes de hacer cualquier pregunta sobre la biblioteca, lea la
       documentación.  Si no encuentra la respuesta en ella o no entiende algo,
       entonces sí, diríjase al foro.  Si cree que falta algo en los documentos,
       no se explica correctamente o que hay errores, lo sabemos: ya dijimos que

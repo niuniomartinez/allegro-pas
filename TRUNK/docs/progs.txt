@@ -350,9 +350,7 @@ This program demonstrates how to draw Gouraud shaded (lit) sprites.  In an appar
 
 @section(1 demo Demonstration game)
 
-  This game is a demonstration of the Allegro.pas library.  Its goal is to
-  create a good piece of code to show how to write your games using
-  Allegro.pas.  See the sources and read the documentation.
+  This game is a demonstration of the Allegro.pas library.  Its goal is to create a good piece of code to show how to write your games using Allegro.pas.  It includes a map editor.  See the sources and read the documentation at the "demo" subdirectory to know how to use this demonstration in your own projects.
 
   Help Alex the Allegator to get the coins and find the exit of the level.  Use
   left and right cursor keys or the joystick to move Alex.  Use the space bar
@@ -387,7 +385,9 @@ This program demonstrates how to draw Gouraud shaded (lit) sprites.  In an appar
   Seoane (http://delphi.jmrds.com): Helped with Delphi compatibility in version
   4.2.
 
-  Martin Kalbfuss: Helped testing and fixing the lasts versions.
+  Martin Kalbfuss: Helped testing and fixing some versions.
+
+  See the AUTHORS file for more information about people who helped.
 
   Thanks to the Spanish Delphi community (http://www.clubdelphi.net/) and the
   Allegro community (http://www.allegro.cc/)
