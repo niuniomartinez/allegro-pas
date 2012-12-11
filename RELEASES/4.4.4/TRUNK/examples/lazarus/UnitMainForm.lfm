@@ -1,0 +1,45 @@
+object Form1: TForm1
+  Left = 193
+  Height = 300
+  Top = 149
+  Width = 400
+  Caption = 'The Allegro''s Lazarus example'
+  ClientHeight = 273
+  ClientWidth = 400
+  Menu = MainMenu1
+  OnClose = FormClose
+  OnCreate = FormCreate
+  Position = poDefault
+  LCLVersion = '0.9.30'
+  object PaintBox: TPaintBox
+    Left = 0
+    Height = 273
+    Top = 0
+    Width = 400
+    Align = alClient
+    OnPaint = PaintBoxPaint
+  end
+  object OpenBitmapDialog: TOpenDialog
+    Filter = 'Bitmap (*.bmp;*.lbm;*.pcx;*.tga)|*.bmp;*.lbm;*.pcx;*.tga|Windows and OS/2 bitmap (*.bmp)|*.bmp|LBM (*.lbm)|*.lbm|ZSoft bitmap (*.pcx)|*.pcx|TARGA file format (*.tga)|*.tga'
+    left = 56
+    top = 80
+  end
+  object MainMenu1: TMainMenu
+    left = 32
+    top = 19
+    object MenuItem1: TMenuItem
+      Caption = '&File'
+      object MenuItem3: TMenuItem
+        Caption = 'Load &picture...'
+        OnClick = MenuItem3Click
+      end
+    end
+    object MenuItem2: TMenuItem
+      Caption = '?'
+      object MenuItem4: TMenuItem
+        Caption = 'About...'
+        OnClick = MenuItem4Click
+      end
+    end
+  end
+end
