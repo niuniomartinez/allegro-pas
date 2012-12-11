@@ -1,0 +1,393 @@
+@shorttitle(Examples, tools and demo game)
+@title(Examples, tools and demonstration game)
+
+@section(1 indice Contents)
+
+  @unorderedList(
+    @item(@bold(@link(examples Examples)))
+    @item(@bold(@link(tools Tools)))
+    @item(@bold(@link(demo Demonstration game)))
+    @item(@bold(@link(authors Authors)))
+  )
+
+@section(1 examples Examples)
+
+  On the @code(examples) subdirectory there are several simple example programs that explains how to use Allegro.pas in specific cases.  Here you have a list with all examples ordered by complexity (most simple first) with links to some related types, functions and procedures:
+
+  @section(2 exhello exhello)
+
+  This is a very simple program showing how to get into graphics mode and draw text onto the screen.
+
+  @bold(See also:) @link(al_init) @link(al_set_color_depth) @link(al_set_gfx_mode) @link(al_screen) @link(al_message) @link(al_error) @link(al_clear_to_color) @link(al_textout_ex) @link(al_textout_centre_ex) @link(al_font) @link(al_install_keyboard) @link(al_readkey) @link(al_set_palette) @link(al_desktop_palette) @link(al_makecol) @link(al_exit)
+
+  @section(2 exmem exmem)
+
+  This program demonstrates the use of memory bitmaps. It creates a small temporary bitmap in memory, draws some circles onto it, and then blits lots of copies of it onto the screen.
+
+  @bold(See also:) @link(AL_BITMAPptr) @link(al_acquire_screen) @link(al_blit) @link(al_circle) @link(al_clear_bitmap) @link(al_create_bitmap) @link(al_destroy_bitmap) @link(al_palette_color) @link(al_screen)
+
+  @section(2 expal expal)
+
+  This program demonstrates how to manipulate the palette. It draws a set of
+  concentric circles onto the screen and animates them by cycling the palette.
+
+  @bold(See also:) @link(al_set_palette) @link(al_black_palette) @link(al_circlefill)
+
+  @section(2 expat expat)
+
+  This program demonstrates the use of patterned drawing and sub-bitmaps.
+
+  @bold(See also:) @link(exfont) @link(AL_BITMAPptr) @link(al_create_bitmap) @link(al_create_sub_bitmap) @link(al_drawing_mode) @link(al_makecol)
+
+  @section(2 exdbuf exdbuf)
+
+  This program demonstrates the use of double buffering.  It moves a circle across the screen, first just erasing and redrawing directly to the screen, then with a double buffer.
+
+  @bold(See also:) @link(AL_BITMAPptr) @link(al_blit) @link(al_install_timer) @link(al_retrace_count) @link(al_circlefill) @link(al_clear_to_color) @link(al_create_bitmap) @link(al_destroy_bitmap)
+
+  @section(2 exflip exflip)
+
+  This program moves a circle across the screen, first with a double buffer and then using page flips.
+
+  @bold(See also:) @link(exdbuf) @link(al_create_video_bitmap) @link(al_show_video_bitmap)
+
+  @section(2 exfixed exfixed)
+
+  This program demonstrates how to use fixed point numbers, which are signed 32-bit integers storing the integer part in the upper 16 bits and the decimal part in the 16 lower bits.  This example also uses the unusual approach of communicating with the user exclusively via the @link(al_message) function.
+
+  @bold(See also:) @link(alfixed)
+
+  @section(2 exfont exfont)
+
+  This is a very simple program showing how to load and manipulate fonts.
+
+  @bold(See also:) @link(AL_FONTptr) @link(al_font) @link(al_load_font) @link(al_destroy_font) @link(al_extract_font_range) @link(al_merge_fonts)
+
+  @section(2 exmouse exmouse)
+
+  This program demonstrates how to get mouse input.  The first part of the test retrieves the raw mouse input data and displays it on the screen without using any mouse cursor.  When you press a key the standard arrow-like mouse cursor appears.  You are not restricted to this shape, and a second key press modifies the cursor to be several concentric colored circles.  They are not joined together, so you can still see bits of what's behind when you move the cursor over the printed text message.
+
+  @bold(See also:) @link(al_bitmap_mask_color) @link(al_clear_keybuf) @link(al_desktop_palette) @link(al_install_mouse) @link(al_set_mouse_sprite) @link(al_show_mouse) @link(al_get_mouse_mickeys) @link(al_mouse_x) @link(al_mouse_y) @link(al_mouse_z) @link(al_poll_mouse) @link(al_set_mouse_sprite) @link(al_set_mouse_sprite_focus)
+
+  @section(2 extimer extimer)
+
+  This program demonstrates how to use the timer routines. These can be a bit of a pain, because your interrupt handlers are used in "interrupt time". The first part of the example shows a basic use of timing using the blocking procedure @link(al_rest).  The second part shows how to use three timers with different frequencies in a non blocking way.
+
+  @bold(See also:) @link(al_install_timer) @link(al_install_int) @link(al_install_int_ex) @link(al_rest)
+
+  @section(2 exkeys exkeys)
+
+  This program demonstrates how to access the keyboard.  The first part shows the basic use of @link(al_readkey).  The second part shows how to extract the ASCII value.  Next come the scan codes.  The fourth test detects modifier keys like alt or shift.  The fifth test requires some focus to be passed.  The final step shows how to use the global @link(al_key) array to read simultaneous key presses.  The last method to detect key presses are keyboard callbacks.  This is demonstrated by installing a keyboard callback, which marks all pressed keys by drawing to a grid.
+
+  @bold(See also:) @link(al_install_keyboard) @link(al_key_shifts) @link(al_keyboard_lowlevel_callback) @link(al_scancode_to_name) @link(al_ureadkey) @link(al_key)
+
+  @section(2 exjoy exjoy)
+
+  This program uses the Allegro library to detect and read the value of a joystick. The output of the program is a small target sight on the screen which you can move. At the same time the program will tell you what you are doing with the joystick (moving or firing).
+
+  @bold(See also:) @link(al_install_joystick) @link(al_calibrate_joystick) @link(al_calibrate_joystick_name) @link(al_joy) @link(al_num_joysticks) @link(al_poll_joystick)
+
+  @section(2 exsample exsample)
+
+  This program demonstrates how to play samples.  You have to use this example from the command line to specify as first parameter a WAV or VOC sound file to play.  If the file is loaded successfully, the sound will be played in an infinite loop.  While it is being played, you can use the left and right arrow keys to modify the panning of the sound.  You can also use the up and down arrow keys to modify the pitch.
+
+  @bold(See also:) @link(al_install_sound) @link(al_load_sample) @link(al_play_sample) @link(al_adjust_sample) @link(al_destroy_sample)
+
+  @section(2 exmidi exmidi)
+
+  This program demonstrates how to play MIDI files.
+
+  @bold(See also:) @link(al_install_sound) @link(al_load_midi) @link(al_get_midi_length) @link(al_play_midi) @link(al_midi_pause) @link(al_midi_pos) @link(al_midi_resume) @link(al_midi_time) @link(al_destroy_midi)
+
+  @section(2 exgui exgui)
+
+  This program demonstrates how to use the GUI routines. From the simple dialog controls that display a text or a bitmap to more complex multiple choice selection lists, Allegro provides a framework which can be customised to suit your needs.
+
+  @bold(See also:) @link(algui)
+
+  @section(2 excustom excustom)
+
+  A follow up of the @link(exgui) example showing how to customise the default Allegro framework.  In this case a dialog procedure animates a graphical clock without disrupting other GUI dialogs.  A more simple option shows how to dynamically change the font used by all GUI elements.
+
+  @bold(See also:) @link(algui)
+
+  @section(2 exscale exscale)
+
+  This example demonstrates how to use PCX files, palettes and stretch blits.  It loads a PCX file, sets its palette and does some random stretch_blits.  Don't worry - it's VERY slowed down using @link(al_vsync).
+
+  @bold(See also:) @link(AL_BITMAPptr) @link(al_blit) @link(al_stretch_blit)
+
+  @section(2 exconfig exconfig)
+
+  This program shows how to use the configuration routines. A first look at the
+  example shows nothing more than a static graphic and the wait for a key press.
+  However, the way this graphic is displayed is configured through a custom
+  exconfig.ini file which is loaded manually. From this file the example obtains
+  parameters like fullscreen/windowed mode, a specific graphic resolution to set
+  up, which graphic to show, how to blit it on the screen, etc.
+
+  @bold(See also:) @link(configuration Configuration routines) @link(al_set_config_file)
+
+  @section(2 exdata exdata)
+
+  This program demonstrates how to access the contents of an Allegro datafile
+  (created by the @link(grabber) utility).  The example loads the file
+  @code(example.dat), then blits a bitmap and shows a font, both from this
+  datafile.
+
+  @bold(See also:) @link(alfile)
+
+  @section(2 exsprite exsprite)
+
+  This example demonstrates how to use datafiles, various sprite drawing
+  routines and flicker-free animation.
+
+  Why is the @code(Animate) routine coded in that way?  As you probably know,
+  VIDEO RAM is much slower than "normal" RAM, so it's advisable to reduce VRAM
+  blits to a minimum.  Drawing sprite on the screen (meaning in VRAM) and then
+  clearing a background for it is not very fast.  This example uses a different
+  method which is much faster, but require a bit more memory.
+
+  First the buffer is cleared (it's a normal @link(AL_BITMAPptr)), then the sprite is drawn on it, and when the drawing is finished this buffer is copied directly to the screen.  So the end result is that there is a single VRAM blit instead of blitting/clearing the background and drawing a sprite on it. It's a good method even when you have to restore the background.  And of course, it completely removes any flickering effect.
+
+  When one uses a big (ie. 800x600 background) and draws something on it, it's
+  wise to use a copy of background somewhere in memory and restore background
+  using this "virtual background".  When blitting from VRAM in SVGA modes, it's
+  probably, that drawing routines have to switch banks on video card.  I think,
+  I don't have to remind how slow is it.
+
+  Note that on modern systems, the above isn't true anymore, and you usually
+  get the best performance by caching all your animations in video ram and
+  doing only VRAM->VRAM blits, so there is no more RAM->VRAM transfer at all
+  anymore.  And usually, such transfers can run in parallel on the graphics
+  card's processor as well, costing virtually no main cpu time at all.  See
+  the exaccel example for an example of this.
+
+  @bold(See also:) @link(al_draw_sprite) @link(al_draw_sprite_h_flip) @link(al_draw_sprite_v_flip) @link(al_draw_sprite_vh_flip)
+
+  @section(2 exrotscl exrotscl)
+
+  This example demonstrates rotate_scaled_sprite functions.
+
+  @bold(See also:) @link(al_set_color_conversion) @link(al_set_alpha_blender) @link(al_set_color_depth) @link(al_set_trans_blender) @link(al_draw_trans_sprite) @link(al_rotate_scaled_sprite) @link(al_rotate_scaled_sprite_lit) @link(al_rotate_scaled_sprite_trans)
+
+  @section(2 extrans extrans) Lighting and translucency effects.)
+
+  This program demonstrates how to use the lighting and translucency functions.
+  The first part of the example will show a dark screen illuminated by a
+  spotlight you can move with your mouse.  After a key press the example shows
+  the full bitmap and the spotlight changes to be a reduced version of the
+  background with 50% of translucency.
+
+  The translucency effect is easy to do in all color depths.  However, the
+  lighting effect has to be performed in a different way depending on whether
+  the screen is in 8bit mode or another color depth.  This is because additive
+  drawing mode uses a different set of routines for truecolor modes.
+
+  @bold(See also:) @link(alvga) @link(alblend) @link(al_bitmap_color_depth)
+
+  @section(2 extrans2 extrans2)
+
+  This program demonstrates how to draw trans and lit sprites and flip them at the same time, using @link(al_draw_sprite_ex) function.  It displays several images moving around using different drawing modes while you can press space key to change the flipping orientation.
+
+  @bold(See also:) @link(al_set_trans_blender)
+
+  @section(2 extruec extruec)
+
+  This program shows how to specify colors in the various different truecolor
+  pixel formats.  The example shows the same screen (a few text lines and three
+  coloured gradients) in all the color depth modes supported by your video
+  card.  The more color depth you have, the less banding you will see in the
+  gradients.
+
+  @bold(See also:) @link(al_generate_332_palette) @link(al_makecol)
+  @link(al_set_palette)
+
+  @section(2 excolmap excolmap)
+
+  This program demonstrates how to create custom graphic effects with the
+  @link(al_create_color_table) function.  Allegro drawing routines are affected
+  by any color table you might have set up.  In the first part of this example,
+  a greyscale color table is set.  The result is that a simple rectfill call,
+  instead of drawing a rectangle with color zero, uses the already drawn pixels
+  to determine the pixel to be drawn (read the comment of
+  @code(ReturnGreyColor) for a precise description of the algorithm).  In the
+  second part of the test, the color table is changed to be an inverse table,
+  meaning that any pixel drawn will be shown as its color values had been
+  inverted.
+
+  @bold(See also:) @link(AL_BITMAPptr) @link(AL_COLOR_MAP) @link(al_color_table)
+
+  @section(2 exhsvrgb exhsvrgb)
+
+  Translating HSV space -> RGB values.
+
+  @bold(See also:) @link(al_hsv_to_rgb) @link(al_rgb_to_hsv)
+
+  @section(2 exshade exshade)
+
+This program demonstrates how to draw Gouraud shaded (lit) sprites.  In an apparently black screen, a planet like sprite is drawn close to the middle of the screen.  In a similar way to how the first test of @link(extrans) works, you move the cursor on the screen with the mouse.  Attached to this mouse you can imagine a virtual spotlight illuminating the scene around.  Depending on where the mouse is, the Gouraud shaded sprite will show the direction of the light.
+
+  @bold(See also:) @link(AL_BITMAPptr) @link(AL_COLOR_MAP) @link(AL_PALETTE) @link(AL_RGB_MAP) @link(al_error) @link(al_message) @link(al_color_map) @link(al_create_bitmap) @link(al_create_light_table) @link(al_create_rgb_table) @link(al_destroy_bitmap) @link(al_draw_gouraud_sprite) @link(al_load_bitmap) @link(al_mouse_x) @link(al_mouse_y) @link(al_palette_color) @link(al_rgb_map) @link(al_screen) @link(al_set_gfx_mode) @link(al_set_palette) @link(al_set_trans_blender) @link(al_show_mouse)
+
+  @section(2 exblend exblend)
+
+  This program demonstrates how to use the translucency functions in truecolor
+  video modes.  Two image files are loaded from disk and displayed moving
+  slowly around the screen.  One of the images will be tinted to different
+  colors.  The other image will be faded out with a varying alpha strength, and
+  drawn on top of the other image.
+
+  @bold(See also:) @link(alblend)
+
+  @section(2 exxfade exxfade)
+
+  This program demonstrates how to load and display bitmap files in truecolor video modes, and how to crossfade between them. You have to use this example from the command line to specify as parameters a number of graphic files.  Use at least two files to see the graphical effect.  The example will crossfade from one image to another with each key press until you press the ESC key.
+
+  @bold(See also:) @link(al_blit) @link(al_draw_trans_sprite) @link(al_set_color_conversion) @link(al_set_color_depth) @link(al_set_gfx_mode) @link(al_set_palette) @link(al_set_trans_blender)
+
+  @section(2 exalpha exalpha)
+
+  This program demonstrates how to use the 32 bit RGBA translucency functions to store an alpha channel along with a bitmap graphic. Two images are loaded from disk.  One will be used for the background and the other as a sprite.  The example generates an alpha channel for the sprite image, composing the 32 bit RGBA bitmap during runtime, and draws it at the position of the mouse cursor.
+
+  @bold(See also:) @link(al_blit) @link(al_draw_trans_sprite) @link(al_drawing_mode) @link(al_getb) @link(al_getg) @link(al_getpixel) @link(al_getr) @link(al_makecol) @link(al_putpixel) @link(al_set_alpha_blender) @link(al_set_color_conversion) @link(al_set_color_depth) @link(al_set_gfx_mode) @link(al_set_multiply_blender) @link(al_set_write_alpha_blender) @link(al_solid_mode)
+
+  @section(2 ex3d ex3d)
+
+  Example for Allegro.pas that displays a 3D cube and rotates it.
+
+  Actutally this example has two different files: ex3d, with the main code, and cube.pas, with some useful classes.
+
+  @bold(See also:) @link(al3d)
+
+
+  @section(2 excamera excamera)
+
+  This program demonstrates how to use the @link(al_get_camera_matrix) function to view a 3d world from any position and angle.  The example draws a checkered floor through a viewport region on the screen.  You can use the keyboard to move around the camera or modify the size of the viewport.  The keys that can be used with this example are displayed between brackets at the top of the screen.
+
+  @bold(See also) @link(al3d)
+
+  @section(2 exquat exquat)
+
+  Euler angles are convenient for storing and creating 3D orientations. However, this program demonstrates that they are not good when interpolating between two different orientations. The problem is solved by using Allegro's quaternion operations.
+
+  In this program, two cubes are rotated between random orientations. Notice that although they have the same beginning and ending orientations, they do not follow the same path between orientations.
+
+  One cube is being rotated by directly incrementing or decrementing the Euler angles from the starting point to the ending point. This is an intuitive notion, but it is incorrect because it does not cause the object to turn around a single unchanging axis of rotation. The axis of rotation wobbles resulting in the object spinning in strange ways. The object will eventually end up in the orientation that the user intended, but it gets there in a way that is unattractive. Imagine if this method was used to update the position of a camera in a game! Sometimes it would swing wildly and disorient the player.
+
+  The other cube is animated using quaternions. This results in a much more pleasing animation because the cube turns around a single axis of rotation.
+
+  @bold(See also) @link(al3d)
+
+  @section(2 exstars exstars)
+
+  This program draws a 3D star field (depth-cued) and a polygon starship (controllable with the keyboard cursor keys), using the Allegro math functions.
+
+  @bold(See also) @link(al3d)
+
+  @section(2 exscn3d exscn3d)
+
+  Another 3D demonstration.  This program demonstrates how to use scanline sorting algorithm in Allegro (al_create_scene, al_clear_scene, ... functions).  It also provides an example of how to use the 3D clipping function.  The example consists of a flyby through a lot of rotating 3d cubes.
+
+  @bold(See also:) @link(al3d) @link(al_create_scene)
+
+  @section(2 exzbuf exzbuf)
+
+  A third 3D demonstration that shows how to use the Z-buffer.  It uses the same cube object than the @link(ex3d) example.
+
+  @bold(See also:) @link(al3d) @link(al_create_zbuffer)
+
+  @section(2 exscroll exscroll)
+
+  This program demonstrates how to use hardware scrolling.  The scrolling should work on anything that supports virtual screens larger than the physical screen.
+
+  @bold(See also) @link(al_create_sub_bitmap) @link(al_desktop_palette) @link(al_destroy_bitmap) @link(al_scroll_screen) @link(al_vline)
+
+  @section(2 ex3buf ex3buf)
+
+  This program demonstrates the use of triple buffering.  Several triangles are displayed rotating and bouncing on the screen until you press a key.  Note that on some platforms you can't get real hardware triple buffering.  The Allegro code remains the same, but most likely the graphic driver will emulate it.  Unfortunately, in these cases you can't expect the animation to be completely smooth and flicker free.
+
+  @bold(See also:) @link(al_create_video_bitmap) @link(al_enable_triple_buffer) @link(al_gfx_capabilities) @link(al_poll_scroll) @link(al_request_video_bitmap)
+
+  @section(2 exspline exspline)
+
+  This program demonstrates the use of spline curves to create smooth paths connecting a number of node points.  This can be useful for constructing realistic motion and animations.
+
+  The technique is to connect the series of guide points @italic(p1..p@(n@)) with spline curves from @italic(p1-p2), @italic(p2-p3), etc.  Each spline must pass though both of its guide points, so they must be used as the first and fourth of the spline control points.  The fun bit is coming up with sensible values for the second and third spline control points, such that the spline segments will have equal gradients where they meet.  I came up with the following solution:
+
+  For each guide point @italic(p@(n@)), calculate the desired tangent to the curve at that point.  I took this to be the vector @italic(p@(n-1@) -> p@(n+1@)), which can easily be calculated with the inverse tangent function, and gives decent looking results.  One implication of this is that two dummy guide points are needed at each end of the curve, which are used in the tangent calculations but not connected to the set of splines.
+
+  Having got these tangents, it becomes fairly easy to calculate the spline control points.  For a spline between guide points @italic(p@(a@)) and @italic(p@(b@)), the second control point should lie along the positive tangent from @italic(p@(a@)), and the third control point should lie along the negative tangent from @italic(p@(b@)).  How far they are placed along these tangents controls the shape of the curve:  I found that applying a 'curviness' scaling factor to the distance between @italic(p@(a@)) and @italic(p@(b@)) works well.
+
+  One thing to note about splines is that the generated points are not all equidistant.  Instead they tend to bunch up nearer to the ends of the spline, which means you will need to apply some fudges to get an object to move at a constant speed.  On the other hand, in situations where the curve has a noticeable change of direction at each guide point, the effect can be quite nice because it makes the object slow down for the curve.
+
+  @bold(See also) @link(al_calc_spline) @link(al_fixatan2) @link(alfixed) @link(al_line) @link(al_spline) @link(al_xor_mode)
+
+  @section(2 exsyscur exsyscur)
+
+  This program demonstrates the use of hardware accelerated mouse cursors.
+
+  @bold(See also:) @link(al_enable_hardware_cursor) @link(al_gfx_capabilities) @link(al_select_mouse_cursor)
+
+  @section(2 Lazarus Lazarus example)
+
+  This program shows a way to use Allegro.pas within Lazarus application.  It
+  presents a window with a menu that allows to load a bitmap, which is drawn
+  in the window.
+
+  Read all comments, including the ones at the @code(example.lpr) file for
+  detailed information.
+
+@section(1 tools Tools)
+
+@section(2 grabber Grabber)
+
+  The grabber utility allows to create data files to be loaded by
+  @link(al_load_datafile).  It is included in the original Allegro release at
+  http://alleg.sourceforge.net/.  You can download it also from
+  http://www.allegro.cc/depot/Grabber/.  The user manual is included with the
+  applicacion.
+
+@section(1 demo Demonstration game)
+
+  This game is a demonstration of the Allegro.pas library.  Its goal is to create a good piece of code to show how to write your games using Allegro.pas.  It includes a map editor.  See the sources and read the documentation at the "demo" subdirectory to know how to use this demonstration in your own projects.
+
+  Help Alex the Allegator to get the coins and find the exit of the level.  Use
+  left and right cursor keys or the joystick to move Alex.  Use the space bar
+  or the joystick ''A'' button to jump.  Press ''jump'' to play or [Esc] to
+  exit.
+
+  @bold(Original game concept:) Ken Silverman (http://www.advsys.net/ken/)
+
+  @bold(Programming and graphics:) Guillermo Martinez (http://www.burdjia.com/)
+
+  @bold(Alex the Allegator character courtesy from:) Johan Peitz
+  (http://www.freelunchdesign.com/)
+
+  @bold(Title music) (provisional):  Garret Thomsom (g@@sirsonic.com) (ripped
+  from the original Allegro demo game)
+
+  @bold(Game music:)  Partners In Rhyme (http://www.partnersinrhyme.com/)
+
+  @bold(Sound FX) ripped from games by Shawn Hargreaves and Johan Peitz
+
+
+@section(1 authors Authors)
+
+  Allegro originally created by Shawn Hargreaves (http://talula.demon.co.uk/)
+  and currently mantained by the Allegro Development Team
+  (http://alleg.sourceforge.net/)
+
+  Main developer and project administrator: Guillermo Martinez
+
+  @bold(Additional developers:)
+
+  Seoane (http://delphi.jmrds.com): Helped with Delphi compatibility in version
+  4.2.
+
+  Martin Kalbfuss: Helped testing and fixing some versions.
+
+  See the AUTHORS file for more information about people who helped.
+
+  Thanks to the Spanish Delphi community (http://www.clubdelphi.net/) and the
+  Allegro community (http://www.allegro.cc/)
