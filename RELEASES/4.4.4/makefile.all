@@ -1,0 +1,64 @@
+# Makefile generic - build rules
+
+.PHONY: all
+
+# Main objective: the whole project
+all: adbanner examples demo
+	@echo "Finished $(PROJECT)"
+	@echo "To create the documentation, run 'make' from the docs directory"
+
+# Examples.
+examples: $(EXMFILES)
+	@echo "Finished all examples"
+
+# Demo game.
+demo: $(DEMO)
+
+# Executables.
+$(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR) -FU$(OBJDIR) $< -o$@
+	@echo Example $@ ready!
+
+$(DEMODIR)%$(BINSUF): $(DEMOSRC) $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(DEMODIR) -FU$(OBJDIR) $< -o$@
+	@echo Demo game ready!
+
+# Returns some variables.
+status: adbanner
+	@echo "-----------------"
+	@echo "- Status Report -"
+	@echo "-----------------"
+	@echo "  Project : $(PROJECT)"
+	@echo "  Platform : $(PLATFORM)"
+	@echo "  Compiler options : $(FLAGS)"
+	@echo "  Units : $(LIBFILES)"
+	@echo "  Examples : $(EXMFILES)"
+	@echo "  Demo game : $(DEMO)"
+
+# Cleans everything.
+veryclean: clean
+	$(DELETE) $(EXMFILES)
+	$(DELETE) $(DEMO)
+
+# Clean temporary files.
+clean:
+	$(DELETE) $(OBJDIR)*$(OBJSUF)
+	$(DELETE) $(OBJDIR)*.ppu
+	$(DELETE) $(OBJDIR)*.a
+
+# Show all options.
+help: adbanner
+	@echo "--------"
+	@echo "- Help -"
+	@echo "--------"
+	@echo "make all            } Builds the whole project."
+	@echo "make examples       } Builds the examples only."
+	@echo "make demo           } Builds the demo game."
+	@echo "make clean          } Deletes temporary files."
+	@echo "make veryclean      } Deletes all builded files."
+	@echo "make status         } Shows some configuration variables."
+	@echo "make help           } Shows this help."
+
+# Some info.
+adbanner:
+	@echo "$(PROJECT) - http://allegro-pas.sourceforge.net/"
