@@ -439,12 +439,12 @@ END;
     INLINE;
 
 (* Converts strings from ASCII into the current encoding format.
-   @seealso (al_uconvert) @seealso(al_uconvert_toascii) *)
+   @seealso(al_uconvert) @seealso(al_uconvert_toascii) *)
   FUNCTION al_uconvert_ascii (CONST s: STRING): STRING;
     INLINE;
 
 (* Converts strings from the current encoding format into ASCII.
-   @seealso (al_uconvert) @seealso(al_uconvert_ascii) *)
+   @seealso(al_uconvert) @seealso(al_uconvert_ascii) *)
   FUNCTION al_uconvert_toascii (CONST s: STRING): STRING;
     INLINE;
 
