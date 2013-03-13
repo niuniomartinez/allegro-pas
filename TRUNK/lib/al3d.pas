@@ -862,6 +862,21 @@ INTERFACE
 
 
 
+(* Same as @link(al_polygon_z_normal_f) but using fixed instead than floats.
+
+   Also note that fixed point is less accurate than the floating point
+   one so it might return wrong values in some cases.
+   @seealso(al_polygon_z_normal_sign)
+ *)
+  FUNCTION al_polygon_z_normal (CONST v1, v2, v3: AL_V3Dptr): AL_FIXED;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal';
+
+(* Returns the sign of the z normal of the polygon.  it's more accurated than
+   @link(al_polygon_z_normal).
+ *)
+  FUNCTION al_polygon_z_normal_sign (CONST v1, v2, v3: AL_V3Dptr): AL_INT64;
+    INLINE;
+
 (* Finds the Z component of the normal vector to the specified three vertices
    (which must be part of a convex polygon).  This is used mainly in back-face
    culling.  The back-faces of closed polyhedra are never visible to the
@@ -873,13 +888,9 @@ INTERFACE
    Y coordinates have been projected into screen space using
    @link(al_persp_project) (or if an orthographic (isometric) projection is
    being used).  Note that this function will fail if the three vertices are
-   co-linear (they lie on the same line) in 3D space.  Also note that the fixed
-   point version of the function is less accurate than the floating point one
-   so it might return wrong values in some cases. @seealso(al_cross_product) *)
-  FUNCTION al_polygon_z_normal (CONST v1, v2, v3: AL_V3Dptr): AL_FIXED;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal';
-
-(* Same as @link(al_polygon_z_normal) but using floats instead than fixed. *)
+   co-linear (they lie on the same line) in 3D space.
+   @seealso(al_cross_product) @seealso(al_polygon_z_normal)
+  *)
   FUNCTION al_polygon_z_normal_f (CONST v1, v2, v3: AL_V3D_Fptr): AL_FLOAT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal_f';
 
@@ -1296,6 +1307,13 @@ IMPLEMENTATION
     al_polygon_z_normal_f := ((v2^.x-v1^.x) * (v3^.y-v2^.y)) - ((v3^.x-v2^.x) * (v2^.y-v1^.y));
   END;
 }
+
+  FUNCTION al_polygon_z_normal_sign (CONST v1, v2, v3: AL_V3Dptr): AL_INT64;
+  BEGIN
+    al_polygon_z_normal_sign :=
+      ((v2^.x-v1^.x) * (v3^.y-v2^.y)) - ((v3^.x-v2^.x) * (v2^.y-v1^.y));
+  END;
+
 
 
   FUNCTION create_scene (nedge, npoly: AL_INT): AL_INT;

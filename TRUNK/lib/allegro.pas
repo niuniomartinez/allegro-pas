@@ -3611,9 +3611,9 @@ VAR
 @unorderedList(
   @item(@code(AL_DRAW_SPRITE_NORMAL) draws a masked sprite, like
     @link(al_draw_sprite).)
-  @item(@code (AL_DRAW_SPRITE_LIT) draws a tinted sprite, like
+  @item(@code(AL_DRAW_SPRITE_LIT) draws a tinted sprite, like
     @link(al_draw_lit_sprite).)
-  @item(@code (AL_DRAW_SPRITE_TRANS) draws a blended sprite, like
+  @item(@code(AL_DRAW_SPRITE_TRANS) draws a blended sprite, like
     @link(al_draw_trans_sprite). )
 )
    )
