@@ -43,20 +43,10 @@ Allegro's API description
   The "CDECL" modifier tells the compiler that it's a C function.  It's
   necesary because C uses a different calling convention than Pascal.
 
-  Most functions are in dll/so/dylib files so they're external.  The link
-  information should be in the "IMPLEMENTATION" section to try to keep the
-  "INTERFACE" section as clean as possible.
+  Most functions are in dll/so/dylib files so they're external.
 
-  So the previous example lines are inte INTERFACE while the IMPLEMENTATION
-  should be:
-
-    PROCEDURE al_set_new_bitmap_format (format: LONGINT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-    FUNCTION al_get_new_bitmap_format: LONGINT) CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  Some functions are "inline", and should be "INLINE" in Pascal too.
+  Some functions are "inline", and should be "INLINE" in Pascal too.  Also
+  wrapper functions and procedures should bee "INLINE" too.
 
 
 
@@ -66,18 +56,17 @@ Data types
   C data types aren't very different than Pascal ones, but we should be careful
   to keep the same size to make them compatible.
 
-  Also, the Free Pascal compiler activates some CPU exceptions to manage data
+  Free Pascal compiler activates some CPU exceptions to manage data
   conversions.  By default, C compilers don't activate these exceptions.  That
   results in some issues as discused in an Allegro.cc forum thread[2].
 
   Pointers in C are marked by "*".  "*char" are a pointer to char, but they
   actually use it as ANSISTRINGS.  I think it's better to use "PCHAR" and
-  create inlined wrappers for parameters and function returning.
+  create inlined wrappers for parameters and function returning.  By the way
+  I've defined type AL_STRptr for that cases.
 
   C doesn't distiguish between array and pointers.  Actually an array is a
-  pointer that points to a "non dynamic" memory space.  I think this is why
-  Allegro.pas isn't working properly so we'll use pointers and create inlined
-  wrappers for parameters and function returning.
+  pointer that points to a "non dynamic" memory space.
 
   "bool" is the bad guy here.  It's a recent addition to the C language
   (1999 IIRC) and not all compilers supports it.  Allegro's defines it as
@@ -85,21 +74,19 @@ Data types
 
   Enumerations are discussed in next section.
 
-
-
   Here you have a list of data types.  First column are C types, second are
   Pascal types.
 
   bool			BYTEBOOL[3]
 
-  char			CHAR[3]
+  char			CHAR or SHORTINT (depending the use).
   unsigned char		BYTE
   *char			PCHAR or ANSISTRING
 
   int			LONGINT
-  long int		LONGINT
+  long int		LONGINT or INT64
   unsigned int		LONGWORD
-  unsigned long int	LONGWORD[3]
+  unsigned long int	LONGWORD or QWORD
 
   uint32_t		LONGWORD
 
@@ -107,25 +94,19 @@ Data types
   double		DOUBLE
 
 
+  Anyway, unit al5base defines some types to make it easer.  For example, C
+  type "int" is "AL_INT", "unsigned int" is "AL_UINT", etcetera.
+
 
 Enumerations
 ------------
 
-  Enumerations are another "bad guy".  There are almost no difference between
-  "enum" and "int".  In a perfect world, we should use enumerations in Pascal,
-  but I think we shouldn't or use a wrapper for functions.
+  Enumerations are another "bad guy".  In C There are almost no differences
+  between "enum" and "int".  Actually, Allegro 5 doesn't use enums as function
+  parameter, it uses "int".  I think we should use enumerations.
 
   Free Pascal and Delphi optimizes enumerations.  Both have modifiers that
-  modifies that.
-
-  AFAIK C enums are 4 bytes wide, so we can do this:
-
-  PROCEDURE _ActualFunction_ (Value: LONGWORD); CDECL; EXTERNAL ...;
-
-  PROCEDURE TheProcedure (Variable: EnumType);
-  BEGIN
-    _ActualFunction_ (ORD (Variable));
-  END;
+  modifies that.  AFAIK C enums are 4 bytes wide.
 
 
 
@@ -136,13 +117,20 @@ Parameters and return values
 
   In some cases they're passed as "const", so we must use the "CONST" modifier.
 
-  C hasn't "VAR" nor "OUT" modifiers:  it uses pointer for this.  I think it is
-  a bad idea to use "VAR" and "OUT", so we should use pointers and wrappers for
-  this.
+  C hasn't "VAR" nor "OUT" modifiers:  it uses pointer for this.  It looks like
+  FPC translates "VAR" to pointers, so I'm using VAR.  If Delphi doesn't do it
+  the same way or there are problems then we should use wrapper procedures
+  instead:
 
-  PROCEDURE _ActualFunction_ (ValuePtr: ^LONGWORD); CDECL; EXTERNAL ...;
+INTERFACE
 
-  PROCEDURE TheProcedure (VAR Variable: LONGWORD);
+  PROCEDURE WrapperProcedure (VAR Variable: AL_UINT); INLINE;
+
+IMPLEMENTATION
+
+  PROCEDURE _ActualFunction_ (ValuePtr: AL_UINTptr); CDECL; EXTERNAL ...;
+
+  PROCEDURE WrapperProcedure (VAR Variable: AL_UINT);
   BEGIN
     _ActualFunction_ (@Variable);
   END;
@@ -158,4 +146,4 @@ NOTES
 
   [2] http://www.allegro.cc/forums/thread/602423
 
-  [3] Not sure.
+  [3] Not sure but it seems to work.

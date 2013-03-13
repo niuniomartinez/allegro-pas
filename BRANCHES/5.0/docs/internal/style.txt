@@ -87,7 +87,6 @@ Indentation
     ELSE
       BEGIN
         DoElse (Param);
-
      { This comments the loop. }
         WHILE Param > 0 DO
           BEGIN
@@ -117,24 +116,24 @@ Spaces
 
 (* This is a function to show how to use empty lines to separate
    logic blocs. *)
-FUNCTION Example: BOOLEAN;
-BEGIN
-  Example := TRUE;
-END;
+  FUNCTION Example: BOOLEAN;
+  BEGIN
+    Example := TRUE;
+  END;
 
 
 
 (* This procedure is preceded by 3 empty lines so it's easy to
    find where the previous one finishes and where this starts. *)
-PROCEDURE Other;
-BEGIN
-  IF Something THEN
-    DoThis;
-  DoSometing;
+  PROCEDURE Other;
+  BEGIN
+    IF Something THEN
+      DoThis;
+    DoSometing;
 
-{ The previous line separates a logic block. }
-  DoMore;
-END;
+  { The previous line separates a logic block. }
+    DoMore;
+  END;
 
 
 
@@ -147,7 +146,7 @@ Line length
 
 { An example about how to split long lines. }
   IF (AbnormallyLongVariableName <> A_VERY_LONG_CONSTANT_NAME)
-    AND (AbnormallyLongVariableName < OTHER_CONSTANT)
+  AND (AbnormallyLongVariableName < OTHER_CONSTANT)
   THEN
     ThisProcedureHasALongName (
       AbnormallyLongVariableName,

@@ -4,7 +4,6 @@ PROGRAM test;
  *)
 
   USES
-    Common,
     Allegro5, al5gl,
   {$IFDEF FPC}
     GL;
@@ -64,7 +63,6 @@ PROGRAM test;
   END;
 
 VAR
-  al_init_result: BOOLEAN;
   Display: ALLEGRO_DISPLAYptr;
 BEGIN
   IF al_init THEN
@@ -80,8 +78,8 @@ BEGIN
       al_flip_display;
     END
     ELSE
-      AbortExample ('Could not create display.');
+      WriteLn ('Could not create display.');
   END
   ELSE
-    AbortExample ('Allegro 5 didn''t work! :(')
+    WriteLn ('Allegro 5 didn''t work! :(')
 END.

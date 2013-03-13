@@ -1,5 +1,8 @@
 In no special order
 
+  * Check error "(...)libGLcore.so.1: undefined reference to `__moddi3'".
+    To fix it I've added al5gl to uses section of al5image and al5primitives.
+
   * Add to documentation a note about to define symbol "DEBUGMODE" if using
     "-g".
 
