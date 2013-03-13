@@ -372,7 +372,8 @@ IMPLEMENTATION
       OR (fDrawmode = AL_POLYTYPE_PTEX_LIT)
       THEN BEGIN
       { Only faces with positive normals are visible. }
-	IF al_polygon_z_normal (@Vertex[v1], @Vertex[v2], @Vertex[v3]) < 0 THEN
+	IF al_polygon_z_normal_sign (@Vertex[v1], @Vertex[v2], @Vertex[v3]) < 0 THEN
+
 	  CONTINUE;
       END;
     { Insert the face in the face list. }
