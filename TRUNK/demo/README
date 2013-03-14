@@ -78,7 +78,7 @@ How to use the game engine and the map editor in your projects
   so you should pay atention to variable "CanDrawMap" (at the end of procedure
   SetTileset) because if you allow to the map editor to draw a map with the
   wrong tileset then the application may die with an error.  Remember that you
-  can assing up to 253 tiles, as tiles 0, 254 and 255 are reserved.  Read
+  can assign up to 253 tiles, as tiles 0, 254 and 255 are reserved.  Read
   comments at tilemap.pas and mapedit.pp for more information.
 
   To change tile size just change const TSIZE from tilemap.pas.  To change
@@ -87,10 +87,10 @@ How to use the game engine and the map editor in your projects
 
   Mapedit doesn't allow to set sprites on map, so you should reserve several
   tiles for this.  In your game you should check the tilemap looking for these
-  reserved tiles to know where to put you sprites.  Look at function LoadMapPf
+  reserved tiles to know where to put the sprites.  Look at function LoadMapPf
   how it does find start and end points, your code should be alike.
 
   Anyway, before to start your own project take your time to read sources of
   demonstration game and mapedit, as well as the programs at the "examples"
-  subdirectory.  Once you learned how does Allegro.pas works and how to use
+  subdirectory.  Once you learn how does Allegro.pas works and how to use
   the engine it should be easy to create your own masterpieces.

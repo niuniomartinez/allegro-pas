@@ -927,11 +927,13 @@ PROGRAM mapedit;
 
 (* Loads and assigns a tileset. *)
   PROCEDURE SetTileset (TilesetName: STRING);
+  {$I demo.inc}
   VAR
     Palette: AL_PALETTEptr;
     DemoData: AL_DATAFILEptr;
+    Tmp, TmpTile: AL_BITMAPptr;
     buf: STRING;
-    Ndx: INTEGER;
+    Ndx, X, Y: INTEGER;
   BEGIN
   { Hack note: May be you want to call UnsetTileset to clean up the Tileset
 		first.  I don't do it because Demo game uses the same
@@ -946,7 +948,7 @@ PROGRAM mapedit;
       EXIT;
     END;
   { Select the palette which was loaded from the datafile. }
-    Palette := DemoData^[25].dat;
+    Palette := DemoData^[GAME_PAL].dat;
     al_set_palette (Palette^);
   { Map editor needs all 256 tiles because uses the last ones (254 and 255) as
     markers of "map startpoint" and "map endpoint". }
@@ -956,8 +958,22 @@ PROGRAM mapedit;
   { Copy the tiles to convert them to the current color depth.  It's necessary
     because dlgTileSelector uses al_stretch_blit to draw the tiles, and it
     doesn't convert color depth of bitmaps. }
-    FOR Ndx := 0 TO 6 DO
-      Tileset[Ndx + 1] := CloneBitmap (DemoData^[Ndx].dat,TSIZE, TSIZE);
+    Tmp := DemoData^[BMP_TILES].dat;
+    X := 0; Y := 0; Ndx := 1;
+    REPEAT
+    { Use a sub-bitmap to "extract" the tile from the tileset. }
+      TmpTile := al_create_sub_bitmap (Tmp, X, Y, TSIZE, TSIZE);
+      Tileset[Ndx] := CloneBitmap (TmpTile, TSIZE, TSIZE);
+      al_destroy_bitmap (TmpTile);
+    { Next tile. }
+      INC (Ndx);
+      INC (X, TSIZE);
+      IF X >= Tmp^.w THEN
+      BEGIN
+	X := 0;
+	INC (Y, TSIZE);
+      END;
+    UNTIL (Y >= Tmp^.h) OR (Ndx > 253);
   { Unload data, because we don't need it. }
     al_unload_datafile (DemoData);
   { Set start and end markers. }

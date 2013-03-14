@@ -21,7 +21,7 @@ Menu description
 Loading or creating a new map
 -----------------------------
 
-  Use options on menu "Program" to load or create maps.
+  Use options on menu "Map" to load or create maps.
 
   Remember that map size should be between 10 and 32767.
 
@@ -98,7 +98,7 @@ Save the map
 ------------
 
   To save the map, just select the "Save" option from the
-  Program menu.  It will ask for the map name.
+  Map menu.  It will ask for the map name.
 
 
 Configuration

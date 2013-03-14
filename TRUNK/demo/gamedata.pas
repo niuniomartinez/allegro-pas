@@ -49,7 +49,8 @@ IMPLEMENTATION
   FUNCTION LoadData: BOOLEAN;
   VAR
     buf: STRING;
-    Ndx: INTEGER;
+    Tiles: AL_BITMAPptr;
+    Ndx, X, Y: INTEGER;
   BEGIN
   { Load the datafile into memory. }
     buf :=  ExtractFilePath (PARAMSTR (0)) + 'demo.dat';
@@ -58,8 +59,19 @@ IMPLEMENTATION
     LoadData := (Data <> NIL);
   { Assigns tileset. }
     SetLength (TileSet, T_ROWD + 1);
+    Tiles := Data^[BMP_TILES].dat;
+    X := 0; Y := 0;
     FOR Ndx := T_COIN TO T_ROWD DO
-      TileSet[Ndx] := Data^[Ndx - 1].dat;
+    BEGIN
+      TileSet[Ndx] := al_create_sub_bitmap (Tiles, X, Y, TSIZE, TSIZE);
+    { Next tile. }
+      INC (X, TSIZE);
+      IF X >= Tiles^.w THEN
+      BEGIN
+	X := 0;
+	INC (Y, TSIZE);
+      END;
+    END;
   END;
 
 
@@ -67,9 +79,13 @@ IMPLEMENTATION
 (* Releases all resources used by the data.  Should be called before uninstall
    Allegro. *)
   PROCEDURE ReleaseData;
+  VAR
+    Ndx: INTEGER;
   BEGIN
     IF Data <> NIL THEN
     BEGIN
+      FOR Ndx := T_COIN TO T_ROWD DO
+	al_destroy_bitmap (TileSet[Ndx]);
       al_unload_datafile (Data);
       Data := NIL;
     END;

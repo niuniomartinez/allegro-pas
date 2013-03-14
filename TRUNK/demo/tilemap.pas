@@ -78,7 +78,7 @@ INTERFACE
  *)
   FUNCTION SaveMap (FileName: STRING): BOOLEAN;
 
-(* Like @link(SaveMap), but reads from a packfile. *)
+(* Like @link(SaveMap), but saves to a packfile. *)
   FUNCTION SaveMapPf (PackFile: AL_PACKFILEptr): BOOLEAN;
 
 IMPLEMENTATION
@@ -140,8 +140,6 @@ IMPLEMENTATION
       EXIT;
     CreateMap (MapWidth, MapHeight);
   { Now, the map. }
-    StartX := -1; StartY := -1;
-    EndX := -1; EndY := -1;
     FOR Y := 0 TO MapHeight - 1 DO
       FOR X := 0 TO MapWidth - 1 DO
       BEGIN
