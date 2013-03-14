@@ -5,87 +5,75 @@
 
 
   { Allegro datafile object indexes, produced by grabber v4.4.2, Unix  }
-  { Datafile: /home/guillermo/prog/bibliotecas/allegro-pas/allegro.pas.TRUNK/demo/demo.dat  }
-  { Date: Mon Dec 10 19:21:11 2012  }
+  { Datafile: /home/guillermo/Trabajo/bibliotecas/allegro.pas/allegro-pas/demo/demo.dat  }
+  { Date: Thu Mar 14 11:44:23 2013  }
   { Do not hand edit!  }
   { BMP   }
 
   const
-    BMP_COIN = 0;    
+    BMP_TILES = 0;    
   { BMP   }
-    BMP_BLK1 = 1;    
-  { BMP   }
-    BMP_BLK2 = 2;    
-  { BMP   }
-    BMP_BLK3 = 3;    
-  { BMP   }
-    BMP_ROW_R = 4;    
-  { BMP   }
-    BMP_ROW_L = 5;    
-  { BMP   }
-    BMP_ROW_D = 6;    
+    BMP_BOMB1 = 1;    
   { RLE   }
-    BMP_BOMB1 = 7;    
+    BMP_BOMB2 = 2;    
   { RLE   }
-    BMP_BOMB2 = 8;    
+    BMP_EXPLOSION1 = 3;    
   { RLE   }
-    BMP_EXPLOSION1 = 9;    
+    BMP_EXPLOSION2 = 4;    
   { RLE   }
-    BMP_EXPLOSION2 = 10;    
+    BMP_MAIN_L0 = 5;    
   { RLE   }
-    BMP_MAIN_L0 = 11;    
+    BMP_MAIN_L1 = 6;    
   { RLE   }
-    BMP_MAIN_L1 = 12;    
+    BMP_MAIN_L2 = 7;    
   { RLE   }
-    BMP_MAIN_L2 = 13;    
+    BMP_MAIN_L3 = 8;    
   { RLE   }
-    BMP_MAIN_L3 = 14;    
+    BMP_MAIN_LD = 9;    
   { RLE   }
-    BMP_MAIN_LD = 15;    
+    BMP_MAIN_LJ = 10;    
   { RLE   }
-    BMP_MAIN_LJ = 16;    
+    BMP_MAIN_R0 = 11;    
   { RLE   }
-    BMP_MAIN_R0 = 17;    
+    BMP_MAIN_R1 = 12;    
   { RLE   }
-    BMP_MAIN_R1 = 18;    
+    BMP_MAIN_R2 = 13;    
   { RLE   }
-    BMP_MAIN_R2 = 19;    
+    BMP_MAIN_R3 = 14;    
   { RLE   }
-    BMP_MAIN_R3 = 20;    
+    BMP_MAIN_RD = 15;    
   { RLE   }
-    BMP_MAIN_RD = 21;    
-  { RLE   }
-    BMP_MAIN_RJ = 22;    
+    BMP_MAIN_RJ = 16;    
   { FONT  }
-    GAME_FONT = 23;    
+    GAME_FONT = 17;    
   { SAMP  }
-    GAME_MUSIC = 24;    
+    GAME_MUSIC = 18;    
   { PAL   }
-    GAME_PAL = 25;    
+    GAME_PAL = 19;    
   { FLIC  }
-    INTRO_ANIM = 26;    
+    INTRO_ANIM = 20;    
   { MIDI  }
-    INTRO_MUSIC = 27;    
+    INTRO_MUSIC = 21;    
   { SAMP  }
-    INTRO_SPL = 28;    
+    INTRO_SPL = 22;    
   { SAMP  }
-    SND_COIN = 29;    
+    SND_COIN = 23;    
   { SAMP  }
-    SND_DEAD = 30;    
+    SND_DEAD = 24;    
   { SAMP  }
-    SND_EXPLODE = 31;    
+    SND_EXPLODE = 25;    
   { SAMP  }
-    SND_JUMP = 32;    
+    SND_JUMP = 26;    
   { SAMP  }
-    SND_WIN = 33;    
+    SND_WIN = 27;    
   { BMP   }
-    TITLE_BMP = 34;    
+    TITLE_BMP = 28;    
   { FONT  }
-    TITLE_FONT = 35;    
+    TITLE_FONT = 29;    
   { MIDI  }
-    TITLE_MUSIC = 36;    
+    TITLE_MUSIC = 30;    
   { PAL   }
-    TITLE_PAL = 37;    
+    TITLE_PAL = 31;    
   { SAMP  }
-    WELCOME_SPL = 38;    
+    WELCOME_SPL = 32;    
 
