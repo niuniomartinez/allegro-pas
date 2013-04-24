@@ -69,7 +69,7 @@ Data types
   pointer that points to a "non dynamic" memory space.
 
   "bool" is the bad guy here.  It's a recent addition to the C language
-  (1999 IIRC) and not all compilers supports it.  Allegro's defines it as
+  (1999 IIRC) and not all compilers support it.  Allegro's defines it as
   "unsigned char" if compiler doesn't supports it.
 
   Enumerations are discussed in next section.
@@ -118,9 +118,9 @@ Parameters and return values
   In some cases they're passed as "const", so we must use the "CONST" modifier.
 
   C hasn't "VAR" nor "OUT" modifiers:  it uses pointer for this.  It looks like
-  FPC translates "VAR" to pointers, so I'm using VAR.  If Delphi doesn't do it
-  the same way or there are problems then we should use wrapper procedures
-  instead:
+  FPC translates "VAR" to pointers, so I'm using VAR in some places.  If Delphi
+  doesn't do it the same way or there are problems then we should use wrapper
+  procedures instead:
 
 INTERFACE
 

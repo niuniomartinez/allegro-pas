@@ -1,12 +1,7 @@
 In no special order
 
-  * Check error "(...)libGLcore.so.1: undefined reference to `__moddi3'".
-    To fix it I've added al5gl to uses section of al5image and al5primitives.
-
   * Add to documentation a note about to define symbol "DEBUGMODE" if using
     "-g".
-
-  * Units "al5color", "al5gl" have STRING parameters.  Add wrappers to PCHAR.
 
   * There are some "enum" types (sets). Be sure that they have the correct
     sice in bits.  Read FPC and Delphi help.
