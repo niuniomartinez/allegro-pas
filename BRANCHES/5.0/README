@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 5.0.alpha             \/___/                 \/_/
+     Version 5.0.alpha 1           \/___/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Ñuño Martínez, January 11, 2012.
+  by Ñuño Martínez, April 24, 2013.
 
 
 
@@ -42,9 +42,10 @@ Introduction
   is the latest stable version released.  Please go to the Allegro.pas' project
   site at sourceforge for more information.
 
-  Current version was tested only on GNU/Linux + Free Pascal.  Windows + Delphi
-  was tested while development by a volunteer but I can't grant it will work.
-  Other operanting systems and compilers weren't tested.
+  Current version was tested only on GNU/Linux + Free Pascal.  An earlier SVN
+  version was tested while development by a volunteer in Windows + Delphi but I
+  can't grant it will work.  Other operanting systems and compilers weren't
+  tested.
 
   The goal is to make Allegro.pas 5 compatible with any operating system
   supported by Allegro, which are Windows, Linux, MacOS and iOS.  AFAIK all
@@ -74,20 +75,21 @@ Partially implemented or need more testing
 
   * Audio samples and streams.
 
+  * Native dialogs.
+
+  * ttf fonts.
+
+
 Unimplemented
 -------------
 
   - OpenGL extensions.
-
-  - ttf fonts.
 
   - kcm audio.
 
   - Custom memory management.
 
   - Phys file system.
-
-  - Native dialogs.
 
   - Demonstration game.
 
@@ -125,8 +127,8 @@ Installation
 Documentation
 =============
 
-  At the moment there are no public documentation.  Since symbols have same
-  name than the C version you can use the original Allegro documentation.
+  At the moment the public documentation isn't complete.  Since symbols have
+  same name than the C version you can use the original Allegro documentation.
 
   BTW I've put some information at the docs/internal subdirectory.  Read it
   specially if you're planning to write or hack your own test programs.
