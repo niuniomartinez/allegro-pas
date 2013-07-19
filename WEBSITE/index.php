@@ -19,11 +19,7 @@
   # Formatear noticias.
     foreach ($Noticias['Items'] as $Key => $Item):
       $Item['Fecha'] = date ('d/m/Y h:m', $Item['Fecha']);
-      $Item['Contenido'] = AGORA::$Modulos->formato->SeparaParrafos (
-	AGORA::$Modulos->formato->bbCodeLinea (
-	  str_replace ('\\', '', $Item['Contenido'])
-	)
-      );
+      $Item['Contenido'] = str_replace ('\\', '', $Item['Contenido']);
       $Noticias['Items'][$Key] = $Item;
     endforeach;
   # Resumen de la descripción del proyecto:
