@@ -4823,6 +4823,136 @@ END;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_check';
 
 
+  CONST
+  (* Plays the sample a single time. This is the default if you don't set the
+    loop flag. @seealso(al_voice_set_playmode) *)
+    AL_PLAYMODE_PLAY     = 0;
+  (* Loops repeatedly through the sample, jumping back to the loop start
+    position upon reaching the loop end. @seealso(al_voice_set_playmode) *)
+    AL_PLAYMODE_LOOP     = 1;
+  (* Plays the sample from beginning to end. This is the default if you don't
+    set the backward flag. @seealso(al_voice_set_playmode) *)
+    AL_PLAYMODE_FORWARD  = 0;
+  (* Reverses the direction of the sample. If you combine this with the loop
+    flag, the sample jumps to the loop end position upon reaching the loop
+    start (ie. you do not need to reverse the loop start and end values when
+    you play the sample in reverse).  @seealso(al_voice_set_playmode) *)
+    AL_PLAYMODE_BACKWARD = 2;
+  (* When used in combination with the loop flag, causes the sample to change
+    direction each time it reaches one of the loop points, so it alternates
+    between playing forwards and in reverse. @seealso(al_voice_set_playmode) *)
+    AL_PLAYMODE_BIDIR    = 4;
+
+(* Adjusts the loop status of the specified voice.  This can be done while the
+   voice is playing, so you can start a sample in looped mode (having set the
+   loop start and end positions to the appropriate values), and then clear the
+   loop flag when you want to end the sound, which will cause it to continue
+   past the loop end, play the subsequent part of the sample, and finish in the
+   normal way. The mode parameter is a bitfield containing the following
+   values: @code(AL_PLAYMODE_PLAY), @code(AL_PLAYMODE_LOOP),
+   @code(AL_PLAYMODE_FORWARD), @code(AL_PLAYMODE_BACKWARD),
+   @code(AL_PLAYMODE_BIDIR)
+   @seealso(AL_PLAYMODE_PLAY) @seealso(AL_PLAYMODE_LOOP)
+   @seealso(AL_PLAYMODE_FORWARD) @seealso(AL_PLAYMODE_BACKWARD)
+   @seealso(AL_PLAYMODE_BIDIR)
+ *)
+  PROCEDURE al_voice_set_playmode (voice, playmode: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_set_playmode';
+
+
+(* Returns the current position of a voice, in sample units, or -1 if it has
+   finished playing. @seealso(al_voice_set_position) *)
+  FUNCTION al_voice_get_position (voice: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_get_position';
+
+(* Sets the position of a voice, in sample units.
+  @seealso(al_voice_get_position) @seealso(al_voice_set_playmode) *)
+  PROCEDURE al_voice_set_position (voice, position: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_set_position';
+
+
+
+(* Returns the current volume of the voice, range 0-255. Otherwise it returns
+   -1 if that cannot be determined (because it has finished or been preempted
+   by a different sound). @seealso(al_voice_set_volume). *)
+  FUNCTION al_voice_get_volume (voice: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_get_volume';
+
+(* Sets the volume of the voice, range 0-255.
+  @seealso(al_voice_get_volume) @seealso(al_voice_ramp_volume) *)
+  PROCEDURE al_voice_set_volume (voice, volume: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_set_volume';
+
+(* Starts a volume ramp (crescendo or diminuendo) from the current volume to
+  the specified ending volume, lasting for time milliseconds. The volume is a
+  value in the range 0-255.
+  @seealso(al_voice_set_volume) @seealso(al_voice_stop_volumeramp) *)
+  PROCEDURE al_voice_ramp_volume (voice, tyme, endvol: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_ramp_volume';
+
+(* Interrupts a volume ramp operation. @seealso(al_voice_ramp_volume) *)
+  PROCEDURE al_voice_stop_volumeramp (voice: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_stop_volumeramp';
+
+
+
+(* Returns the current pitch of the voice, in Hz.
+  @seealso(al_voice_set_frequency) *)
+  FUNCTION al_voice_get_frequency (voice: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_get_frequency';
+
+(* Sets the pitch of the voice, in Hz.
+  @seealso(al_voice_get_frequency) @seealso(al_voice_sweep_frequency) *)
+  PROCEDURE al_voice_set_frequency (voice, frequency: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_set_frequency';
+
+(* Starts a frequency sweep (glissando) from the current pitch to the specified
+  ending pitch, lasting for time milliseconds.
+  @seealso(al_voice_set_frequency) @seealso(al_voice_stop_frequency_sweep) *)
+  PROCEDURE al_voice_sweep_frequency (voice, tyme, endfreq: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_sweep_frequency';
+
+(* Interrupts a frequency sweep operation. @seealso(al_voice_sweep_frequency) *)
+  PROCEDURE al_voice_stop_frequency_sweep (voice: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_stop_frequency_sweep';
+
+
+
+(* Returns the current pan position, from 0 (left) to 255 (right).
+  @seealso(al_voice_set_pan) *)
+  FUNCTION al_voice_get_pan (voice: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_get_pan';
+
+(* Sets the pan position, ranging from 0 (left) to 255 (right).
+  @seealso(al_voice_get_pan) @seealso(al_voice_sweep_pan) *)
+  PROCEDURE al_voice_set_pan (voice, pan: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_set_pan';
+
+(* Starts a pan sweep (left <-> right movement) from the current position to
+  the specified ending position, lasting for time milliseconds.
+  @seealso(al_voice_stop_pan_sweep) @seealso(al_voice_set_pan) *)
+  PROCEDURE al_voice_sweep_pan (voice, tyme, endpan: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_sweep_pan';
+
+(* Interrupts a pan sweep operation. @seealso(al_voice_sweep_pan) *)
+  PROCEDURE al_voice_stop_pan_sweep (voice: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_stop_pan_sweep';
+
+
+
+(* Sets the echo parameters for a voice (not currently implemented). *)
+  PROCEDURE al_voice_set_echo (voice, strength, delay: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_set_echo';
+
+(* Sets the tremolo parameters for a voice (not currently implemented). *)
+  PROCEDURE al_voice_set_tremolo (voice, rate, depth: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_set_tremolo';
+
+(* Sets the vibrato parameters for a voice (not currently implemented). *)
+  PROCEDURE al_voice_set_vibrato (voice, rate, depth: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_set_vibrato';
+
+
 
 (* Informs the @link(al_load_sample) and the @link(al_save_sample) functions
    of a new sample file type, providing routines to read and write samples in
