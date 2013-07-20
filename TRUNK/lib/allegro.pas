@@ -75,7 +75,7 @@ END;
     al_id_string: AL_STRptr;
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_id';
 
-  (* Text string used by @code(al_set_gfx_mode), @code(al_install_sound) and
+  (* Text string used by @link(al_set_gfx_mode), @link(al_install_sound) and
     other functions to report error messages.  If they fail and you want to tell
     the user why, this is the place to look for a description of the problem. *)
     al_error: AL_STRptr;
@@ -4757,6 +4757,70 @@ END;
    sample is not playing it has no effect. *)
   PROCEDURE al_adjust_sample (CONST spl: AL_SAMPLEptr; vol, pan, freq, loop: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'adjust_sample';
+
+
+
+(* Allocates a soundcard voice and prepares it for playing the specified sample,
+   setting up sensible default parameters (maximum volume, centre pan, no change
+   of pitch, no looping).  When you are finished with the voice you must free it
+   by calling @link(al_deallocate_voice) or @link(al_release_voice).  Allegro
+   can manage up to 256 simultaneous voices, but that limit may be lower due to
+   hardware reasons.
+   @returns(the voice number, or -1 if no voices are available.)
+   @seealso(al_reallocate_voice) @seealso(al_load_sample) *)
+  FUNCTION al_allocate_voice (CONST spl: AL_SAMPLEptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allocate_voice';
+
+(* Frees a soundcard voice, stopping it from playing and releasing whatever
+   resources it is using.
+   @seealso(al_allocate_voice) @seealso(al_voice_stop) *)
+  PROCEDURE al_deallocate_voice (voice: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'deallocate_voice';
+
+(* Switches an already-allocated voice to use a different sample. Calling
+   @code(al_reallocate_voice@(voice, sample@)) is equivalent to:
+@longcode(#
+  al_deallocate_voice (Voice);
+  Voice := al_allocate_voice (Sample);
+#)
+  @seealso(al_allocate_voice) @seealso(al_load_sample) *)
+  PROCEDURE al_reallocate_voice (voice: AL_INT; CONST spl: AL_SAMPLEptr);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'reallocate_voice';
+
+(* Releases a soundcard voice, indicating that you are no longer interested in
+   manipulating it.  The sound will continue to play, and any resources that it
+   is using will automatically be freed when it finishes.  This is essentially
+   the same as @link(al_deallocate_voice), but it waits for the sound to stop
+   playing before taking effect. @seealso(al_allocate_voice) *)
+  PROCEDURE al_release_voice (voice: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'release_voice';
+
+(* Activates a voice, using whatever parameters have been set for it.
+  @seealso(al_allocate_voice) @seealso(al_voice_stop) *)
+  PROCEDURE al_voice_start (voice: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_start';
+
+(* Stops a voice, storing the current position and state so that it may later
+   be resumed by calling @link(al_voice_start).
+   @seealso(al_deallocate_voice) @seealso(al_release_voice) *)
+  PROCEDURE al_voice_stop (voice: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_stop';
+
+(* Sets the priority of a voice (range 0-255). This is used to decide which
+   voices should be chopped off, if you attempt to play more than the
+   soundcard driver can handle. *)
+  PROCEDURE al_voice_set_priority (voice, priority: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_set_priority';
+
+(* Checks whether a voice is currently allocated.
+   @return(a pointer to the sample that the voice is using, or @nil if the
+   voice is inactive @(ie. it has been deallocated@), or the
+   @link(al_release_voice) function has been called and the sample has then
+   finished playing.)
+ @seealso(al_allocate_voice) @seealso(al_voice_start)
+ @seealso(al_voice_get_position) *)
+  FUNCTION al_voice_check (voice: AL_INT): AL_SAMPLEptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'voice_check';
 
 
 
