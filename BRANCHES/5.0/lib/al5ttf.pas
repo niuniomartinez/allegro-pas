@@ -26,9 +26,6 @@ UNIT al5ttf;
 
 INTERFACE
 
-  USES
-    al5base;
-
   CONST
   (* Do not use any kerning even if the font file supports it.
     @seealso(al_load_font) @seealso(al_load_ttf_font) *)

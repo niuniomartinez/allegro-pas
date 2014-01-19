@@ -13,6 +13,11 @@ PROGRAM haiku;
  * the nice title sequence, text labels and mouse cursors.
  *)
 
+(* This is a translation to Pascal from the original C code.  Unfortunatelly
+   I (Ñuño) didn't do it right and some animations (earth and water) don't work
+   as spected.
+ *)
+
 USES
    Common,
    Allegro5,
@@ -689,8 +694,8 @@ CONST
          RandomFloat := Random * (Max - Min) + Min;
       END;
 
-   VAR
-      MaxDuration: SINGLE;
+   CONST
+      MaxDuration = 1;
 
       FUNCTION MRand (Min, Max: SINGLE): SINGLE;
       BEGIN
@@ -703,7 +708,6 @@ CONST
       i: INTEGER;
    BEGIN
       Now := al_get_time;
-      MaxDuration := 1.0; { TODO: Why is this value a variable? }
       Spr := CreateFlair (IMG_WATER, x, y, Now + MaxDuration);
       Anim (Spr^, @(Spr^.ScaleX), 1.0, 2.0, INTERP_FAST, 0.5);
       Anim (Spr^, @(Spr^.ScaleY), 1.0, 2.0, INTERP_FAST, 0.5);

@@ -26,9 +26,6 @@ PROGRAM ex_font;
     Common,
     Allegro5, al5image, al5font;
 
-  CONST
-    EURO = #226#82#172;
-
   PROCEDURE WaitForEsc (Display: ALLEGRO_DISPLAYptr);
   VAR
     Queue: ALLEGRO_EVENT_QUEUEptr;
@@ -119,7 +116,7 @@ BEGIN
   al_draw_text (Font, al_map_rgb (0, 255, 0), 10, 50, 0, 'green');
 
 { Draw a unicode symbol }
-  al_draw_text (A4Font, al_map_rgb (0, 0, 255), 10, 90, 0, 'Mysha''s 0.02' + EURO);
+  al_draw_text (A4Font, al_map_rgb (0, 0, 255), 10, 90, 0, 'Mysha''s 0.02€');
 
   al_flip_display;
 

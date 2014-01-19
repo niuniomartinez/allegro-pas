@@ -109,7 +109,7 @@ Installation
 ============
 
   First you must install Allegro itself.  Current Allegro.pas version is
-  compatible with version 5.0.x only so DON'T install verision 5.1.x.  Visit
+  compatible with version 5.0.x only so DON'T install version 5.1.x.  Visit
   Allegro's project website at http://alleg.sf.net/ to download it.  The
   package includes installation instructions.
 

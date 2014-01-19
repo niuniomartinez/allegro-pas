@@ -30,28 +30,28 @@ USES
 
 
 
-   PROCEDURE RedDot (x, y: INTEGER);
+   PROCEDURE RedDot (x, y: INTEGER); INLINE;
    BEGIN
       al_draw_filled_rectangle (x - 2, y - 2, x + 2, y + 2, al_map_rgb_f (1, 0, 0));
    END;
 
 
 
-   PROCEDURE DrawClipRect;
+   PROCEDURE DrawClipRect; INLINE;
    BEGIN
       al_draw_rectangle (100.5, 100.5, W - 100.5, H - 100.5, Black, 0);
    END;
 
 
 
-   PROCEDURE SetClipRect;
+   PROCEDURE SetClipRect; INLINE;
    BEGIN
       al_set_clipping_rectangle (100, 100, W - 200, H - 200);
    END;
 
 
 
-   PROCEDURE ResetClipRect;
+   PROCEDURE ResetClipRect; INLINE;
    BEGIN
       al_set_clipping_rectangle (0, 0, W, H);
    END;

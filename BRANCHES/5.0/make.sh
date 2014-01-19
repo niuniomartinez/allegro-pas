@@ -3,7 +3,6 @@
 # FLAGS='-dDEBUGMODE -g'
 FLAGS='-g'
 DIRS='-Fulib -FUobj -FEexamples'
-fpc $FLAGS $DIRS examples/test.pas
 fpc $FLAGS $DIRS examples/ex_audio_simple.pas
 fpc $FLAGS $DIRS examples/ex_blit.pas
 fpc $FLAGS $DIRS examples/ex_font.pas
