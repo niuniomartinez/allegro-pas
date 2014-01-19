@@ -19,6 +19,11 @@ PROGRAM ex_prim;
  *      See readme.txt for copyright information.
  *)
 
+(* NOTE: Actually I (Ñuño) don't know how the primitives work.  That's why
+	 this example doesn't work at all.  May be translating the parts that
+	 are commented fix the problem(?).
+ *)
+
 {$LONGSTRINGS ON}
 
   USES

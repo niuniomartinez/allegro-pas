@@ -19,7 +19,7 @@ INTERfACE
 IMPLEMENTATION
 
   USES
-    Allegro5, al5nativedlg;
+    Allegro5 , al5nativedlg;
 
   VAR
     TextLog: ALLEGRO_TEXTLOGptr;

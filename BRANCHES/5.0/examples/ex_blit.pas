@@ -125,6 +125,7 @@ PROGRAM ex_blit;
 
   { Test 1. }
   { /* Disabled: drawing to same bitmap is not supported. }
+    Print ('Screen -> Screen (disabled)');
   (*
     Print ('Screen -> Screen (%.1f fps)', get_fps(0));
     get_xy(&x, &y);
@@ -133,8 +134,8 @@ PROGRAM ex_blit;
     start_timer(0);
     al_draw_bitmap_region(screen, x, y, iw, ih, x + 8 + iw, y, 0);
     stop_timer(0);
-    set_xy(x, y + ih);
    *)
+    SetXY (x, y + ih);
 
   { Test 2. }
     Print (Format ('Screen -> Bitmap -> Screen (%.1f fps)', [GetFPS (1)]));
@@ -173,13 +174,18 @@ PROGRAM ex_blit;
 
     al_destroy_bitmap (Temp);
     al_set_new_bitmap_flags (ALLEGRO_VIDEO_BITMAP);
+
+
+    Print ('Screen -> Locked -> Screen (disabled)');
 (*
-   
+  Disabled because the "memcpy".  I tried it but I never used 'memcpy' on C nor
+  pointers on Pascal so I don't know how to translate it.
+
    /* Test 4. */
     Print ('Screen -> Locked -> Screen (%.1f fps)', get_fps(3));
     get_xy(&x, &y);
     al_draw_bitmap(ex.Pattern, x, y, 0);
- 
+
     StartTimer (3);
     lock = al_lock_bitmap_region(Screen, x, y, iw, ih,
       ALLEGRO_PIXEL_FORMAT_ANY, ALLEGRO_LOCK_READONLY);
@@ -190,7 +196,7 @@ PROGRAM ex_blit;
        memcpy((char* )data + i * size * iw,
          (char* )lock->data + i * lock->pitch, size * iw);
     al_unlock_bitmap(Screen);
-   
+
    lock = al_lock_bitmap_region(Screen, x + 8 + iw, y, iw, ih, format,
       ALLEGRO_LOCK_WRITEONLY);
    for (i = 0; i < ih; i++)
@@ -199,8 +205,8 @@ PROGRAM ex_blit;
    al_unlock_bitmap(Screen);
    free(data);
    StopTimer (3);
-   SetXY (x, y + ih);
  *)
+    SetXY (x, y + ih);
   END;
 
 
