@@ -672,7 +672,7 @@ BEGIN
 (* Clipping *)
   PROCEDURE al_set_clipping_rectangle (x, y, width, height: AL_INT); CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_restore_clipping_rectangle; CDECL
+  PROCEDURE al_restore_clipping_rectangle; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_get_clipping_rectangle (VAR x, y, w, h: AL_INT); CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
