@@ -137,8 +137,18 @@ INTERFACE
     AL_UINT32 = LONGWORD;
   (* Signed 64bit integer values. *)
     AL_INT64 = INT64;
+{$IFDEF FPC}
   (* Unsigned 64bit integer values. *)
     AL_UINT64 = QWORD;
+{$ELSE}
+  {$IFDEF ISDELPHI2007ANDUP}
+  (* Unsigned 64bit integer values. *)
+    AL_UINT64 = UINT64;
+  {$ELSE}
+  (* Unsigned 64bit integer values. *)
+    AL_UINT64 = INT64;
+  {$ENDIF}
+{$ENDIF}
 
 
 
