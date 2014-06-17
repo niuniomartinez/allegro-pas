@@ -23,12 +23,18 @@ UNIT al5acodec;
     distribution.
  *)
 
-{$include allegro.cfg}
+{$include allegro5.cfg}
 
 INTERFACE
 
   USES
     al5base;
+
+  CONST
+  (* Builds library name. *)
+    { @exclude }
+    ALLEGRO_ACODEC_LIB_NAME = _A5_LIB_PREFIX_+'allegro_acodec'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
+
 
 (* Registers all the known audio file type handlers for @link(al_load_sample), @link(al_save_sample), @link(al_load_audio_stream), etc.
 

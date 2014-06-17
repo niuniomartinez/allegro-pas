@@ -27,11 +27,11 @@ UNIT al5base;
     distribution.
  *)
 
-{$INCLUDE allegro.cfg}
+{$INCLUDE allegro5.cfg}
 
 INTERFACE
 
-  (* Defines some constants with the names of the library files. *)
+  (* Defines some constants to build the correct names of the library files. *)
   CONST
 {$IFDEF DEBUGMODE}
     { @exclude }
@@ -42,72 +42,9 @@ INTERFACE
 {$ENDIF}
 
 {$IF DEFINED(UNIX)}
-    { @exclude }
-    ALLEGRO_LIB_NAME            = 'liballegro'+_DBG_+'.so.5.0';
-    { @exclude }
-    ALLEGRO_ACODEC_LIB_NAME     = 'liballegro_acodec'+_DBG_+'.so.5.0';
-    { @exclude }
-    ALLEGRO_AUDIO_LIB_NAME      = 'liballegro_audio'+_DBG_+'.so.5.0';
-    { @exclude }
-    ALLEGRO_COLOR_LIB_NAME      = 'liballegro_color'+_DBG_+'.so.5.0';
-    { @exclude }
-    ALLEGRO_FONT_LIB_NAME       = 'liballegro_font'+_DBG_+'.so.5.0';
-    { @exclude }
-    ALLEGRO_IMAGE_LIB_NAME      = 'liballegro_image'+_DBG_+'.so.5.0';
-    { @exclude }
-    ALLEGRO_MAIN_LIB_NAME       = 'liballegro_main'+_DBG_+'.so.5.0';
-    { @exclude }
-    ALLEGRO_NATIVE_DLG_LIB_NAME = 'liballegro_dialog'+_DBG_+'.so.5.0';
-    { @exclude }
-    ALLEGRO_PRIMITIVES_LIB_NAME = 'liballegro_primitives'+_DBG_+'.so.5.0';
-    { @exclude }
-    ALLEGRO_TTF_LIB_NAME        = 'liballegro_ttf'+_DBG_+'.so.5.0';
+  {$INCLUDE al5_unix.inc}
 {$ELSEIF DEFINED(WINDOWS)}
-  {$IFDEF MONOLITH}
-  {It uses monolith staticaly linked version. }
-    { @exclude }
-    ALLEGRO_LIB_NAME            = 'allegro-5.0.5-monolith-mt'+_DBG_+'.dll';
-    { @exclude }
-    ALLEGRO_ACODEC_LIB_NAME     = ALLEGRO_LIB_NAME;
-    { @exclude }
-    ALLEGRO_AUDIO_LIB_NAME      = ALLEGRO_LIB_NAME;
-    { @exclude }
-    ALLEGRO_COLOR_LIB_NAME      = ALLEGRO_LIB_NAME;
-    { @exclude }
-    ALLEGRO_FONT_LIB_NAME       = ALLEGRO_LIB_NAME;
-    { @exclude }
-    ALLEGRO_IMAGE_LIB_NAME      = ALLEGRO_LIB_NAME;
-    { @exclude }
-    ALLEGRO_MAIN_LIB_NAME       = ALLEGRO_LIB_NAME;
-    { @exclude }
-    ALLEGRO_NATIVE_DLG_LIB_NAME = ALLEGRO_LIB_NAME;
-    { @exclude }
-    ALLEGRO_PRIMITIVES_LIB_NAME = ALLEGRO_LIB_NAME;
-    { @exclude }
-    ALLEGRO_TTF_LIB_NAME        = ALLEGRO_LIB_NAME;
-  {$ELSE}
-  {It uses add-ons }
-    { @exclude }
-    ALLEGRO_LIB_NAME            = 'allegro'+_DBG_+'.5.0.dll';
-    { @exclude }
-    ALLEGRO_ACODEC_LIB_NAME     = 'allegro_acodec'+_DBG_+'.5.0.dll';
-    { @exclude }
-    ALLEGRO_AUDIO_LIB_NAME      = 'allegro_audio'+_DBG_+'.5.0.dll';
-    { @exclude }
-    ALLEGRO_COLOR_LIB_NAME      = 'allegro_color'+_DBG_+'.5.0.dll';
-    { @exclude }
-    ALLEGRO_FONT_LIB_NAME       = 'allegro_font'+_DBG_+'.5.0.dll';
-    { @exclude }
-    ALLEGRO_IMAGE_LIB_NAME      = 'allegro_image'+_DBG_+'.5.0.dll';
-    { @exclude }
-    ALLEGRO_MAIN_LIB_NAME       = 'allegro_main'+_DBG_+'.5.0.dll';
-    { @exclude }
-    ALLEGRO_NATIVE_DLG_LIB_NAME = 'allegro_dialog'+_DBG_+'.5.0.dll';
-    { @exclude }
-    ALLEGRO_PRIMITIVES_LIB_NAME = 'allegro_primitives'+_DBG_+'.5.0.dll';
-    { @exclude }
-    ALLEGRO_TTF_LIB_NAME        = 'allegro_primitives'+_DBG_+'.5.0.dll';
-  {$ENDIF}
+  {$INCLUDE al5_win.inc}
 {$ENDIF}
 
 

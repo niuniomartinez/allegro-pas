@@ -1,0 +1,19 @@
+# Makefile generic - Sources
+
+#
+# Builds the list of source files and object files for each bynary type.
+#
+
+# Allegro sources
+TAL5 = $(wildcard $(LIBDIR)*.pas)
+ifeq ($(strip $(TAL5)),)
+$(error ERROR: No source code found at $(LIBDIR))
+endif
+LIBFILES = $(TAL5)
+
+# For the examples.
+TEXM = $(wildcard $(EXMDIR)ex*.pas)
+ifeq ($(strip $(TEXM)),)
+$(error ERROR: No source code found at $(EXMDIR))
+endif
+EXMFILES = $(addprefix $(EXMDIR),$(addsuffix $(BINSUF), $(basename $(notdir $(TEXM) ) ) ) )

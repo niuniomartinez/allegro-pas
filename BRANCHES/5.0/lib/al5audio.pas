@@ -24,7 +24,7 @@ UNIT al5audio;
  *)
 
 
-{$include allegro.cfg}
+{$include allegro5.cfg}
 
 INTERFACE
 
@@ -32,6 +32,11 @@ INTERFACE
     Allegro5, al5base;
 
   CONST
+  (* Builds library name. *)
+    { @exclude }
+    ALLEGRO_AUDIO_LIB_NAME = _A5_LIB_PREFIX_+'allegro_audio'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
+
+
   (* Internal, used to communicate with acodec.
    * Must be in 512 <= n < 1024 *)
     _KCM_STREAM_FEEDER_QUIT_EVENT_TYPE = 512;

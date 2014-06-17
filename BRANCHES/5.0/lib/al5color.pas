@@ -22,13 +22,17 @@ UNIT al5color;
     distribution.
  *)
 
-{$include allegro.cfg}
+{$include allegro5.cfg}
 
 INTERFACE
 
   USES
     Allegro5, al5base;
 
+  CONST
+  (* Builds library name. *)
+    { @exclude }
+    ALLEGRO_COLOR_LIB_NAME = _A5_LIB_PREFIX_+'allegro_color'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
 
   FUNCTION al_get_allegro_color_version: AL_UINT32; CDECL;
     EXTERNAL ALLEGRO_COLOR_LIB_NAME;

@@ -1,12 +1,17 @@
 UNIT Allegro5;
 (* Wrapper of the Allegro 5 core library. *)
 
-{$include allegro.cfg}
+{$include allegro5.cfg}
 
 INTERFACE
 
   USES
     al5base;
+
+  CONST
+  (* Builds library name. *)
+    { @exclude }
+    ALLEGRO_LIB_NAME = _A5_LIB_PREFIX_+'allegro'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
 
 (* The code is distributed in sections.  Each section wraps with a header file (approx.). *)
 
@@ -23,7 +28,7 @@ INTERFACE
   (* Minor version of Allegro. *)
     ALLEGRO_SUB_VERSION  =   0;
   (* Revision number of Allegro. *)
-    ALLEGRO_WIP_VERSION  =   6;
+    ALLEGRO_WIP_VERSION  =   10;
   (* Not sure we need it, but since ALLEGRO_VERSION_STR contains it:
      0 = SVN
      1 = first release
@@ -42,7 +47,6 @@ INTERFACE
     );
   (* Allegro PI. *)
     ALLEGRO_PI = 3.14159265358979323846;
-
 
   TYPE
   (* Description of user main function for al_run_main. *)
@@ -248,7 +252,7 @@ program start.)
    *)
     ALLEGRO_PIXEL_FORMAT = (
     { @exclude }
-      ALLEGRO_PIXEL_FORMAT_ANY := 0,
+      ALLEGRO_PIXEL_FORMAT_ANY = 0,
     { @exclude }
       ALLEGRO_PIXEL_FORMAT_ANY_NO_ALPHA,
     { @exclude }
@@ -352,13 +356,13 @@ program start.)
   (* Blending modes.  Documented at al_set_blender. *)
     ALLEGRO_BLEND_MODE = (
     { @exclude }
-      ALLEGRO_ZERO := 0,
+      ALLEGRO_ZERO = 0,
     { @exclude }
-      ALLEGRO_ONE := 1,
+      ALLEGRO_ONE = 1,
     { @exclude }
-      ALLEGRO_ALPHA := 2,
+      ALLEGRO_ALPHA = 2,
     { @exclude }
-      ALLEGRO_INVERSE_ALPHA := 3
+      ALLEGRO_INVERSE_ALPHA = 3
     );
 
 
@@ -366,11 +370,11 @@ program start.)
   (* Blending modes.  Documented at al_set_blender. *)
     ALLEGRO_BLEND_OPERATIONS = (
     { @exclude }
-      ALLEGRO_ADD := 0,
+      ALLEGRO_ADD = 0,
     { @exclude }
-      ALLEGRO_SRC_MINUS_DEST := 1,
+      ALLEGRO_SRC_MINUS_DEST = 1,
     { @exclude }
-      ALLEGRO_DEST_MINUS_SRC := 2,
+      ALLEGRO_DEST_MINUS_SRC = 2,
     { @exclude }
       ALLEGRO_NUM_BLEND_OPERATIONS
     );
