@@ -26,12 +26,17 @@ UNIT al5image;
     distribution.
  *)
 
-{$include allegro.cfg}
+{$include allegro5.cfg}
 
 INTERFACE
 
   USES
     al5base;
+
+  CONST
+  (* Builds library name. *)
+    { @exclude }
+    ALLEGRO_IMAGE_LIB_NAME = _A5_LIB_PREFIX_+'allegro_image'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
 
 (* Initializes the image addon. *)
   FUNCTION al_init_image_addon: AL_BOOL; CDECL;

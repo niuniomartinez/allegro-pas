@@ -2,12 +2,17 @@ UNIT al5nativedlg;
 (*<See readme.txt for copyright information.
  *)
 
-{$include allegro.cfg}
+{$include allegro5.cfg}
 
 INTERFACE
 
   USES
     allegro5, al5base;
+
+  CONST
+  (* Builds library name. *)
+    { @exclude }
+    ALLEGRO_NATIVE_DLG_LIB_NAME = _A5_LIB_PREFIX_+'allegro_dialog'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
 
   TYPE
     ALLEGRO_FILECHOOSERptr = AL_POINTER;

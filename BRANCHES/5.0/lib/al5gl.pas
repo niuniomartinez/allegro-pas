@@ -22,7 +22,7 @@ UNIT al5gl;
     distribution.
  *)
 
-{$include allegro.cfg}
+{$include allegro5.cfg}
 
 INTERFACE
 

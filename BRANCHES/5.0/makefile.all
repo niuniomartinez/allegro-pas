@@ -1,0 +1,56 @@
+# Makefile generic - build rules
+
+.PHONY: all
+
+# Main objective: the whole project
+all: adbanner examples
+	@echo "Finished $(PROJECT)"
+	@echo "To create the documentation, run 'make' from the docs directory"
+
+examples: $(EXMFILES)
+	@echo "Finished all examples."
+
+# Executables
+$(EXMDIR)%$(BINSUF): $(EXMDIR)%.pas
+	fpc $(FLAGS) $(EFLAGS) -Fu$(LIBDIR)* -FU$(OBJDIR) $< -o$@
+	@echo Example $@ ready!
+
+# Returns some variables.
+status: adbanner
+	@echo "-----------------"
+	@echo "- Status Report -"
+	@echo "-----------------"
+	@echo "  Project : $(PROJECT)"
+	@echo "  Platform : $(PLATFORM)"
+	@echo "  Compiler options : $(FLAGS) $(EFLAGS)"
+	@echo "  Library units : $(LIBFILES)"
+	@echo "  Examples : $(EXMFILES)"
+
+# Cleans everything.
+veryclean: clean
+	$(DELETE) $(EXMFILES)
+
+# Clean temporary files.
+clean:
+	$(DELETE) $(OBJDIR)*$(OBJSUF)
+	$(DELETE) $(OBJDIR)*.ppu
+	$(DELETE) $(OBJDIR)*.a
+
+# Show all options.
+help: adbanner
+	@echo "--------"
+	@echo "- Help -"
+	@echo "--------"
+	@echo "make all            } Builds the whole project."
+	@echo "make examples       } Builds the examples only."
+	@echo "make clean          } Deletes temporary files."
+	@echo "make veryclean      } Deletes all builded files."
+	@echo "make status         } Shows some configuration variables."
+	@echo "make help           } Shows this help."
+
+# Some info.
+adbanner:
+	@echo "$(PROJECT)"
+	@echo "(c) Guillermo Martínez J. 2012-2014"
+	@echo "http://allegro-pas.sourceforge.net"
+	@echo
