@@ -1301,7 +1301,7 @@ BEGIN
       y : AL_INT;
       width : AL_INT;
       height : AL_INT;
-      orientation : AL_INT;
+      orientation : ALLEGRO_DISPLAY_ORIENTATION;
     END;
 
     ALLEGRO_JOYSTICK_EVENT = RECORD
