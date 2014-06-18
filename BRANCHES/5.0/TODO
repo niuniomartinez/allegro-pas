@@ -1,5 +1,10 @@
 In no special order
 
+  * Sometimes it doesn't load samples.
+    - It doesn't load on Fedora 64bit, but does on Ubuntu 32bit.
+    - Suspect it's a problem with the funcion in C, similar than the problem
+      with 3D rendering on Allegro 4.
+
   * Work to merge Gregor A. Cieslak's fork
     (https://github.com/Soldat/allegro-pas5-test)
 

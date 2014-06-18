@@ -186,10 +186,10 @@ CONST
       BEGIN
          FOR p := 0 TO NUM_PITCH - 1 DO
          BEGIN
-            Name := HAIKU_DATA + Base[t] + '_' + IntToStr (p) + '.ogg';
+            Name := HAIKU_DATA + Format ('%s_%d.ogg', [Base[t], p]);
             ElementSamples[t][p] := al_load_sample (Name);
             IF ElementSamples[t][p] = NIL THEN
-               AbortExample ('Error loading ' + Name + '.');
+               AbortExample ('Error loading "' + Name + '".');
          END;
       END;
       SelectSample := al_load_sample (HAIKU_DATA+'select.ogg');
@@ -1017,8 +1017,8 @@ BEGIN
       AbortExample ('Error initialising Allegro.');
    IF NOT al_install_audio OR NOT al_reserve_samples (128) THEN
       AbortExample ('Error initialising audio.');
-   al_init_acodec_addon();
-   al_init_image_addon();
+   al_init_acodec_addon;
+   al_init_image_addon;
 
    al_set_new_bitmap_flags (ALLEGRO_MIN_LINEAR OR ALLEGRO_MAG_LINEAR);
 
