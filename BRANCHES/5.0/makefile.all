@@ -11,8 +11,8 @@ examples: $(EXMFILES)
 	@echo "Finished all examples."
 
 # Executables
-$(EXMDIR)%$(BINSUF): $(EXMDIR)%.pas
-	fpc $(FLAGS) $(EFLAGS) -Fu$(LIBDIR)* -FU$(OBJDIR) $< -o$@
+$(EXMDIR)%$(BINSUF): $(EXMDIR)%.pas $(LIBFILES)
+	fpc $(FLAGS) $(EFLAGS) -Fu$(LIBDIR) -FU$(OBJDIR) $< -o$@
 	@echo Example $@ ready!
 
 # Returns some variables.
