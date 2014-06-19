@@ -10,39 +10,22 @@ USES
 
 VAR
   FileName: STRING;
-  Display: ALLEGRO_DISPLAYptr;
   MemBitmap, Bitmap: ALLEGRO_BITMAPptr;
   Timer: ALLEGRO_TIMERptr;
-  Queue: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
-
   Redraw, EndLoop: BOOLEAN;
   Zoom, T0, T1: DOUBLE;
 
-(* Set-up the program. *)
-  PROCEDURE InitProgram;
-  BEGIN
-    IF NOT al_init THEN AbortExample ('Could not init Allegro.');
-    OpenLog;
-
-    IF ParamCount > 0 THEN
-      FileName := ParamStr (1)
-    ELSE
-      FileName := 'data/mysha.pcx';
-    IF ParamCount > 2 THEN al_set_new_display_adapter (StrToInt (ParamStr(2)));
-
-    al_install_mouse;
-    al_install_keyboard;
-    al_init_image_addon;
-    Display := al_create_display (640, 480);
-    IF Display = NIL THEN AbortExample ('Error creating display');
-    al_set_window_title (Display, FileName);
-  END;
-
-
-
 BEGIN
-  InitProgram;
+  IF ParamCount > 0 THEN
+    FileName := ParamStr (1)
+  ELSE
+    FileName := 'data/mysha.pcx';
+  IF ParamCount > 2 THEN al_set_new_display_adapter (StrToInt (ParamStr(2)));
+
+  InitProgram (FileName);
+  al_init_image_addon;
+  OpenLog;
 
   Redraw := TRUE;
   Zoom := 1;
@@ -68,15 +51,12 @@ BEGIN
   IF Bitmap = NIL THEN Bitmap := MemBitmap;
 
   Timer := al_create_timer (1.0 / 30);
-  Queue := al_create_event_queue;
-  al_register_event_source (Queue, al_get_keyboard_event_source ());
-  al_register_event_source (Queue, al_get_display_event_source (Display));
-  al_register_event_source (Queue, al_get_timer_event_source (Timer));
+  al_register_event_source (EventQueue, al_get_timer_event_source (Timer));
   al_start_timer (Timer);
 
   EndLoop := FALSE;
   REPEAT
-    al_wait_for_event (Queue, Event);
+    al_wait_for_event (EventQueue, Event);
     CASE Event._type OF
     ALLEGRO_EVENT_DISPLAY_ORIENTATION:
       CASE Event.display.orientation OF
@@ -112,7 +92,7 @@ BEGIN
       Redraw := TRUE;
     END;
             
-    IF Redraw AND  al_is_event_queue_empty (Queue) THEN
+    IF Redraw AND  al_is_event_queue_empty (EventQueue) THEN
     BEGIN
       Redraw := FALSE;
       al_clear_to_color (al_map_rgb_f (0, 0, 0));
