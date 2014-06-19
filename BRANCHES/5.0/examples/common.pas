@@ -6,17 +6,6 @@ INTERFACE
   USES
     allegro5;
 
-  VAR
-  (* Display. *)
-    Display: ALLEGRO_DISPLAYptr;
-  (* Events queue. *)
-    EventQueue: ALLEGRO_EVENT_QUEUEptr;
-
-(* Initializes Allegro and creates a display.
-
-   It also initializes keyboard, mouse and events. *)
-  PROCEDURE InitProgram (CONST Title: STRING);
-
 (* Exits program with error. *)
   PROCEDURE AbortExample (CONST Message: STRING);
 
@@ -34,29 +23,8 @@ IMPLEMENTATION
 
   USES
     al5nativedlg;
-
   VAR
     TextLog: ALLEGRO_TEXTLOGptr;
-
-(* Initializes Allegro and creates a display.
-
-   It also initializes keyboard, mouse and events. *)
-  PROCEDURE InitProgram (CONST Title: STRING);
-  BEGIN
-    IF NOT al_init THEN AbortExample ('Could not init Allegro.');
-
-    al_install_mouse;
-    al_install_keyboard;
-    Display := al_create_display (640, 480);
-    IF Display = NIL THEN AbortExample ('Error creating display');
-    al_set_window_title (Display, Title);
-
-    EventQueue := al_create_event_queue;
-    al_register_event_source (EventQueue, al_get_mouse_event_source);
-    al_register_event_source (EventQueue, al_get_keyboard_event_source);
-    al_register_event_source (EventQueue, al_get_display_event_source (Display));
-  END;
-
 
 
 (* Exits program with error. *)
@@ -73,8 +41,9 @@ IMPLEMENTATION
       al_show_native_message_box (Display, 'Error', 'Cannot run example', Message, '', 0);
     END
     //ELSE
-     // WriteLn (stderr, Message);
-    ;HALT (1);
+     // WriteLn (stderr, Message)
+        ;
+    HALT (1);
   END;
 
 
