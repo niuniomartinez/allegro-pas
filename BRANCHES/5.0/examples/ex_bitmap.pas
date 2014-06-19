@@ -7,25 +7,34 @@ USES
   Common,
   allegro5, al5image,
   sysutils;
-
 VAR
   FileName: STRING;
   MemBitmap, Bitmap: ALLEGRO_BITMAPptr;
   Timer: ALLEGRO_TIMERptr;
+  Display: ALLEGRO_DISPLAYptr;
+  EventQueue: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
   Redraw, EndLoop: BOOLEAN;
   Zoom, T0, T1: DOUBLE;
-
 BEGIN
   IF ParamCount > 0 THEN
     FileName := ParamStr (1)
   ELSE
     FileName := 'data/mysha.pcx';
+
+  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+
+  OpenLog;
+
   IF ParamCount > 2 THEN al_set_new_display_adapter (StrToInt (ParamStr(2)));
 
-  InitProgram (FileName);
+  al_install_keyboard;
   al_init_image_addon;
-  OpenLog;
+
+  Display := al_create_display (640, 480);
+  IF Display = NIL THEN AbortExample ('Could not create display');
+
+  al_set_window_title (Display, FileName);
 
   Redraw := TRUE;
   Zoom := 1;
@@ -51,6 +60,9 @@ BEGIN
   IF Bitmap = NIL THEN Bitmap := MemBitmap;
 
   Timer := al_create_timer (1.0 / 30);
+  EventQueue := al_create_event_queue;
+  al_register_event_source (EventQueue, al_get_keyboard_event_source);
+  al_register_event_source (EventQueue, al_get_display_event_source (Display));
   al_register_event_source (EventQueue, al_get_timer_event_source (Timer));
   al_start_timer (Timer);
 
@@ -106,6 +118,7 @@ BEGIN
   UNTIL EndLoop;
 
   al_destroy_bitmap (Bitmap);
+
   CloseLog (FALSE);
 END.
 

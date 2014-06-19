@@ -61,7 +61,7 @@ PROGRAM ex_font;
 	    x, y, w, h,
 	    x, y, 0
 	  );
-	  al_update_display_region(x, y, w, h);
+	  al_update_display_region (x, y, w, h);
 	END;
     UNTIL EndLoop;
     al_destroy_bitmap (ScreenClone);
@@ -81,28 +81,23 @@ VAR
     $20AC, $20AC  { Euro }
   );
 BEGIN
-  IF NOT al_init THEN
-    AbortExample ('Could not init Allegro.');
+  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
   al_init_image_addon;
   al_init_font_addon;
 
   al_set_new_display_option (ALLEGRO_SINGLE_BUFFER, 0, ALLEGRO_SUGGEST);
   al_set_new_display_flags (ALLEGRO_GENERATE_EXPOSE_EVENTS);
   Display := al_create_display (320, 200);
-  IF Display = NIL THEN
-    AbortExample ('Failed to create display.');
+  IF Display = NIL THEN AbortExample ('Failed to create display.');
 
   Bitmap := al_load_bitmap ('data/mysha.pcx');
-  IF Bitmap = NIL THEN
-    AbortExample ('Failed to load misha.pcx.');
+  IF Bitmap = NIL THEN AbortExample ('Failed to load misha.pcx.');
 
   Font := al_load_font ('data/bmpfont.tga', 0, 0);
-  IF Font = NIL THEN
-    AbortExample ('Failed to load bmpfont.tga.');
+  IF Font = NIL THEN AbortExample ('Failed to load bmpfont.tga.');
 
   FontBitmap := al_load_bitmap ('data/a4_font.tga');
-  IF FontBitmap = NIL THEN
-    AbortExample ('Failed to load a4_font.tga.');
+  IF FontBitmap = NIL THEN AbortExample ('Failed to load a4_font.tga.');
 
   A4Font := al_grab_font_from_bitmap (FontBitmap, 4, Ranges);
 

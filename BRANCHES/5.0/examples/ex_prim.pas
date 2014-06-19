@@ -82,7 +82,7 @@ PROGRAM ex_prim;
   VAR
     vtx: ARRAY [1..4] OF CUSTOM_VERTEX;
     Decl: ALLEGRO_VERTEX_DECLptr;
-    Ndx, x, y: INTEGER;
+    Ndx, ii, x, y: INTEGER;
   CONST
      Elems: ARRAY [1..4] OF ALLEGRO_VERTEX_ELEMENT = (
      { NOTE: There's no way to get the field offset at runtime,
@@ -99,8 +99,9 @@ PROGRAM ex_prim;
 	Decl := al_create_vertex_decl (@Elems[LOW (Elems)], sizeof (CUSTOM_VERTEX));
 	FOR Ndx := LOW (vtx) TO HIGH (vtx) DO
 	BEGIN
-	  x := TRUNC (200 * cos (Ndx DIV 4 * 2 * ALLEGRO_PI));
-	  y := TRUNC (200 * sin (Ndx DIV 4 * 2 * ALLEGRO_PI));
+          ii := Ndx - 1;
+	  x := TRUNC (200 * cos (ii DIV 4 * 2 * ALLEGRO_PI));
+	  y := TRUNC (200 * sin (ii DIV 4 * 2 * ALLEGRO_PI));
 	  vtx[Ndx].x := x; vtx[Ndx].y := y;
 	  vtx[Ndx].u := 64 * x DIV 100; vtx[Ndx].v := 64 * y DIV 100;
 	  vtx[Ndx].Color := al_map_rgba_f (1, 1, 1, 1);
@@ -129,21 +130,22 @@ PROGRAM ex_prim;
   PROCEDURE TexturePrimitives (Mode: TMODE);
   VAR
     vtx, vtx2: ARRAY [1..13] OF ALLEGRO_VERTEX;
-    Ndx, x, y: INTEGER;
+    Ndx, ii, x, y: INTEGER;
     Color: ALLEGRO_COLOR;
   BEGIN
     CASE Mode OF
     INIT:
       FOR Ndx := LOW (vtx) TO HIGH (vtx) DO
       BEGIN
-	x := TRUNC (200 * cos (Ndx DIV 13 * 2 * ALLEGRO_PI));
-	y := TRUNC (200 * sin (Ndx DIV 13 * 2 * ALLEGRO_PI));
-	Color := al_map_rgb ((Ndx + 1) MOD 3 * 64, (Ndx + 2) MOD 3 * 64, Ndx MOD 3 * 64);
+        ii := Ndx - 1;
+	x := TRUNC (200 * cos (ii DIV 13 * 2 * ALLEGRO_PI));
+	y := TRUNC (200 * sin (ii DIV 13 * 2 * ALLEGRO_PI));
+	Color := al_map_rgb ((ii + 1) MOD 3 * 64, (ii + 2) MOD 3 * 64, ii MOD 3 * 64);
 	vtx[Ndx].x := x; vtx[Ndx].y := y; vtx[Ndx].z := 0;
 	vtx2[Ndx].x := 0.1 * x; vtx2[Ndx].y := 0.1 * y;
 	vtx[Ndx].u := 64 * x DIV 100; vtx[Ndx].v := 64 * y DIV 100;
 	vtx2[Ndx].u := 64 * x DIV 100; vtx2[Ndx].v := 64 * y DIV 100;
-	IF Ndx < 10 THEN
+	IF ii < 10 THEN
 	  vtx[Ndx].Color := al_map_rgba_f (1, 1, 1, 1)
 	ELSE
 	  vtx[Ndx].Color := Color;
@@ -175,30 +177,31 @@ PROGRAM ex_prim;
   PROCEDURE FilledTexturePrimitives (Mode: TMODE);
   VAR
     vtx: ARRAY [1..21] OF ALLEGRO_VERTEX;
-    Ndx, x, y: INTEGER;
+    Ndx, ii, x, y: INTEGER;
     Color: ALLEGRO_COLOR;
   BEGIN
     CASE Mode OF
     INIT:
       FOR Ndx := LOW (vtx) TO HIGH (vtx) DO
       BEGIN
-	IF Ndx MOD 2 = 0 THEN
+        ii := Ndx - 1;
+	IF ii MOD 2 = 0 THEN
 	BEGIN
-	  x := TRUNC (150 * cos (Ndx DIV 20 * 2 * ALLEGRO_PI));
-	  y := TRUNC (150 * sin (Ndx DIV 20 * 2 * ALLEGRO_PI));
+	  x := TRUNC (150 * cos (ii DIV 20 * 2 * ALLEGRO_PI));
+	  y := TRUNC (150 * sin (ii DIV 20 * 2 * ALLEGRO_PI));
 	 END
 	 ELSE BEGIN
-	  x := TRUNC (200 * cos (Ndx DIV 20 * 2 * ALLEGRO_PI));
-	  y := TRUNC (200 * sin (Ndx DIV 20 * 2 * ALLEGRO_PI));
+	  x := TRUNC (200 * cos (ii DIV 20 * 2 * ALLEGRO_PI));
+	  y := TRUNC (200 * sin (ii DIV 20 * 2 * ALLEGRO_PI));
 	END;
-	IF Ndx = 0 THEN
+	IF ii = 0 THEN
 	BEGIN
 	  x := 0; y := 0;
 	END;
-	Color := al_map_rgb ((7 * Ndx + 1) MOD 3 * 64, (2 * Ndx + 2) MOD 3 * 64, Ndx MOD 3 * 64);
+	Color := al_map_rgb ((7 * ii + 1) MOD 3 * 64, (2 * ii + 2) MOD 3 * 64, ii MOD 3 * 64);
 	vtx[Ndx].x := x; vtx[Ndx].y := y; vtx[Ndx].z := 0;
 	vtx[Ndx].u := 64 * x DIV 100; vtx[Ndx].v := 64 * y DIV 100;
-	IF Ndx < 10 THEN
+	IF ii < 10 THEN
 	  vtx[Ndx].Color := al_map_rgba_f (1, 1, 1, 1)
 	ELSE
 	  vtx[Ndx].Color := Color;
@@ -228,30 +231,31 @@ PROGRAM ex_prim;
   PROCEDURE FilledPrimitives (Mode: TMODE);
   VAR
     vtx: ARRAY [1..21] OF ALLEGRO_VERTEX;
-    Ndx, x, y: INTEGER;
+    Ndx, ii,x, y: INTEGER;
     Color: ALLEGRO_COLOR;
   BEGIN
     CASE Mode OF
     INIT:
       FOR Ndx := LOW (vtx) TO HIGH (vtx) DO
       BEGIN
-	IF Ndx MOD 2 = 0 THEN
+        ii := Ndx - 1;
+	IF ii MOD 2 = 0 THEN
 	BEGIN
-	  x := TRUNC (150 * cos (Ndx DIV 20 * 2 * ALLEGRO_PI));
-	  y := TRUNC (150 * sin (Ndx DIV 20 * 2 * ALLEGRO_PI));
+	  x := TRUNC (150 * cos (ii DIV 20 * 2 * ALLEGRO_PI));
+	  y := TRUNC (150 * sin (ii DIV 20 * 2 * ALLEGRO_PI));
 	 END
 	 ELSE BEGIN
-	  x := TRUNC (200 * cos (Ndx DIV 20 * 2 * ALLEGRO_PI));
-	  y := TRUNC (200 * sin (Ndx DIV 20 * 2 * ALLEGRO_PI));
+	  x := TRUNC (200 * cos (ii DIV 20 * 2 * ALLEGRO_PI));
+	  y := TRUNC (200 * sin (ii DIV 20 * 2 * ALLEGRO_PI));
 	END;
-	IF Ndx = 0 THEN
+	IF ii = 0 THEN
 	BEGIN
 	  x := 0; y := 0;
 	END;
-	Color := al_map_rgb ((7 * Ndx + 1) MOD 3 * 64, (2 * Ndx + 2) MOD 3 * 64, Ndx MOD 3 * 64);
+	Color := al_map_rgb ((7 * ii + 1) MOD 3 * 64, (2 * ii + 2) MOD 3 * 64, ii MOD 3 * 64);
 	vtx[Ndx].x := x; vtx[Ndx].y := y; vtx[Ndx].z := 0;
 	vtx[Ndx].u := 64 * x DIV 100; vtx[Ndx].v := 64 * y DIV 100;
-	IF Ndx < 10 THEN
+	IF ii < 10 THEN
 	  vtx[Ndx].Color := al_map_rgba_f (1, 1, 1, 1)
 	ELSE
 	  vtx[Ndx].Color := Color;
@@ -556,15 +560,13 @@ VAR
 
 BEGIN
 { Initialize Allegro 5 and addons }
-  IF NOT al_init THEN
-    AbortExample ('Could not init Allegro.');
+  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
   al_init_image_addon;
   al_init_font_addon;
   al_init_primitives_addon;
 { Create a window to display things on: 640x480 pixels }
   Display := al_create_display (ScreenW, ScreenH);
-  IF Display = NIL THEN
-      AbortExample ('Error creating display.');
+  IF Display = NIL THEN AbortExample ('Error creating display.');
 { Install input handler }
   IF NOT al_install_keyboard THEN
     AbortExample ('Error installing keyboard.');
@@ -572,13 +574,11 @@ BEGIN
     AbortExample ('Error installing mouse.');
 { Load resources }
   Font := al_load_font ('data/fixed_font.tga', 0, 0);
-  IF Font = NIL THEN
-    AbortExample ('Error loading "data/fixed_font.tga"');
+  IF Font = NIL THEN AbortExample ('Error loading "data/fixed_font.tga"');
   SolidWhite := al_map_rgba_f (1, 1, 1, 1);
   Bkg := al_load_bitmap ('data/bkg.png');
   Texture := al_load_bitmap ('data/texture.tga');
-  IF Texture = NIL THEN
-    AbortExample ('Error loading "data/texture.tga"');
+  IF Texture = NIL THEN AbortExample ('Error loading "data/texture.tga"');
 { Make and set some color to draw with }
   White := al_map_rgba_f (1.0, 1.0, 1.0, 1.0);
   Black := al_map_rgba_f (0.0, 0.0, 0.0, 1.0);
@@ -648,6 +648,7 @@ BEGIN
       BEGIN
 	StartTime := al_get_time;
 	GameTime := GameTime + FixedTimestep;
+IF Screens[CurScreen] <> NIL THEN
 	Screens[CurScreen](LOGIC);
 	WHILE al_get_next_event (Queue, KeyEvent) DO
 	BEGIN
@@ -725,6 +726,7 @@ BEGIN
       END;
       IF Clip THEN
 	al_set_clipping_rectangle (ScreenW DIV 2, ScreenH DIV 2, ScreenW DIV 2, ScreenH DIV 2);
+IF Screens[CurScreen] <> NIL THEN
       Screens[CurScreen] (DRAW);
       al_set_clipping_rectangle (0, 0, ScreenW, ScreenH);
       IF Soft THEN

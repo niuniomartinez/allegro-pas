@@ -2,19 +2,18 @@ PROGRAM ex_blit;
 (*
  * An example demonstrating different blending modes.
  *)
-  USES
-    common,
-    Allegro5, al5font, al5image, al5color,
-    math, sysutils;
-
-  VAR
-    Pattern: ALLEGRO_BITMAPptr;
-    Font: ALLEGRO_FONTptr;
-    Queue: ALLEGRO_EVENT_QUEUEptr;
-    Background, TextClr, White, Black, Red: ALLEGRO_COLOR;
-    Timer, Counter: ARRAY [1..4] OF DOUBLE;
-    FPS: INTEGER;
-    TextX, TextY: SINGLE;
+USES
+  Common,
+  Allegro5, al5font, al5image, al5color,
+  math, sysutils;
+VAR
+  Pattern: ALLEGRO_BITMAPptr;
+  Font: ALLEGRO_FONTptr;
+  EventQueue: ALLEGRO_EVENT_QUEUEptr;
+  Background, TextClr, Black, Red: ALLEGRO_COLOR;
+  Timer, Counter: ARRAY [1..4] OF DOUBLE;
+  FPS: INTEGER;
+  TextX, TextY: SINGLE;
 
 
 
@@ -25,7 +24,6 @@ PROGRAM ex_blit;
     State: ALLEGRO_STATE;
     Lock: ALLEGRO_LOCKED_REGIONptr;
     Pattern: ALLEGRO_BITMAPptr;
-    Colour: ALLEGRO_COLOR;
   BEGIN
     mx := w * 0.5;
     my := h * 0.5;
@@ -42,8 +40,7 @@ PROGRAM ex_blit;
 	sat := power (1 - 1 / (1 + d * 0.1), 5);
 	hue := 3 * a * 180 / ALLEGRO_PI;
 	hue := (hue / 360 - floor (hue / 360)) * 360;
-	Colour := al_color_hsv (hue, sat, 1);
-	al_put_pixel (i, j, Colour);
+	al_put_pixel (i, j, al_color_hsv (hue, sat, 1));
       END;
     END;
     al_put_pixel (0, 0, Black);
@@ -99,10 +96,8 @@ PROGRAM ex_blit;
 
   FUNCTION GetFPS  (Ndx: INTEGER): SINGLE;
   BEGIN
-    IF Timer[Ndx] = 0 THEN
-      GetFPS := 0
-    ELSE
-      GetFPS := Counter[Ndx] / Timer[Ndx];
+    IF Timer[Ndx] = 0 THEN EXIT (0.0);
+    GetFPS := Counter[Ndx] / Timer[Ndx];
   END;
 
 
@@ -110,10 +105,10 @@ PROGRAM ex_blit;
   PROCEDURE Draw;
   VAR
     x, y: SINGLE;
-    iw, ih, Size, Ndx, FormatLock: INTEGER;
+    iw, ih {, FormatLock }: INTEGER;
     Screen, Temp: ALLEGRO_BITMAPptr;
-    Lock: ALLEGRO_LOCKED_REGIONptr;
-    Data: POINTER;
+    {  Lock: ALLEGRO_LOCKED_REGIONptr;
+    Data: POINTER; }
   BEGIN
     iw := al_get_bitmap_width (Pattern);
     ih := al_get_bitmap_height (Pattern);
@@ -125,7 +120,6 @@ PROGRAM ex_blit;
 
   { Test 1. }
   { /* Disabled: drawing to same bitmap is not supported. }
-    Print ('Screen -> Screen (disabled)');
   (*
     Print ('Screen -> Screen (%.1f fps)', get_fps(0));
     get_xy(&x, &y);
@@ -134,8 +128,8 @@ PROGRAM ex_blit;
     start_timer(0);
     al_draw_bitmap_region(screen, x, y, iw, ih, x + 8 + iw, y, 0);
     stop_timer(0);
-   *)
     SetXY (x, y + ih);
+   *)
 
   { Test 2. }
     Print (Format ('Screen -> Bitmap -> Screen (%.1f fps)', [GetFPS (1)]));
@@ -176,7 +170,6 @@ PROGRAM ex_blit;
     al_set_new_bitmap_flags (ALLEGRO_VIDEO_BITMAP);
 
 
-    Print ('Screen -> Locked -> Screen (disabled)');
 (*
   Disabled because the "memcpy".  I tried it but I never used 'memcpy' on C nor
   pointers on Pascal so I don't know how to translate it.
@@ -205,8 +198,8 @@ PROGRAM ex_blit;
    al_unlock_bitmap(Screen);
    free(data);
    StopTimer (3);
- *)
     SetXY (x, y + ih);
+ *)
   END;
 
 
@@ -227,12 +220,12 @@ PROGRAM ex_blit;
     NeedDraw := TRUE;
 
     REPEAT
-      IF NeedDraw AND al_is_event_queue_empty (Queue) THEN
+      IF NeedDraw AND al_is_event_queue_empty (EventQueue) THEN
       BEGIN
 	Tick;
 	NeedDraw := FALSE;
       END;
-      al_wait_for_event (Queue, Event);
+      al_wait_for_event (EventQueue, Event);
       CASE Event._type OF
 	ALLEGRO_EVENT_DISPLAY_CLOSE:
 	  EXIT;
@@ -255,7 +248,6 @@ PROGRAM ex_blit;
       AbortExample ('data/fixed_font.tga not found');
     Background := al_color_name ('beige');
     TextClr := al_color_name ('black');
-    White := al_color_name ('white');
     Black := al_color_name ('black');
     Red := al_map_rgba_f (1, 0, 0, 1);
     Pattern := ExampleBitmap (100, 100);
@@ -267,25 +259,26 @@ VAR
   Display: ALLEGRO_DISPLAYptr;
   TheTimer: ALLEGRO_TIMERptr;
 BEGIN
-  IF NOT al_init THEN
-    AbortExample ('Could not init Allegro.');
+  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+
   al_install_keyboard;
-  al_install_mouse;
   al_init_image_addon;
   al_init_font_addon;
+
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN
-    AbortExample ('Error creating display');
+  IF Display = NIL THEN AbortExample ('Could not create display');
+
   Init;
+
   TheTimer := al_create_timer (1 / FPS);
-  Queue := al_create_event_queue;
-  al_register_event_source (Queue, al_get_keyboard_event_source);
-  al_register_event_source (Queue, al_get_mouse_event_source);
-  al_register_event_source (Queue, al_get_display_event_source (Display));
-  al_register_event_source (Queue, al_get_timer_event_source (TheTimer));
+
+  EventQueue := al_create_event_queue;
+  al_register_event_source (EventQueue, al_get_keyboard_event_source);
+  al_register_event_source (EventQueue, al_get_display_event_source (Display));
+  al_register_event_source (EventQueue, al_get_timer_event_source (TheTimer));
+
   al_start_timer (TheTimer);
   Run;
-  al_destroy_event_queue (Queue);
-{ Don't know why it fails at exit.  But it doesn't fails if you press key "Esc"
-  before one second of execution (?). }
+
+  al_destroy_event_queue (EventQueue);
 END.

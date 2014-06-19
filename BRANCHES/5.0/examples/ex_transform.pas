@@ -1,22 +1,22 @@
 PROGRAM ex_transform;
 
-  USES
-    common,
-    Allegro5, al5image, al5font, al5primitives;
+USES
+  common,
+  Allegro5, al5image, al5font, al5primitives;
 
-  VAR
-    Filename: STRING;
-    Display: ALLEGRO_DISPLAYptr;
-    Buffer, Bitmap, Subbitmap, BufferSubbitmap, Overlay: ALLEGRO_BITMAPptr;
-    Timer: ALLEGRO_TIMERptr;
-    Queue: ALLEGRO_EVENT_QUEUEptr;
-    Event: ALLEGRO_EVENT;
-    Transform, Identity: ALLEGRO_TRANSFORM;
-    Software, Redraw, Blend, UseSubbitmap, EndLoop: BOOLEAN;
-    w, h: INTEGER;
-    Font, SoftFont: ALLEGRO_FONTptr;
-    t: SINGLE;
-    Tint: ALLEGRO_COLOR;
+VAR
+  Filename: STRING;
+  Display: ALLEGRO_DISPLAYptr;
+  Buffer, Bitmap, Subbitmap, BufferSubbitmap, Overlay: ALLEGRO_BITMAPptr;
+  Timer: ALLEGRO_TIMERptr;
+  Queue: ALLEGRO_EVENT_QUEUEptr;
+  Event: ALLEGRO_EVENT;
+  Transform, Identity: ALLEGRO_TRANSFORM;
+  Software, Redraw, Blend, UseSubbitmap, EndLoop: BOOLEAN;
+  w, h: INTEGER;
+  Font, SoftFont: ALLEGRO_FONTptr;
+  t: SINGLE;
+  Tint: ALLEGRO_COLOR;
 BEGIN
   Software := FALSE;
   Redraw := FALSE;
@@ -28,8 +28,7 @@ BEGIN
   ELSE
     Filename := 'data/mysha.pcx';
 
-  IF NOT al_init THEN
-    AbortExample ('Could not init Allegro.\n');
+  IF NOT al_init THEN AbortExample ('Could not init Allegro.\n');
 
   al_init_primitives_addon;
   al_install_mouse;
@@ -39,8 +38,7 @@ BEGIN
   al_init_font_addon;
 
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN
-    AbortExample ('Error creating display');
+  IF Display = NIL THEN AbortExample ('Error creating display');
 
   Subbitmap := al_create_sub_bitmap (al_get_backbuffer (Display), 50, 50, 640 - 50, 480 - 50);
   Overlay := al_create_sub_bitmap (al_get_backbuffer (Display), 100, 100, 300, 50);
@@ -60,7 +58,7 @@ BEGIN
 
   SoftFont := al_load_font ('data/bmpfont.tga', 0, 0);
   IF SoftFont = NIL THEN
-    AbortExample ('data/bmpfont.tga not found or failed to load\n');
+    AbortExample ('data/bmpfont.tga not found or failed to load');
 
   Timer := al_create_timer (1 / 60);
   Queue := al_create_event_queue;
