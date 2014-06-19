@@ -86,7 +86,7 @@ BEGIN
   OSTYPE_LINUX := AL_ID('TUX ');
 END;
  *)
-  FUNCTION AL_ID (str: SHORTSTRING): AL_INT;
+  FUNCTION AL_ID (CONST str: SHORTSTRING): AL_INT;
 
 
 
@@ -1268,11 +1268,18 @@ BEGIN
     ALLEGRO_EVENT_DISPLAY_SWITCH_OUT     = 46;
     ALLEGRO_EVENT_DISPLAY_ORIENTATION    = 47;
 
-(*    1 <= n < 512  - builtin events
+(* Function: ALLEGRO_EVENT_TYPE_IS_USER
+ *
+ *    1 <= n < 512  - builtin events
  *  512 <= n < 1024 - reserved user events (for addons)
  * 1024 <= n        - unreserved user events
  *)
   FUNCTION ALLEGRO_EVENT_TYPE_IS_USER (t: ALLEGRO_EVENT_TYPE): AL_BOOL; INLINE;
+
+(* Function: ALLEGRO_GET_EVENT_TYPE
+ *)
+  FUNCTION ALLEGRO_GET_EVENT_TYPE (CONST str: SHORTSTRING): AL_INT; INLINE;
+
 
 (*
  * Event structures
@@ -1562,10 +1569,10 @@ IMPLEMENTATION
  * base.h *
  **********)
 
-  FUNCTION AL_ID (str: SHORTSTRING): AL_INT;
+  FUNCTION AL_ID (CONST str: SHORTSTRING): AL_INT;
   BEGIN
     AL_ID := (ORD (str[1]) SHL 24) OR (ORD (str[2]) SHL 16)
-	     OR (ORD (str[3]) SHL  8) OR  ORD (str[4]);
+	     OR (ORD (str[3]) SHL  8) OR  ORD (str[4])
   END;
 
 
@@ -1576,8 +1583,10 @@ IMPLEMENTATION
 
   FUNCTION al_init: AL_BOOL;
   BEGIN
-    al_init := al_install_system (ALLEGRO_VERSION_INT, NIL);
+    al_init := al_install_system (ALLEGRO_VERSION_INT, NIL)
   END;
+
+
 
 (******************************************************************************
  * bitmap_io.h *
@@ -1588,7 +1597,7 @@ IMPLEMENTATION
 
   FUNCTION al_load_bitmap (CONST filename: STRING): ALLEGRO_BITMAPptr;
   BEGIN
-    al_load_bitmap := _al_load_bitmap_ (AL_STRptr (Filename));
+    al_load_bitmap := _al_load_bitmap_ (AL_STRptr (Filename))
   END;
 
 
@@ -1598,7 +1607,7 @@ IMPLEMENTATION
 
   FUNCTION al_save_bitmap (CONST filename: STRING; bitmap: ALLEGRO_BITMAPptr): AL_BOOL;
   BEGIN
-    al_save_bitmap := _al_save_bitmap_ (AL_STRptr (Filename), bitmap);
+    al_save_bitmap := _al_save_bitmap_ (AL_STRptr (Filename), bitmap)
   END;
 
 
@@ -1612,7 +1621,7 @@ IMPLEMENTATION
 
   PROCEDURE al_set_window_title (display: ALLEGRO_DISPLAYptr; CONST title: STRING);
   BEGIN
-    _al_set_window_title_ (display, AL_STRptr (Title));
+    _al_set_window_title_ (display, AL_STRptr (Title))
   END;
 
 
@@ -1649,7 +1658,14 @@ IMPLEMENTATION
 
   FUNCTION ALLEGRO_EVENT_TYPE_IS_USER (t: ALLEGRO_EVENT_TYPE): AL_BOOL;
   BEGIN
-    ALLEGRO_EVENT_TYPE_IS_USER := t >= 512;
+    ALLEGRO_EVENT_TYPE_IS_USER := t >= 512
+  END;
+
+
+
+  FUNCTION ALLEGRO_GET_EVENT_TYPE (CONST str: SHORTSTRING): AL_INT;
+  BEGIN
+    ALLEGRO_GET_EVENT_TYPE := AL_ID (str)
   END;
 
 
@@ -1663,7 +1679,7 @@ IMPLEMENTATION
 
   FUNCTION al_ustr_new (CONST s: STRING): ALLEGRO_USTRptr;
   BEGIN
-    al_ustr_new := _al_ustr_new_ (AL_STRptr (s));
+    al_ustr_new := _al_ustr_new_ (AL_STRptr (s))
   END;
 
 
@@ -1673,7 +1689,7 @@ IMPLEMENTATION
 
   FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: STRING): AL_BOOL;
   BEGIN
-    al_ustr_assign_cstr := _al_ustr_assign_cstr_ (us1, AL_STRptr (s));
+    al_ustr_assign_cstr := _al_ustr_assign_cstr_ (us1, AL_STRptr (s))
   END;
 
 INITIALIZATION

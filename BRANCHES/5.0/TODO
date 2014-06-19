@@ -8,6 +8,9 @@ In no special order
   * Work to merge Gregor A. Cieslak's fork
     (https://github.com/Soldat/allegro-pas5-test)
 
+  * FPC linker can't find public function al_init_native_dialog_addon (?).
+    Once fixed, modify unit Common at examples/.
+
   * Check error "(...)libGLcore.so.1: undefined reference to `__moddi3'".
     To fix it I've added al5gl to uses section of al5image and al5primitives.
 

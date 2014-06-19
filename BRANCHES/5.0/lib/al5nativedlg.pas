@@ -14,9 +14,24 @@ INTERFACE
     { @exclude }
     ALLEGRO_NATIVE_DLG_LIB_NAME = _A5_LIB_PREFIX_+'allegro_dialog'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
 
+(******************************************************************************
+ * allegro_native_dialog.h
+ **********)
+
   TYPE
     ALLEGRO_FILECHOOSERptr = AL_POINTER;
     ALLEGRO_TEXTLOGptr = AL_POINTER;
+
+  FUNCTION al_init_native_dialog_addon: AL_BOOL; CDECL;
+    EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
+  PROCEDURE al_shutdown_native_dialog_addon; CDECL;
+    EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
+
+
+
+(******************************************************************************
+  Next lines weren't in the same order than C header.
+ **********)
 
   CONST
     ALLEGRO_FILECHOOSER_FILE_MUST_EXIST = 1;

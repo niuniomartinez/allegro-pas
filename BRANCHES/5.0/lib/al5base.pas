@@ -47,6 +47,10 @@ INTERFACE
   {$INCLUDE al5_win.inc}
 {$ENDIF}
 
+ (* Builds main library name.  AFAIK it's not needed. *)
+    { @exclude }
+    ALLEGRO_MAIN_LIB_NAME = _A5_LIB_PREFIX_+'allegro_main'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
+
 
 
 (*
