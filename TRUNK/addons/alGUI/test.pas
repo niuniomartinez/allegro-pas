@@ -2,7 +2,7 @@ PROGRAM Test;
 (* Tests the GUI. *)
 
   USES
-    allegro;
+    allegro, alGUI;
 
 BEGIN
   IF NOT al_init THEN
