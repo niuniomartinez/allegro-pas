@@ -38,6 +38,8 @@ BEGIN
     Dialog := TalGUI_Dialog.Create;
     Dialog.Bmp := Bmp;
 
+    Dialog.Add (TalGUI_ClearScreen.Create); { Play fair with OS. }
+
     Styles[0] := Dialog.Style;
     ActiveStyle := 0;
 
