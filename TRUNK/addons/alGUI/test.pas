@@ -2,7 +2,15 @@ PROGRAM Test;
 (* Tests the GUI. *)
 
   USES
-    allegro, alGUI;
+    allegro, alGUI,
+    sysutils;
+
+  VAR
+    Styles: ARRAY [0..0] OF TalGUI_Style;
+    Ndx, ActiveStyle: INTEGER;
+    Dialog: TalGUI_Dialog;
+
+    Bmp: AL_BITMAPptr;
 
 BEGIN
   IF NOT al_init THEN
@@ -11,16 +19,64 @@ BEGIN
     EXIT;
   END;
 
-  al_install_keyboard;
   al_install_timer;
+  al_install_keyboard;
+  al_install_mouse;
 
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
+  al_set_color_depth (32);
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
       al_message ('Unable to set any graphic mode'#10+al_error+''#10);
-      EXIT;
+      EXIT
     END;
+  al_show_mouse (al_screen);
 
-  al_set_palette (al_desktop_palette);
+  Bmp := al_create_bitmap (320, 240);
+  TRY
+    Dialog := TalGUI_Dialog.Create;
+    Dialog.Bmp := Bmp;
+
+    Styles[0] := Dialog.Style;
+    ActiveStyle := 0;
+
+    al_clear_to_color (Bmp, Dialog.Style.TextColor);
+
+    Dialog.Style.DrawDialogFrame (
+      Dialog.Bmp, 5, 5, 315, 195, Dialog.Style.BackgroundColor, 'GUI example', TRUE
+    );
+    Dialog.Style.DrawBevel (Dialog.Bmp, 10, 26, 305, 185, FALSE);
+
+    Dialog.Style.DrawText (
+      Dialog.Bmp, 'This is normal text.', 20, 32, Dialog.Style.TextColor, FALSE
+    );
+    Dialog.Style.DrawDisabledText (
+      Dialog.Bmp, 'This is disabled text.', 20, 40, FALSE
+    );
+
+    Dialog.Style.DrawBox (
+      Dialog.Bmp, 20, 50, 50, 100, -1, 2, TRUE
+    );
+
+    al_scare_mouse;
+    al_stretch_blit (
+      Bmp, al_screen, 0, 0, Bmp^.w, Bmp^.h, 0, 0, AL_SCREEN_W, AL_SCREEN_H
+    );
+    al_unscare_mouse;
+
+    al_readkey
+  EXCEPT
+    ON Error: Exception DO
+    BEGIN
+      al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
+      al_message (Error.Message);
+    END
+  END;
+
+  al_destroy_bitmap (Bmp);
+  Dialog.Style := NIL; { Avoids destruction by dialog. }
+  FreeAndNil (Dialog);
+  FOR Ndx := LOW (Styles) TO HIGH (Styles) DO
+    IF Styles[Ndx] <> NIL THEN Styles[Ndx].Free
 END.
