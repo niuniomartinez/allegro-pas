@@ -120,9 +120,53 @@ INTERFACE
     TalGUI_Control = CLASS (TObject)
     PRIVATE
       fOwner: TalGUI_Dialog;
+      fX, fY, fW, fH, fTag: INTEGER;
+      fHasFocus, fDisabled: BOOLEAN;
+    PROTECTED
+    (* Sets the @code(Disabled) property.  Overriden implementation should call
+      this to actually set the @code(Disabled) value. *)
+      PROCEDURE SetDisabled (CONST SetDisabled: BOOLEAN); VIRTUAL;
+
+    (* Informs the object that a mouse button has been clicked while the mouse
+      was on top of the object.  Typically an object will perform its own
+      mouse tracking as long as the button is held down, and only return from
+      this message handler when it is released.
+
+      If you process this message, use the functions @link(al_gui_mouse_* ) to
+      read the state of the mouse.
+      @return(@true if message was handled, or @false if control isn't
+       interested on it.) *)
+      FUNCTION MsgClick (CONST X, Y, Button: INTEGER): BOOLEAN; VIRTUAL;
+    (* Sent whenever the dialog manager has nothing better to do. *)
+      PROCEDURE MsgIddle; VIRTUAL;
     PUBLIC
+    (* Constructor. *)
+      CONSTRUCTOR Create; VIRTUAL;
+    (* Draws the control in the given bitmap. *)
+      PROCEDURE Draw (Bmp: AL_BITMAPptr); VIRTUAL;
+
     (* Reference to the owner dialog. *)
       PROPERTY Dialog: TalGUI_Dialog READ fOwner;
+    (* Left position of the component. *)
+      PROPERTY X: INTEGER READ fX WRITE fX;
+    (* Top position of the component. *)
+      PROPERTY Y: INTEGER READ fY WRITE fY;
+    (* Width of the component in pixels. *)
+      PROPERTY Width: INTEGER READ fW WRITE fW;
+    (* Height of the component in pixels. *)
+      PROPERTY Height: INTEGER READ fH WRITE fH;
+    (* Extra value that can be used to identify the component or to store a
+      value that may be useful somewhere. *)
+      PROPERTY Tag: INTEGER READ fTag WRITE fTag;
+    (* @true if control has input focus, @false otherwise.
+      @seealso(MsgGotFocus) @seealso(MsgLostFocus) @seealso(WantFocus) *)
+      PROPERTY HasFocus: BOOLEAN READ fHasFocus;
+    (* @true if control is inactive, @false otherwise.
+
+      Inactive controls can't get input focus and can't be selected.
+
+      By default it's @false *)
+      PROPERTY Disabled: BOOLEAN READ fDisabled WRITE SetDisabled;
     END;
 
 
@@ -133,6 +177,9 @@ INTERFACE
       fBitmap: AL_BITMAPptr;
       fStyle: TalGUI_Style;
       fControlList : TFPObjectList;
+
+      FUNCTION GetCount: INTEGER;
+      FUNCTION GetControl (CONST Index: INTEGER): TalGUI_Control;
     PUBLIC
     (* Constructor.
 
@@ -140,6 +187,9 @@ INTERFACE
       CONSTRUCTOR Create; VIRTUAL;
     (* Destructor. *)
       DESTRUCTOR Destroy; OVERRIDE;
+    (* Adds a new control to the dialog. @return(Index to the control)
+      @seealso(Controls) *)
+      FUNCTION Add (aControl: TalGUI_Control): INTEGER;
 
     (* Bitmap where the dialog will be drawn.  By default it's the
       @code(al_screen). *)
@@ -147,6 +197,14 @@ INTERFACE
     (* Dialog style.  Note that assign it will not destroy the previous style.
      *)
       PROPERTY Style: TalGUI_Style READ fStyle WRITE fStyle;
+    (* Number of controls in the dialog. @seealso(Controls) *)
+      PROPERTY Count: INTEGER READ GetCount;
+    (* Indexed access to the controls of the dialog.
+
+      @code(Controls) is the default property of the class.
+      The index @code(Index) is zero based, i.e., runs from 0 (zero) to
+      @code(Count-1). @seealso(Count) @seealso(Add) *)
+      PROPERTY Controls[Index: INTEGER]: TalGUI_Control READ GetControl;
     END;
 
 
@@ -155,11 +213,14 @@ INTERFACE
   (* An invisible helper object that yields time slices for the scheduler (if
      the system supports it) when the GUI has nothing to do but waiting for
      user actions.  You should put one instance of this object, or a descendent
-     such as @code(TalGUI_ClearScreen), in each dialog array because it may be
-     needed on systems with an unusual scheduling algorithm (for instance QNX)
-     in order to make the GUI fully responsive.
+     such as @code(TalGUI_ClearScreen), in each dialog because it may be needed
+     on systems with an unusual scheduling algorithm (for instance QNX) in
+     order to make the GUI fully responsive.
      @seealso(TalGUI_ClearScreen) *)
     TalGUI_Yield = CLASS (TalGUI_Control)
+    PROTECTED
+    (* Sent whenever the dialog manager has nothing better to do. *)
+      PROCEDURE MsgIddle; OVERRIDE;
     END;
 
 
@@ -170,6 +231,16 @@ INTERFACE
      Since it's a @code(TalGUI_Yield) descendent, such object isn't needed if
      @code(TalGUI_ClearScreen) is used. *)
     TalGUI_ClearScreen = CLASS (TalGUI_Yield)
+    PRIVATE
+      fColor: LONGINT;
+    PUBLIC
+    (* Constructor. *)
+      CONSTRUCTOR Create; OVERRIDE;
+    (* Draws the control in the given bitmap. *)
+      PROCEDURE Draw (Bmp: AL_BITMAPptr); OVERRIDE;
+
+    (* Color to use to clear the screen. *)
+      PROPERTY Color: LONGINT READ fColor WRITE fColor;
     END;
 
 
@@ -194,17 +265,14 @@ INTERFACE
 
 
 
-  (* A simple button object. *)
-    TalGUI_Button = CLASS (TalGUI_CustomButton)
-    END;
-
-
-
   (* Extends @code(TalGUI_Style) to define a default style.
 
     It's inspired by the old Windows style. *)
     TalGUI_DefaultStyle = CLASS (TalGUI_Style)
     PUBLIC
+    (* Sets default colors.  Call this after set graphics mode and define the
+      color palette. *)
+      PROCEDURE SetDefaultColors; OVERRIDE;
     (* Draws a bevel, this is, a border, rectangle or frame.
       @param(Bmp Where to draw it.)
       @param(x1 Left limit of box.)  @param(y1 Top limit of box.)
@@ -212,10 +280,6 @@ INTERFACE
       @param(Raised @true, to draw as raised, if @false to draw as depressed.)
       @seealso(DrawBox)
     *)
-   (* Sets default colors.  Call this after set graphics mode and define the
-      color palette. *)
-      PROCEDURE SetDefaultColors; OVERRIDE;
-
       PROCEDURE DrawBevel (Bmp: AL_BITMAPptr; x1, y1, x2, y2: INTEGER;
 	Raised: BOOLEAN); OVERRIDE;
     (* Draws a box.  Useful for buttons and pannels.
@@ -320,8 +384,69 @@ IMPLEMENTATION
 
 
 (*
+ * TalGUI_Control
+ *****************************************************************************)
+
+(* Sets the @code(Disabled) property.  Overriden implementation should call
+  his to actually set the @code(Disabled) value. *)
+  PROCEDURE TalGUI_Control.SetDisabled (CONST SetDisabled: BOOLEAN);
+  BEGIN
+    fDisabled := SetDisabled
+  END;
+
+
+(* Informs the object that a mouse button has been clicked. *)
+  FUNCTION TalGUI_Control.MsgClick (CONST X, Y, Button: INTEGER): BOOLEAN;
+  BEGIN
+    RESULT := FALSE
+  END;
+
+
+
+(* Sent whenever the dialog manager has nothing better to do. *)
+  PROCEDURE TalGUI_Control.MsgIddle;
+  BEGIN
+    { Does nothing by default. }
+  END;
+
+
+
+(* Constructor. *)
+  CONSTRUCTOR TalGUI_Control.Create;
+  BEGIN
+    INHERITED Create;
+    fOwner := NIL;
+    fX := 0; fY := 0; fW := 0; fH := 0; fTag := 0;
+    fDisabled := FALSE; fHasFocus := FALSE;
+  END;
+
+
+
+(* Draws the control in the given bitmap. *)
+  PROCEDURE TalGUI_Control.Draw (Bmp: AL_BITMAPptr);
+  BEGIN
+    { Does nothing by default. }
+  END;
+
+
+
+(*
  * TalGUI_Dialog
  *****************************************************************************)
+
+  FUNCTION TalGUI_Dialog.GetCount: INTEGER;
+  BEGIN
+    RESULT := fControlList.Count
+  END;
+
+
+
+  FUNCTION TalGUI_Dialog.GetControl (CONST Index: INTEGER): TalGUI_Control;
+  BEGIN
+    RESULT := TalGUI_Control (fControlList.Items[Index])
+  END;
+
+
 
 (* Constructor. *)
   CONSTRUCTOR TalGUI_Dialog.Create;
@@ -340,6 +465,49 @@ IMPLEMENTATION
     fControlList.Free;
     IF fStyle <> NIL THEN fStyle.Free;
     INHERITED Destroy;
+  END;
+
+
+
+(* Adds a new control to the dialog. @return(Index to the control) *)
+  FUNCTION TalGUI_Dialog.Add (aControl: TalGUI_Control): INTEGER;
+  BEGIN
+    RESULT := fControlList.Add (aControl);
+    aControl.fOwner := SELF
+  END;
+
+
+
+(*
+ * TalGUI_Yield
+ *****************************************************************************)
+
+(* Sent whenever the dialog manager has nothing better to do. *)
+  PROCEDURE TalGUI_Yield.MsgIddle;
+  BEGIN
+  { Play fair with Opeating System. }
+    al_rest (1)
+  END;
+
+
+
+(*
+ * TalGUI_ClearScreen
+ *****************************************************************************)
+
+(* Constructor. *)
+  CONSTRUCTOR TalGUI_ClearScreen.Create;
+  BEGIN
+    INHERITED Create;
+    fColor := al_makecol (0, 0, 0)
+  END;
+
+
+
+(* Draws the control in the given bitmap. *)
+  PROCEDURE TalGUI_ClearScreen.Draw (Bmp: AL_BITMAPptr);
+  BEGIN
+    al_clear_to_color (Bmp, fColor)
   END;
 
 
