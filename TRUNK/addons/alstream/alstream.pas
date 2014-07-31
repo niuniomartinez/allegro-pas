@@ -51,7 +51,7 @@ INTERFACE
       @param(Count Number of bytes to write.)
       @returns(the number of bytes actually written.)
      *)
-      FUNCTION Write (VAR Buffer; Count: LONGINT): LONGINT; OVERRIDE;
+      FUNCTION Write (CONST Buffer; Count: LONGINT): LONGINT; OVERRIDE;
 
     (* Returns the asociated AL_PACKFILE object. *)
       PROPERTY Packfile: AL_PACKFILEptr READ fPackfile;
@@ -121,24 +121,25 @@ IMPLEMENTATION
 (* Reimplements the Seek method. *)
   FUNCTION TAllegroStream.Seek (Offset: LONGINT; Origin: WORD): LONGINT;
   BEGIN
-    IF Origin := soFromCurrent THEN
+    IF Origin = soFromCurrent THEN
     BEGIN
       IF NOT al_pack_fseek (fPackfile, Offset) THEN
-        RAISE EStreamError.Create ('Error seeking on PACKFILE.');
+        RAISE EStreamError.Create ('Error seeking on PACKFILE.')
     END
     ELSE
       RAISE EStreamError.Create ('Allegro''s PACKFILE only supports soFromCurrent seeking.');
+    Seek := Offset
   END;
 
 
 
 (* Opens a sub-chunk of file.  Read al_pack_fopen_chunk description. *)
-  PROCEDURE OpenChunk (Pack: BOOLEAN);
+  PROCEDURE TAllegroStream.OpenChunk (Pack: BOOLEAN);
   VAR
     Tmp: AL_PACKFILEptr;
   BEGIN
     Tmp := al_pack_fopen_chunk (fPackfile, Pack);
-    IF Tmp := NIL THEN
+    IF Tmp = NIL THEN
       RAISE EStreamError.Create ('Error opening sub-chunk of a PACKFILE.');
     fPackfile := Tmp; { Note: al_pack_fclose_chunk returns parent! }
   END;
@@ -146,12 +147,12 @@ IMPLEMENTATION
 
 
 (* Closes a sub-chunk of file. *)
-  PROCEDURE CloseChunk;
+  PROCEDURE TAllegroStream.CloseChunk;
   VAR
     Tmp: AL_PACKFILEptr;
   BEGIN
     Tmp := al_pack_fclose_chunk (fPackfile);
-    IF Tmp := NIL THEN
+    IF Tmp = NIL THEN
       RAISE EStreamError.Create ('Error closing sub-chunk of a PACKFILE.');
     fPackfile := Tmp;
   END;
@@ -169,7 +170,7 @@ IMPLEMENTATION
  *)
   FUNCTION TAllegroStream.Read (VAR Buffer; Count: LONGINT): LONGINT;
   BEGIN
-    Read := al_pack_fread (Buffer, Count, fPackfile);
+    Read := al_pack_fread (@Buffer, Count, fPackfile);
   END;
 
 
@@ -183,9 +184,9 @@ IMPLEMENTATION
   @param(Count Number of bytes to write.)
   @returns(the number of bytes actually written.)
  *)
-  FUNCTION TAllegroStream.Write (VAR Buffer; Count: LONGINT): LONGINT;
+  FUNCTION TAllegroStream.Write (CONST Buffer; Count: LONGINT): LONGINT;
   BEGIN
-    Read := al_pack_fwrite (Buffer, Count, fPackfile);
+    Write := al_pack_fwrite (@Buffer, Count, fPackfile);
   END;
 
 END.
