@@ -171,15 +171,52 @@ INTERFACE
 
 
 
+  (* Manages a list of dialog controls. *)
+    TalGUI_ControlList = CLASS (TObject)
+    PRIVATE
+      fControlList: TFPObjectList;
+      fOwner: TalGUI_Dialog;
+
+      FUNCTION GetCount: INTEGER; INLINE;
+      FUNCTION GetControl (CONST Ndx: INTEGER): TalGUI_Control; INLINE;
+      PROCEDURE SetControl (CONST Ndx: INTEGER; aControl: TalGUI_Control);
+	INLINE;
+    PUBLIC
+    (* Constructor.
+      @param(DlgOwner Reference to the dialog that contains the list. *)
+      CONSTRUCTOR Create (DlgOwner: TalGUI_Dialog); VIRTUAL;
+    (* Destructor. *)
+      DESTRUCTOR Destroy; OVERRIDE;
+    (* Removes all controls from the list. @seealso(Controls) *)
+      PROCEDURE Clear; INLINE;
+    (* Adds given control to the list.
+      @return(Index to of the control.) *)
+      FUNCTION Add (aControl: TalGUI_Control): INTEGER; INLINE;
+
+    (* How many controls are in the list.  This may include NULL controls. *)
+      PROPERTY Count: INTEGER READ GetCount;
+    (* Indexed access to the controls.  Reading it will return the reference to
+       the control at position @code(Ndx).  Writting it will set the control at
+       position @code(Ndx) but will not destroy the control yet existed.
+
+       Since the array is zero-based, @code(Ndx) should be an integer between 0
+       and @code(Count-1).
+
+       It is the default property.
+       @seealso(Count) @seealso(Clear) @seealso(Add)
+    *)
+      PROPERTY Controls[Ndx: INTEGER]: TalGUI_Control
+        READ GetControl WRITE SetControl; DEFAULT;
+    END;
+
+
+
   (* Defines and manages the dialog. *)
     TalGUI_Dialog = CLASS (TObject)
     PRIVATE
       fBitmap: AL_BITMAPptr;
       fStyle: TalGUI_Style;
-      fControlList : TFPObjectList;
-
-      FUNCTION GetCount: INTEGER;
-      FUNCTION GetControl (CONST Index: INTEGER): TalGUI_Control;
+      fControlList : TalGUI_ControlList;
     PUBLIC
     (* Constructor.
 
@@ -187,9 +224,6 @@ INTERFACE
       CONSTRUCTOR Create; VIRTUAL;
     (* Destructor. *)
       DESTRUCTOR Destroy; OVERRIDE;
-    (* Adds a new control to the dialog. @return(Index to the control)
-      @seealso(Controls) *)
-      FUNCTION Add (aControl: TalGUI_Control): INTEGER;
 
     (* Bitmap where the dialog will be drawn.  By default it's the
       @code(al_screen). *)
@@ -197,14 +231,8 @@ INTERFACE
     (* Dialog style.  Note that assign it will not destroy the previous style.
      *)
       PROPERTY Style: TalGUI_Style READ fStyle WRITE fStyle;
-    (* Number of controls in the dialog. @seealso(Controls) *)
-      PROPERTY Count: INTEGER READ GetCount;
-    (* Indexed access to the controls of the dialog.
-
-      @code(Controls) is the default property of the class.
-      The index @code(Index) is zero based, i.e., runs from 0 (zero) to
-      @code(Count-1). @seealso(Count) @seealso(Add) *)
-      PROPERTY Controls[Index: INTEGER]: TalGUI_Control READ GetControl;
+    (* Access to the control list of the dialog. *)
+      PROPERTY Controls: TalGUI_ControlList READ fControlList;
     END;
 
 
@@ -431,28 +459,80 @@ IMPLEMENTATION
 
 
 (*
- * TalGUI_Dialog
+ * TalGUI_ControlList
  *****************************************************************************)
 
-  FUNCTION TalGUI_Dialog.GetCount: INTEGER;
+  FUNCTION TalGUI_ControlList.GetCount: INTEGER;
   BEGIN
     RESULT := fControlList.Count
   END;
 
 
 
-  FUNCTION TalGUI_Dialog.GetControl (CONST Index: INTEGER): TalGUI_Control;
+  FUNCTION TalGUI_ControlList.GetControl (CONST Ndx: INTEGER): TalGUI_Control;
   BEGIN
-    RESULT := TalGUI_Control (fControlList.Items[Index])
+    RESULT := TalGUI_Control (fControlList.Items[Ndx])
+  END;
+
+
+
+  PROCEDURE TalGUI_ControlList.SetControl (CONST Ndx: INTEGER; aControl: TalGUI_Control);
+  BEGIN
+  { Remove from list without destroying. }
+    fControlList.Extract (fControlList.Items[Ndx]);
+  { Set the control. }
+    fControlList.Items[Ndx] := aControl;
+    aControl.fOwner := SELF.fOwner
   END;
 
 
 
 (* Constructor. *)
-  CONSTRUCTOR TalGUI_Dialog.Create;
+  CONSTRUCTOR TalGUI_ControlList.Create (DlgOwner: TalGUI_Dialog);
   BEGIN
     INHERITED Create;
     fControlList := TFPObjectList.Create (TRUE);
+    fOwner := DlgOwner
+  END;
+
+
+
+(* Destructor. *)
+  DESTRUCTOR TalGUI_ControlList.Destroy;
+  BEGIN
+    fControlList.Free;
+    INHERITED Destroy
+  END;
+
+
+
+(* Removes all controls from the list. @seealso(Controls) *)
+  PROCEDURE TalGUI_ControlList.Clear;
+  BEGIN
+    fControlList.Clear
+  END;
+
+
+
+(* Adds given control to the list.
+  @return(Index to of the control.) *)
+  FUNCTION TalGUI_ControlList.Add (aControl: TalGUI_Control): INTEGER;
+  BEGIN
+    RESULT := fControlList.Add (aControl);
+    aControl.fOwner := SELF.fOwner
+  END;
+
+
+
+(*
+ * TalGUI_Dialog
+ *****************************************************************************)
+
+(* Constructor. *)
+  CONSTRUCTOR TalGUI_Dialog.Create;
+  BEGIN
+    INHERITED Create;
+    fControlList := TalGUI_ControlList.Create (SELF);
     fBitmap := al_screen;
     fStyle := TalGUI_DefaultStyle.Create
   END;
@@ -465,15 +545,6 @@ IMPLEMENTATION
     fControlList.Free;
     IF fStyle <> NIL THEN fStyle.Free;
     INHERITED Destroy;
-  END;
-
-
-
-(* Adds a new control to the dialog. @return(Index to the control) *)
-  FUNCTION TalGUI_Dialog.Add (aControl: TalGUI_Control): INTEGER;
-  BEGIN
-    RESULT := fControlList.Add (aControl);
-    aControl.fOwner := SELF
   END;
 
 
