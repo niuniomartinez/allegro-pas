@@ -38,7 +38,7 @@ BEGIN
     Dialog := TalGUI_Dialog.Create;
     Dialog.Bmp := Bmp;
 
-    Dialog.Add (TalGUI_ClearScreen.Create); { Play fair with OS. }
+    Dialog.Controls.Add (TalGUI_ClearScreen.Create); { Play fair with OS. }
 
     Styles[0] := Dialog.Style;
     ActiveStyle := 0;
@@ -60,6 +60,12 @@ BEGIN
     Dialog.Style.DrawBox (
       Dialog.Bmp, 20, 50, 50, 100, -1, 2, TRUE
     );
+
+    Dialog.Style.DrawBox (
+      Dialog.Bmp, 60, 50, 90, 100, -1, 2, FALSE
+    );
+
+    Dialog.Style.DrawBevel (Dialog.Bmp, 100, 50, 130, 100, TRUE);
 
     al_scare_mouse;
     al_stretch_blit (
