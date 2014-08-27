@@ -120,14 +120,26 @@ IMPLEMENTATION
 
 (* Reimplements the Seek method. *)
   FUNCTION TAllegroStream.Seek (Offset: LONGINT; Origin: WORD): LONGINT;
+  VAR
+    Cnt: LONGINT;
+    Value: BYTE;
   BEGIN
     IF Origin = soFromCurrent THEN
     BEGIN
-      IF NOT al_pack_fseek (fPackfile, Offset) THEN
+    { For some reason, next line raises a Segmentation Fault signal.
+      al_pack_fseek (fPackfile, Offset);
+
+      So, we use next workaround. }
+      FOR Cnt := 1 TO Offset DO
+        al_pack_fread (@Value, 1, fPackfile);
+      IF al_pack_feof (fPackfile) THEN
         RAISE EStreamError.Create ('Error seeking on PACKFILE.')
     END
+  {
     ELSE
       RAISE EStreamError.Create ('Allegro''s PACKFILE only supports soFromCurrent seeking.');
+  }
+  ;
     Seek := Offset
   END;
 
