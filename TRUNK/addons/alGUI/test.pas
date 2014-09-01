@@ -9,9 +9,6 @@ PROGRAM Test;
     Styles: ARRAY [0..0] OF TalGUI_Style;
     Ndx, ActiveStyle: INTEGER;
     Dialog: TalGUI_Dialog;
-
-    Bmp: AL_BITMAPptr;
-
 BEGIN
   IF NOT al_init THEN
   BEGIN
@@ -33,16 +30,15 @@ BEGIN
     END;
   al_show_mouse (al_screen);
 
-  Bmp := al_create_bitmap (320, 240);
   TRY
     Dialog := TalGUI_Dialog.Create;
-    Dialog.Bmp := Bmp;
 
     Dialog.Controls.Add (TalGUI_ClearScreen.Create); { Play fair with OS. }
 
     Styles[0] := Dialog.Style;
     ActiveStyle := 0;
 
+    {
     al_clear_to_color (Bmp, Dialog.Style.TextColor);
 
     Dialog.Style.DrawDialogFrame (
@@ -66,14 +62,9 @@ BEGIN
     );
 
     Dialog.Style.DrawBevel (Dialog.Bmp, 100, 50, 130, 100, TRUE);
+    }
 
-    al_scare_mouse;
-    al_stretch_blit (
-      Bmp, al_screen, 0, 0, Bmp^.w, Bmp^.h, 0, 0, AL_SCREEN_W, AL_SCREEN_H
-    );
-    al_unscare_mouse;
-
-    al_readkey
+    Dialog.Run (-1);
   EXCEPT
     ON Error: Exception DO
     BEGIN
@@ -82,7 +73,6 @@ BEGIN
     END
   END;
 
-  al_destroy_bitmap (Bmp);
   Dialog.Style := NIL; { Avoids destruction by dialog. }
   FreeAndNil (Dialog);
   FOR Ndx := LOW (Styles) TO HIGH (Styles) DO
