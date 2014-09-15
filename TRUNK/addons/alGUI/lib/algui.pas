@@ -7,7 +7,7 @@ UNIT alGUI;
 INTERFACE
 
   USES
-    allegro, contnrs;
+    Allegro, contnrs;
 
   TYPE
   (* @exclude *)
@@ -89,8 +89,8 @@ INTERFACE
        the @code(DisabledTextColor), but descendent classes may draw the text
        with special properties or different text fonts.
       @seealso(TextFont) @seealso(DrawText) *)
-      PROCEDURE DrawDisabledText (Bmp: AL_BITMAPptr; CONST Msg:
-	STRING; X, Y: LONGINT; Centered: BOOLEAN); VIRTUAL;
+      PROCEDURE DrawDisabledText (Bmp: AL_BITMAPptr; CONST Msg: STRING;
+	X, Y: LONGINT; Centered: BOOLEAN); VIRTUAL;
 
     (* Default text color. *)
       PROPERTY TextColor: LONGINT READ fTxtColor WRITE fTxtColor;
@@ -119,25 +119,25 @@ INTERFACE
     PRIVATE
       fOwner: TalGUI_Dialog;
       fX, fY, fW, fH, fKeyShortCut, fTag: INTEGER;
-      fHasFocus, fDisabled: BOOLEAN;
+      fHasFocus, fHasMouse, fEnabled, fRedraw: BOOLEAN;
     PROTECTED
-    (* Sets the @code(Disabled) property.  Overriden implementation should call
-      this to actually set the @code(Disabled) value. *)
-      PROCEDURE SetDisabled (CONST SetDisabled: BOOLEAN); VIRTUAL;
+    (* Sets the @code(Enabled) property.  Overriden implementation should call
+      this to actually set the @code(Enabled) value. *)
+      PROCEDURE SetEnabled (CONST aEnabled: BOOLEAN); VIRTUAL;
 
     (* Informs the object that a mouse button has been clicked while the mouse
       was on top of the object.  Typically an object will perform its own
       mouse tracking as long as the button is held down, and only return from
       this message handler when it is released.
 
-      If you process this message, use the functions @link(al_gui_mouse_* ) to
+      If you process this message, use the functions @link(al_mouse_* ) to
       read the state of the mouse.
       @return(@true if message was handled, or @false if control isn't
        interested on it.) *)
-      FUNCTION MsgClick (CONST X, Y, Button: INTEGER): BOOLEAN; VIRTUAL;
+      FUNCTION MsgClick (CONST aX, aY, Button: INTEGER): BOOLEAN; VIRTUAL;
     (* Sent when the keyboard shortcut for the object is pressed, or if enter,
       space, or a joystick button is pressed while it has the input focus. *)
-      PROCEDURE MsgKey (aKey: INTEGER); VIRTUAL;
+      PROCEDURE MsgKey; VIRTUAL;
     (* Sent when a key is pressed and the object has the input focus.
       @return(@true if the object deals with the keypress, otherwise it
       should return @false to allow the default keyboard interface to operate.)
@@ -157,13 +157,38 @@ INTERFACE
 	the focus @(this trick is used by the @code(TalGUIEdit) object@),
 	@true otherwise.) @seealso(MsgGotFocus) *)
       FUNCTION MsgLostFocus: BOOLEAN; VIRTUAL;
+    (* Sent when mouse moves on top of an object.  Unlike the @italic(focus)
+      message, this message will not be be followed by a call to @link(Draw),
+      so if the object is isplayed differently when the mouse is on top of it,
+      it should set the @link(RedrawMe) property to @true. @seealso(MsgLostMouse) *)
+      PROCEDURE MsgGotMouse; VIRTUAL;
+    (* Sent when mouse moves away of an object.  Unlike the @italic(focus)
+      message, this message will not be be followed by a call to @link(Draw),
+      so if the object is isplayed differently when the mouse is on top of it,
+      it should set the @link(RedrawMe) property to @true. @seealso(MsgGotMouse) *)
+      PROCEDURE MsgLostMouse; VIRTUAL;
     (* Sent whenever the dialog manager has nothing better to do. *)
       PROCEDURE MsgIddle; VIRTUAL;
     PUBLIC
     (* Constructor. *)
       CONSTRUCTOR Create; VIRTUAL;
+    (* Initializes the control.  It's called by the @link(TalGUI_Dialog) object
+      just before it displays the dialog. *)
+      PROCEDURE Initialize; VIRTUAL;
+    (* Finalizes the control  It's called when closing the dialog.  Allows to
+      perform whatever cleanup operations it requires. *)
+      PROCEDURE Finalize; VIRTUAL;
     (* Draws the control in the given bitmap. *)
       PROCEDURE Draw (Bmp: AL_BITMAPptr); VIRTUAL;
+
+    (* Queries whether an object is willing to accept the input focus.
+      @return(@true if it does, or @false if it isn't interested in getting user
+	input.)
+      @seealso(HasFocus) @seealso(MsgGotFocus) @seealso(MsgLostFocus) *)
+      FUNCTION WantFocus: BOOLEAN; VIRTUAL;
+
+    (* Tests if given point is inside the control. *)
+      FUNCTION Inside (CONST aX, aY: INTEGER): BOOLEAN; VIRTUAL;
 
     (* Reference to the owner dialog. *)
       PROPERTY Dialog: TalGUI_Dialog READ fOwner;
@@ -183,13 +208,22 @@ INTERFACE
     (* @true if control has input focus, @false otherwise.
       @seealso(MsgGotFocus) @seealso(MsgLostFocus) @seealso(WantFocus) *)
       PROPERTY HasFocus: BOOLEAN READ fHasFocus;
-    (* @true if control is inactive, @false otherwise.
+    (* @true if mouse is inside the control, @false otherwise. *)
+      PROPERTY HasMouse: BOOLEAN READ fHasMouse;
+    (* @true if control is active, @false otherwise.
 
       Inactive controls can't get input focus and can't be selected.
 
       By default it's @false *)
-      PROPERTY Disabled: BOOLEAN READ fDisabled WRITE SetDisabled;
+      PROPERTY Enabled: BOOLEAN READ fEnabled WRITE SetEnabled;
+    (* @true if control should be redrawn. *)
+      PROPERTY RedrawMe: BOOLEAN READ fRedraw WRITE fRedraw;
     END;
+
+
+
+  (* An event control handler. *)
+    TalGUI_ControlEvent = PROCEDURE (Sender: TalGUI_Control) OF OBJECT;
 
 
 
@@ -242,25 +276,25 @@ INTERFACE
       fStyle: TalGUI_Style;
       fControlList : TalGUI_ControlList;
       fFocusIndex: INTEGER;
+      fRedrawAll, fClosed: BOOLEAN;
+
+      PROCEDURE SetFocus (CONST NewFocus: INTEGER);
     PROTECTED
     (* Initializes the dialog.
 
       It is a low level method that may be needed if you override the
       @code(Run) method.  For example:
 @longcode(#
-  SELF.Initialize (1);
-  TRY
-    WHILE SELF.Update DO ;
-  FINALLY
-    Control := SELF.Shutdown
-  END;
+  Dialog.Initialize (1);
+  REPEAT UNTIL Dialog.Update;
+  Control := Dialog.Shutdown;
 #)
       @param(FocusCtrl Index to the control that has focus at the beginning.)
       @seealso(Update) @seealso(Shutdown) @seealso(Run) *)
       PROCEDURE Initialize (CONST FocusCtrl: INTEGER);
     (* Updates the dialog.  You should call this before @code(Initialize).
-      @return(@true if the dialog is still active, or @false if it has
-	terminated. Upon a return value of @false, it is up to you whether to
+      @return(@true if the dialog is terminated, or @false if it is still
+	active. Upon a return value of @true, it is up to you whether to
 	call @code(Shutdown) or to continue execution.)
       @seealso(Initialize) @seealso(Shutdown) @seealso(Run) *)
       FUNCTION Update: BOOLEAN;
@@ -289,6 +323,11 @@ INTERFACE
      *)
        FUNCTION Run (CONST FocusCtrl: INTEGER): INTEGER; VIRTUAL;
 
+    (* Tells the dialog that it should redraw all controls. *)
+       PROCEDURE RedrawAll; INLINE;
+    (* Closes the dialog. *)
+       PROCEDURE Close; INLINE;
+
     (* Bitmap where the dialog will be drawn.  By default it's the
       @code(al_screen). *)
       PROPERTY Bmp: AL_BITMAPptr READ fBitmap WRITE fBitmap;
@@ -297,6 +336,8 @@ INTERFACE
       PROPERTY Style: TalGUI_Style READ fStyle WRITE fStyle;
     (* Access to the control list of the dialog. *)
       PROPERTY Controls: TalGUI_ControlList READ fControlList;
+    (* Index of current focus. *)
+      PROPERTY Focus: INTEGER READ fFocusIndex WRITE SetFocus;
     END;
 
 
@@ -349,10 +390,32 @@ INTERFACE
 
 
 
-  (* Introduces methods and stuff for many types of buttons.
-    This object can be selected by clicking on it with the mouse or by pressing
-    its keyboard shortcut. *)
+  (* Base class for various types of buttons.
+
+    Introduces default behavior and an event handler (@link(onCLick)). *)
     TalGUI_CustomButton = CLASS (TalGUI_Control)
+    PRIVATE
+      fonClick: TalGUI_ControlEvent;
+    PROTECTED
+    (* Tells if button is pressed or released.  Useful for drawing method. *)
+      fPressed: BOOLEAN;
+
+    (* Sent when the keyboard shortcut for the object is pressed, or if enter,
+      space, or a joystick button is pressed while it has the input focus. *)
+      PROCEDURE MsgKey; OVERRIDE;
+    (* User pressed in button.  Does default behavior, setting the
+      @code(fPressed) property and calling the @code(Draw) method. *)
+      FUNCTION MsgClick (CONST aX, aY, Button: INTEGER): BOOLEAN; OVERRIDE;
+    PUBLIC
+    (* Constructor. *)
+      CONSTRUCTOR Create; OVERRIDE;
+    (* Initializes the control. *)
+      PROCEDURE Initialize; OVERRIDE;
+    (* Queries whether an object is willing to accept the input focus. *)
+      FUNCTION WantFocus: BOOLEAN; OVERRIDE;
+
+    (* Event called when control is clicked by mouse. *)
+      PROPERTY onCLick: TalGUI_ControlEvent READ fonClick WRITE fonClick;
     END;
 
 
@@ -407,6 +470,9 @@ INTERFACE
     END;
 
 IMPLEMENTATION
+
+  USES
+    albase;
 
 (*
  * TalGUI_Style
@@ -479,17 +545,17 @@ IMPLEMENTATION
  * TalGUI_Control
  *****************************************************************************)
 
-(* Sets the @code(Disabled) property.  Overriden implementation should call
-  his to actually set the @code(Disabled) value. *)
-  PROCEDURE TalGUI_Control.SetDisabled (CONST SetDisabled: BOOLEAN);
+(* Sets the @code(Enabled) property.  Overriden implementation should call
+  his to actually set the @code(Enabled) value. *)
+  PROCEDURE TalGUI_Control.SetEnabled (CONST aEnabled: BOOLEAN);
   BEGIN
-    fDisabled := SetDisabled
+    fEnabled := aEnabled
   END;
 
 
 
 (* Informs the object that a mouse button has been clicked. *)
-  FUNCTION TalGUI_Control.MsgClick (CONST X, Y, Button: INTEGER): BOOLEAN;
+  FUNCTION TalGUI_Control.MsgClick (CONST aX, aY, Button: INTEGER): BOOLEAN;
   BEGIN
     RESULT := FALSE
   END;
@@ -498,7 +564,7 @@ IMPLEMENTATION
 
 (* Sent when the keyboard shortcut for the object is pressed, or if enter,
   space, or a joystick button is pressed while it has the input focus. *)
-  PROCEDURE TalGUI_Control.MsgKey (aKey: INTEGER);
+  PROCEDURE TalGUI_Control.MsgKey;
   BEGIN
     { Does nothing by default. }
   END;
@@ -516,7 +582,8 @@ IMPLEMENTATION
 (* Sent when an object gains the input focus. *)
   PROCEDURE TalGUI_Control.MsgGotFocus;
   BEGIN
-    { Does nothing by default. }
+    fHasFocus := TRUE;
+    RedrawMe := TRUE
   END;
 
 
@@ -524,9 +591,26 @@ IMPLEMENTATION
 (* Sent when an object loses the input focus. *)
   FUNCTION TalGUI_Control.MsgLostFocus: BOOLEAN;
   BEGIN
+    fHasFocus := FALSE;
+    RedrawMe := TRUE;
     RESULT := TRUE
   END;
 
+
+
+(* Sent when mouse moves on top of an object. *)
+  PROCEDURE TalGUI_Control.MsgGotMouse;
+  BEGIN
+    fHasMouse := TRUE
+  END;
+
+
+
+(* Sent when mouse moves away of an object. *)
+  PROCEDURE TalGUI_Control.MsgLostMouse;
+  BEGIN
+    fHasMouse := FALSE
+  END;
 
 
 
@@ -544,7 +628,23 @@ IMPLEMENTATION
     INHERITED Create;
     fOwner := NIL;
     fX := 0; fY := 0; fW := 0; fH := 0; fTag := 0;
-    fDisabled := FALSE; fHasFocus := FALSE;
+    fEnabled := TRUE; fHasFocus := FALSE;
+  END;
+
+
+
+(* Initializes the control. *)
+  PROCEDURE TalGUI_Control.Initialize;
+  BEGIN
+    fRedraw := FALSE
+  END;
+
+
+
+(* Finalizes the control. *)
+  PROCEDURE TalGUI_Control.Finalize;
+  BEGIN
+    ; { Does nothing by default. }
   END;
 
 
@@ -553,6 +653,22 @@ IMPLEMENTATION
   PROCEDURE TalGUI_Control.Draw (Bmp: AL_BITMAPptr);
   BEGIN
     { Does nothing by default. }
+  END;
+
+
+
+(* Queries if wants focus. *)
+  FUNCTION TalGUI_Control.WantFocus: BOOLEAN;
+  BEGIN
+    RESULT := FALSE
+  END;
+
+
+
+(* Tests if given point is inside the control. *)
+  FUNCTION TalGUI_Control.Inside (CONST aX, aY: INTEGER): BOOLEAN;
+  BEGIN
+    RESULT := (fX <= aX) AND (aX <= fX + fW) AND (fY <= aY) AND (aY <= fY + fH)
   END;
 
 
@@ -638,10 +754,51 @@ IMPLEMENTATION
  * TalGUI_Dialog
  *****************************************************************************)
 
+  PROCEDURE TalGUI_Dialog.SetFocus (CONST NewFocus: INTEGER);
+  VAR
+    FocusReleased: BOOLEAN;
+  BEGIN
+  { TODO: Should raise an exception if trying to set focus to an unexistent
+    control?  If so, then TalGUI_Dialog.Initialize should use a different way
+    to set the initial focus control. }
+    IF (0 <= NewFocus) AND (NewFocus < fControlList.Count) THEN
+      IF fControlList[NewFocus].WantFocus THEN
+      BEGIN
+      { Be careful:  Uninitialized dialogs may have the Focus property
+	assigned to an unexistent control. }
+	IF (0 <= fFocusIndex) AND (fFocusIndex < fControlList.Count) THEN
+	  FocusReleased := fControlList[fFocusIndex].MsgLostFocus
+	ELSE
+	{ If nobody has focus, then it's free. }
+	  FocusReleased := TRUE;
+	IF FocusReleased THEN
+	BEGIN
+	  fFocusIndex := NewFocus;
+	  fControlList[fFocusIndex].MsgGotFocus
+	END
+      END
+  END;
+
+
+
 (* Initializes the dialog. *)
   PROCEDURE TalGUI_Dialog.Initialize (CONST FocusCtrl: INTEGER);
+  VAR
+    Ndx: INTEGER;
   BEGIN
-    fFocusIndex := FocusCtrl
+    fFocusIndex := -1;
+  { Initialize the controls. }
+    FOR Ndx := 0 TO fControlList.Count - 1 DO
+    BEGIN
+      fControlList[Ndx].Initialize;
+      fControlList[Ndx].fHasMouse := FALSE;
+      fControlList[Ndx].fHasFocus := FALSE
+    END;
+    SELF.SetFocus (FocusCtrl);
+  { Must draw all controls. }
+    SELF.RedrawAll;
+  { Begin. }
+    fClosed := FALSE
   END;
 
 
@@ -650,15 +807,124 @@ IMPLEMENTATION
   FUNCTION TalGUI_Dialog.Update: BOOLEAN;
   VAR
     CtrNdx: INTEGER;
+    DoIddle: BOOLEAN;
+    KeyPressed: AL_INT;
+
+  { Moves focus to next control. }
+    PROCEDURE NextFocus;
+    VAR
+      NewFocus: INTEGER;
+    BEGIN
+      IF fFocusIndex < 0 THEN EXIT;
+      NewFocus := fFocusIndex + 1;
+      IF NewFocus >= fControlList.Count THEN NewFocus := 0;
+      WHILE NewFocus <> fFocusIndex DO
+      BEGIN
+	IF fControlList[NewFocus].Enabled
+	AND fControlList[NewFocus].WantFocus THEN
+	BEGIN
+	  SetFocus (NewFocus);
+	  DoIddle := FALSE;
+	  EXIT
+	END;
+	INC (NewFocus);
+	IF NewFocus >= fControlList.Count THEN NewFocus := 0;
+      END
+    END;
+
+  { Moves focus to previous control. }
+    PROCEDURE PreviousFocus;
+    VAR
+      PrevFocus: INTEGER;
+    BEGIN
+      IF fFocusIndex < 0 THEN EXIT;
+      PrevFocus := fFocusIndex - 1;
+      IF PrevFocus < 0 THEN PrevFocus := fControlList.Count - 1;
+      WHILE PrevFocus <> fFocusIndex DO
+      BEGIN
+	IF fControlList[PrevFocus].Enabled
+	AND fControlList[PrevFocus].WantFocus THEN
+	BEGIN
+	  SetFocus (PrevFocus);
+	  DoIddle := FALSE;
+	  EXIT
+	END;
+	DEC (PrevFocus);
+	IF PrevFocus < 0 THEN PrevFocus := fControlList.Count - 1
+      END
+    END;
+
   BEGIN
-    IF al_is_screen_bitmap (fBitmap) THEN al_scare_mouse;
-    fControlList.Draw (fBitmap);
-    IF al_is_screen_bitmap (fBitmap) THEN al_unscare_mouse;
-  { There's nothing to do.  }
+  { Check if dialog was closed. }
+    IF fClosed THEN EXIT (TRUE);
+    DoIddle := TRUE;
+  { Check mouse. }
     FOR CtrNdx := 0 TO (fControlList.Count - 1) DO
-      IF fControlList[CtrNdx] <> NIL THEN
-	fControlList[CtrNdx].MsgIddle;
-    RESULT := NOT al_keypressed
+    BEGIN
+      IF fControlList[CtrNdx].Inside (al_mouse_x, al_mouse_y) THEN
+      BEGIN
+	DoIddle := FALSE;
+	fControlList[CtrNdx].MsgGotMouse;
+	IF (al_mouse_b <> 0) AND fControlList[CtrNdx].Enabled THEN
+	BEGIN
+	  SetFocus (CtrNdx);
+	  fControlList[CtrNdx].MsgClick (al_mouse_x, al_mouse_y, al_mouse_b)
+	END
+      END
+      ELSE IF fControlList[CtrNdx].fHasMouse THEN
+	fControlList[CtrNdx].MsgLostMouse
+    END;
+  { Check keyboard. }
+    IF al_keypressed THEN
+    BEGIN
+      KeyPressed := al_readkey;
+    { The current focus may want to manage the key presed. }
+      IF fControlList[fFocusIndex].MsgKeyChar (KeyPressed) THEN
+	DoIddle := FALSE
+      ELSE BEGIN
+      { Control keys. }
+	CASE KeyPressed SHR 8 OF
+	AL_KEY_ESC:
+	  SELF.Close;
+	AL_KEY_TAB:
+	  IF (al_key_shifts AND AL_KB_SHIFT_FLAG) <> 0 THEN
+	    PreviousFocus
+	  ELSE
+	    NextFocus;
+	AL_KEY_DOWN, AL_KEY_RIGHT:
+	  NextFocus;
+	AL_KEY_UP, AL_KEY_LEFT:
+	  PreviousFocus;
+	AL_KEY_ENTER, AL_KEY_SPACE, AL_KEY_ENTER_PAD:
+	  IF fFocusIndex >= 0 THEN
+	  BEGIN
+	    fControlList[fFocusIndex].MsgKey;
+	    DoIddle := FALSE
+	  END
+	END
+      END
+    END;
+  { There's nothing to do.  }
+    IF DoIddle THEN FOR CtrNdx := 0 TO (fControlList.Count - 1) DO
+      fControlList[CtrNdx].MsgIddle;
+  { Check if redraw. }
+    IF fRedrawAll THEN
+    BEGIN
+      IF al_is_screen_bitmap (fBitmap) THEN al_scare_mouse;
+      fControlList.Draw (fBitmap);
+      IF al_is_screen_bitmap (fBitmap) THEN al_unscare_mouse;
+      fRedrawAll := FALSE
+    END
+    ELSE FOR CtrNdx := 0 TO (fControlList.Count - 1) DO
+      IF fControlList[CtrNdx].RedrawMe THEN
+      BEGIN
+	IF al_is_screen_bitmap (fBitmap) THEN al_scare_mouse;
+	fControlList[CtrNdx].Draw (fBitmap);
+	fControlList[CtrNdx].RedrawMe := FALSE;
+	IF al_is_screen_bitmap (fBitmap) THEN al_unscare_mouse
+      END;
+  { End. }
+    RESULT := fClosed
   END;
 
 
@@ -666,8 +932,14 @@ IMPLEMENTATION
 (* Finalizes the dialog execution and returns the control that caused it to
   exit or @code(-1) if @code(Esc) key was pressed. *)
   FUNCTION TalGUI_Dialog.Shutdown: INTEGER;
+  VAR
+    Ndx: INTEGER;
   BEGIN
-    RESULT := -1
+  { Finalizes the controls. }
+    FOR Ndx := 0 TO fControlList.Count - 1 DO
+      IF fControlList[Ndx] <> NIL THEN
+	fControlList[Ndx].Finalize;
+    RESULT := fFocusIndex
   END;
 
 
@@ -696,7 +968,25 @@ IMPLEMENTATION
 (* Executes the dialog loop. *)
   FUNCTION TalGUI_Dialog.Run (CONST FocusCtrl: INTEGER): INTEGER;
   BEGIN
-    SELF.Initialize (FocusCtrl); WHILE SELF.Update DO ; RESULT := SELF.Shutdown
+    SELF.Initialize (FocusCtrl);
+    REPEAT UNTIL SELF.Update;
+    RESULT := SELF.Shutdown
+  END;
+
+
+
+(* Set RedrawAll flag. *)
+  PROCEDURE TalGUI_Dialog.RedrawAll;
+  BEGIN
+    fRedrawAll := TRUE
+  END;
+
+
+
+(* Set Close flag. *)
+  PROCEDURE TalGUI_Dialog.Close;
+  BEGIN
+    fClosed := TRUE
   END;
 
 
@@ -731,6 +1021,88 @@ IMPLEMENTATION
   PROCEDURE TalGUI_ClearScreen.Draw (Bmp: AL_BITMAPptr);
   BEGIN
     al_clear_to_color (Bmp, fColor)
+  END;
+
+
+
+(*
+ * TalGUI_CustomButton
+ *****************************************************************************)
+
+(* Sent when the keyboard shortcut for the object is pressed, or if enter,
+  space, or a joystick button is pressed while it has the input focus. *)
+  PROCEDURE TalGUI_CustomButton.MsgKey;
+  BEGIN
+    IF fonClick <> NIL THEN fonClick (SELF)
+  END;
+
+
+
+(* Button was pressed. *)
+  FUNCTION TalGUI_CustomButton.MsgClick (CONST aX, aY, Button: INTEGER): BOOLEAN;
+
+    PROCEDURE MyDraw;
+    BEGIN
+      al_scare_mouse; SELF.Draw (SELF.Dialog.Bmp); al_unscare_mouse
+    END;
+
+  BEGIN
+    fPressed := TRUE;
+    MyDraw;
+  { Control the control. }
+    WHILE al_mouse_b <> 0 DO
+    BEGIN
+      IF HasMouse THEN
+      BEGIN
+	IF NOT Inside (al_mouse_x, al_mouse_y) THEN
+	BEGIN
+	  SELF.MsgLostMouse;
+	  fPressed := FALSE;
+	  MyDraw
+	END
+      END
+      ELSE BEGIN
+	IF Inside (al_mouse_x, al_mouse_y) THEN
+	BEGIN
+	  SELF.MsgGotMouse;
+	  fPressed := TRUE;
+	  MyDraw
+	END
+      END
+    END;
+    fPressed := FALSE;
+    MyDraw;
+  { Events. }
+    IF (fonClick <> NIL) AND Inside (al_mouse_x, al_mouse_y) THEN
+      fonClick (SELF);
+    RESULT := FALSE
+  END;
+
+
+
+(* Constructor. *)
+  CONSTRUCTOR TalGUI_CustomButton.Create;
+  BEGIN
+    INHERITED Create;
+    fonClick := NIL
+  END;
+
+
+
+(* Initializes the control.  It's called by the @link(TalGUI_Dialog) object
+  just before it displays the dialog. *)
+  PROCEDURE TalGUI_CustomButton.Initialize;
+  BEGIN
+    INHERITED Initialize;
+    fPressed := FALSE
+  END;
+
+
+
+(* Queries if wants focus. *)
+  FUNCTION TalGUI_CustomButton.WantFocus: BOOLEAN;
+  BEGIN
+    RESULT := Enabled
   END;
 
 
