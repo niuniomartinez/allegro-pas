@@ -72,35 +72,45 @@ PROGRAM Test;
     al_show_mouse (al_screen);
   { Dialog must be created after setting the graphics mode. }
     Dialog := TalGUI_Dialog.Create;
- { Play fair with OS. }
-    Ndx := Dialog.Controls.Add (TalGUI_ClearScreen.Create);
-    TalGUI_ClearScreen (Dialog.Controls[Ndx]).Color :=
-      Dialog.Style.BackgroundColor;
-
+  { Play fair with OS. }
+    Dialog.Controls.Add (TalGUI_ClearScreen.Create);
+  { Some texts. }
+    Dialog.Controls.Add (TalGUI_Label.Create);
+    WITH TalGUI_Label (Dialog.Controls[1]) DO
+    BEGIN
+      X := 0; Y := 5; Width := AL_SCREEN_W; Height := 8;
+      Caption := 'New Allegro.pas'' Object-Oriented GUI example';
+      Alignment := agaCenter
+    END;
+  { Example buttons. }
     Ndx := Dialog.Controls.Add (TalGUI_Button.Create);
     WITH TalGUI_Button (Dialog.Controls[Ndx]) DO
     BEGIN
       X := 25; Y := 25;
-      Width := 100; Height := 16;
-      Caption := 'A button';
+      Width := 144; Height := 24;
+      Caption := 'Press me'
     END;
     Ndx := Dialog.Controls.Add (TalGUI_Button.Create);
     WITH TalGUI_Button (Dialog.Controls[Ndx]) DO
     BEGIN
       X := 25; Y := 125;
-      Width := 100; Height := 16;
-      Caption := 'Another Btn';
+      Width := 144; Height := 24;
+      Caption := 'Disabled button';
+      Enabled := FALSE
     END;
  { Close button. }
     Ndx := Dialog.Controls.Add (TalGUI_Button.Create);
     WITH TalGUI_Button (Dialog.Controls[Ndx]) DO
     BEGIN
       X := 25; Y := 200;
-      Width := 100; Height := 16;
+      Width := 144; Height := 24;
       Caption := 'Close dialog';
     { Set event. }
       onCLick := @SELF.onCloseBtnClick
     END;
+  { Set colors. }
+    Dialog.SetDefaultColors;
+    Dialog.Controls[0].Color := Dialog.Style.BackgroundColor;
   END;
 
 
@@ -109,7 +119,7 @@ PROGRAM Test;
   PROCEDURE TDemoGUI.Run;
   BEGIN
     TRY
-      Dialog.Run (1)
+      Dialog.Run (2)
     EXCEPT
       ON Error: Exception DO
       BEGIN

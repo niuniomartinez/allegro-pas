@@ -15,6 +15,15 @@ INTERFACE
 
 
 
+  (* Alignment values. *)
+    TalGUI_Alignment = (
+      agaLeft,   (*<Aligned to the left side. *)
+      agaCenter, (*<Centered. *)
+      agaRight   (*<Aligned to the right. *)
+    );
+
+
+
   (* Defines a base class for GUI styles. *)
     TalGUI_Style = CLASS (TObject)
     PRIVATE
@@ -118,6 +127,7 @@ INTERFACE
     TalGUI_Control = CLASS (TObject)
     PRIVATE
       fOwner: TalGUI_Dialog;
+      fBgColor, fColor, fBdColor: LONGINT;
       fX, fY, fW, fH, fKeyShortCut, fTag: INTEGER;
       fHasFocus, fHasMouse, fEnabled, fRedraw: BOOLEAN;
     PROTECTED
@@ -175,6 +185,10 @@ INTERFACE
     (* Initializes the control.  It's called by the @link(TalGUI_Dialog) object
       just before it displays the dialog. *)
       PROCEDURE Initialize; VIRTUAL;
+    (* Sets colors to default.  Note that control must be part of a dialog or
+       this procedure will fail!
+       @seealso(BorderColor) @seealso(BackgroundColor) @seealso(Color) *)
+      PROCEDURE SetDefaultColors; VIRTUAL;
     (* Finalizes the control  It's called when closing the dialog.  Allows to
       perform whatever cleanup operations it requires. *)
       PROCEDURE Finalize; VIRTUAL;
@@ -192,6 +206,15 @@ INTERFACE
 
     (* Reference to the owner dialog. *)
       PROPERTY Dialog: TalGUI_Dialog READ fOwner;
+    (* Color used by border (if any).
+      @seealso(BackgroundColor) @seealso(Color) @seealso(SetDefaultColors) *)
+      PROPERTY BorderColor: LONGINT READ fBdColor WRITE fBdColor;
+    (* Color used by background (if any).
+      @seealso(BorderColor) @seealso(Color) @seealso(SetDefaultColors) *)
+      PROPERTY BackgroundColor: LONGINT READ fBgColor WRITE fBgColor;
+    (* Color.
+      @seealso(BorderColor) @seealso(BackgroundColor) @seealso(SetDefaultColors) *)
+      PROPERTY Color: LONGINT READ fColor WRITE fColor;
     (* Left position of the component. *)
       PROPERTY X: INTEGER READ fX WRITE fX;
     (* Top position of the component. *)
@@ -248,6 +271,8 @@ INTERFACE
     (* Adds given control to the list.
       @return(Index to of the control.) *)
       FUNCTION Add (aControl: TalGUI_Control): INTEGER; INLINE;
+    (* Sets default colors to all contained controls. *)
+      PROCEDURE SetDefaultColors;
     (* Draw controls in the given bitmap. *)
       PROCEDURE Draw (BmpOut: AL_BITMAPptr);
 
@@ -310,6 +335,9 @@ INTERFACE
     (* Destructor. *)
       DESTRUCTOR Destroy; OVERRIDE;
 
+    (* Sets default colors to all contained controls.  Note that @link(Style)
+      @bold(must) be set. *)
+      PROCEDURE SetDefaultColors;
     (* Executes the dialog loop.
 
        It sets the input focus to the @code(FocusCtrl) control,  Then it
@@ -364,16 +392,11 @@ INTERFACE
      Since it's a @code(TalGUI_Yield) descendent, such object isn't needed if
      @code(TalGUI_ClearScreen) is used. *)
     TalGUI_ClearScreen = CLASS (TalGUI_Yield)
-    PRIVATE
-      fColor: LONGINT;
     PUBLIC
     (* Constructor. *)
       CONSTRUCTOR Create; OVERRIDE;
     (* Draws the control in the given bitmap. *)
       PROCEDURE Draw (Bmp: AL_BITMAPptr); OVERRIDE;
-
-    (* Color to use to clear the screen. *)
-      PROPERTY Color: LONGINT READ fColor WRITE fColor;
     END;
 
 
@@ -386,6 +409,21 @@ INTERFACE
 
   (* Draws text onto the dialog. *)
     TalGUI_Label = CLASS (TalGUI_Control)
+    PRIVATE
+      fCaption: STRING;
+      fAlignment: TalGUI_Alignment;
+
+      PROCEDURE SetAlignment (CONST aAlign: TalGUI_Alignment); INLINE;
+      PROCEDURE SetCaption   (CONST aCaption: STRING); INLINE;
+    PUBLIC
+    (* Sets colors to default. *)
+      PROCEDURE SetDefaultColors; OVERRIDE;
+    (* Draws the control in the given bitmap. *)
+      PROCEDURE Draw (Bmp: AL_BITMAPptr); OVERRIDE;
+    (* Text alignment. *)
+      PROPERTY Alignment: TalGUI_Alignment READ fAlignment WRITE SetAlignment;
+    (* Label text. *)
+      PROPERTY Caption: STRING READ fCaption WRITE SetCaption;
     END;
 
 
@@ -627,6 +665,9 @@ IMPLEMENTATION
   BEGIN
     INHERITED Create;
     fOwner := NIL;
+    fBdColor := Random (maxLongint);
+    fBgColor := Random (maxLongint);
+    fColor   := Random (maxLongint);
     fX := 0; fY := 0; fW := 0; fH := 0; fTag := 0;
     fEnabled := TRUE; fHasFocus := FALSE;
   END;
@@ -645,6 +686,16 @@ IMPLEMENTATION
   PROCEDURE TalGUI_Control.Finalize;
   BEGIN
     ; { Does nothing by default. }
+  END;
+
+
+
+(* Sets default colors. *)
+  PROCEDURE TalGUI_Control.SetDefaultColors;
+  BEGIN
+    fColor   := fOwner.Style.TextColor;
+    fBdColor := fOwner.Style.BorderColor;
+    fBgColor := fOwner.Style.BackgroundColor
   END;
 
 
@@ -738,6 +789,18 @@ IMPLEMENTATION
 
 
 
+(* Set default colors. *)
+  PROCEDURE TalGUI_ControlList.SetDefaultColors;
+  VAR
+    Ndx: INTEGER;
+  BEGIN
+    FOR Ndx := 0 TO (fControlList.Count - 1) DO
+      IF GetControl (Ndx) <> NIL THEN
+	GetControl (Ndx).SetDefaultColors
+  END;
+
+
+
 (* Draw controls in the given bitmap. *)
   PROCEDURE TalGUI_ControlList.Draw (BmpOut: AL_BITMAPptr);
   VAR
@@ -815,7 +878,7 @@ IMPLEMENTATION
     VAR
       NewFocus: INTEGER;
     BEGIN
-      IF fFocusIndex < 0 THEN EXIT;
+      IF fFocusIndex < 0 THEN fFocusIndex := 0;
       NewFocus := fFocusIndex + 1;
       IF NewFocus >= fControlList.Count THEN NewFocus := 0;
       WHILE NewFocus <> fFocusIndex DO
@@ -837,7 +900,7 @@ IMPLEMENTATION
     VAR
       PrevFocus: INTEGER;
     BEGIN
-      IF fFocusIndex < 0 THEN EXIT;
+      IF fFocusIndex < 0 THEN fFocusIndex := 0;
       PrevFocus := fFocusIndex - 1;
       IF PrevFocus < 0 THEN PrevFocus := fControlList.Count - 1;
       WHILE PrevFocus <> fFocusIndex DO
@@ -867,8 +930,9 @@ IMPLEMENTATION
 	fControlList[CtrNdx].MsgGotMouse;
 	IF (al_mouse_b <> 0) AND fControlList[CtrNdx].Enabled THEN
 	BEGIN
-	  SetFocus (CtrNdx);
-	  fControlList[CtrNdx].MsgClick (al_mouse_x, al_mouse_y, al_mouse_b)
+	  IF fControlList[CtrNdx].MsgClick (al_mouse_x, al_mouse_y, al_mouse_b)
+	  THEN
+	    SetFocus (CtrNdx);
 	END
       END
       ELSE IF fControlList[CtrNdx].fHasMouse THEN
@@ -878,8 +942,9 @@ IMPLEMENTATION
     IF al_keypressed THEN
     BEGIN
       KeyPressed := al_readkey;
-    { The current focus may want to manage the key presed. }
-      IF fControlList[fFocusIndex].MsgKeyChar (KeyPressed) THEN
+    { Current focus may want to manage the key presed. }
+      IF (fFocusIndex >= 0) AND fControlList[fFocusIndex].HasFocus
+      AND fControlList[fFocusIndex].MsgKeyChar (KeyPressed) THEN
 	DoIddle := FALSE
       ELSE BEGIN
       { Control keys. }
@@ -965,6 +1030,14 @@ IMPLEMENTATION
 
 
 
+(* Set default colors. *)
+  PROCEDURE TalGUI_Dialog.SetDefaultColors;
+  BEGIN
+    fControlList.SetDefaultColors
+  END;
+
+
+
 (* Executes the dialog loop. *)
   FUNCTION TalGUI_Dialog.Run (CONST FocusCtrl: INTEGER): INTEGER;
   BEGIN
@@ -1012,7 +1085,7 @@ IMPLEMENTATION
   CONSTRUCTOR TalGUI_ClearScreen.Create;
   BEGIN
     INHERITED Create;
-    fColor := al_makecol (0, 0, 0)
+    SELF.Color := al_makecol (0, 0, 0)
   END;
 
 
@@ -1020,7 +1093,60 @@ IMPLEMENTATION
 (* Draws the control in the given bitmap. *)
   PROCEDURE TalGUI_ClearScreen.Draw (Bmp: AL_BITMAPptr);
   BEGIN
-    al_clear_to_color (Bmp, fColor)
+    al_clear_to_color (Bmp, SELF.Color)
+  END;
+
+
+
+(*
+ * TalGUI_Label
+ *****************************************************************************)
+
+  PROCEDURE TalGUI_Label.SetAlignment (CONST aAlign: TalGUI_Alignment);
+  BEGIN
+    fAlignment := aAlign; SELF.RedrawMe := TRUE
+  END;
+
+
+
+  PROCEDURE TalGUI_Label.SetCaption (CONST aCaption: STRING);
+  BEGIN
+    fCaption := aCaption; SELF.RedrawMe := TRUE
+  END;
+
+
+
+(* Sets default colors. *)
+  PROCEDURE TalGUI_Label.SetDefaultColors;
+  BEGIN
+    INHERITED SetDefaultColors;
+    BorderColor := BackgroundColor
+  END;
+
+
+
+(* Draws the control in the given bitmap. *)
+  PROCEDURE TalGUI_Label.Draw (Bmp: AL_BITMAPptr);
+  VAR
+    pX: INTEGER;
+  BEGIN
+    IF SELF.BackgroundColor > -1 THEN
+      Dialog.Style.DrawBox (
+        Bmp, X, Y, x + Width - 1, Y + Height - 1,
+        SELF.BackgroundColor, 0, FALSE
+      );
+    CASE fAlignment OF
+    agaLeft:
+      pX := X;
+    agaCenter:
+      px := X + (Width DIV 2) - (al_text_length (al_font, fCaption) DIV 2);
+    agaRight:
+      px := X + Width - al_text_length (al_font, fCaption);
+    END;
+    IF SELF.Enabled THEN
+      Dialog.Style.DrawText (Bmp, fCaption, pX, Y, SELF.Color, FALSE)
+    ELSE
+      Dialog.Style.DrawDisabledText (Bmp, fCaption, pX, Y, FALSE)
   END;
 
 
@@ -1073,9 +1199,13 @@ IMPLEMENTATION
     fPressed := FALSE;
     MyDraw;
   { Events. }
-    IF (fonClick <> NIL) AND Inside (al_mouse_x, al_mouse_y) THEN
-      fonClick (SELF);
-    RESULT := FALSE
+    IF Inside (al_mouse_x, al_mouse_y) THEN
+    BEGIN
+      RESULT := TRUE;
+      IF fonClick <> NIL THEN fonClick (SELF)
+    END
+    ELSE
+      RESULT := FALSE
   END;
 
 
@@ -1170,8 +1300,6 @@ IMPLEMENTATION
         al_vline (Bmp, X1 + Cnt, y1 + Cnt, y2 - Cnt, ClrLeft);
       END
     END
-    ELSE
-      al_rect (Bmp, x1, y1, x2, y2, fBorderColor);
   END;
 
 
