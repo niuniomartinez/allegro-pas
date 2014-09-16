@@ -2,7 +2,7 @@ PROGRAM Test;
 (* Tests the GUI. *)
 
   USES
-    allegro, alGUI, alGUICommonCtrls,
+    Allegro, alGUI, alGUICommonCtrls,
     sysutils;
 
   TYPE
@@ -74,40 +74,53 @@ PROGRAM Test;
     Dialog := TalGUI_Dialog.Create;
   { Play fair with OS. }
     Dialog.Controls.Add (TalGUI_ClearScreen.Create);
-  { Some texts. }
-    Dialog.Controls.Add (TalGUI_Label.Create);
-    WITH TalGUI_Label (Dialog.Controls[1]) DO
-    BEGIN
-      X := 0; Y := 5; Width := AL_SCREEN_W; Height := 8;
-      Caption := 'New Allegro.pas'' Object-Oriented GUI example';
-      Alignment := agaCenter
-    END;
+  { Some texts and static components. }
+    Dialog.Controls.Add (TalGUI_Label.Create (
+      ' This is a label aligned left ',
+      0, 16, AL_SCREEN_W, 8, agaLeft
+    ));
+    Dialog.Controls.Add (TalGUI_Label.Create (
+      ' This is a label centered ',
+      0, 24, AL_SCREEN_W, 8, agaCenter
+    ));
+    Dialog.Controls.Add (TalGUI_Label.Create (
+      ' This is a label aligned right ',
+      0, 32, AL_SCREEN_W, 8, agaRight
+    ));
+
+    Dialog.Controls.Add (TalGUI_Label.Create (
+      'These are TalGUI_Box -->',
+      0, 64, AL_SCREEN_W DIV 2, 8, agaRight
+    ));
+    Dialog.Controls.Add (TalGUI_Box.Create (
+      AL_SCREEN_W DIV 2 + 8, 50, 100, 32
+    ));
+    Dialog.Controls.Add (TalGUI_Box.Create (
+      AL_SCREEN_W DIV 2 + 115, 50, 100, 32, FALSE
+    ));
+
   { Example buttons. }
-    Ndx := Dialog.Controls.Add (TalGUI_Button.Create);
-    WITH TalGUI_Button (Dialog.Controls[Ndx]) DO
-    BEGIN
-      X := 25; Y := 25;
-      Width := 144; Height := 24;
-      Caption := 'Press me'
-    END;
-    Ndx := Dialog.Controls.Add (TalGUI_Button.Create);
-    WITH TalGUI_Button (Dialog.Controls[Ndx]) DO
-    BEGIN
-      X := 25; Y := 125;
-      Width := 144; Height := 24;
-      Caption := 'Disabled button';
-      Enabled := FALSE
-    END;
+    Dialog.Controls.Add (TalGUI_Label.Create (
+      'These are buttons -->',
+      0, 96, AL_SCREEN_W DIV 2, 8, agaRight
+    ));
+    Dialog.Controls.Add (TalGUI_Button.Create (
+      'Press me',
+      AL_SCREEN_W DIV 2 + 8, 88, 144, 24
+    ));
+
+    Ndx := Dialog.Controls.Add (TalGUI_Button.Create (
+      'Disabled button',
+      AL_SCREEN_W DIV 2 + 160, 88, 144, 24
+    ));
+    TalGUI_Button (Dialog.Controls[Ndx]).Enabled := FALSE;
  { Close button. }
-    Ndx := Dialog.Controls.Add (TalGUI_Button.Create);
-    WITH TalGUI_Button (Dialog.Controls[Ndx]) DO
-    BEGIN
-      X := 25; Y := 200;
-      Width := 144; Height := 24;
-      Caption := 'Close dialog';
+    Ndx := Dialog.Controls.Add (TalGUI_Button.Create (
+      'Close dialog',
+      AL_SCREEN_W - 150, AL_SCREEN_H - 50
+    ));
     { Set event. }
-      onCLick := @SELF.onCloseBtnClick
-    END;
+    TalGUI_Button (Dialog.Controls[Ndx]).onCLick := @SELF.onCloseBtnClick;
   { Set colors. }
     Dialog.SetDefaultColors;
     Dialog.Controls[0].Color := Dialog.Style.BackgroundColor;
@@ -119,7 +132,7 @@ PROGRAM Test;
   PROCEDURE TDemoGUI.Run;
   BEGIN
     TRY
-      Dialog.Run (2)
+      Dialog.Run (-1)
     EXCEPT
       ON Error: Exception DO
       BEGIN

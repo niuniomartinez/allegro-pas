@@ -13,6 +13,16 @@ INTERFACE
       fCaption: STRING;
       PROCEDURE SetCaption   (CONST aCaption: STRING); INLINE;
     PUBLIC
+    (* Constructor. *)
+      CONSTRUCTOR Create; OVERRIDE;
+    (* Creaates the button.  Width and height are calculated from caption
+      size. *)
+      CONSTRUCTOR Create (CONST aCaption: STRING; CONST aX, aY: INTEGER); OVERLOAD;
+    (* Creaates the button. *)
+      CONSTRUCTOR Create (CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER;
+	CONST aAlign: TalGUI_Alignment = agaLeft); OVERLOAD;
+    (* Initializes the control. *)
+      PROCEDURE Initialize; OVERRIDE;
     (* Draws the control in the given bitmap. *)
       PROCEDURE Draw (Bmp: AL_BITMAPptr); OVERRIDE;
 
@@ -30,6 +40,51 @@ IMPLEMENTATION
   PROCEDURE TalGUI_Button.SetCaption (CONST aCaption: STRING);
   BEGIN
     fCaption := aCaption; SELF.RedrawMe := TRUE
+  END;
+
+
+
+(* Creaates the button. *)
+  CONSTRUCTOR TalGUI_Button.Create;
+  BEGIN
+    INHERITED Create;
+    fCaption := ''
+  END;
+
+
+
+(* Creaates the button.  Width and height are calculated from caption size. *)
+  CONSTRUCTOR TalGUI_Button.Create (CONST aCaption: STRING; CONST aX, aY: INTEGER);
+  BEGIN
+    INHERITED Create;
+    fCaption := aCaption;
+    X := aX; Y := aY; Width := -1;
+  END;
+
+
+
+(* Creaates the button. *)
+  CONSTRUCTOR TalGUI_Button.Create (CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER; CONST aAlign: TalGUI_Alignment);
+  BEGIN
+    INHERITED Create;
+    fCaption := aCaption;
+    X := aX; Y := aY; Width := aW; Height := aH
+  END;
+
+
+
+(* Initializes the control. *)
+  PROCEDURE TalGUI_Button.Initialize;
+  VAR
+    Margin: INTEGER;
+  BEGIN
+    INHERITED Initialize;
+    IF Width < 0 THEN
+    BEGIN
+      Margin := al_text_length (Dialog.Style.TextFont, 'A');
+      Width := al_text_length (Dialog.Style.TextFont, fCaption) + (Margin * 2);
+      Height := Margin * 3
+    END
   END;
 
 

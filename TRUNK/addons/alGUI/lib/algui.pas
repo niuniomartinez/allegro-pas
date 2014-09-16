@@ -139,9 +139,6 @@ INTERFACE
       was on top of the object.  Typically an object will perform its own
       mouse tracking as long as the button is held down, and only return from
       this message handler when it is released.
-
-      If you process this message, use the functions @link(al_mouse_* ) to
-      read the state of the mouse.
       @return(@true if message was handled, or @false if control isn't
        interested on it.) *)
       FUNCTION MsgClick (CONST aX, aY, Button: INTEGER): BOOLEAN; VIRTUAL;
@@ -316,7 +313,7 @@ INTERFACE
 #)
       @param(FocusCtrl Index to the control that has focus at the beginning.)
       @seealso(Update) @seealso(Shutdown) @seealso(Run) *)
-      PROCEDURE Initialize (CONST FocusCtrl: INTEGER);
+      PROCEDURE Initialize (FocusCtrl: INTEGER);
     (* Updates the dialog.  You should call this before @code(Initialize).
       @return(@true if the dialog is terminated, or @false if it is still
 	active. Upon a return value of @true, it is up to you whether to
@@ -401,8 +398,30 @@ INTERFACE
 
 
 
-  (* Draws a box or panel.  It may have border, bevel and/or background. *)
+  (* Draws a box or panel.
+
+    If BackgroundColor is less than zero, it doesn't draw the background, wich
+    is faster. *)
     TalGUI_Box = CLASS (TalGUI_Control)
+    PRIVATE
+      fBorderWidth: INTEGER;
+      fRaised: BOOLEAN;
+
+      PROCEDURE SetBorderWidth (CONST aWidth: INTEGER); INLINE;
+      PROCEDURE SetRaised (CONST aRaised: BOOLEAN); INLINE;
+    PUBLIC
+    (* Constructor. *)
+      CONSTRUCTOR Create; OVERRIDE;
+    (* Creaates the box. *)
+      CONSTRUCTOR Create (CONST aX, aY, aW, aH: INTEGER;
+	CONST aRaised: BOOLEAN=TRUE; CONST aBorderWidth: INTEGER = 2); OVERLOAD;
+    (* Draws the control in the given bitmap. *)
+      PROCEDURE Draw (Bmp: AL_BITMAPptr); OVERRIDE;
+
+    (* Border width. *)
+      PROPERTY BorderWidth: INTEGER READ fBorderWidth WRITE SetBorderWidth;
+    (* @true, to draw the border as raised, @false to draw it as depressed. *)
+      PROPERTY Raised: BOOLEAN READ fRaised WRITE SetRaised;
     END;
 
 
@@ -416,6 +435,16 @@ INTERFACE
       PROCEDURE SetAlignment (CONST aAlign: TalGUI_Alignment); INLINE;
       PROCEDURE SetCaption   (CONST aCaption: STRING); INLINE;
     PUBLIC
+    (* Constructor. *)
+      CONSTRUCTOR Create; OVERRIDE;
+    (* Creaates the label.  Width and height are calculated from caption
+      size. *)
+      CONSTRUCTOR Create (CONST aCaption: STRING; CONST aX, aY: INTEGER); OVERLOAD;
+    (* Creaates the label. *)
+      CONSTRUCTOR Create (CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER;
+	CONST aAlign: TalGUI_Alignment = agaLeft); OVERLOAD;
+    (* Initializes the control. *)
+      PROCEDURE Initialize; OVERRIDE;
     (* Sets colors to default. *)
       PROCEDURE SetDefaultColors; OVERRIDE;
     (* Draws the control in the given bitmap. *)
@@ -482,8 +511,8 @@ INTERFACE
       @param(BorderWidth Width of border in pixels.)
       @param(BackColor Background color.  If negative, then it will not draw
         background.)
-      @param(Raised @true, to draw the border as raised, if @false to draw it
-        as depressed.)
+      @param(Raised @true, to draw the border as raised, @false to draw it
+        depressed.)
       @seealso(DrawBevel)
      *)
       PROCEDURE DrawBox (
@@ -668,8 +697,8 @@ IMPLEMENTATION
     fBdColor := Random (maxLongint);
     fBgColor := Random (maxLongint);
     fColor   := Random (maxLongint);
-    fX := 0; fY := 0; fW := 0; fH := 0; fTag := 0;
-    fEnabled := TRUE; fHasFocus := FALSE;
+    fX := -1; fY := -1; fW := 0; fH := 0; fTag := 0;
+    fEnabled := TRUE; fHasFocus := FALSE
   END;
 
 
@@ -719,7 +748,8 @@ IMPLEMENTATION
 (* Tests if given point is inside the control. *)
   FUNCTION TalGUI_Control.Inside (CONST aX, aY: INTEGER): BOOLEAN;
   BEGIN
-    RESULT := (fX <= aX) AND (aX <= fX + fW) AND (fY <= aY) AND (aY <= fY + fH)
+    RESULT := (fX <= aX) AND (aX <= fX + fW - 1)
+          AND (fY <= aY) AND (aY <= fY + fH - 1)
   END;
 
 
@@ -829,7 +859,9 @@ IMPLEMENTATION
       BEGIN
       { Be careful:  Uninitialized dialogs may have the Focus property
 	assigned to an unexistent control. }
-	IF (0 <= fFocusIndex) AND (fFocusIndex < fControlList.Count) THEN
+	IF (0 <= fFocusIndex) AND (fFocusIndex < fControlList.Count)
+	AND fControlList[fFocusIndex].HasFocus
+	THEN
 	  FocusReleased := fControlList[fFocusIndex].MsgLostFocus
 	ELSE
 	{ If nobody has focus, then it's free. }
@@ -845,17 +877,30 @@ IMPLEMENTATION
 
 
 (* Initializes the dialog. *)
-  PROCEDURE TalGUI_Dialog.Initialize (CONST FocusCtrl: INTEGER);
+  PROCEDURE TalGUI_Dialog.Initialize (FocusCtrl: INTEGER);
   VAR
     Ndx: INTEGER;
   BEGIN
-    fFocusIndex := -1;
   { Initialize the controls. }
     FOR Ndx := 0 TO fControlList.Count - 1 DO
     BEGIN
       fControlList[Ndx].Initialize;
       fControlList[Ndx].fHasMouse := FALSE;
       fControlList[Ndx].fHasFocus := FALSE
+    END;
+  { Set focus. }
+    IF (0 > FocusCtrl) OR (FocusCtrl >= fControlList.Count) THEN
+      FocusCtrl := 0;
+    fFocusIndex := FocusCtrl;
+    INC (FocusCtrl);
+    IF FocusCtrl >= fControlList.Count THEN FocusCtrl := 0;
+    WHILE fFocusIndex <> FocusCtrl DO
+    BEGIN
+      IF fControlList[FocusCtrl].Enabled
+      AND fControlList[FocusCtrl].WantFocus THEN
+	BREAK;
+      INC (FocusCtrl);
+      IF FocusCtrl >= fControlList.Count THEN FocusCtrl := 0;
     END;
     SELF.SetFocus (FocusCtrl);
   { Must draw all controls. }
@@ -931,8 +976,11 @@ IMPLEMENTATION
 	IF (al_mouse_b <> 0) AND fControlList[CtrNdx].Enabled THEN
 	BEGIN
 	  IF fControlList[CtrNdx].MsgClick (al_mouse_x, al_mouse_y, al_mouse_b)
-	  THEN
+	  THEN BEGIN
 	    SetFocus (CtrNdx);
+	    DoIddle := FALSE;
+	    BREAK
+	  END
 	END
       END
       ELSE IF fControlList[CtrNdx].fHasMouse THEN
@@ -1099,6 +1147,59 @@ IMPLEMENTATION
 
 
 (*
+ * TalGUI_Box
+ *****************************************************************************)
+
+  PROCEDURE TalGUI_Box.SetBorderWidth (CONST aWidth: INTEGER);
+  BEGIN
+    fBorderWidth := aWidth;
+    IF fBorderWidth < 0 THEN fBorderWidth := 1;
+    RedrawMe := TRUE
+  END;
+
+
+
+  PROCEDURE TalGUI_Box.SetRaised (CONST aRaised: BOOLEAN);
+  BEGIN
+    fRaised := aRaised;
+    RedrawMe := TRUE
+  END;
+
+
+
+(* Constructor. *)
+  CONSTRUCTOR TalGUI_Box.Create;
+  BEGIN
+    INHERITED Create;
+    fBorderWidth := 2; fRaised := TRUE
+  END;
+
+
+
+(* Creaates the box. *)
+  CONSTRUCTOR TalGUI_Box.Create (CONST aX, aY, aW, aH: INTEGER;
+    CONST aRaised: BOOLEAN; CONST aBorderWidth: INTEGER);
+  BEGIN
+    INHERITED Create;
+    X := aX; Y := aY; Width := aW; Height := aH;
+    fRaised := aRaised; fBorderWidth := aBorderWidth
+  END;
+
+
+
+(* Draws the control in the given bitmap. *)
+  PROCEDURE TalGUI_Box.Draw (Bmp: AL_BITMAPptr);
+  BEGIN
+    Dialog.Style.DrawBox (
+      Bmp,
+      X, Y, X + Width - 1, Y + Height - 1,
+      BackgroundColor, fBorderWidth, fRaised
+    );
+  END;
+
+
+
+(*
  * TalGUI_Label
  *****************************************************************************)
 
@@ -1112,6 +1213,51 @@ IMPLEMENTATION
   PROCEDURE TalGUI_Label.SetCaption (CONST aCaption: STRING);
   BEGIN
     fCaption := aCaption; SELF.RedrawMe := TRUE
+  END;
+
+
+
+(* Creaates the label. *)
+  CONSTRUCTOR TalGUI_Label.Create;
+  BEGIN
+    INHERITED Create;
+    fCaption := '';
+    fAlignment := agaLeft
+  END;
+
+
+
+(* Creaates the label.  Width and height are calculated from caption size. *)
+  CONSTRUCTOR TalGUI_Label.Create (CONST aCaption: STRING; CONST aX, aY: INTEGER);
+  BEGIN
+    INHERITED Create;
+    fCaption := aCaption;
+    fX := aX; fY := aY; fW := -1;
+    fAlignment := agaLeft
+  END;
+
+
+
+(* Creaates the label. *)
+  CONSTRUCTOR TalGUI_Label.Create (CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER; CONST aAlign: TalGUI_Alignment);
+  BEGIN
+    INHERITED Create;
+    fCaption := aCaption;
+    fX := aX; fY := aY; fW := aW; fH := aH;
+    fAlignment := aAlign
+  END;
+
+
+
+(* Initializes the control. *)
+  PROCEDURE TalGUI_Label.Initialize;
+  BEGIN
+    INHERITED Initialize;
+    IF fW < 0 THEN
+    BEGIN
+      fW := al_text_length (Dialog.Style.TextFont, fCaption);
+      fH := al_text_height (Dialog.Style.TextFont)
+    END
   END;
 
 
@@ -1139,9 +1285,9 @@ IMPLEMENTATION
     agaLeft:
       pX := X;
     agaCenter:
-      px := X + (Width DIV 2) - (al_text_length (al_font, fCaption) DIV 2);
+      px := X + (Width DIV 2) - (al_text_length (Dialog.Style.TextFont, fCaption) DIV 2);
     agaRight:
-      px := X + Width - al_text_length (al_font, fCaption);
+      px := X + Width - al_text_length (Dialog.Style.TextFont, fCaption);
     END;
     IF SELF.Enabled THEN
       Dialog.Style.DrawText (Bmp, fCaption, pX, Y, SELF.Color, FALSE)
@@ -1322,7 +1468,7 @@ IMPLEMENTATION
     STRING; X, Y: LONGINT; Centered: BOOLEAN);
   BEGIN
     DrawText (Bmp, Msg, X + 1, Y + 1, fLightColor, Centered);
-    DrawText (Bmp, Msg, X, Y,     fDarkColor,  Centered)
+    DrawText (Bmp, Msg, X, Y, fDarkColor, Centered)
   END;
 
 END.
