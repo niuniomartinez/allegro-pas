@@ -1,8 +1,5 @@
 * Fix al_pack_fseek with workaround.
 
-* Make exampe "ex3d" similar to the original one, adding more cubes, adding
-  "fog" to the TCube class and sorting by Z axis.
-
 * Some functions don't return the correct value:
  - al_getpixel (see exalpha and compare with the original C version).
 
