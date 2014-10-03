@@ -2,7 +2,7 @@ PROGRAM Test;
 (* Tests the GUI. *)
 
   USES
-    Allegro, alGUI, alGUICommonCtrls,
+    Allegro, alGUI, alGUICommonCtrls, alGUIdialogs,
     sysutils;
 
   TYPE
@@ -10,6 +10,8 @@ PROGRAM Test;
     TDemoGUI = CLASS (TObject)
     PRIVATE
       Dialog: TalGUI_Dialog;
+    (* Event executed when clicking the "Click me" button. *)
+      PROCEDURE onClickMeBtnClick (Sender: TalGUI_Control);
     (* Event executed when clicking the close button. *)
       PROCEDURE onCloseBtnClick (Sender: TalGUI_Control);
     PUBLIC
@@ -22,6 +24,19 @@ PROGRAM Test;
     (* Executes de application. *)
       PROCEDURE Run; INLINE;
     END;
+
+
+
+(* Event executed when clicking the "Click me" button. *)
+  PROCEDURE TDemoGUI.onClickMeBtnClick (Sender: TalGUI_Control);
+  BEGIN
+    MessageDlg (
+      'Message box',
+      'Congratulations!'#10'You clicked a button.',
+      ['Close dialog']
+    );
+    Dialog.RedrawAll
+  END;
 
 
 
@@ -104,10 +119,11 @@ PROGRAM Test;
       'These are buttons -->',
       0, 96, AL_SCREEN_W DIV 2, 8, agaRight
     ));
-    Dialog.Controls.Add (TalGUI_Button.Create (
+    Ndx := Dialog.Controls.Add (TalGUI_Button.Create (
       'Press me',
       AL_SCREEN_W DIV 2 + 8, 88, 144, 24
     ));
+    TalGUI_Button (Dialog.Controls[Ndx]).onCLick := @SELF.onClickMeBtnClick;
 
     Ndx := Dialog.Controls.Add (TalGUI_Button.Create (
       'Disabled button',
