@@ -32,7 +32,7 @@ PROGRAM Test;
   BEGIN
     MessageDlg (
       'Message box',
-      'Congratulations!'#10'You clicked a button.',
+      'Congratulations!'#10'You clicked a button.'#10'Press [Esc] to close.',
       ['Close dialog']
     );
     Dialog.RedrawAll
@@ -168,29 +168,4 @@ BEGIN
   Demo.Initialize;
   Demo.Run;
   FreeAndNil (Demo);
-
-
-    {
-    Dialog.Style.DrawDialogFrame (
-      Dialog.Bmp, 5, 5, 315, 195, Dialog.Style.BackgroundColor, 'GUI example', TRUE
-    );
-    Dialog.Style.DrawBevel (Dialog.Bmp, 10, 26, 305, 185, FALSE);
-
-    Dialog.Style.DrawText (
-      Dialog.Bmp, 'This is normal text.', 20, 32, Dialog.Style.TextColor, FALSE
-    );
-    Dialog.Style.DrawDisabledText (
-      Dialog.Bmp, 'This is disabled text.', 20, 40, FALSE
-    );
-
-    Dialog.Style.DrawBox (
-      Dialog.Bmp, 20, 50, 50, 100, -1, 2, TRUE
-    );
-
-    Dialog.Style.DrawBox (
-      Dialog.Bmp, 60, 50, 90, 100, -1, 2, FALSE
-    );
-
-    Dialog.Style.DrawBevel (Dialog.Bmp, 100, 50, 130, 100, TRUE);
-    }
 END.

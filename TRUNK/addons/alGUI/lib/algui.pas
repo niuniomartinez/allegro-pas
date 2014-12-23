@@ -270,6 +270,10 @@ INTERFACE
       FUNCTION Add (aControl: TalGUI_Control): INTEGER; INLINE;
     (* Sets default colors to all contained controls. *)
       PROCEDURE SetDefaultColors;
+    (* Changes position of all contained controls.
+      @param(DisplacementX How many pixels to move horizontally.)
+      @param(DisplacementY How many pixels to move vertically.) *)
+      PROCEDURE MoveControls (CONST DisplacementX, DisplacementY: INTEGER);
     (* Draw controls in the given bitmap. *)
       PROCEDURE Draw (BmpOut: AL_BITMAPptr);
 
@@ -313,17 +317,17 @@ INTERFACE
 #)
       @param(FocusCtrl Index to the control that has focus at the beginning.)
       @seealso(Update) @seealso(Shutdown) @seealso(Run) *)
-      PROCEDURE Initialize (FocusCtrl: INTEGER);
+      PROCEDURE Initialize (FocusCtrl: INTEGER); VIRTUAL;
     (* Updates the dialog.  You should call this before @code(Initialize).
       @return(@true if the dialog is terminated, or @false if it is still
 	active. Upon a return value of @true, it is up to you whether to
 	call @code(Shutdown) or to continue execution.)
       @seealso(Initialize) @seealso(Shutdown) @seealso(Run) *)
-      FUNCTION Update: BOOLEAN;
+      FUNCTION Update: BOOLEAN; VIRTUAL;
     (* Finalizes the dialog execution and returns the control that caused it to
       exit or @code(-1) if @code(Esc) key was pressed.
       @seealso(Initialize) @seealso(Update) @seealso(Run) *)
-      FUNCTION Shutdown: INTEGER;
+      FUNCTION Shutdown: INTEGER; VIRTUAL;
     PUBLIC
     (* Constructor.
 
@@ -827,6 +831,21 @@ IMPLEMENTATION
     FOR Ndx := 0 TO (fControlList.Count - 1) DO
       IF GetControl (Ndx) <> NIL THEN
 	GetControl (Ndx).SetDefaultColors
+  END;
+
+
+
+(* Changes position of all contained controls. *)
+  PROCEDURE TalGUI_ControlList.MoveControls (CONST DisplacementX, DisplacementY: INTEGER);
+  VAR
+    Ndx: INTEGER;
+  BEGIN
+    FOR Ndx := 0 TO (fControlList.Count - 1) DO
+      IF GetControl (Ndx) <> NIL THEN
+      BEGIN
+	GetControl (Ndx).X := GetControl (Ndx).X + DisplacementX;
+	GetControl (Ndx).Y := GetControl (Ndx).Y + DisplacementY;
+      END
   END;
 
 
