@@ -32,7 +32,7 @@ PROGRAM Test;
   BEGIN
     MessageDlg (
       'Message box',
-      'Congratulations!'#10'You clicked a button.'#10'Press [Esc] to close.',
+      'Congratulations!'#10'You clicked a button.',
       ['Close dialog']
     );
     Dialog.RedrawAll
@@ -130,12 +130,11 @@ PROGRAM Test;
       AL_SCREEN_W DIV 2 + 160, 88, 144, 24
     ));
     TalGUI_Button (Dialog.Controls[Ndx]).Enabled := FALSE;
- { Close button. }
+  { Close button. }
     Ndx := Dialog.Controls.Add (TalGUI_Button.Create (
       'Close dialog',
       AL_SCREEN_W - 150, AL_SCREEN_H - 50
     ));
-    { Set event. }
     TalGUI_Button (Dialog.Controls[Ndx]).onCLick := @SELF.onCloseBtnClick;
   { Set colors. }
     Dialog.SetDefaultColors;
