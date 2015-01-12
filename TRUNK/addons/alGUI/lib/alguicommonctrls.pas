@@ -30,7 +30,6 @@ INTERFACE
       PROPERTY Caption: STRING READ fCaption WRITE SetCaption;
     END;
 
-
 IMPLEMENTATION
 
 (*

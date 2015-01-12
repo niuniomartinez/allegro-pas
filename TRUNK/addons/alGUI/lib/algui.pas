@@ -1017,7 +1017,10 @@ IMPLEMENTATION
       { Control keys. }
 	CASE KeyPressed SHR 8 OF
 	AL_KEY_ESC:
-	  SELF.Close;
+	  BEGIN
+	    SELF.SetFocus (-1);
+	    SELF.Close
+	  END;
 	AL_KEY_TAB:
 	  IF (al_key_shifts AND AL_KB_SHIFT_FLAG) <> 0 THEN
 	    PreviousFocus

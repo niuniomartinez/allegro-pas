@@ -1,7 +1,9 @@
 UNIT alGUIdialogs;
-(*<Defines some dialogs. *)
+(*<Defines classes that helps to build dialogs.
+
+  Also defines some common use dialogs. *)
 (*
-  Copyright (c) 2014 Guillermo Martínez J.
+  Copyright (c) 2014-2015 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -40,7 +42,7 @@ INTERFACE
       CONSTRUCTOR Create
 	(CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER); OVERLOAD;
     (* Adjust frame size and position, so all controls in the owner dialog will
-	be drawed inside the frame. @seealso(TalGUI_Control.Dialog) *)
+	be drawn inside the frame. @seealso(TalGUI_Control.Dialog) *)
       PROCEDURE AdjustSize;
     (* Draws the control in the given bitmap. *)
       PROCEDURE Draw (Bmp: AL_BITMAPptr); OVERRIDE;
@@ -54,7 +56,8 @@ INTERFACE
   (* Base class for default dialogs.
 
      It introduces some stuff as a frame to show the caption and helpers to add
-     and manage controls. *)
+     and manage controls.
+     @seealso(MessageDlg) *)
     TalGUI_CustomDialogWindow = CLASS (TalGUI_Dialog)
     PRIVATE
       fNextY: INTEGER;
@@ -63,6 +66,8 @@ INTERFACE
       FUNCTION GetCaption: STRING;
       PROCEDURE SetCaption (CONST aCaption: STRING);
     PROTECTED
+    (* Event handler that closes the dialog. *)
+      PROCEDURE ControlClosesDialog (Sender: TalGUI_Control);
     (* Initializes the dialog.
 
       This method adjust the window size and then calls the @code(INHERITED)
@@ -71,12 +76,31 @@ INTERFACE
     PUBLIC
     (* Constructor. *)
       CONSTRUCTOR Create; OVERRIDE;
+    (* Adds a @code(Control) to the dialog.
+
+      Control will be put at the bottom of the dialog window, and window will
+      be resized so the new control will fit inside.
+      @param(aControl The control.) @retun(Index to the control.)
+      @seealso(AddLabel) @seealso(AddButton) @seealso(NextRow)
+     *)
+      FUNCTION AddControl (aControl: TalGUI_Control): INTEGER;
     (* Adds a @code(Label).
        @param(aText Text of the label.)
-       @return(The index to the label control.) *)
+       @return(The index to the label control.)
+       @seealso(AddControl) @seealso(AddButton) @seealso(NextRow)
+     *)
       FUNCTION AddLabel (CONST aText: STRING): INTEGER;
+    (* Adds a @code(Button).
+       @param(aCaption Caption of the button.)
+       @return(The index to the Button control.)
+      @seealso(AddLabel) @seealso(AddControl) @seealso(NextRow)
+      *)
+      FUNCTION AddButton (CONST aCaption: STRING): INTEGER;
+
     (* Dialog caption. *)
       PROPERTY Caption: STRING READ GetCaption WRITE SetCaption;
+    (* Row where the @code(Add) methods will add new controls. *)
+      PROPERTY NextRow: INTEGER READ fNextY WRITE fNextY;
     END;
 
 
@@ -111,72 +135,24 @@ IMPLEMENTATION
   VAR
     Dialog: TalGUI_CustomDialogWindow;
     Lines: TStringList;
-
-    Ndx, Tmp, DlgX, DlgY, DlgWidth, DlgHeight, TxtH, BtnLeft: INTEGER;
+    Ndx: INTEGER;
   BEGIN
     Lines := TStringList.Create;
     Dialog := TalGUI_CustomDialogWindow.Create;
     TRY
       Dialog.Caption := aCaption;
-    { Get dialog lines. }
+    { Set dialog lines. }
       Lines.Text := aMsg;
       FOR Ndx := 0 TO Lines.Count - 1 DO
 	Dialog.AddLabel (Lines[Ndx]);
-
-    { Get dialog sizes. }
-{
-      DlgWidth := 0; DlgHeight := 0;
-      TxtH := al_text_height (Dialog.Style.TextFont);
-      FOR Ndx := 0 TO Lines.Count - 1 DO
-      BEGIN
-	INC (DlgHeight, TxtH);
-	Tmp := al_text_length (Dialog.Style.TextFont, Lines[Ndx]);
-	IF DlgWidth < Tmp THEN DlgWidth := Tmp;
-      END;
-      Tmp := 0;
-      FOR Ndx := 0 TO Length (Buttons) DO
-	INC (Tmp, GetButtonWidth (Dialog.Style.TextFont, Buttons[Ndx]));
-      IF DlgWidth < Tmp THEN
-      BEGIN
-	DlgWidth := Tmp;
-	BtnLeft := DLG_MARGIN DIV 2
-      END
-      ELSE
-	BtnLeft := (DlgWidth - Tmp) DIV 2;
-      INC (DlgWidth, DLG_MARGIN);
-      DlgHeight := DlgHeight + DLG_CAPTION_H +
-	GetButtonHeight (Dialog.Style.TextFont) + (DLG_MARGIN * 2);
-      DlgX := (Dialog.Bmp^.w - DlgWidth) DIV 2;
-      DlgY := (Dialog.Bmp^.h - DlgHeight) DIV 2;
-}
-    { Creates the dialog. }
-{
-      Dialog.Controls.Add (TalGUI_WindowFrame.Create (
-	aCaption,
-	DlgX, DlgY,
-	DlgWidth, DlgHeight
-      ));
-
-      FOR Ndx := 0 TO Lines.Count - 1 DO
-	Dialog.Controls.Add (TalGUI_Label.Create (
-	  Lines[Ndx],
-	  DlgX + (DLG_MARGIN DIV 2),
-	  DlgY + (TxtH * Ndx) + (DLG_MARGIN DIV 2) + DLG_CAPTION_H
-	));
-
-	BtnLeft := DlgX + BtnLeft;
-      TxtH := DlgY + (TxtH * Lines.Count) + DLG_MARGIN + DLG_CAPTION_H;
+    { Buttons. }
+      Dialog.NextRow := Dialog.NextRow + DLG_MARGIN;
       FOR Ndx := 0 TO Length (Buttons) - 1 DO
-      BEGIN
-	Dialog.Controls.Add (TalGUI_Button.Create (
-	  Buttons[Ndx], BtnLeft, TxtH
-	));
-	INC (BtnLeft, GetButtonWidth (Dialog.Style.TextFont, Buttons[Ndx]) + DLG_MARGIN)
-      END;
-}
+	Dialog.AddButton (Buttons[Ndx]);
+    { Let's go. }
       Dialog.SetDefaultColors;
       Dialog.Run (0);
-      RESULT := -1
+      RESULT := Dialog.Focus
     FINALLY
       FreeAndNil (Lines);
       FreeAndNil (Dialog)
@@ -263,11 +239,20 @@ IMPLEMENTATION
 
 
 
+  PROCEDURE TalGUI_CustomDialogWindow.ControlClosesDialog (Sender: TalGUI_Control);
+  BEGIN
+    SELF.Close
+  END;
+
+
+
 (* Initializes the dialog. *)
   PROCEDURE TalGUI_CustomDialogWindow.Initialize (FocusCtrl: INTEGER);
   VAR
     Left, Top: INTEGER;
   BEGIN
+    INHERITED Initialize (FocusCtrl);
+
     IF NOT Initialized THEN
     BEGIN
     { Adjust frame size and position. }
@@ -279,8 +264,6 @@ IMPLEMENTATION
     { Done. }
       Initialized := TRUE
     END;
-  { Continues initialization. }
-    INHERITED Initialize (FocusCtrl)
   END;
 
 
@@ -297,19 +280,37 @@ IMPLEMENTATION
 
 
 
+(* Adds a @code(Control) to the dialog. *)
+  FUNCTION TalGUI_CustomDialogWindow.AddControl (aControl: TalGUI_Control): INTEGER;
+  BEGIN
+    aControl.Y := fNextY;
+    INC (fNextY, aControl.Height);
+    RESULT := Controls.Add (aControl)
+  END;
+
+
+
 (* Adds a label. *)
   FUNCTION TalGUI_CustomDialogWindow.AddLabel (CONST aText: STRING): INTEGER;
-  VAR
-    TheLabel: TalGUI_Label;
   BEGIN
-    TheLabel := TalGUI_Label.Create (
+    RESULT := SELF.AddControl (TalGUI_Label.Create (
       aText,
       DLG_MARGIN, fNextY,
       al_text_length (SELF.Style.TextFont, aText),
       al_text_height (SELF.Style.TextFont)
-    );
-    INC (fNextY, TheLabel.Height);
-    RESULT := Controls.Add (TheLabel);
+    ))
+  END;
+
+
+
+(* Adds a button. *)
+  FUNCTION TalGUI_CustomDialogWindow.AddButton (CONST aCaption: STRING): INTEGER;
+  BEGIN
+    RESULT := SELF.AddControl (TalGUI_Button.Create (
+      aCaption,
+      DLG_MARGIN, fNextY
+    ));
+    TalGUI_Button (SELF.Controls[RESULT]).onCLick := @SELF.ControlClosesDialog
   END;
 
 
