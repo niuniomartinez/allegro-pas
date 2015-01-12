@@ -80,7 +80,7 @@ INTERFACE
 
       Control will be put at the bottom of the dialog window, and window will
       be resized so the new control will fit inside.
-      @param(aControl The control.) @retun(Index to the control.)
+      @param(aControl The control.) @return(Index to the control.)
       @seealso(AddLabel) @seealso(AddButton) @seealso(NextRow)
      *)
       FUNCTION AddControl (aControl: TalGUI_Control): INTEGER;
