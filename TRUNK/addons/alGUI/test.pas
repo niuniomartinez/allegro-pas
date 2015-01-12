@@ -10,8 +10,11 @@ PROGRAM Test;
     TDemoGUI = CLASS (TObject)
     PRIVATE
       Dialog: TalGUI_Dialog;
+
     (* Event executed when clicking the "Click me" button. *)
       PROCEDURE onClickMeBtnClick (Sender: TalGUI_Control);
+    (* Event executed when slider changed. *)
+      PROCEDURE onSliderChange (Sender: TalGUI_Control);
     (* Event executed when clicking the close button. *)
       PROCEDURE onCloseBtnClick (Sender: TalGUI_Control);
     PUBLIC
@@ -36,6 +39,22 @@ PROGRAM Test;
       ['Close dialog']
     );
     Dialog.RedrawAll
+  END;
+
+
+
+(* Event executed when slider changed. *)
+  PROCEDURE TDemoGUI.onSliderChange (Sender: TalGUI_Control);
+  VAR
+    Slider: TalGUI_CustomSlider;
+  BEGIN
+    Slider := TalGUI_CustomSlider (Sender);
+
+    TalGUI_Label (Dialog.Controls[Slider.Tag]).Caption :=
+      Format ('Position: %d of %d    ', [
+	TalGUI_CustomSlider (Sender).Position,
+	TalGUI_CustomSlider (Sender).Max
+      ])
   END;
 
 
@@ -130,6 +149,22 @@ PROGRAM Test;
       AL_SCREEN_W DIV 2 + 160, 88, 144, 24
     ));
     TalGUI_Button (Dialog.Controls[Ndx]).Enabled := FALSE;
+  { Example slider/scroll-bar. }
+    Dialog.Controls.Add (TalGUI_Label.Create (
+      'This is a slider -->',
+      0, 128, AL_SCREEN_W DIV 2, 8, agaRight
+    ));
+    Ndx := Dialog.Controls.Add (TalGUI_Slider.Create (
+      100, AL_SCREEN_W DIV 2 + 8, 120, agdHorizontal
+    ));
+  { Store index of label in slider's Tag property. }
+    TalGUI_Slider (Dialog.Controls[Ndx]).Tag :=
+      Dialog.Controls.Add (TalGUI_Label.Create (
+	'Position: 0 of 100',
+	AL_SCREEN_W DIV 2 + 130, 128, 200, 24, agaLeft
+      ));
+    TalGUI_Slider (Dialog.Controls[Ndx]).OnChange := @SELF.onSliderChange;
+
   { Close button. }
     Ndx := Dialog.Controls.Add (TalGUI_Button.Create (
       'Close dialog',

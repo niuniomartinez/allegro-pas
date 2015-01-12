@@ -24,6 +24,14 @@ INTERFACE
 
 
 
+  (* Direction values. *)
+    TalGUI_Direction = (
+      agdHorizontal, (*<Horizontal direction. *)
+      agdVertical    (*<Vertical direction. *)
+    );
+
+
+
   (* Defines a base class for GUI styles. *)
     TalGUI_Style = CLASS (TObject)
     PRIVATE
@@ -131,6 +139,10 @@ INTERFACE
       fX, fY, fW, fH, fKeyShortCut, fTag: INTEGER;
       fHasFocus, fHasMouse, fEnabled, fRedraw: BOOLEAN;
     PROTECTED
+    (* Sets control width. *)
+      PROCEDURE SetWidth (CONST aWidth: INTEGER); VIRTUAL;
+    (* Sets control height. *)
+      PROCEDURE SetHeight (CONST aHeight: INTEGER); VIRTUAL;
     (* Sets the @code(Enabled) property.  Overriden implementation should call
       this to actually set the @code(Enabled) value. *)
       PROCEDURE SetEnabled (CONST aEnabled: BOOLEAN); VIRTUAL;
@@ -217,9 +229,9 @@ INTERFACE
     (* Top position of the component. *)
       PROPERTY Y: INTEGER READ fY WRITE fY;
     (* Width of the component in pixels. *)
-      PROPERTY Width: INTEGER READ fW WRITE fW;
+      PROPERTY Width: INTEGER READ fW WRITE SetWidth;
     (* Height of the component in pixels. *)
-      PROPERTY Height: INTEGER READ fH WRITE fH;
+      PROPERTY Height: INTEGER READ fH WRITE SetHeight;
     (* ASCII keyboard shortcut. *)
       PROPERTY KeyShortcut: INTEGER READ fKeyShortCut WRITE fKeyShortCut;
     (* Extra value that can be used to identify the component or to store a
@@ -491,6 +503,52 @@ INTERFACE
 
 
 
+  (* Base class for various slider controls (such as scroll bars and sliders).
+
+    Introduces default properties and event handlers. *)
+    TalGUI_CustomSlider = CLASS (TalGUI_Control)
+    PRIVATE
+      fDirection: TalGUI_Direction;
+      fMin, fMax, fPos: INTEGER;
+      fOnChange: TalGUI_ControlEvent;
+
+      PROCEDURE SetDirection (CONST aDir: TalGUI_Direction);
+      PROCEDURE SetPos (CONST aPos: INTEGER);
+    PROTECTED
+    (* Sets minimun value. *)
+      PROCEDURE SetMin (CONST aMin: INTEGER); VIRTUAL;
+    (* Sets maximun value. *)
+      PROCEDURE SetMax (CONST aMax: INTEGER); VIRTUAL;
+    (* Manages key input.
+
+      It manages cursor keys, and Home, PgUp, PgDown and End. *)
+      FUNCTION MsgKeyChar (aKey: INTEGER): BOOLEAN; OVERRIDE;
+    PUBLIC
+    (* Constructor. *)
+      CONSTRUCTOR Create; OVERRIDE;
+    (* Initializes control. *)
+      PROCEDURE Initialize; OVERRIDE;
+    (* It wants focus. *)
+      FUNCTION WantFocus: BOOLEAN; OVERRIDE;
+
+    (* Control direction. *)
+      PROPERTY Direction: TalGUI_Direction READ fDirection WRITE SetDirection;
+    (* The minimun value, for the top or leftmost position.
+      @seealso(Max) @seealso(Position) *)
+      PROPERTY Min: INTEGER READ fMin WRITE SetMin;
+    (* The maximun value, for the bottom or rightmost position.
+      @seealso(Min) @seealso(Position) *)
+      PROPERTY Max: INTEGER READ fMax WRITE SetMax;
+    (* The position value of the slider.
+      @seealso(Min) @seealso(Max) *)
+      PROPERTY Position: INTEGER READ fPos WRITE SetPos;
+
+    (* Event handler for any change on @link(Position). *)
+      PROPERTY OnChange: TalGUI_ControlEvent READ fOnChange WRITE fOnChange;
+    END;
+
+
+
   (* Extends @code(TalGUI_Style) to define a default style.
 
     It's inspired by the old Windows style. *)
@@ -616,11 +674,30 @@ IMPLEMENTATION
  * TalGUI_Control
  *****************************************************************************)
 
+(* Sets control width. *)
+  PROCEDURE TalGUI_Control.SetWidth (CONST aWidth: INTEGER);
+  BEGIN
+    fW := aWidth;
+    RedrawMe := TRUE
+  END;
+
+
+
+(* Sets control height. *)
+  PROCEDURE TalGUI_Control.SetHeight (CONST aHeight: INTEGER);
+  BEGIN
+    fH := aHeight;
+    RedrawMe := TRUE
+  END;
+
+
+
 (* Sets the @code(Enabled) property.  Overriden implementation should call
   his to actually set the @code(Enabled) value. *)
   PROCEDURE TalGUI_Control.SetEnabled (CONST aEnabled: BOOLEAN);
   BEGIN
-    fEnabled := aEnabled
+    fEnabled := aEnabled;
+    RedrawMe := TRUE
   END;
 
 
@@ -1370,7 +1447,7 @@ IMPLEMENTATION
     IF Inside (al_mouse_x, al_mouse_y) THEN
     BEGIN
       RESULT := TRUE;
-      IF fonClick <> NIL THEN fonClick (SELF)
+      IF Assigned (fonClick) THEN fonClick (SELF)
     END
     ELSE
       RESULT := FALSE
@@ -1399,6 +1476,118 @@ IMPLEMENTATION
 
 (* Queries if wants focus. *)
   FUNCTION TalGUI_CustomButton.WantFocus: BOOLEAN;
+  BEGIN
+    RESULT := Enabled
+  END;
+
+
+
+(*
+ * TalGUI_CustomSlider
+ *****************************************************************************)
+
+  PROCEDURE TalGUI_CustomSlider.SetDirection (CONST aDir: TalGUI_Direction);
+  BEGIN
+    IF fDirection <> aDir THEN
+    BEGIN
+      fDirection := aDir;
+      SELF.RedrawMe := TRUE
+    END
+  END;
+
+
+
+  PROCEDURE TalGUI_CustomSlider.SetPos (CONST aPos: INTEGER);
+  BEGIN
+    IF fPos <> aPos THEN
+    BEGIN
+      fPos := aPos;
+      IF fPos < fMin THEN fPos := fMin;
+      IF fPos > fMax THEN fPos := fMax;
+      IF Assigned (fOnChange) THEN fOnChange (SELF);
+      IF fPos < fMin THEN fPos := fMin;
+      IF fPos > fMax THEN fPos := fMax;
+      SELF.RedrawMe := TRUE
+    END
+  END;
+
+
+
+  PROCEDURE TalGUI_CustomSlider.SetMin (CONST aMin: INTEGER);
+  BEGIN
+    IF fMin <> aMin THEN
+    BEGIN
+      fMin := aMin;
+      IF fMin > fMax THEN fMax := fMin;
+      IF fPos < fMin THEN fPos := fMin;
+      SELF.RedrawMe := TRUE
+    END
+  END;
+
+
+
+  PROCEDURE TalGUI_CustomSlider.SetMax (CONST aMax: INTEGER);
+  BEGIN
+    IF fMax <> aMax THEN
+    BEGIN
+      fMax := aMax;
+      IF fMin > fMax THEN fMin := fMax;
+      IF fPos > fMax THEN fPos := fMax;
+      SELF.RedrawMe := TRUE
+    END
+  END;
+
+
+
+(* Manages key input. *)
+  FUNCTION TalGUI_CustomSlider.MsgKeyChar (aKey: INTEGER): BOOLEAN;
+  BEGIN
+    CASE aKey SHR 8 OF
+    AL_KEY_HOME:
+      SetPos (fMin);
+    AL_KEY_PGUP:
+      SetPos (fPos - 10);
+    AL_KEY_UP, AL_KEY_LEFT:
+      SetPos (fPos - 1);
+    AL_KEY_DOWN, AL_KEY_RIGHT:
+      SetPos (fPos + 1);
+    AL_KEY_PGDN:
+      SetPos (fPos + 10);
+    AL_KEY_END:
+      SetPos (fMax);
+    ELSE
+      EXIT (FALSE);
+    END;
+    RESULT := TRUE
+  END;
+
+
+
+(* Constructor. *)
+  CONSTRUCTOR TalGUI_CustomSlider.Create;
+  BEGIN
+    INHERITED Create;
+    SELF.fDirection := agdHorizontal;
+    SELF.fMin := 0; SELF.fMax := 100; SELF.fPos := 0;
+    fOnChange := NIL
+  END;
+
+
+
+(* Initializes control. *)
+  PROCEDURE TalGUI_CustomSlider.Initialize;
+  BEGIN
+    INHERITED Initialize;
+    IF fPos < fMin THEN fPos := fMin;
+    IF fPos < fMax THEN fPos := fMax;
+
+    fMin := 0; fMax := 100; fPos := 0
+  END;
+
+
+
+(* It wants focus. *)
+  FUNCTION TalGUI_CustomSlider.WantFocus: BOOLEAN;
   BEGIN
     RESULT := Enabled
   END;
