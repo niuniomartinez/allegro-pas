@@ -939,7 +939,7 @@ PROGRAM mapedit;
 		first.  I don't do it because Demo game uses the same
 		Tileset for all maps. }
   { Load the demo datafile into memory. }
-    buf :=  ExtractFilePath (PARAMSTR (0)) + 'demo.dat';
+    buf :=  'demo.dat';
     DemoData := al_load_datafile (buf);
   { Check if it was loaded. }
     IF DemoData = NIL THEN
@@ -1129,7 +1129,7 @@ PROGRAM mapedit;
     { Doesn't let Allegro twist colors. }
       al_set_color_conversion (AL_COLORCONV_NONE);
     { Load the datafile into memory. }
-      buf :=  ExtractFilePath (PARAMSTR (0)) + 'mapedit.dat';
+      buf :=  'mapedit.dat';
       Data := al_load_datafile (buf);
     { Check if it was loaded. }
       LoadData := Data <> NIL;

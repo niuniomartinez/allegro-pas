@@ -1,4 +1,4 @@
-UNIT albase;
+UNIT alBase;
 (*< Base definitions to interface with Allegro dynamic module.
 
   This unit includes definitions of data types used by Allegro.  They're used
