@@ -32,7 +32,7 @@ PROGRAM exalpha;
 
 
 (* Helper function. *)
-  FUNCTION CLAMP (a, b, c: INTEGER): INTEGER; INLINE;
+  FUNCTION CLAMP (a, b, c: LONGINT): LONGINT; INLINE;
   BEGIN
     IF b < a THEN
       CLAMP := a
@@ -47,7 +47,7 @@ PROGRAM exalpha;
 VAR
   buf, filename: STRING;
   background, alpha, sprite, buffer: AL_BITMAPptr;
-  bpp, x, y, c, a: INTEGER;
+  bpp, x, y, c, a: LONGINT;
   ret: BOOLEAN;
   color_depths: ARRAY [0..4] OF INTEGER = ( 15, 16, 32, 24, 0 );
 
@@ -85,7 +85,7 @@ BEGIN { The program starts here. }
   BEGIN
   { Set a user-requested color depth. }
     al_set_color_depth (bpp);
-    ret := al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0);
+    ret := al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0);
   END
   ELSE BEGIN
   { Autodetect what color depths are available. }
@@ -93,7 +93,7 @@ BEGIN { The program starts here. }
     REPEAT
       bpp := color_depths[a];
       al_set_color_depth (bpp);
-      ret := al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0);
+      ret := al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0);
       IF ret THEN BREAK;
       INC (a);
     UNTIL color_depths[a] < 1;
