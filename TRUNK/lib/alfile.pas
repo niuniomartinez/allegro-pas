@@ -1,4 +1,4 @@
-UNIT alfile;
+UNIT alFile;
 (*<Data files and low-level packed file.
 
  Datafiles are created by the @link(grabber) utility, and have a @code(.dat)
@@ -63,7 +63,7 @@ UNIT alfile;
 INTERFACE
 
   USES
-    albase, allegro; { Needs some basic definitions. }
+    alBase, Allegro; { Needs some basic definitions. }
 
 
 (*****************************************************************************
@@ -430,13 +430,39 @@ BEGIN
  *     Datafile access routines.
  *)
 
-  VAR
-  (* Mnemonics for data object types.  You must assume they're constants.
-     They're variables for technical reasons. *)
-    AL_DAT_MAGIC, AL_DAT_FILE, AL_DAT_DATA, AL_DAT_FONT, AL_DAT_SAMPLE,
-    AL_DAT_MIDI, AL_DAT_PATCH, AL_DAT_FLI, AL_DAT_BITMAP, AL_DAT_RLE_SPRITE,
-    AL_DAT_C_SPRITE, AL_DAT_XC_SPRITE, AL_DAT_PALETTE, AL_DAT_PROPERTY,
-    AL_DAT_NAME, AL_DAT_END: AL_INT;
+  CONST
+  (* @code (AL_ID (@'ALL.'@)) *)
+    AL_DAT_MAGIC      = $414C4C2E;
+  (* @code (AL_ID (@'FILE'@)) *)
+    AL_DAT_FILE       = $46494C45;
+  (* @code (AL_ID (@'DATA'@)) *)
+    AL_DAT_DATA       = $44415441;
+  (* @code (AL_ID (@'FONT'@)) *)
+    AL_DAT_FONT       = $464F4E54;
+  (* @code (AL_ID (@'SAMP'@)) *)
+    AL_DAT_SAMPLE     = $53414D50;
+  (* @code (AL_ID (@'MIDI'@)) *)
+    AL_DAT_MIDI       = $4D494449;
+  (* @code (AL_ID (@'PAT '@)) *)
+    AL_DAT_PATCH      = $50415420;
+  (* @code (AL_ID (@'FLIC'@)) *)
+    AL_DAT_FLI        = $464C4943;
+  (* @code (AL_ID (@'BMP '@)) *)
+    AL_DAT_BITMAP     = $424D5020;
+  (* @code (AL_ID (@'RLE '@)) *)
+    AL_DAT_RLE_SPRITE = $524C4520;
+  (* @code (AL_ID (@'CMP '@)) *)
+    AL_DAT_C_SPRITE   = $434D5020;
+  (* @code (AL_ID (@'XCMP'@)) *)
+    AL_DAT_XC_SPRITE  = $58434D50;
+  (* @code (AL_ID (@'PAL '@)) *)
+    AL_DAT_PALETTE    = $50414C20;
+  (* @code (AL_ID (@'prop'@)) *)
+    AL_DAT_PROPERTY   = $70726F70;
+  (* @code (AL_ID (@'NAME'@)) *)
+    AL_DAT_NAME       = $4E414D45;
+  (* End of datafile. *)
+    AL_DAT_END = -1;
 
   TYPE
   { @exclude }
@@ -731,23 +757,5 @@ IMPLEMENTATION
     al_save_tga_pf := save_tga_pf (f, bmp, palette) = 0;
   END;
 
-INITIALIZATION
-{ Generates identifiers for data objects. }
-  AL_DAT_MAGIC		:= AL_ID ('ALL.');
-  AL_DAT_FILE		:= AL_ID ('FILE');
-  AL_DAT_DATA		:= AL_ID ('DATA');
-  AL_DAT_FONT		:= AL_ID ('FONT');
-  AL_DAT_SAMPLE		:= AL_ID ('SAMP');
-  AL_DAT_MIDI		:= AL_ID ('MIDI');
-  AL_DAT_PATCH		:= AL_ID ('PAT ');
-  AL_DAT_FLI		:= AL_ID ('FLIC');
-  AL_DAT_BITMAP		:= AL_ID ('BMP ');
-  AL_DAT_RLE_SPRITE	:= AL_ID ('RLE ');
-  AL_DAT_C_SPRITE	:= AL_ID ('CMP ');
-  AL_DAT_XC_SPRITE	:= AL_ID ('XCMP');
-  AL_DAT_PALETTE	:= AL_ID ('PAL ');
-  AL_DAT_PROPERTY	:= AL_ID ('prop');
-  AL_DAT_NAME		:= AL_ID ('NAME');
-  AL_DAT_END		:= -1;
 END.
 
