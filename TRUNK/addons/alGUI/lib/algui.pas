@@ -32,8 +32,13 @@ INTERFACE
 
 
 
-  (* Defines a base class for GUI styles. *)
-    TalGUI_Style = CLASS (TObject)
+  (* Defines a base class for GUI styles.
+
+    It introduces methods and properties that will be used by controls to
+    render themselves.  The @code(Style) object used is stored by the
+    @code(Dialog) object.
+    @seealso(TalGUI_Dialog.Style) @seealso(TalGUI_Control.Dialog) *)
+    TalGUI_CustomStyle = CLASS (TObject)
     PRIVATE
       fTxtColor, fDisabledColor, fSelectedTxtColor, fBgColor, fSelectedBgColor,
       fLightColor, fDarkColor, fBorderColor: LONGINT;
@@ -44,13 +49,13 @@ INTERFACE
     (* Sets default colors.  Call this after set graphics mode and define the
       color palette.
 
-      Since it is an abstract method, @code(TalGUI_Style) itself does
+      Since it is an abstract method, @code(TalGUI_CustomStyle) itself does
       not implement @code(SetDefaultColors).  Descendent classes such as
       @link(TalGUI_DefaultStyle) implement this method. *)
       PROCEDURE SetDefaultColors; VIRTUAL; ABSTRACT;
     (* Draws a bevel, this is, a border, rectangle or frame.
 
-      Since it is an abstract method, @code(TalGUI_Style) itself does
+      Since it is an abstract method, @code(TalGUI_CustomStyle) itself does
       not implement @code(DrawBevel).  Descendent classes such as
       @link(TalGUI_DefaultStyle) implement this method.
       @param(Bmp Where to draw it.)
@@ -63,13 +68,12 @@ INTERFACE
 	Raised: BOOLEAN); VIRTUAL; ABSTRACT;
     (* Draws a box.  Useful for buttons and pannels.
 
-      Since it is an abstract method, @code(TalGUI_Style) itself does
+      Since it is an abstract method, @code(TalGUI_CustomStyle) itself does
       not implement @code(DrawBevel).  Descendent classes such as
       @link(TalGUI_DefaultStyle) implement this method.
       @param(Bmp Where to draw it.)
       @param(x1 Left limit of box.)  @param(y1 Top limit of box.)
       @param(x2 Right limit of box.) @param(y2 Bottom limit of box.)
-      @param(BorderWidth Width of border in pixels.)
       @param(BackColor Background color.  If negative, then it will not draw
         background.)
       @param(Raised @true, to draw the border as raised, if @false to draw it
@@ -77,11 +81,11 @@ INTERFACE
       @seealso(DrawBevel)
      *)
       PROCEDURE DrawBox (
-        Bmp: AL_BitmapPtr; x1, y1, x2, y2, BackColor, BorderWidth: INTEGER;
+        Bmp: AL_BitmapPtr; x1, y1, x2, y2, BackColor: INTEGER;
         Raised: BOOLEAN); VIRTUAL; ABSTRACT;
     (* Draws a dialog frame, wich includes a title.
 
-      Since it is an abstract method, @code(TalGUI_Style) itself does
+      Since it is an abstract method, @code(TalGUI_CustomStyle) itself does
       not implement @code(DrawDialogFrame).  Descendent classes such as
       @link(TalGUI_DefaultStyle) implement this method.
       @param(Bmp Where to draw it.)
@@ -96,6 +100,9 @@ INTERFACE
         Bmp: AL_BitmapPtr; x1, y1, x2, y2, BackColor: INTEGER;
         Title: STRING; TitleCentered: BOOLEAN
       ); VIRTUAL; ABSTRACT;
+    (* Draws a "trench". *)
+      PROCEDURE DrawTrench (Bmp: AL_BITMAPptr; x1, y1, x2, y2: INTEGER);
+	VIRTUAL;
     (* Draws a dotted rectangle to show that the control has acquired focus. *)
       PROCEDURE DrawFocusRect (Bmp: AL_BITMAPptr; x1, y1, x2, y2: INTEGER);
 	VIRTUAL;
@@ -139,6 +146,10 @@ INTERFACE
       fX, fY, fW, fH, fKeyShortCut, fTag: INTEGER;
       fHasFocus, fHasMouse, fEnabled, fRedraw: BOOLEAN;
     PROTECTED
+    (* Sets X position. *)
+      PROCEDURE SetX (CONST aX: INTEGER); VIRTUAL;
+    (* Sets Y position. *)
+      PROCEDURE SetY (CONST aY: INTEGER); VIRTUAL;
     (* Sets control width. *)
       PROCEDURE SetWidth (CONST aWidth: INTEGER); VIRTUAL;
     (* Sets control height. *)
@@ -179,12 +190,12 @@ INTERFACE
     (* Sent when mouse moves on top of an object.  Unlike the @italic(focus)
       message, this message will not be be followed by a call to @link(Draw),
       so if the object is isplayed differently when the mouse is on top of it,
-      it should set the @link(RedrawMe) property to @true. @seealso(MsgLostMouse) *)
+      it should call @link(RedrawMe). @seealso(MsgLostMouse) *)
       PROCEDURE MsgGotMouse; VIRTUAL;
     (* Sent when mouse moves away of an object.  Unlike the @italic(focus)
       message, this message will not be be followed by a call to @link(Draw),
       so if the object is isplayed differently when the mouse is on top of it,
-      it should set the @link(RedrawMe) property to @true. @seealso(MsgGotMouse) *)
+      it should call @link(RedrawMe). @seealso(MsgGotMouse) *)
       PROCEDURE MsgLostMouse; VIRTUAL;
     (* Sent whenever the dialog manager has nothing better to do. *)
       PROCEDURE MsgIddle; VIRTUAL;
@@ -198,6 +209,8 @@ INTERFACE
        this procedure will fail!
        @seealso(BorderColor) @seealso(BackgroundColor) @seealso(Color) *)
       PROCEDURE SetDefaultColors; VIRTUAL;
+    (* Tell the owner dialog that control should be redrawn. *)
+      PROCEDURE RedrawMe; VIRTUAL;
     (* Finalizes the control  It's called when closing the dialog.  Allows to
       perform whatever cleanup operations it requires. *)
       PROCEDURE Finalize; VIRTUAL;
@@ -248,8 +261,6 @@ INTERFACE
 
       By default it's @false *)
       PROPERTY Enabled: BOOLEAN READ fEnabled WRITE SetEnabled;
-    (* @true if control should be redrawn. *)
-      PROPERTY RedrawMe: BOOLEAN READ fRedraw WRITE fRedraw;
     END;
 
 
@@ -311,7 +322,7 @@ INTERFACE
     TalGUI_Dialog = CLASS (TObject)
     PRIVATE
       fBitmap: AL_BITMAPptr;
-      fStyle: TalGUI_Style;
+      fStyle: TalGUI_CustomStyle;
       fControlList : TalGUI_ControlList;
       fFocusIndex: INTEGER;
       fRedrawAll, fClosed: BOOLEAN;
@@ -324,7 +335,7 @@ INTERFACE
       @code(Run) method.  For example:
 @longcode(#
   Dialog.Initialize (1);
-  REPEAT UNTIL Dialog.Update;
+  REPEAT Dialog.Draw UNTIL Dialog.Update;
   Control := Dialog.Shutdown;
 #)
       @param(FocusCtrl Index to the control that has focus at the beginning.)
@@ -351,6 +362,9 @@ INTERFACE
     (* Sets default colors to all contained controls.  Note that @link(Style)
       @bold(must) be set. *)
       PROCEDURE SetDefaultColors;
+    (* Draw the dialog.  You don't need to do this as @code(Run) will do it for
+       you. @seealso(Update) *)
+      PROCEDURE Draw;
     (* Executes the dialog loop.
 
        It sets the input focus to the @code(FocusCtrl) control,  Then it
@@ -374,7 +388,7 @@ INTERFACE
       PROPERTY Bmp: AL_BITMAPptr READ fBitmap WRITE fBitmap;
     (* Dialog style.  Note that assign it will not destroy the previous style.
      *)
-      PROPERTY Style: TalGUI_Style READ fStyle WRITE fStyle;
+      PROPERTY Style: TalGUI_CustomStyle READ fStyle WRITE fStyle;
     (* Access to the control list of the dialog. *)
       PROPERTY Controls: TalGUI_ControlList READ fControlList;
     (* Index of current focus. *)
@@ -420,22 +434,18 @@ INTERFACE
     is faster. *)
     TalGUI_Box = CLASS (TalGUI_Control)
     PRIVATE
-      fBorderWidth: INTEGER;
       fRaised: BOOLEAN;
 
-      PROCEDURE SetBorderWidth (CONST aWidth: INTEGER); INLINE;
       PROCEDURE SetRaised (CONST aRaised: BOOLEAN); INLINE;
     PUBLIC
     (* Constructor. *)
       CONSTRUCTOR Create; OVERRIDE;
     (* Creaates the box. *)
       CONSTRUCTOR Create (CONST aX, aY, aW, aH: INTEGER;
-	CONST aRaised: BOOLEAN=TRUE; CONST aBorderWidth: INTEGER = 2); OVERLOAD;
+	CONST aRaised: BOOLEAN=TRUE); OVERLOAD;
     (* Draws the control in the given bitmap. *)
       PROCEDURE Draw (Bmp: AL_BITMAPptr); OVERRIDE;
 
-    (* Border width. *)
-      PROPERTY BorderWidth: INTEGER READ fBorderWidth WRITE SetBorderWidth;
     (* @true, to draw the border as raised, @false to draw it as depressed. *)
       PROPERTY Raised: BOOLEAN READ fRaised WRITE SetRaised;
     END;
@@ -509,7 +519,7 @@ INTERFACE
     TalGUI_CustomSlider = CLASS (TalGUI_Control)
     PRIVATE
       fDirection: TalGUI_Direction;
-      fMin, fMax, fPos: INTEGER;
+      fMin, fMax, fPos, fPage: INTEGER;
       fOnChange: TalGUI_ControlEvent;
 
       PROCEDURE SetDirection (CONST aDir: TalGUI_Direction);
@@ -519,6 +529,8 @@ INTERFACE
       PROCEDURE SetMin (CONST aMin: INTEGER); VIRTUAL;
     (* Sets maximun value. *)
       PROCEDURE SetMax (CONST aMax: INTEGER); VIRTUAL;
+    (* Sets page size. *)
+      PROCEDURE SetPage (CONST aSize: INTEGER); VIRTUAL;
     (* Manages key input.
 
       It manages cursor keys, and Home, PgUp, PgDown and End. *)
@@ -534,13 +546,16 @@ INTERFACE
     (* Control direction. *)
       PROPERTY Direction: TalGUI_Direction READ fDirection WRITE SetDirection;
     (* The minimun value, for the top or leftmost position.
-      @seealso(Max) @seealso(Position) *)
+      @seealso(Max) @seealso(Page) @seealso(Position) *)
       PROPERTY Min: INTEGER READ fMin WRITE SetMin;
     (* The maximun value, for the bottom or rightmost position.
-      @seealso(Min) @seealso(Position) *)
+      @seealso(Min) @seealso(Page) @seealso(Position) *)
       PROPERTY Max: INTEGER READ fMax WRITE SetMax;
+    (* Page size.
+      @seealso(Min) @seealso(Max) @seealso(Position) *)
+      PROPERTY Page: INTEGER READ fPage WRITE SetPage;
     (* The position value of the slider.
-      @seealso(Min) @seealso(Max) *)
+      @seealso(Min) @seealso(Max) @seealso(Page) *)
       PROPERTY Position: INTEGER READ fPos WRITE SetPos;
 
     (* Event handler for any change on @link(Position). *)
@@ -549,10 +564,10 @@ INTERFACE
 
 
 
-  (* Extends @code(TalGUI_Style) to define a default style.
+  (* Extends @code(TalGUI_CustomStyle) to define a default style.
 
     It's inspired by the old Windows style. *)
-    TalGUI_DefaultStyle = CLASS (TalGUI_Style)
+    TalGUI_DefaultStyle = CLASS (TalGUI_CustomStyle)
     PUBLIC
     (* Sets default colors.  Call this after set graphics mode and define the
       color palette. *)
@@ -570,7 +585,6 @@ INTERFACE
       @param(Bmp Where to draw it.)
       @param(x1 Left limit of box.)  @param(y1 Top limit of box.)
       @param(x2 Right limit of box.) @param(y2 Bottom limit of box.)
-      @param(BorderWidth Width of border in pixels.)
       @param(BackColor Background color.  If negative, then it will not draw
         background.)
       @param(Raised @true, to draw the border as raised, @false to draw it
@@ -578,7 +592,7 @@ INTERFACE
       @seealso(DrawBevel)
      *)
       PROCEDURE DrawBox (
-        Bmp: AL_BitmapPtr; x1, y1, x2, y2, BackColor, BorderWidth: INTEGER;
+        Bmp: AL_BitmapPtr; x1, y1, x2, y2, BackColor: INTEGER;
         Raised: BOOLEAN); OVERRIDE;
     (* Draws a dialog frame, wich includes a title.
       @param(Bmp Where to draw it.)
@@ -604,11 +618,11 @@ IMPLEMENTATION
     albase;
 
 (*
- * TalGUI_Style
+ * TalGUI_CustomStyle
  *****************************************************************************)
 
 (* Constructor.  Sets default colors. *)
-  CONSTRUCTOR TalGUI_Style.Create;
+  CONSTRUCTOR TalGUI_CustomStyle.Create;
   BEGIN
     INHERITED Create;
     SELF.SetDefaultColors;
@@ -617,8 +631,17 @@ IMPLEMENTATION
 
 
 
+(* Draws a "trench". *)
+  PROCEDURE TalGUI_CustomStyle.DrawTrench (
+    Bmp: AL_BitmapPtr; x1, y1, x2, y2: INTEGER);
+  BEGIN
+    SELF.DrawBox (Bmp, X1, Y1, X2, Y2, SELF.BackgroundColor, FALSE)
+  END;
+
+
+
 (* Draws a dotted rectangle to show that the control has acquired focus. *)
-  PROCEDURE TalGUI_Style.DrawFocusRect (Bmp: AL_BITMAPptr; x1, y1, x2, y2: INTEGER);
+  PROCEDURE TalGUI_CustomStyle.DrawFocusRect (Bmp: AL_BITMAPptr; x1, y1, x2, y2: INTEGER);
   VAR
     X, Y: INTEGER;
   BEGIN
@@ -650,7 +673,7 @@ IMPLEMENTATION
 
 
 (* Draws a text. *)
-  PROCEDURE TalGUI_Style.DrawText (Bmp: AL_BITMAPptr; CONST Msg: STRING;
+  PROCEDURE TalGUI_CustomStyle.DrawText (Bmp: AL_BITMAPptr; CONST Msg: STRING;
     X, Y, Color: LONGINT; Centered: BOOLEAN);
   BEGIN
     IF Centered THEN
@@ -662,7 +685,7 @@ IMPLEMENTATION
 
 
 (* Draws a text as disabled. *)
-  PROCEDURE TalGUI_Style.DrawDisabledText (Bmp: AL_BITMAPptr; CONST Msg:
+  PROCEDURE TalGUI_CustomStyle.DrawDisabledText (Bmp: AL_BITMAPptr; CONST Msg:
     STRING; X, Y: LONGINT; Centered: BOOLEAN);
   BEGIN
     SELF.DrawText (Bmp, Msg, X, Y, fDisabledColor, Centered)
@@ -674,11 +697,29 @@ IMPLEMENTATION
  * TalGUI_Control
  *****************************************************************************)
 
+(* Sets control X position. *)
+  PROCEDURE TalGUI_Control.SetX (CONST aX: INTEGER);
+  BEGIN
+    fX := aX;
+    SELF.RedrawMe
+  END;
+
+
+
+(* Sets control X position. *)
+  PROCEDURE TalGUI_Control.SetY (CONST aY: INTEGER);
+  BEGIN
+    fY := aY;
+    SELF.RedrawMe
+  END;
+
+
+
 (* Sets control width. *)
   PROCEDURE TalGUI_Control.SetWidth (CONST aWidth: INTEGER);
   BEGIN
     fW := aWidth;
-    RedrawMe := TRUE
+    SELF.RedrawMe
   END;
 
 
@@ -687,7 +728,7 @@ IMPLEMENTATION
   PROCEDURE TalGUI_Control.SetHeight (CONST aHeight: INTEGER);
   BEGIN
     fH := aHeight;
-    RedrawMe := TRUE
+    SELF.RedrawMe
   END;
 
 
@@ -697,7 +738,7 @@ IMPLEMENTATION
   PROCEDURE TalGUI_Control.SetEnabled (CONST aEnabled: BOOLEAN);
   BEGIN
     fEnabled := aEnabled;
-    RedrawMe := TRUE
+    SELF.RedrawMe
   END;
 
 
@@ -731,7 +772,7 @@ IMPLEMENTATION
   PROCEDURE TalGUI_Control.MsgGotFocus;
   BEGIN
     fHasFocus := TRUE;
-    RedrawMe := TRUE
+    SELF.RedrawMe
   END;
 
 
@@ -740,7 +781,7 @@ IMPLEMENTATION
   FUNCTION TalGUI_Control.MsgLostFocus: BOOLEAN;
   BEGIN
     fHasFocus := FALSE;
-    RedrawMe := TRUE;
+    SELF.RedrawMe;
     RESULT := TRUE
   END;
 
@@ -779,7 +820,7 @@ IMPLEMENTATION
     fBgColor := Random (maxLongint);
     fColor   := Random (maxLongint);
     fX := -1; fY := -1; fW := 0; fH := 0; fTag := 0;
-    fEnabled := TRUE; fHasFocus := FALSE
+    fEnabled := TRUE; fHasFocus := FALSE; fRedraw := FALSE
   END;
 
 
@@ -807,6 +848,12 @@ IMPLEMENTATION
     fBdColor := fOwner.Style.BorderColor;
     fBgColor := fOwner.Style.BackgroundColor
   END;
+
+
+
+(* Control should be redrawn. *)
+  PROCEDURE TalGUI_Control.RedrawMe;
+  BEGIN fRedraw := TRUE END;
 
 
 
@@ -931,10 +978,17 @@ IMPLEMENTATION
   PROCEDURE TalGUI_ControlList.Draw (BmpOut: AL_BITMAPptr);
   VAR
     Ndx: INTEGER;
+    Control: TalGUI_Control;
   BEGIN
     FOR Ndx := 0 TO (fControlList.Count - 1) DO
-      IF GetControl (Ndx) <> NIL THEN
-	GetControl (Ndx).Draw (BmpOut)
+    BEGIN
+      Control := GetControl (Ndx);
+      IF Control <> NIL THEN
+      BEGIN
+	Control.Draw (BmpOut);
+	Control.fRedraw := FALSE
+      END
+    END
   END;
 
 
@@ -1119,22 +1173,6 @@ IMPLEMENTATION
   { There's nothing to do.  }
     IF DoIddle THEN FOR CtrNdx := 0 TO (fControlList.Count - 1) DO
       fControlList[CtrNdx].MsgIddle;
-  { Check if redraw. }
-    IF fRedrawAll THEN
-    BEGIN
-      IF al_is_screen_bitmap (fBitmap) THEN al_scare_mouse;
-      fControlList.Draw (fBitmap);
-      IF al_is_screen_bitmap (fBitmap) THEN al_unscare_mouse;
-      fRedrawAll := FALSE
-    END
-    ELSE FOR CtrNdx := 0 TO (fControlList.Count - 1) DO
-      IF fControlList[CtrNdx].RedrawMe THEN
-      BEGIN
-	IF al_is_screen_bitmap (fBitmap) THEN al_scare_mouse;
-	fControlList[CtrNdx].Draw (fBitmap);
-	fControlList[CtrNdx].RedrawMe := FALSE;
-	IF al_is_screen_bitmap (fBitmap) THEN al_unscare_mouse
-      END;
   { End. }
     RESULT := fClosed
   END;
@@ -1185,11 +1223,35 @@ IMPLEMENTATION
 
 
 
+(* Draws the dialog. *)
+  PROCEDURE TalGUI_Dialog.Draw;
+  VAR
+    CtrNdx: INTEGER;
+  BEGIN
+    IF fRedrawAll THEN
+    BEGIN
+      IF al_is_screen_bitmap (fBitmap) THEN al_scare_mouse;
+      fControlList.Draw (fBitmap);
+      IF al_is_screen_bitmap (fBitmap) THEN al_unscare_mouse;
+      fRedrawAll := FALSE
+    END
+    ELSE FOR CtrNdx := 0 TO (fControlList.Count - 1) DO
+      IF fControlList[CtrNdx].fRedraw THEN
+      BEGIN
+	IF al_is_screen_bitmap (fBitmap) THEN al_scare_mouse;
+	fControlList[CtrNdx].Draw (fBitmap);
+	fControlList[CtrNdx].fRedraw := FALSE;
+	IF al_is_screen_bitmap (fBitmap) THEN al_unscare_mouse
+      END;
+  END;
+
+
+
 (* Executes the dialog loop. *)
   FUNCTION TalGUI_Dialog.Run (CONST FocusCtrl: INTEGER): INTEGER;
   BEGIN
     SELF.Initialize (FocusCtrl);
-    REPEAT UNTIL SELF.Update;
+    REPEAT SELF.Draw UNTIL SELF.Update;
     RESULT := SELF.Shutdown
   END;
 
@@ -1249,19 +1311,10 @@ IMPLEMENTATION
  * TalGUI_Box
  *****************************************************************************)
 
-  PROCEDURE TalGUI_Box.SetBorderWidth (CONST aWidth: INTEGER);
-  BEGIN
-    fBorderWidth := aWidth;
-    IF fBorderWidth < 0 THEN fBorderWidth := 1;
-    RedrawMe := TRUE
-  END;
-
-
-
   PROCEDURE TalGUI_Box.SetRaised (CONST aRaised: BOOLEAN);
   BEGIN
     fRaised := aRaised;
-    RedrawMe := TRUE
+    SELF.RedrawMe
   END;
 
 
@@ -1270,18 +1323,18 @@ IMPLEMENTATION
   CONSTRUCTOR TalGUI_Box.Create;
   BEGIN
     INHERITED Create;
-    fBorderWidth := 2; fRaised := TRUE
+    fRaised := TRUE
   END;
 
 
 
 (* Creaates the box. *)
   CONSTRUCTOR TalGUI_Box.Create (CONST aX, aY, aW, aH: INTEGER;
-    CONST aRaised: BOOLEAN; CONST aBorderWidth: INTEGER);
+    CONST aRaised: BOOLEAN);
   BEGIN
     INHERITED Create;
     X := aX; Y := aY; Width := aW; Height := aH;
-    fRaised := aRaised; fBorderWidth := aBorderWidth
+    fRaised := aRaised
   END;
 
 
@@ -1292,7 +1345,7 @@ IMPLEMENTATION
     Dialog.Style.DrawBox (
       Bmp,
       X, Y, X + Width - 1, Y + Height - 1,
-      BackgroundColor, fBorderWidth, fRaised
+      BackgroundColor, fRaised
     );
   END;
 
@@ -1304,14 +1357,14 @@ IMPLEMENTATION
 
   PROCEDURE TalGUI_Label.SetAlignment (CONST aAlign: TalGUI_Alignment);
   BEGIN
-    fAlignment := aAlign; SELF.RedrawMe := TRUE
+    fAlignment := aAlign; SELF.RedrawMe
   END;
 
 
 
   PROCEDURE TalGUI_Label.SetCaption (CONST aCaption: STRING);
   BEGIN
-    fCaption := aCaption; SELF.RedrawMe := TRUE
+    fCaption := aCaption; SELF.RedrawMe
   END;
 
 
@@ -1376,17 +1429,17 @@ IMPLEMENTATION
     pX: INTEGER;
   BEGIN
     IF SELF.BackgroundColor > -1 THEN
-      Dialog.Style.DrawBox (
+      al_rectfill (
         Bmp, X, Y, x + Width - 1, Y + Height - 1,
-        SELF.BackgroundColor, 0, FALSE
+	SELF.BackgroundColor
       );
     CASE fAlignment OF
     agaLeft:
       pX := X;
     agaCenter:
-      px := X + (Width DIV 2) - (al_text_length (Dialog.Style.TextFont, fCaption) DIV 2);
+      pX := X + (Width DIV 2) - (al_text_length (Dialog.Style.TextFont, fCaption) DIV 2);
     agaRight:
-      px := X + Width - al_text_length (Dialog.Style.TextFont, fCaption);
+      pX := X + Width - al_text_length (Dialog.Style.TextFont, fCaption);
     END;
     IF SELF.Enabled THEN
       Dialog.Style.DrawText (Bmp, fCaption, pX, Y, SELF.Color, FALSE)
@@ -1491,7 +1544,7 @@ IMPLEMENTATION
     IF fDirection <> aDir THEN
     BEGIN
       fDirection := aDir;
-      SELF.RedrawMe := TRUE
+      SELF.RedrawMe
     END
   END;
 
@@ -1507,7 +1560,7 @@ IMPLEMENTATION
       IF Assigned (fOnChange) THEN fOnChange (SELF);
       IF fPos < fMin THEN fPos := fMin;
       IF fPos > fMax THEN fPos := fMax;
-      SELF.RedrawMe := TRUE
+      SELF.RedrawMe
     END
   END;
 
@@ -1520,7 +1573,7 @@ IMPLEMENTATION
       fMin := aMin;
       IF fMin > fMax THEN fMax := fMin;
       IF fPos < fMin THEN fPos := fMin;
-      SELF.RedrawMe := TRUE
+      SELF.RedrawMe
     END
   END;
 
@@ -1533,7 +1586,18 @@ IMPLEMENTATION
       fMax := aMax;
       IF fMin > fMax THEN fMin := fMax;
       IF fPos > fMax THEN fPos := fMax;
-      SELF.RedrawMe := TRUE
+      SELF.RedrawMe
+    END
+  END;
+
+
+
+  PROCEDURE TalGUI_CustomSlider.SetPage (CONST aSize: INTEGER);
+  BEGIN
+    IF fPage <> aSize THEN
+    BEGIN
+      fPage := aSize;
+      SELF.RedrawMe
     END
   END;
 
@@ -1546,13 +1610,13 @@ IMPLEMENTATION
     AL_KEY_HOME:
       SetPos (fMin);
     AL_KEY_PGUP:
-      SetPos (fPos - 10);
+      SetPos (fPos - fPage);
     AL_KEY_UP, AL_KEY_LEFT:
       SetPos (fPos - 1);
     AL_KEY_DOWN, AL_KEY_RIGHT:
       SetPos (fPos + 1);
     AL_KEY_PGDN:
-      SetPos (fPos + 10);
+      SetPos (fPos + fPage);
     AL_KEY_END:
       SetPos (fMax);
     ELSE
@@ -1568,8 +1632,8 @@ IMPLEMENTATION
   BEGIN
     INHERITED Create;
     SELF.fDirection := agdHorizontal;
-    SELF.fMin := 0; SELF.fMax := 100; SELF.fPos := 0;
-    fOnChange := NIL
+    SELF.fMin := 0; SELF.fMax := 100; SELF.fPage := 10; SELF.fPos := 0;
+    SELF.fOnChange := NIL
   END;
 
 
@@ -1579,9 +1643,7 @@ IMPLEMENTATION
   BEGIN
     INHERITED Initialize;
     IF fPos < fMin THEN fPos := fMin;
-    IF fPos < fMax THEN fPos := fMax;
-
-    fMin := 0; fMax := 100; fPos := 0
+    IF fPos > fMax THEN fPos := fMax;
   END;
 
 
@@ -1602,14 +1664,14 @@ IMPLEMENTATION
   color palette. *)
   PROCEDURE TalGUI_DefaultStyle.SetDefaultColors;
   BEGIN
-    fTxtColor         := al_makecol (  0,   0,   0);
-    fDisabledColor    := al_makecol (128, 128, 128);
-    fSelectedTxtColor := al_makecol (255, 255, 255);
-    fBgColor          := al_makecol (204, 204, 204);
-    fSelectedBgColor  := al_makecol (  0,   0, 128);
-    fLightColor       := al_makecol (255, 255, 255);
-    fDarkColor        := al_makecol (102, 102, 102);
-    fBorderColor      := al_makecol (  0,   0,   0);
+    TextColor               := al_makecol (  0,   0,   0);
+    DisabledTextColor       := al_makecol (128, 128, 128);
+    SelectedTextColor       := al_makecol (255, 255, 255);
+    BackgroundColor         := al_makecol (204, 204, 204);
+    SelectedBackgroundColor := al_makecol (  0,   0, 128);
+    LightColor              := al_makecol (255, 255, 255);
+    DarkColor               := al_makecol (102, 102, 102);
+    BorderColor             := al_makecol (  0,   0,   0);
   END;
 
 
@@ -1620,12 +1682,12 @@ IMPLEMENTATION
   BEGIN
     IF Raised THEN
     BEGIN
-      al_rect (Bmp, x1, y1, x2 - 1, y2 - 1, fLightColor);
-      al_rect (Bmp, x1 + 1, y1 + 1, x2, y2, fDarkColor)
+      al_rect (Bmp, x1, y1, x2 - 1, y2 - 1, LightColor);
+      al_rect (Bmp, x1 + 1, y1 + 1, x2, y2, DarkColor)
     END
     ELSE BEGIN
-      al_rect (Bmp, x1, y1, x2 - 1, y2 - 1, fDarkColor);
-      al_rect (Bmp, x1 + 1, y1 + 1, x2, y2, fLightColor)
+      al_rect (Bmp, x1, y1, x2 - 1, y2 - 1, DarkColor);
+      al_rect (Bmp, x1 + 1, y1 + 1, x2, y2, LightColor)
     END
   END;
 
@@ -1633,29 +1695,26 @@ IMPLEMENTATION
 
 (* Draws a box.  Useful for buttons and pannels. *)
   PROCEDURE TalGUI_DefaultStyle.DrawBox (
-    Bmp: AL_BitmapPtr; x1, y1, x2, y2, BackColor, BorderWidth: INTEGER;
+    Bmp: AL_BitmapPtr; x1, y1, x2, y2, BackColor: INTEGER;
     Raised: BOOLEAN);
   VAR
     Cnt, ClrLeft, ClrRight: INTEGER;
   BEGIN
     IF BackColor >= 0 THEN al_rectfill (Bmp, x1, y1, x2, y2, BackColor);
-    IF BorderWidth > 0 THEN
+    IF Raised THEN
     BEGIN
-      IF Raised THEN
-      BEGIN
-        ClrLeft := fLightColor; ClrRight := fDarkColor
-      END
-      ELSE BEGIN
-        ClrLeft := fDarkColor; ClrRight := fLightColor
-      END;
-      FOR Cnt := BorderWidth - 1 DOWNTO 0 DO
-      BEGIN
-        al_hline (Bmp, x1 + Cnt, y2 - Cnt, x2 - Cnt, ClrRight);
-        al_vline (Bmp, X2 - Cnt, y1 + Cnt, y2 - Cnt, ClrRight);
+      ClrLeft := LightColor; ClrRight := DarkColor
+    END
+    ELSE BEGIN
+      ClrLeft := DarkColor; ClrRight := LightColor
+    END;
+    FOR Cnt := 1 DOWNTO 0 DO
+    BEGIN
+      al_hline (Bmp, x1 + Cnt, y2 - Cnt, x2 - Cnt, ClrRight);
+      al_vline (Bmp, X2 - Cnt, y1 + Cnt, y2 - Cnt, ClrRight);
 
-        al_hline (Bmp, x1 + Cnt, y1 + Cnt, x2 - Cnt, ClrLeft);
-        al_vline (Bmp, X1 + Cnt, y1 + Cnt, y2 - Cnt, ClrLeft);
-      END
+      al_hline (Bmp, x1 + Cnt, y1 + Cnt, x2 - Cnt, ClrLeft);
+      al_vline (Bmp, X1 + Cnt, y1 + Cnt, y2 - Cnt, ClrLeft);
     END
   END;
 
@@ -1666,10 +1725,18 @@ IMPLEMENTATION
     Bmp: AL_BitmapPtr; x1, y1, x2, y2, BackColor: INTEGER;
     Title: STRING; TitleCentered: BOOLEAN);
   BEGIN
-    DrawBox (Bmp, X1, Y1, X2, Y2, BackColor, 1, TRUE);
-    DrawBox (Bmp, X1, Y1, X2, Y1 + 16, fSelectedBgColor, 1, TRUE);
+    al_rectfill (Bmp, X1, Y1, X2, Y2, BackColor);
+    al_rectfill (Bmp, X1, Y1, X2, Y1 + 16, SelectedBackgroundColor);
+    al_rect     (Bmp, X1, Y1, X2, Y2, BorderColor);
+
+    al_hline (Bmp, x1 + 1, y2 - 1, x2 - 1, DarkColor);
+    al_vline (Bmp, X2 - 1, y1 + 1, y2 - 1, DarkColor);
+
+    al_hline (Bmp, x1 + 1, y1 + 1, x2 - 1, LightColor);
+    al_vline (Bmp, X1 + 1, y1 + 1, y2 - 1, LightColor);
+
     IF TitleCentered THEN x1 := (x1 + X2) DIV 2;
-    DrawText (Bmp, Title, X1, Y1 + 4, fSelectedTxtColor, TitleCentered)
+    DrawText (Bmp, Title, X1, Y1 + 4, SelectedTextColor, TitleCentered)
   END;
 
 
@@ -1678,8 +1745,8 @@ IMPLEMENTATION
   PROCEDURE TalGUI_DefaultStyle.DrawDisabledText (Bmp: AL_BITMAPptr; CONST Msg:
     STRING; X, Y: LONGINT; Centered: BOOLEAN);
   BEGIN
-    DrawText (Bmp, Msg, X + 1, Y + 1, fLightColor, Centered);
-    DrawText (Bmp, Msg, X, Y, fDarkColor, Centered)
+    DrawText (Bmp, Msg, X + 1, Y + 1, LightColor, Centered);
+    DrawText (Bmp, Msg, X, Y, DarkColor, Centered)
   END;
 
 END.

@@ -44,6 +44,8 @@ INTERFACE
     (* Adjust frame size and position, so all controls in the owner dialog will
 	be drawn inside the frame. @seealso(TalGUI_Control.Dialog) *)
       PROCEDURE AdjustSize;
+    (* Tell the owner dialog that control should be redrawn. *)
+      PROCEDURE RedrawMe; OVERRIDE;
     (* Draws the control in the given bitmap. *)
       PROCEDURE Draw (Bmp: AL_BITMAPptr); OVERRIDE;
 
@@ -211,6 +213,17 @@ IMPLEMENTATION
 
 
 
+(* Control should be redrawn. *)
+  PROCEDURE TalGUI_WindowFrame.RedrawMe;
+  BEGIN
+  { Window frames are often used to contain controls, so if it's redrawn it
+    will overwrite the contained controls.  So, redraw the frame should redraw
+    the whole dialog. }
+    SELF.Dialog.RedrawAll
+  END;
+
+
+
 (* Draws the control in the given bitmap. *)
   PROCEDURE TalGUI_WindowFrame.Draw (Bmp: AL_BITMAPptr);
   BEGIN
@@ -252,7 +265,6 @@ IMPLEMENTATION
     Left, Top: INTEGER;
   BEGIN
     INHERITED Initialize (FocusCtrl);
-
     IF NOT Initialized THEN
     BEGIN
     { Adjust frame size and position. }
@@ -263,7 +275,7 @@ IMPLEMENTATION
       SELF.Controls.MoveControls (Left - Controls[0].X, Top - Controls[0].Y);
     { Done. }
       Initialized := TRUE
-    END;
+    END
   END;
 
 
@@ -312,35 +324,5 @@ IMPLEMENTATION
     ));
     TalGUI_Button (SELF.Controls[RESULT]).onCLick := @SELF.ControlClosesDialog
   END;
-
-
-
-(*
- * TMessageDialog
- ****************************************************************************)
-
-(* Helper function that returns width of a button.
-
-  Note that it uses same formula than TalGUI_Button to calculate margins. *)
-{
-  FUNCTION TMessageDialog.GetButtonWidth (CONST aCaption: STRING): INTEGER;
-  BEGIN
-    RESULT := al_text_length (SELF.Style.TextFont, aCaption)
-	    + al_text_length (SELF.Style.TextFont, 'A')
-  END;
- }
-
-
-(* Helper function that returns height of a button.
-
-  Note that it uses same formula than TalGUI_Button to calculate margins. *)
-{
-  FUNCTION TMessageDialog.GetButtonHeight: INTEGER;
-  BEGIN
-    RESULT := al_text_length (SELF.Style.TextFont, 'A') * 3
-  END;
-}
-
-
 
 END.
