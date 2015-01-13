@@ -21,7 +21,7 @@ PROGRAM exgui;
  *)
 
 USES
-  allegro, albase, alfile, algui,
+  Allegro, alBase, alFile, alGUI, alUnicode,
   sysutils;
 
 {$include example.inc}

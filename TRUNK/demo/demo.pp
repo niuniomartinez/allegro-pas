@@ -7,6 +7,7 @@ PROGRAM demo;
 USES
   allegro,
   alflic,   { FLIC animations. }
+  alUnicode,{ UNICODE support. }
   config,   { Management of the game configuration. }
   error,    { To show nice error messages. }
   framectr, { The frame speed controller. }

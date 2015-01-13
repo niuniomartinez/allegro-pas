@@ -53,25 +53,30 @@ IMPLEMENTATION
     Ndx, X, Y: INTEGER;
   BEGIN
   { Load the datafile into memory. }
-    buf :=  ExtractFilePath (PARAMSTR (0)) + 'demo.dat';
+    buf :=  'demo.dat';
     Data := al_load_datafile (buf);
   { Check if it was loaded. }
-    LoadData := (Data <> NIL);
-  { Assigns tileset. }
-    SetLength (TileSet, T_ROWD + 1);
-    Tiles := Data^[BMP_TILES].dat;
-    X := 0; Y := 0;
-    FOR Ndx := T_COIN TO T_ROWD DO
+    IF Data <> NIL THEN
     BEGIN
-      TileSet[Ndx] := al_create_sub_bitmap (Tiles, X, Y, TSIZE, TSIZE);
-    { Next tile. }
-      INC (X, TSIZE);
-      IF X >= Tiles^.w THEN
+    { Assigns tileset. }
+      SetLength (TileSet, T_ROWD + 1);
+      Tiles := Data^[BMP_TILES].dat;
+      X := 0; Y := 0;
+      FOR Ndx := T_COIN TO T_ROWD DO
       BEGIN
-	X := 0;
-	INC (Y, TSIZE);
-      END;
-    END;
+	TileSet[Ndx] := al_create_sub_bitmap (Tiles, X, Y, TSIZE, TSIZE);
+      { Next tile. }
+	INC (X, TSIZE);
+	IF X >= Tiles^.w THEN
+	BEGIN
+	  X := 0;
+	  INC (Y, TSIZE);
+	END
+      END
+      EXIT (TRUE)
+    END
+    ELSE
+      LoadData := FALSE
   END;
 
 

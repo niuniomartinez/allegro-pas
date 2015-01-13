@@ -4,11 +4,22 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
   Errores corregidos
   ------------------
   * Muchos cambios en la extensión "alstream".
+  * El ejemplo exalpha funciona algo mejor.
+  * En ocasiones, el juego de demostración y el editor de mapas no leían
+    el archivo de datos.  Además, si el juego no cargaba el archivo, el mensaje
+    de error era una excepción EAccessViolation.  Ahora ya funcionan como
+    deberían.
 
   Novedades
   ---------
   + Nueva extensión alGUI.
   + El ejemplo al3d es más completo.
+
+  Otros
+  -----
+  * Ahora los mnemónicos tipo de dato de archivo de datos son constantes.
+    Esto hace que sea más rápido, que se use algo menos de memoria, y que
+    puedan utilizarse como etiquetas en sentencias CASE.
 
 Cambios entre las versiones 4.4.3 y 4.4.4
 =========================================

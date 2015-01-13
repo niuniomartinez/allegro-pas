@@ -66,9 +66,9 @@ IMPLEMENTATION
   USES
     allegro; { Needed by al_error }
 
-(******************
- * TAllegroStream *
- ******************)
+(*
+ * TAllegroStream
+ ****************************************************************************)
 
 (* Returns EOF state. *)
   FUNCTION TAllegroStream.GetEOF: BOOLEAN;
