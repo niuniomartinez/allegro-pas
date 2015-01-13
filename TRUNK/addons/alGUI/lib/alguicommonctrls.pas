@@ -47,6 +47,9 @@ INTERFACE
       PROCEDURE SetMin (CONST aMin: INTEGER); OVERRIDE;
     (* Sets maximun value. *)
       PROCEDURE SetMax (CONST aMax: INTEGER); OVERRIDE;
+
+    (* Mouse clicked on control. *)
+      FUNCTION MsgClick (CONST aX, aY, Button: INTEGER): BOOLEAN; OVERRIDE;
     PUBLIC
     (* Constructor. *)
       CONSTRUCTOR Create; OVERRIDE;
@@ -57,10 +60,7 @@ INTERFACE
 	aDir: TalGUI_Direction); OVERLOAD;
     (* Initializes the control. *)
       PROCEDURE Initialize; OVERRIDE;
-    (* Draws the control in the given bitmap.
-
-      Note that it uses @code(DrawBevel) and @code(DrawBox) from current
-      @link(TalGUI_Style). *)
+    (* Draws the control in the given bitmap. *)
       PROCEDURE Draw (Bmp: AL_BITMAPptr); OVERRIDE;
     END;
 
@@ -68,7 +68,7 @@ INTERFACE
 
   (* Scroll-bar control.  Note that currently there are not difference between
     slider and scroll-bar. *)
-   TalGUI_ScrollBar = CLASS (TalGUI_Slider)
+   TalGUI_ScrollBar = CLASS (TalGUI_CustomSlider)
    END;
 
 IMPLEMENTATION
@@ -79,7 +79,7 @@ IMPLEMENTATION
 
   PROCEDURE TalGUI_Button.SetCaption (CONST aCaption: STRING);
   BEGIN
-    fCaption := aCaption; SELF.RedrawMe := TRUE
+    fCaption := aCaption; SELF.RedrawMe
   END;
 
 
@@ -143,7 +143,7 @@ IMPLEMENTATION
     END;
     Dialog.Style.DrawBox (
       Bmp, X, Y, X + Width - 1, Y + Height - 1,
-      SELF.BackgroundColor, 2,
+      SELF.BackgroundColor,
       NOT fPressed
     );
     IF SELF.HasFocus THEN
@@ -175,12 +175,18 @@ IMPLEMENTATION
  * TalGUI_Slider
  ****************************************************************************)
 
+  CONST
+  (* Slider width. *)
+    SLIDER_W = 5;
+
+
+
   PROCEDURE TalGUI_Slider.AdjustSlider;
   BEGIN
     IF (Width > 0) AND (Height > 0) THEN
     CASE Direction OF
-      agdHorizontal: fSliderFactor := ABS (Max - Min) / Width;
-      agdVertical: fSliderFactor := ABS (Max - Min) / Height;
+      agdHorizontal: fSliderFactor := ABS (Max - Min) / (Width - SLIDER_W + 1);
+      agdVertical: fSliderFactor := ABS (Max - Min) / (Height - SLIDER_W + 1);
     END
   END;
 
@@ -222,6 +228,87 @@ IMPLEMENTATION
 
 
 
+(* Mouse was clicked. *)
+  FUNCTION TalGUI_Slider.MsgClick (CONST aX, aY, Button: INTEGER): BOOLEAN;
+
+    PROCEDURE MyDraw; INLINE;
+    BEGIN
+      SELF.RedrawMe;
+      SELF.Dialog.Draw
+    END;
+
+  VAR
+    sX1, sY1, sX2, sY2, NewPos: INTEGER;
+
+    PROCEDURE DoHorizontal;
+    BEGIN
+    { Test if mouse clicked inside the slider. }
+      sY1 := SELF.Y; sY2 := sY1 + SELF.Width - 1;
+      sX1 := SELF.X + TRUNC (Position * fSliderFactor); sX2 := sX1 + SLIDER_W;
+      IF (sX1 <= aX) AND (aX <= sX2) AND (sY1 <= aY) AND (aY <= sY2) THEN
+      BEGIN
+        WHILE al_mouse_b = Button DO
+	BEGIN
+	  NewPos := TRUNC ((al_mouse_x - SELF.X) / fSliderFactor);
+	  IF NewPos <> Position THEN
+	  BEGIN
+	    Position := NewPos; MyDraw
+	  END;
+	END;
+	EXIT;
+      END
+      ELSE BEGIN
+      { Check if pressed page up or page down. }
+	IF aX < sX1 THEN
+	  Position := Position - Page
+	ELSE
+	  Position := Position + Page;
+	MyDraw;
+      { Wait until mouse release. }
+        REPEAT UNTIL al_mouse_b <> Button
+      END
+    END;
+
+
+    PROCEDURE DoVertical;
+    BEGIN
+    { Test if mouse clicked inside the slider. }
+      sX1 := SELF.X; sX2 := sX1 + SELF.Height - 1;
+      sY1 := SELF.Y + TRUNC (Position * fSliderFactor); sY2 := sY1 + SLIDER_W;
+      IF (sX1 <= aX) AND (aX <= sX2) AND (sY1 <= aY) AND (aY <= sY2) THEN
+      BEGIN
+        WHILE al_mouse_b = Button DO
+	BEGIN
+	  NewPos := TRUNC ((al_mouse_y - SELF.Y) / fSliderFactor);
+	  IF NewPos <> Position THEN
+	  BEGIN
+	    Position := NewPos; MyDraw
+	  END
+	END;
+	EXIT;
+      END
+      ELSE BEGIN
+      { Check if pressed page up or page down. }
+	IF aY < sY1 THEN
+	  Position := Position - Page
+	ELSE
+	  Position := Position + Page;
+	MyDraw;
+      { Wait until mouse release. }
+        REPEAT UNTIL al_mouse_b <> Button
+      END
+    END;
+
+  BEGIN
+    CASE Direction OF
+      agdHorizontal: DoHorizontal;
+      agdVertical:   DoVertical;
+    END;
+    RESULT := TRUE
+  END;
+
+
+
 (* Creates the slider. *)
   CONSTRUCTOR TalGUI_Slider.Create;
   BEGIN
@@ -247,7 +334,7 @@ IMPLEMENTATION
   BEGIN
     INHERITED Create;
     Direction := aDir;
-    Min := aMin; Max := aMax;
+    Min := aMin; Max := aMax; Position := aMin;
     X := aX; Y := aY; Width := aW; Height := aH
   END;
 
@@ -265,11 +352,11 @@ IMPLEMENTATION
       CASE Direction OF
       agdHorizontal:
 	BEGIN
-	  Width := ABS (Max - Min); Height := Size;
+	  Width := ABS (Max - Min) + SLIDER_W; Height := Size;
 	END;
       agdVertical:
 	BEGIN
-	  Height := ABS (Max - Min); Width := Size;
+	  Height := ABS (Max - Min) + SLIDER_W; Width := Size;
 	END;
       END
     END;
@@ -287,16 +374,12 @@ IMPLEMENTATION
     BEGIN
     { Trench. }
       Offset :=  Y + (SELF.Height DIV 2) - 1;
-      Dialog.Style.DrawBox (
-	Bmp, X, Offset, X + Width - 1, Offset + 2,
-	SELF.BackgroundColor, 1,
-	FALSE
-      );
+      Dialog.Style.DrawTrench (Bmp, X, Offset, X + Width - 1, Offset + 2);
     { Slider. }
       Offset := X + TRUNC (Position * fSliderFactor);
       Dialog.Style.DrawBox (
-	Bmp, Offset - 1, Y, Offset + 4, Y + Height,
-	SELF.BackgroundColor, 1,
+	Bmp, Offset, Y, Offset + SLIDER_W, Y + Height - 1,
+	SELF.BackgroundColor,
 	TRUE
       );
     END;
@@ -305,24 +388,20 @@ IMPLEMENTATION
     BEGIN
     { Trench. }
       Offset :=  X + (SELF.Width DIV 2) - 1;
-      Dialog.Style.DrawBox (
-	Bmp, Offset, y, Offset + 2, Y + Height - 1,
-	SELF.BackgroundColor, 1,
-	FALSE
-      );
+      Dialog.Style.DrawTrench (Bmp, Offset, y, Offset + 2, Y + Height - 1);
     { Slider. }
       Offset := Y + TRUNC (Position * fSliderFactor);
       Dialog.Style.DrawBox (
-	Bmp, X, Offset - 1, X + Width, Offset + 4,
-	SELF.BackgroundColor, 1,
+	Bmp, X, Offset, X + Width - 1, Offset + SLIDER_W,
+	SELF.BackgroundColor,
 	TRUE
       );
     END;
 
   BEGIN
-    Dialog.Style.DrawBox (
+    al_rectfill (
       Bmp, X, Y, x + Width - 1, Y + Height - 1,
-      SELF.BackgroundColor, 0, FALSE
+      SELF.BackgroundColor
     );
     CASE Direction OF
       agdHorizontal: DrawHorizontal;
