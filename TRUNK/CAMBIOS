@@ -20,6 +20,9 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
   * Ahora los mnemónicos tipo de dato de archivo de datos son constantes.
     Esto hace que sea más rápido, que se use algo menos de memoria, y que
     puedan utilizarse como etiquetas en sentencias CASE.
+  * Se ha cambiado la distribución de la documentación.  Además, ahora se
+    construye desde el makefile principal, en lugar de tener otro makefile
+    diferente.
 
 Cambios entre las versiones 4.4.3 y 4.4.4
 =========================================

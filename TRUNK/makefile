@@ -71,6 +71,7 @@ OBJDIR = obj/
 DEMODIR = demo/
 EXMDIR = examples/
 LIBDIR = lib/
+DOCDIR = docs/lib/
 
 #FLAGS = -O3 -Sh -Si -Xs -XX $(EFLAGS)
 # Use next line instead to activate debug.

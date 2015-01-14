@@ -1,11 +1,11 @@
 # Makefile generic - build rules
 
-.PHONY: all
+.PHONY: all docs
 
 # Main objective: the whole project
 all: adbanner examples demo
 	@echo "Finished $(PROJECT)"
-	@echo "To create the documentation, run 'make' from the docs directory"
+	@echo "To create the documentation, run 'make docs'."
 
 # Examples.
 examples: $(EXMFILES)
@@ -13,6 +13,10 @@ examples: $(EXMFILES)
 
 # Demo game.
 demo: $(DEMO)
+
+# Library documentation.
+docs:
+	pasdoc -T Allegro.pas -O html --cache-dir $(OBJDIR) -E $(DOCDIR) --auto-abstract $(LIBFILES)
 
 # Executables.
 $(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
@@ -44,6 +48,7 @@ veryclean: clean
 clean:
 	$(DELETE) $(OBJDIR)*$(OBJSUF)
 	$(DELETE) $(OBJDIR)*.ppu
+	$(DELETE) $(OBJDIR)*.pduc
 	$(DELETE) $(OBJDIR)*.a
 
 # Show all options.
@@ -54,6 +59,7 @@ help: adbanner
 	@echo "make all            } Builds the whole project."
 	@echo "make examples       } Builds the examples only."
 	@echo "make demo           } Builds the demo game."
+	@echo "make docs           } Builds the internal documentation."
 	@echo "make clean          } Deletes temporary files."
 	@echo "make veryclean      } Deletes all builded files."
 	@echo "make status         } Shows some configuration variables."
