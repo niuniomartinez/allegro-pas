@@ -1,43 +1,57 @@
-@shorttitle(Introduction)
-@title(Allegro.pas)
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Allegro.pas: Introduction</title>
+  <meta name="generator" content="gVim" />
+  <meta name="robots" content="index, follow" />
+  <link href="lib/pasdoc.css" rel="stylesheet" type="text/css" />
+  <link rel="shortcut icon" href="favicon.ico" />
+<!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+ </head>
+ <body>
+  <header><h1>Allegro.pas: Introduction</h1></header>
 
-@section(1 indice Contents)
+  <nav><table class="sections wide_list">
+    <tbody><tr>
+      <td><a class="section" href="#intro">Introduction</a></td>
+      <td><a class="section" href="#use_allegro">How to use Allegro.pas</a></td>
+      <td><a class="section" href="#contact">Contact info</a></td>
+    </tr></tbody>
+  </table></nav>
 
-  @unorderedList(
-    @item(@bold(@link(intro Introduction)))
-    @item(@bold(@link(use_allegro How to use Allegro.pas)))
-    @item(@bold(@link(contact Contact info)))
-  )
+  <section id="intro">
+    <header><h2>Introduction</h2></header>
 
+    <p>Allegro.pas is a wrapper to allow Pascal compilers (such as Free Pascal or
+    Delphi) to use the Allegro library.</p>
 
-@section(1 intro Introduction)
+    <p>Read <a href="#use_allegro">section "How to use Allegro.pas"</a> for a description of
+    the main module of the library.</p>
 
-  Allegro.pas is a wrapper to allow Pascal compilers (such as Free Pascal or
-  Delphi) to use the Allegro library.
+    <p>There are a few add-ons that adds some functionality to the original Allegro.
+    They came with their own documentation and makefiles at the <code>addons</code>
+  directory.</p>
 
-  Read @link(use_allegro section "How to use Allegro.pas") for a description of
-  the main module of the library.
+  <p>There are a wiki at <a href="http://allegro-pas.sf.net/">Allegro.pas</a>the project website</a> which
+    may include additional documentation and tutorials.</p>
 
-  There are a few add-ons that adds some functionality to the original Allegro.
-  They came with their own documentation and makefiles at the @code(addons)
-  directory.
-
-  There are a wiki at Allegro.pas website (http://allegro-pas.sf.net/) which
-  may include additional documentation and tutorials.
-
-  If you want to collaborate please join the main Allegro.pas mailing list
-  or ask at Pascal Game Development forum.  Read @link(contact section "Contact
-  info").
-
+    <p>If you want to collaborate please join the main Allegro.pas mailing list
+    or ask at Pascal Game Development forum.  Read <a href="#contact">section "Contact
+      info"</a>.</p>
+  </section>
 
 @section(1 use_allegro How to use Allegro.pas)
 
-  The best way to start with Allegro.pas is to study the sources at examples
+    <p>The best way to start with Allegro.pas is to study the sources at examples
   and look for detailed description of procedures and functions at the
   documentation.  That examples are fully commented and should be easy to
-  understand.
+  understand.</p>
 
-  Anyway, here you have a brief description of the Allegro library:
+  <p>Anyway, here you have a brief description of the Allegro library:</p>
 
   @unorderedList(
     @item(@bold(@link(init Initialization and finalization)))
@@ -59,18 +73,18 @@
 
 @section(2 init Initialization and finalization)
 
-  You @bold(must) call either @link(al_install) or @link(al_init) before doing
-  anything other than using the @link(unicode UNICODE routines).
+    <p>You @bold(must) call either @link(al_install) or @link(al_init) before doing
+    anything other than using the @link(unicode UNICODE routines).</p>
 
-  On the other hand, you can call @link(al_exit) before to finish the program
+    <p>On the other hand, you can call @link(al_exit) before to finish the program
   to close Allegro.  You don't need to do it because it will be called
   automaticly by the @code(FINALIZATION) section of Allegro.pas but some times
-  it's neccessary to call it before.
+  it's neccessary to call it before.</p>
 
 
 @section(2 unicode UNICODE routines)
 
-  Allegro can manipulate and display text using any character values from 0
+    <p>Allegro can manipulate and display text using any character values from 0
   right up to 2^32-1 (although the current implementation of the @link(grabber)
   can only create fonts using characters up to 2^16-1).  You can choose between
   a number of different text encoding formats, which controls how strings are
@@ -78,9 +92,9 @@
   @link(al_set_uformat) procedure.  This setting affects all aspects of the
   system:  whenever you see a function that returns a @code(STRING) or
   @code(AL_STRptr) type, or that takes the same as an argument, that text will
-  be in whatever format you have told Allegro to use.
+  be in whatever format you have told Allegro to use.</p>
 
-  By default, Allegro uses UTF-8 encoded text (@code(AL_U_UTF8)).  This is a
+    <p>By default, Allegro uses UTF-8 encoded text (@code(AL_U_UTF8)).  This is a
   variable-width format, where characters can occupy anywhere from one to four
   bytes.  The nice thing about it is that characters ranging from 0-127 are
   encoded directly as themselves, so UTF-8 is upwardly compatible with 7-bit
@@ -90,22 +104,22 @@
   will be encoded as a sequence of two or more bytes, each in the range
   128-255.  This means you will never get what looks like a 7-bit ASCII
   character as part of the encoding of a different character value, which makes
-  it very easy to manipulate UTF-8 strings.
+  it very easy to manipulate UTF-8 strings.</p>
 
-  There are a few editing programs that understand UTF-8 format text files.
+    <p>There are a few editing programs that understand UTF-8 format text files.
   Alternatively, you can write your strings in plain ASCII or 16-bit Unicode
   formats, and then use the Allegro @code(textconv) program to convert them
   into UTF-8.  The @code(textconv) program is included with the original
-  Allegro release.
+  Allegro release.</p>
 
-  If you prefer to use some other text format, you can set Allegro to work with
+    <p>If you prefer to use some other text format, you can set Allegro to work with
   normal 8-bit ASCII (@code(AL_U_ASCII)), or 16-bit Unicode
   (@code(AL_U_UNICODE)) instead, or you can provide some handler functions to
   make it support whatever other text encoding you like (for example it would
   be easy to add support for 32 bit UCS-4 characters, or the Chinese GB-code
-  format).
+  format).</p>
 
-  There is some limited support for alternative 8-bit codepages, via the
+    <p>There is some limited support for alternative 8-bit codepages, via the
   @code(AL_U_ASCII_CP) mode.  This is very slow, so you shouldn't use it for
   serious work, but it can be handy as an easy way to convert text between
   different codepages.  By default the @code(AL_U_ASCII_CP) mode is set up to
@@ -113,21 +127,21 @@
   vowels with their simpler equivalents (this is used by the @link(al_message)
   function when it needs to print an error report onto a text mode DOS screen).
   If you want to work with other codepages, you can do this by passing a
-  character mapping table to the @link(al_set_ucodepage) function.
+  character mapping table to the @link(al_set_ucodepage) function.</p>
 
-  Note that you can use the Unicode routines before you call @link(al_install)
+    <p>Note that you can use the Unicode routines before you call @link(al_install)
   or @link(al_init).  If you want to work in a text mode other than UTF-8, it
-  is best to set it with @link(al_set_uformat) just before you call these.
+  is best to set it with @link(al_set_uformat) just before you call these.</p>
 
-  @bold(Note:)  While UNICODE is almost supported by Free Pascal and Lazarus,
+    <p>@bold(Note:)  While UNICODE is almost supported by Free Pascal and Lazarus,
   you might have bad results using it with Allegro.pas.  See the TODO file
-  for more information.
+  for more information.</p>
 
 
 
 @section(2 configuration Configuration routines)
 
-  Various parts of Allegro, such as the sound routines and the
+    <p>Various parts of Allegro, such as the sound routines and the
   @link(al_load_joystick_data) function, require some configuration
   information.  This data is stored in text files as a collection of
   @code(variable=value) lines, along with comments that begin with a @code(#)
@@ -135,25 +149,25 @@
   optionally be divided into sections, which begin with a @code([sectionname])
   line.  Each section has a unique namespace, to prevent variable name
   conflicts, but any variables that aren't in a section are considered to
-  belong to all the sections simultaneously.
+  belong to all the sections simultaneously.</p>
 
-  Note that variable and section names cannot contain spaces.
+  <p>Note that variable and section names cannot contain spaces.</p>
 
-  By default the configuration data is read from a file called
+    <p>By default the configuration data is read from a file called
   @code(allegro.cfg), which can be located either in the same directory as the
   program executable, or the directory pointed to by the @code(ALLEGRO)
   environment variable.  Under Unix, it also checks for @code(~/allegro.cfg),
   @code(~/.allegrorc), @code(/etc/allegro.cfg), and @code(/etc/allegrorc), in
   that order;  under BeOS only the last two are also checked.  MacOS X also
   checks in the Contents/Resources directory of the application bundle, if any,
-  before doing the checks above.
+  before doing the checks above.</p>
 
-  If you don't like this approach, you can specify any filename you like with
+    <p>If you don't like this approach, you can specify any filename you like with
   using procedure @link(al_set_config_file), or use a block of binary
   configuration data with @link(al_set_config_data) provided by your program
-  (which could for example be loaded from a @link(al_load_datafile datafile)).
+  (which could for example be loaded from a @link(al_load_datafile datafile)).</p>
 
-  You can store whatever custom information you like in the config file, along
+    <p>You can store whatever custom information you like in the config file, along
   with the standard variables that are used by Allegro.  Allegro (but not
   Allegro.pas) comes with a @code(tools/setup) directory where you can find
   configuration programs.  The standalone setup program is likely to be of
@@ -161,69 +175,69 @@
   file without the need to touch a text editor and enter values by hand.  It
   also provides a few basic tests like sound playing for sound card testing.
   You are welcome to include the setup program with your game, either as is or
-  with modified graphics to fit better your game.
+  with modified graphics to fit better your game.</p>
 
 @section(2 timer Timer routines)
 
-  Allegro can set up several virtual timer functions, all going at different
-  speeds.
+    <p>Allegro can set up several virtual timer functions, all going at different
+    speeds.</p>
 
-  They are usually implemented using threads, which run parallel to the main
+    <p>They are usually implemented using threads, which run parallel to the main
   thread.  Therefore timer callbacks on such platforms will not block the main
   thread when called, so you may need to use appropriate synchronisation
   devices (eg. mutexes, semaphores, etc.) when accessing data that is shared by
   a callback and the main thread.  (Currently Allegro does not provide such
-  devices.)
+  devices.)</p>
 
   @bold(See also) @link(al_install_int)
 
 @section(2 keyboard Keyboard routines)
 
-  The Allegro keyboard handler provides both buffered input (@link(al_readkey))
+    <p>The Allegro keyboard handler provides both buffered input (@link(al_readkey))
   and a set of flags storing the current state of each key (@link(al_key)).
   Note that it is not possible to correctly detect every combination of keys,
   due to the design of the PC keyboard.  Up to two or three keys at a time will
   work fine, but if you press more than that the extras are likely to be
   ignored (exactly which combinations are possible seems to vary from one
-  keyboard to another).
+  keyboard to another).</p>
 
-  Allegro.pas comes with a prepackaged @code(keyboard.dat) file at the
+    <p>Allegro.pas comes with a prepackaged @code(keyboard.dat) file at the
   @code(resources) directory which you can put along with your binary.  If
   this file is present, Allegro will be able to extract the keyboard mapping
   information stored there.  However, the end user still needs to select which
   keyboard mapping to use.  This can be accomplished through the keyboard
   variable of the system section in a standard @code(allegro.cfg) configuration
   file.  Read section about @link(configuration) for more information about
-  this.
+  this.</p>
 
   @bold(See also) @link(al_install_keyboard)
 
 @section(2 joystick Joystick support)
 
-  Unlike keyboard or mouse input, which are usually read through hardware
+    <p>Unlike keyboard or mouse input, which are usually read through hardware
   interrupts by Allegro, joystick input functions have to be polled because
   there are no hardware interrupts for them on most platforms.  This doesn't
   mean that you have to poll the joysticks on each line of code you want to
   read their values, but you should make sure to poll them at least once per
   frame in your game loop.  Otherwise you face the possibility of reading stale
-  incorrect data.
+  incorrect data.</p>
 
   @bold(See also) @link(al_install_joystick)
 
 @section(2 color Color)
 
-  All the Allegro drawing functions use integer parameters to represent colors.
+<p>All the Allegro drawing functions use integer parameters to represent colors.</p>
 
-  In 256-color mode the color values are treated as indexes into the current
+    <p>In 256-color mode the color values are treated as indexes into the current
   palette, which is a table listing the red, green and blue intensities for
-  each of the 256 possible colors.
+  each of the 256 possible colors.</p>
 
-  Palette entries are stored in an @link(AL_RGB) structure, which contains red,
+    <p>Palette entries are stored in an @link(AL_RGB) structure, which contains red,
   green and blue intensities in the VGA hardware format, ranging from 0-63.
   The full palette is an @link(AL_PALETTE), a list of 256 @code(AL_RGB)
-  values.  You can set the palette using the @link(al_set_palette) procedure.
+  values.  You can set the palette using the @link(al_set_palette) procedure.</p>
 
-  In a truecolor video mode the red, green, and blue components for each pixel
+    <p>In a truecolor video mode the red, green, and blue components for each pixel
   are packed directly into the color value, rather than using a palette lookup
   table.  In a 15-bit mode there are 5 bits for each color, in 16-bit modes
   there are 5 bits each of red and blue and six bits of green, and both 24 and
@@ -232,22 +246,22 @@
   can vary depending on your hardware, but will generally either be RGB or BGR.
   Since the layout is not known until you select the video mode you will be
   using, you must call @link(al_set_gfx_mode) before using any of the color
-  routines!
+  routines!</p>
 
   @bold(See also) @link(alvga) @link(alblend)
 
 @section(2 bitmap Bitmaps)
 
-  Once you have selected a graphics mode, you can draw things onto the display
+    <p>Once you have selected a graphics mode, you can draw things onto the display
   via the @link(al_screen) bitmap.  All the Allegro graphics routines draw onto
   @link(AL_BITMAP) structures, which are areas of memory containing rectangular
   images, stored as packed byte arrays (in 8-bit modes one byte per pixel, in
   15- and 16-bit modes two bytes per pixel, in 24-bit modes 3 bytes per pixel
   and in 32-bit modes 4 bytes per pixel).  You can create and manipulate
   bitmaps in system RAM, or you can write to the special @code(al_screen)
-  bitmap which represents the video memory in your graphics card.
+  bitmap which represents the video memory in your graphics card.</p>
 
-  Allegro supports several different types of bitmaps:
+  <p>Allegro supports several different types of bitmaps:</p>
   @unorderedList(
     @item(The @link(al_screen) bitmap, which represents the hardware video
 	memory.  Ultimately you have to draw onto this in order for your image
@@ -295,13 +309,13 @@
 
 @section(2 mouse Mouse routines)
 
-  Allegro provides functions for reading the mouse state and displaying a mouse
+    <p>Allegro provides functions for reading the mouse state and displaying a mouse
   cursor on-screen.  You can read the absolute position of the mouse and the
   state of the mouse buttons from global variables.  Additionally, you can read
   the mouse position difference as mouse mickeys, which is the number of pixels
-  the cursor moved since the last time this information was read.
+  the cursor moved since the last time this information was read.</p>
 
-  Allegro offers three ways to display the mouse cursor:
+  <p>Allegro offers three ways to display the mouse cursor:</p>
   @definitionList(
     @itemLabel(Standard Allegro cursor)@item(Allegro is responsible for drawing
       the mouse cursor from a timer.  Use @link(al_set_mouse_sprite) and
@@ -326,18 +340,18 @@
       @link(al_enable_hardware_cursor) before you can use this.  Or you can use
       the low level @link(al_show_os_cursor) function.)
   )
-  Not all drivers will support all functionality.
+  <p>Not all drivers will support all functionality.</p>
 
 
 
   @section(2 graphmode Graphics modes initialization)
 
-  Graphics modes are the common denominator for most Allegro programs.  While
+    <p>Graphics modes are the common denominator for most Allegro programs.  While
   it is possible to write platform specific programs using Allegro which don't
   set a graphic mode through the routines provided in this unit, these are not
-  very common.
+  very common.</p>
 
-  The first thing to note is that due to the wide range of supported platforms,
+    <p>The first thing to note is that due to the wide range of supported platforms,
   a graphic mode is the only way to safely communicate with the user.  When
   Allegro was a DOS only library (versions 3.x and previous), it was frequent
   for programmers to use functions from the runt-time library to communicate
@@ -346,17 +360,17 @@
   such a game running under Windows where there is no default console output or
   it may be hidden from the user?  Even if the game compiled successfully, it
   would be unplayable, especially if there was vital information for the user
-  in those text only messages.
+  in those text only messages.</p>
 
-  Allegro provides the @link(al_message) function to deal with this problem,
+    <p>Allegro provides the @link(al_message) function to deal with this problem,
   but this is not a very user friendly method of communicating with the user
   and its main purpose is displaying small error like messages when no graphic
   mode is available.  Therefore, the first thing your Allegro program should do
   is set a graphic mode, and from there on, use Allegro's text output routines
   to display messages to the user, just like
-  @code(allegro.pas/examples/exhello.pp) does.
+  @code(allegro.pas/examples/exhello.pp) does.</p>
 
-  Setting a graphic mode involves deciding how to allocate the memory of the
+    <p>Setting a graphic mode involves deciding how to allocate the memory of the
   video card for your program.  On some platforms this means creating a virtual
   screen bigger than the physical resolution to do hardware scrolling or page
   flipping.  Virtual screens can cause a lot of confusion, but they are really
@@ -369,13 +383,13 @@
   the hole in one position and ignore the parts of video memory that aren't
   visible, but you can get all sorts of useful effects by sliding the screen
   window around, or by drawing images in a hidden part of video memory and then
-  flipping across to display them.
+  flipping across to display them.</p>
 
-  For example, you could select a 640x480 mode in which the monitor acts as a
+    <p>For example, you could select a 640x480 mode in which the monitor acts as a
   window onto a 1024x1024 virtual screen, and then move the visible screen
   around in this larger area (hardware scrolling).  Initially, with the visible
   screen positioned at the top left corner of video memory, this setup would
-  look like:
+  look like:</p>
   @longcode(#
           (0,0)------------(640,0)----(1024,0)
             |                  |           |
@@ -387,39 +401,39 @@
             |                              |
           (0,1024)--------------------(1024,1024)
   #)
-  With a virtual screen bigger than the visible screen you can perform smooth
+    <p>With a virtual screen bigger than the visible screen you can perform smooth
   CPU inexpensive scrolling:  you draw your graphics once, and then only tell
   the video card to show a different portion of the screen.  However, virtual
   screens are not supported on all platforms, and on some they might be
   emulated through software, losing any performance.  On top of that, many
   video cards only allow horizontal scrolling in steps of 32 bytes.  This is
   not a problem if your game runs in 24 or 32 bit, but it tends to mean jerky
-  scrolling for other color depths.
+  scrolling for other color depths.</p>
 
-  The other reason you could use virtual screens for is page flipping.  This
+    <p>The other reason you could use virtual screens for is page flipping.  This
   means showing one portion of the virtual screen while your program draws to
   the hidden one. When you finish, you show the part you have been drawing to
   and repeat the process with the area now hidden. The result is a perfectly
-  smooth screen update without flickering or other graphical artifacts.
+  smooth screen update without flickering or other graphical artifacts.</p>
 
-  Scrolling manually to one part of the video memory is one non portable way to
+    <p>Scrolling manually to one part of the video memory is one non portable way to
   accomplish this. The portable way is to use functions like
   @link(al_create_system_bitmap), @link(al_create_video_bitmap),
   @link(al_show_video_bitmap), etc.  These functions divide the memory of the
   video card in areas and switch between them, a feature supported on all
   platforms and video cards (given that they have enough memory for the screen
-  resolutions you asked for).
+  resolutions you asked for).</p>
 
-  The last thing you need to know about setting a graphic mode are drivers.
+    <p>The last thing you need to know about setting a graphic mode are drivers.
   Each platform has a number of graphic drivers which support a different range
   of hardware or behave in different ways.  To avoid cluttering your own code
   with #ifdefs and dealing with drivers added after you release your program,
   Allegro provides several so called magic drivers.  These magic drivers don't
-  really exists, they wrap around a specific kind of functionality.
+  really exists, they wrap around a specific kind of functionality.</p>
 
-  The magic drivers you can use are:  @link(AL_GFX_AUTODETECT),
+    <p>The magic drivers you can use are:  @link(AL_GFX_AUTODETECT),
   @link(AL_GFX_AUTODETECT_FULLSCREEN), @link(AL_GFX_AUTODETECT_WINDOWED),
-  @link(AL_GFX_SAFE), @link(AL_GFX_TEXT).
+  @link(AL_GFX_SAFE), @link(AL_GFX_TEXT).</p>
 
   @bold(See also) @link(al_set_gfx_mode)
 
@@ -427,10 +441,10 @@
 
 @section(2 draw_primitives Drawing primitives)
 
-  Except for @link(_al_putpixel), all these routines are affected by the
+    <p>Except for @link(_al_putpixel), all these routines are affected by the
   current drawing mode and the clipping rectangle of the destination bitmap.
   Unless specified otherwise, all coordinates for drawing operations are
-  inclusive, and they, as well as lengths, are specified in pixel units.
+  inclusive, and they, as well as lengths, are specified in pixel units.</p>
 
   @bold(See also) @link(al_set_clip_rect) @link(al_drawing_mode)
 
@@ -438,22 +452,22 @@
 
 @section(2 text text drawing)
 
-  Allegro provides routines for loading fonts directly from GRX format .fnt
+    <p>Allegro provides routines for loading fonts directly from GRX format .fnt
   files, 8x8 or 8x16 BIOS format .fnt files, from bitmap images, from datafiles
   or you can import a multiple-range Unicode font by writing a .txt script that
   specifies a number of different source files for each range of characters.
 
-  By default, Allegro can only use bitmapped (non-scalable) fonts.  If you want
+    <p>By default, Allegro can only use bitmapped (non-scalable) fonts.  If you want
   to use TrueType fonts, you will need to use an add-on library which allows
   you to load them on the fly (like AllegTTF or Glyph Keeper, listed among
   others at http://www.allegro.cc/) and render them directly, or generate a
   bitmapped version of a TrueType font with tools like TTF2PCX
-  (http://www.talula.demon.co.uk/ttf2pcx/index.html).
+  (http://www.talula.demon.co.uk/ttf2pcx/index.html).</p>
 
-  Allegro provides text output routines that work with both monochrome and
+    <p>Allegro provides text output routines that work with both monochrome and
   color fonts, which can contain any number of Unicode character ranges.  The
   @link(grabber) program can create fonts from sets of characters drawn in a
-  bitmap file, and can also import GRX or BIOS format font files.
+  bitmap file, and can also import GRX or BIOS format font files.</p>
 
   @bold(See also) @link(al_load_font) @link(al_textout_ex)
 
@@ -461,7 +475,7 @@
 
 @section(2 bltspr Bitting and sprite drawing)
 
-  As far as Allegro is concerned, a bitmap and a sprite are the same thing, but
+    <p>As far as Allegro is concerned, a bitmap and a sprite are the same thing, but
   to many people the two words imply slightly different things.  The function
   @link(al_draw_sprite) is called so rather than @code(al_draw_bitmap) partly
   because it indicates that it uses a masked drawing mode (if it existed, you
@@ -469,11 +483,11 @@
   historical reasons.  In Allegro 1.0 there were actually different structures
   for sprites and bitmaps, each with their own set of abilities.  Allegro 2.0
   merged these into a single more flexible structure, but retained some names
-  like @code(al_draw_sprite).
+  like @code(al_draw_sprite).</p>
 
-  In wider (non-Allegro) terms, the two words can mean quite different things.
+    <p>In wider (non-Allegro) terms, the two words can mean quite different things.
   Generally you can say that sprites are a subset of bitmaps, but even that
-  isn't true in 100% of cases.
+  isn't true in 100% of cases.</p>
   @definitionList(
     @itemlabel(BITMAP)@item(a widely accepted term that will be understood by
       anyone even remotely connected with computer graphics.  It simply means
@@ -493,7 +507,7 @@
       would have been possible if all the drawing had to be done directly by
       the puny CPU.)
   )
-  Later on, a lot of old C64 programmers upgraded to machines like the Atari
+    <p>Later on, a lot of old C64 programmers upgraded to machines like the Atari
   ST, which didn't have any special sprite hardware, but they carried on
   referring to their main moving objects as sprites (the routine to draw such a
   thing would obviously be called @code(al_draw_sprite)).  A sprite is really
@@ -503,14 +517,14 @@
   environment, and that it will be drawn in a masked overlay mode rather than
   as a solid rectangle (there is also a strong implication that a sprite will
   be animated by cycling through a number of frames, but that isn't always the
-  case).
+  case).</p>
 
-  In recent years some people have started using "sprite" to refer to any
+    <p>In recent years some people have started using "sprite" to refer to any
   character graphics, even if they are not in fact drawn as 2d bitmaps, eg.
   @italic("this game uses 3d polygonal player sprites"). This is a confusing
-  misuse of the word (Doom uses sprites, Quake does not), but it does happen.
+  misuse of the word (Doom uses sprites, Quake does not), but it does happen.</p>
 
-  The origin of the term @italic(blit) is also rather interesting.  This was
+    <p>The origin of the term @italic(blit) is also rather interesting.  This was
   originally BitBlt, an abbreviation of BITmap BLock Transfer, which was a
   function designed (possibly) by the people at Xerox who did so much of the
   pioneering work on graphics display systems, and subsequently copied by
@@ -521,9 +535,9 @@
   different ROP modes (Raster OPerations) for doing things like XOR, inverting
   pixels, etc.  A whole family of related words grew up around the BitBlt
   function, but "blt" is impossible to speak (try saying "bltter" or "bltting"
-  :-) so people added the vowel to make it easier to pronounce.
+  :-) so people added the vowel to make it easier to pronounce.</p>
 
-  Therefore, the act of calling the BitBlt function came to be known as
+    <p>Therefore, the act of calling the BitBlt function came to be known as
   @italic("doing a blit").  The obvious next step was to rename the function
   itself to @code(blit), which generally took place at the same time as people
   decided to simplify the original, removing the different ROP modes on the
@@ -531,10 +545,10 @@
   anything higher than monochrome images in any case.  This leaves us with a
   function called @code(blit), which is an abbreviation for @italic("block
   transfer").  A strong case could be made for calling this @code(blot)
-  instead, but somehow that just doesn't sound the same!
+  instead, but somehow that just doesn't sound the same!</p>
 
-  Anyway, all the routines in this chapter are affected by the clipping
-  rectangle of the destination bitmap.
+    <p>Anyway, all the routines in this chapter are affected by the clipping
+    rectangle of the destination bitmap.</p>
 
   @bold(See also) @link(al_blit)
 
@@ -542,14 +556,14 @@
 
 @section(2 rlespr Run-length compressed sprites)
 
-  Because bitmaps can be used in so many different ways, the bitmap structure
+    <p>Because bitmaps can be used in so many different ways, the bitmap structure
   is quite complicated, and it contains a lot of data.  In many situations,
   though, you will find yourself storing images that are only ever copied to
   the screen, rather than being drawn onto or used as filling patterns, etc.
   If this is the case you may be better off storing your images in
-  @link(AL_RLE_SPRITE) structure rather than regular bitmaps.
+  @link(AL_RLE_SPRITE) structure rather than regular bitmaps.</p>
 
-  RLE sprites store the image in a simple run-length encoded format, where
+    <p>RLE sprites store the image in a simple run-length encoded format, where
   repeated zero pixels are replaced by a single length count, and strings of
   non-zero pixels are preceded by a counter giving the length of the solid run.
   RLE sprites are usually much smaller than normal bitmaps, both because of the
@@ -558,67 +572,67 @@
   rather than having to compare every single pixel with zero to determine
   whether it should be drawn, it is possible to skip over a whole run of zeros
   with a single add, or to copy a long run of non-zero pixels with fast string
-  instructions.
+  instructions.</p>
 
-  Every silver lining has a cloud, though, and in the case of RLE sprites it is
+    <p>Every silver lining has a cloud, though, and in the case of RLE sprites it is
   a lack of flexibility.  You can't draw onto them, and you can't flip them,
   rotate them, or stretch them.  In fact the only thing you can do with them is
   to blast them onto a bitmap with the @link(al_draw_rle_sprite) function,
   which is equivalent to using @link(al_draw_sprite) with a regular bitmap.
   You can convert bitmaps into RLE sprites at runtime, or you can create RLE
   sprite structures in @link(grabber) datafiles by making a new object of type
-  'RLE sprite'.
+  'RLE sprite'.</p>
 
 
 
 @section(2 sound Sound and music routines)
 
-  Allegro allows you to use the sound hardware in two ways:  automatic, or
+    <p>Allegro allows you to use the sound hardware in two ways:  automatic, or
   manual.  Usually you should try the automatic version first.  This means
   calling @link(al_install_sound) with the autodetection parameters and using
   the rest of the sound functions to play samples or music.  In this situation,
   Allegro will handle the sound devices and mix the samples and/or music the
-  best way it can.
+  best way it can.</p>
 
-  However, sound hardware has a limitation on the number of samples it may play
+    <p>However, sound hardware has a limitation on the number of samples it may play
   all at the same time (from now on, called hardware voices).  When you exceed
   this limit, Allegro will cut off one of the samples being played and
   reproduce the new one.  Depending on the type of sounds you are playing, how
   many of them you need at the same time and their nature (e.g: vital audio
   feedback to the user or useless "ping" when some shrapnel hits a rock in the
   scenery) you will want to specify more carefully how hardware voices are
-  reserved and which samples have priority over others.
+  reserved and which samples have priority over others.</p>
 
-  The hardware voice reservation phase has to be done before the call to
+    <p>The hardware voice reservation phase has to be done before the call to
   @link(al_install_sound), since it directly affects how Allegro talks to the
-  sound drivers.
+  sound drivers.</p>
 
-  Allegro allows you to play MIDI files.  MIDI files basically contain notes
+    <p>Allegro allows you to play MIDI files.  MIDI files basically contain notes
   and the type of instrument that is meant to play them, so they are usually
   very small in size.  However, it's up to the sound card of the end user to
   play the notes, and sound cards have been historically known to have poor
   MIDI performance (at least those oriented to the consumer market).  Few
   consumer cards feature decent MIDI playback.  Still, as a game creator you
   can never be sure if the music of your game will be played as you meant it,
-  because it totally depends on the hardware of the user.
+  because it totally depends on the hardware of the user.</p>
 
-  For this reason Allegro also provides a @link(AL_MIDI_DIGMID) driver.  This
+    <p>For this reason Allegro also provides a @link(AL_MIDI_DIGMID) driver.  This
   is a software implementation of the so called Wavetable synthesis.  Sound
   cards featuring this store digital samples of real instruments at different
   pitches, interpolating those that are not recorded, thus achieving a high
   sound quality.  Implementing this in software makes you sure that the quality
   you hear on your computer is that which will be heard by end users using the
-  same driver.
+  same driver.</p>
 
-  The disadvantage of the @code(AL_MIDI_DIGMID) driver is that it uses more CPU
+    <p>The disadvantage of the @code(AL_MIDI_DIGMID) driver is that it uses more CPU
   than simple MIDI playback, and it steals some hardware voices from the sound
   card, which might be more critical for the end user experience than the
   background music . At the Allegro.pas wiki
   (http://allegro-pas.sourceforge.net/) you can find more information about
   @code(AL_MIDI_DIGMID) and where to download and create digital samples for
-  your MIDI files.
+  your MIDI files.</p>
 
-  Allegro also allows the use of digital samples.
+  <p>Allegro also allows the use of digital samples.</p>
 
   @bold(See also) @link(al_play_midi) @link(al_play_sample)
 
@@ -626,8 +640,8 @@
 
 @section(1 contact Contact info)
 
-  If you want to ask, comment or make suggestions about Allegro.pas you can do
+    <p>If you want to ask, comment or make suggestions about Allegro.pas you can do
   it by joining the Allegro.pas mailing list
   (http://sourceforge.net/mailarchive/forum.php?forum_name=allegro-pas-main),
   or at the Pascal Game Development forums
-  (http://www.pascalgamedevelopment.com/).
+  (http://www.pascalgamedevelopment.com/).</p>

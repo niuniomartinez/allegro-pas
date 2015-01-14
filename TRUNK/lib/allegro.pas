@@ -1751,13 +1751,13 @@ END.
      code will have to deal with this little detail. *)
     AL_GFX_SAFE			= $53414645; { AL_ID('S','A','F','E') }
 
-  (* Drawing modes for al_draw_sprite_ex. *)
-    AL_DRAW_SPRITE_NORMAL_MODE = 0; {< @exclude }
+  (* @exclude Drawing modes for al_draw_sprite_ex. *)
+    AL_DRAW_SPRITE_NORMAL_MODE = 0;
     AL_DRAW_SPRITE_LIT_MODE    = 1; {< @exclude }
     AL_DRAW_SPRITE_TRANS_MODE  = 2; {< @exclude }
 
-  (* Flipping modes for al_draw_sprite_ex. *)
-    AL_DRAW_SPRITE_NO_FLIP_MODE = 0; {< @exclude }
+  (* @exclude Flipping modes for al_draw_sprite_ex. *)
+    AL_DRAW_SPRITE_NO_FLIP_MODE = 0;
     AL_DRAW_SPRITE_H_FLIP_MODE  = 1; {< @exclude }
     AL_DRAW_SPRITE_V_FLIP_MODE  = 2; {< @exclude }
     AL_DRAW_SPRITE_VH_FLIP_MODE = 3; {< @exclude }

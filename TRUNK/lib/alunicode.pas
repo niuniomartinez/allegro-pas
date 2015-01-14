@@ -1,5 +1,5 @@
 UNIT alUnicode;
-(*<UNICODE support routines. *)
+(*<Unicode support routines. *)
 
 {$INCLUDE allegro.cfg}
 
@@ -8,18 +8,18 @@ INTERFACE
   USES
     alBase;
 
-  VAR
+  CONST
   (* Fixed size, 8-bit ASCII characters. @seealso(al_set_uformat). *)
-    AL_U_ASCII: AL_INT32;
+    AL_U_ASCII = $41534338; { 'ASC8' }
   (* Alternative 8-bit codepage. @seealso(al_set_ucodepage)
      @seealso(al_set_uformat). *)
-    AL_U_ASCII_CP: AL_INT32;
+    AL_U_ASCII_CP = $41534350; { 'ASCP' }
   (* Fixed size, 16-bit Unicode characters. @seealso(al_set_uformat). *)
-    AL_U_UNICODE: AL_INT32;
+    AL_U_UNICODE = $554E4943; { 'UNIC' }
   (* Variable size, UTF-8 format Unicode characters. @seealso(al_set_uformat). *)
-    AL_U_UTF8: AL_INT32;
+    AL_U_UTF8 = $55544638; { 'UTF8' }
   (* Current encoding. @seealso(al_set_uformat) *)
-    AL_U_CURRENT: AL_INT32;
+    AL_U_CURRENT = $6375722E; { 'cur.' }
 
 (* Sets the current text encoding format.  This will affect all parts of
    Allegro, wherever you see a function that returns a string, or takes a
@@ -145,14 +145,5 @@ IMPLEMENTATION
   BEGIN
     al_uconvert_toascii := al_uconvert (s, AL_U_CURRENT, AL_U_ASCII);
   END;
-
-INITIALIZATION
-{ Create identifiers. }
-  AL_U_ASCII	:= AL_ID('ASC8');
-  AL_U_ASCII_CP	:= AL_ID('ASCP');
-  AL_U_UNICODE	:= AL_ID('UNIC');
-  AL_U_UTF8	:= AL_ID('UTF8');
-  AL_U_CURRENT	:= AL_ID('cur.');
-FINALIZATION
 
 END.

@@ -72,11 +72,10 @@ IMPLEMENTATION
 	  X := 0;
 	  INC (Y, TSIZE);
 	END
-      END
+      END;
       EXIT (TRUE)
-    END
-    ELSE
-      LoadData := FALSE
+    END;
+    LoadData := FALSE { Didn't load data! }
   END;
 
 
