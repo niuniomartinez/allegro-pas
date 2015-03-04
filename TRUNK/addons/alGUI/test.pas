@@ -109,64 +109,82 @@ PROGRAM Test;
   { Play fair with OS. }
     Dialog.Controls.Add (TalGUI_ClearScreen.Create);
   { Some texts and static components. }
-    Dialog.Controls.Add (TalGUI_Label.Create (
+    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
       ' This is a label aligned left ',
       0, 16, AL_SCREEN_W, 8, agaLeft
     ));
-    Dialog.Controls.Add (TalGUI_Label.Create (
+    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
       ' This is a label centered ',
       0, 24, AL_SCREEN_W, 8, agaCenter
     ));
-    Dialog.Controls.Add (TalGUI_Label.Create (
+    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
       ' This is a label aligned right ',
       0, 32, AL_SCREEN_W, 8, agaRight
     ));
 
-    Dialog.Controls.Add (TalGUI_Label.Create (
+    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
       'These are TalGUI_Box -->',
       0, 64, AL_SCREEN_W DIV 2, 8, agaRight
     ));
-    Dialog.Controls.Add (TalGUI_Box.Create (
+    Dialog.Controls.Add (TalGUI_Box.CreateBox (
       AL_SCREEN_W DIV 2 + 8, 50, 100, 32
     ));
-    Dialog.Controls.Add (TalGUI_Box.Create (
+    Dialog.Controls.Add (TalGUI_Box.CreateBox (
       AL_SCREEN_W DIV 2 + 115, 50, 100, 32, FALSE
     ));
 
   { Example buttons. }
-    Dialog.Controls.Add (TalGUI_Label.Create (
+    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
       'These are buttons -->',
       0, 96, AL_SCREEN_W DIV 2, 8, agaRight
     ));
-    Ndx := Dialog.Controls.Add (TalGUI_Button.Create (
+    Ndx := Dialog.Controls.Add (TalGUI_Button.CreateButtonBox (
       'Press me',
       AL_SCREEN_W DIV 2 + 8, 88, 144, 24
     ));
     TalGUI_Button (Dialog.Controls[Ndx]).onCLick := @SELF.onClickMeBtnClick;
 
-    Ndx := Dialog.Controls.Add (TalGUI_Button.Create (
+    Ndx := Dialog.Controls.Add (TalGUI_Button.CreateButtonBox (
       'Disabled button',
       AL_SCREEN_W DIV 2 + 160, 88, 144, 24
     ));
     TalGUI_Button (Dialog.Controls[Ndx]).Enabled := FALSE;
+
   { Example slider/scroll-bar. }
-    Dialog.Controls.Add (TalGUI_Label.Create (
+    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
       'This is a slider -->',
       0, 128, AL_SCREEN_W DIV 2, 8, agaRight
     ));
-    Ndx := Dialog.Controls.Add (TalGUI_Slider.Create (
+    Ndx := Dialog.Controls.Add (TalGUI_Slider.CreateSlider (
       100, AL_SCREEN_W DIV 2 + 8, 120, agdHorizontal
     ));
   { Store index of label in slider's Tag property. }
     TalGUI_Slider (Dialog.Controls[Ndx]).Tag :=
-      Dialog.Controls.Add (TalGUI_Label.Create (
+      Dialog.Controls.Add (TalGUI_Label.CreateLabel (
 	'Position: 0 of 100',
 	AL_SCREEN_W DIV 2 + 130, 128, 200, 24, agaLeft
       ));
     TalGUI_Slider (Dialog.Controls[Ndx]).OnChange := @SELF.onSliderChange;
 
+  { Example list box. }
+    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
+      'This is a list box -->',
+      0, 156, AL_SCREEN_W DIV 2, 8, agaRight
+    ));
+    Ndx := Dialog.Controls.Add (TalGUI_ListBox.CreateList (
+      AL_SCREEN_W DIV 2 + 8, 156
+    ));
+    WITH TalGUI_ListBox (Dialog.Controls[Ndx]) DO
+    BEGIN
+      Items.Add ('One');
+      Items.Add ('Two');
+      Items.Add ('Three');
+      Items.Add ('Four');
+      Items.Add ('Five');
+    END;
+
   { Close button. }
-    Ndx := Dialog.Controls.Add (TalGUI_Button.Create (
+    Ndx := Dialog.Controls.Add (TalGUI_Button.CreateButton (
       'Close dialog',
       AL_SCREEN_W - 150, AL_SCREEN_H - 50
     ));

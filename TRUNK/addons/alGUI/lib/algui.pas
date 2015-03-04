@@ -7,7 +7,7 @@ UNIT alGUI;
 INTERFACE
 
   USES
-    Allegro, contnrs;
+    Allegro, contnrs, Classes;
 
   TYPE
   (* @exclude *)
@@ -41,7 +41,7 @@ INTERFACE
     TalGUI_CustomStyle = CLASS (TObject)
     PRIVATE
       fTxtColor, fDisabledColor, fSelectedTxtColor, fBgColor, fSelectedBgColor,
-      fLightColor, fDarkColor, fBorderColor: LONGINT;
+      fBgTextBoxColor, fLightColor, fDarkColor, fBorderColor: LONGINT;
       fTxtFont: AL_FONTptr;
     PUBLIC
     (* Constructor.  Sets default colors and text font. *)
@@ -126,6 +126,8 @@ INTERFACE
       PROPERTY BackgroundColor: LONGINT READ fBgColor WRITE fBgColor;
     (* Selected background color. *)
       PROPERTY SelectedBackgroundColor: LONGINT READ fSelectedBgColor WRITE fSelectedBgColor;
+    (* Background color for text boxes (i.e. editors, item lists, etc. *)
+      PROPERTY BackgroundTextBoxColor: LONGINT READ fBgTextBoxColor WRITE fBgTextBoxColor;
     (* Color used in the light side of 3D drawing.  For example, in 3D buttons. *)
       PROPERTY LightColor: LONGINT READ fLightColor WRITE fLightColor;
     (* Color used in the dark side of 3D drawing.  For example, in 3D buttons. *)
@@ -440,9 +442,9 @@ INTERFACE
     PUBLIC
     (* Constructor. *)
       CONSTRUCTOR Create; OVERRIDE;
-    (* Creaates the box. *)
-      CONSTRUCTOR Create (CONST aX, aY, aW, aH: INTEGER;
-	CONST aRaised: BOOLEAN=TRUE); OVERLOAD;
+    (* Creates the box. *)
+      CONSTRUCTOR CreateBox
+	(CONST aX, aY, aW, aH: INTEGER; CONST aRaised: BOOLEAN=TRUE);
     (* Draws the control in the given bitmap. *)
       PROCEDURE Draw (Bmp: AL_BITMAPptr); OVERRIDE;
 
@@ -463,12 +465,14 @@ INTERFACE
     PUBLIC
     (* Constructor. *)
       CONSTRUCTOR Create; OVERRIDE;
-    (* Creaates the label.  Width and height are calculated from caption
+    (* Creates the label.  Width and height are calculated from caption
       size. *)
-      CONSTRUCTOR Create (CONST aCaption: STRING; CONST aX, aY: INTEGER); OVERLOAD;
-    (* Creaates the label. *)
-      CONSTRUCTOR Create (CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER;
-	CONST aAlign: TalGUI_Alignment = agaLeft); OVERLOAD;
+      CONSTRUCTOR CreateCaption
+	(CONST aCaption: STRING; CONST aX, aY: INTEGER);
+    (* Creates the label. *)
+      CONSTRUCTOR CreateLabel
+	(CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER;
+	 CONST aAlign: TalGUI_Alignment = agaLeft);
     (* Initializes the control. *)
       PROCEDURE Initialize; OVERRIDE;
     (* Sets colors to default. *)
@@ -559,6 +563,41 @@ INTERFACE
       PROPERTY Position: INTEGER READ fPos WRITE SetPos;
 
     (* Event handler for any change on @link(Position). *)
+      PROPERTY OnChange: TalGUI_ControlEvent READ fOnChange WRITE fOnChange;
+    END;
+
+
+
+  (* Base class for list of selectable items. *)
+    TalGUI_CustomItemListControl = CLASS (TalGUI_Control)
+    PRIVATE
+      fItemList: TStringList;
+      fSelected: INTEGER;
+      fOnChange: TalGUI_ControlEvent;
+
+      PROCEDURE SetSelected (CONST Ndx: INTEGER);
+    PROTECTED
+    (* Sent when a key is pressed and the object has the input focus.
+      @return(@true if the object deals with the keypress, otherwise it
+      should return @false to allow the default keyboard interface to operate.)
+      @param(aKey Key pressed with an @code(al_readkey) format character code
+      @(ASCII value in the low byte, scancode in the high byte@).) *)
+      FUNCTION MsgKeyChar (aKey: INTEGER): BOOLEAN; OVERRIDE;
+    PUBLIC
+    (* Constructor.  Creates an empty list. *)
+      CONSTRUCTOR Create; OVERRIDE;
+    (* Destructor. *)
+      DESTRUCTOR Destroy; OVERRIDE;
+
+    (* Queries whether an object is willing to accept the input focus. *)
+      FUNCTION WantFocus: BOOLEAN; OVERRIDE;
+
+    (* List of items. *)
+      PROPERTY Items: TStringList READ fItemList;
+    (* Index of the selected item. *)
+      PROPERTY Selected: INTEGER READ fSelected WRITE SetSelected;
+
+    (* Event handler for any change on @link(Selected). *)
       PROPERTY OnChange: TalGUI_ControlEvent READ fOnChange WRITE fOnChange;
     END;
 
@@ -706,7 +745,7 @@ IMPLEMENTATION
 
 
 
-(* Sets control X position. *)
+(* Sets control Y position. *)
   PROCEDURE TalGUI_Control.SetY (CONST aY: INTEGER);
   BEGIN
     fY := aY;
@@ -771,8 +810,11 @@ IMPLEMENTATION
 (* Sent when an object gains the input focus. *)
   PROCEDURE TalGUI_Control.MsgGotFocus;
   BEGIN
-    fHasFocus := TRUE;
-    SELF.RedrawMe
+    IF NOT fHasFocus THEN
+    BEGIN
+      fHasFocus := TRUE;
+      SELF.RedrawMe
+    END
   END;
 
 
@@ -780,8 +822,11 @@ IMPLEMENTATION
 (* Sent when an object loses the input focus. *)
   FUNCTION TalGUI_Control.MsgLostFocus: BOOLEAN;
   BEGIN
-    fHasFocus := FALSE;
-    SELF.RedrawMe;
+    IF fHasFocus THEN
+    BEGIN
+      fHasFocus := FALSE;
+      SELF.RedrawMe
+    END;
     RESULT := TRUE
   END;
 
@@ -1001,10 +1046,11 @@ IMPLEMENTATION
   VAR
     FocusReleased: BOOLEAN;
   BEGIN
+    IF (NewFocus <> fFocusIndex)
   { TODO: Should raise an exception if trying to set focus to an unexistent
     control?  If so, then TalGUI_Dialog.Initialize should use a different way
     to set the initial focus control. }
-    IF (0 <= NewFocus) AND (NewFocus < fControlList.Count) THEN
+    AND (0 <= NewFocus) AND (NewFocus < fControlList.Count) THEN
       IF fControlList[NewFocus].WantFocus THEN
       BEGIN
       { Be careful:  Uninitialized dialogs may have the Focus property
@@ -1328,9 +1374,9 @@ IMPLEMENTATION
 
 
 
-(* Creaates the box. *)
-  CONSTRUCTOR TalGUI_Box.Create (CONST aX, aY, aW, aH: INTEGER;
-    CONST aRaised: BOOLEAN);
+(* Creates the box. *)
+  CONSTRUCTOR TalGUI_Box.CreateBox
+    (CONST aX, aY, aW, aH: INTEGER; CONST aRaised: BOOLEAN);
   BEGIN
     INHERITED Create;
     X := aX; Y := aY; Width := aW; Height := aH;
@@ -1369,7 +1415,7 @@ IMPLEMENTATION
 
 
 
-(* Creaates the label. *)
+(* Creates the label. *)
   CONSTRUCTOR TalGUI_Label.Create;
   BEGIN
     INHERITED Create;
@@ -1379,8 +1425,9 @@ IMPLEMENTATION
 
 
 
-(* Creaates the label.  Width and height are calculated from caption size. *)
-  CONSTRUCTOR TalGUI_Label.Create (CONST aCaption: STRING; CONST aX, aY: INTEGER);
+(* Creates the label.  Width and height are calculated from caption size. *)
+  CONSTRUCTOR TalGUI_Label.CreateCaption
+    (CONST aCaption: STRING; CONST aX, aY: INTEGER);
   BEGIN
     INHERITED Create;
     fCaption := aCaption;
@@ -1390,8 +1437,9 @@ IMPLEMENTATION
 
 
 
-(* Creaates the label. *)
-  CONSTRUCTOR TalGUI_Label.Create (CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER; CONST aAlign: TalGUI_Alignment);
+(* Creates the label. *)
+  CONSTRUCTOR TalGUI_Label.CreateLabel
+    (CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER; CONST aAlign: TalGUI_Alignment);
   BEGIN
     INHERITED Create;
     fCaption := aCaption;
@@ -1657,6 +1705,74 @@ IMPLEMENTATION
 
 
 (*
+ * TalGUI_CustomItemListControl
+ *****************************************************************************)
+
+
+  PROCEDURE TalGUI_CustomItemListControl.SetSelected (CONST Ndx: INTEGER);
+  BEGIN
+    IF Ndx <> fSelected THEN
+    BEGIN
+      IF Ndx < 0 THEN
+        fSelected := 0
+      ELSE IF Ndx >= fItemList.Count THEN
+        fSelected := fItemList.Count - 1
+      ELSE
+        fSelected := Ndx;
+      IF Assigned (SELF.fOnChange) THEN SELF.fOnChange (SELF);
+      SELF.RedrawMe
+    END
+  END;
+
+
+
+(* Manages key input. *)
+  FUNCTION TalGUI_CustomItemListControl.MsgKeyChar (aKey: INTEGER): BOOLEAN;
+  BEGIN
+    CASE aKey SHR 8 OF
+    AL_KEY_HOME:
+      SetSelected (0);
+    AL_KEY_UP:
+      SetSelected (fSelected - 1);
+    AL_KEY_DOWN:
+      SetSelected (fSelected + 1);
+    AL_KEY_END:
+      SetSelected (fItemList.Count);
+    ELSE
+      EXIT (FALSE);
+    END;
+    RESULT := TRUE
+  END;
+
+
+
+(* Constructor. *)
+  CONSTRUCTOR TalGUI_CustomItemListControl.Create;
+  BEGIN
+    INHERITED Create;
+    fItemList := TStringList.Create
+  END;
+
+
+
+(* Destructor. *)
+  DESTRUCTOR TalGUI_CustomItemListControl.Destroy;
+  BEGIN
+    fItemList.Free;
+    INHERITED Destroy
+  END;
+
+
+
+(* Queries if wants focus. *)
+  FUNCTION TalGUI_CustomItemListControl.WantFocus: BOOLEAN;
+  BEGIN
+    RESULT := TRUE
+  END;
+
+
+
+(*
  * TalGUI_DefaultStyle
  *****************************************************************************)
 
@@ -1669,6 +1785,7 @@ IMPLEMENTATION
     SelectedTextColor       := al_makecol (255, 255, 255);
     BackgroundColor         := al_makecol (204, 204, 204);
     SelectedBackgroundColor := al_makecol (  0,   0, 128);
+    BackgroundTextBoxColor  := al_makecol (255, 255, 255);
     LightColor              := al_makecol (255, 255, 255);
     DarkColor               := al_makecol (102, 102, 102);
     BorderColor             := al_makecol (  0,   0,   0);

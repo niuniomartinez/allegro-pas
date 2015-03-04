@@ -252,7 +252,8 @@ IMPLEMENTATION
 
 
 
-  PROCEDURE TalGUI_CustomDialogWindow.ControlClosesDialog (Sender: TalGUI_Control);
+  PROCEDURE TalGUI_CustomDialogWindow.ControlClosesDialog
+    (Sender: TalGUI_Control);
   BEGIN
     SELF.Close
   END;
@@ -293,7 +294,8 @@ IMPLEMENTATION
 
 
 (* Adds a @code(Control) to the dialog. *)
-  FUNCTION TalGUI_CustomDialogWindow.AddControl (aControl: TalGUI_Control): INTEGER;
+  FUNCTION TalGUI_CustomDialogWindow.AddControl
+    (aControl: TalGUI_Control): INTEGER;
   BEGIN
     aControl.Y := fNextY;
     INC (fNextY, aControl.Height);
@@ -305,7 +307,7 @@ IMPLEMENTATION
 (* Adds a label. *)
   FUNCTION TalGUI_CustomDialogWindow.AddLabel (CONST aText: STRING): INTEGER;
   BEGIN
-    RESULT := SELF.AddControl (TalGUI_Label.Create (
+    RESULT := SELF.AddControl (TalGUI_Label.CreateLabel (
       aText,
       DLG_MARGIN, fNextY,
       al_text_length (SELF.Style.TextFont, aText),
@@ -316,9 +318,10 @@ IMPLEMENTATION
 
 
 (* Adds a button. *)
-  FUNCTION TalGUI_CustomDialogWindow.AddButton (CONST aCaption: STRING): INTEGER;
+  FUNCTION TalGUI_CustomDialogWindow.AddButton
+    (CONST aCaption: STRING): INTEGER;
   BEGIN
-    RESULT := SELF.AddControl (TalGUI_Button.Create (
+    RESULT := SELF.AddControl (TalGUI_Button.CreateButton (
       aCaption,
       DLG_MARGIN, fNextY
     ));
