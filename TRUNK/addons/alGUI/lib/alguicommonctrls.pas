@@ -17,10 +17,11 @@ INTERFACE
       CONSTRUCTOR Create; OVERRIDE;
     (* Creates the button.  Width and height are calculated from caption
       size. *)
-      CONSTRUCTOR Create (CONST aCaption: STRING; CONST aX, aY: INTEGER); OVERLOAD;
-    (* Creaates the button. *)
-      CONSTRUCTOR Create (CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER;
-	CONST aAlign: TalGUI_Alignment = agaLeft); OVERLOAD;
+      CONSTRUCTOR CreateButton (CONST aCaption: STRING; CONST aX, aY: INTEGER);
+    (* Creates the button. *)
+      CONSTRUCTOR CreateButtonBox
+	(CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER;
+	 CONST aAlign: TalGUI_Alignment = agaLeft);
     (* Initializes the control. *)
       PROCEDURE Initialize; OVERRIDE;
     (* Draws the control in the given bitmap. *)
@@ -54,10 +55,12 @@ INTERFACE
     (* Constructor. *)
       CONSTRUCTOR Create; OVERRIDE;
     (* Creates a slider with default size, width and height. *)
-      CONSTRUCTOR Create (CONST aSize, aX, aY: INTEGER; aDir: TalGUI_Direction); OVERLOAD;
+      CONSTRUCTOR CreateSlider
+	(CONST aSize, aX, aY: INTEGER; aDir: TalGUI_Direction);
     (* Creates a slider. *)
-      CONSTRUCTOR Create (CONST aMin, aMax, aX, aY, aW, aH: INTEGER;
-	aDir: TalGUI_Direction); OVERLOAD;
+      CONSTRUCTOR CreateSliderBox
+	(CONST aMin, aMax, aX, aY, aW, aH: INTEGER;
+	 aDir: TalGUI_Direction);
     (* Initializes the control. *)
       PROCEDURE Initialize; OVERRIDE;
     (* Draws the control in the given bitmap. *)
@@ -66,10 +69,53 @@ INTERFACE
 
 
 
-  (* Scroll-bar control.  Note that currently there are not difference between
-    slider and scroll-bar. *)
-   TalGUI_ScrollBar = CLASS (TalGUI_CustomSlider)
-   END;
+  (* Scroll-bar control.
+
+    Currently, it's just an alias for @code(TalGUI_Slider). *)
+    TalGUI_ScrollBar = CLASS (TalGUI_Slider)
+    END;
+
+
+
+  (* A box with lines you can select. *)
+    TalGUI_ListBox = CLASS (TalGUI_CustomItemListControl)
+    PRIVATE
+      fSelBgColor, fSelTxtColor: LONGINT;
+    PROTECTED
+    (* Informs the object that a mouse button has been clicked while the mouse
+      was on top of the object.  Typically an object will perform its own
+      mouse tracking as long as the button is held down, and only return from
+      this message handler when it is released.
+      @return(@true if message was handled, or @false if control isn't
+       interested on it.) *)
+      FUNCTION MsgClick (CONST aX, aY, Button: INTEGER): BOOLEAN; OVERRIDE;
+    PUBLIC
+    (* Constructor. *)
+      CONSTRUCTOR Create; OVERRIDE;
+    (* Creates the list.  Size will be calculated by @code(Initialize). *)
+      CONSTRUCTOR CreateList
+	(CONST aX, aY: INTEGER);
+    (* Creates a box. *)
+      CONSTRUCTOR CreateBox
+	(CONST aX, aY, aW, aH: INTEGER);
+    (* Destructor. *)
+      DESTRUCTOR Destroy; OVERRIDE;
+
+    (* Initializes the control.  It's called by the @link(TalGUI_Dialog) object
+      just before it displays the dialog. *)
+      PROCEDURE Initialize; OVERRIDE;
+    (* Sets colors to default. *)
+      PROCEDURE SetDefaultColors; OVERRIDE;
+    (* Draws the control in the given bitmap. *)
+      PROCEDURE Draw (Bmp: AL_BITMAPptr); OVERRIDE;
+
+    (* Text color for selected items. *)
+      PROPERTY TextSelectedColor: LONGINT
+	READ fSelTxtColor WRITE fSelTxtColor;
+    (* Background color for selected items. *)
+      PROPERTY BackgrounSelectedColor: LONGINT
+	READ fSelBgColor WRITE fSelBgColor;
+    END;
 
 IMPLEMENTATION
 
@@ -94,7 +140,8 @@ IMPLEMENTATION
 
 
 (* Creates the button.  Width and height are calculated from caption size. *)
-  CONSTRUCTOR TalGUI_Button.Create (CONST aCaption: STRING; CONST aX, aY: INTEGER);
+  CONSTRUCTOR TalGUI_Button.CreateButton
+    (CONST aCaption: STRING; CONST aX, aY: INTEGER);
   BEGIN
     INHERITED Create;
     fCaption := aCaption;
@@ -104,7 +151,9 @@ IMPLEMENTATION
 
 
 (* Creates the button. *)
-  CONSTRUCTOR TalGUI_Button.Create (CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER; CONST aAlign: TalGUI_Alignment);
+  CONSTRUCTOR TalGUI_Button.CreateButtonBox
+    (CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER;
+     CONST aAlign: TalGUI_Alignment);
   BEGIN
     INHERITED Create;
     fCaption := aCaption;
@@ -318,7 +367,8 @@ IMPLEMENTATION
 
 
 (* Creates the slider. *)
-  CONSTRUCTOR TalGUI_Slider.Create (CONST aSize, aX, aY: INTEGER; aDir: TalGUI_Direction);
+  CONSTRUCTOR TalGUI_Slider.CreateSlider
+    (CONST aSize, aX, aY: INTEGER; aDir: TalGUI_Direction);
   BEGIN
     INHERITED Create;
     Direction := aDir;
@@ -329,8 +379,8 @@ IMPLEMENTATION
 
 
 (* Creates the slider. *)
-  CONSTRUCTOR TalGUI_Slider.Create (CONST aMin, aMax, aX, aY, aW, aH: INTEGER;
-	aDir: TalGUI_Direction);
+  CONSTRUCTOR TalGUI_Slider.CreateSliderBox
+    (CONST aMin, aMax, aX, aY, aW, aH: INTEGER; aDir: TalGUI_Direction);
   BEGIN
     INHERITED Create;
     Direction := aDir;
@@ -413,6 +463,135 @@ IMPLEMENTATION
 	X, Y,
 	X + Width - 1, Y + Height - 1
       );
+  END;
+
+
+
+(*
+ * TalGUI_ListBox
+ ****************************************************************************)
+
+(* Informs the object that a mouse button has been clicked. *)
+  FUNCTION TalGUI_ListBox.MsgClick (CONST aX, aY, Button: INTEGER): BOOLEAN;
+  VAR
+    NewSel: INTEGER;
+  BEGIN
+    NewSel := (aY - Y) DIV al_text_height (Dialog.Style.TextFont);
+    SELF.selected := NewSel;
+    RESULT := TRUE
+  END;
+
+
+
+(* Constructor. *)
+  CONSTRUCTOR TalGUI_ListBox.Create;
+  BEGIN
+    INHERITED Create;
+  END;
+
+
+
+(* Creates the box. *)
+  CONSTRUCTOR TalGUI_ListBox.CreateList
+    (CONST aX, aY: INTEGER);
+  BEGIN
+    SELF.Create;
+    X := aX; Y := aY; Width := -1; Height := -1
+  END;
+
+
+
+(* Creates the box. *)
+  CONSTRUCTOR TalGUI_ListBox.CreateBox
+    (CONST aX, aY, aW, aH: INTEGER);
+  BEGIN
+    SELF.Create;
+    X := aX; Y := aY; Width := aW; Height := aH
+  END;
+
+
+
+(* Destructor. *)
+  DESTRUCTOR TalGUI_ListBox.Destroy;
+  BEGIN
+    INHERITED Destroy
+  END;
+
+
+
+(* Initializes the control. *)
+  PROCEDURE TalGUI_ListBox.Initialize;
+  VAR
+    Ndx, Tmp, Max: INTEGER;
+  BEGIN
+    INHERITED Initialize;
+    IF Width < 0 THEN
+    BEGIN
+      Max := 0;
+      FOR Ndx := SELF.Items.Count - 1 DOWNTO 0 DO
+      BEGIN
+	Tmp := al_text_length (Dialog.Style.TextFont, SELF.Items[Ndx]);
+	IF Tmp > Max THEN Max := Tmp;
+      END;
+      Tmp := al_text_height (Dialog.Style.TextFont);
+      Width := Max + (Tmp * 3);
+      Height := (SELF.Items.Count + 1) * Tmp
+    END;
+  END;
+
+
+
+(* Sets default colors. *)
+  PROCEDURE TalGUI_ListBox.SetDefaultColors;
+  BEGIN
+    Color           := Dialog.Style.TextColor;
+    BorderColor     := Dialog.Style.BorderColor;
+    BackgroundColor := Dialog.Style.BackgroundTextBoxColor;
+    fSelTxtColor    := Dialog.Style.SelectedTextColor;
+    fSelBgColor     := Dialog.Style.SelectedBackgroundColor
+  END;
+
+
+
+(* Draws the control in the given bitmap. *)
+  PROCEDURE TalGUI_ListBox.Draw (Bmp: AL_BITMAPptr);
+  VAR
+    SubBmp: AL_BITMAPptr;
+    Ndx, Line, Increment: INTEGER;
+  BEGIN
+  { Set clipping, so text doesn't overloads the control }
+    SubBmp := al_create_sub_bitmap (Bmp, X, Y, X + Width - 1, Y + Height - 1);
+    TRY
+    { Background. }
+      al_rectfill (SubBmp, 0, 0, Width - 1, Height - 1, BackgroundColor);
+    { Items. }
+      Increment := al_text_height (Dialog.Style.TextFont);
+      Line := Increment DIV 2;
+      FOR Ndx := 0 TO Items.Count - 1 DO
+      BEGIN
+	IF Ndx = Selected THEN
+	BEGIN
+	  al_rectfill (
+	    SubBmp, 0, Line, Width - 1, Line + Increment - 1, fSelBgColor
+	  );
+	  Dialog.Style.DrawText (
+	    SubBmp, Items[Ndx], Increment DIV 2, Line, fSelTxtColor, FALSE
+	  )
+	END
+	ELSE
+	  Dialog.Style.DrawText (
+	    SubBmp, Items[Ndx], Increment DIV 2, Line, SELF.Color, FALSE
+	  );
+	INC (Line, Increment)
+      END;
+    { Border. }
+      al_rect (SubBmp, 0, 0, Width - 1, Height - 1, BorderColor);
+      IF HasFocus THEN
+	Dialog.Style.DrawFocusRect (SubBmp, 1, 1, Width - 2, Height - 2)
+    FINALLY
+    { Restore clipping. }
+      al_destroy_bitmap (SubBmp)
+    END
   END;
 
 END.
