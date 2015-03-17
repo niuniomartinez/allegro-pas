@@ -24,7 +24,7 @@ PROGRAM exzbuf;
 
 USES
   cube,
-  allegro, algui, al3d, alfixed, alvga, alblend,
+  allegro, algui, al3D, alfixed, alvga, alblend,
   sysutils;
 
 
@@ -213,8 +213,8 @@ BEGIN (* The program starts here. *)
   { Draw. }
     al_clear_bitmap (Buffer);
     al_clear_zbuffer (Zbuf, 0);
-    Cube1.Draw (Buffer, @al_identity_matrix);
-    Cube2.Draw (Buffer, @al_identity_matrix);
+    Cube1.Draw (Buffer, al_identity_matrix);
+    Cube2.Draw (Buffer, al_identity_matrix);
     al_textout_ex (Buffer, al_font, 'Z-buffer example', 1, 9, -1, -1);
     al_textout_ex (Buffer, al_font, 'Press ''P'' to pause', 1, 19, -1, -1);
     al_vsync;

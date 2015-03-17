@@ -25,7 +25,6 @@ UNIT alIffPict;
     distribution.
  *)
 
-{ Using TStringList makes VARL parsing much easer! }
 {$mode objfpc}{$H+}
 INTERFACE
 
@@ -112,10 +111,12 @@ INTERFACE
 IMPLEMENTATION
 
   USES
+{ Using TStringList makes VARL parsing much easer! }
     Classes, sysutils;
 
 (* Helper function to write integer values. *)
   FUNCTION SaveInt (CONST Value: AL_LONG; pFile: AL_PACKFILEptr): BOOLEAN;
+    INLINE;
   BEGIN
     RESULT := al_pack_mputl (Value, pFile) = Value
   END;
@@ -186,7 +187,7 @@ IMPLEMENTATION
       EXIT (NIL);
   { Now, it must be a BMP  chunk. }
     IF ChunkId <> ID_BMP_ THEN EXIT (NIL);
-    
+
     RESULT := al_load_BMP__pf (f, PixFormat, Width, Height, Compression)
   END;
 

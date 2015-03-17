@@ -21,7 +21,7 @@ PROGRAM exscn3d;
  *)
 
   USES
-    allegro, algui, al3d,
+    allegro, algui, al3D,
     sysutils;
 
   CONST
@@ -174,7 +174,7 @@ PROGRAM exscn3d;
 
 
 (*  Translates, rotates, clips, projects, culls backfaces and draws a cube. *)
-  PROCEDURE DrawCube (Matrix: AL_MATRIX_fptr);
+  PROCEDURE DrawCube (Matrix: AL_MATRIX_f);
   VAR
     i, j, nv: LONGINT;
     iOut: ARRAY [0..12] OF LONGINT;
@@ -263,26 +263,26 @@ BEGIN (* The program starts here. *)
     al_clear_scene  (Buffer);
 
   { Matrix2: rotates cube }
-    al_get_rotation_matrix_f (@matrix2, rx, ry, 0);
+    al_get_rotation_matrix_f (matrix2, rx, ry, 0);
   { Matrix3: turns head right/left }
-    al_get_rotation_matrix_f (@matrix3, 0, rot, 0);
+    al_get_rotation_matrix_f (matrix3, 0, rot, 0);
 
     FOR K := (CUBE_CUBES - 1) DOWNTO 0 DO
       FOR J := 0 TO (CUBE_CUBES - 1) DO
         FOR I := 0 TO (CUBE_CUBES - 1) DO
 	BEGIN
 	{ Matrix1: locates cubes }
-	  al_get_translation_matrix_f (@matrix1, (j * 40 - CUBE_CUBES * 20 + 20),
+	  al_get_translation_matrix_f (matrix1, (j * 40 - CUBE_CUBES * 20 + 20),
 					(i * 40 - CUBE_CUBES * 20 + 20), (tz + k * 40));
 
 	{ Matrix: rotates cube THEN locates cube THEN turns
 	  head right/left }
-	  al_matrix_mul_f (@matrix2, @matrix1, @matrix);
-	  al_matrix_mul_f (@matrix,  @matrix3, @matrix);
+	  al_matrix_mul_f (matrix2, matrix1, matrix);
+	  al_matrix_mul_f (matrix,  matrix3, matrix);
 
 	{ Cubes are just added to the scene.
 	  No sorting is done at this stage. }
-	  DrawCube (@matrix);
+	  DrawCube (matrix);
 	END;
   { Sorts and renders polys }
     al_render_scene;
