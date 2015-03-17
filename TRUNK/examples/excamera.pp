@@ -96,11 +96,11 @@ PROGRAM excamera;
     TChessBoard = CLASS (TObject)
     PRIVATE
     (* Draws a single square. *)
-      PROCEDURE DrawSquare (OutBmp: AL_BITMAPptr; CameraMatrix: AL_MATRIXptr; X, Z: INTEGER);
+      PROCEDURE DrawSquare (OutBmp: AL_BITMAPptr; CameraMatrix: AL_MATRIX; X, Z: INTEGER);
 	INLINE;
     PUBLIC
     (* Draws the grid. *)
-      PROCEDURE Draw (OutBmp: AL_BITMAPptr; CameraMatrix: AL_MATRIXptr);
+      PROCEDURE Draw (OutBmp: AL_BITMAPptr; CameraMatrix: AL_MATRIX);
     END;
 
 
@@ -153,16 +153,12 @@ PROGRAM excamera;
       ZFront := al_fixmul (al_fixcos (fAngle.y), al_fixcos (fAngle.x));
 
     { rotate the up vector around the in-front vector by the roll angle }
-      al_get_vector_rotation_matrix (@Roller, XFront, YFront, ZFront, fAngle.z);
-      al_apply_matrix (
-	@Roller,
-	0, al_itofix (-1), 0,
-	XUp, YUp, ZUp
-      );
+      al_get_vector_rotation_matrix (Roller, XFront, YFront, ZFront, fAngle.z);
+      al_apply_matrix (Roller, 0, al_itofix (-1), 0, XUp, YUp, ZUp);
 
     { build the camera matrix }
       al_get_camera_matrix (
-	@fMatrix,
+	fMatrix,
 	fPosition.x, fPosition.y, fPosition.z, { camera position }
 	XFront, YFront, ZFront,                { in-front vector }
 	XUp, YUp, ZUp,                         { up vector }
@@ -176,16 +172,16 @@ PROGRAM excamera;
 { Next is a hack that implements a working camera matrix using rotation instead
   of Front/Up matrices.  FOV an Aspect can be simulated by scaling.
 
-  al_get_translation_matrix (@fMatrix, -fPosition.x, -fPosition.y, -fPosition.z);
+  al_get_translation_matrix (fMatrix, -fPosition.x, -fPosition.y, -fPosition.z);
 
-  al_get_y_rotate_matrix (@Roller, -fAngle.y);
-  al_matrix_mul (@fMatrix, @Roller, @fMatrix);
+  al_get_y_rotate_matrix (Roller, -fAngle.y);
+  al_matrix_mul (fMatrix, Roller, fMatrix);
 
-  al_get_x_rotate_matrix (@Roller, -fAngle.x);
-  al_matrix_mul (@fMatrix, @Roller, @fMatrix);
+  al_get_x_rotate_matrix (Roller, -fAngle.x);
+  al_matrix_mul (fMatrix, Roller, fMatrix);
 
-  al_get_z_rotate_matrix (@Roller, -fAngle.z);
-  al_matrix_mul (@fMatrix, @Roller, @fMatrix);
+  al_get_z_rotate_matrix (Roller, -fAngle.z);
+  al_matrix_mul (fMatrix, Roller, fMatrix);
 
   End of hack. }
 
@@ -229,7 +225,7 @@ PROGRAM excamera;
     GRID_SIZE = 8;
 
 (* Displays a nice 8x8 chessboard grid. *)
-  PROCEDURE TChessBoard.DrawSquare (OutBmp: AL_BITMAPptr; CameraMatrix: AL_MATRIXptr; X, Z: INTEGER);
+  PROCEDURE TChessBoard.DrawSquare (OutBmp: AL_BITMAPptr; CameraMatrix: AL_MATRIX; X, Z: INTEGER);
   VAR
     _V: ARRAY [1..4] OF AL_V3D;
     _VOut, _VTmp: ARRAY [1..8] OF AL_V3D;
@@ -334,7 +330,7 @@ PROGRAM excamera;
 
 
 (* Draws the grid. *)
-  PROCEDURE TChessBoard.Draw (OutBmp: AL_BITMAPptr; CameraMatrix: AL_MATRIXptr);
+  PROCEDURE TChessBoard.Draw (OutBmp: AL_BITMAPptr; CameraMatrix: AL_MATRIX);
   VAR
     X, Y: INTEGER;
   BEGIN
@@ -368,7 +364,7 @@ PROGRAM excamera;
     al_set_clip_rect  (OutBmp, x, y, x + w - 1, y + h - 1);
 
   { Draw grid. }
-    Grid.Draw (OutBmp, Camera.Matrix);
+    Grid.Draw (OutBmp, Camera.Matrix^);
 
   { overlay some text }
     al_set_clip_rect (OutBmp, 0, 0, OutBmp^.w, OutBmp^.h);

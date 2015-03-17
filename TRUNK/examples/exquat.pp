@@ -40,7 +40,7 @@ PROGRAM exquat;
 
   USES
     cube,
-    allegro, al3d;
+    allegro, al3D;
 
   CONST
   (* the number of steps to get from the starting to the ending orientation *)
@@ -152,7 +152,7 @@ PROGRAM exquat;
 
 
 (* draw an object defined as a set of points and edges *)
-  PROCEDURE RenderWireframeObject (m: AL_MATRIX_Fptr; b: AL_BITMAPptr; Points: ARRAY OF POINT; Edges: ARRAY OF EDGE; np, ne, c: INTEGER);
+  PROCEDURE RenderWireframeObject (m: AL_MATRIX_F; b: AL_BITMAPptr; Points: ARRAY OF POINT; Edges: ARRAY OF EDGE; np, ne, c: INTEGER);
   VAR
     Index, From, _To: INTEGER;
     TmpPoints: ARRAY OF POINT;
@@ -185,12 +185,12 @@ PROGRAM exquat;
  * showing the 'from' orientation, and another arrow showing the
  * interpolated orientation.
  *)
-  PROCEDURE RenderDemoBox (b: AL_BITMAPptr; From, _In, _to: AL_MATRIX_Fptr; Col1, Col2, Col3: INTEGER);
+  PROCEDURE RenderDemoBox (b: AL_BITMAPptr; aFrom, aIn, aTo: AL_MATRIX_F; Col1, Col2, Col3: INTEGER);
   BEGIN
-    RenderWireframeObject (_in, b, BoxPoints, BoxEdges, 8, 12, Col1);
-    RenderWireframeObject (from, b, ArrowPoints, ArrowEdges, 4, 3, Col3);
-    RenderWireframeObject (_to, b, ArrowPoints, ArrowEdges, 4, 3, Col3);
-    RenderWireframeObject (_in, b, ArrowPoints, ArrowEdges, 4, 3, Col2);
+    RenderWireframeObject (aIn,   b, BoxPoints,   BoxEdges, 8, 12, Col1);
+    RenderWireframeObject (aFrom, b, ArrowPoints, ArrowEdges, 4, 3, Col3);
+    RenderWireframeObject (aTo,   b, ArrowPoints, ArrowEdges, 4, 3, Col3);
+    RenderWireframeObject (aIn,   b, ArrowPoints, ArrowEdges, 4, 3, Col2);
   END;
 
 
@@ -288,7 +288,7 @@ BEGIN
   eTo.z := RANDOM (256);
 
 { the camera is backed away from the origin and turned to face it }
-  al_get_camera_matrix_f (@Camera, 5, 0, 0, -1, 0, 0, 0, 0, 1, 46, 1.33);
+  al_get_camera_matrix_f (Camera, 5, 0, 0, -1, 0, 0, 0, 0, 1, 46, 1.33);
 
 { this is a for-ever loop }
   WHILE TRUE DO
@@ -306,39 +306,39 @@ BEGIN
       using Euler angles }
 
     { create the matrix for the starting orientation }
-      al_get_rotation_matrix_f (@Rotation, eFrom.x, eFrom.y, eFrom.z);
-      al_matrix_mul_f (@Rotation, @Camera, @eFromMatrix);
+      al_get_rotation_matrix_f (Rotation, eFrom.x, eFrom.y, eFrom.z);
+      al_matrix_mul_f (Rotation, Camera, eFromMatrix);
 
     { create the matrix for the ending orientation }
-      al_get_rotation_matrix_f (@Rotation, eTo.x, eTo.y, eTo.z);
-      al_matrix_mul_f (@rotation, @Camera, @eToMatrix);
+      al_get_rotation_matrix_f (Rotation, eTo.x, eTo.y, eTo.z);
+      al_matrix_mul_f (Rotation, Camera, eToMatrix);
 
     { use the incorrect method to interpolate between them }
       EulerInterpolate (eFrom, eTo, t, eIn);
-      al_get_rotation_matrix_f (@Rotation, eIn.x, eIn.y, eIn.z);
-      al_matrix_mul_f (@Rotation, @Camera, @eInMatrix);
+      al_get_rotation_matrix_f (Rotation, eIn.x, eIn.y, eIn.z);
+      al_matrix_mul_f (Rotation, Camera, eInMatrix);
 
     { update the lines that make up the Euler orientation path }
-      al_apply_matrix_f (@Rotation, 0, 0, 1.5,
+      al_apply_matrix_f (Rotation, 0, 0, 1.5,
 			ePathPoints1[Index][0],
 			ePathPoints1[Index][1],
 			ePathPoints1[Index][2]);
 
-      al_apply_matrix_f (@rotation, 0, 0, 2.0,
+      al_apply_matrix_f (Rotation, 0, 0, 2.0,
 			ePathPoints2[Index][0],
 			ePathPoints2[Index][1],
 			ePathPoints2[Index][2]);
 
     { render the results to the Euler sub-bitmap }
       al_clear_to_color (EulerBuffer, al_palette_color^[0]);
-      RenderDemoBox (EulerBuffer, @eFromMatrix, @eInMatrix, @eToMatrix,
+      RenderDemoBox (EulerBuffer, eFromMatrix, eInMatrix, eToMatrix,
 	al_palette_color^[15], al_palette_color^[1], al_palette_color^[4]);
 
-      RenderWireframeObject (@Camera, EulerBuffer, ePathPoints1,
+      RenderWireframeObject (Camera, EulerBuffer, ePathPoints1,
 				PathEdges, Index + 1, Index,
 				al_palette_color^[5]);
 
-      RenderWireframeObject (@Camera, EulerBuffer, ePathPoints2,
+      RenderWireframeObject (Camera, EulerBuffer, ePathPoints2,
 				PathEdges, Index + 1, Index,
 				al_palette_color^[5]);
 
@@ -350,26 +350,26 @@ BEGIN
       generate the same matrix as that gotten by get_rotation_matrix }
       al_get_rotation_quat (@qFrom, eFrom.x, eFrom.y, eFrom.z);
       al_quat_to_matrix (@qFrom, @Rotation);
-      al_matrix_mul_f (@Rotation, @Camera, @qFromMatrix);
+      al_matrix_mul_f (Rotation, Camera, qFromMatrix);
 
     { this is the same as above, but for the ending orientation }
       al_get_rotation_quat (@qTo, eTo.x, eTo.y, eTo.z);
       al_quat_to_matrix (@qTo, @Rotation);
-      al_matrix_mul_f (@Rotation, @Camera, @qToMatrix);
+      al_matrix_mul_f (Rotation, Camera, qToMatrix);
 
     { quat_interpolate is the proper way to interpolate between two
       orientations. }
       al_quat_interpolate (@qFrom, @qTo, t, @qIn);
       al_quat_to_matrix (@qIn, @Rotation);
-      al_matrix_mul_f (@Rotation, @Camera, @qInMatrix);
+      al_matrix_mul_f (Rotation, Camera, qInMatrix);
 
     { update the lines that make up the quaternion orientation path }
-      al_apply_matrix_f (@Rotation, 0, 0, 1.5,
+      al_apply_matrix_f (Rotation, 0, 0, 1.5,
 			qPathPoints1[Index][0],
 			qPathPoints1[Index][1],
 			qPathPoints1[Index][2]);
 
-      al_apply_matrix_f (@Rotation, 0, 0, 2.0,
+      al_apply_matrix_f (Rotation, 0, 0, 2.0,
 			qPathPoints2[Index][0],
 			qPathPoints2[Index][1],
 			qPathPoints2[Index][2]);
@@ -377,14 +377,14 @@ BEGIN
     { render the results to the quaternion sub-bitmap }
       al_clear_to_color (QuatBuffer, al_palette_color^[0]);
 
-      RenderDemoBox (QuatBuffer, @qFromMatrix, @qInMatrix, @qToMatrix,
+      RenderDemoBox (QuatBuffer, qFromMatrix, qInMatrix, qToMatrix,
 		al_palette_color^[15], al_palette_color^[1], al_palette_color^[4]);
 
-      RenderWireframeObject (@Camera, QuatBuffer, qPathPoints1,
+      RenderWireframeObject (Camera, QuatBuffer, qPathPoints1,
 			PathEdges, Index + 1, Index,
 			al_palette_color^[5]);
 
-      RenderWireframeObject (@Camera, QuatBuffer, qPathPoints2,
+      RenderWireframeObject (Camera, QuatBuffer, qPathPoints2,
 			PathEdges, Index + 1, Index,
 			al_palette_color^[5]);
 

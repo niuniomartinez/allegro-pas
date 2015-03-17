@@ -75,7 +75,7 @@ DOCDIR = docs/lib/
 
 #FLAGS = -O3 -Sh -Si -Xs -XX $(EFLAGS)
 # Use next line instead to activate debug.
-FLAGS = -CO -gl -O- -Sh -Si $(EFLAGS)
+FLAGS = -gl -O1 -Sh -Si -vh -vw $(EFLAGS)
 
 # -- Source files list --
 include makefile.list

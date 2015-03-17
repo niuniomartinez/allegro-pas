@@ -110,8 +110,8 @@ PROGRAM exstars;
   BEGIN
     FOR Ndx := Low (Stars) TO High (Stars) DO
     BEGIN
-      al_get_translation_matrix (@Matrix, Delta.x, Delta.y, Delta.z);
-      al_apply_matrix (@Matrix, Stars[Ndx].x, Stars[Ndx].y, Stars[Ndx].z,
+      al_get_translation_matrix (Matrix, Delta.x, Delta.y, Delta.z);
+      al_apply_matrix (Matrix, Stars[Ndx].x, Stars[Ndx].y, Stars[Ndx].z,
 		       Outs[Ndx].x, Outs[Ndx].y, Outs[Ndx].z);
       al_persp_project (Outs[Ndx].x, Outs[Ndx].y, Outs[Ndx].z,
 			StarX[Ndx], StarY[Ndx]);
@@ -287,27 +287,27 @@ PROGRAM exstars;
     Ship.maxx := 0;
     Ship.maxy := 0;
 
-    al_get_rotation_matrix (@Matrix, Ship.rx, Ship.ry, Ship.rz);
-    al_apply_matrix (@Matrix, Ship.aim.x, Ship.aim.y, Ship.aim.z,
+    al_get_rotation_matrix (Matrix, Ship.rx, Ship.ry, Ship.rz);
+    al_apply_matrix (Matrix, Ship.aim.x, Ship.aim.y, Ship.aim.z,
 		     Outs[1].x, Outs[1].y, Outs[1].z);
     Direction.x := Outs[1].x;
     Direction.y := Outs[1].y;
     Direction.z := Outs[1].z;
 
     FOR Ndx := Low (Ship.faces) TO High (Ship.faces) DO
-      al_apply_matrix (@Matrix,
+      al_apply_matrix (Matrix,
 			Ship.faces[Ndx].normal.x, Ship.faces[Ndx].normal.y,
 			Ship.faces[Ndx].normal.z,
 			Ship.faces[Ndx].rnormal.x, Ship.faces[Ndx].rnormal.y,
 			Ship.faces[Ndx].rnormal.z);
 
-    al_get_transformation_matrix (@Matrix, al_itofix (1),
+    al_get_transformation_matrix (Matrix, al_itofix (1),
 				  Ship.rx, Ship.ry, Ship.rz,
 				  Ship.x, Ship.y, Ship.z);
 
     FOR Ndx := Low (Ship.points) TO High (Ship.points) DO
     BEGIN
-      al_apply_matrix (@Matrix,
+      al_apply_matrix (Matrix,
 		Ship.points[Ndx].x, Ship.points[Ndx].y, Ship.points[Ndx].z,
 		Outs[Ndx].x, Outs[Ndx].y, Outs[Ndx].z);
       al_persp_project (

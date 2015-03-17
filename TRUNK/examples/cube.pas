@@ -31,7 +31,7 @@ UNIT cube;
 INTERFACE
 
   USES
-    allegro, alfixed, al3d;
+    allegro, alfixed, al3D;
 
 
 
@@ -86,7 +86,7 @@ INTERFACE
     (* Updates cube. *)
       PROCEDURE Update; VIRTUAL;
     (* Draws the cube. *)
-      PROCEDURE Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIXptr);
+      PROCEDURE Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIX);
 
     (* Cube position. *)
       PROPERTY Pos: TVector READ fPosition WRITE fPosition;
@@ -286,7 +286,7 @@ IMPLEMENTATION
 
    This is very inefficient and doesn't draw the masked and transparent modes
    in the right order. *)
-  PROCEDURE TCube.Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIXptr);
+  PROCEDURE TCube.Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIX);
   VAR
     Cnt, v1, v2, v3, v4, Face: LONGINT;
     z1, z2: AL_FIXED;
@@ -345,14 +345,14 @@ IMPLEMENTATION
 
   BEGIN
   { Create the transformation matrix. }
-    al_get_transformation_matrix (@Matrix, fSize, fAngle.x, fAngle.y, fAngle.z,
+    al_get_transformation_matrix (Matrix, fSize, fAngle.x, fAngle.y, fAngle.z,
 				  fPosition.x, fPosition.y, fPosition.z);
-    al_matrix_mul (@Matrix, aMatrix, @Matrix);
+    al_matrix_mul (Matrix, aMatrix, Matrix);
   { vertices of the cube }
     FOR Cnt := 0 TO 7 DO
     BEGIN
     { "Move" and project each vertex. }
-      al_apply_matrix (@Matrix,
+      al_apply_matrix (Matrix,
 	PointCoordinates[Cnt].x, PointCoordinates[Cnt].y, PointCoordinates[Cnt].z,
 	Vertex[Cnt].x, Vertex[Cnt].y, Vertex[Cnt].z);
       al_persp_project (Vertex[Cnt].x, Vertex[Cnt].y, Vertex[Cnt].z,

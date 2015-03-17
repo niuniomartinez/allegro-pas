@@ -23,7 +23,7 @@ PROGRAM ex3d;
 
   USES
     cube,
-    allegro, algui, al3d, alfixed, alvga, alblend,
+    allegro, algui, al3D, alfixed, alvga, alblend,
     sysutils;
 
 
@@ -300,7 +300,7 @@ BEGIN (* The program starts here. *)
   { Draw. }
     al_clear_bitmap (Buffer);
     FOR Cnt := LOW (TheCubes) TO HIGH (TheCubes) DO
-      TheCubes[Cnt].Draw (Buffer, @al_identity_matrix);
+      TheCubes[Cnt].Draw (Buffer, al_identity_matrix);
     al_textout_ex (Buffer, al_font, 'Poly type: '+DrawModeName[DrawMode + 1],
 		   1, 1, -1, -1);
     al_textout_ex (Buffer, al_font, 'Color depth: '+IntToStr (bpp)+'bpp',
