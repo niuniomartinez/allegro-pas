@@ -278,7 +278,7 @@ PROGRAM exstars;
 (* Draws the ship model. *)
   PROCEDURE DrawShip;
   VAR
-    Outs: ARRAY [1..NUM_VERTS] OF VECTOR;
+    Outs: ARRAY [1..NUM_VERTS] OF AL_V3D;
     Matrix: AL_MATRIX;
     Ndx, Col: INTEGER;
   BEGIN
@@ -329,9 +329,9 @@ PROGRAM exstars;
       Better to use next:
     }
       IF al_polygon_z_normal (
-	@Outs[Ship.faces[Ndx].v1],
-	@Outs[Ship.faces[Ndx].v2],
-	@Outs[Ship.faces[Ndx].v3]
+	Outs[Ship.faces[Ndx].v1],
+	Outs[Ship.faces[Ndx].v2],
+	Outs[Ship.faces[Ndx].v3]
       ) < 0 THEN
       BEGIN
 	Col := al_fixtoi (al_fixmul (al_dot_product (

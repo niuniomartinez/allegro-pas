@@ -198,7 +198,7 @@ PROGRAM exscn3d;
 	FOR J := LOW (Vout) TO nv DO
 	  al_persp_project_f (Vout[j].x, Vout[j].y, Vout[j].z,
 				Vout[j].x, Vout[j].y);
-	IF al_polygon_z_normal_f (@vout[1], @vout[2], @vout[3]) > 0 THEN
+	IF al_polygon_z_normal_f (vout[1], vout[2], vout[3]) > 0 THEN
 	  al_scene_polygon3d_f (AL_POLYTYPE_PTEX, Texture, nv, pVout);
       END;
     END;

@@ -496,41 +496,41 @@ INTERFACE
 (* Construct axis rotation quaternion, storing it in @code(q). When applied to a
    point, this quaternion will rotate it about the relevant axis by the
    specified angle (given in binary, 256 degrees to a circle format). *)
-    PROCEDURE al_get_x_rotate_quat (p: AL_QUATptr; r: AL_FLOAT);
+    PROCEDURE al_get_x_rotate_quat (OUT p: AL_QUAT; r: AL_FLOAT);
       CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_x_rotate_quat';
 
 (* Construct axis rotation quaternion, storing it in q. When applied to a
    point, this quaternion will rotate it about the relevant axis by the
    specified angle (given in binary, 256 degrees to a circle format). *)
-    PROCEDURE al_get_y_rotate_quat (p: AL_QUATptr; r: AL_FLOAT);
+    PROCEDURE al_get_y_rotate_quat (OUT p: AL_QUAT; r: AL_FLOAT);
       CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_y_rotate_quat';
 
 (* Construct axis rotation quaternion, storing it in q. When applied to a
    point, this quaternion will rotate it about the relevant axis by the
    specified angle (given in binary, 256 degrees to a circle format). *)
-    PROCEDURE al_get_z_rotate_quat (p: AL_QUATptr; r: AL_FLOAT);
+    PROCEDURE al_get_z_rotate_quat (OUT p: AL_QUAT; r: AL_FLOAT);
       CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_z_rotate_quat';
 
 (* Constructs a quaternion that will rotate points around all three axes by the
    specified amounts (given in binary, 256 degrees to a circle format). *)
-    PROCEDURE al_get_rotation_quat (p: AL_QUATptr; x, y, z: AL_FLOAT);
+    PROCEDURE al_get_rotation_quat (OUT p: AL_QUAT; x, y, z: AL_FLOAT);
       CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_rotation_quat';
 
 (* Constructs a quaternion that will rotate points around the especified x,y,z
    vector by the specified amounts (given in binary, 256 degrees to a circle
    format). *)
-    PROCEDURE al_get_vector_rotation_quat (p: AL_QUATptr; x, y, z, a: AL_FLOAT);
+    PROCEDURE al_get_vector_rotation_quat (OUT p: AL_QUAT; x, y, z, a: AL_FLOAT);
       CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_vector_rotation_quat';
 
 
 
-(* Multiplies the point @code(x, y, z) by the quaternion q, storing the result
-   in @code(xout, yout, zout).  This is quite a bit slower than
+(* Multiplies the point @code(x, y, z) by the quaternion @code(q), storing the
+   result in @code(xout, yout, zout).  This is quite a bit slower than
    @link(al_apply_matrix_f), so only use it to translate a few points.  If you
    have many points, it is much more efficient to call @link(al_quat_to_matrix)
    and then use @code(al_apply_matrix_f). *)
-    PROCEDURE al_apply_quat (CONST q: AL_QUATptr; x, y, z: AL_FLOAT; VAR xout, yout, zout: AL_FLOAT);
-      INLINE;
+    PROCEDURE al_apply_quat (VAR q: AL_QUAT; x, y, z: AL_FLOAT; OUT xout, yout, zout: AL_FLOAT);
+      CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'apply_quat';
 
 (* The same as @link(al_quat_interpolate), but allows more control over how the
    rotation is done. The @code(how) parameter can be any one of the values:
@@ -541,16 +541,18 @@ INTERFACE
     @item(AL_QUAT_CCW    - rotate counterclockwise when viewed from above)
     @item(AL_QUAT_USER   - the quaternions are interpolated exactly as given)
    ) *)
-    PROCEDURE al_quat_slerp (CONST _from, _to: AL_QUATptr; t: AL_FLOAT; _out: AL_QUATptr; how: AL_INT);
+    PROCEDURE al_quat_slerp (VAR aFrom, aTo: AL_QUAT; t: AL_FLOAT; OUT aOut: AL_QUAT; how: AL_INT);
       CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'quat_slerp';
 
-(* Constructs a quaternion that represents a rotation between _from and _to.
-   The argument t can be anything between 0 and 1 and represents where between
-   from and to the result will be.  0 returns from, 1 returns to, and 0.5 will
-   return a rotation exactly in between.  The result is copied to _out.  This
-   function will create the short rotation (less than 180 degrees) between
-   _from and _to. *)
-    PROCEDURE al_quat_interpolate (CONST _from, _to: AL_QUATptr; t: AL_FLOAT; _out: AL_QUATptr);
+(* Constructs a quaternion that represents a rotation between @code(aFrom) and
+    @code(aTo).  The result is copied to @code(aout).  This function will
+    create the short rotation (less than 180 degrees) between @code(aFrom) and
+    @code(aTo).
+   @param(t can be anything between 0 and 1 and represents where between
+     @code(aFrom) and @code(aTo) the result will be.  0 returns @code(aFrom),
+     1 returns @code(aTo), and 0.5 will return a rotation exactly in between.)
+ *)
+    PROCEDURE al_quat_interpolate (VAR aFrom, aTo: AL_QUAT; t: AL_FLOAT; OUT aOut: AL_QUAT);
       INLINE;
 
 
@@ -617,13 +619,13 @@ INTERFACE
 
 (* Constructs a rotation matrix from a quaternion.
    @seealso(al_matrix_to_quat) *)
-  PROCEDURE al_quat_to_matrix (CONST q: AL_QUATptr; m: AL_MATRIX_Fptr);
+  PROCEDURE al_quat_to_matrix (VAR q: AL_QUAT; OUT m: AL_MATRIX_F);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'quat_to_matrix';
 
 (* Constructs a quaternion from a rotation matrix.  Translation is discarded
    during the conversion.  Use @link(al_get_align_matrix_f) if the matrix is
    not orthonormalized, because strange things may happen otherwise. *)
-  PROCEDURE al_matrix_to_quat (CONST m: AL_MATRIX_Fptr; q: AL_QUATptr);
+  PROCEDURE al_matrix_to_quat (VAR m: AL_MATRIX_F; OUT q: AL_QUAT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'matrix_to_quat';
 
 
@@ -836,8 +838,10 @@ INTERFACE
    situations. @returns(the number of vertices after clipping is done.)
    @seealso(al_clip3d_f) @seealso(al_polygon3d) *)
   FUNCTION al_clip3d (
-    _type: AL_INT; min_z, max_z: AL_FIXED; vc: AL_INT;
-    CONST vtx: ARRAY OF AL_V3Dptr; VAR vout, vtmp: ARRAY OF AL_V3Dptr; VAR _out: ARRAY OF AL_INT
+    aType: AL_INT; min_z, max_z: AL_FIXED;
+    vc: AL_INT; VAR vtx: ARRAY OF AL_V3Dptr;
+    VAR vout, vtmp: ARRAY OF AL_V3Dptr;
+    VAR aOut: ARRAY OF AL_INT
   ): AL_INT; CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clip3d';
 
 (* Clips the polygon given in @code(vtx).  The number of vertices is @code(vc),
@@ -859,7 +863,11 @@ INTERFACE
    @link(AL_POLYTYPE_GCOL).
    @returns(the number of vertices after clipping is done.)
    @seealso(al_clip3d) @seealso(al_polygon3d_f) *)
-  FUNCTION al_clip3d_f (_type: AL_INT; min_z, max_z: AL_FLOAT; vc: AL_INT; CONST vtx: ARRAY OF AL_V3D_Fptr; VAR vout, vtmp: ARRAY OF AL_V3D_Fptr; VAR _out: ARRAY OF AL_INT): AL_INT;
+  FUNCTION al_clip3d_f (
+    aType: AL_INT; min_z, max_z: AL_FLOAT;
+    vc: AL_INT; VAR vtx: ARRAY OF AL_V3D_Fptr;
+    VAR vout, vtmp: ARRAY OF AL_V3D_Fptr;
+    VAR aOut: ARRAY OF AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'clip3d_f';
 
 
@@ -870,13 +878,13 @@ INTERFACE
    one so it might return wrong values in some cases.
    @seealso(al_polygon_z_normal_sign)
  *)
-  FUNCTION al_polygon_z_normal (CONST v1, v2, v3: AL_V3Dptr): AL_FIXED;
+  FUNCTION al_polygon_z_normal (VAR v1, v2, v3: AL_V3D): AL_FIXED;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal';
 
 (* Returns the sign of the z normal of the polygon.  it's more accurated than
    @link(al_polygon_z_normal).
  *)
-  FUNCTION al_polygon_z_normal_sign (CONST v1, v2, v3: AL_V3Dptr): AL_INT64;
+  FUNCTION al_polygon_z_normal_sign (CONST v1, v2, v3: AL_V3D): AL_INT64;
     INLINE;
 
 (* Finds the Z component of the normal vector to the specified three vertices
@@ -893,7 +901,7 @@ INTERFACE
    co-linear (they lie on the same line) in 3D space.
    @seealso(al_cross_product) @seealso(al_polygon_z_normal)
   *)
-  FUNCTION al_polygon_z_normal_f (CONST v1, v2, v3: AL_V3D_Fptr): AL_FLOAT;
+  FUNCTION al_polygon_z_normal_f (VAR v1, v2, v3: AL_V3D_F): AL_FLOAT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal_f';
 
 
@@ -1166,19 +1174,9 @@ IMPLEMENTATION
  * quat.h
  *)
 
-  PROCEDURE apply_quat (CONST q: AL_QUATptr; x, y, z: AL_FLOAT; xout, yout, zout: AL_FLOATptr);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_apply_quat (CONST q: AL_QUATptr; x, y, z: AL_FLOAT; VAR xout, yout, zout: AL_FLOAT);
+  PROCEDURE al_quat_interpolate (VAR aFrom, aTo: AL_QUAT; t: AL_FLOAT; OUT aOut: AL_QUAT);
   BEGIN
-    apply_quat (q, x, y, z, @xout, @yout, @zout);
-  END;
-
-
-
-  PROCEDURE al_quat_interpolate (CONST _from, _to: AL_QUATptr; t: AL_FLOAT; _out: AL_QUATptr);
-  BEGIN
-    al_quat_slerp (_from, _to, t, _out, AL_QUAT_SHORT);
+    al_quat_slerp (aFrom, aTo, t, aOut, AL_QUAT_SHORT);
   END;
 
 
@@ -1256,10 +1254,13 @@ IMPLEMENTATION
   END;
 }
 
-  FUNCTION al_polygon_z_normal_sign (CONST v1, v2, v3: AL_V3Dptr): AL_INT64;
+  FUNCTION al_polygon_z_normal_sign (CONST v1, v2, v3: AL_V3D): AL_INT64;
   BEGIN
     al_polygon_z_normal_sign :=
-      ((v2^.x-v1^.x) * (v3^.y-v2^.y)) - ((v3^.x-v2^.x) * (v2^.y-v1^.y));
+      ((AL_INT64 (v2.x) - AL_INT64 (v1.x)) *
+       (AL_INT64 (v3.y) - AL_INT64 (v2.y))) -
+      ((AL_INT64 (v3.x) - AL_INT64 (v2.x)) *
+       (AL_INT64 (v2.y) - AL_INT64 (v1.y)));
   END;
 
 
