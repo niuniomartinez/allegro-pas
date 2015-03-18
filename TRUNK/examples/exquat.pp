@@ -154,7 +154,7 @@ PROGRAM exquat;
 (* draw an object defined as a set of points and edges *)
   PROCEDURE RenderWireframeObject (m: AL_MATRIX_F; b: AL_BITMAPptr; Points: ARRAY OF POINT; Edges: ARRAY OF EDGE; np, ne, c: INTEGER);
   VAR
-    Index, From, _To: INTEGER;
+    Index, tFrom, tTo: INTEGER;
     TmpPoints: ARRAY OF POINT;
   BEGIN
   { transform the points and store them in a buffer }
@@ -171,10 +171,13 @@ PROGRAM exquat;
   { draw the edges }
     FOR Index := (ne - 1) DOWNTO LOW (Edges) DO
     BEGIN
-      From := Edges[index][0];
-      _To := Edges[index][1];
+      tFrom := Edges[index][0];
+      tTo := Edges[index][1];
 
-      al_line (b, TRUNC (TmpPoints[From][0]), TRUNC (TmpPoints[From][1]), TRUNC (TmpPoints[_To][0]), TRUNC (TmpPoints[_To][1]), c);
+      al_line (b,
+	TRUNC (TmpPoints[tFrom][0]), TRUNC (TmpPoints[tFrom][1]),
+	TRUNC (TmpPoints[tTo][0]), TRUNC (TmpPoints[tTo][1]),
+	c);
     END;
   END;
 
@@ -348,19 +351,19 @@ BEGIN
       we create it using quaternions.  This is to demonstrate
       that the quaternion gotten with get_rotation_quat will
       generate the same matrix as that gotten by get_rotation_matrix }
-      al_get_rotation_quat (@qFrom, eFrom.x, eFrom.y, eFrom.z);
-      al_quat_to_matrix (@qFrom, @Rotation);
+      al_get_rotation_quat (qFrom, eFrom.x, eFrom.y, eFrom.z);
+      al_quat_to_matrix (qFrom, Rotation);
       al_matrix_mul_f (Rotation, Camera, qFromMatrix);
 
     { this is the same as above, but for the ending orientation }
-      al_get_rotation_quat (@qTo, eTo.x, eTo.y, eTo.z);
-      al_quat_to_matrix (@qTo, @Rotation);
+      al_get_rotation_quat (qTo, eTo.x, eTo.y, eTo.z);
+      al_quat_to_matrix (qTo, Rotation);
       al_matrix_mul_f (Rotation, Camera, qToMatrix);
 
     { quat_interpolate is the proper way to interpolate between two
       orientations. }
-      al_quat_interpolate (@qFrom, @qTo, t, @qIn);
-      al_quat_to_matrix (@qIn, @Rotation);
+      al_quat_interpolate (qFrom, qTo, t, qIn);
+      al_quat_to_matrix (qIn, Rotation);
       al_matrix_mul_f (Rotation, Camera, qInMatrix);
 
     { update the lines that make up the quaternion orientation path }
@@ -393,7 +396,7 @@ BEGIN
       al_blit (QuatBuffer,  al_screen, 0, 0, 320, 120, 320, 240);
       al_release_bitmap (al_screen);
 
-      al_rest (1);
+      al_rest (100);
     END;
 
   { handle user input }

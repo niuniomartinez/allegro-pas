@@ -24,7 +24,7 @@ PROGRAM exblend;
 USES
   sysutils,
 { It needs some Allegro.pas units. }
-  allegro, alblend, alfile, alfixed;
+  allegro, alblend, alfixed;
 
 
 

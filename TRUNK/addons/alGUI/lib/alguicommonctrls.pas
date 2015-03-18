@@ -474,9 +474,10 @@ IMPLEMENTATION
 (* Informs the object that a mouse button has been clicked. *)
   FUNCTION TalGUI_ListBox.MsgClick (CONST aX, aY, Button: INTEGER): BOOLEAN;
   VAR
-    NewSel: INTEGER;
+    TextHeight, NewSel: INTEGER;
   BEGIN
-    NewSel := (aY - Y) DIV al_text_height (Dialog.Style.TextFont);
+    TextHeight := al_text_height (Dialog.Style.TextFont);
+    NewSel := (aY - Y - (TextHeight DIV 2)) DIV TextHeight;
     SELF.selected := NewSel;
     RESULT := TRUE
   END;
