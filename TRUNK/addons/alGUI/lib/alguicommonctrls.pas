@@ -117,6 +117,15 @@ INTERFACE
 	READ fSelBgColor WRITE fSelBgColor;
     END;
 
+
+
+  (* A checkbox. *)
+    TalGUI_CheckBox = CLASS (TalGUI_CustomCheckBox)
+    PUBLIC
+    (* Draws the control in the given bitmap. *)
+      PROCEDURE Draw (Bmp: AL_BITMAPptr); OVERRIDE;
+    END;
+
 IMPLEMENTATION
 
 (*
@@ -296,14 +305,14 @@ IMPLEMENTATION
       sX1 := SELF.X + TRUNC (Position * fSliderFactor); sX2 := sX1 + SLIDER_W;
       IF (sX1 <= aX) AND (aX <= sX2) AND (sY1 <= aY) AND (aY <= sY2) THEN
       BEGIN
-        WHILE al_mouse_b = Button DO
-	BEGIN
+	REPEAT
+	  IF al_mouse_needs_poll THEN al_poll_mouse;
 	  NewPos := TRUNC ((al_mouse_x - SELF.X) / fSliderFactor);
 	  IF NewPos <> Position THEN
 	  BEGIN
 	    Position := NewPos; MyDraw
 	  END;
-	END;
+	UNTIL al_mouse_b <> Button;
 	EXIT;
       END
       ELSE BEGIN
@@ -314,7 +323,9 @@ IMPLEMENTATION
 	  Position := Position + Page;
 	MyDraw;
       { Wait until mouse release. }
-        REPEAT UNTIL al_mouse_b <> Button
+	REPEAT
+	  IF al_mouse_needs_poll THEN al_poll_mouse
+	UNTIL al_mouse_b <> Button
       END
     END;
 
@@ -326,14 +337,14 @@ IMPLEMENTATION
       sY1 := SELF.Y + TRUNC (Position * fSliderFactor); sY2 := sY1 + SLIDER_W;
       IF (sX1 <= aX) AND (aX <= sX2) AND (sY1 <= aY) AND (aY <= sY2) THEN
       BEGIN
-        WHILE al_mouse_b = Button DO
-	BEGIN
+	REPEAT
+	  IF al_mouse_needs_poll THEN al_poll_mouse;
 	  NewPos := TRUNC ((al_mouse_y - SELF.Y) / fSliderFactor);
 	  IF NewPos <> Position THEN
 	  BEGIN
 	    Position := NewPos; MyDraw
 	  END
-	END;
+	UNTIL al_mouse_b <> Button;
 	EXIT;
       END
       ELSE BEGIN
@@ -344,7 +355,9 @@ IMPLEMENTATION
 	  Position := Position + Page;
 	MyDraw;
       { Wait until mouse release. }
-        REPEAT UNTIL al_mouse_b <> Button
+	REPEAT
+	  IF al_mouse_needs_poll THEN al_poll_mouse
+	UNTIL al_mouse_b <> Button
       END
     END;
 
@@ -593,6 +606,26 @@ IMPLEMENTATION
     { Restore clipping. }
       al_destroy_bitmap (SubBmp)
     END
+  END;
+
+
+
+(*
+ * TalGUI_CheckBox
+ ****************************************************************************)
+
+(* Draws the control in the given bitmap. *)
+  PROCEDURE TalGUI_CheckBox.Draw (Bmp: AL_BITMAPptr);
+  BEGIN
+    Dialog.Style.DrawCheckbox (
+      Bmp, X, Y, X + Width - 1, Y + Height - 1, SELF.Checked
+    );
+    IF HasFocus THEN
+      Dialog.Style.DrawFocusRect (
+	Bmp,
+	X + 1, Y + 1,
+	X + Width - 2, Y + Height - 2
+      )
   END;
 
 END.
