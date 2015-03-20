@@ -1,1 +1,5 @@
- * Mouse should be polled.
+Try to implement actual "radio-buttons", but using TalGUI_CustomItemListControl
+as base class.  I've always feel that is a better way to do it.
+
+Add property "FocusControl" to TalGUI_Label, so if it's clicked then it passes
+focus to such control.

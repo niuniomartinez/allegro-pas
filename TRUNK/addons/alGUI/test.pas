@@ -10,11 +10,15 @@ PROGRAM Test;
     TDemoGUI = CLASS (TObject)
     PRIVATE
       Dialog: TalGUI_Dialog;
+      FirstRadio, LastRadio: INTEGER;
+      CheckingRadio: BOOLEAN;
 
     (* Event executed when clicking the "Click me" button. *)
       PROCEDURE onClickMeBtnClick (Sender: TalGUI_Control);
     (* Event executed when slider changed. *)
       PROCEDURE onSliderChange (Sender: TalGUI_Control);
+    (* Event used by checkboxes that simulates radio-butons. *)
+      PROCEDURE onChangeRadio (Sender: TalGUI_Control);
     (* Event executed when clicking the close button. *)
       PROCEDURE onCloseBtnClick (Sender: TalGUI_Control);
     PUBLIC
@@ -55,6 +59,29 @@ PROGRAM Test;
 	TalGUI_CustomSlider (Sender).Position,
 	TalGUI_CustomSlider (Sender).Max
       ])
+  END;
+
+
+
+(* Event used by checkboxes that simulates radio-butons. *)
+  PROCEDURE TDemoGUI.onChangeRadio (Sender: TalGUI_Control);
+  VAR
+    Ndx: INTEGER;
+  BEGIN
+    IF NOT CheckingRadio THEN
+    BEGIN
+      CheckingRadio := TRUE;
+      TRY
+	FOR Ndx := FirstRadio TO LastRadio DO
+	BEGIN
+	  TalGUI_CheckBox (Dialog.Controls[Ndx]).Checked := FALSE;
+	  Dialog.Controls[Ndx].Enabled := TRUE
+	END;
+	Sender.Enabled := FALSE
+      FINALLY
+	CheckingRadio := FALSE
+      END
+    END
   END;
 
 
@@ -183,6 +210,62 @@ PROGRAM Test;
       Items.Add ('Five');
     END;
 
+  { Example checkbox. }
+    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
+      'This is a checkbox -->',
+      0, 212, AL_SCREEN_W DIV 2, 8, agaRight
+    ));
+    Ndx := Dialog.Controls.Add (TalGUI_CheckBox.Create);
+    WITH TalGUI_CheckBox (Dialog.Controls[Ndx]) DO
+    BEGIN
+      X := AL_SCREEN_W DIV 2 + 8;
+      Y := 210
+    END;
+  { Checkboxes don't have labels (at the moment). }
+    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
+      ' Check me!',
+      AL_SCREEN_W DIV 2 + 22, 212, AL_SCREEN_W DIV 2, 8, agaLeft
+    ));
+
+  { Example of how to simulate radio-buttons using checkbox "onChange" event.
+
+    There are some things done to make this work.
+    Firs: it uses "CheckingRadio" property to avoid an infinite loop.  See the
+	  "onChangeRadio" method and remove the "IF NOT CheckingRadio THEN" line
+	  to see what happens.
+    Second: the selected radio button is disabled, so it doesn't allow to
+	    unselect the selected checkbox.  Method "onChangeRadio" deals with
+	    this too.
+
+    This method isn't perfect but works fairly well, doesn't it? }
+    CheckingRadio := FALSE;
+    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
+      'You can select only one of these-->',
+      0, 228, AL_SCREEN_W DIV 2, 8, agaRight
+    ));
+    FirstRadio := Dialog.Controls.Add (TalGUI_CheckBox.Create);
+    WITH TalGUI_CheckBox (Dialog.Controls[FirstRadio]) DO
+    BEGIN
+      X := AL_SCREEN_W DIV 2 + 8;
+      Y := 226;
+      Checked := TRUE; Enabled := FALSE;
+      onChange := @SELF.onChangeRadio
+    END;
+    Ndx := Dialog.Controls.Add (TalGUI_CheckBox.Create);
+    WITH TalGUI_CheckBox (Dialog.Controls[Ndx]) DO
+    BEGIN
+      X := AL_SCREEN_W DIV 2 + 21;
+      Y := 226;
+      onChange := @SELF.onChangeRadio
+    END;
+    LastRadio := Dialog.Controls.Add (TalGUI_CheckBox.Create);
+    WITH TalGUI_CheckBox (Dialog.Controls[LastRadio]) DO
+    BEGIN
+      X := AL_SCREEN_W DIV 2 + 34;
+      Y := 226;
+      onChange := @SELF.onChangeRadio
+    END;
+
   { Close button. }
     Ndx := Dialog.Controls.Add (TalGUI_Button.CreateButton (
       'Close dialog',
@@ -205,13 +288,10 @@ PROGRAM Test;
       ON Error: Exception DO
       BEGIN
 	al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
-        al_message (Error.Message)
+	al_message (Error.Message)
       END
     END
   END;
-
-
-
 
 VAR
   Demo: TDemoGUI;

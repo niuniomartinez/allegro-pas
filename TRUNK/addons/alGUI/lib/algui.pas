@@ -93,12 +93,12 @@ INTERFACE
       @param(x2 Right limit of window.) @param(y2 Bottom limit of window.)
       @param(BackColor Background color.  If negative, then it will not draw
         background.)
-      @param(Title Texto to draw on title.)
+      @param(Title Text to draw on title.)
       @param(TitleCentered @true, to draw title centered.)
      *)
       PROCEDURE DrawDialogFrame (
-        Bmp: AL_BitmapPtr; x1, y1, x2, y2, BackColor: INTEGER;
-        Title: STRING; TitleCentered: BOOLEAN
+	Bmp: AL_BitmapPtr; x1, y1, x2, y2, BackColor: INTEGER;
+	Title: STRING; TitleCentered: BOOLEAN
       ); VIRTUAL; ABSTRACT;
     (* Draws a "trench". *)
       PROCEDURE DrawTrench (Bmp: AL_BITMAPptr; x1, y1, x2, y2: INTEGER);
@@ -115,6 +115,20 @@ INTERFACE
       @seealso(TextFont) @seealso(DrawText) *)
       PROCEDURE DrawDisabledText (Bmp: AL_BITMAPptr; CONST Msg: STRING;
 	X, Y: LONGINT; Centered: BOOLEAN); VIRTUAL;
+
+    (* Draws a checkbox.
+
+      Since it is an abstract method, @code(TalGUI_CustomStyle) itself does
+      not implement @code(DrawCheckbox).  Descendent classes such as
+      @link(TalGUI_DefaultStyle) implement this method.
+      @param(Bmp Where to draw it.)
+      @param(x1 Left limit of checkbox.)  @param(y1 Top limit of checkbox.)
+      @param(x2 Right limit of checkbox.) @param(y2 Bottom limit of checkbox.)
+      @param(Checked Whether to draw it checked or not.)
+     *)
+      PROCEDURE DrawCheckbox (
+	Bmp: AL_BitmapPtr; x1, y1, x2, y2: INTEGER; Checked: BOOLEAN
+      ); VIRTUAL; ABSTRACT;
 
     (* Default text color. *)
       PROPERTY TextColor: LONGINT READ fTxtColor WRITE fTxtColor;
@@ -301,6 +315,11 @@ INTERFACE
       PROCEDURE MoveControls (CONST DisplacementX, DisplacementY: INTEGER);
     (* Draw controls in the given bitmap. *)
       PROCEDURE Draw (BmpOut: AL_BITMAPptr);
+    (* Helper method to know if control wants focus.
+
+       This method doesn't just call the @code(WantFocus) method of the control,
+       but it also checks other important states. *)
+      FUNCTION WantsFocus (CONST Ndx: INTEGER): BOOLEAN; INLINE;
 
     (* How many controls are in the list.  This may include NULL controls. *)
       PROPERTY Count: INTEGER READ GetCount;
@@ -517,6 +536,38 @@ INTERFACE
 
 
 
+  (* Base class check boxes and radio buttons.
+
+    Introduces default behavior and an event handler (@link(onChange)). *)
+    TalGUI_CustomCheckBox = CLASS (TalGUI_Control)
+    PRIVATE
+      fChecked: BOOLEAN;
+      fOnChange: TalGUI_ControlEvent;
+    PROTECTED
+    (* Sets the @link(Checked) property value. *)
+      PROCEDURE SetChecked (CONST aValue: BOOLEAN); VIRTUAL;
+
+    (* Sent when the keyboard shortcut for the object is pressed, or if enter,
+      space, or a joystick button is pressed while it has the input focus. *)
+      PROCEDURE MsgKey; OVERRIDE;
+    (* User pressed in checkbox.  Does default behavior, setting the
+      @code(Checked) property and calling the @code(Draw) method. *)
+      FUNCTION MsgClick (CONST aX, aY, Button: INTEGER): BOOLEAN; OVERRIDE;
+    PUBLIC
+    (* Constructor. *)
+      CONSTRUCTOR Create; OVERRIDE;
+    (* Queries whether an object is willing to accept the input focus. *)
+      FUNCTION WantFocus: BOOLEAN; OVERRIDE;
+
+    (* Tells if control is checked or not. *)
+      PROPERTY Checked: BOOLEAN READ fChecked WRITE SetChecked;
+
+    (* Event called when control is changed. *)
+      PROPERTY onChange: TalGUI_ControlEvent READ fOnChange WRITE fOnChange;
+    END;
+
+
+
   (* Base class for various slider controls (such as scroll bars and sliders).
 
     Introduces default properties and event handlers. *)
@@ -527,7 +578,7 @@ INTERFACE
       fOnChange: TalGUI_ControlEvent;
 
       PROCEDURE SetDirection (CONST aDir: TalGUI_Direction);
-      PROCEDURE SetPos (CONST aPos: INTEGER);
+      PROCEDURE SetPos (aPos: INTEGER);
     PROTECTED
     (* Sets minimun value. *)
       PROCEDURE SetMin (CONST aMin: INTEGER); VIRTUAL;
@@ -575,7 +626,7 @@ INTERFACE
       fSelected: INTEGER;
       fOnChange: TalGUI_ControlEvent;
 
-      PROCEDURE SetSelected (CONST Ndx: INTEGER);
+      PROCEDURE SetSelected (Ndx: INTEGER);
     PROTECTED
     (* Sent when a key is pressed and the object has the input focus.
       @return(@true if the object deals with the keypress, otherwise it
@@ -639,7 +690,7 @@ INTERFACE
       @param(x2 Right limit of window.) @param(y2 Bottom limit of window.)
       @param(BackColor Background color.  If negative, then it will not draw
         background.)
-      @param(Title Texto to draw on title.)
+      @param(Title Text to draw on title.)
       @param(TitleCentered @true, to draw title centered.)
      *)
       PROCEDURE DrawDialogFrame (
@@ -649,6 +700,15 @@ INTERFACE
     (* Draws a text as disabled. *)
       PROCEDURE DrawDisabledText (Bmp: AL_BITMAPptr; CONST Msg:
 	STRING; X, Y: LONGINT; Centered: BOOLEAN); OVERRIDE;
+    (* Draws a checkbox.
+      @param(Bmp Where to draw it.)
+      @param(x1 Left limit of checkbox.)  @param(y1 Top limit of checkbox.)
+      @param(x2 Right limit of checkbox.) @param(y2 Bottom limit of checkbox.)
+      @param(Checked Whether to draw it checked or not.)
+     *)
+      PROCEDURE DrawCheckbox (
+	Bmp: AL_BitmapPtr; x1, y1, x2, y2: INTEGER; Checked: BOOLEAN
+      ); OVERRIDE;
     END;
 
 IMPLEMENTATION
@@ -1038,6 +1098,18 @@ IMPLEMENTATION
 
 
 
+(* Helper method to know if control wants focus. *)
+  FUNCTION TalGUI_ControlList.WantsFocus (CONST Ndx: INTEGER): BOOLEAN;
+  VAR
+    Control: TalGUI_Control;
+  BEGIN
+    Control := SELF.GetControl (Ndx);
+    RESULT := (Control <> NIL) AND Control.Enabled AND Control.WantFocus
+  END;
+
+
+
+
 (*
  * TalGUI_Dialog
  *****************************************************************************)
@@ -1051,7 +1123,7 @@ IMPLEMENTATION
     control?  If so, then TalGUI_Dialog.Initialize should use a different way
     to set the initial focus control. }
     AND (0 <= NewFocus) AND (NewFocus < fControlList.Count) THEN
-      IF fControlList[NewFocus].WantFocus THEN
+      IF fControlList.WantsFocus (NewFocus) THEN
       BEGIN
       { Be careful:  Uninitialized dialogs may have the Focus property
 	assigned to an unexistent control. }
@@ -1092,9 +1164,7 @@ IMPLEMENTATION
     IF FocusCtrl >= fControlList.Count THEN FocusCtrl := 0;
     WHILE fFocusIndex <> FocusCtrl DO
     BEGIN
-      IF fControlList[FocusCtrl].Enabled
-      AND fControlList[FocusCtrl].WantFocus THEN
-	BREAK;
+      IF fControlList.WantsFocus (FocusCtrl) THEN BREAK;
       INC (FocusCtrl);
       IF FocusCtrl >= fControlList.Count THEN FocusCtrl := 0;
     END;
@@ -1124,8 +1194,7 @@ IMPLEMENTATION
       IF NewFocus >= fControlList.Count THEN NewFocus := 0;
       WHILE NewFocus <> fFocusIndex DO
       BEGIN
-	IF fControlList[NewFocus].Enabled
-	AND fControlList[NewFocus].WantFocus THEN
+	IF fControlList.WantsFocus (NewFocus) THEN
 	BEGIN
 	  SetFocus (NewFocus);
 	  DoIddle := FALSE;
@@ -1139,22 +1208,21 @@ IMPLEMENTATION
   { Moves focus to previous control. }
     PROCEDURE PreviousFocus;
     VAR
-      PrevFocus: INTEGER;
+      NewFocus: INTEGER;
     BEGIN
       IF fFocusIndex < 0 THEN fFocusIndex := 0;
-      PrevFocus := fFocusIndex - 1;
-      IF PrevFocus < 0 THEN PrevFocus := fControlList.Count - 1;
-      WHILE PrevFocus <> fFocusIndex DO
+      NewFocus := fFocusIndex - 1;
+      IF NewFocus < 0 THEN NewFocus := fControlList.Count - 1;
+      WHILE NewFocus <> fFocusIndex DO
       BEGIN
-	IF fControlList[PrevFocus].Enabled
-	AND fControlList[PrevFocus].WantFocus THEN
+	IF fControlList.WantsFocus (NewFocus) THEN
 	BEGIN
-	  SetFocus (PrevFocus);
+	  SetFocus (NewFocus);
 	  DoIddle := FALSE;
 	  EXIT
 	END;
-	DEC (PrevFocus);
-	IF PrevFocus < 0 THEN PrevFocus := fControlList.Count - 1
+	DEC (NewFocus);
+	IF NewFocus < 0 THEN NewFocus := fControlList.Count - 1
       END
     END;
 
@@ -1163,6 +1231,7 @@ IMPLEMENTATION
     IF fClosed THEN EXIT (TRUE);
     DoIddle := TRUE;
   { Check mouse. }
+    IF al_mouse_needs_poll THEN al_poll_mouse;
     FOR CtrNdx := 0 TO (fControlList.Count - 1) DO
     BEGIN
       IF fControlList[CtrNdx].Inside (al_mouse_x, al_mouse_y) THEN
@@ -1183,6 +1252,7 @@ IMPLEMENTATION
 	fControlList[CtrNdx].MsgLostMouse
     END;
   { Check keyboard. }
+    IF al_keyboard_needs_poll THEN al_poll_keyboard;
     IF al_keypressed THEN
     BEGIN
       KeyPressed := al_readkey;
@@ -1513,7 +1583,7 @@ IMPLEMENTATION
 (* Button was pressed. *)
   FUNCTION TalGUI_CustomButton.MsgClick (CONST aX, aY, Button: INTEGER): BOOLEAN;
 
-    PROCEDURE MyDraw;
+    PROCEDURE MyDraw; INLINE;
     BEGIN
       al_scare_mouse; SELF.Draw (SELF.Dialog.Bmp); al_unscare_mouse
     END;
@@ -1524,6 +1594,7 @@ IMPLEMENTATION
   { Control the control. }
     WHILE al_mouse_b <> 0 DO
     BEGIN
+      IF al_mouse_needs_poll THEN al_poll_mouse;
       IF HasMouse THEN
       BEGIN
 	IF NOT Inside (al_mouse_x, al_mouse_y) THEN
@@ -1584,6 +1655,72 @@ IMPLEMENTATION
 
 
 (*
+ * TalGUI_CustomCheckBox
+ *****************************************************************************)
+
+(* Sets the @link(Checked) property value. *)
+  PROCEDURE TalGUI_CustomCheckBox.SetChecked (CONST aValue: BOOLEAN);
+  BEGIN
+    IF aValue <> fChecked THEN
+    BEGIN
+      IF Assigned (fOnChange) THEN fOnChange (SELF);
+      fChecked := aValue;
+      RedrawMe
+    END
+  END;
+
+
+
+(* Sent when the keyboard shortcut for the object is pressed, or if enter,
+  space, or a joystick button is pressed while it has the input focus. *)
+  PROCEDURE TalGUI_CustomCheckBox.MsgKey;
+  BEGIN
+    SetChecked (NOT fChecked)
+  END;
+
+
+
+(* Button was pressed. *)
+  FUNCTION TalGUI_CustomCheckBox.MsgClick (CONST aX, aY, Button: INTEGER): BOOLEAN;
+
+    PROCEDURE MyDraw; INLINE;
+    BEGIN
+      al_scare_mouse; SELF.Draw (SELF.Dialog.Bmp); al_unscare_mouse
+    END;
+
+  BEGIN
+  { Control the control. }
+    REPEAT IF al_mouse_needs_poll THEN al_poll_mouse UNTIL al_mouse_b = 0;
+  { Events. }
+    IF Inside (al_mouse_x, al_mouse_y) THEN
+    BEGIN
+      RESULT := TRUE;
+      SetChecked (NOT fChecked)
+    END
+    ELSE
+      RESULT := FALSE
+  END;
+
+
+
+(* Constructor. *)
+  CONSTRUCTOR TalGUI_CustomCheckBox.Create;
+  BEGIN
+    INHERITED Create;
+    Width := 12; Height := 12
+  END;
+
+
+
+(* Queries if wants focus. *)
+  FUNCTION TalGUI_CustomCheckBox.WantFocus: BOOLEAN;
+  BEGIN
+    RESULT := Enabled
+  END;
+
+
+
+(*
  * TalGUI_CustomSlider
  *****************************************************************************)
 
@@ -1598,13 +1735,13 @@ IMPLEMENTATION
 
 
 
-  PROCEDURE TalGUI_CustomSlider.SetPos (CONST aPos: INTEGER);
+  PROCEDURE TalGUI_CustomSlider.SetPos (aPos: INTEGER);
   BEGIN
+    IF aPos < fMin THEN aPos := fMin;
+    IF aPos > fMax THEN aPos := fMax;
     IF fPos <> aPos THEN
     BEGIN
       fPos := aPos;
-      IF fPos < fMin THEN fPos := fMin;
-      IF fPos > fMax THEN fPos := fMax;
       IF Assigned (fOnChange) THEN fOnChange (SELF);
       IF fPos < fMin THEN fPos := fMin;
       IF fPos > fMax THEN fPos := fMax;
@@ -1709,16 +1846,15 @@ IMPLEMENTATION
  *****************************************************************************)
 
 
-  PROCEDURE TalGUI_CustomItemListControl.SetSelected (CONST Ndx: INTEGER);
+  PROCEDURE TalGUI_CustomItemListControl.SetSelected (Ndx: INTEGER);
   BEGIN
+    IF Ndx < 0 THEN
+      Ndx := 0
+    ELSE IF Ndx >= fItemList.Count THEN
+      Ndx := fItemList.Count - 1;
     IF Ndx <> fSelected THEN
     BEGIN
-      IF Ndx < 0 THEN
-        fSelected := 0
-      ELSE IF Ndx >= fItemList.Count THEN
-        fSelected := fItemList.Count - 1
-      ELSE
-        fSelected := Ndx;
+      fSelected := Ndx;
       IF Assigned (SELF.fOnChange) THEN SELF.fOnChange (SELF);
       SELF.RedrawMe
     END
@@ -1864,6 +2000,24 @@ IMPLEMENTATION
   BEGIN
     DrawText (Bmp, Msg, X + 1, Y + 1, LightColor, Centered);
     DrawText (Bmp, Msg, X, Y, DarkColor, Centered)
+  END;
+
+
+
+(* Draws a checkbox. *)
+  PROCEDURE TalGUI_DefaultStyle.DrawCheckbox (
+    Bmp: AL_BitmapPtr; x1, y1, x2, y2: INTEGER; Checked: BOOLEAN);
+  BEGIN
+    al_rectfill (Bmp, x1, y1, x2, y2, SELF.BackgroundTextBoxColor);
+    IF Checked THEN
+    BEGIN
+      al_line (Bmp, x1, y1, x2, y2, TextColor);
+      al_line (Bmp, x2, y1, x1, y2, TextColor)
+    END;
+    al_hline (Bmp, x1, y2, x2, LightColor);
+    al_vline (Bmp, X2, y1, y2, LightColor);
+    al_vline (Bmp, X1, y1, y2, DarkColor);
+    al_hline (Bmp, x1, y1, x2, DarkColor);
   END;
 
 END.
