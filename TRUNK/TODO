@@ -17,6 +17,8 @@ New features
 
 Other
 =====
+ * Change STRING by AL_STR and AL_STRptr, and remove wrapper procedures/functions.
+   Use AL_STR on parameters and AL_STRptr on return values.
  * Remove (if possible) the MANY hint messages abour C ARRAYs.
  * Check Windows alleg44.dll build parameters.  Be sure it's optimised.
  + Complete explanation of Joystick. i.e. problems with configuration file.

@@ -225,7 +225,7 @@ INTERFACE
    so don't use negative offsets.  Note that seeking is very slow when reading
    compressed files, and so should be avoided unless you are sure that the file
    is not compressed.
-   @returns (@true on success, @false on failure, storing the error code in
+   @returns(@true on success, @false on failure, storing the error code in
      @link(al_errno).)
    @seealso(al_pack_fopen) @seealso(al_pack_fopen_chunk) *)
   FUNCTION al_pack_fseek (f: AL_PACKFILEptr; offset: AL_INT): BOOLEAN;
@@ -431,35 +431,35 @@ BEGIN
  *)
 
   CONST
-  (* @code (AL_ID (@'ALL.'@)) *)
+  (* @code (AL_ID @('ALL.'@)) *)
     AL_DAT_MAGIC      = $414C4C2E;
-  (* @code (AL_ID (@'FILE'@)) *)
+  (* @code (AL_ID @('FILE'@)) *)
     AL_DAT_FILE       = $46494C45;
-  (* @code (AL_ID (@'DATA'@)) *)
+  (* @code (AL_ID @('DATA'@)) *)
     AL_DAT_DATA       = $44415441;
-  (* @code (AL_ID (@'FONT'@)) *)
+  (* @code (AL_ID @('FONT'@)) *)
     AL_DAT_FONT       = $464F4E54;
-  (* @code (AL_ID (@'SAMP'@)) *)
+  (* @code (AL_ID @('SAMP'@)) *)
     AL_DAT_SAMPLE     = $53414D50;
-  (* @code (AL_ID (@'MIDI'@)) *)
+  (* @code (AL_ID @('MIDI'@)) *)
     AL_DAT_MIDI       = $4D494449;
-  (* @code (AL_ID (@'PAT '@)) *)
+  (* @code (AL_ID @('PAT '@)) *)
     AL_DAT_PATCH      = $50415420;
-  (* @code (AL_ID (@'FLIC'@)) *)
+  (* @code (AL_ID @('FLIC'@)) *)
     AL_DAT_FLI        = $464C4943;
-  (* @code (AL_ID (@'BMP '@)) *)
+  (* @code (AL_ID @('BMP '@)) *)
     AL_DAT_BITMAP     = $424D5020;
-  (* @code (AL_ID (@'RLE '@)) *)
+  (* @code (AL_ID @('RLE '@)) *)
     AL_DAT_RLE_SPRITE = $524C4520;
-  (* @code (AL_ID (@'CMP '@)) *)
+  (* @code (AL_ID @('CMP '@)) *)
     AL_DAT_C_SPRITE   = $434D5020;
-  (* @code (AL_ID (@'XCMP'@)) *)
+  (* @code (AL_ID @('XCMP'@)) *)
     AL_DAT_XC_SPRITE  = $58434D50;
-  (* @code (AL_ID (@'PAL '@)) *)
+  (* @code (AL_ID @('PAL '@)) *)
     AL_DAT_PALETTE    = $50414C20;
-  (* @code (AL_ID (@'prop'@)) *)
+  (* @code (AL_ID @('prop'@)) *)
     AL_DAT_PROPERTY   = $70726F70;
-  (* @code (AL_ID (@'NAME'@)) *)
+  (* @code (AL_ID @('NAME'@)) *)
     AL_DAT_NAME       = $4E414D45;
   (* End of datafile. *)
     AL_DAT_END = -1;
