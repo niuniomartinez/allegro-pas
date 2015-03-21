@@ -36,7 +36,7 @@ TYPE
   (* get_executable_name must NOT be used. *)
     get_executable_name, find_resource: AL_POINTER;
 
-    set_window_title: PROCEDURE (CONST name: AL_STRptr); CDECL;
+    set_window_title: PROCEDURE (CONST name: AL_STR); CDECL;
 
     set_close_button_callback: FUNCTION (proc: AL_SIMPLE_PROC): AL_INT; CDECL;
     _message: PROCEDURE (CONST msg: AL_STRptr); CDECL;
@@ -48,7 +48,7 @@ TYPE
 
     desktop_color_depth: AL_SIMPLE_FUNC;
 
-    get_desktop_resolution: FUNCTION (width, height: AL_INTptr): AL_INT; CDECL;
+    get_desktop_resolution: FUNCTION (width, height: AL_INTptr): AL_BOOL; CDECL;
 
     get_gfx_safe_mode, yield_timeslice, create_mutex, destroy_mutex,
     lock_mutex, unlock_mutex: AL_POINTER;

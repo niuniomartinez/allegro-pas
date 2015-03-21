@@ -74,6 +74,12 @@ TYPE
 
 
 
+(* The bool type.
+
+  Note that this type is used to interface with C only.  Native Pascal code use
+  @code(BOOLEAN) instead. *)
+  AL_BOOL = LONGBOOL;
+
 (* Signed 8bit integer.
 
   Note that it isn't Pascal's CHAR type! *)
@@ -138,6 +144,10 @@ TYPE
 (* Double value. *)
   AL_DOUBLE = DOUBLE;
 
+(* Strings.  Used in parameters to convert Pascal's @code(STRING) to C's
+  @code(char * )*)
+  AL_STR = ANSISTRING;
+
 
 
 (* Pointer. *)
@@ -170,31 +180,31 @@ TYPE
 (* Pointer to float values. *)
   AL_FLOATptr = ^AL_FLOAT;
 
-(* Pointer to text strings.  Used to convert Pascal's @code(STRING) to C
-  @code(char * ) *)
+(* Pointer to text strings.  Used in return values to convert C's
+   @code(char * ) to Pascal's @code(STRING). *)
   AL_STRptr = PCHAR;
 
 
 
-(* This is used to define call-back parameter or pointers to call-back
+(* This is used to define call-back parameters or pointers to call-back
    procedures.
 
    A call-back procedure must be declared as @code(CDECL) since Allegro is
    written in C. *)
   AL_SIMPLE_PROC = PROCEDURE; CDECL;
-(* This is used to define call-back parameter or pointers to call-back
+(* This is used to define call-back parameters or pointers to call-back
    procedures.
 
    A call-back procedure must be declared as @code(CDECL) since Allegro is
    written in C. *)
   AL_PARAM_PROC  = PROCEDURE (x: AL_VOIDptr); CDECL;
-(* This is used to define call-back parameter or pointers to call-back
+(* This is used to define call-back parameters or pointers to call-back
    procedures.
 
    A call-back procedure must be declared as @code(CDECL) since Allegro is
    written in C. *)
   AL_INT_PROC	 = PROCEDURE (x: AL_INT); CDECL;
-(* This is used to define call-back parameter or pointers to call-back
+(* This is used to define call-back parameters or pointers to call-back
    procedures.
 
    A call-back procedure must be declared as @code(CDECL) since Allegro is
