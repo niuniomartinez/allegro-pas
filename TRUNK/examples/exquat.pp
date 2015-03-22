@@ -233,8 +233,9 @@ BEGIN
     EXIT;
   END;
   al_install_keyboard;
+  al_install_timer;
 
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
     IF NOT al_set_gfx_mode(AL_GFX_SAFE, 640, 480, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
@@ -396,7 +397,7 @@ BEGIN
       al_blit (QuatBuffer,  al_screen, 0, 0, 320, 120, 320, 240);
       al_release_bitmap (al_screen);
 
-      al_rest (100);
+      al_rest (10);
     END;
 
   { handle user input }

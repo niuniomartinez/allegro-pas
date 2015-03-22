@@ -69,7 +69,7 @@ BEGIN { The program starts here. }
   In the config file this is stored as either FALSE or TRUE.
   So we need to read a string and see what it contains.
   If the entry is not found, we use "FALSE" by default. }
-  IF al_get_config_string ('graphics', 'windowed', 'FALSE') = 'FALSE' THEN
+  IF al_get_config_string ('graphics', 'windowed', 'TRUE') = 'FALSE' THEN
     windowed := AL_GFX_AUTODETECT_FULLSCREEN
   ELSE
     windowed := AL_GFX_AUTODETECT_WINDOWED;

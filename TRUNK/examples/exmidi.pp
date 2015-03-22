@@ -64,7 +64,7 @@ BEGIN (* The program starts here. *)
   Beats := -al_midi_pos; { al_get_midi_length updates midi_pos to the negative
                            number of beats (quarter notes) in the midi. }
 
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);

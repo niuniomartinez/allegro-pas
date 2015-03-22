@@ -106,19 +106,20 @@ BEGIN
       Arguments[i] := ParamStr (i);
 
   al_install_keyboard;
+  al_install_timer;
 
 { set the best color depth that we can find }
   al_set_color_depth (16);
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
   BEGIN
     al_set_color_depth (15);
-    IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
     BEGIN
       al_set_color_depth (32);
-      IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
+      IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
       BEGIN
 	al_set_color_depth (24);
-	IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
+	IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
 	BEGIN
 	  al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
 	  al_message ('Error setting graphics mode'#10+al_error+''#10);

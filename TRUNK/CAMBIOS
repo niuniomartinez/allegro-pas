@@ -23,12 +23,26 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
   * Se ha cambiado la distribución de la documentación.  Además, ahora se
     construye desde el makefile principal, en lugar de tener otro makefile
     diferente.
-  * A lot of procedures of unit al3D changed their "POINTER" parameters to
+  * A lot of procedures changed their "POINTER" parameters to
     "VAR" and "OUT" parameters.  This way there's no need to use the "@"
-    operator.
+    operator. to reduce HINT messages and to avoid
+   the use of POINTERs (now they're VAR and OUT parameters).
   + Added {$MODE OBJFPC} to configuration file, so now it is possible to use
     "OUT" parameters and avoid some "Variable X doesn't seems to be
     initialized" hint messages.
+  - Removed a lot of wrapper functions and procedures, as the C ones can be
+    called directly.
+ + Added another BOOLEAN type (8 bit), so now ARRAY al_key can be used as 
+   BOOLEAN instead of INTEGER, avoiding the use of "<> 0" when testing.
+   This means that should change old code, but I think it worths it.
+ * Functions al_poll_keyboard return AL_BOOL now.
+ * Variables al_three_finger_flag and al_key_led_flag are AL_BOOL now.
+ * Digital fields of joysticks are AL_BOOL now.
+   NOTE:  I'm not able to test joysticks (my Fedora doesn't like my
+   arcade-style joystick :_( ) so I don't know if it actually works.
+   Please, let me know if you can test it.
+ * Fixed some issues with timers on some examples.
+   Also, changed the default graphics mode to windowed in some of them.
 
 Cambios entre las versiones 4.4.3 y 4.4.4
 =========================================

@@ -92,15 +92,15 @@ BEGIN (* The program starts here. *)
     al_poll_keyboard;
 
   { alter the pan position? }
-    IF (al_key[AL_KEY_LEFT] <> 0) AND (Pan > 0) THEN
+    IF al_key[AL_KEY_LEFT] AND (Pan > 0) THEN
       DEC (Pan)
-    ELSE IF (al_key[AL_KEY_RIGHT] <> 0) AND (Pan < 255) THEN
+    ELSE IF al_key[AL_KEY_RIGHT] AND (Pan < 255) THEN
       INC (Pan);
 
   { alter the pitch? }
-    IF (al_key[AL_KEY_UP] <> 0) AND (Pitch < 16384) THEN
+    IF al_key[AL_KEY_UP] AND (Pitch < 16384) THEN
       Pitch := ((Pitch * 513) DIV 512) + 1
-    ELSE IF (al_key[AL_KEY_DOWN] <> 0) AND (Pitch > 64) THEN
+    ELSE IF al_key[AL_KEY_DOWN] AND (Pitch > 64) THEN
       Pitch := ((Pitch * 511) DIV 512) - 1;
 
   { adjust the sample }
@@ -109,7 +109,7 @@ BEGIN (* The program starts here. *)
   { delay a bit }
     al_rest (2);
 
-  UNTIL (al_key[AL_KEY_ESC] <> 0) OR (al_key[AL_KEY_SPACE] <> 0);
+  UNTIL al_key[AL_KEY_ESC] OR al_key[AL_KEY_SPACE];
 
 { destroy the sample }
   al_destroy_sample (TheSample);

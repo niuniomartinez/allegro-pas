@@ -105,7 +105,7 @@ VAR
 	ELSE IF al_num_joysticks > 0 THEN
 	BEGIN
 	  al_poll_joystick;
-	  IF al_joy[0].button[0].b <> 0 THEN
+	  IF al_joy[0].button[0].b THEN
 	  BEGIN
 	    EndSlideShow := TRUE;
 	    Key := AL_KEY_SPACE; { Simulate keyboard. }

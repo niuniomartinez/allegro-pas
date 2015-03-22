@@ -162,7 +162,7 @@ BEGIN { The program starts here. }
 
 { setting graphics mode }
   al_set_color_depth (16);
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_SAFE, 640, 480, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
@@ -195,7 +195,7 @@ BEGIN { The program starts here. }
   al_set_trans_blender (128, 0, 64, 128);
 
 { exit on Esc key }
-  WHILE al_key[AL_KEY_ESC] = 0 DO
+  WHILE NOT al_key[AL_KEY_ESC] DO
   BEGIN
   { move every sprite and draw it on the back buffer }
     FOR i := LOW (Sprites) TO HIGH (Sprites) DO
@@ -206,7 +206,7 @@ BEGIN { The program starts here. }
     END;
 
   { handle the space key }
-    IF (al_key[AL_KEY_SPACE] <> 0) AND NOT HoldSpace THEN
+    IF al_key[AL_KEY_SPACE] AND NOT HoldSpace THEN
     BEGIN
       HoldSpace := TRUE;
     { switch to next flipping mode }
@@ -221,8 +221,7 @@ BEGIN { The program starts here. }
 	Mode := AL_DRAW_SPRITE_H_FLIP_MODE;
       END;
     END;
-    IF al_key[AL_KEY_SPACE] = 0 THEN
-      HoldSpace := FALSE;
+    IF NOT al_key[AL_KEY_SPACE] THEN HoldSpace := FALSE;
 
   { set the title according to the flipping mode used }
     CASE Mode OF
