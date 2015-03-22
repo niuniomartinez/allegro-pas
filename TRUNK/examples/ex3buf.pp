@@ -155,6 +155,8 @@ PROGRAM ex3buf;
 	1: BEGIN Page := 2;  ActivePage := Page3; END;
 	2: BEGIN Page := 0;  ActivePage := Page1; END;
       END;
+    { Play fair with OS. }
+      al_rest (0)
     UNTIL al_keypressed;
 
     al_clear_keybuf;

@@ -129,7 +129,7 @@ PROGRAM exscn3d;
     END;
 
   { Set the graphics mode. }
-    IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
     { Show an error message. }
@@ -257,7 +257,7 @@ BEGIN (* The program starts here. *)
 
   Tick := 0;
   FrameLabel := '(0.0 fps)';
-  WHILE al_key[AL_KEY_ESC] = 0 DO
+  WHILE NOT al_key[AL_KEY_ESC] DO
   BEGIN
     al_clear_bitmap (Buffer);
     al_clear_scene  (Buffer);

@@ -80,6 +80,9 @@ TYPE
   @code(BOOLEAN) instead. *)
   AL_BOOL = LONGBOOL;
 
+(* Another bool type, used if C's declaration is byte sized. *)
+  AL_BOL8 = BYTEBOOL;
+
 (* Signed 8bit integer.
 
   Note that it isn't Pascal's CHAR type! *)

@@ -37,7 +37,7 @@ USES
   { Set the screen mode }
     al_set_color_depth (colordepth);
 
-    IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
+    IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
 	EXIT;
 
   { In case this is a 256 color mode, we'd better make sure that the

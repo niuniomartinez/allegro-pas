@@ -460,7 +460,7 @@ PROGRAM excamera;
   BEGIN
     al_poll_keyboard;
 
-    IF al_key[AL_KEY_W] <> 0 THEN
+    IF al_key[AL_KEY_W] THEN
     BEGIN
       IF al_key_shifts AND AL_KB_SHIFT_FLAG <> 0 THEN
       BEGIN
@@ -473,7 +473,7 @@ PROGRAM excamera;
       END;
     END;
 
-     IF al_key[AL_KEY_H] <> 0 THEN
+     IF al_key[AL_KEY_H] THEN
      BEGIN
       IF al_key_shifts AND AL_KB_SHIFT_FLAG <> 0 THEN
       BEGIN
@@ -486,7 +486,7 @@ PROGRAM excamera;
       END;
     END;
 
-    IF al_key[AL_KEY_F] <> 0 THEN
+    IF al_key[AL_KEY_F] THEN
       IF al_key_shifts AND AL_KB_SHIFT_FLAG <> 0 THEN
       BEGIN
 	IF Camera.FOV < 96 THEN
@@ -497,7 +497,7 @@ PROGRAM excamera;
 	  Camera.FOV := Camera.FOV - 1;
       END;
 
-    IF al_key[AL_KEY_A] <> 0 THEN
+    IF al_key[AL_KEY_A] THEN
     BEGIN
       IF al_key_shifts AND AL_KB_SHIFT_FLAG <> 0 THEN
       BEGIN
@@ -510,7 +510,7 @@ PROGRAM excamera;
       END;
     END;
 
-    IF al_key[AL_KEY_X] <> 0 THEN
+    IF al_key[AL_KEY_X] THEN
     BEGIN
       IF al_key_shifts AND AL_KB_SHIFT_FLAG <> 0 THEN
 	Camera.Position.X := al_fixadd (Camera.Position.X, al_ftofix (0.05))
@@ -518,7 +518,7 @@ PROGRAM excamera;
 	Camera.Position.X := al_fixsub (Camera.Position.X, al_ftofix (0.05));
     END;
 
-    IF al_key[AL_KEY_Y] <> 0 THEN
+    IF al_key[AL_KEY_Y] THEN
     BEGIN
       IF al_key_shifts AND AL_KB_SHIFT_FLAG <> 0 THEN
 	Camera.Position.Y := al_fixadd (Camera.Position.Y, al_ftofix (0.05))
@@ -526,7 +526,7 @@ PROGRAM excamera;
 	Camera.Position.Y := al_fixsub (Camera.Position.Y, al_ftofix (0.05));
     END;
 
-    IF al_key[AL_KEY_Z] <> 0 THEN
+    IF al_key[AL_KEY_Z] THEN
     BEGIN
       IF al_key_shifts AND AL_KB_SHIFT_FLAG <> 0 THEN
 	Camera.Position.Z := al_fixadd (Camera.Position.Z, al_ftofix (0.05))
@@ -534,21 +534,21 @@ PROGRAM excamera;
 	Camera.Position.Z := al_fixsub (Camera.Position.Z, al_ftofix (0.05));
     END;
 
-    IF al_key[AL_KEY_LEFT] <> 0 THEN
+    IF al_key[AL_KEY_LEFT] THEN
       Camera.Angle.Y := al_fixsub (Camera.Angle.Y, al_itofix (1));
 
-    IF al_key[AL_KEY_RIGHT] <> 0 THEN
+    IF al_key[AL_KEY_RIGHT] THEN
       Camera.Angle.Y := al_fixadd (Camera.Angle.Y, al_itofix (1));
 
-    IF al_key[AL_KEY_PGUP] <> 0 THEN
+    IF al_key[AL_KEY_PGUP] THEN
       IF Camera.Angle.X > al_itofix (-32) THEN
         Camera.Angle.X := al_fixsub (Camera.Angle.X, al_itofix (1));
 
-    IF al_key[AL_KEY_PGDN] <> 0 THEN
+    IF al_key[AL_KEY_PGDN] THEN
       IF Camera.Angle.X < al_itofix (32) THEN
         Camera.Angle.X := al_fixadd (Camera.Angle.X, al_itofix (1));
 
-    IF al_key[AL_KEY_R] <> 0 THEN
+    IF al_key[AL_KEY_R] THEN
     BEGIN
       IF al_key_shifts AND AL_KB_SHIFT_FLAG <> 0 THEN
       BEGIN
@@ -561,19 +561,19 @@ PROGRAM excamera;
       END;
     END;
 
-    IF al_key[AL_KEY_UP] <> 0 THEN
+    IF al_key[AL_KEY_UP] THEN
     BEGIN
       Camera.Position.X := al_fixadd (Camera.Position.X, al_fixsin (Camera.Angle.Y) DIV 2);
       Camera.Position.Z := al_fixadd (Camera.Position.Z, al_fixcos (Camera.Angle.Y) DIV 2);
     END;
 
-    IF al_key[AL_KEY_DOWN] <> 0 THEN
+    IF al_key[AL_KEY_DOWN] THEN
     BEGIN
       Camera.Position.X := al_fixsub (Camera.Position.X, al_fixsin (Camera.Angle.Y) DIV 2);
       Camera.Position.Z := al_fixsub (Camera.Position.Z, al_fixcos (Camera.Angle.Y) DIV 2);
     END;
 
-    IF al_key[AL_KEY_V] <> 0 THEN
+    IF al_key[AL_KEY_V] THEN
       UseVSync := al_key_shifts AND AL_KB_SHIFT_FLAG <> 0;
   END;
 
@@ -597,7 +597,7 @@ BEGIN { The program starts here. }
   al_install_timer;
   al_install_keyboard;
 
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_SAFE, 640, 480, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
@@ -622,7 +622,7 @@ BEGIN { The program starts here. }
   al_install_int_ex (@FPSCheck, AL_BPS_TO_TIMER (FPS_INT));
 
   TRY
-    WHILE al_key [AL_KEY_ESC] = 0 DO
+    WHILE NOT al_key[AL_KEY_ESC] DO
     BEGIN
       Render (Backbuffer);
 

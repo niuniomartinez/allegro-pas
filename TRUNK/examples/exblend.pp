@@ -94,7 +94,7 @@ BEGIN { The program starts here. }
   BEGIN
   { Set a user-requested color depth. }
     al_set_color_depth (bpp);
-    ret := al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0);
+    ret := al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0);
   END
   ELSE BEGIN
   { Autodetect what color depths are available. }
@@ -102,7 +102,7 @@ BEGIN { The program starts here. }
     REPEAT
       bpp := color_depths[a];
       al_set_color_depth (bpp);
-      ret := al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0);
+      ret := al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0);
       IF ret THEN BREAK;
       INC (a);
     UNTIL color_depths[a] < 1;

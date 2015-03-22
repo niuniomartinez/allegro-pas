@@ -147,18 +147,18 @@ IMPLEMENTATION
 	  WHILE Tick > 0 DO { While there are frames to uptade. }
 	  BEGIN
 	  { Keyboard. }
-	    IF al_key[AL_KEY_ESC] <> 0 THEN
+	    IF al_key[AL_KEY_ESC] THEN
 	    BEGIN
 	      EndPlayLoop := TRUE;
 	      EndLoop := TRUE;
 	    END;
-	    IF al_key[AL_KEY_F12] <> 0 THEN
+	    IF al_key[AL_KEY_F12] THEN
 	    BEGIN
 	      al_save_bitmap ('shoot'+IntToStr (ScreenShootCnt)+'.pcx',
 			      ScreenShoot,
 			      Data^[GAME_PAL].dat);
 	      INC (ScreenShootCnt);
-	      al_key[AL_KEY_F12] := 0; { To avoid repetition. }
+	      al_key[AL_KEY_F12] := FALSE; { To avoid repetition. }
 	    { Save a bitmap is a long task so restart the Tick variable. }
 	      Tick := 1;
 	    END;

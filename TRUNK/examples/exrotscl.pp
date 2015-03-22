@@ -44,6 +44,7 @@ BEGIN { The program starts here. }
     EXIT;
   END;
   al_install_keyboard;
+  al_install_timer;
 
   al_set_color_depth (32);
   IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
@@ -90,7 +91,7 @@ BEGIN { The program starts here. }
   al_set_alpha_blender;
   al_draw_trans_sprite (b2, b, 0, 0);
 
-  WHILE al_key[AL_KEY_ESC] = 0 DO
+  WHILE NOT al_key[AL_KEY_ESC] DO
   BEGIN
     Angle := al_ftofix (fAngle);
     Scale := al_ftofix (fScale);

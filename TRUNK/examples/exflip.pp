@@ -49,7 +49,7 @@ BEGIN { The program starts here. }
   size, and if that doesn't work, for 320x200.
 }
    IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 400) THEN
-      IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) THEN
+      IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
 	 IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 400) THEN
 	 BEGIN
 	    al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);

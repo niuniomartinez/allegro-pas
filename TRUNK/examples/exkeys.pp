@@ -123,7 +123,7 @@ BEGIN
   al_install_keyboard;
   al_install_timer;
 
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_SAFE, 640, 480, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
@@ -255,20 +255,20 @@ BEGIN
 
   REPEAT
     Buf := '          ';
-    IF al_key[AL_KEY_1] <> 0 THEN Buf[1] := '1';
-    IF al_key[AL_KEY_2] <> 0 THEN Buf[2] := '2';
-    IF al_key[AL_KEY_3] <> 0 THEN Buf[3] := '3';
-    IF al_key[AL_KEY_4] <> 0 THEN Buf[4] := '4';
-    IF al_key[AL_KEY_5] <> 0 THEN Buf[5] := '5';
-    IF al_key[AL_KEY_6] <> 0 THEN Buf[6] := '6';
-    IF al_key[AL_KEY_7] <> 0 THEN Buf[7] := '7';
-    IF al_key[AL_KEY_8] <> 0 THEN Buf[8] := '8';
-    IF al_key[AL_KEY_9] <> 0 THEN Buf[9] := '9';
-    IF al_key[AL_KEY_0] <> 0 THEN Buf[10]:= '0';
+    IF al_key[AL_KEY_1] THEN Buf[1] := '1';
+    IF al_key[AL_KEY_2] THEN Buf[2] := '2';
+    IF al_key[AL_KEY_3] THEN Buf[3] := '3';
+    IF al_key[AL_KEY_4] THEN Buf[4] := '4';
+    IF al_key[AL_KEY_5] THEN Buf[5] := '5';
+    IF al_key[AL_KEY_6] THEN Buf[6] := '6';
+    IF al_key[AL_KEY_7] THEN Buf[7] := '7';
+    IF al_key[AL_KEY_8] THEN Buf[8] := '8';
+    IF al_key[AL_KEY_9] THEN Buf[9] := '9';
+    IF al_key[AL_KEY_0] THEN Buf[10]:= '0';
     al_textout_ex (al_screen, al_font, Buf,
 		   8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
     al_rest(1);
-  UNTIL al_keypressed AND (al_key[AL_KEY_ESC] <> 0);
+  UNTIL al_keypressed AND al_key[AL_KEY_ESC];
 
   al_clear_keybuf;
   al_keyboard_lowlevel_callback := NIL;

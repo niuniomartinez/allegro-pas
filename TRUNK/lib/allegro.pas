@@ -719,14 +719,14 @@ VAR
    use this function when accessing the @link(al_key) array and
    @link(al_key_shifts) variable.
 
-   @returns(zero on success or a negative on failure @(ie. no keyboard driver
+   @returns(@true on success or @false on failure @(ie. no keyboard driver
      installed@).) *)
-  FUNCTION al_poll_keyboard: AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'poll_keyboard';
+  FUNCTION al_poll_keyboard: BOOLEAN;
+    INLINE;
 
 (* Returns @true if the current keyboard driver is operating in polling mode. *)
-  FUNCTION al_keyboard_needs_poll: BOOLEAN;
-    INLINE;
+  FUNCTION al_keyboard_needs_poll: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'keyboard_needs_poll';
 
 
 
@@ -743,7 +743,7 @@ VAR
 
   TYPE
   { @exclude }
-    AL_KEY_LIST = ARRAY [0..126] OF AL_CHAR;
+    AL_KEY_LIST = ARRAY [0..126] OF AL_BOL8;
 
   VAR
   (* Array of flags indicating the state of each key, ordered by scancode.
@@ -753,7 +753,7 @@ VAR
      scancodes are defined as a series of @code(AL_KEY_* ) constants (and are
      also listed below). For example, you could write:
      @longcode(#
-  IF  al_key[AL_KEY_SPACE] <> 0 THEN
+  IF  al_key[AL_KEY_SPACE] THEN
     WriteLn ('Space is pressed');
      #)
 
@@ -836,17 +836,17 @@ VAR
      three finger salute, ctrl+alt+del.  Most multitasking OS's will trap this
      combination before it reaches the Allegro handler, in which case you can use
      the alternative ctrl+alt+end.  If you want to disable this behaviour in
-     release versions of your program, set this flag to @code(NOT 0).
+     release versions of your program, set this flag to @true.
      @seealso(al_install_keyboard) *)
-    al_three_finger_flag: AL_INT;
+    al_three_finger_flag: AL_BOOL;
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'three_finger_flag';
 
   (* By default, the capslock, numlock, and scroll-lock keys toggle the keyboard
      LED indicators when they are pressed.  If you are using these keys for input
      in your game (eg. capslock to fire) this may not be desirable, so you can
-     set this flag to zero and prevent the LED's being updated.
+     set this flag to @false and prevent the LED's being updated.
      @seealso(al_install_keyboard) @seealso(al_set_leds) *)
-    al_key_led_flag: AL_INT;
+    al_key_led_flag: AL_BOOL;
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'key_led_flag';
 
 
@@ -863,7 +863,6 @@ VAR
      @seealso(al_simulate_keypress) @seealso(al_clear_keybuf) *)
   FUNCTION al_keypressed: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'keypressed';
-    // INLINE;
 
 (* Returns the next character from the keyboard buffer, in ASCII format.  If
    the buffer is empty, it waits until a key is pressed.  You can see if there
@@ -923,8 +922,8 @@ VAR
    You should be able to find Unicode character maps at
    http://www.unicode.org/.
    @seealso(al_readkey) *)
-  FUNCTION al_ureadkey (VAR scancode: AL_INT): AL_INT;
-    INLINE;
+  FUNCTION al_ureadkey (OUT scancode: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'ureadkey';
 
 (* Stuffs a key into the keyboard buffer, just as if the user had pressed it.
    The parameter is in the same format returned by @link(al_readkey).
@@ -947,8 +946,8 @@ VAR
 
 (* Overrides the state of the keyboard LED indicators.  The parameter is a
    bitmask containing any of the values @code(AL_KB_SCROLOCK_FLAG),
-   @code(AL_KB_NUMLOCK_FLAG), and @code(AL_KB_CAPSLOCK_FLAG), or -1 to restore
-   the default behavior.
+   @code(AL_KB_NUMLOCK_FLAG), and @code(AL_KB_CAPSLOCK_FLAG), or @code(-1) to
+   restore the default behavior.
 
    Note that the led behaviour cannot be guaranteed on some platforms, some
    leds might not react, or none at all.  Therefore you shouldn't rely only on
@@ -978,8 +977,8 @@ VAR
    the given scancode.  This is useful if you e.g. let the user choose a key
    for some action, and want to display something more meaningful than just the
    scancode. @seealso(al_scancode_to_ascii)  *)
-  FUNCTION al_scancode_to_name (scancode: AL_INT): STRING;
-    INLINE;
+  FUNCTION al_scancode_to_name (scancode: AL_INT): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scancode_to_name';
 
 (* Key scan-code and flag identifiers. *)
   {$INCLUDE alkeyid.inc}
@@ -1027,8 +1026,8 @@ VAR
      @seealso(al_joy) @seealso(AL_JOYSTICK_INFO) *)
     AL_JOYSTICK_AXIS_INFO = RECORD
       pos : AL_INT; {< analogue axis position. }
-      d1 : AL_INT; {<digital axis position. }
-      d2 : AL_INT; {<digital axis position. }
+      d1 : AL_BOOL; {<digital axis position. }
+      d2 : AL_BOOL; {<digital axis position. }
       name : AL_STRptr; {< description of this axis. }
     END;
 
@@ -1050,7 +1049,7 @@ VAR
      elements in the button array will always be the main trigger controls.
     @seealso(al_joy) @seealso(AL_JOYSTICK_INFO) *)
     AL_JOYSTICK_BUTTON_INFO = RECORD
-      b : AL_INT; {<0 not pressed, (NOT 0) pressed. }
+      b : AL_BOOL; {<@false not pressed, @true pressed. }
       name : AL_STRptr; {<description of this button. }
     END;
 
@@ -1152,7 +1151,7 @@ VAR
      inputs.)
      @seealso(al_remove_joystick) @seealso(al_num_joysticks)
      @seealso(al_load_joystick_data) @seealso(al_poll_joystick) *)
-  FUNCTION al_install_joystick (atype: AL_INT): BOOLEAN;
+  FUNCTION al_install_joystick (CONST atype: AL_INT): BOOLEAN;
 
 (* Removes the joystick handler. You don't normally need to bother calling
    this, because @link(al_exit) will do it for you.
@@ -1166,7 +1165,7 @@ VAR
       be done on the specified joystick, or empty string if no more calibration
       is required.)
     @seealso(al_calibrate_joystick) @seealso(al_num_joysticks) *)
-  FUNCTION al_calibrate_joystick_name (n: AL_INT): STRING;
+  FUNCTION al_calibrate_joystick_name (CONST n: AL_INT): STRING;
 
 (* Most joysticks need to be calibrated before they can provide full analogue
    input.  This function performs the next operation in the calibration series
@@ -1202,6 +1201,7 @@ END;
      successfully.)
     @seealso(al_num_joysticks) *)
   FUNCTION al_calibrate_joystick (n: AL_INT): BOOLEAN;
+    INLINE;
 
 (* After all the headache of calibrating the joystick, you may not want to make
    your poor users repeat the process every time they run your program.  Call
@@ -1212,7 +1212,8 @@ END;
 
    @returns(@true on success, @false if the data could not be saved.)
    @seealso(al_calibrate_joystick) *)
-  FUNCTION al_save_joystick_data (filename: STRING): BOOLEAN;
+  FUNCTION al_save_joystick_data (CONST filename: AL_STR): BOOLEAN;
+    INLINE;
 
 (* Restores calibration data previously stored by @link(al_save_joystick_data)
    or the setup utility.  This sets up all aspects of the joystick code:  you
@@ -1223,7 +1224,7 @@ END;
    @returns(@true on success:  if it fails the joystick state is undefined and
      you must reinitialise it from scratch.)
    @seealso(al_calibrate_joystick) *)
-  FUNCTION al_load_joystick_data (filename: STRING): BOOLEAN;
+  FUNCTION al_load_joystick_data (CONST filename: AL_STR): BOOLEAN;
 
 (* The joystick handler is not interrupt driven, so you need to call this
    function every now and again to update the global position values.
@@ -1252,7 +1253,7 @@ END;
     END;
 
   CONST
-  (* To know thet palette size. @seealso(AL_PALETTE) *)
+  (* To know the palette size. @seealso(AL_PALETTE) *)
     AL_PAL_SIZE = 256;
 
   TYPE
@@ -1361,32 +1362,32 @@ END;
    RGB structures.  Unlike @link(al_set_color), there is no need to call
    @link(al_vsync) before this function. @seealso(al_get_palette)
    @seealso(al_set_color) @seealso(al_set_palette_range) *)
-  PROCEDURE al_set_palette (CONST p: AL_PALETTE);
+  PROCEDURE al_set_palette (VAR p: AL_PALETTE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_palette';
 
 (* Sets the palette entries between @code(from) and @code(ato) (inclusive:
-   pass 0 and 255 to set the entire palette).  If @code(vsync) is not zero it
+   pass 0 and 255 to set the entire palette).  If @code(vsync) is @true it
    waits for the vertical retrace, otherwise it sets the colors immediately.
    @seealso(al_set_color) @seealso(al_set_palette) *)
-  PROCEDURE al_set_palette_range (CONST p: AL_PALETTE; from, ato, vsync: AL_INT);
+  PROCEDURE al_set_palette_range (VAR p: AL_PALETTE; aFrom, aTo: AL_INT; vsync: AL_BOOL);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_palette_range';
 
 
 
 (* Retrieves the specified palette entry.
    @seealso(al_get_palette) @seealso(al_set_color) *)
-  PROCEDURE al_get_color (idx: AL_INT; VAR p: AL_RGB);
-    INLINE;
+  PROCEDURE al_get_color (idx: AL_INT; OUT p: AL_RGB);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_color';
 
 (* Retrieves the entire palette of 256 colors.  You should provide a
    @code(AL_PALETTE) to store it in. *)
   PROCEDURE al_get_palette (VAR p: AL_PALETTE);
-    INLINE;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_palette';
 
 (* Retrieves the palette entries between @code(from) and @code(ato)
    (inclusive: pass 0 and 255 to set the entire palette). *)
-  PROCEDURE al_get_palette_range (VAR p: AL_PALETTE; from, ato: AL_INT);
-    INLINE;
+  PROCEDURE al_get_palette_range (VAR p: AL_PALETTE; aFrom, aTo: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_palette_range';
 
 
 
@@ -1397,8 +1398,8 @@ END;
    This routine only affects colors between @code(from) and @code(ato)
    (inclusive: pass 0 and 255 to interpolate the entire palette).
    @seealso(al_fade_in) @seealso(al_fade_out) @seealso(al_fade_from) *)
-  PROCEDURE al_fade_interpolate (CONST source, dest: AL_PALETTE; VAR aoutput: AL_PALETTE; apos, from, ato: AL_INT);
-    INLINE;
+  PROCEDURE al_fade_interpolate (VAR source, dest, aOutput: AL_PALETTE; aPos, from, aTo: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fade_interpolate';
 
 (* Gradually fades a part of the palette from the @code(source) palette to the
    @code(dest) palette.  The @code(speed) is from 1 (the slowest) up to 64
@@ -1408,7 +1409,7 @@ END;
    Note that this function will block your game while the fade is in effect,
    and it won't work right visually if you are not in an 8 bit color depth
    resolution. @seealso(al_fade_from) *)
-  PROCEDURE al_fade_from_range (source, dest: AL_PALETTE; speed, from, ato: AL_INT);
+  PROCEDURE al_fade_from_range (VAR source, dest: AL_PALETTE; speed, from, ato: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fade_from_range';
 
 (* Gradually fades a part of the palette from a black screen to the specified
@@ -1419,7 +1420,7 @@ END;
    Note that this function will block your game while the fade is in effect,
    and it won't work right visually if you are not in an 8 bit color depth
    resolution. @seealso(al_fade_in) *)
-  PROCEDURE al_fade_in_range (p: AL_PALETTE; speed, from, ato: AL_INT);
+  PROCEDURE al_fade_in_range (VAR p: AL_PALETTE; speed, from, ato: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fade_in_range';
 
 (* Gradually fades a part of the current palette to the @code(dest) palette.
@@ -1440,7 +1441,7 @@ END;
    and it won't work right visually if you are not in an 8 bit color depth
    resolution. @seealso(al_fade_in) @seealso(al_fade_out)
    @seealso(al_fade_interpolate) @seealso(al_fade_from_range) *)
-  PROCEDURE al_fade_from (source, dest: AL_PALETTE; speed: AL_INT);
+  PROCEDURE al_fade_from (VAR source, dest: AL_PALETTE; speed: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fade_from';
 
 (* Gradually fades from a black screen to the specified palette.  The
@@ -1450,7 +1451,7 @@ END;
    and it won't work right visually if you are not in an 8 bit color depth
    resolution. @seealso(al_fade_from) @seealso(al_fade_out)
    @seealso(al_fade_interpolate) @seealso(al_fade_in_range) *)
-  PROCEDURE al_fade_in (p: AL_PALETTE; speed: AL_INT);
+  PROCEDURE al_fade_in (VAR p: AL_PALETTE; speed: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fade_in';
 
 (* Gradually fades from the current palette to a black screen.  The
@@ -1473,7 +1474,7 @@ END;
    internal buffer, and can be restored by calling @link(al_unselect_palette).
    If you call @code(al_select_palette) again, however, the internal buffer
    will be overwritten. *)
-  PROCEDURE al_select_palette (p: AL_PALETTE);
+  PROCEDURE al_select_palette (VAR p: AL_PALETTE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'select_palette';
 
 (* Restores the palette tables that were in use before the last call to
@@ -1489,7 +1490,7 @@ END;
    are reading a truecolor bitmap).
    @seealso(al_generate_optimized_palette) @seealso(al_set_color_depth) *)
   PROCEDURE al_generate_332_palette (VAR p: AL_PALETTE);
-    INLINE;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'generate_332_palette';
 
 (* Generates a 256-color palette suitable for making a reduced color version of
    the specified truecolor image.
@@ -1504,12 +1505,9 @@ END;
      to perform the operation, and negative if there was any internal error in
      the color reduction code.)
    @seealso(al_generate_332_palette) @seealso(al_set_color_depth) *)
-  FUNCTION  al_generate_optimized_palette (image: AL_BITMAPptr; pal: AL_PALETTEptr; rsvdcols: ARRAY OF AL_CHAR): AL_INT;
+  FUNCTION  al_generate_optimized_palette
+    (image: AL_BITMAPptr; VAR pal: AL_PALETTE; VAR rsvdcols: ARRAY OF AL_CHAR): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'generate_optimized_palette';
-{ Don'n know why it doesn't allows to use next.
-  FUNCTION  al_generate_optimized_palette (image: AL_BITMAPptr; VAR pal: AL_PALETTE; rsvdcols: ARRAY OF AL_CHAR): AL_INT;
-    INLINE;
-    }
 
 
 
@@ -1517,8 +1515,9 @@ END;
    palette.  If the @code(callback) function is not @nil, it will be called
    256 times during the calculation, allowing you to display a progress
    indicator. *)
-  PROCEDURE al_create_rgb_table (VAR table: AL_RGB_MAP; CONST pal: AL_PALETTE; callback: AL_INT_PROC);
-    INLINE;
+  PROCEDURE al_create_rgb_table
+    (VAR table: AL_RGB_MAP; VAR pal: AL_PALETTE; callback: AL_INT_PROC);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_rgb_table';
 
 { NOTE: Other table creation functions are in unit alvga. }
 
@@ -1527,14 +1526,14 @@ END;
 (* Convert color values between the HSV and RGB color spaces.  The RGB values
    range from 0 to 255, hue is from 0 to 360, and saturation and value are from
    0 to 1. @seealso(al_rgb_to_hsv) *)
-  PROCEDURE al_hsv_to_rgb (h, s, v: AL_FLOAT; VAR r, g, b: AL_INT);
-    INLINE;
+  PROCEDURE al_hsv_to_rgb (h, s, v: AL_FLOAT; OUT r, g, b: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'hsv_to_rgb';
 
 (* Convert color values between the HSV and RGB color spaces.  The RGB values
    range from 0 to 255, hue is from 0 to 360, and saturation and value are from
    0 to 1. @seealso(al_hsv_to_rgb) *)
-  PROCEDURE al_rgb_to_hsv (r, g, b: AL_INT; VAR h, s, v: AL_FLOAT);
-    INLINE;
+  PROCEDURE al_rgb_to_hsv (r, g, b: AL_INT; OUT h, s, v: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rgb_to_hsv';
 
 
 
@@ -1547,7 +1546,7 @@ END;
    @returns(the index of the palette for the closest match to the requested
      color.)
    @seealso(al_makecol8) *)
-  FUNCTION al_bestfit_color (CONST pal: AL_PALETTE; r, g, b: AL_INT): AL_INT;
+  FUNCTION al_bestfit_color (VAR pal: AL_PALETTE; r, g, b: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'bestfit_color';
 
 
@@ -4981,6 +4980,8 @@ IMPLEMENTATION
       system_driver^.set_window_title (title)
   END;
 
+
+
 (* Finds out the currently selected desktop color depth. *)
   FUNCTION al_desktop_color_depth: AL_INT;
   BEGIN
@@ -4989,6 +4990,8 @@ IMPLEMENTATION
     ELSE
       RESULT := 0
   END;
+
+
 
 (* Finds out the currently selected desktop resolution. *)
   FUNCTION al_get_desktop_resolution (VAR w, h: AL_INT): BOOLEAN;
@@ -5015,6 +5018,8 @@ IMPLEMENTATION
     ELSE
       set_config_file (NIL)
   END;
+
+
 
   PROCEDURE override_config_file (filename: AL_STRptr); CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'override_config_file';
@@ -5051,6 +5056,8 @@ IMPLEMENTATION
     RESULT := NOT install_int_ex (proc, speed)
   END;
 
+
+
   FUNCTION install_int (proc: AL_SIMPLE_PROC; speed: AL_LONG): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
@@ -5058,6 +5065,8 @@ IMPLEMENTATION
   BEGIN
     RESULT := NOT install_int (proc, speed)
   END;
+
+
 
   FUNCTION install_param_int_ex
     (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): AL_BOOL;
@@ -5068,6 +5077,8 @@ IMPLEMENTATION
   BEGIN
     RESULT := NOT install_param_int_ex (proc, param, speed)
   END;
+
+
 
   FUNCTION install_param_int
     (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): AL_BOOL;
@@ -5110,45 +5121,21 @@ IMPLEMENTATION
  * keyboard.h
  *)
 
-  FUNCTION install_keyboard: AL_INT;
+  FUNCTION install_keyboard: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_install_keyboard: BOOLEAN;
   BEGIN
-    al_install_keyboard := install_keyboard = 0;
+    RESULT := NOT install_keyboard;
   END;
 
-  FUNCTION keyboard_needs_poll: AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_keyboard_needs_poll: BOOLEAN;
+
+  FUNCTION poll_keyboard: AL_BOOL; CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_poll_keyboard: BOOLEAN;
   BEGIN
-    al_keyboard_needs_poll := keyboard_needs_poll <> 0;
-  END;
-  {
-  FUNCTION keypressed: AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_keypressed: BOOLEAN;
-  BEGIN
-    al_keypressed := keypressed <> 0;
-  END;
-  }
-
-  FUNCTION ureadkey (scancode: AL_INTptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_ureadkey (VAR scancode: AL_INT): AL_INT;
-  BEGIN
-    al_ureadkey := ureadkey (@scancode);
-  END;
-
-  FUNCTION scancode_to_name (scancode: AL_INT): AL_STRptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scancode_to_name';
-
-  FUNCTION al_scancode_to_name (scancode: AL_INT): STRING;
-  BEGIN
-    al_scancode_to_name := scancode_to_name (scancode);
+    RESULT := NOT poll_keyboard;
   END;
 
 
@@ -5157,18 +5144,20 @@ IMPLEMENTATION
  * joystick.h
  *)
 
-  FUNCTION install_joystick (atype: AL_INT): AL_INT;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION install_joystick (atype: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_install_joystick (atype: AL_INT): BOOLEAN;
+  FUNCTION al_install_joystick (CONST atype: AL_INT): BOOLEAN;
   BEGIN
-    al_install_joystick := install_joystick (atype) = 0;
+    RESULT := NOT install_joystick (atype)
   END;
 
-  FUNCTION calibrate_joystick_name (n: AL_INT): AL_STRptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_calibrate_joystick_name (n: AL_INT): STRING;
+
+  FUNCTION calibrate_joystick_name (n: AL_INT): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_calibrate_joystick_name (CONST n: AL_INT): STRING;
   VAR
     Tmp: PCHAR;
   BEGIN
@@ -5179,119 +5168,37 @@ IMPLEMENTATION
       al_calibrate_joystick_name := '';
   END;
 
-  FUNCTION calibrate_joystick (n: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+
+  FUNCTION calibrate_joystick (n: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_calibrate_joystick (n: AL_INT): BOOLEAN;
   BEGIN
-    al_calibrate_joystick := calibrate_joystick (n) = 0;
+    RESULT := NOT calibrate_joystick (n)
   END;
 
-  FUNCTION save_joystick_data (filename: AL_STRptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_save_joystick_data (filename: STRING): BOOLEAN;
+
+  FUNCTION save_joystick_data (filename: AL_STR): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_save_joystick_data (CONST filename: AL_STR): BOOLEAN;
   BEGIN
-    al_save_joystick_data := save_joystick_data (AL_STRptr (filename)) = 0;
+    RESULT := NOT save_joystick_data (filename)
   END;
 
-  FUNCTION load_joystick_data (filename: AL_STRptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_load_joystick_data (filename: STRING): BOOLEAN;
+
+  FUNCTION load_joystick_data (filename: AL_STRptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_load_joystick_data (CONST filename: AL_STR): BOOLEAN;
   BEGIN
     IF filename <> '' THEN
-      al_load_joystick_data := load_joystick_data (AL_STRptr (filename)) = 0
+      RESULT :=  NOT load_joystick_data (AL_STRptr (filename))
     ELSE
-      al_load_joystick_data := load_joystick_data (NIL) = 0;
-  END;
-
-
-
-(******************************************************************************
- * color.h
- *)
-
-  PROCEDURE get_color (idx: AL_INT; p: AL_RGBptr);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_get_color (idx: AL_INT; VAR p: AL_RGB);
-  BEGIN
-    get_color (idx, @p);
-  END;
-
-  PROCEDURE get_palette (p: AL_PALETTEptr);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_get_palette (VAR p: AL_PALETTE);
-  BEGIN
-    get_palette (@(p[0]));
-  END;
-
-  PROCEDURE get_palette_range (p: AL_PALETTEptr; from, ato: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_get_palette_range (VAR p: AL_PALETTE; from, ato: AL_INT);
-  BEGIN
-    get_palette_range (@p[0], from, ato);
-  END;
-
-
-
-  PROCEDURE fade_interpolate (source, dest: AL_PALETTE; aoutput: AL_PALETTEptr; apos, from, ato: LONGINT);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_fade_interpolate (CONST source, dest: AL_PALETTE; VAR aoutput: AL_PALETTE; apos, from, ato: AL_INT);
-  BEGIN
-    fade_interpolate (source, dest, @aoutput[0], apos, from, ato);
-  END;
-
-  PROCEDURE generate_332_palette (p: AL_PALETTEptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_generate_332_palette (VAR p: AL_PALETTE);
-  BEGIN
-    generate_332_palette (@p[0]);
-  END;
-
-  { Don't know why it doesn't allows to use this.
-  FUNCTION  generate_optimized_palette (image: AL_BITMAPptr; pal: AL_PALETTEptr; rsvdcols: ARRAY OF AL_CHAR): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION  al_generate_optimized_palette (image: AL_BITMAPptr; VAR pal: AL_PALETTE; rsvdcols: ARRAY OF AL_CHAR): AL_INT;
-  BEGIN
-    al_generate_optimized_palette := generate_optimized_palette (
-      image, @pal[0], rsvdcols
-    );
-  END;
-  }
-
-
-
-  PROCEDURE create_rgb_table (table: AL_RGB_MAPptr; CONST pal: AL_PALETTE; callback: AL_INT_PROC); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_create_rgb_table (VAR table: AL_RGB_MAP; CONST pal: AL_PALETTE; callback: AL_INT_PROC);
-  BEGIN
-    create_rgb_table (@table, pal, callback);
-  END;
-
-
-
-  PROCEDURE _hsv_to_rgb_ (h, s, v: AL_FLOAT; r, g, b: AL_INTptr); CDECL;
-      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'hsv_to_rgb';
-
-  PROCEDURE al_hsv_to_rgb (h, s, v: AL_FLOAT; VAR r, g, b: AL_INT);
-  BEGIN
-    _hsv_to_rgb_ (h, s, v, @r, @g, @b);
-  END;
-
-  PROCEDURE _rgb_to_hsv (r, g, b: AL_INT; h, s, v: AL_FLOATptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rgb_to_hsv';
-
-  PROCEDURE al_rgb_to_hsv (r, g, b: AL_INT; VAR h, s, v: AL_FLOAT);
-  BEGIN
-    _rgb_to_hsv (r, g, b, @h, @s, @v);
+      RESULT := NOT load_joystick_data (NIL)
   END;
 
 

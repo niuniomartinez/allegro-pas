@@ -150,32 +150,32 @@ VAR
       DrawTextCentre (Buffer, 'Press any key to exit', 160, 190);
     { If we detect any buttons, we print a message on the screen. }
       FOR Ndx := 0 TO al_joy[0].num_buttons - 1 DO
-	IF al_joy[0].button[Ndx].b <> 0 THEN
+	IF al_joy[0].button[Ndx].b THEN
 	  DrawTextCentre (Buffer, al_joy[0].button[Ndx].name + ' pressed',
 			  160, Ndx*10);
       IF NOT AnalogMode THEN
       BEGIN
       { Now we have to check individually every possible movement and
         actualize the coordinates of the target sight. }
-	IF al_joy[0].stick[0].axis[0].d1 <> 0 THEN
+	IF al_joy[0].stick[0].axis[0].d1 THEN
 	BEGIN
 	  IF X > 0 THEN
 	    DEC (X);
 	  DrawTextCentre (Buffer, 'Left', 120, 100);
 	END;
-	IF al_joy[0].stick[0].axis[0].d2 <> 0 THEN
+	IF al_joy[0].stick[0].axis[0].d2 THEN
 	BEGIN
 	  IF X < 319 THEN
 	    INC (X);
 	  DrawTextCentre (Buffer, 'Right', 200, 100);
 	END;
-	IF al_joy[0].stick[0].axis[1].d1 <> 0 THEN
+	IF al_joy[0].stick[0].axis[1].d1 THEN
 	BEGIN
 	  IF Y > 0 THEN
 	    DEC (Y);
 	  DrawTextCentre (Buffer, 'Up', 200, 100);
 	END;
-	IF al_joy[0].stick[0].axis[1].d2 <> 0 THEN
+	IF al_joy[0].stick[0].axis[1].d2 THEN
 	BEGIN
 	  IF Y < 199 THEN
 	    INC (Y);
@@ -245,7 +245,7 @@ BEGIN (* The program starts here. *)
   al_install_keyboard;
   al_install_timer;
 { Set a graphics mode. }
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 200, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);

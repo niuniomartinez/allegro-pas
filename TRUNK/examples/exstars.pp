@@ -475,23 +475,23 @@ BEGIN
     al_poll_keyboard;
 
   { Rotates the ship. }
-    IF al_key[AL_KEY_UP] <> 0 THEN
+    IF al_key[AL_KEY_UP] THEN
       DEC (Ship.rx, al_itofix (5))
-    ELSE IF al_key[AL_KEY_DOWN] <> 0 THEN
+    ELSE IF al_key[AL_KEY_DOWN] THEN
       INC (Ship.rx, al_itofix (5));
 
-    IF al_key[AL_KEY_LEFT] <> 0 THEN
+    IF al_key[AL_KEY_LEFT] THEN
       DEC (Ship.ry, al_itofix (5))
-    ELSE IF al_key[AL_KEY_RIGHT] <> 0 THEN
+    ELSE IF al_key[AL_KEY_RIGHT] THEN
       INC (Ship.ry, al_itofix (5));
 
-    IF al_key[AL_KEY_PGUP] <> 0 THEN
+    IF al_key[AL_KEY_PGUP] THEN
       DEC (Ship.rz, al_itofix (5))
-    ELSE IF al_key[AL_KEY_PGDN] <> 0 THEN
+    ELSE IF al_key[AL_KEY_PGDN] THEN
       INC (Ship.rz, al_itofix (5));
 
   { Thrust. }
-    IF (al_key[AL_KEY_LCONTROL] <> 0) OR (al_key[AL_KEY_RCONTROL] <> 0) THEN
+    IF al_key[AL_KEY_LCONTROL] OR al_key[AL_KEY_RCONTROL] THEN
     BEGIN
       Ship.faces[ENGINE].colour := ENGINE_ON;
       Ship.faces[ENGINE].range := 3;
@@ -512,7 +512,7 @@ BEGIN
     Delta.x := al_fixmul (Direction.x, al_itofix (Ship.velocity));
     Delta.y := al_fixmul (Direction.y, al_itofix (Ship.velocity));
     Delta.z := al_fixmul (Direction.z, al_itofix (Ship.velocity));
-  UNTIL al_key[AL_KEY_ESC] <> 0;
+  UNTIL al_key[AL_KEY_ESC];
 
   al_destroy_bitmap (buffer);
 END.
