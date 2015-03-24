@@ -17,11 +17,8 @@ INTERFACE
       CONSTRUCTOR Create; OVERRIDE;
     (* Creates the button.  Width and height are calculated from caption
       size. *)
-      CONSTRUCTOR CreateButton (CONST aCaption: STRING; CONST aX, aY: INTEGER);
-    (* Creates the button. *)
-      CONSTRUCTOR CreateButtonBox
-	(CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER;
-	 CONST aAlign: TalGUI_Alignment = agaLeft);
+      CONSTRUCTOR CreateButton (CONST aCaption: STRING; CONST aX, aY: INTEGER;
+	 CONST aW: INTEGER=-1; CONST aH: INTEGER=-1);
     (* Initializes the control. *)
       PROCEDURE Initialize; OVERRIDE;
     (* Draws the control in the given bitmap. *)
@@ -54,13 +51,10 @@ INTERFACE
     PUBLIC
     (* Constructor. *)
       CONSTRUCTOR Create; OVERRIDE;
-    (* Creates a slider with default size, width and height. *)
-      CONSTRUCTOR CreateSlider
-	(CONST aSize, aX, aY: INTEGER; aDir: TalGUI_Direction);
     (* Creates a slider. *)
-      CONSTRUCTOR CreateSliderBox
-	(CONST aMin, aMax, aX, aY, aW, aH: INTEGER;
-	 aDir: TalGUI_Direction);
+      CONSTRUCTOR CreateSlider
+	(CONST aX, aY: INTEGER; aDir: TalGUI_Direction;
+	 CONST aW: INTEGER=-1; CONST aH: INTEGER=-1);
     (* Initializes the control. *)
       PROCEDURE Initialize; OVERRIDE;
     (* Draws the control in the given bitmap. *)
@@ -93,11 +87,8 @@ INTERFACE
     (* Constructor. *)
       CONSTRUCTOR Create; OVERRIDE;
     (* Creates the list.  Size will be calculated by @code(Initialize). *)
-      CONSTRUCTOR CreateList
-	(CONST aX, aY: INTEGER);
-    (* Creates a box. *)
-      CONSTRUCTOR CreateBox
-	(CONST aX, aY, aW, aH: INTEGER);
+      CONSTRUCTOR CreateListBox
+	(CONST aX, aY: INTEGER; CONST aW: INTEGER = -1; CONST aH: INTEGER = -1);
     (* Destructor. *)
       DESTRUCTOR Destroy; OVERRIDE;
 
@@ -150,19 +141,7 @@ IMPLEMENTATION
 
 (* Creates the button.  Width and height are calculated from caption size. *)
   CONSTRUCTOR TalGUI_Button.CreateButton
-    (CONST aCaption: STRING; CONST aX, aY: INTEGER);
-  BEGIN
-    INHERITED Create;
-    fCaption := aCaption;
-    X := aX; Y := aY; Width := -1;
-  END;
-
-
-
-(* Creates the button. *)
-  CONSTRUCTOR TalGUI_Button.CreateButtonBox
-    (CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER;
-     CONST aAlign: TalGUI_Alignment);
+    (CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER);
   BEGIN
     INHERITED Create;
     fCaption := aCaption;
@@ -243,8 +222,8 @@ IMPLEMENTATION
   BEGIN
     IF (Width > 0) AND (Height > 0) THEN
     CASE Direction OF
-      agdHorizontal: fSliderFactor := ABS (Max - Min) / (Width - SLIDER_W + 1);
-      agdVertical: fSliderFactor := ABS (Max - Min) / (Height - SLIDER_W + 1);
+      agdHorizontal: fSliderFactor := (Width - SLIDER_W + 1) / ABS (Max - Min);
+      agdVertical:   fSliderFactor := (Height - SLIDER_W + 1) / ABS (Max - Min);
     END
   END;
 
@@ -374,31 +353,20 @@ IMPLEMENTATION
 (* Creates the slider. *)
   CONSTRUCTOR TalGUI_Slider.Create;
   BEGIN
-    INHERITED Create
+    SELF.CreateSlider (-1, -1, agdHorizontal, -1, -1)
   END;
 
 
 
 (* Creates the slider. *)
   CONSTRUCTOR TalGUI_Slider.CreateSlider
-    (CONST aSize, aX, aY: INTEGER; aDir: TalGUI_Direction);
+    (CONST aX, aY: INTEGER; aDir: TalGUI_Direction;
+     CONST aW, aH: INTEGER);
   BEGIN
     INHERITED Create;
     Direction := aDir;
-    Max := aSize;
-    X := aX; Y := aY; Width := -1
-  END;
-
-
-
-(* Creates the slider. *)
-  CONSTRUCTOR TalGUI_Slider.CreateSliderBox
-    (CONST aMin, aMax, aX, aY, aW, aH: INTEGER; aDir: TalGUI_Direction);
-  BEGIN
-    INHERITED Create;
-    Direction := aDir;
-    Min := aMin; Max := aMax; Position := aMin;
-    X := aX; Y := aY; Width := aW; Height := aH
+    X := aX; Y := aY; Width := aW; Height := aH;
+    Min := 0; Max := 100; Position := 0
   END;
 
 
@@ -506,17 +474,7 @@ IMPLEMENTATION
 
 
 (* Creates the box. *)
-  CONSTRUCTOR TalGUI_ListBox.CreateList
-    (CONST aX, aY: INTEGER);
-  BEGIN
-    SELF.Create;
-    X := aX; Y := aY; Width := -1; Height := -1
-  END;
-
-
-
-(* Creates the box. *)
-  CONSTRUCTOR TalGUI_ListBox.CreateBox
+  CONSTRUCTOR TalGUI_ListBox.CreateListBox
     (CONST aX, aY, aW, aH: INTEGER);
   BEGIN
     SELF.Create;
@@ -548,9 +506,10 @@ IMPLEMENTATION
 	IF Tmp > Max THEN Max := Tmp;
       END;
       Tmp := al_text_height (Dialog.Style.TextFont);
-      Width := Max + (Tmp * 3);
-      Height := (SELF.Items.Count + 1) * Tmp
+      Width := Max + (Tmp * 3)
     END;
+    IF Height < 0 THEN
+      Height := (SELF.Items.Count + 1) * al_text_height (Dialog.Style.TextFont)
   END;
 
 

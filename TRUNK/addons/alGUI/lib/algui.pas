@@ -484,13 +484,11 @@ INTERFACE
     PUBLIC
     (* Constructor. *)
       CONSTRUCTOR Create; OVERRIDE;
-    (* Creates the label.  Width and height are calculated from caption
-      size. *)
-      CONSTRUCTOR CreateCaption
-	(CONST aCaption: STRING; CONST aX, aY: INTEGER);
-    (* Creates the label. *)
+    (* Creates the label.  If width and height are not set, then they're
+      calculated from caption size. *)
       CONSTRUCTOR CreateLabel
-	(CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER;
+	(CONST aCaption: STRING; CONST aX, aY: INTEGER;
+	 CONST aW: INTEGER=-1; CONST aH: INTEGER=-1;
 	 CONST aAlign: TalGUI_Alignment = agaLeft);
     (* Initializes the control. *)
       PROCEDURE Initialize; OVERRIDE;
@@ -1495,18 +1493,6 @@ IMPLEMENTATION
 
 
 
-(* Creates the label.  Width and height are calculated from caption size. *)
-  CONSTRUCTOR TalGUI_Label.CreateCaption
-    (CONST aCaption: STRING; CONST aX, aY: INTEGER);
-  BEGIN
-    INHERITED Create;
-    fCaption := aCaption;
-    fX := aX; fY := aY; fW := -1;
-    fAlignment := agaLeft
-  END;
-
-
-
 (* Creates the label. *)
   CONSTRUCTOR TalGUI_Label.CreateLabel
     (CONST aCaption: STRING; CONST aX, aY, aW, aH: INTEGER; CONST aAlign: TalGUI_Alignment);
@@ -1523,11 +1509,10 @@ IMPLEMENTATION
   PROCEDURE TalGUI_Label.Initialize;
   BEGIN
     INHERITED Initialize;
-    IF fW < 0 THEN
-    BEGIN
+    IF fW < 1 THEN
       fW := al_text_length (Dialog.Style.TextFont, fCaption);
+    IF fH < 1 THEN
       fH := al_text_height (Dialog.Style.TextFont)
-    END
   END;
 
 
