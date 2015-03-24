@@ -55,10 +55,7 @@ PROGRAM Test;
     Slider := TalGUI_CustomSlider (Sender);
 
     TalGUI_Label (Dialog.Controls[Slider.Tag]).Caption :=
-      Format ('Position: %d of %d    ', [
-	TalGUI_CustomSlider (Sender).Position,
-	TalGUI_CustomSlider (Sender).Max
-      ])
+      Format ('Position: %d of %d    ', [Slider.Position, Slider.Max])
   END;
 
 
@@ -114,6 +111,27 @@ PROGRAM Test;
 
 (* Initializes the application. *)
   PROCEDURE TDemoGUI.Initialize;
+  CONST
+  { Some default measures. }
+    LEFT = 1; RIGHT = 200;
+    WIDTH = 150; HEIGHT = 20;
+  VAR
+    LastY: INTEGER;
+
+  { Helper function to keep stuff "on grid". }
+    FUNCTION AddControl (CONST aName: STRING; aControl: TalGUI_Control)
+      : INTEGER;
+    BEGIN
+      Dialog.Controls.Add (TalGUI_Label.CreateLabel (aName, LEFT, LastY));
+      RESULT := Dialog.Controls.Add (aControl);
+      IF aControl.X < 1 THEN
+      BEGIN
+	aControl.X := RIGHT; aControl.Y := LastY;
+	aControl.Width := WIDTH; aControl.Height := HEIGHT
+      END;
+      INC (LastY, HEIGHT + (HEIGHT DIV 2))
+    END;
+
   VAR
     Ndx: INTEGER;
   BEGIN
@@ -137,70 +155,50 @@ PROGRAM Test;
     Dialog.Controls.Add (TalGUI_ClearScreen.Create);
   { Some texts and static components. }
     Dialog.Controls.Add (TalGUI_Label.CreateLabel (
-      ' This is a label aligned left ',
-      0, 16, AL_SCREEN_W, 8, agaLeft
+      'TalGUI_Label agaLeft',
+      LEFT, 16, AL_SCREEN_W, 8, agaLeft
     ));
     Dialog.Controls.Add (TalGUI_Label.CreateLabel (
-      ' This is a label centered ',
-      0, 24, AL_SCREEN_W, 8, agaCenter
+      'TalGUI_Label agaCenter',
+      LEFT, 24, AL_SCREEN_W, 8, agaCenter
     ));
     Dialog.Controls.Add (TalGUI_Label.CreateLabel (
-      ' This is a label aligned right ',
-      0, 32, AL_SCREEN_W, 8, agaRight
+      'TalGUI_Label agaRight',
+      LEFT, 32, AL_SCREEN_W, 8, agaRight
     ));
+    LastY := 64;
 
-    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
-      'These are TalGUI_Box -->',
-      0, 64, AL_SCREEN_W DIV 2, 8, agaRight
-    ));
-    Dialog.Controls.Add (TalGUI_Box.CreateBox (
-      AL_SCREEN_W DIV 2 + 8, 50, 100, 32
-    ));
+    Ndx := AddControl ('TalGUI_Box->', TalGUI_Box.Create);
+    TalGUI_Box (Dialog.Controls[Ndx]).Raised := FALSE;
+{
     Dialog.Controls.Add (TalGUI_Box.CreateBox (
       AL_SCREEN_W DIV 2 + 115, 50, 100, 32, FALSE
     ));
-
+}
   { Example buttons. }
-    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
-      'These are buttons -->',
-      0, 96, AL_SCREEN_W DIV 2, 8, agaRight
-    ));
-    Ndx := Dialog.Controls.Add (TalGUI_Button.CreateButtonBox (
-      'Press me',
-      AL_SCREEN_W DIV 2 + 8, 88, 144, 24
+    Ndx := AddControl ('TalGUI_Button->', TalGUI_Button.CreateButton (
+      'Press me', RIGHT, LastY, WIDTH, HEIGHT
     ));
     TalGUI_Button (Dialog.Controls[Ndx]).onCLick := @SELF.onClickMeBtnClick;
-
-    Ndx := Dialog.Controls.Add (TalGUI_Button.CreateButtonBox (
+{
+    Ndx := Dialog.Controls.Add (TalGUI_Button.CreateButton (
       'Disabled button',
       AL_SCREEN_W DIV 2 + 160, 88, 144, 24
     ));
     TalGUI_Button (Dialog.Controls[Ndx]).Enabled := FALSE;
-
+}
   { Example slider/scroll-bar. }
-    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
-      'This is a slider -->',
-      0, 128, AL_SCREEN_W DIV 2, 8, agaRight
-    ));
-    Ndx := Dialog.Controls.Add (TalGUI_Slider.CreateSlider (
-      100, AL_SCREEN_W DIV 2 + 8, 120, agdHorizontal
-    ));
-  { Store index of label in slider's Tag property. }
+    Ndx := AddControl ('TalGUI_Slider->', TalGUI_Slider.Create);
+  { Store index of label on slider's Tag property. }
     TalGUI_Slider (Dialog.Controls[Ndx]).Tag :=
       Dialog.Controls.Add (TalGUI_Label.CreateLabel (
 	'Position: 0 of 100',
-	AL_SCREEN_W DIV 2 + 130, 128, 200, 24, agaLeft
+	AL_SCREEN_W DIV 2 + 130, 128, WIDTH * 2, HEIGHT
       ));
     TalGUI_Slider (Dialog.Controls[Ndx]).OnChange := @SELF.onSliderChange;
 
   { Example list box. }
-    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
-      'This is a list box -->',
-      0, 156, AL_SCREEN_W DIV 2, 8, agaRight
-    ));
-    Ndx := Dialog.Controls.Add (TalGUI_ListBox.CreateList (
-      AL_SCREEN_W DIV 2 + 8, 156
-    ));
+    Ndx := AddControl ('TalGUI_ListBox->', TalGUI_ListBox.Create);
     WITH TalGUI_ListBox (Dialog.Controls[Ndx]) DO
     BEGIN
       Items.Add ('One');
@@ -208,24 +206,16 @@ PROGRAM Test;
       Items.Add ('Three');
       Items.Add ('Four');
       Items.Add ('Five');
+      Height := 48
     END;
 
+    LastY :=
+      Dialog.Controls[Ndx].Y + Dialog.Controls[Ndx].Height + (HEIGHT DIV 2);
   { Example checkbox. }
     Dialog.Controls.Add (TalGUI_Label.CreateLabel (
-      'This is a checkbox -->',
-      0, 212, AL_SCREEN_W DIV 2, 8, agaRight
+      ' Check me!', RIGHT + 22, LastY
     ));
-    Ndx := Dialog.Controls.Add (TalGUI_CheckBox.Create);
-    WITH TalGUI_CheckBox (Dialog.Controls[Ndx]) DO
-    BEGIN
-      X := AL_SCREEN_W DIV 2 + 8;
-      Y := 210
-    END;
-  { Checkboxes don't have labels (at the moment). }
-    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
-      ' Check me!',
-      AL_SCREEN_W DIV 2 + 22, 212, AL_SCREEN_W DIV 2, 8, agaLeft
-    ));
+    Ndx := AddControl ('TalGUI_CheckBox->', TalGUI_CheckBox.Create);
 
   { Example of how to simulate radio-buttons using checkbox "onChange" event.
 
@@ -240,14 +230,13 @@ PROGRAM Test;
     This method isn't perfect but works fairly well, doesn't it? }
     CheckingRadio := FALSE;
     Dialog.Controls.Add (TalGUI_Label.CreateLabel (
-      'You can select only one of these-->',
-      0, 228, AL_SCREEN_W DIV 2, 8, agaRight
+      'Radio button simulation->', LEFT, LastY
     ));
     FirstRadio := Dialog.Controls.Add (TalGUI_CheckBox.Create);
     WITH TalGUI_CheckBox (Dialog.Controls[FirstRadio]) DO
     BEGIN
-      X := AL_SCREEN_W DIV 2 + 8;
-      Y := 226;
+      X := RIGHT;
+      Y := LastY;
       Checked := TRUE; Enabled := FALSE;
       onChange := @SELF.onChangeRadio
     END;
@@ -255,21 +244,20 @@ PROGRAM Test;
     WITH TalGUI_CheckBox (Dialog.Controls[Ndx]) DO
     BEGIN
       X := AL_SCREEN_W DIV 2 + 21;
-      Y := 226;
+      Y := LastY;
       onChange := @SELF.onChangeRadio
     END;
     LastRadio := Dialog.Controls.Add (TalGUI_CheckBox.Create);
     WITH TalGUI_CheckBox (Dialog.Controls[LastRadio]) DO
     BEGIN
       X := AL_SCREEN_W DIV 2 + 34;
-      Y := 226;
+      Y := LastY;
       onChange := @SELF.onChangeRadio
     END;
 
   { Close button. }
     Ndx := Dialog.Controls.Add (TalGUI_Button.CreateButton (
-      'Close dialog',
-      AL_SCREEN_W - 150, AL_SCREEN_H - 50
+      'Close dialog', LEFT, AL_SCREEN_H - 50
     ));
     TalGUI_Button (Dialog.Controls[Ndx]).onCLick := @SELF.onCloseBtnClick;
   { Set colors. }
