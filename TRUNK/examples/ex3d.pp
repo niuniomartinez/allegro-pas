@@ -251,11 +251,11 @@ BEGIN (* The program starts here. *)
   CreatePalette;
 
 { Build a lighting table. }
-  al_create_light_table (@LightTable, Palette, 0, 0, 0, NIL);
+  al_create_light_table (LightTable, Palette, 0, 0, 0, NIL);
   al_color_table := @LightTable;
 
 { Build a transparency table (25% transparent). }
-  al_create_trans_table (@TransTable, Palette, 192, 192, 192, NIL);
+  al_create_trans_table (TransTable, Palette, 192, 192, 192, NIL);
 
 { Set up truecolor blending function (25% transparent). }
   al_set_trans_blender (0, 0, 0, 192);

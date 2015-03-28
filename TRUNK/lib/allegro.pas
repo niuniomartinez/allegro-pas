@@ -719,10 +719,10 @@ VAR
    use this function when accessing the @link(al_key) array and
    @link(al_key_shifts) variable.
 
-   @returns(@true on success or @false on failure @(ie. no keyboard driver
+   @returns(@false on success or @true on failure @(ie. no keyboard driver
      installed@).) *)
-  FUNCTION al_poll_keyboard: BOOLEAN;
-    INLINE;
+  FUNCTION al_poll_keyboard: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'poll_keyboard';
 
 (* Returns @true if the current keyboard driver is operating in polling mode. *)
   FUNCTION al_keyboard_needs_poll: AL_BOOL;
@@ -1229,10 +1229,10 @@ END;
 (* The joystick handler is not interrupt driven, so you need to call this
    function every now and again to update the global position values.
 
-   @returns(zero on success or a negative number on failure @(usually because
-     no joystick driver was installed@).)
+   @returns(@false on success or @true on failure @(usually because no joystick
+     driver was installed@).)
    @seealso(al_install_joystick) @seealso(al_joy) *)
-  FUNCTION al_poll_joystick: AL_INT;
+  FUNCTION al_poll_joystick: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'poll_joystick';
 
 
@@ -1351,11 +1351,15 @@ END;
     al_palette_color: AL_PALETTE_DICTptr;
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'palette_color';
 
+  (* @exclude For some reason, this is undocumented, so keep it as it is. *)
+    al_current_palette: AL_PALETTE ;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'current_palette';
+
 (* Sets the specified palette entry to the specified @link(AL_RGB) triplet.
    Unlike the other palette functions this doesn't do any retrace
    synchronisation, so you should call @link(al_vsync) before it to prevent
    snow problems. @seealso(al_set_palette) @seealso(al_get_color) *)
-  PROCEDURE al_set_color (idx: AL_INT; CONST p: AL_RGBptr);
+  PROCEDURE al_set_color (idx: AL_INT; VAR p: AL_RGB);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_color';
 
 (* Sets the entire palette of 256 colors.  You should provide an array of 256
@@ -1365,11 +1369,12 @@ END;
   PROCEDURE al_set_palette (VAR p: AL_PALETTE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_palette';
 
-(* Sets the palette entries between @code(from) and @code(ato) (inclusive:
+(* Sets the palette entries between @code(aFrom) and @code(aTo) (inclusive:
    pass 0 and 255 to set the entire palette).  If @code(vsync) is @true it
    waits for the vertical retrace, otherwise it sets the colors immediately.
    @seealso(al_set_color) @seealso(al_set_palette) *)
-  PROCEDURE al_set_palette_range (VAR p: AL_PALETTE; aFrom, aTo: AL_INT; vsync: AL_BOOL);
+  PROCEDURE al_set_palette_range
+    (VAR p: AL_PALETTE; aFrom, aTo: AL_INT; vsync: AL_BOOL);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_palette_range';
 
 
@@ -1379,26 +1384,28 @@ END;
   PROCEDURE al_get_color (idx: AL_INT; OUT p: AL_RGB);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_color';
 
-(* Retrieves the entire palette of 256 colors.  You should provide a
-   @code(AL_PALETTE) to store it in. *)
+(* Retrieves the entire palette of 256 colors.
+    @seealso(al_get_palette_range) *)
   PROCEDURE al_get_palette (VAR p: AL_PALETTE);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_palette';
 
-(* Retrieves the palette entries between @code(from) and @code(ato)
-   (inclusive: pass 0 and 255 to set the entire palette). *)
+(* Retrieves the palette entries between @code(aFrom) and @code(aTo)
+   (inclusive: pass 0 and 255 to set the entire palette).
+   @seealso(al_get_palette) *)
   PROCEDURE al_get_palette_range (VAR p: AL_PALETTE; aFrom, aTo: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_palette_range';
 
 
 
 (* Calculates a temporary palette part way between @code(source) and
-   @code(dest), returning it in the @code(aoutput) parameter.  The position between
+   @code(dest), returning it in the @code(aOutput) parameter.  The position between
    the two extremes is specified by the pos value: 0 returns an exact copy of
    source, 64 returns dest, 32 returns a palette half way between the two, etc.
-   This routine only affects colors between @code(from) and @code(ato)
+   This routine only affects colors between @code(aFrom) and @code(aTo)
    (inclusive: pass 0 and 255 to interpolate the entire palette).
    @seealso(al_fade_in) @seealso(al_fade_out) @seealso(al_fade_from) *)
-  PROCEDURE al_fade_interpolate (VAR source, dest, aOutput: AL_PALETTE; aPos, from, aTo: AL_INT);
+  PROCEDURE al_fade_interpolate
+    (VAR source, dest, aOutput: AL_PALETTE; aPos, aFrom, aTo: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fade_interpolate';
 
 (* Gradually fades a part of the palette from the @code(source) palette to the
@@ -1409,7 +1416,8 @@ END;
    Note that this function will block your game while the fade is in effect,
    and it won't work right visually if you are not in an 8 bit color depth
    resolution. @seealso(al_fade_from) *)
-  PROCEDURE al_fade_from_range (VAR source, dest: AL_PALETTE; speed, from, ato: AL_INT);
+  PROCEDURE al_fade_from_range
+    (VAR source, dest: AL_PALETTE; speed, from, ato: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fade_from_range';
 
 (* Gradually fades a part of the palette from a black screen to the specified
@@ -1494,7 +1502,8 @@ END;
 
 (* Generates a 256-color palette suitable for making a reduced color version of
    the specified truecolor image.
-
+   @param(image The trucolor image to convert.)
+   @param(pal The generated palette.)
    @param(rsvdcols points to a table indicating which colors it is allowed to
      modify:  zero for free colors which may be set to whatever the optimiser
      likes, negative values for reserved colors which cannot be used,
@@ -1613,34 +1622,61 @@ END;
 
 
 
-(* Given a color in the format being used by the current video mode, these
-   functions extract one of the red, green, blue, or alpha components (ranging
-   0-255), calling the preceding 8, 15, 16, 24, or 32-bit get functions as
-   appropriate.  The alpha part is only meaningful for 32-bit pixels.
-   @seealso(al_getr_depth) @seealso(al_getg) @seealso(al_getb)
+(* Given a color in the format being used by the current video mode, this
+   function extracts the red component (ranging 0-255), calling the
+   preceding 8, 15, 16, 24, or 32-bit get functions as
+   appropriate. @seealso(al_getr_depth) @seealso(al_getg) @seealso(al_getb)
    @seealso(al_geta) *)
   FUNCTION al_getr (c: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getr';
+(* Given a color in the format being used by the current video mode, this
+   function extracts the green component (ranging 0-255), calling the
+   preceding 8, 15, 16, 24, or 32-bit get functions as
+   appropriate. @seealso(al_getg_depth) @seealso(al_getr) @seealso(al_getb)
+   @seealso(al_geta) *)
   FUNCTION al_getg (c: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getg';
+(* Given a color in the format being used by the current video mode, this
+   function extracts the blue component (ranging 0-255), calling the
+   preceding 8, 15, 16, 24, or 32-bit get functions as
+   appropriate. @seealso(al_getb_depth) @seealso(al_getr) @seealso(al_getg)
+   @seealso(al_geta) *)
   FUNCTION al_getb (c: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getb';
+(* Given a color in the format being used by the current video mode, this
+   function extracts the alpha chanel value (ranging 0-255), calling the
+   preceding 8, 15, 16, 24, or 32-bit get functions as
+   appropriate.  The alpha part is only meaningful for 32-bit pixels.
+   @seealso(al_geta_depth) @seealso(al_getr) @seealso(al_getg)
+   @seealso(al_getb) *)
   FUNCTION al_geta (c: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'geta';
 
 
 
-(* Given a color in the format being used by the specified color depth, these
-   functions extract one of the red, green, blue, or alpha components (ranging
-   0-255). The alpha part is only meaningful for 32-bit pixels.
+(* Given a color in the format being used by the specified color depth, this
+   functions extract the red component (ranging 0-255).
    @seealso(al_getr) @seealso(al_getg_depth) @seealso(al_getb_depth)
    @seealso(al_geta_depth)*)
   FUNCTION al_getr_depth (color_depth, c: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getr_depth';
+(* Given a color in the format being used by the specified color depth, this
+   functions extract the green component (ranging 0-255).
+   @seealso(al_getg) @seealso(al_getr_depth) @seealso(al_getb_depth)
+   @seealso(al_geta_depth)*)
   FUNCTION al_getg_depth (color_depth, c: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getg_depth';
+(* Given a color in the format being used by the specified color depth, this
+   functions extract the blue component (ranging 0-255).
+   @seealso(al_getb) @seealso(al_getr_depth) @seealso(al_getg_depth)
+   @seealso(al_geta_depth)*)
   FUNCTION al_getb_depth (color_depth, c: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'getb_depth';
+(* Given a color in the format being used by the specified color depth, this
+   functions extract the alpha channel value (ranging 0-255). The alpha part is
+   only meaningful for 32-bit pixels.
+   @seealso(al_geta) @seealso(al_getr_depth) @seealso(al_getg_depth)
+   @seealso(al_getb_depth)*)
   FUNCTION al_geta_depth (color_depth, c: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'geta_depth';
 
@@ -2064,12 +2100,12 @@ END.
    scrolling the screen, so you don't need to call @link(al_vsync) before it.
    This means that @code(al_scroll_screen) has the same time delay effects as
    @code(al_vsync).
-   @return(@true on success, @false if the graphics driver can't handle
+   @return(@false on success, @true if the graphics driver can't handle
      hardware scrolling or the virtual screen is not large enough.)
    @seealso(al_set_gfx_mode) @seealso(al_show_video_bitmap)
    @seealso(al_request_scroll) @seealso(al_request_video_bitmap) *)
-  FUNCTION al_scroll_screen (x, y: AL_INT): BOOLEAN;
-    INLINE;
+  FUNCTION al_scroll_screen (x, y: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scroll_screen';
 
 (* Queues a hardware scroll request with triple buffering.  It requests a
    hardware scroll to the specified position, but returns immediately rather
@@ -2090,8 +2126,8 @@ END.
    @returns(@true if it is still waiting to take place, or @false if the
      requested scroll has already happened.)
    @seealso(al_request_scroll) @seealso(al_request_video_bitmap) *)
-  FUNCTION al_poll_scroll: BOOLEAN;
-    INLINE;
+  FUNCTION al_poll_scroll: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'poll_scroll';
 
 (* Attempts to page flip the hardware screen to display the specified video
    bitmap object, which must be the same size as the physical screen, and
@@ -5131,15 +5167,6 @@ IMPLEMENTATION
 
 
 
-  FUNCTION poll_keyboard: AL_BOOL; CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_poll_keyboard: BOOLEAN;
-  BEGIN
-    RESULT := NOT poll_keyboard;
-  END;
-
-
-
 (******************************************************************************
  * joystick.h
  *)
@@ -5220,52 +5247,30 @@ CONST
 
 
 
-  FUNCTION set_gfx_mode (card, w, h, v_w, v_h: AL_INT): AL_INT;
+  FUNCTION set_gfx_mode (card, w, h, v_w, v_h: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: AL_INT): BOOLEAN;
   BEGIN
-    al_set_gfx_mode := set_gfx_mode (card, w, h, v_w, v_h) = 0;
-    IF al_set_gfx_mode THEN
+    IF set_gfx_mode (card, w, h, v_w, v_h) THEN EXIT (FALSE);
+    IF al_screen <> NIL THEN
     BEGIN
-      IF al_screen <> NIL THEN
-      BEGIN
-        AL_SCREEN_W := w;
-        AL_SCREEN_H := h;
-        AL_VIRTUAL_W := al_screen^.w;
-        AL_VIRTUAL_H := al_screen^.h;
-      END;
+      AL_SCREEN_W := w;
+      AL_SCREEN_H := h;
+      AL_VIRTUAL_W := al_screen^.w;
+      AL_VIRTUAL_H := al_screen^.h
     END;
+    RESULT := TRUE
   END;
 
 
 
-  FUNCTION scroll_screen (x, y: AL_INT): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_scroll_screen (x, y: AL_INT): BOOLEAN;
-  BEGIN
-    al_scroll_screen := scroll_screen (x, y) = 0;
-  END;
-
-
-
-  FUNCTION request_scroll (x, y: AL_INT): AL_INT;
+  FUNCTION request_scroll (x, y: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_request_scroll (x, y: AL_INT): BOOLEAN;
   BEGIN
-    al_request_scroll := request_scroll (x, y) = 0;
-  END;
-
-
-
-  FUNCTION poll_scroll: AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_poll_scroll: BOOLEAN;
-  BEGIN
-    al_poll_scroll := poll_scroll <> 0;
+    RESULT := NOT request_scroll (x, y)
   END;
 
 

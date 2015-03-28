@@ -91,7 +91,7 @@ BEGIN
   al_create_rgb_table (rgb_table, pal, NIL);
   al_rgb_table := @rgb_table;
 
-  al_create_light_table (@light_table, pal, 0, 0, 0, NIL);
+  al_create_light_table (light_table, pal, 0, 0, 0, NIL);
   al_color_table := @light_table;
 
 { Pre-calculate values used to calculate distances. }

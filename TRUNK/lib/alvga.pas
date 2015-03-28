@@ -27,11 +27,15 @@ USES
   (* Pointer to @link(AL_COLOR_MAP). *)
     AL_COLOR_MAPptr = ^AL_COLOR_MAP;
   (* Clolor map. @seealso(al_color_table) *)
-    AL_COLOR_MAP = ARRAY [0..AL_PAL_SIZE-1, 0..AL_PAL_SIZE-1] OF AL_UCHAR;
-  (* Call-back procedure to be ussed to create color tables using
+    AL_COLOR_MAP = RECORD
+      data: ARRAY [0..AL_PAL_SIZE-1, 0..AL_PAL_SIZE-1] OF AL_UCHAR;
+    END;
+
+  (* Call-back procedure to be used to create color tables using
      @link(al_create_color_table).
    *)
-    AL_256_BLEND_PROC = PROCEDURE (CONST pal: AL_PALETTE; x, y: AL_INT; rgb: AL_RGBptr); CDECL;
+    AL_256_BLEND_PROC = PROCEDURE
+      (VAR pal: AL_PALETTE; x, y: AL_INT; VAR rgb: AL_RGB); CDECL;
 
   VAR
   (* Pointer to the color mapping table.  You must allocate your own
@@ -64,7 +68,7 @@ USES
    @seealso(al_create_color_table) @seealso(al_create_blender_table)
    @seealso(al_draw_trans_sprite) @seealso(al_draw_lit_sprite)
    @seealso(al_draw_gouraud_sprite) *)
-  PROCEDURE al_create_light_table (table: AL_COLOR_MAPptr; CONST pal: AL_PALETTE;
+  PROCEDURE al_create_light_table (OUT table: AL_COLOR_MAP; VAR pal: AL_PALETTE;
 				r, g, b: AL_INT; callback: AL_INT_PROC);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_light_table';
 
@@ -85,7 +89,7 @@ USES
    @seealso(al_create_color_table) @seealso(al_create_blender_table)
    @seealso(al_draw_trans_sprite) @seealso(al_draw_lit_sprite)
    @seealso(al_draw_gouraud_sprite) *)
-  PROCEDURE al_create_trans_table (table: AL_COLOR_MAPptr; CONST pal: AL_PALETTE;
+  PROCEDURE al_create_trans_table (OUT table: AL_COLOR_MAP; VAR pal: AL_PALETTE;
 				r, g, b: AL_INT; callback: AL_INT_PROC);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_trans_table';
 
@@ -105,7 +109,7 @@ USES
    @seealso(al_create_trans_table) @seealso(al_create_blender_table)
    @seealso(al_draw_trans_sprite) @seealso(al_draw_lit_sprite)
    @seealso(al_draw_gouraud_sprite) *)
-  PROCEDURE al_create_color_table (table: AL_COLOR_MAPptr; CONST pal: AL_PALETTE;
+  PROCEDURE al_create_color_table (OUT table: AL_COLOR_MAP; VAR pal: AL_PALETTE;
 		blend: AL_256_BLEND_PROC; callback: AL_INT_PROC);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_color_table';
 
@@ -123,8 +127,8 @@ USES
    @seealso(al_create_trans_table) @seealso(al_create_color_table)
    @seealso(al_draw_trans_sprite) @seealso(al_draw_lit_sprite)
    @seealso(al_draw_gouraud_sprite) *)
-  PROCEDURE al_create_blender_table (table: AL_COLOR_MAPptr; CONST pal: AL_PALETTE;
-				callback: AL_INT_PROC);
+  PROCEDURE al_create_blender_table
+    (OUT table: AL_COLOR_MAP; VAR pal: AL_PALETTE; callback: AL_INT_PROC);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'create_blender_table';
 
 IMPLEMENTATION

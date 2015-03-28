@@ -52,7 +52,7 @@ VAR
   BEGIN
   { Setup of the title sequence. }
     Palette := Data^[TITLE_PAL].dat;
-    al_set_color (0, @(Palette[0]));
+    al_set_color (0, Palette^[0]);
     al_clear_bitmap (al_screen);
     al_set_palette (Palette^);
     SlideBmp := al_create_bitmap (AL_SCREEN_W, 50);

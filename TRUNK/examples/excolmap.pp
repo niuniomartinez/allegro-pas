@@ -58,16 +58,15 @@ VAR
  * When you return the rgb value, you don't need to search the palette for
  * the nearest color, Allegro does this automatically.
  *)
-  PROCEDURE ReturnGreyColor (CONST pal: AL_PALETTE; x, y: AL_INT; rgb: AL_RGBptr);
-	CDECL;
+  PROCEDURE ReturnGreyColor
+    (VAR pal: AL_PALETTE; x, y: AL_INT; VAR rgb: AL_RGB); CDECL;
   VAR
     C: INTEGER;
   BEGIN
   { first create the greyscale color. }
     c := TRUNC (pal[y].r * 0.3 + pal[y].g * 0.5 + pal[y].b * 0.2);
-
   { Now assign to our rgb triplet the palette greyscale color... }
-    rgb^.r := c; rgb^.g := c; rgb^.b := c;
+    rgb.r := c; rgb.g := c; rgb.b := c
   END;
 
 
@@ -75,14 +74,14 @@ VAR
 (* The negative_color function is quite the same like the grayscale one,
  * since we are ignoring the value of the drawn color (aka x).
  *)
-  PROCEDURE ReturnNegativeColor (CONST pal: AL_PALETTE; x, y: AL_INT;
-				 rgb: AL_RGBptr); CDECL;
+  PROCEDURE ReturnNegativeColor
+    (VAR pal: AL_PALETTE; x, y: AL_INT; VAR rgb: AL_RGB); CDECL;
   BEGIN
   { To get the negative color, substract the color values of red, green
     and blue from the full (63) color value. }
-    rgb^.r := 63 - pal[y].r;
-    rgb^.g := 63 - pal[y].g;
-    rgb^.b := 63 - pal[y].b;
+    rgb.r := 63 - pal[y].r;
+    rgb.g := 63 - pal[y].g;
+    rgb.b := 63 - pal[y].b
   END;
 
 
@@ -136,10 +135,10 @@ BEGIN { The program starts here. }
   al_color_table := @rgb_table;
 
 { Build a color lookup table for greyscale effect. }
-  al_create_color_table (@greyscale_table, pal, @ReturnGreyColor, NIL);
+  al_create_color_table (greyscale_table, pal, @ReturnGreyColor, NIL);
 
 { Build a color lookup table for negative effect. }
-  al_create_color_table (@negative_table, pal, @ReturnNegativeColor, NIL);
+  al_create_color_table (negative_table, pal, @ReturnNegativeColor, NIL);
 
   IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 200, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 200, 0, 0) THEN

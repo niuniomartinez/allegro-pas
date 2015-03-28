@@ -92,10 +92,10 @@ BEGIN { The program starts here. }
   al_rgb_table := @rgb_table;
 
 { Build a color lookup table for lighting effects. }
-  al_create_light_table (@light_table, pal, 0, 0, 0, NIL);
+  al_create_light_table (light_table, pal, 0, 0, 0, NIL);
 
 { Build a color lookup table for translucent drawing. }
-  al_create_trans_table (@trans_table, pal, 128, 128, 128, NIL);
+  al_create_trans_table (trans_table, pal, 128, 128, 128, NIL);
 
   al_set_palette (pal);
 
