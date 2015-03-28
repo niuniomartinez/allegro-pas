@@ -13,12 +13,17 @@ New features
  * Audio stream (all).
  * Load MIDI using IFF instead of current.  This way we can add a "packed"
    version of loader.
+ * Get information about available graphics modes.
+ * Display switch modes.
 
 
 Other
 =====
- * Change STRING by AL_STR and AL_STRptr, and remove wrapper procedures/functions.
-   Use AL_STR on parameters and AL_STRptr on return values.
- * Remove (if possible) the MANY hint messages abour C ARRAYs.
+ * Change STRING by AL_STR and AL_STRptr, and remove wrapper
+   procedures/functions.  Use AL_STR on parameters and AL_STRptr on return
+   values.
+ * Remove (if possible) the MANY hint messages about C ARRAYs.
+ * Check the "inverse logic" used by some functions.  In most cases they're
+   "inversed" using NOT but may be it's better not to do that in some cases.
  * Check Windows alleg44.dll build parameters.  Be sure it's optimised.
  + Complete explanation of Joystick. i.e. problems with configuration file.

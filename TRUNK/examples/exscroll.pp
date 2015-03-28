@@ -49,7 +49,7 @@ BEGIN
   Scroller := al_create_sub_bitmap (al_screen, 0, 0, AL_SCREEN_W * 2, AL_SCREEN_H);
 
   al_set_palette (al_desktop_palette);
-  al_set_color (0, @Black);
+  al_set_color (0, Black);
 
   al_rectfill (Scroller, 0, 0, AL_SCREEN_W, 100, 6);
   al_rectfill (Scroller, 0, 100, AL_SCREEN_W, AL_SCREEN_H, 2);
