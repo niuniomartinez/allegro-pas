@@ -11,9 +11,6 @@ UNIT aldrv;
 INTERFACE
 
 USES
-{$IFDEF MSWINDOWS}
-  windows,
-{$ENDIF}
   albase;
 
 (*****************************************************************************
@@ -48,7 +45,7 @@ TYPE
 
     desktop_color_depth: AL_SIMPLE_FUNC;
 
-    get_desktop_resolution: FUNCTION (width, height: AL_INTptr): AL_BOOL; CDECL;
+    get_desktop_resolution: FUNCTION (VAR width, height: AL_INT): AL_BOOL; CDECL;
 
     get_gfx_safe_mode, yield_timeslice, create_mutex, destroy_mutex,
     lock_mutex, unlock_mutex: AL_POINTER;
@@ -61,37 +58,6 @@ TYPE
   (* Pointer to the system driver. *)
     al_system_driver: __AL_SYSTEM_DRIVER__ptr;
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'system_driver';
-
-
-
-{$IFDEF MSWINDOWS}
-(*****************************************************************************
- * winalleg.h
- *     Windows header file for the Allegro library.
- *
- *     It must be included by Allegro programs that need to use
- *     direct Win32 API calls and by Win32 programs that need to
- *     interface with Allegro.
- *)
-TYPE
-  __AL_WIN_CREATE_PROC__ = FUNCTION (p: WNDPROC): HWND; CDECL;
-  __AL_WIN_MESSAGE_PROC__ = FUNCTION (w: HWND; m: UINT; wp: WPARAM; lp: LPARAM; p: AL_INTptr): AL_INT; CDECL;
-
-(* Returns the window handler. *)
-  FUNCTION al_win_get_window: HWND;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_get_window';
-
-(* Sets the window handler. *)
-  PROCEDURE al_win_set_window (wnd: HWND);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_set_window';
-
-(* Set the window creation procedure. *)
-  PROCEDURE al_win_set_wnd_create_proc (proc: __AL_WIN_CREATE_PROC__);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_set_wnd_create_proc';
-
-  PROCEDURE al_win_set_msg_pre_proc (proc: __AL_WIN_MESSAGE_PROC__);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_set_msg_pre_proc';
-{$ENDIF}
 
 IMPLEMENTATION
 

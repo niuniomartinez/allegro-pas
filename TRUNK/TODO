@@ -15,6 +15,7 @@ New features
    version of loader.
  * Get information about available graphics modes.
  * Display switch modes.
+ * Add IDs for controllers (Windows and Linux).  This needs new units.
 
 
 Other

@@ -53,7 +53,7 @@ BEGIN
   OSTYPE_LINUX := AL_ID('TUX ');
 END;
   #) *)
-  FUNCTION AL_ID (str: SHORTSTRING): AL_INT32;
+  FUNCTION AL_ID (str: SHORTSTRING): AL_INT32; INLINE;
 
 
 
@@ -81,6 +81,74 @@ END;
     al_error: AL_STRptr;
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'allegro_error';
 
+{$INCLUDE alosid.inc }
+
+  VAR
+  (* Identifies the Operating System.
+
+    Set by @code(al_init) to one of the values:
+@longcode(#
+    AL_OSTYPE_UNKNOWN    - unknown, or regular MSDOS
+
+    AL_OSTYPE_WIN3       - Windows 3.1 or earlier
+    AL_OSTYPE_WIN95      - Windows 95
+    AL_OSTYPE_WIN98      - Windows 98
+    AL_OSTYPE_WINME      - Windows ME
+    AL_OSTYPE_WINNT      - Windows NT
+    AL_OSTYPE_WIN2000    - Windows 2000
+    AL_OSTYPE_WINXP      - Windows XP
+    AL_OSTYPE_WIN2003    - Windows 2003
+    AL_OSTYPE_WINVISTA   - Windows Vista
+    AL_OSTYPE_WIN7       - Windows 7
+
+    AL_OSTYPE_OS2        - OS/2
+    AL_OSTYPE_WARP       - OS/2 Warp 3
+
+    AL_OSTYPE_LINUX      - Linux
+    AL_OSTYPE_SUNOS      - SunOS/Solaris
+    AL_OSTYPE_FREEBSD    - FreeBSD
+    AL_OSTYPE_NETBSD     - NetBSD
+    AL_OSTYPE_IRIX       - IRIX
+    AL_OSTYPE_QNX        - QNX
+    AL_OSTYPE_UNIX       - Unknown Unix variant
+
+    AL_OSTYPE_BEOS       - BeOS
+    AL_OSTYPE_HAIKU      - Haiku OS
+
+    AL_OSTYPE_DARWIN     - Darwin
+    AL_OSTYPE_MACOS      - MacOS
+    AL_OSTYPE_MACOSX     - MacOS X
+ #)
+    @seealso(al_init) @seealso(al_os_version) @seealso(al_os_multitasking) *)
+    al_os_type: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'os_type';
+
+  (* The major version of the Operating System currently running.  Set by
+     @link(al_init). If Allegro for some reason was not able to retrieve the
+     version of the Operating System, @code(al_os_version) will be set to -1.
+
+      For example: Under Win98 SE (v4.10.2222) @code(al_os_version) will be set
+      to 4.
+      @seealso(al_os_type) @seealso(al_os_revision)
+      @seealso(al_os_multitasking) *)
+    al_os_version: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'os_version';
+  (* The minor version of the Operating System currently running.  Set by
+     @link(al_init). If Allegro for some reason was not able to retrieve the
+     version of the Operating System, @code(al_os_revision) will be set to -1.
+
+      For example: Under Win98 SE (v4.10.2222) @code(al_os_revision) will be
+      set to 10.
+      @seealso(al_os_type) @seealso(al_os_version)
+      @seealso(al_os_multitasking) *)
+    al_os_revision: AL_INT;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'os_revision';
+  (* Set by @link(al_init) to either @true or @false depending on whether your
+     Operating System is multitasking or not.
+     @seealso(al_os_type) @seealso(al_os_version) *)
+    al_os_multitasking: AL_BOOL;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'os_multitasking';
+
   CONST
   (* Tells to @link(al_install) that must autodetect the system driver. *)
     AL_SYSTEM_AUTODETECT	= 0;
@@ -92,8 +160,6 @@ END;
 
     Is equivalent to @code(AL_ID @('NONE'@);). *)
     AL_SYSTEM_NONE	= $4E4F4E45;
-
-
 
 (* Initialises the Allegro library.  You must call either this or al_init
    before doing anything other.  The functions that can be called before this
@@ -182,15 +248,14 @@ VAR
 
 PROCEDURE CloseButtonHandler; CDECL;
 BEGIN
-  ClosePuttonPressed := TRUE;
+  CloseButtonPressed := TRUE;
 END;
 
     ...
   al_init;
   al_set_close_button_callback (@CloseButtonHandler);
     ...
-  WHILE NOT ClosePuttonPressed DO
-    DoStuff;
+  REPEAT DoStuff UNTIL CloseButtonPressed;
   #)
    @returns(@true on success or @false on failure @(e.g. the feature is not
      supported by the platform@).)
@@ -856,8 +921,9 @@ VAR
    to simply wait for the user to press a key while you still update the screen
    possibly drawing some animation.  Example:
    @longcode(#
-  WHILE NOT al_keypressed DO
-    AnimateLogo (al_screen);
+  REPEAT
+    AnimateLogo (al_screen)
+  UNTIL al_keypressed;
    #)
      @seealso(al_install_keyboard) @seealso(al_readkey)
      @seealso(al_simulate_keypress) @seealso(al_clear_keybuf) *)
@@ -4955,7 +5021,7 @@ IMPLEMENTATION
   BEGIN
     RESULT := NOT _install_allegro_version_check (
 	system_id, @NumError, NIL,
-	(4 SHL 16) OR (4 SHL 8) OR 0
+	(AL_VERSION SHL 16) OR (AL_SUB_VERSION SHL 8) OR 0
     )
   END;
 
@@ -4966,7 +5032,7 @@ IMPLEMENTATION
   BEGIN
     RESULT := NOT _install_allegro_version_check (
 	AL_SYSTEM_AUTODETECT, @NumError, NIL,
-	(4 SHL 16) OR (4 SHL 8) OR 0
+	(AL_VERSION SHL 16) OR (AL_SUB_VERSION SHL 8) OR 0
     )
   END;
 
@@ -5033,7 +5099,7 @@ IMPLEMENTATION
   FUNCTION al_get_desktop_resolution (VAR w, h: AL_INT): BOOLEAN;
   BEGIN
     IF system_driver^.get_desktop_resolution <> NIL THEN
-      RESULT := NOT system_driver^.get_desktop_resolution (@w, @h)
+      RESULT := NOT system_driver^.get_desktop_resolution (w, h)
     ELSE
       RESULT := FALSE
   END;

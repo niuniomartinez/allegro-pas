@@ -14,6 +14,7 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
   ---------
   + Nueva extensión alGUI.
   + El ejemplo al3d es más completo.
+  + Añadida identificación del sistema operativo en tiempo de ejecución.
 
   Otros
   -----
