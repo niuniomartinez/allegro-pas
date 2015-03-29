@@ -49,7 +49,7 @@ VAR
 {$R *.res}
 
 BEGIN
-  Application.Title := 'The Allegro.pas'' Lazarus Example';
+  Application.Title := 'The Allegro.pas Lazarus example';
 { Initialises Allegro, avoiding interferences.
   As we call al_install using "AL_SYSTEM_NONE" we can't use timers, keyboard,
   graphics modes, joysticks, sound, etc.  If you try to initialize them then

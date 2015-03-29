@@ -27,8 +27,8 @@ UNIT UnitMainForm;
 INTERFACE
 
 USES
-  Classes, SysUtils, FileUtil, LResources, Forms, Controls, Graphics, Dialogs,
-  Menus, ExtCtrls, Buttons, ComCtrls,
+  SysUtils, LResources, Forms, Dialogs,
+  Menus, ExtCtrls,
   Allegro;
 
 TYPE
