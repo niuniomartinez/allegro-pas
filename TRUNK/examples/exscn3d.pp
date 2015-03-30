@@ -185,7 +185,7 @@ PROGRAM exscn3d;
       BEGIN
 	v[j] := Vertex[Cube[i].v[j]];
 	al_apply_matrix_f (Matrix, v[j].x, v[j].y, v[j].z,
-				 v[j].x, v[j].y, v[j].z);
+				   v[j].x, v[j].y, v[j].z);
       END;
       v[1].u := 128; v[1].v := 128;
       v[2].u :=   0; v[2].v := 128;

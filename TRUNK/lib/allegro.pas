@@ -503,18 +503,19 @@ END;
 
 
 
-(* Retrieves a string variable from the current config file.  The section name
-   may be set to an empty string to read variables from the root of the file,
-   or used to control which set of parameters (eg. sound or joystick) you are
-   interested in reading. Example:
+(* Retrieves a string variable from the current config file.  Example:
 @longcode(#
 VAR
   Lang: STRING;
   ...
   Lang := al_get_config_string ('system', 'language', 'EN');
   #)
-
-   @returns(the string to the constant string found in the configuration file.
+  @param(section Set to an empty string to read variables from the root of the
+    file, or used to control which set of parameters (eg. sound or joystick)
+    you are interested in reading.)
+  @param(name Name of the variable to read.)
+  @param(def Default value.)
+   @returns(The string string found in the configuration file.
      If the named variable cannot be found, or its entry in the config file is
      empty, the value of @code(def) is returned.)
   @seealso(al_set_config_file) @seealso(al_set_config_string)
@@ -549,12 +550,12 @@ VAR
 
 (* Writes a string variable to the current config file, replacing any existing
    value it may have, or removes the variable if @code(val) is empty.  The
-   section name may be set to a empty string to write the variable to the root
-   of the file, or used to control which section the variable is inserted into.
-   The altered file will be cached in memory, and not actually written to disk
-   until you call @link(al_exit).  Note that you can only write to files in
-   this way, so the function will have no effect if the current config source
-   was specified with @link(al_set_config_data) rather than
+   @code(section) name may be set to a empty string to write the variable to
+   the root of the file, or used to control which section the variable is
+   inserted into.  The altered file will be cached in memory, and not actually
+   written to disk until you call @link(al_exit).  Note that you can only write
+   to files in this way, so the function will have no effect if the current
+   config source was specified with @link(al_set_config_data) rather than
    @link(al_set_config_file).
 
    As a special case, variable or section names that begin with a '#' character
@@ -564,7 +565,7 @@ VAR
    @code(al_get_config_string) function.
    @seealso(al_set_config_file) @seealso(al_get_config_string)
    @seealso(al_set_config_int) @seealso(al_set_config_hex)
-   @seealso(al_set_config_float) *)
+   @seealso(al_set_config_float) @seealso(al_flush_config_file) *)
   PROCEDURE al_set_config_string (CONST section, name, val: AL_STR);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_config_string';
 
@@ -718,14 +719,14 @@ VAR
   missing the vertical retrace and skipping frames.  On the other hand, on
   multitasking operating systems it is good form to give up the CPU for a while
   if you will not be using it. *)
-  PROCEDURE al_rest (tyme: AL_UINT);
+  PROCEDURE al_rest (mseconds: AL_UINT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rest';
 
 (* Like @link(al_rest), but for non-zero values continually calls the
   specified function while it is waiting for the required time to elapse.  If
   the provided @code(callback) parameter is @nil, this function does exactly
   the same thing as calling @code(al_rest). *)
-  PROCEDURE al_rest_callback (tyme: AL_UINT; callback: AL_PARAM_PROC);
+  PROCEDURE al_rest_callback (mseconds: AL_UINT; callback: AL_PARAM_PROC);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'rest_callback';
 
 
@@ -818,7 +819,7 @@ VAR
      scancodes are defined as a series of @code(AL_KEY_* ) constants (and are
      also listed below). For example, you could write:
      @longcode(#
-  IF  al_key[AL_KEY_SPACE] THEN
+  IF al_key[AL_KEY_SPACE] THEN
     WriteLn ('Space is pressed');
      #)
 
@@ -863,7 +864,7 @@ VAR
      @code(AL_KEY_PAUSE) key.  This key only generates an interrupt when it is
      pressed, not when it is released.  For this reason, Allegro pretends the
      pause key is a @italic(`state') key, which is the only way to make it
-     usable. 
+     usable.
      @seealso(al_install_keyboard) @seealso(al_poll_keyboard)
      @seealso(al_key_shifts) *)
     al_key: AL_KEY_LIST;
@@ -943,7 +944,7 @@ VAR
    For example:
    @longcode(#
 VAR
-  val: INTEGER;
+  val: LONGINT;
   ...
   val := al_readkey;
 
@@ -975,7 +976,7 @@ VAR
    greater than 255.  Example:
    @longcode(#
 VAR
-  val, scancode: INTEGER;
+  val, scancode: LONGINT;
   ...
   val := al_ureadkey (scancode);
   IF val = $00F1 THEN
@@ -1046,7 +1047,6 @@ VAR
   FUNCTION al_scancode_to_name (scancode: AL_INT): AL_STRptr;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scancode_to_name';
 
-(* Key scan-code and flag identifiers. *)
   {$INCLUDE alkeyid.inc}
 
 (******************************************************************************
@@ -1228,10 +1228,11 @@ VAR
 (* Pass the number of the joystick you want to calibrate as the parameter.
 
     @returns(a text description for the next type of calibration that will
-      be done on the specified joystick, or empty string if no more calibration
+      be done on the specified joystick, or @nil if no more calibration
       is required.)
     @seealso(al_calibrate_joystick) @seealso(al_num_joysticks) *)
-  FUNCTION al_calibrate_joystick_name (CONST n: AL_INT): STRING;
+  FUNCTION al_calibrate_joystick_name (CONST n: AL_INT): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'calibrate_joystick_name';
 
 (* Most joysticks need to be calibrated before they can provide full analogue
    input.  This function performs the next operation in the calibration series
@@ -1262,7 +1263,6 @@ BEGIN
   RESULT := TRUE;
 END;
    #)
-
    @returns(@true on success, @false if the calibration could not be performed
      successfully.)
     @seealso(al_num_joysticks) *)
@@ -1275,7 +1275,6 @@ END;
    configuration file, from which it can later be read by
    @link(al_load_joystick_data).  Pass a @nil filename to write the data to the
    currently selected configuration file.
-
    @returns(@true on success, @false if the data could not be saved.)
    @seealso(al_calibrate_joystick) *)
   FUNCTION al_save_joystick_data (CONST filename: AL_STR): BOOLEAN;
@@ -1286,7 +1285,6 @@ END;
    don't even need to call @link(al_install_joystick) if you are using this
    function.  Pass an empty filename to read the data from the currently
    selected configuration file.
-
    @returns(@true on success:  if it fails the joystick state is undefined and
      you must reinitialise it from scratch.)
    @seealso(al_calibrate_joystick) *)
@@ -1294,7 +1292,6 @@ END;
 
 (* The joystick handler is not interrupt driven, so you need to call this
    function every now and again to update the global position values.
-
    @returns(@false on success or @true on failure @(usually because no joystick
      driver was installed@).)
    @seealso(al_install_joystick) @seealso(al_joy) *)
@@ -1757,8 +1754,8 @@ END;
   (* Pointer to @code(AL_BITMAP). *)
     AL_BITMAPptr = ^AL_BITMAP;
   (* @exclude
-    These are for internal low-level access.  DO NOT USE IT IN YOUR GAMES. *)
-    _BMP_BANK_SWITCHER = FUNCTION (bmp: AL_BITMAPptr; lyne: AL_INT): AL_UINTPTR_T; CDECL;
+    This is for internal low-level access.  DO NOT USE IT IN YOUR GAMES. *)
+    _BMP_BANK_SWITCHER = FUNCTION (bmp: AL_BITMAPptr; lyne: AL_INT): AL_VOIDptr; CDECL;
 
   (* Stores the contents of a bitmap.
 
@@ -1788,7 +1785,7 @@ END.
      @seealso(al_create_bitmap) @seealso(AL_RLE_SPRITE) *)
     AL_BITMAP = RECORD
       w, h: AL_INT;		{< width and height in pixels }
-      clip: AL_INT;		{< flag if clipping is turned on }
+      clip: AL_BOOL;		{< flag if clipping is turned on }
       cl, cr, ct, cb: AL_INT;	{< clip left, right, top and bottom values }
       vtable: AL_GFX_VTABLEptr;	{< @exclude drawing functions }
       write_bank: _BMP_BANK_SWITCHER;	{< @exclude C func on some machines, asm on i386 }
@@ -1803,8 +1800,7 @@ END.
     END;
 
   (* This is used to define call-back procedures for some drawing procedures. *)
-    AL_POINT_PROC = PROCEDURE (bmp: AL_BITMAPptr; x, y, c: AL_INT);
-      CDECL;
+    AL_POINT_PROC = PROCEDURE (bmp: AL_BITMAPptr; x, y, c: AL_INT); CDECL;
 
   VAR
   (* Screen bitmap *)
@@ -2112,6 +2108,33 @@ END.
   FUNCTION al_get_color_conversion: AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_color_conversion';
 
+(* Requests that the next call to @code(al_set_gfx_mode) try to use the
+   specified refresh rate, if possible. Not all drivers are able to control
+   this at all, and even when they can, not all rates will be possible on all
+   hardware, so the actual settings may differ from what you requested. After
+   you call @code(al_set_gfx_mode), you can use @code(al_get_refresh_rate) to
+   find out what was actually selected. At the moment only some Windows DirectX
+   drivers support this function. The speed is specified in Hz, eg. 60, 70. To
+   return to the normal default selection, pass a rate value of zero.
+
+   Example:
+@longcode(#
+     al_request_refresh_rate(60);
+     IF  NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
+       abort_on_error ('Couldn''t set graphic mode!');
+     IF al_get_refresh_rate <> 60 THEN
+       abort_on_error ('Couldn''t set refresh rate to 60Hz!');
+#)
+    @seealso(al_set_gfx_mode) @seealso(al_get_refresh_rate) *)
+  PROCEDURE al_request_refresh_rate (rate: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'request_refresh_rate';
+
+(* Returns the current refresh rate, if known (not all drivers are able to
+   report this information). Returns zero if the actual rate is unknown.
+   @seealso(al_request_refresh_rate) *)
+  FUNCTION al_get_refresh_rate: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_refresh_rate';
+
 (* Switches into graphics mode.  The card parameter should usually be one of
    the Allegro magic drivers (read introduction of this unit) or see the
    platform specific documentation for a list of the available drivers.  The
@@ -2183,10 +2206,10 @@ END.
    Triple buffering is only possible with certain drivers:  you can look at the
    @link(AL_GFX_CAN_TRIPLE_BUFFER) bit in the @link(al_gfx_capabilities) flag
    to see if it will work with the current driver.
-   @return(@true on success, @false Otherwise.)
+   @return(@false on success, @true Otherwise.)
    @seealso(al_request_video_bitmap) @seealso(al_scroll_screen) *)
-  FUNCTION al_request_scroll (x, y: AL_INT): BOOLEAN;
-    INLINE;
+  FUNCTION al_request_scroll (x, y: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'requests_scroll';
 
 (* Checks the status of a scroll request with triple buffering.
    @returns(@true if it is still waiting to take place, or @false if the
@@ -2205,9 +2228,8 @@ END.
    that @code(al_show_video_bitmap) has the same time delay effects as
    @code(al_vsync) by default.  This can be adjusted with the "disable_vsync"
    config key in the @code(graphics) section of allegro.cfg.
-
-   @returns(zero on success and non-zero on failure.) *)
-  FUNCTION al_show_video_bitmap (bmp: AL_BITMAPptr): AL_INT;
+   @returns(@false on success and @true on failure.) *)
+  FUNCTION al_show_video_bitmap (bmp: AL_BITMAPptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'show_video_bitmap';
 
 (* Requests a page flip to display the specified video bitmap object, but
@@ -2225,7 +2247,7 @@ BEGIN
   ...
 // Create pages for page flipping
   FOR CurrentPage := Low (VideoPage) TO High (VideoPage) DO
-    VideoPage[CurrentPage] := al_create_video_bitmap(SCREEN_W, SCREEN_H);
+    VideoPage[CurrentPage] := al_create_video_bitmap (SCREEN_W, SCREEN_H);
   CurrentPage := Low (VideoPage);
   ...
 // draw the screen and flip pages
@@ -2237,11 +2259,11 @@ BEGIN
   ...
 END.
 #)
-   @returns(@true on success or @false on failure.)
+   @returns(@false on success or @true on failure.)
    @seealso(al_gfx_capabilities) @seealso(al_create_video_bitmap)
    @seealso(al_scroll_screen) *)
-  FUNCTION al_request_video_bitmap (bitmap: AL_BITMAPptr): BOOLEAN;
-    INLINE;
+  FUNCTION al_request_video_bitmap (bitmap: AL_BITMAPptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'request_video_bitmap';
 
 (* Enables triple buffering.  If the @link(AL_GFX_CAN_TRIPLE_BUFFER) bit of the
    @link(al_gfx_capabilities) field is not set, you can attempt to enable it by
@@ -2395,53 +2417,53 @@ END.
 
 (* Clears the bitmap to the specified color. @seealso(al_clear_bitmap)
   @seealso(al_makecol) *)
-  PROCEDURE al_clear_to_color (bitmap: AL_BITMAPptr; color: AL_INT);
+  PROCEDURE al_clear_to_color (bitmap: AL_BITMAPptr; CONST color: AL_INT);
     INLINE;
 
-(* @returns(the color depth of the specified bitmap @(8, 15, 16, 24, or 32@).)
+(* Returns the color depth of the specified bitmap @(8, 15, 16, 24, or 32@).
   @seealso(al_set_color_depth) @seealso(al_bitmap_mask_color) *)
-  FUNCTION al_bitmap_color_depth (bmp: AL_BITMAPptr): AL_INT;
+  FUNCTION al_bitmap_color_depth (CONST bmp: AL_BITMAPptr): AL_INT;
     INLINE;
 
-(* @returns(the mask color for the specified bitmap @(the value which is
+(* Returns the mask color for the specified bitmap @(the value which is
     skipped when drawing sprites@).  For 256-color bitmaps this is zero, and
     for truecolor bitmaps it is bright pink @(maximum red and blue, zero
     green@).  A frequent use of this function is to clear a bitmap with the
     mask color so you can later use this bitmap with @link(al_draw_sprite)
-    after drawing other stuff on it.)
+    after drawing other stuff on it.
     @seealso(al_set_color_depth) @seealso(al_bitmap_color_depth) *)
-  FUNCTION al_bitmap_mask_color (bmp: AL_BITMAPptr): AL_INT;
+  FUNCTION al_bitmap_mask_color (CONST bmp: AL_BITMAPptr): AL_INT;
     INLINE;
 
-(* @returns(@true if the two bitmaps describe the same drawing surface, ie.
+(* Returns @true if the two bitmaps describe the same drawing surface, ie.
     the pointers are equal, one is a sub-bitmap of the other, or they are both
-    sub-bitmaps of a common parent.) @seealso(al_create_sub_bitmap) *)
-  FUNCTION al_is_same_bitmap (bmp1, bmp2: AL_BITMAPptr): BOOLEAN;
+    sub-bitmaps of a common parent. @seealso(al_create_sub_bitmap) *)
+  FUNCTION al_is_same_bitmap (CONST bmp1, bmp2: AL_BITMAPptr): BOOLEAN;
     INLINE;
 
-(* @returns(@true if bmp is a memory bitmap, ie. it was created by calling
-    @link(al_create_bitmap) or loaded from a grabber datafile or image file.) *)
-  FUNCTION al_is_memory_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+(* Returns @true if bmp is a memory bitmap, ie. it was created by calling
+    @link(al_create_bitmap) or loaded from a grabber datafile or image file. *)
+  FUNCTION al_is_memory_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
     INLINE;
 
-(* @returns(@true if @code(bmp) is the screen bitmap, or a sub-bitmap of the
-   screen.) @seealso(al_screen) @seealso(al_create_sub_bitmap) *)
-  FUNCTION al_is_screen_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+(* Returns @true if @code(bmp) is the screen bitmap, or a sub-bitmap of the
+   screen. @seealso(al_screen) @seealso(al_create_sub_bitmap) *)
+  FUNCTION al_is_screen_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
     INLINE;
 
-(* @returns(@true) if bmp is the screen bitmap, a video memory bitmap, or a
-   sub-bitmap of either.) @seealso(al_screen)
+(* Returns @true if bmp is the screen bitmap, a video memory bitmap, or a
+   sub-bitmap of either. @seealso(al_screen)
    @seealso(al_create_video_bitmap) @seealso(al_create_sub_bitmap) *) 
-  FUNCTION al_is_video_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_is_video_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
     INLINE;
 
-(* @returns(@true if bmp is a system bitmap object, or a sub-bitmap of one.)
+(* Returns @true if bmp is a system bitmap object, or a sub-bitmap of one.
   @seealso(al_create_system_bitmap) @seealso(al_create_sub_bitmap) *)
-  FUNCTION al_is_system_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_is_system_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
     INLINE;
 
-(* @returns(@true if bmp is a sub-bitmap.) @seealso(al_create_sub_bitmap) *)
-  FUNCTION al_is_sub_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+(* Returns @true if bmp is a sub-bitmap. @seealso(al_create_sub_bitmap) *)
+  FUNCTION al_is_sub_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
     INLINE;
 
 (* Acquires the specified video bitmap prior to drawing onto it.  You never
@@ -2517,7 +2539,7 @@ END.
   PROCEDURE al_release_screen;
     INLINE;
 
-(* Returns the clipping rectangle for the specified bitmap. 
+(* Returns the clipping rectangle for the specified bitmap.
   @seealso(al_set_clip_rect) @seealso(al_add_clip_rect)
   @seealso(al_get_clip_state) *)
   PROCEDURE al_get_clip_rect (bmp: AL_BITMAPptr; VAR x1, y1, x2, y2: AL_INT);
@@ -2545,7 +2567,7 @@ END.
  *      Datafile access routines.
  *
  *      This section includes only functions related with bitmap loading and
- *      saveing.  The other datafile.h stuff are in unit alfile.
+ *      saving.  Other datafile.h stuff are in unit alfile.
  *)
 
 (* Loads a bitmap from a file.  The palette data will be stored in the second
@@ -2574,43 +2596,43 @@ VAR
   IF bmp = NIL THEN
     abort_on_error ('Could not load image.pcx!');
           ...
-   al_destroy_bitmap (bmp);
+ al_destroy_bitmap (bmp);
 #)
      @seealso(al_load_bmp) @seealso(al_load_pcx) @seealso(al_load_tga)
      @seealso(al_load_lbm) @seealso(al_save_bitmap) *)
-  FUNCTION al_load_bitmap (CONST filename: STRING; pal: AL_PALETTEptr): AL_BITMAPptr;
-    INLINE;
+  FUNCTION al_load_bitmap (filename: AL_STR; pal: AL_PALETTEptr): AL_BITMAPptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_bitmap';
 
 (* Loads an 8-bit, 16-bit, 24-bit or 32-bit Windows or OS/2 BMP file.  Remember
    that you are responsible for destroying the bitmap when you are finished
    with it to avoid memory leaks.
    @returns(a pointer to the bitmap or @nil on error.)
    @seealso(al_load_bitmap) @seealso(al_load_bmp_pf) *)
-  FUNCTION al_load_bmp (CONST filename: STRING; palette: AL_PALETTEptr): AL_BITMAPptr;
-    INLINE;
+  FUNCTION al_load_bmp (filename: AL_STR; pal: AL_PALETTEptr): AL_BITMAPptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_bmp';
 
 (* Loads a 256-color IFF ILBM/PBM file.  Remember that you are responsible for
    destroying the bitmap when you are finished with it to avoid memory leaks.
    @returns(a pointer to the bitmap or @nil on error.)
    @seealso(al_load_bitmap) *)
-  FUNCTION al_load_lbm (CONST filename: STRING; palette: AL_PALETTEptr): AL_BITMAPptr;
-    INLINE;
+  FUNCTION al_load_lbm (filename: AL_STR; pal: AL_PALETTEptr): AL_BITMAPptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_lbm';
 
 (* Loads a 256-color or 24-bit truecolor PCX file. Remember that you are
    responsible for destroying the bitmap when you are finished with it to avoid
    memory leaks.
    @returns(a pointer to the bitmap or @nil on error.)
    @seealso(al_load_bitmap) @seealso(al_load_pcx_pf) *)
-  FUNCTION al_load_pcx (CONST filename: STRING; palette: AL_PALETTEptr): AL_BITMAPptr;
-    INLINE;
+  FUNCTION al_load_pcx (filename: AL_STR; pal: AL_PALETTEptr): AL_BITMAPptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_pcx';
 
 (* Loads a 256-color, 15-bit hicolor, 24-bit truecolor, or 32-bit
    truecolor+alpha TGA file.  Remember that you are responsible for destroying
    the bitmap when you are finished with it to avoid memory leaks.
    @returns(a pointer to the bitmap or @nil on error.)
    @seealso(al_load_bitmap) @seealso(al_load_tga_pf) *)
-  FUNCTION al_load_tga (CONST filename: STRING; palette: AL_PALETTEptr): AL_BITMAPptr;
-    INLINE;
+  FUNCTION al_load_tga (filename: AL_STR; pal: AL_PALETTEptr): AL_BITMAPptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_tga';
 
 
 
@@ -2635,6 +2657,10 @@ VAR
   al_save_bitmap ('dump.pcx', bmp, @palette);
   al_destroy_bitmap (bmp);
 #)
+    @param(filename Where to save the bitmap.)
+    @param(bmp Bitmap to be saved.)
+    @param(pal Palette of bitmap or @nil if none is used (i.e. true color bitmap).)
+    @return(@true on success, @false on failure.)
   *)
   FUNCTION al_save_bitmap (filename: STRING; bmp: AL_BITMAPptr; pal: AL_PALETTEptr): BOOLEAN;
     INLINE;
@@ -2646,14 +2672,12 @@ VAR
     INLINE;
 
 (* Writes a bitmap into a 256-color or 24-bit truecolor PCX file.
-   @returns(non-zero on error.)
    @seealso(al_save_bitmap) @seealso(al_save_pcx_pf) *)
   FUNCTION al_save_pcx (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): BOOLEAN;
     INLINE;
 
 (* Writes a bitmap into a 256-color, 15-bit hicolor, 24-bit truecolor, or
    32-bit truecolor+alpha TGA file.
-   @returns(non-zero on error.)
    @seealso(al_save_bitmap) @seealso(al_save_tga_pf) *)
   FUNCTION al_save_tga (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): BOOLEAN;
     INLINE;
@@ -2819,16 +2843,16 @@ VAR
    mode, so from that point onwards you will have to call this routine in order
    to get any mouse input at all, regardless of whether the current driver
    actually needs to be polled or not.
-   @returns(zero on success, or a negative number on failure @(ie. no mouse
+   @returns(@false on success, or @true on failure @(ie. no mouse
      driver installed@).)
    @seealso(al_mouse_needs_poll) @seealso(al_install_mouse) *)
-  FUNCTION al_poll_mouse: AL_INT;
+  FUNCTION al_poll_mouse: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'poll_mouse';
 
 (* Returns @true if the current mouse driver is operating in polling mode.
   @seealso(al_poll_mouse) @seealso(al_install_mouse) *)
-  FUNCTION al_mouse_needs_poll: BOOLEAN;
-    INLINE;
+  FUNCTION al_mouse_needs_poll: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_needs_poll';
 
 
 
@@ -2977,8 +3001,8 @@ VAR
    Note that the infinite movement may not work in windowed mode, since under
    some platforms the mouse would leave the window, and may not work at all if
    the hardware cursor is in use. *)
-  PROCEDURE al_get_mouse_mickeys (VAR mickeyx, mickeyy: AL_INT);
-    INLINE;
+  PROCEDURE al_get_mouse_mickeys (OUT mickeyx, mickeyy: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_mouse_mickeys';
 
 (* You don't like Allegro's mouse pointer?  No problem.  Use this function to
    supply an alternative of your own.  If you change the pointer and then want
@@ -3029,8 +3053,8 @@ VAR
     ability to pause your game when the mouse goes off of the window, or only
     scrolling the view when the pointer is near the edge of the window, but not
     while off of the window. *)
-  FUNCTION al_mouse_on_screen: BOOLEAN;
-    INLINE;
+  FUNCTION al_mouse_on_screen: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'mouse_on_screen';
 
 
 
@@ -3124,8 +3148,8 @@ VAR
    @code(@(AL_DRAW_MODE_XOR, @nil, 0, 0@)).  Calling @code(al_xor_mode @(@false@))
    is equivalent to @code(al_drawing_mode @(A_DRAW_MODE_SOLID, @nil, 0, 0@)).
    @seealso(al_drawing_mode) *)
-  PROCEDURE al_xor_mode (aOn: BOOLEAN);
-    INLINE;
+  PROCEDURE al_xor_mode (aOn: AL_BOOL);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'xor_mode';
 
 (* This is a shortcut for selecting solid drawing mode.  It is equivalent to
    calling @code(al_drawing_mode) @code(@(AL_DRAW_MODE_XOR, NIL, 0, 0@)).
@@ -3219,7 +3243,7 @@ END;
    useful for constructing smooth paths around a series of control points, as
    in exspline.pp.
    @seealso(al_spline) *)
-  PROCEDURE al_calc_spline (CONST points: ARRAY OF AL_INT; npts: AL_INT; VAR x, y: ARRAY OF AL_INT);
+  PROCEDURE al_calc_spline (VAR points: ARRAY OF AL_INT; npts: AL_INT; VAR x, y: ARRAY OF AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'calc_spline';
 
 (* Copies a rectangular area of the source bitmap to the destination bitmap.
@@ -3814,7 +3838,6 @@ VAR
    don't perform any clipping (it may crash if you try to draw outside the
    bitmap!), and ignore the drawing mode. *)
   PROCEDURE _al_putpixel24 (bmp: AL_BITMAPptr; x, y, color: AL_INT);
-    INLINE;
 
 (* Faster inline version of @link(al_getpixel).  This is specific for 24 bits
    color depth and don't do any clipping, so you must make sure the point
@@ -3850,8 +3873,8 @@ VAR
     AL_FONTptr = AL_POINTER;
 
 (* Search all pixels of a font for alpha values. @seealso(al_is_trans_font) *)
-  FUNCTION al_font_has_alpha (f: AL_FONTptr): BOOLEAN;
-    INLINE;
+  FUNCTION al_font_has_alpha (f: AL_FONTptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'font_has_alpha';
 
 (* Makes a font use transparency.   That is, each glyph in the font will be
    drawn with @seealso(al_draw_trans_sprite), so you can use the same blenders
@@ -3881,30 +3904,30 @@ END;
    @link(al_draw_trans_sprite) to render glyphs.
    @seealso(al_make_trans_font) @seealso(al_is_color_font)
    @seealso(al_is_mono_font) *)
-  FUNCTION al_is_trans_font (f: AL_FONTptr): BOOLEAN;
-    INLINE;
+  FUNCTION al_is_trans_font (f: AL_FONTptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'is_trans_font';
 
 (* This function checks if the given font is a color font, as opposed to a
    monochrome font.
    @returns(@true if the font is a color font, @false if it is not.)
    @seealso(al_is_mono_font) @seealso(al_is_trans_font) *)
-  FUNCTION al_is_color_font (f: AL_FONTptr): BOOLEAN;
-    INLINE;
+  FUNCTION al_is_color_font (f: AL_FONTptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'is_color_font';
 
 (* This function checks if the given font is a mono font, as opposed to a
    color font.
    @returns(@true if the font is a monochrome font, @false if it is not.)
    @seealso(al_is_color_font) @seealso(al_is_trans_font) *)
-  FUNCTION al_is_mono_font (f: AL_FONTptr): BOOLEAN;
-    INLINE;
+  FUNCTION al_is_mono_font (f: AL_FONTptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'is_mono_font';
 
 (* This function compares the two fonts, which you can use to find out if
    Allegro is capable of merging them.
 
    @returns(@true if the two fonts are of the same general type @(both are
      color fonts or both are monochrome fonts, for instance@).) *)
-  FUNCTION al_is_compatible_font (f1, f2: AL_FONTptr): BOOLEAN;
-    INLINE;
+  FUNCTION al_is_compatible_font (f1, f2: AL_FONTptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'is_compatible_font';
 
 
 
@@ -3926,8 +3949,8 @@ END;
      memory leaks.)
    @seealso(al_load_bitmap_font) @seealso(al_grab_font_from_bitmap)
    @seealso(alfile) @seealso(al_destroy_font) *)
-  FUNCTION al_load_font (filename: STRING; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
-    INLINE;
+  FUNCTION al_load_font (filename: AL_STR; pal: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_font';
 
 (* Tries to grab a font from a bitmap.  The bitmap can be in any format that
    @link(al_load_bitmap) understands.
@@ -3963,8 +3986,8 @@ END;
      responsible for destroying the font when you are finished with it to avoid
      memory leaks.)
    @seealso(al_load_font) @seealso(al_destroy_font) *)
-  FUNCTION al_load_bitmap_font (filename: STRING; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
-    INLINE;
+  FUNCTION al_load_bitmap_font (filename: AL_STR; pal: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_bitmap_font';
 
 (* Loads a font script.  The script file contains a number of lines in the
    format @code(filename start end), which specify the source file for that
@@ -3984,8 +4007,8 @@ END;
      responsible for destroying the font when you are finished with it to avoid
      memory leaks.)
    @seealso(al_load_font) @seealso(al_destroy_font) *)
-  FUNCTION al_load_txt_font (CONST filename: STRING; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
-    INLINE;
+  FUNCTION al_load_txt_font (CONST filename: AL_STR; pal: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_txt_font';
 
 (* This function is the work-horse of @link(al_load_bitmap_font), and can be
    used to grab a font from a bitmap in memory.  You can use this if you want
@@ -4162,32 +4185,32 @@ END;
    @param(color Foreground color.  Set to -1 to use multicolor fonts.)
    @param(bg Background color.  Set to -1 to use transparent background.)
    @seealso(al_textout_centre_ex) @seealso(al_textout_right_ex) @seealso(al_textout_justify_ex)*)
-  PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x, y, color, bg: AL_INT);
-    INLINE;
+  PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: AL_STR; x, y, color, bg: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_ex';
 
 (* Like @code(al_textout_ex), but interprets the @code(x) coordinate as the
    centre rather than the left edge of the string.
    @seealso(al_textout_ex) @seealso(al_textout_right_ex) @seealso(al_textout_justify_ex)*)
-  PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x, y, color, bg: AL_INT);
-    INLINE;
+  PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: AL_STR; x, y, color, bg: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_centre_ex';
 
 (* Like @code(al_textout_ex), but interprets the @code(x) coordinate as the
    right rather than the left edge of the string.
    @seealso(al_textout_ex) @seealso(al_textout_centre_ex) @seealso(al_textout_justify_ex)*)
-  PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x, y, color, bg: AL_INT);
-    INLINE;
+  PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: AL_STR; x, y, color, bg: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_right_ex';
 
 (* Draws justified text within the region @code(x1-x2).  If the amount of spare
    space is greater than the @code(diff) value, it will give up and draw
    regular left justified text instead.
    @seealso(al_textout_ex) @seealso(al_textout_centre_ex) @seealso(al_textout_right_ex)*)
-  PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x1, x2, y, diff, color, bg: AL_INT);
-    INLINE;
+  PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: AL_STR; x1, x2, y, diff, color, bg: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_justify_ex';
 
 (* Returns the length (in pixels) of a string in the specified font.
   @seealso(al_text_height) *)
-  FUNCTION al_text_length (CONST f: AL_FONTptr; CONST str: STRING): AL_INT;
-    INLINE;
+  FUNCTION al_text_length (CONST f: AL_FONTptr; CONST str: AL_STR): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'text_length';
 
 (* Returns the height (in pixels) of the specified font.
   @seealso(al_text_length) *)
@@ -4386,15 +4409,15 @@ END;
 (* Retrieves the global sound output volume, both for digital samples and MIDI
    playback, as integers from 0 to 255.
    @seealso(al_set_volume) @seealso(al_get_hardware_volume) *)
-  PROCEDURE al_get_volume (VAR digi, midi: AL_INT);
-    INLINE;
+  PROCEDURE al_get_volume (OUT digi, midi: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_volume';
 
 (* Retrieves the hardware sound output volume, both for digital samples and
    MIDI playback, as integers from 0 to 255, or -1 if the information is not
    available.
    @seealso(al_set_hardware_volume) @seealso(al_get_volume) *)
-  PROCEDURE al_get_hardware_volume (VAR digi, midi: AL_INT);
-    INLINE;
+  PROCEDURE al_get_hardware_volume (OUT digi, midi: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_hardware_volume';
 
 
 
@@ -4504,8 +4527,8 @@ END;
      Remember to free this MIDI file later to avoid memory leaks.)
    @seealso(al_destroy_midi) @seealso(al_play_midi)
    @seealso(al_get_midi_length) *)
-  FUNCTION al_load_midi (CONST filename: STRING): AL_MIDIptr;
-    INLINE;
+  FUNCTION al_load_midi (CONST filename: AL_STR): AL_MIDIptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_midi';
 
 (* Destroys a @link(AL_MIDI) structure when you are done with it.  It is safe
    to call this even when the MIDI file might be playing, because it checks and
@@ -4664,9 +4687,10 @@ END;
     END;
 
   (* Used by @link(al_register_sample_file_type). *)
-    AL_SAMPLE_LOAD_FUNC = FUNCTION (CONST filename: AL_STRptr): AL_SAMPLEptr; CDECL;
-  (* Used by @link(al_register_sample_file_type). *)
-    AL_SAMPLE_SAVE_FUNC = FUNCTION (CONST filename: AL_STRptr; spl: AL_SAMPLEptr): AL_INT; CDECL;
+    AL_SAMPLE_LOAD_FUNC = FUNCTION (CONST filename: AL_STR): AL_SAMPLEptr; CDECL;
+  (* Used by @link(al_register_sample_file_type).  Should return zero on
+    success or non-zero otherwise. *)
+    AL_SAMPLE_SAVE_FUNC = FUNCTION (CONST filename: AL_STR; spl: AL_SAMPLEptr): AL_INT; CDECL;
 
 
 (* Loads a sample from a file, supporting both mono and stereo WAV and mono VOC
@@ -4678,8 +4702,8 @@ END;
    @returns(a pointer to the @link(AL_SAMPLE) or @nil on error.)
    @seealso(al_destroy_sample) @seealso(al_load_voc) @seealso(al_load_wav)
    @seealso(al_play_sample) @seealso(al_save_sample) *)
-  FUNCTION al_load_sample (CONST filename: STRING): AL_SAMPLEptr;
-    INLINE;
+  FUNCTION al_load_sample (CONST filename: AL_STR): AL_SAMPLEptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_sample';
 
 (* Loads a sample from a RIFF WAV file.
 
@@ -4687,8 +4711,8 @@ END;
 
    @returns(a pointer to the @code(AL_SAMPLE) or @nil on error.)
    @seealso(al_load_wav_pf) *)
-  FUNCTION al_load_wav (CONST filename: STRING): AL_SAMPLEptr;
-    INLINE;
+  FUNCTION al_load_wav (CONST filename: AL_STR): AL_SAMPLEptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_wav';
 
 (* Loads a sample from a Creative Labs VOC file.
 
@@ -4696,8 +4720,8 @@ END;
 
    @returns(a pointer to the @code(AL_SAMPLE) or @nil on error.)
    @seealso(al_load_voc_pf) *)
-  FUNCTION al_load_voc (CONST filename: STRING): AL_SAMPLEptr;
-    INLINE;
+  FUNCTION al_load_voc (CONST filename: AL_STR): AL_SAMPLEptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_voc';
 
 (* Writes a sample into a file.  The output format is determined from the
    @code(filename) extension.  At present Allegro does not natively support
@@ -4781,7 +4805,7 @@ END;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'deallocate_voice';
 
 (* Switches an already-allocated voice to use a different sample. Calling
-   @code(al_reallocate_voice@(voice, sample@)) is equivalent to:
+   @code(al_reallocate_voice @(voice, sample@)) is equivalent to:
 @longcode(#
   al_deallocate_voice (Voice);
   Voice := al_allocate_voice (Sample);
@@ -4970,8 +4994,8 @@ END;
 
    al_register_sample_file_type ('mp3', @LoadMPT, NIL);
    #) *)
-  PROCEDURE al_register_sample_file_type (CONST ext: STRING; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC);
-    INLINE;
+  PROCEDURE al_register_sample_file_type (CONST ext: AL_STR; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'register_sample_file_type';
 
 IMPLEMENTATION
 
@@ -5247,22 +5271,6 @@ IMPLEMENTATION
 
 
 
-  FUNCTION calibrate_joystick_name (n: AL_INT): AL_STRptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_calibrate_joystick_name (CONST n: AL_INT): STRING;
-  VAR
-    Tmp: PCHAR;
-  BEGIN
-    Tmp := calibrate_joystick_name (n);
-    IF Tmp <> NIL THEN
-      al_calibrate_joystick_name := (Tmp)
-    ELSE
-      al_calibrate_joystick_name := '';
-  END;
-
-
-
   FUNCTION calibrate_joystick (n: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
@@ -5305,10 +5313,12 @@ CONST
   AL_BMP_ID_VIDEO     = $80000000;
   AL_BMP_ID_SYSTEM    = $40000000;
   AL_BMP_ID_SUB       = $20000000;
+{ Unused.
   AL_BMP_ID_PLANAR    = $10000000;
   AL_BMP_ID_NOBLIT    = $08000000;
   AL_BMP_ID_LOCKED    = $04000000;
   AL_BMP_ID_AUTOLOCK  = $02000000;
+}
   AL_BMP_ID_MASK      = $01FFFFFF;
 
 
@@ -5331,30 +5341,12 @@ CONST
 
 
 
-  FUNCTION request_scroll (x, y: AL_INT): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_request_scroll (x, y: AL_INT): BOOLEAN;
-  BEGIN
-    RESULT := NOT request_scroll (x, y)
-  END;
-
-
-
-  FUNCTION request_video_bitmap (bitmap: AL_BITMAPptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_request_video_bitmap (bitmap: AL_BITMAPptr): BOOLEAN;
-  BEGIN
-    al_request_video_bitmap := request_video_bitmap (bitmap) = 0;
-  END;
-
-  FUNCTION enable_triple_buffer: AL_INT;
+  FUNCTION enable_triple_buffer: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_enable_triple_buffer: BOOLEAN;
   BEGIN
-    al_enable_triple_buffer := enable_triple_buffer = 0;
+    RESULT := NOT enable_triple_buffer
   END;
 
 
@@ -5364,60 +5356,71 @@ CONST
  *)
 
 (* Clears the bitmap to the specified color. @seealso(al_clear_bitmap)*)
-  PROCEDURE al_clear_to_color (bitmap: AL_BITMAPptr; color: AL_INT);
+  PROCEDURE al_clear_to_color (bitmap: AL_BITMAPptr; CONST color: AL_INT);
   BEGIN
     bitmap^.vtable^.clear_to_color (bitmap, color);
   END;
 
-  FUNCTION al_bitmap_color_depth (bmp: AL_BITMAPptr): AL_INT;
+
+
+  FUNCTION al_bitmap_color_depth (CONST bmp: AL_BITMAPptr): AL_INT;
   BEGIN
-    al_bitmap_color_depth := bmp^.vtable^.color_depth;
+    RESULT := bmp^.vtable^.color_depth
   END;
 
-  FUNCTION al_bitmap_mask_color (bmp: AL_BITMAPptr): AL_INT;
+
+
+  FUNCTION al_bitmap_mask_color (CONST bmp: AL_BITMAPptr): AL_INT;
   BEGIN
-    al_bitmap_mask_color := bmp^.vtable^.mask_color;
+    RESULT := bmp^.vtable^.mask_color
   END;
 
-  FUNCTION al_is_same_bitmap (bmp1, bmp2: AL_BITMAPptr): BOOLEAN;
+
+
+  FUNCTION al_is_same_bitmap (CONST bmp1, bmp2: AL_BITMAPptr): BOOLEAN;
   VAR
     m1, m2: AL_ULONG;
   BEGIN
-    IF (bmp1 = NIL) OR (bmp2 = NIL) THEN
-      al_is_same_bitmap := FALSE
-    ELSE
-      IF bmp1 = bmp2 THEN
-	al_is_same_bitmap := TRUE
-      ELSE BEGIN
-	m1 := (bmp1^.id AND AL_BMP_ID_MASK);
-	m2 := (bmp2^.id AND AL_BMP_ID_MASK);
-	al_is_same_bitmap := ((m1 <> 0) AND (m1 = m2));
-      END;
+    IF (bmp1 = NIL) OR (bmp2 = NIL) THEN EXIT (FALSE);
+    IF bmp1 = bmp2 THEN EXIT (TRUE);
+    m1 := (bmp1^.id AND AL_BMP_ID_MASK);
+    m2 := (bmp2^.id AND AL_BMP_ID_MASK);
+    RESULT := ((m1 <> 0) AND (m1 = m2))
   END;
 
-  FUNCTION al_is_memory_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+
+
+  FUNCTION al_is_memory_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
   BEGIN
-    al_is_memory_bitmap := (bmp^.id AND (AL_BMP_ID_VIDEO OR AL_BMP_ID_SYSTEM)) = 0;
+    RESULT := (bmp^.id AND (AL_BMP_ID_VIDEO OR AL_BMP_ID_SYSTEM)) = 0
   END;
 
-  FUNCTION al_is_screen_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+
+
+  FUNCTION al_is_screen_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
   BEGIN
-    al_is_screen_bitmap := al_is_same_bitmap (bmp, al_screen);
+    RESULT := al_is_same_bitmap (bmp, al_screen)
   END;
 
-  FUNCTION al_is_video_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+
+
+  FUNCTION al_is_video_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
   BEGIN
-    al_is_video_bitmap := (bmp^.id AND AL_BMP_ID_VIDEO) <> 0;
+    RESULT := (bmp^.id AND AL_BMP_ID_VIDEO) <> 0
   END;
 
-  FUNCTION al_is_system_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+
+
+  FUNCTION al_is_system_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
   BEGIN
-    al_is_system_bitmap := (bmp^.id AND AL_BMP_ID_SYSTEM) <> 0;
+    RESULT := (bmp^.id AND AL_BMP_ID_SYSTEM) <> 0
   END;
 
-  FUNCTION al_is_sub_bitmap (bmp: AL_BITMAPptr): BOOLEAN;
+
+
+  FUNCTION al_is_sub_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
   BEGIN
-    al_is_sub_bitmap := (bmp^.id AND AL_BMP_ID_SUB) <> 0;
+    RESULT := (bmp^.id AND AL_BMP_ID_SUB) <> 0
   END;
 
   PROCEDURE al_acquire_bitmap (bmp: AL_BITMAPptr);
@@ -5452,17 +5455,18 @@ CONST
     y2 := bmp^.cb-1;
   END;
 
+
+
   PROCEDURE al_set_clip_state (bmp: AL_BITMAPptr; state: BOOLEAN);
   BEGIN
-    IF state THEN
-      bmp^.clip := -1
-    ELSE
-      bmp^.clip := 0;
+    bmp^.clip := state
   END;
+
+
 
   FUNCTION al_get_clip_state (bmp: AL_BITMAPptr): BOOLEAN;
   BEGIN
-    al_get_clip_state := bmp^.clip <> 0;
+    RESULT := bmp^.clip
   END;
 
 
@@ -5471,78 +5475,36 @@ CONST
  * datafile.h
  *)
 
-  FUNCTION load_bitmap (CONST filename: AL_STRptr; pal: AL_PALETTEptr): AL_BITMAPptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_load_bitmap (CONST filename: STRING; pal: AL_PALETTEptr): AL_BITMAPptr;
-  BEGIN
-    al_load_bitmap := load_bitmap (AL_STRptr (filename), pal);
-  END;
-
-  FUNCTION load_bmp (CONST filename: AL_STRptr; palette: AL_PALETTEptr): AL_BITMAPptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_load_bmp (CONST filename: STRING; palette: AL_PALETTEptr): AL_BITMAPptr;
-  BEGIN
-    al_load_bmp := load_bmp (AL_STRptr (filename), palette);
-  END;
-
-  FUNCTION load_lbm (CONST filename: AL_STRptr; palette: AL_PALETTEptr): AL_BITMAPptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_load_lbm (CONST filename: STRING; palette: AL_PALETTEptr): AL_BITMAPptr;
-  BEGIN
-    al_load_lbm := load_lbm (AL_STRptr (filename), palette);
-  END;
-
-  FUNCTION load_pcx (CONST filename: AL_STRptr; palette: AL_PALETTEptr): AL_BITMAPptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_load_pcx (CONST filename: STRING; palette: AL_PALETTEptr): AL_BITMAPptr;
-  BEGIN
-    al_load_pcx := load_pcx (AL_STRptr (filename), palette);
-  END;
-
-  FUNCTION load_tga (CONST filename: AL_STRptr; palette: AL_PALETTEptr): AL_BITMAPptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_load_tga (CONST filename: STRING; palette: AL_PALETTEptr): AL_BITMAPptr;
-  BEGIN
-    al_load_tga := load_tga (AL_STRptr (filename), palette);
-  END;
-
-
-
-  FUNCTION save_bitmap (filename: AL_STRptr; bmp: AL_BITMAPptr; pal: AL_PALETTEptr): AL_INT;
+  FUNCTION save_bitmap (filename: AL_STR; bmp: AL_BITMAPptr; pal: AL_PALETTEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_save_bitmap (filename: STRING; bmp: AL_BITMAPptr; pal: AL_PALETTEptr): BOOLEAN;
   BEGIN
-    al_save_bitmap := save_bitmap (AL_STRptr (filename), bmp, pal) = 0;
+    RESULT := NOT save_bitmap (filename, bmp, pal)
   END;
 
-  FUNCTION save_bmp (filename: AL_STRptr; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_INT;
+  FUNCTION save_bmp (filename: AL_STR; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_save_bmp (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): BOOLEAN;
   BEGIN
-    al_save_bmp := save_bmp (AL_STRptr (filename), bmp, palette) = 0;
+    RESULT := NOT save_bmp (filename, bmp, palette)
   END;
 
-  FUNCTION save_pcx (filename: AL_STRptr; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_INT;
+  FUNCTION save_pcx (filename: AL_STR; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_save_pcx (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): BOOLEAN;
   BEGIN
-    al_save_pcx := save_pcx (AL_STRptr (filename), bmp, palette) = 0;
+    RESULT := NOT save_pcx (filename, bmp, palette)
   END;
 
-  FUNCTION save_tga (filename: AL_STRptr; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_INT;
+  FUNCTION save_tga (filename: AL_STR; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_save_tga (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): BOOLEAN;
   BEGIN
-    al_save_tga := save_tga (AL_STRptr (filename), bmp, palette) = 0;
+    RESULT := NOT save_tga (filename, bmp, palette)
   END;
 
 
@@ -5551,59 +5513,12 @@ CONST
  * mouse.h
  *)
 
-  FUNCTION mouse_needs_poll: AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_mouse_needs_poll: BOOLEAN;
-  BEGIN
-    al_mouse_needs_poll := mouse_needs_poll <> 0;
-  END;
-
-
-
-  PROCEDURE get_mouse_mickeys (mickeyx, mickeyy: AL_INTptr);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_get_mouse_mickeys (VAR mickeyx, mickeyy: AL_INT);
-  BEGIN
-    get_mouse_mickeys (@mickeyx, @mickeyy);
-  END;
-
-
-
-  FUNCTION show_os_cursor (cursor: AL_INT): AL_INT;
+  FUNCTION show_os_cursor (cursor: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_show_os_cursor (cursor: AL_INT): BOOLEAN;
   BEGIn
-    al_show_os_cursor := show_os_cursor (cursor) = 0;
-  END;
-
-
-
-  FUNCTION mouse_on_screen: AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_mouse_on_screen: BOOLEAN;
-  BEGIN
-    al_mouse_on_screen := mouse_on_screen <> 0;
-  END;
-
-
-
-(******************************************************************************
- * draw.h
- *)
-
-  PROCEDURE xor_mode (aOn: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_xor_mode (aOn: BOOLEAN);
-  BEGIN
-    IF aOn THEN
-      xor_mode (1)
-    ELSE
-      xor_mode (0);
+    RESULT := NOT show_os_cursor (cursor)
   END;
 
 
@@ -5809,122 +5724,104 @@ CONST
 
 
   PROCEDURE _al_putpixel (bmp: AL_BITMAPptr; x, y, color: AL_INT);
-  VAR
-    addr: AL_UINTPTR_T;
   BEGIN
-    addr := bmp^.write_bank (bmp, y);
-    (AL_UINT8ptr (addr + AL_UINTPTR_T (x)))^ := color;
-    bmp^.vtable^.unwrite_bank (bmp);
+    (AL_UINT8ptr (bmp^.write_bank (bmp, y)) + x)^ := color;
+    bmp^.vtable^.unwrite_bank (bmp)
   END;
+
+
 
   FUNCTION _al_getpixel (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
-  VAR
-    addr: AL_UINTPTR_T;
   BEGIN
-    addr := bmp^.read_bank (bmp, y);
-    _al_getpixel := (AL_UINT8ptr (addr + AL_UINTPTR_T (x)))^;
-    bmp^.vtable^.unwrite_bank (bmp);
+    RESULT := (AL_UINT8ptr (bmp^.read_bank (bmp, y)) + x)^;
+    bmp^.vtable^.unwrite_bank (bmp)
   END;
+
+
 
   PROCEDURE _al_putpixel15 (bmp: AL_BITMAPptr; x, y, color: AL_INT);
-  VAR
-    addr: AL_UINTPTR_T;
   BEGIN
-    addr := bmp^.write_bank (bmp, y);
-    (AL_UINT16ptr (addr + (AL_UINTPTR_T (x) * SizeOf (AL_SHORT))))^ := color;
+    (AL_UINT16ptr (bmp^.write_bank (bmp, y)) + x)^ := color;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
+
+
 
   FUNCTION _al_getpixel15 (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
-  VAR
-    addr: AL_UINTPTR_T;
   BEGIN
-    addr := bmp^.read_bank (bmp, y);
-    _al_getpixel15 := (AL_UINT16ptr (addr + (AL_UINTPTR_T (x) * SizeOf (AL_SHORT))))^;
+    RESULT := (AL_UINT16ptr(bmp^.read_bank (bmp, y)) + x)^;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
+
+
 
   PROCEDURE _al_putpixel16 (bmp: AL_BITMAPptr; x, y, color: AL_INT);
-  VAR
-    addr: AL_UINTPTR_T;
   BEGIN
-    addr := bmp^.write_bank (bmp, y);
-    (AL_UINT16ptr (addr + (AL_UINTPTR_T (x) * SizeOf (AL_SHORT))))^ := color;
+    (AL_UINT16ptr (bmp^.write_bank (bmp, y)) + x)^ := color;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
+
+
   FUNCTION _al_getpixel16 (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
-  VAR
-    addr: AL_UINTPTR_T;
   BEGIN
-    addr := bmp^.read_bank (bmp, y);
-    _al_getpixel16 := (AL_UINT16ptr (addr + (AL_UINTPTR_T (x) * SizeOf (AL_SHORT))))^;
+    RESULT := (AL_UINT16ptr(bmp^.read_bank (bmp, y)) + x)^;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
+
+
 
   PROCEDURE _al_putpixel24 (bmp: AL_BITMAPptr; x, y, color: AL_INT);
   VAR
-    addr: AL_UINTPTR_T;
-
-    PROCEDURE WRITE3BYTES; INLINE;
-    BEGIN
-    {$IFDEF ENDIAN_BIG}
-	(AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3)    ))^ := (color SHR 16) AND $FF;
-	(AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 1))^ := (color SHR  8) AND $FF;
-	(AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 2))^ :=  color         AND $FF;
-    {$ELSE}
-	(AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3)    ))^ :=  color         AND $FF;
-	(AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 1))^ := (color SHR  8) AND $FF;
-	(AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 2))^ := (color SHR 16) AND $FF;
-    {$ENDIF}
-    END;
-
+    addr: AL_UCHARptr;
   BEGIN
     addr := bmp^.write_bank (bmp, y);
-    WRITE3BYTES;
+{$IFDEF ENDIAN_BIG}
+    (addr + (x * 3)    )^ := (color SHR 16) AND $FF;
+    (addr + (x * 3) + 1)^ := (color SHR  8) AND $FF;
+    (addr + (x * 3) + 2)^ :=  color         AND $FF;
+{$ELSE}
+    (addr + (x * 3)    )^ :=  color         AND $FF;
+    (addr + (x * 3) + 1)^ := (color SHR  8) AND $FF;
+    (addr + (x * 3) + 2)^ := (color SHR 16) AND $FF;
+{$ENDIF}
     bmp^.vtable^.unwrite_bank (bmp);
   END;
+
+
 
   FUNCTION _al_getpixel24 (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
   VAR
-    addr: AL_UINTPTR_T;
-
-    FUNCTION READ3BYTES: AL_INT; INLINE;
-    BEGIN
-      READ3BYTES :=
-    {$IFDEF ENDIAN_BIG}
-	   ((AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3)    ))^ SHL 16)
-	OR ((AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 1))^ SHL  8)
-	OR ((AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 2))^       )
-    {$ELSE}
-	   ((AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3)    ))^       )
-	OR ((AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 1))^ SHL  8)
-	OR ((AL_UCHARptr (addr + (AL_UINTPTR_T (x) * 3) + 2))^ SHL 16)
-    {$ENDIF}
-      ;
-    END;
-
+    addr: AL_UCHARptr;
   BEGIN
     addr := bmp^.read_bank (bmp, y);
-    _al_getpixel24 := READ3BYTES;
+    RESULT :=
+    {$IFDEF ENDIAN_BIG}
+	   ((addr + (x * 3)    )^ SHL 16)
+	OR ((addr + (x * 3) + 1)^ SHL  8)
+	OR ((addr + (x * 3) + 2)^       )
+    {$ELSE}
+	   ((addr + (x * 3)    )^       )
+	OR ((addr + (x * 3) + 1)^ SHL  8)
+	OR ((addr + (x * 3) + 2)^ SHL 16)
+    {$ENDIF}
+    ;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
+
+
 
   PROCEDURE _al_putpixel32 (bmp: AL_BITMAPptr; x, y, color: AL_INT);
-  VAR
-    addr: AL_UINTPTR_T;
   BEGIN
-    addr := bmp^.write_bank (bmp, y);
-    (AL_UINT32ptr (addr + (AL_UINTPTR_T (x) * SizeOf (AL_INT32))))^ := color;
+    (AL_UINT32ptr (bmp^.write_bank (bmp, y)) + x)^ := color;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
+
+
   FUNCTION _al_getpixel32 (bmp: AL_BITMAPptr; x, y: AL_INT): AL_INT;
-  VAR
-    addr: AL_UINTPTR_T;
   BEGIN
-    addr := bmp^.read_bank (bmp, y);
-    _al_getpixel32 := (AL_UINT32ptr (addr + (AL_UINTPTR_T (x) * SizeOf (AL_INT32))))^;
+    RESULT := (AL_UINT32ptr (bmp^.read_bank (bmp, y)) + x)^;
     bmp^.vtable^.unwrite_bank (bmp);
   END;
 
@@ -5934,143 +5831,12 @@ CONST
  * font.h
  *)
 
-  FUNCTION font_has_alpha (f: AL_FONTptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_font_has_alpha (f: AL_FONTptr): BOOLEAN;
-  BEGIN
-    al_font_has_alpha := font_has_alpha (f) <> 0;
-  END;
-
-
-
-  FUNCTION is_trans_font (f: AL_FONTptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_is_trans_font (f: AL_FONTptr): BOOLEAN;
-  BEGIN
-    al_is_trans_font := is_trans_font (f) <> 0;
-  END;
-
-
-
-  FUNCTION is_color_font (f: AL_FONTptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_is_color_font (f: AL_FONTptr): BOOLEAN;
-  BEGIN
-    al_is_color_font := is_color_font (f) <> 0;
-  END;
-
-
-
-  FUNCTION is_mono_font (f: AL_FONTptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_is_mono_font (f: AL_FONTptr): BOOLEAN;
-  BEGIN
-    al_is_mono_font := is_mono_font (f) <> 0;
-  END;
-
-
-
-  FUNCTION is_compatible_font (f1, f2: AL_FONTptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_is_compatible_font (f1, f2: AL_FONTptr): BOOLEAN;
-  BEGIN
-    al_is_compatible_font := is_compatible_font (f1, f2) <> 0;
-  END;
-
-
-
-  FUNCTION load_font (CONST filename: AL_STRptr; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_load_font (filename: STRING; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
-  BEGIN
-    al_load_font := load_font (AL_STRptr (filename), palette, param);
-  END;
-
-
-
-  FUNCTION load_bitmap_font (CONST filename: AL_STRptr; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_load_bitmap_font (filename: STRING; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
-  BEGIN
-    al_load_bitmap_font := load_bitmap_font (AL_STRptr (filename), palette, param);
-  END;
-
-
-
-  FUNCTION load_txt_font (CONST filename: AL_STRptr; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_load_txt_font (CONST filename: STRING; palette: AL_PALETTEptr; param: AL_VOIDptr): AL_FONTptr;
-  BEGIN
-    al_load_txt_font := load_txt_font (AL_STRptr (filename), palette, param);
-  END;
-
-
-
-  FUNCTION transpose_font (f: AL_FONTptr; drange: AL_INT): AL_INT;
+  FUNCTION transpose_font (f: AL_FONTptr; drange: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_transpose_font (f: AL_FONTptr; drange: AL_INT): BOOLEAN;
   BEGIN
-    al_transpose_font := transpose_font (f, drange) = 0;
-  END;
-
-
-
-(******************************************************************************
- * text.h
- *)
-
-  PROCEDURE textout_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: AL_STRptr; x, y, color, bg: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x, y, color, bg: AL_INT);
-  BEGIN
-    textout_ex (bmp, f, AL_STRptr (str), x, y, color, bg);
-  END;
-
-
-
-  PROCEDURE textout_centre_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: AL_STRptr; x, y, color, bg: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_textout_centre_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x, y, color, bg: AL_INT);
-  BEGIN
-    textout_centre_ex (bmp, f, AL_STRptr (str), x, y, color, bg);
-  END;
-
-
-  PROCEDURE textout_right_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: AL_STRptr; x, y, color, bg: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_textout_right_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x, y, color, bg: AL_INT);
-  BEGIN
-    textout_right_ex (bmp, f, AL_STRptr (str), x, y, color, bg);
-  END;
-
-
-
-  PROCEDURE textout_justify_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: PCHAR; x1, x2, y, diff, color, bg: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: STRING; x1, x2, y, diff, color, bg: AL_INT);
-  BEGIN
-    textout_justify_ex (bmp, f, AL_STRptr (str), x1, x2, y, diff, color, bg);
-  END;
-
-  FUNCTION text_length (CONST f: AL_FONTptr; CONST str: AL_STRptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_text_length (CONST f: AL_FONTptr; CONST str: STRING): AL_INT;
-  BEGIN
-    al_text_length := text_length (f, AL_STRptr (str));
+    RESULT := NOT transpose_font (f, drange)
   END;
 
 
@@ -6103,32 +5869,12 @@ CONST
  * sound.h
  *)
 
-  FUNCTION install_sound (digi, midi: AL_INT; CONST c: AL_STRptr): AL_INT;
+  FUNCTION install_sound (digi, midi: AL_INT; CONST c: AL_STRptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_install_sound (digi, midi: AL_INT): BOOLEAN;
   BEGIN
-    al_install_sound := install_sound (digi, midi, NIL) = 0;
-  END;
-
-
-
-  PROCEDURE get_volume (digi, midi: AL_INTptr);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_get_volume (VAR digi, midi: AL_INT);
-  BEGIN
-    get_volume (@digi, @midi);
-  END;
-
-
-
-  PROCEDURE get_hardware_volume (digi, midi: AL_INTptr);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_get_hardware_volume (VAR digi, midi: AL_INT);
-  BEGIN
-    get_hardware_volume (@digi, @midi);
+    RESULT := NOT install_sound (digi, midi, NIL)
   END;
 
 
@@ -6137,45 +5883,32 @@ CONST
  * midi.h
  *)
 
-  FUNCTION load_midi (CONST filename: AL_STRptr): AL_MIDIptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_load_midi (CONST filename: STRING): AL_MIDIptr;
-  BEGIN
-    al_load_midi := load_midi (AL_STRptr (filename));
-  END;
-
-
-
-  FUNCTION play_midi (midi: AL_MIDIptr; loop: AL_INT): AL_INT;
+  FUNCTION play_midi (midi: AL_MIDIptr; loop: AL_BOOL): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_play_midi (midi: AL_MIDIptr; loop: BOOLEAN): BOOLEAN;
   BEGIN
-    IF loop THEN
-      al_play_midi := play_midi (midi, -1) = 0
-    ELSE
-      al_play_midi := play_midi (midi, 0) = 0;
+    RESULT := NOT play_midi (midi, loop)
   END;
 
 
 
-  FUNCTION play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: AL_INT): AL_INT;
+  FUNCTION play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: AL_INT): BOOLEAN;
   BEGIN
-    al_play_looped_midi := play_looped_midi (midi, loop_start, loop_end) = 0
+    RESULT := NOT play_looped_midi (midi, loop_start, loop_end)
   END;
 
 
 
-  FUNCTION load_midi_patches: AL_INT;
+  FUNCTION load_midi_patches: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_load_midi_patches: BOOLEAN;
   BEGIN
-    al_load_midi_patches := load_midi_patches = 0;
+    RESULT := NOT load_midi_patches
   END;
 
 
@@ -6184,52 +5917,12 @@ CONST
  * digi.h
  *)
 
-  FUNCTION load_sample (CONST filename: AL_STRptr): AL_SAMPLEptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_load_sample (CONST filename: STRING): AL_SAMPLEptr;
-  BEGIN
-    al_load_sample := load_sample (AL_STRptr (filename));
-  END;
-
-
-
-  FUNCTION load_wav (CONST filename: AL_CHARptr): AL_SAMPLEptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_load_wav (CONST filename: STRING): AL_SAMPLEptr;
-  BEGIN
-    al_load_wav := load_wav (AL_CHARptr (filename));
-  END;
-
-
-
-  FUNCTION load_voc (CONST filename: AL_CHARptr): AL_SAMPLEptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_load_voc (CONST filename: STRING): AL_SAMPLEptr;
-  BEGIN
-    al_load_voc := load_voc (AL_CHARptr (filename));
-  END;
-
-
-
-  FUNCTION save_sample (CONST filename: AL_STRptr; spl: AL_SAMPLEptr): AL_INT;
+  FUNCTION save_sample (CONST filename: AL_STR; spl: AL_SAMPLEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_save_sample (CONST filename: STRING; spl: AL_SAMPLEptr): BOOLEAN;
   BEGIN
-    al_save_sample := (save_sample (AL_STRptr (filename), spl) = 0);
-  END;
-
-
-
-  PROCEDURE register_sample_file_type (CONST ext: AL_STRptr; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC);
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  PROCEDURE al_register_sample_file_type (CONST ext: STRING; load: AL_SAMPLE_LOAD_FUNC; save: AL_SAMPLE_SAVE_FUNC);
-  BEGIN
-    register_sample_file_type (AL_STRptr (ext), load, save);
+    RESULT := NOT save_sample (filename, spl)
   END;
 
 INITIALIZATION

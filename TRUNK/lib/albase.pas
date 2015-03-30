@@ -135,10 +135,6 @@ TYPE
 (* size_t equivalent. *)
   AL_SIZE_T = AL_UINT32;
 
-(* Fake pointer type.  It's needed because the need of pointer arithmetics in
-  some inlined methods. *)
-  AL_UINTPTR_T = AL_UINT32;
-
 {$ENDIF}
 
 (* Float value. *)
