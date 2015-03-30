@@ -442,7 +442,15 @@ INTERFACE
 
 (* Same as @link(al_apply_matrix) but using floats instead than fixed. *)
   PROCEDURE al_apply_matrix_f (CONST m: AL_MATRIX_F; x, y, z: AL_FLOAT; OUT xout, yout, zout: AL_FLOAT);
-    INLINE;
+{ NOTE: This procedure cannot be INLINE.  If it is then calculations are messed
+	up and results in twisted stuff.  This seems to be a bug (or issue) on
+	Free Pascal compiler.
+
+	Also, using the external C function seems to be a bit slower (at least
+	in my old IBM Pentium IV).  Anyway, if you want to use the original
+	Allegro function, remember to change the CONST parameter to VAR!
+}
+  {  CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'apply_matrix_f';  }
 
 
 (*****************************************************************************
@@ -881,7 +889,7 @@ INTERFACE
   FUNCTION al_polygon_z_normal (VAR v1, v2, v3: AL_V3D): AL_FIXED;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'polygon_z_normal';
 
-(* Returns the sign of the z normal of the polygon.  it's more accurated than
+(* Returns the sign of the z normal of the polygon.  It's more accurated than
    @link(al_polygon_z_normal).
  *)
   FUNCTION al_polygon_z_normal_sign (CONST v1, v2, v3: AL_V3D): AL_INT64;
@@ -1018,14 +1026,18 @@ INTERFACE
    @link(al_cpu_capabilities) global variable on entry in this routine affect
    the choice of low-level asm routine that will be used by
    @code(al_render_scene) for this polygon.
-   @returns(zero on success, or a negative number if it won't be rendered for
+   @returns(@false on success, or @true if it won't be rendered for
     lack of a rendering routine.)
    @seealso(al_create_scene) @seealso(al_clear_scene) @seealso(al_render_scene)
    @seealso(al_polygon3d) *)
-  FUNCTION al_scene_polygon3d (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: ARRAY OF AL_V3Dptr): BOOLEAN;
+  FUNCTION al_scene_polygon3d
+    (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; VAR vtx: ARRAY OF AL_V3Dptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scene_polygon3d';
 
 (* Floating point version of @link(al_scene_polygon3d). *)
-  FUNCTION al_scene_polygon3d_f (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: ARRAY OF AL_V3D_Fptr): BOOLEAN;
+  FUNCTION al_scene_polygon3d_f
+    (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; VAR vtx: ARRAY OF AL_V3D_Fptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'scene_polygon3d_f';
 
 (* Renders all the specified @link(al_scene_polygon3d)'s on the bitmap passed
    to @link(al_clear_scene).  Rendering is done one scanline at a time, with no
@@ -1101,11 +1113,11 @@ INTERFACE
   @seealso(al_polygon3d_f) @seealso(al_triangle3d) @seealso(al_quad3d)
   @seealso(al_gfx_capabilities). *)
   PROCEDURE al_polygon3d (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: ARRAY OF AL_V3Dptr);
-  {  INLINE; }
+    INLINE;
 
 (* Same as @link(al_polygon3d) but using floats instead than fixed. *)
   PROCEDURE al_polygon3d_f (bmp: AL_BITMAPptr; _type: AL_INT; texture: AL_BITMAPptr; vc: AL_INT; vtx: ARRAY OF AL_V3D_Fptr);
-  {  INLINE; }
+    INLINE;
 
 (* Draw 3D triangles, using fixed point vertex structures.  Unlike
   @link(al_quad3d), this procedure is not a wrapper of @link(al_polygon3d).
@@ -1265,32 +1277,12 @@ IMPLEMENTATION
 
 
 
-  FUNCTION create_scene (nedge, npoly: AL_INT): AL_INT;
+  FUNCTION create_scene (nedge, npoly: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_create_scene (nedge, npoly: AL_INT): BOOLEAN;
   BEGIN
-    al_create_scene := create_scene (nedge, npoly) = 0;
-  END;
-
-
-
-  FUNCTION scene_polygon3d (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; VAR vtx: ARRAY OF AL_V3Dptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_scene_polygon3d (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: ARRAY OF AL_V3Dptr): BOOLEAN;
-  BEGIN
-    al_scene_polygon3d := scene_polygon3d (_type, texture, vx, vtx) = 0;
-  END;
-
-
-
-  FUNCTION scene_polygon3d_f (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; VAR vtx: ARRAY OF AL_V3D_Fptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_scene_polygon3d_f (_type: AL_INT; texture: AL_BITMAPptr; vx: AL_INT; vtx: ARRAY OF AL_V3D_Fptr): BOOLEAN;
-  BEGIN
-    al_scene_polygon3d_f := scene_polygon3d_f (_type, texture, vx, vtx) = 0;
+    RESULT := NOT create_scene (nedge, npoly)
   END;
 
 
