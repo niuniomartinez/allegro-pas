@@ -9,12 +9,15 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
     el archivo de datos.  Además, si el juego no cargaba el archivo, el mensaje
     de error era una excepción EAccessViolation.  Ahora ya funcionan como
     deberían.
+  * Fixed function al_apply_matrix_f.  Actually a workaround a possible bug
+   in Free Pascal compiler (MUST investigate this).
 
   Novedades
   ---------
   + Nueva extensión alGUI.
   + El ejemplo al3d es más completo.
   + Añadida identificación del sistema operativo en tiempo de ejecución.
+  + Added al_request_refresh_rate and al_get_refresh_rate.
 
   Otros
   -----
@@ -44,6 +47,15 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
    Please, let me know if you can test it.
  * Fixed some issues with timers on some examples.
    Also, changed the default graphics mode to windowed in some of them.
+ * Procedures _al_pupixel* and _al_getpixel* rewritten to work with pointers
+   instead of integers, avoiding weird conversions (I still don't like to play
+   with pointers on Pascal anyway).
+ * Some functions use now "inverse logic", that may be better:
+   + al_scene_plolygon3d<_f>
+   + al_request_scrool
+   + al_request_video_bitmap
+
+   Documentacion actualizada (mucho).
 
 Cambios entre las versiones 4.4.3 y 4.4.4
 =========================================
