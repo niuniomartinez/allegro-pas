@@ -4,13 +4,15 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
   Errores corregidos
   ------------------
   * Muchos cambios en la extensión "alstream".
-  * El ejemplo exalpha funciona algo mejor.
+  * El ejemplo exalpha funciona ahora correctamente.  El problema era que usaba
+    enteros de 16bit cuando necesita 32bit.
   * En ocasiones, el juego de demostración y el editor de mapas no leían
     el archivo de datos.  Además, si el juego no cargaba el archivo, el mensaje
     de error era una excepción EAccessViolation.  Ahora ya funcionan como
     deberían.
   * Fixed function al_apply_matrix_f.  Actually a workaround a possible bug
-   in Free Pascal compiler (MUST investigate this).
+    in Free Pascal compiler (MUST investigate this).
+  * Corregida la función al_pack_fseek.
 
   Novedades
   ---------

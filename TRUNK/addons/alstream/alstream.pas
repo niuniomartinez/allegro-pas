@@ -126,21 +126,13 @@ IMPLEMENTATION
   BEGIN
     IF Origin = soFromCurrent THEN
     BEGIN
-    { For some reason, next line raises a Segmentation Fault signal.
-      al_pack_fseek (fPackfile, Offset);
-
-      So, we use next workaround. }
-      FOR Cnt := 1 TO Offset DO
-        al_pack_fread (@Value, 1, fPackfile);
-      IF al_pack_feof (fPackfile) THEN
-        RAISE EStreamError.Create ('Error seeking on PACKFILE.')
+      IF al_pack_fseek (fPackfile, Offset) THEN
+	RESULT := Offset
+      ELSE
+	RESULT := -1
     END
-  {
     ELSE
       RAISE EStreamError.Create ('Allegro''s PACKFILE only supports soFromCurrent seeking.');
-  }
-  ;
-    Seek := Offset
   END;
 
 

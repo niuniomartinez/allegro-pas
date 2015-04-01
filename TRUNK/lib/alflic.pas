@@ -34,17 +34,20 @@ UNIT alflic;
 
 INTERFACE
 
-USES
-  albase, allegro; { Needs some basic definitions. }
+  USES
+    alBase, Allegro;
 
 
 
-CONST
-(* @exclude Values returnded by FLIC player functions. *)
-  AL_FLI_OK	  =  0;
-  AL_FLI_EOF	  = -1;
-  AL_FLI_ERROR	  = -2;
-  AL_FLI_NOT_OPEN = -3;
+  CONST
+  (* @exclude Values returnded by FLIC player functions. *)
+    AL_FLI_OK	  =  0;
+  { @exclude }
+    AL_FLI_EOF	  = -1;
+  { @exclude }
+    AL_FLI_ERROR	  = -2;
+  { @exclude }
+    AL_FLI_NOT_OPEN = -3;
 
 
 
@@ -58,8 +61,8 @@ CONST
     @code(AL_FLI_ERROR) if something went wrong, or the value returned by the
     @code(callback) function if that was what stopped it.)
    @seealso(al_play_memory_fli) @link(al_install_timer) @link(al_fli_frame) *)
-  FUNCTION al_play_fli (CONST filename: STRING; bmp: AL_BITMAPptr; loop: BOOLEAN; callback: AL_SIMPLE_FUNC): AL_INT;
-    INLINE;
+  FUNCTION al_play_fli (CONST filename: AL_STR; bmp: AL_BITMAPptr; loop: AL_BOOL; callback: AL_SIMPLE_FUNC): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'play_fli';
 
 (* Plays an Autodesk Animator FLI or FLC animation on the specified
    @link(AL_BITMAP), reading the data from a copy of the file which is held in
@@ -80,8 +83,8 @@ CONST
     @code(AL_FLI_ERROR) if something went wrong, or the value returned by the
     @code(callback) function if that was what stopped it.)
    @seealso(al_install_timer) @seealso(al_fli_frame) *)
-  FUNCTION al_play_memory_fli (fli_data: POINTER; bmp: AL_BITMAPptr; loop: BOOLEAN; callback: AL_SIMPLE_FUNC): LONGINT;
-    INLINE;
+  FUNCTION al_play_memory_fli (fli_data: AL_VOIDptr; bmp: AL_BITMAPptr; loop: AL_BOOL; callback: AL_SIMPLE_FUNC): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'play_memory_fli';
 
 
 
@@ -94,8 +97,8 @@ CONST
      one.)
    @seealso(al_close_fli) @seealso(al_next_fli_frame) @link(al_open_memory_fli)
   *)
-  FUNCTION al_open_fli (CONST filename: STRING): AL_INT;
-    INLINE;
+  FUNCTION al_open_fli (CONST filename: AL_STR): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'open_fli';
 
 (* Open FLI files ready for playing, reading the data from memory.  Information
    about the current FLI is held in the global variables @link(al_fli_bitmap)
@@ -121,8 +124,8 @@ CONST
     @code(AL_FLI_NOT_OPEN) on error, and @code(AL_FLI_EOF) on reaching the end
     of the file.)
    @seealso(al_open_fli) @seealso(al_fli_timer) @seealso(al_fli_frame) *)
-  FUNCTION al_next_fli_frame (loop: BOOLEAN): AL_INT;
-    INLINE;
+  FUNCTION al_next_fli_frame (loop: AL_BOOL): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'next_fli_frame';
 
 (* Once you have done whatever you are going to do with the
    @link(al_fli_bitmap) and @link(al_fli_palette), call this function to reset
@@ -188,52 +191,5 @@ CONST
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'fli_timer';
 
 IMPLEMENTATION
-
-  FUNCTION play_fli (CONST filename: AL_STRptr; bmp: AL_BITMAPptr; loop: AL_INT; callback: AL_SIMPLE_FUNC): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_play_fli (CONST filename: STRING; bmp: AL_BITMAPptr; loop: BOOLEAN; callback: AL_SIMPLE_FUNC): AL_INT;
-  VAR
-    DoLoop: AL_INT;
-  BEGIN
-    IF loop THEN DoLoop := -1 ELSE DoLoop := 0;
-    al_play_fli := play_fli (AL_STRptr (filename), bmp, DoLoop, callback);
-  END;
-
-
-
-  FUNCTION play_memory_fli (fli_data: POINTER; bmp: AL_BITMAPptr; loop: LONGINT; callback: AL_SIMPLE_FUNC): LONGINT; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_play_memory_fli (fli_data: POINTER; bmp: AL_BITMAPptr; loop: BOOLEAN; callback: AL_SIMPLE_FUNC): LONGINT;
-  VAR
-    DoLoop: LONGINT;
-  BEGIN
-    IF loop THEN DoLoop := -1 ELSE DoLoop := 0;
-    al_play_memory_fli := play_memory_fli (fli_data, bmp, DoLoop, callback);
-  END;
-
-
-
-  FUNCTION open_fli (CONST filename: AL_STRptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_open_fli (CONST filename: STRING): AL_INT;
-  BEGIN
-    al_open_fli := open_fli (AL_STRptr (filename));
-  END;
-
-
-
-  FUNCTION next_fli_frame (loop: AL_INT): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_next_fli_frame (loop: BOOLEAN): AL_INT;
-  VAR
-    DoLoop: AL_INT;
-  BEGIN
-    IF loop THEN DoLoop := -1 ELSE DoLoop := 0;
-    al_next_fli_frame := next_fli_frame (DoLoop);
-  END;
 
 END.

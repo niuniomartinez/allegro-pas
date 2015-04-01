@@ -1,4 +1,4 @@
-UNIT aldrv;
+UNIT alDrv;
 (*<Defines structs and variables used internally by Allegro and the add-ons.
 
   Note that this unit is FOR INTERNAL USE ONLY.
@@ -36,7 +36,7 @@ TYPE
     set_window_title: PROCEDURE (CONST name: AL_STR); CDECL;
 
     set_close_button_callback: FUNCTION (proc: AL_SIMPLE_PROC): AL_INT; CDECL;
-    _message: PROCEDURE (CONST msg: AL_STRptr); CDECL;
+    _message: PROCEDURE (CONST msg: AL_STR); CDECL;
     assert, save_console_state,
     restore_console_state, create_bitmap, created_bitmap, create_sub_bitmap,
     created_sub_bitmap, destroy_bitmap, read_hardware_palette,
