@@ -1852,7 +1852,9 @@ END.
      successful call to @link(al_set_gfx_mode) with this driver, you cannot make
      any assumptions about the width, height or color depth of the screen:  your
      code will have to deal with this little detail. *)
-    AL_GFX_SAFE			= $53414645; { AL_ID('S','A','F','E') }
+    AL_GFX_SAFE			= $53414645; { AL_ID('SAFE') }
+  (* No graphics mode. *)
+    AL_GFX_NONE			= $4E4F4E45; { AL_ID('NONE') }
 
   (* @exclude Drawing modes for al_draw_sprite_ex. *)
     AL_DRAW_SPRITE_NORMAL_MODE = 0;

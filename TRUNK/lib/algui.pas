@@ -1,4 +1,4 @@
-UNIT algui;
+UNIT alGUI;
 (*<GUI routines
 
   Allegro contains an object-oriented dialog manager, which was originally
@@ -187,9 +187,7 @@ UNIT algui;
 INTERFACE
 
   USES
-    albase, allegro;
-
-
+    alBase, Allegro;
 
   TYPE
   (* Pointer to @link(AL_DIALOG). *)
@@ -599,12 +597,12 @@ FUNCTION foo (dp3: AL_VOIDptr; d2: AL_INT): AL_INT; CDECL;
    screen, interpreting the @code('&') character as an underbar for displaying
    keyboard shortcuts. @returns(The width of the output string in pixels.)
    @seealso(al_gui_strlen) *)
-  FUNCTION al_gui_textout_ex (bmp: AL_BITMAPptr; s: STRING; x, y, color, bg: AL_INT; centre: BOOLEAN): AL_INT;
-    INLINE;
+  FUNCTION al_gui_textout_ex (bmp: AL_BITMAPptr; s: AL_STR; x, y, color, bg: AL_INT; centre: AL_BOOL): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_textout_ex';
 (* Helper function for use by the GUI routines. @returns(The length of a string
    in pixels, ignoring @code('&') characters.) *)
-  FUNCTION al_gui_strlen (s: STRING): AL_INT;
-    INLINE;
+  FUNCTION al_gui_strlen (s: AL_STR): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_strlen';
 
 (* Helper function to define a dialog item.
    @param(dialog The dialog) @param(item Index to the dialog item)
@@ -636,10 +634,9 @@ al_do_dialog (dlg, al_find_dialog_focus (dlg));
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'find_dialog_focus';
 (* Offers the input focus to a particular object.  Normally the function sends
    the @code(AL_MSG_WANTFOCUS) message to query whether the object is willing
-   to accept the focus.  However, passing any non-zero value as @code(force)
-   argument instructs the function to authoritatively set the focus to the
-   object. *)
-  FUNCTION al_offer_focus (dialog: AL_DIALOGptr; obj: AL_INT; focus_obj: AL_INTptr; force: AL_INT): AL_INT;
+   to accept the focus.  However, passing @true as @code(force) argument
+   instructs the function to authoritatively set the focus to the object. *)
+  FUNCTION al_offer_focus (dialog: AL_DIALOGptr; obj: AL_INT; OUT focus_obj: AL_INT; force: AL_BOOL): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'offer_focus';
 
 (* Sends a message to an object and returns the answer it has generated.
@@ -657,7 +654,7 @@ al_object_message (@(dialog[1]), AL_MSG_DRAW, 0);
    procedures return values other than @code(AL_D_O_K), it returns the value
    and sets @code(obj) to the index of the object which produced it.
    @seealso(al_object_message) @seealso(al_broadcast_dialog_message) *)
-  FUNCTION al_dialog_message (dialog: AL_DIALOGptr; msg, c: AL_INT; obj: AL_INTptr): AL_INT;
+  FUNCTION al_dialog_message (dialog: AL_DIALOGptr; msg, c: AL_INT; OUT obj: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'dialog_message';
 (* Broadcasts a message to all the objects in the active dialog.  If any of the
    dialog procedures return values other than @code(AL_D_O_K), it returns that
@@ -711,8 +708,8 @@ END;
      terminated.  Upon a return value of @false, it is up to you whether to
      call @code(al_shutdown_dialog) or to continue execution.)
    @seealso(al_do_dialog) *)
-  FUNCTION al_update_dialog (player: AL_DIALOG_PLAYERptr): BOOLEAN;
-    INLINE;
+  FUNCTION al_update_dialog (player: AL_DIALOG_PLAYERptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'update_dialog';
 (* Destroys a dialog player object returned by @link(al_init_dialog), returning
    the object that caused it to exit (this is the same as the return value from
    @code(al_do_dialog)). *)
@@ -759,8 +756,8 @@ END;
    @returns(@true if the menu is still active, or @false if it has terminated.
      Upon a return value of @false, it is up to you to call
      @link(al_shutdown_menu) or to continue execution.) *)
-  FUNCTION al_update_menu (player: AL_MENU_PLAYERptr): BOOLEAN;
-    INLINE;
+  FUNCTION al_update_menu (player: AL_MENU_PLAYERptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'update_menu';
 (* Destroys a menu player object returned by @link(al_init_menu), returning the
    index of the menu item that was selected, or -1 if the menu was cancelled
    (this is the same as the return value from @link(al_do_menu)). *)
@@ -775,9 +772,11 @@ END;
      it treats it as a click on the second button @(this is consistent with the
      common @italic("Ok"), @italic("Cancel") alert@).)
    @seealso(al_alert3) *)
-  FUNCTION al_alert (s1, s2, s3, b1, b2: STRING; c1, c2: AL_INT): AL_INT;
+  FUNCTION al_alert (s1, s2, s3, b1, b2: AL_STR; c1, c2: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'alert';
 (* Like @link(al_alert), but with three buttons. @returns(1, 2, or 3) *)
-  FUNCTION al_alert3 (s1, s2, s3, b1, b2, b3: STRING; c1, c2, c3: AL_INT): AL_INT;
+  FUNCTION al_alert3 (s1, s2, s3, b1, b2, b3: AL_STR; c1, c2, c3: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'alert3';
 (* Displays the Allegro file selector, with the message as caption.  The path
    parameter contains the initial filename to display (this can be used to set
    the starting directory, or to provide a default filename for a save-as
@@ -813,87 +812,82 @@ END;
    not used. @returns(@false if it was closed with the @code(Cancel) button or
    @true if it was @code(OK)'d.)
    @seealso(al_gfx_mode_select_ex) @seealso(al_gfx_mode_select_filter) *)
-  FUNCTION al_gfx_mode_select (VAR card, w, h: AL_INT): BOOLEAN;
-    INLINE;
+  FUNCTION al_gfx_mode_select (VAR card, w, h: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gfx_mode_select';
 (* Extended version of the graphics mode selection dialog, which allows the
    user to select the color depth as well as the resolution and hardware
    driver.  This version of the function reads the initial values from the
    parameters when it activates so you can specify the default values.  In
    fact, you should be sure not to pass in uninitialised values.
    @seealso(al_gfx_mode_select) @seealso(al_gfx_mode_select_filter) *)
-  FUNCTION al_gfx_mode_select_ex (VAR card, w, h, color_depth: AL_INT): BOOLEAN;
-    INLINE;
+  FUNCTION al_gfx_mode_select_ex (VAR card, w, h, color_depth: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gfx_mode_select_ex';
 
-TYPE
-(* Callback to be used by @link(al_gfx_mode_select_filter). *)
-  AL_GFX_SELECT_FN = FUNCTION(c, w, h, d: AL_INT): AL_INT; CDECL;
+  TYPE
+  (* Callback to be used by @link(al_gfx_mode_select_filter). *)
+    AL_GFX_SELECT_FN = FUNCTION(c, w, h, d: AL_INT): AL_INT; CDECL;
+
 (* Even more extended version of the graphics mode selection dialog, which
    allows the programmer to customize the contents of the dialog and the user
    to select the color depth as well as the resolution and hardware driver.
-
-   This version of the function reads the initial values from the parameters
-   when it activates so you can specify the default values.  In fact, you
-   should be sure not to pass in uninitialised values.
-   @param(filter will be passed (card, w, h, color_depth) quadruplets and must
+   @code(filter) will be passed (card, w, h, color_depth) quadruplets and must
    return 0 to let the specified quadruplet be added to the list of displayed
-   modes.)
-   @seealso(al_gfx_mode_select) @seealso(al_gfx_mode_select_ex) *)
-  FUNCTION al_gfx_mode_select_filter (VAR card, w, h, color_depth: AL_INT; filter: AL_GFX_SELECT_FN): BOOLEAN;
-    INLINE;
+   modes.
 
+   As with @code(al_gfx_mode_select), the values stored at the addresses passed
+   to the function will be used as suggestions for the initial selections in
+   the dialog, defaulting to the first entry in each list if the values are not
+   found.  Initialize the data stored at the addresses passed to the function to
+   the value of 0 or -1 if you want to ensure that the initial selection for
+   each list will be the first entry.
 
+   If the dialog is OK'd, it stores the selections at the addresses passed to
+   the function.
+
+   Example usage:
+@longcode(#
+  ret := al_gfx_mode_select_filter (card, w, h, color_depth, @user_filter);
+  IF ret THEN
+  BEGIN
+  // User okayed dialog or user_filter removed all modes
+    IF card = AL_GFX_NONE THEN
+    BEGIN
+    // No modes available
+      card := AL_GFX_TEXT; // Make sure not to leave card = AL_GFX_NONE
+      EXIT (-1);
+    END;
+    // Handle changing to new mode here...
+  END
+  ELSE BEGIN
+  // User cancelled dialog or there was an error (unlikely)
+    IF card = AL_GFX_NONE THEN
+    BEGIN
+    // Error, probably out of memory
+      card := AL_GFX_TEXT; // Make sure not to leave card = AL_GFX_NONE
+      EXIT (-2);
+    END;
+  // Carry on in current graphics mode if that is acceptable
+  END;
+#)
+    @return(@false if the user cancelled the dialog or an error occurred. In
+      the case of an error then @code(card) is assigned the value
+      @code(AL_GFX_NONE). The functions return @false if the user made a
+      selection @bold(or) if all the modes were filtered out. In the case that
+      all of the modes were filtered out, then @code(card) is assigned the value
+      @code(AL_GFX_NONE). This means you should @bold(not) initialize the
+      @code(card) to the value of @code(AL_GFX_NONE), as it could interfere with
+      determining the proper return value.
+    )
+    @seealso(al_gfx_mode_select) @seealso(al_gfx_mode_select_ex)
+    @seealso(al_set_color_depth) @seealso(al_set_gfx_mode)
+    @seealso(al_gui_fg_color) *)
+  FUNCTION al_gfx_mode_select_filter (VAR card, w, h, color_depth: AL_INT; filter: AL_GFX_SELECT_FN): AL_BOOL;
+    CDECL; EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME NAME 'gfx_mode_select_filter';
 
 IMPLEMENTATION
 
   USES
     sysutils;
-
-
-
-(* Links to Allegro's functions. *)
-  FUNCTION gui_textout_ex (bmp: AL_BITMAPptr; CONST s: AL_STRptr; x, y, color, bg, centre: AL_INT): AL_INT; CDECL;
-    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-  FUNCTION gui_strlen (CONST s: AL_STRptr): AL_INT; CDECL;
-    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-  FUNCTION update_dialog (player: AL_DIALOG_PLAYERptr): AL_INT; CDECL;
-    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-  FUNCTION update_menu (player: AL_MENU_PLAYERptr): AL_INT; CDECL;
-    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION alert (CONST s1, s2, s3, b1, b2: AL_STRptr; c1, c2: AL_INT): AL_INT; CDECL;
-    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-  FUNCTION alert3 (CONST s1, s2, s3, b1, b2, b3: AL_STRptr; c1, c2, c3: AL_INT): AL_INT; CDECL;
-    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-  FUNCTION file_select_ex (CONST message: AL_STRptr; path: AL_STRptr; CONST ext: AL_STRptr; size, w, h: AL_INT): AL_INT; CDECL;
-    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-  FUNCTION gfx_mode_select (card, w, h: AL_INTptr): AL_INT; CDECL;
-    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-  FUNCTION gfx_mode_select_ex (card, w, h, color_depth: AL_INTptr): AL_INT; CDECL;
-    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-  FUNCTION gfx_mode_select_filter (card, w, h, color_depth: AL_INTptr; filter: AL_POINTER): AL_INT; CDECL;
-    EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
-
-
-
-  FUNCTION al_gui_textout_ex (bmp: AL_BITMAPptr; s: STRING; x, y, color, bg: AL_INT; centre: BOOLEAN): AL_INT;
-  VAR
-    Ctr: AL_INT;
-  BEGIN
-    IF centre THEN
-      Ctr := NOT 0
-    ELSE
-      Ctr := 0;
-    al_gui_textout_ex := gui_textout_ex (bmp, AL_STRptr (s), x, y, color, bg, Ctr);
-  END;
-
-
-
-  FUNCTION al_gui_strlen (s: STRING): AL_INT;
-  BEGIN
-    al_gui_strlen := gui_strlen (AL_STRptr (s));
-  END;
-
-
 
   PROCEDURE al_set_dialog_item (VAR dialog: ARRAY OF AL_DIALOG; index: INTEGER;
     proc: AL_DIALOG_PROC; x, y, w, h, fg, bg, key, flags, d1, d2: AL_INT;
@@ -917,13 +911,6 @@ IMPLEMENTATION
 
 
 
-  FUNCTION al_update_dialog (player: AL_DIALOG_PLAYERptr): BOOLEAN;
-  BEGIN
-    al_update_dialog := update_dialog (player) <> 0;
-  END;
-
-
-
   PROCEDURE al_set_menu_item (VAR menu: ARRAY OF AL_MENU; index: INTEGER;
     txt: STRING; proc: AL_SIMPLE_FUNC; child: AL_MENUptr; flags: AL_INT;
     dp: POINTER);
@@ -937,36 +924,8 @@ IMPLEMENTATION
 
 
 
-  FUNCTION al_update_menu (player: AL_MENU_PLAYERptr): BOOLEAN;
-  BEGIN
-    al_update_menu := update_menu (player) <> 0;
-  END;
-
-
-
-(* Helper funtion to get labels. *)
-  FUNCTION GetPChar (LabelText: STRING): AL_STRptr; INLINE;
-  BEGIN
-    IF LabelText <> '' THEN
-      GetPChar := AL_STRptr (LabelText)
-    ELSE
-      GetPChar := NIL;
-  END;
-
-  FUNCTION al_alert (s1, s2, s3, b1, b2: STRING; c1, c2: AL_INT): AL_INT;
-  BEGIN
-    al_alert := alert (GetPChar (s1), GetPChar (s2), GetPChar (s3),
-		       GetPChar (b1), GetPChar (b2), c1, c2);
-  END;
-
-
-
-  FUNCTION al_alert3 (s1, s2, s3, b1, b2, b3: STRING; c1, c2, c3: AL_INT): AL_INT;
-  BEGIN
-    al_alert3 := alert3 (GetPChar (s1), GetPChar (s2), GetPChar (s3),
-			 GetPChar (b1), GetPChar (b2), GetPChar (b3), c1, c2, c3);
-  END;
-
+  FUNCTION file_select_ex (CONST message: AL_STR; path: AL_STRptr; CONST ext: AL_STR; size, w, h: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL  ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_file_select_ex (message: STRING; VAR path: STRING; ext: STRING; length, w, h: AL_INT): BOOLEAN;
   VAR
@@ -974,30 +933,9 @@ IMPLEMENTATION
   BEGIN
     Buffer := StrAlloc (length + 1);
     StrPCopy (Buffer, path);
-    al_file_select_ex := file_select_ex (AL_STRptr (message), Buffer, AL_STRptr (ext), length, w, h) <> 0;
+    RESULT := file_select_ex (message, Buffer, ext, length, w, h);
     Path := StrPas (Buffer);
     StrDispose (Buffer);
-  END;
-
-
-
-  FUNCTION al_gfx_mode_select (VAR card, w, h: AL_INT): BOOLEAN;
-  BEGIN
-    al_gfx_mode_select := gfx_mode_select (@card, @w, @h) <> 0;
-  END;
-
-
-
-  FUNCTION al_gfx_mode_select_ex (VAR card, w, h, color_depth: AL_INT): BOOLEAN;
-  BEGIN
-    al_gfx_mode_select_ex := gfx_mode_select_ex (@card, @w, @h, @color_depth) <> 0;
-  END;
-
-
-
-  FUNCTION al_gfx_mode_select_filter (VAR card, w, h, color_depth: AL_INT; filter: AL_GFX_SELECT_FN): BOOLEAN;
-  BEGIN
-    al_gfx_mode_select_filter := gfx_mode_select_filter (@card, @w, @h, @color_depth, filter) <> 0;
   END;
 
 END.

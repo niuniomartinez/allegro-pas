@@ -1,4 +1,4 @@
-UNIT alflic;
+UNIT alFlic;
 (*<FLIC movie routines.
 
   There are two high level functions for playing FLI/FLC animations:
