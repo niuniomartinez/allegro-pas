@@ -1,4 +1,4 @@
-UNIT alvga;
+UNIT alVGA;
 (*<256-color special effects.
 
   In paletted video modes, translucency and lighting are implemented with a 64k

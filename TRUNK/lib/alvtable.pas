@@ -1,4 +1,4 @@
-UNIT alvtable;
+UNIT alVTable;
 (*< @exclude
  *
  *      Virtual table to be used by AL_BITMAP.  FOR INTERNAL USE ONLY.
@@ -9,7 +9,7 @@ UNIT alvtable;
 INTERFACE
 
 USES
-  albase, alfixed;
+  alBase, alFixed;
 
 TYPE
 (* Some internal stuff to define virtual methods. *)
