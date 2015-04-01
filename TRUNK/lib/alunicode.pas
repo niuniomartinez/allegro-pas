@@ -82,8 +82,8 @@ INTERFACE
 
 (* @returns(The number of characters in the string.  Note that this doesn't have
    to equal the string's size in bytes.) *)
-  FUNCTION al_ustrlen (s: STRING): AL_INT;
-    INLINE;
+  FUNCTION al_ustrlen (s: AL_STR): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'ustrlen';
 
 (* Converts the specified string @code(s) from @code(aType) to @code(newtype),
    it checks before doing the conversion, and doesn't bother if the string
@@ -92,7 +92,7 @@ INTERFACE
    characters@).
    @seealso(al_set_uformat) @seealso(al_uconvert_ascii)
    @seealso(al_uconvert_toascii) *)
-  FUNCTION al_uconvert (CONST s: STRING; aType, newtype: AL_INT): STRING;
+  FUNCTION al_uconvert (CONST s: AL_STR; aType, newtype: AL_INT): AL_STRptr;
     INLINE;
 
 (* Converts strings from ASCII into the current encoding format.
@@ -111,29 +111,18 @@ IMPLEMENTATION
   USES
     Allegro, sysutils;
 
-  FUNCTION ustrlen (CONST s: AL_STRptr): AL_INT;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+  FUNCTION uconvert (CONST s: AL_STR; aType: AL_INT; buf: AL_STR; newtype, size: AL_INT): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'uconvert';
 
-  FUNCTION al_ustrlen (s: STRING): AL_INT;
-  BEGIN
-    al_ustrlen := ustrlen (AL_STRptr (s));
-  END;
-
-
-
-
-  FUNCTION uconvert (CONST s: AL_STRptr; aType: AL_INT; buf: AL_STRptr; newtype, size: AL_INT): AL_STRptr; CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'uconvert';
-
-  FUNCTION al_uconvert (CONST s: STRING; aType, newtype: AL_INT): STRING;
+  FUNCTION al_uconvert (CONST s: AL_STR; aType, newtype: AL_INT): AL_STRptr;
   VAR
     Buffer: AL_STRptr;
     StrLength: INTEGER;
   BEGIN
     StrLength := Length (s) + 1;
     Buffer := StrAlloc (StrLength);
-    al_uconvert := uconvert (AL_STRptr (s), aType, Buffer, newtype, StrLength);
-    StrDispose (Buffer);
+    RESULT := uconvert (s, aType, Buffer, newtype, StrLength);
+    StrDispose (Buffer)
   END;
 
   FUNCTION al_uconvert_ascii (CONST s: STRING): STRING;

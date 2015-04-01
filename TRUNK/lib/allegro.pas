@@ -5002,7 +5002,7 @@ IMPLEMENTATION
   USES
     sysutils,
   (* Includes the system driver description. *)
-    aldrv;
+    alDrv;
 
   VAR
   (* To be used as "errnum". *)

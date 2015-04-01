@@ -1,4 +1,4 @@
-UNIT alblend;
+UNIT alBlend;
 (*<Truecolor transparency.
 
   In truecolor video modes, translucency and lighting are implemented by a
@@ -15,8 +15,8 @@ UNIT alblend;
 
   The parameter @code(x) represents the blending modifier color and the
   parameter @code(y) represents the base color to be modified.  The
-  interpolation factor @code(n) is in the range [0-255] and controls the
-  solidity of the blending.
+  interpolation factor @code(n) is in the range @code([0..255]) and controls
+  the solidity of the blending.
 
   When a translucent drawing function is used, @code(x) is the color of the
   source, @code(y) is the color of the bitmap being drawn onto and @code(n) is
@@ -39,7 +39,7 @@ UNIT alblend;
 INTERFACE
 
   USES
-    albase;
+    alBase;
 
 (*****************************************************************************
  * color.h

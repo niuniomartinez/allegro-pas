@@ -1,4 +1,4 @@
-UNIT alfixed;
+UNIT alFixed;
 (*<Fixed point math routines
 
   Allegro provides some routines for working with fixed point numbers, and

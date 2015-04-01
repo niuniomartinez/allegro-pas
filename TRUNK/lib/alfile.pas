@@ -63,7 +63,7 @@ UNIT alFile;
 INTERFACE
 
   USES
-    alBase, Allegro; { Needs some basic definitions. }
+    alBase, Allegro;
 
 
 (*****************************************************************************
@@ -192,8 +192,8 @@ INTERFACE
 
   @seealso(al_pack_fclose) @seealso(al_pack_fopen_chunk)
   @seealso(al_packfile_password) @seealso(al_pack_fread) *)
-  FUNCTION al_pack_fopen (CONST filename, mode: STRING): AL_PACKFILEptr;
-    INLINE;
+  FUNCTION al_pack_fopen (CONST filename, mode: AL_STR): AL_PACKFILEptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pack_fopen';
 
 (* Creates a new packfile structure that uses the functions specified in the
    vtable instead of the standard functions.  The data pointer by `vtable' and
@@ -285,8 +285,8 @@ BEGIN
   @returns(a pointer to the sub-chunked @code(AL_PACKFILEptr), or @nil if there
    was some error @(eg. you are using a custom @code(AL_PACKFILEptr) vtable@).)
   @seealso(al_pack_fclose_chunk) @seealso(al_pack_fopen) *)
-  FUNCTION al_pack_fopen_chunk (f: AL_PACKFILEptr; pack: BOOLEAN): AL_PACKFILEptr;
-    INLINE;
+  FUNCTION al_pack_fopen_chunk (f: AL_PACKFILEptr; pack: AL_BOOL): AL_PACKFILEptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pack_fopen_chunk';
 
 (* Closes a sub-chunk of a file, previously obtained by calling
    @link(al_pack_fopen_chunk).  Returns a pointer to the parent of the
@@ -316,8 +316,8 @@ BEGIN
    these functions).
    @returns(@true if you are at the end of the file, @false otherwise.)
    @seealso(al_pack_fopen) @seealso(al_pack_fopen_chunk) @seealso(al_pack_ferror) *)
-  FUNCTION al_pack_feof (f: AL_PACKFILEptr): BOOLEAN;
-    INLINE;
+  FUNCTION al_pack_feof (f: AL_PACKFILEptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'pack_feof';
 
 (* Tells if an error occurred during an operation on the stream.  Since EOF is
    used to report errors by some functions, it's often better to use the
@@ -472,7 +472,9 @@ BEGIN
       ftype : AL_INT;		{ property type  }
     END;
 
+  { @exclude }
     AL_DATAFILE_PROPERTY_LISTptr = ^AL_DATAFILE_PROPERTY_LIST;
+  { @exclude }
     AL_DATAFILE_PROPERTY_LIST = ARRAY [0..AL_UNKNOWN_SIZE] OF AL_DATAFILE_PROPERTY;
 
   (* Pointer to @code(AL_DATAFILE_OBJECT). *)
@@ -500,8 +502,8 @@ BEGIN
    @returns(a pointer to the @code(AL_DATAFILE), or @nil on error.)
    @seealso(al_unload_datafile) @seealso(al_load_datafile_object)
    @seealso(al_packfile_password) @seealso(grabber) *)
-  FUNCTION al_load_datafile (CONST filename: STRING): AL_DATAFILEptr;
-    INLINE;
+  FUNCTION al_load_datafile (CONST filename: AL_STR): AL_DATAFILEptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_datafile';
 
 (* Frees all the objects in a datafile.  Use this to avoid memory leaks in your
    program. @seealso(al_load_datafile) *)
@@ -528,13 +530,13 @@ VAR
      there was no object with the requested name.)
    @seealso(al_unload_datafile_object) @seealso(al_load_datafile)
    @seealso(al_set_color_conversion) @seealso(grabber) *)
-  FUNCTION al_load_datafile_object (CONST filename, objectname: STRING): AL_DATAFILE_OBJECTptr;
-    INLINE;
+  FUNCTION al_load_datafile_object (CONST filename, objectname: AL_STR): AL_DATAFILE_OBJECTptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_datafile_object';
 
 (* Frees an object previously loaded by @code(al_load_datafile_object).  Use
    this to avoid memory leaks in your program. *)
-  PROCEDURE al_unload_datafile_object (dat: AL_DATAFILE_OBJECTptr); CDECL;
-    EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'unload_datafile_object';
+  PROCEDURE al_unload_datafile_object (dat: AL_DATAFILE_OBJECTptr);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'unload_datafile_object';
 
 
 (* Searches an already loaded datafile for an object with the specified name.
@@ -556,8 +558,8 @@ END;
    @return( a pointer to a @link(AL_DATAFILE_OBJECTptr) whose @code(dat) member
      points to the object, or @nil if the object could not be found.)
    @seealso(al_load_datafile) @seealso(al_load_datafile_object) *)
-  FUNCTION al_find_datafile_object (CONST dat: AL_DATAFILEptr; CONST ObjectName: STRING): AL_DATAFILE_OBJECTptr;
-    INLINE;
+  FUNCTION al_find_datafile_object (CONST dat: AL_DATAFILEptr; CONST ObjectName: AL_STR): AL_DATAFILE_OBJECTptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'find_datafile_object';
 
 
 
@@ -626,48 +628,14 @@ IMPLEMENTATION
 
 
 
-  FUNCTION pack_fopen (CONST filename, mode: AL_STRptr): AL_PACKFILEptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_pack_fopen (CONST filename, mode: STRING): AL_PACKFILEptr;
-  BEGIN
-    al_pack_fopen := pack_fopen (AL_STRptr (filename), AL_STRptr (mode));
-  END;
-
-
-
-  FUNCTION pack_fseek (f: AL_PACKFILEptr; offset: AL_INT): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
   FUNCTION al_pack_fseek (f: AL_PACKFILEptr; offset: AL_INT): BOOLEAN;
-  BEGIN
-    al_pack_fseek := (pack_fseek (f, offset) = 0);
-  END;
-
-
-
-  FUNCTION pack_fopen_chunk (f: AL_PACKFILEptr; pack: AL_INT): AL_PACKFILEptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_pack_fopen_chunk (f: AL_PACKFILEptr; pack: BOOLEAN): AL_PACKFILEptr;
   VAR
-    P: INTEGER;
+    Value: ARRAY OF AL_CHAR;
   BEGIN
-    IF pack THEN
-      P := -1
-    ELSE
-      P := 0;
-    al_pack_fopen_chunk := pack_fopen_chunk (f, P);
-  END;
-
-
-
-  FUNCTION pack_feof (f: AL_PACKFILEptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_pack_feof (f: AL_PACKFILEptr): BOOLEAN;
-  BEGIN
-    al_pack_feof := (pack_feof (f) <> 0)
+    IF offset < 1 THEN EXIT (FALSE);
+    SetLength (Value, offset);
+    IF al_pack_fread (@Value[0], offset, f) <> offset THEN EXIT (FALSE);
+    RESULT := TRUE
   END;
 
 
@@ -686,12 +654,12 @@ IMPLEMENTATION
 
 
 
-  FUNCTION pack_fputs (CONST p: AL_STRptr; f: AL_PACKFILEptr): AL_INT;
+  FUNCTION pack_fputs (CONST p: AL_STR; f: AL_PACKFILEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_pack_fputs (p: STRING; f: AL_PACKFILEptr): BOOLEAN;
   BEGIN
-    al_pack_fputs := (pack_fputs (AL_STRptr (p), f) = 0);
+    RESULT := NOT pack_fputs (p, f)
   END;
 
 
@@ -700,61 +668,31 @@ IMPLEMENTATION
  * datafile.h
  *)
 
-  FUNCTION load_datafile (CONST filename: AL_STRptr): AL_DATAFILEptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_datafile';
-
-  FUNCTION al_load_datafile (CONST filename: STRING): AL_DATAFILEptr;
-  BEGIN
-    al_load_datafile := load_datafile (AL_STRptr (filename));
-  END;
-
-
-
-  FUNCTION load_datafile_object (CONST filename, objectname: AL_STRptr): AL_DATAFILE_OBJECTptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_datafile_object';
-
-  FUNCTION al_load_datafile_object (CONST filename, objectname: STRING): AL_DATAFILE_OBJECTptr;
-  BEGIN
-    al_load_datafile_object := load_datafile_object (AL_STRptr (filename), AL_STRptr (objectname));
-  END;
-
-
-
-  FUNCTION find_datafile_object (CONST dat: AL_DATAFILEptr; CONST ObjectName: AL_STRptr): AL_DATAFILE_OBJECTptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
-
-  FUNCTION al_find_datafile_object (CONST dat: AL_DATAFILEptr; CONST ObjectName: STRING): AL_DATAFILE_OBJECTptr;
-  BEGIN
-    al_find_datafile_object := find_datafile_object (dat, AL_STRptr (ObjectName));
-  END;
-
-
-
-  FUNCTION save_bmp_pf (f: AL_PACKFILEptr; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_INT;
+  FUNCTION save_bmp_pf (f: AL_PACKFILEptr; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_save_bmp_pf (f: AL_PACKFILEptr; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): BOOLEAN;
   BEGIN
-    al_save_bmp_pf := save_bmp_pf (f, bmp, palette) = 0;
+    RESULT := NOT save_bmp_pf (f, bmp, palette)
   END;
 
 
 
-  FUNCTION save_pcx_pf (f: AL_PACKFILEptr; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_INT;
+  FUNCTION save_pcx_pf (f: AL_PACKFILEptr; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_save_pcx_pf (f: AL_PACKFILEptr; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): BOOLEAN;
   BEGIN
-    al_save_pcx_pf := save_pcx_pf (f, bmp, palette) = 0;
+    RESULT := NOT save_pcx_pf (f, bmp, palette)
   END;
 
 
-  FUNCTION save_tga_pf (f: AL_PACKFILEptr; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_INT;
+  FUNCTION save_tga_pf (f: AL_PACKFILEptr; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_save_tga_pf (f: AL_PACKFILEptr; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): BOOLEAN;
   BEGIN
-    al_save_tga_pf := save_tga_pf (f, bmp, palette) = 0;
+    RESULT := NOT save_tga_pf (f, bmp, palette)
   END;
 
 END.
