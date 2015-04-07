@@ -112,14 +112,15 @@ PROGRAM Test;
 (* Initializes the application. *)
   PROCEDURE TDemoGUI.Initialize;
   CONST
-  { Some default measures. }
-    LEFT = 1; RIGHT = 200;
-    WIDTH = 150; HEIGHT = 20;
+  { Some default measures.  It assumes standard text font of 8x8. }
+    WIDTH = 150; HEIGHT = 20; SPACE = HEIGHT + (HEIGHT DIV 2);
+    LEFT = 1; RIGHT = 200; RIGHT_2 = RIGHT + WIDTH + 8;
   VAR
     LastY: INTEGER;
 
-  { Helper function to keep stuff "on grid". }
-    FUNCTION AddControl (CONST aName: STRING; aControl: TalGUI_Control)
+  { Helper function to add controls in rows with a label. }
+    FUNCTION AddControl (CONST aName: STRING; aControl: TalGUI_Control;
+      aControl2: TalGUI_Control=NIL)
       : INTEGER;
     BEGIN
       Dialog.Controls.Add (TalGUI_Label.CreateLabel (aName, LEFT, LastY));
@@ -129,11 +130,19 @@ PROGRAM Test;
 	aControl.X := RIGHT; aControl.Y := LastY;
 	aControl.Width := WIDTH; aControl.Height := HEIGHT
       END;
-      INC (LastY, HEIGHT + (HEIGHT DIV 2))
+      IF aControl2 <> NIL THEN
+      BEGIN
+        Dialog.Controls.Add (aControl2);
+	aControl2.X := RIGHT_2; aControl2.Y := LastY;
+	aControl2.Width := WIDTH; aControl2.Height := HEIGHT
+      END;
+      INC (LastY, SPACE)
     END;
 
   VAR
-    Ndx: INTEGER;
+    Ndx,
+  { Some control index. }
+    SliderLabel: INTEGER;
   BEGIN
   { Initialize Allegro. }
     IF NOT al_init THEN
@@ -160,41 +169,33 @@ PROGRAM Test;
     ));
     Dialog.Controls.Add (TalGUI_Label.CreateLabel (
       'TalGUI_Label agaCenter',
-      LEFT, 24, AL_SCREEN_W, 8, agaCenter
+      LEFT, 16, AL_SCREEN_W, 8, agaCenter
     ));
     Dialog.Controls.Add (TalGUI_Label.CreateLabel (
       'TalGUI_Label agaRight',
-      LEFT, 32, AL_SCREEN_W, 8, agaRight
+      LEFT, 16, AL_SCREEN_W, 8, agaRight
     ));
-    LastY := 64;
+    LastY := 32;
 
-    Ndx := AddControl ('TalGUI_Box->', TalGUI_Box.Create);
+    Ndx := AddControl ('TalGUI_Box->', TalGUI_Box.Create, TalGUI_Box.Create);
     TalGUI_Box (Dialog.Controls[Ndx]).Raised := FALSE;
-{
-    Dialog.Controls.Add (TalGUI_Box.CreateBox (
-      AL_SCREEN_W DIV 2 + 115, 50, 100, 32, FALSE
-    ));
-}
   { Example buttons. }
-    Ndx := AddControl ('TalGUI_Button->', TalGUI_Button.CreateButton (
-      'Press me', RIGHT, LastY, WIDTH, HEIGHT
-    ));
+    Ndx := AddControl (
+      'TalGUI_Button->',
+      TalGUI_Button.CreateButton ('Press me', -1, -1),
+      TalGUI_Button.CreateButton ('Disabled button', -1, -1)
+    );
     TalGUI_Button (Dialog.Controls[Ndx]).onCLick := @SELF.onClickMeBtnClick;
-{
-    Ndx := Dialog.Controls.Add (TalGUI_Button.CreateButton (
-      'Disabled button',
-      AL_SCREEN_W DIV 2 + 160, 88, 144, 24
-    ));
-    TalGUI_Button (Dialog.Controls[Ndx]).Enabled := FALSE;
-}
+    Dialog.Controls[Ndx + 1].Enabled := FALSE;
+
   { Example slider/scroll-bar. }
     Ndx := AddControl ('TalGUI_Slider->', TalGUI_Slider.Create);
   { Store index of label on slider's Tag property. }
-    TalGUI_Slider (Dialog.Controls[Ndx]).Tag :=
-      Dialog.Controls.Add (TalGUI_Label.CreateLabel (
+    SliderLabel := Dialog.Controls.Add (TalGUI_Label.CreateLabel (
 	'Position: 0 of 100',
-	AL_SCREEN_W DIV 2 + 130, 128, WIDTH * 2, HEIGHT
-      ));
+	RIGHT_2, LastY - SPACE, WIDTH * 2, HEIGHT
+    ));
+    Dialog.Controls[Ndx].Tag := SliderLabel;
     TalGUI_Slider (Dialog.Controls[Ndx]).OnChange := @SELF.onSliderChange;
 
   { Example list box. }
@@ -212,10 +213,12 @@ PROGRAM Test;
     LastY :=
       Dialog.Controls[Ndx].Y + Dialog.Controls[Ndx].Height + (HEIGHT DIV 2);
   { Example checkbox. }
-    Dialog.Controls.Add (TalGUI_Label.CreateLabel (
-      ' Check me!', RIGHT + 22, LastY
-    ));
-    Ndx := AddControl ('TalGUI_CheckBox->', TalGUI_CheckBox.Create);
+    Ndx := AddControl (
+      'TalGUI_CheckBox->',
+      TalGUI_CheckBox.CreateCheckbox ('Check me!'),
+      TalGUI_CheckBox.CreateCheckbox ('Disabled checkbox')
+    );
+    Dialog.Controls[Ndx + 1].Enabled := FALSE;
 
   { Example of how to simulate radio-buttons using checkbox "onChange" event.
 
@@ -243,14 +246,14 @@ PROGRAM Test;
     Ndx := Dialog.Controls.Add (TalGUI_CheckBox.Create);
     WITH TalGUI_CheckBox (Dialog.Controls[Ndx]) DO
     BEGIN
-      X := AL_SCREEN_W DIV 2 + 21;
+      X := RIGHT + 21;
       Y := LastY;
       onChange := @SELF.onChangeRadio
     END;
     LastRadio := Dialog.Controls.Add (TalGUI_CheckBox.Create);
     WITH TalGUI_CheckBox (Dialog.Controls[LastRadio]) DO
     BEGIN
-      X := AL_SCREEN_W DIV 2 + 34;
+      X := RIGHT + 42;
       Y := LastY;
       onChange := @SELF.onChangeRadio
     END;
@@ -261,8 +264,10 @@ PROGRAM Test;
     ));
     TalGUI_Button (Dialog.Controls[Ndx]).onCLick := @SELF.onCloseBtnClick;
   { Set colors. }
-    Dialog.SetDefaultColors;
+    Dialog.Controls.SetDefaultColors;
     Dialog.Controls[0].Color := Dialog.Style.BackgroundColor;
+  { By default, labels doesn't have background. }
+    Dialog.Controls[SliderLabel].BackgroundColor := Dialog.Style.BackgroundColor
   END;
 
 
