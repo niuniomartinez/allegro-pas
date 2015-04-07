@@ -122,13 +122,14 @@ INTERFACE
       not implement @code(DrawCheckbox).  Descendent classes such as
       @link(TalGUI_DefaultStyle) implement this method.
       @param(Bmp Where to draw it.)
-      @param(x1 Left limit of checkbox.)  @param(y1 Top limit of checkbox.)
-      @param(x2 Right limit of checkbox.) @param(y2 Bottom limit of checkbox.)
+      @param(x Left limit of checkbox.) @param(y Top limit of checkbox.)
       @param(Checked Whether to draw it checked or not.)
+      @param(Focused Whether to draw it focused or not.)
+      @return(Width of the box.  Used to draw label.)
      *)
-      PROCEDURE DrawCheckbox (
-	Bmp: AL_BitmapPtr; x1, y1, x2, y2: INTEGER; Checked: BOOLEAN
-      ); VIRTUAL; ABSTRACT;
+      FUNCTION DrawCheckbox (
+	Bmp: AL_BitmapPtr; x, y: INTEGER; Checked: BOOLEAN
+      ): INTEGER; VIRTUAL; ABSTRACT;
 
     (* Default text color. *)
       PROPERTY TextColor: LONGINT READ fTxtColor WRITE fTxtColor;
@@ -191,11 +192,12 @@ INTERFACE
       @(ASCII value in the low byte, scancode in the high byte@).) *)
       FUNCTION MsgKeyChar (aKey: INTEGER): BOOLEAN; VIRTUAL;
     (* Sent when an object gains the input focus.  This message will always be
-      followed by a call to @link(Draw), to let objects display themselves
-      differently when they have the input focus. @seealso(MsgLostFocus) *)
+      followed by a call to @link(RedrawMe), to let objects display themselves
+      differently when they have the input focus.
+      @seealso(MsgLostFocus) *)
       PROCEDURE MsgGotFocus; VIRTUAL;
     (* Sent when an object loses the input focus.  This message will always be
-      followed by a call to @link(Draw), to let objects display themselves
+      followed by a call to @link(RedrawMe), to let objects display themselves
       differently when they have the input focus.
       @return(@false to prevent the object from losing the focus when the mouse
 	moves off it onto the screen background or some inert object, so it will
@@ -203,10 +205,11 @@ INTERFACE
 	the focus @(this trick is used by the @code(TalGUIEdit) object@),
 	@true otherwise.) @seealso(MsgGotFocus) *)
       FUNCTION MsgLostFocus: BOOLEAN; VIRTUAL;
-    (* Sent when mouse moves on top of an object.  Unlike the @italic(focus)
-      message, this message will not be be followed by a call to @link(Draw),
-      so if the object is isplayed differently when the mouse is on top of it,
-      it should call @link(RedrawMe). @seealso(MsgLostMouse) *)
+    (* Sent when mouse moves on top of an object.  Unlike the @italic(got
+      focus/lost focus) messages, this message will not be be followed by a
+      call to any @code(Draw) method, so if the object is isplayed differently
+      when the mouse is on top of it, it should call @link(RedrawMe).
+      @seealso(MsgLostMouse) *)
       PROCEDURE MsgGotMouse; VIRTUAL;
     (* Sent when mouse moves away of an object.  Unlike the @italic(focus)
       message, this message will not be be followed by a call to @link(Draw),
@@ -221,21 +224,21 @@ INTERFACE
     (* Initializes the control.  It's called by the @link(TalGUI_Dialog) object
       just before it displays the dialog. *)
       PROCEDURE Initialize; VIRTUAL;
+    (* Finalizes the control  It's called when closing the dialog.  Allows to
+      perform whatever cleanup operations it requires. *)
+      PROCEDURE Finalize; VIRTUAL;
     (* Sets colors to default.  Note that control must be part of a dialog or
        this procedure will fail!
        @seealso(BorderColor) @seealso(BackgroundColor) @seealso(Color) *)
       PROCEDURE SetDefaultColors; VIRTUAL;
     (* Tell the owner dialog that control should be redrawn. *)
       PROCEDURE RedrawMe; VIRTUAL;
-    (* Finalizes the control  It's called when closing the dialog.  Allows to
-      perform whatever cleanup operations it requires. *)
-      PROCEDURE Finalize; VIRTUAL;
     (* Draws the control in the given bitmap. *)
       PROCEDURE Draw (Bmp: AL_BITMAPptr); VIRTUAL;
 
     (* Queries whether an object is willing to accept the input focus.
       @return(@true if it does, or @false if it isn't interested in getting user
-	input.)
+	input.  By default, it returns @false.)
       @seealso(HasFocus) @seealso(MsgGotFocus) @seealso(MsgLostFocus) *)
       FUNCTION WantFocus: BOOLEAN; VIRTUAL;
 
@@ -380,9 +383,6 @@ INTERFACE
     (* Destructor. *)
       DESTRUCTOR Destroy; OVERRIDE;
 
-    (* Sets default colors to all contained controls.  Note that @link(Style)
-      @bold(must) be set. *)
-      PROCEDURE SetDefaultColors;
     (* Draw the dialog.  You don't need to do this as @code(Run) will do it for
        you. @seealso(Update) *)
       PROCEDURE Draw;
@@ -541,6 +541,9 @@ INTERFACE
     PRIVATE
       fChecked: BOOLEAN;
       fOnChange: TalGUI_ControlEvent;
+      fCaption: STRING;
+
+      PROCEDURE SetCaption (CONST aCaption: STRING); INLINE;
     PROTECTED
     (* Sets the @link(Checked) property value. *)
       PROCEDURE SetChecked (CONST aValue: BOOLEAN); VIRTUAL;
@@ -557,6 +560,8 @@ INTERFACE
     (* Queries whether an object is willing to accept the input focus. *)
       FUNCTION WantFocus: BOOLEAN; OVERRIDE;
 
+    (* Caption of checkbox. *)
+      PROPERTY Caption: STRING READ fCaption WRITE SetCaption;
     (* Tells if control is checked or not. *)
       PROPERTY Checked: BOOLEAN READ fChecked WRITE SetChecked;
 
@@ -700,13 +705,14 @@ INTERFACE
 	STRING; X, Y: LONGINT; Centered: BOOLEAN); OVERRIDE;
     (* Draws a checkbox.
       @param(Bmp Where to draw it.)
-      @param(x1 Left limit of checkbox.)  @param(y1 Top limit of checkbox.)
-      @param(x2 Right limit of checkbox.) @param(y2 Bottom limit of checkbox.)
+      @param(x Left limit of checkbox.)  @param(y Top limit of checkbox.)
       @param(Checked Whether to draw it checked or not.)
+      @param(Focused Whether to draw it focused or not.)
+      @return(Width of the box.  Used to draw the label.)
      *)
-      PROCEDURE DrawCheckbox (
-	Bmp: AL_BitmapPtr; x1, y1, x2, y2: INTEGER; Checked: BOOLEAN
-      ); OVERRIDE;
+      FUNCTION DrawCheckbox (
+	Bmp: AL_BitmapPtr; x, y: INTEGER; Checked: BOOLEAN
+      ): INTEGER; OVERRIDE;
     END;
 
 IMPLEMENTATION
@@ -773,6 +779,9 @@ IMPLEMENTATION
   PROCEDURE TalGUI_CustomStyle.DrawText (Bmp: AL_BITMAPptr; CONST Msg: STRING;
     X, Y, Color: LONGINT; Centered: BOOLEAN);
   BEGIN
+  { For some reason, if text is an empty string then it fails (may be because
+    optimizations to NIL?). }
+    IF Msg = '' THEN EXIT;
     IF Centered THEN
       al_textout_centre_ex (Bmp, fTxtFont, Msg, X, Y, Color, -1)
     ELSE
@@ -1066,13 +1075,17 @@ IMPLEMENTATION
   PROCEDURE TalGUI_ControlList.MoveControls (CONST DisplacementX, DisplacementY: INTEGER);
   VAR
     Ndx: INTEGER;
+    aControl: TalGUI_Control;
   BEGIN
     FOR Ndx := 0 TO (fControlList.Count - 1) DO
-      IF GetControl (Ndx) <> NIL THEN
+    BEGIN
+      aControl := GetControl (Ndx);
+      IF aControl <> NIL THEN
       BEGIN
-	GetControl (Ndx).X := GetControl (Ndx).X + DisplacementX;
-	GetControl (Ndx).Y := GetControl (Ndx).Y + DisplacementY;
+	aControl.X := aControl.X + DisplacementX;
+	aControl.Y := aControl.Y + DisplacementY;
       END
+    END
   END;
 
 
@@ -1128,14 +1141,19 @@ IMPLEMENTATION
 	IF (0 <= fFocusIndex) AND (fFocusIndex < fControlList.Count)
 	AND fControlList[fFocusIndex].HasFocus
 	THEN
-	  FocusReleased := fControlList[fFocusIndex].MsgLostFocus
+	BEGIN
+	  FocusReleased := fControlList[fFocusIndex].MsgLostFocus;
+	  IF FocusReleased THEN
+	    fControlList[fFocusIndex].RedrawMe
+	END
 	ELSE
 	{ If nobody has focus, then it's free. }
 	  FocusReleased := TRUE;
 	IF FocusReleased THEN
 	BEGIN
 	  fFocusIndex := NewFocus;
-	  fControlList[fFocusIndex].MsgGotFocus
+	  fControlList[fFocusIndex].MsgGotFocus;
+	  fControlList[fFocusIndex].RedrawMe
 	END
       END
   END;
@@ -1329,34 +1347,28 @@ IMPLEMENTATION
 
 
 
-(* Set default colors. *)
-  PROCEDURE TalGUI_Dialog.SetDefaultColors;
-  BEGIN
-    fControlList.SetDefaultColors
-  END;
-
-
-
 (* Draws the dialog. *)
   PROCEDURE TalGUI_Dialog.Draw;
   VAR
     CtrNdx: INTEGER;
   BEGIN
     IF fRedrawAll THEN
-    BEGIN
+    TRY
       IF al_is_screen_bitmap (fBitmap) THEN al_scare_mouse;
       fControlList.Draw (fBitmap);
-      IF al_is_screen_bitmap (fBitmap) THEN al_unscare_mouse;
       fRedrawAll := FALSE
+    FINALLY
+      IF al_is_screen_bitmap (fBitmap) THEN al_unscare_mouse
     END
     ELSE FOR CtrNdx := 0 TO (fControlList.Count - 1) DO
       IF fControlList[CtrNdx].fRedraw THEN
-      BEGIN
+      TRY
 	IF al_is_screen_bitmap (fBitmap) THEN al_scare_mouse;
 	fControlList[CtrNdx].Draw (fBitmap);
-	fControlList[CtrNdx].fRedraw := FALSE;
+	fControlList[CtrNdx].fRedraw := FALSE
+      FINALLY
 	IF al_is_screen_bitmap (fBitmap) THEN al_unscare_mouse
-      END;
+      END
   END;
 
 
@@ -1521,7 +1533,8 @@ IMPLEMENTATION
   PROCEDURE TalGUI_Label.SetDefaultColors;
   BEGIN
     INHERITED SetDefaultColors;
-    BorderColor := BackgroundColor
+  { By default, it doesn't has background color. }
+    BackgroundColor := -1; BorderColor := -1
   END;
 
 
@@ -1529,25 +1542,32 @@ IMPLEMENTATION
 (* Draws the control in the given bitmap. *)
   PROCEDURE TalGUI_Label.Draw (Bmp: AL_BITMAPptr);
   VAR
-    pX: INTEGER;
+    pX, pY, tW: INTEGER;
   BEGIN
     IF SELF.BackgroundColor > -1 THEN
       al_rectfill (
         Bmp, X, Y, x + Width - 1, Y + Height - 1,
 	SELF.BackgroundColor
       );
+    IF SELF.BorderColor > -1 THEN
+      al_rect (
+        Bmp, X, Y, x + Width - 1, Y + Height - 1,
+	SELF.BorderColor
+      );
+    tW := al_text_length (Dialog.Style.TextFont, fCaption);
     CASE fAlignment OF
     agaLeft:
       pX := X;
     agaCenter:
-      pX := X + (Width DIV 2) - (al_text_length (Dialog.Style.TextFont, fCaption) DIV 2);
+      pX := X + (Width DIV 2) - (tW DIV 2);
     agaRight:
-      pX := X + Width - al_text_length (Dialog.Style.TextFont, fCaption);
+      pX := X + Width - tW;
     END;
+    pY := Y + (Height DIV 2) - (al_text_height (Dialog.Style.TextFont) DIV 2);
     IF SELF.Enabled THEN
-      Dialog.Style.DrawText (Bmp, fCaption, pX, Y, SELF.Color, FALSE)
+      Dialog.Style.DrawText (Bmp, fCaption, pX, pY, SELF.Color, FALSE)
     ELSE
-      Dialog.Style.DrawDisabledText (Bmp, fCaption, pX, Y, FALSE)
+      Dialog.Style.DrawDisabledText (Bmp, fCaption, pX, pY, FALSE)
   END;
 
 
@@ -1570,7 +1590,12 @@ IMPLEMENTATION
 
     PROCEDURE MyDraw; INLINE;
     BEGIN
-      al_scare_mouse; SELF.Draw (SELF.Dialog.Bmp); al_unscare_mouse
+      TRY
+	IF al_is_screen_bitmap (SELF.Dialog.Bmp) THEN al_scare_mouse;
+	SELF.Draw (SELF.Dialog.Bmp)
+      FINALLY
+	IF al_is_screen_bitmap (SELF.Dialog.Bmp) THEN al_unscare_mouse
+      END
     END;
 
   BEGIN
@@ -1634,7 +1659,7 @@ IMPLEMENTATION
 (* Queries if wants focus. *)
   FUNCTION TalGUI_CustomButton.WantFocus: BOOLEAN;
   BEGIN
-    RESULT := Enabled
+    RESULT := TRUE
   END;
 
 
@@ -1642,6 +1667,14 @@ IMPLEMENTATION
 (*
  * TalGUI_CustomCheckBox
  *****************************************************************************)
+
+  PROCEDURE TalGUI_CustomCheckBox.SetCaption (CONST aCaption: STRING);
+  BEGIN
+    fCaption := aCaption;
+    SELF.RedrawMe
+  END;
+
+
 
 (* Sets the @link(Checked) property value. *)
   PROCEDURE TalGUI_CustomCheckBox.SetChecked (CONST aValue: BOOLEAN);
@@ -1692,6 +1725,7 @@ IMPLEMENTATION
   CONSTRUCTOR TalGUI_CustomCheckBox.Create;
   BEGIN
     INHERITED Create;
+    fCaption := '';
     Width := 12; Height := 12
   END;
 
@@ -1700,7 +1734,7 @@ IMPLEMENTATION
 (* Queries if wants focus. *)
   FUNCTION TalGUI_CustomCheckBox.WantFocus: BOOLEAN;
   BEGIN
-    RESULT := Enabled
+    RESULT := TRUE
   END;
 
 
@@ -1821,7 +1855,7 @@ IMPLEMENTATION
 (* It wants focus. *)
   FUNCTION TalGUI_CustomSlider.WantFocus: BOOLEAN;
   BEGIN
-    RESULT := Enabled
+    RESULT := TRUE
   END;
 
 
@@ -1963,9 +1997,9 @@ IMPLEMENTATION
     Bmp: AL_BitmapPtr; x1, y1, x2, y2, BackColor: INTEGER;
     Title: STRING; TitleCentered: BOOLEAN);
   BEGIN
-    al_rectfill (Bmp, X1, Y1, X2, Y2, BackColor);
-    al_rectfill (Bmp, X1, Y1, X2, Y1 + 16, SelectedBackgroundColor);
-    al_rect     (Bmp, X1, Y1, X2, Y2, BorderColor);
+    al_rectfill (Bmp, x1, y1, x2, y2, BackColor);
+    al_rectfill (Bmp, x1, y1, x2, y1 + 16, SelectedBackgroundColor);
+    al_rect     (Bmp, x1, y1, x2, y2, BorderColor);
 
     al_hline (Bmp, x1 + 1, y2 - 1, x2 - 1, DarkColor);
     al_vline (Bmp, X2 - 1, y1 + 1, y2 - 1, DarkColor);
@@ -1974,7 +2008,7 @@ IMPLEMENTATION
     al_vline (Bmp, X1 + 1, y1 + 1, y2 - 1, LightColor);
 
     IF TitleCentered THEN x1 := (x1 + X2) DIV 2;
-    DrawText (Bmp, Title, X1, Y1 + 4, SelectedTextColor, TitleCentered)
+    DrawText (Bmp, Title, x1, y1 + 4, SelectedTextColor, TitleCentered)
   END;
 
 
@@ -1983,26 +2017,39 @@ IMPLEMENTATION
   PROCEDURE TalGUI_DefaultStyle.DrawDisabledText (Bmp: AL_BITMAPptr; CONST Msg:
     STRING; X, Y: LONGINT; Centered: BOOLEAN);
   BEGIN
-    DrawText (Bmp, Msg, X + 1, Y + 1, LightColor, Centered);
-    DrawText (Bmp, Msg, X, Y, DarkColor, Centered)
+  { For some reason, if text is an empty string then it fails (may be because
+    optimizations to NIL?). }
+    IF Msg <> '' THEN
+    BEGIN
+      DrawText (Bmp, Msg, X + 1, Y + 1, LightColor, Centered);
+      DrawText (Bmp, Msg, X, Y, DarkColor, Centered)
+    END
   END;
 
 
 
 (* Draws a checkbox. *)
-  PROCEDURE TalGUI_DefaultStyle.DrawCheckbox (
-    Bmp: AL_BitmapPtr; x1, y1, x2, y2: INTEGER; Checked: BOOLEAN);
+  FUNCTION TalGUI_DefaultStyle.DrawCheckbox (
+    Bmp: AL_BitmapPtr; x, y: INTEGER; Checked: BOOLEAN): INTEGER;
+  VAR
+    Size, x2, y2: INTEGER;
   BEGIN
-    al_rectfill (Bmp, x1, y1, x2, y2, SELF.BackgroundTextBoxColor);
+  { Nice sizes and positions. }
+    INC (x); INC (y);
+    Size := ((al_text_height (SELF.TextFont) * 3) DIV 2) - 1;
+    x2 := x + Size; y2 := y + Size;
+    RESULT := Size + 1;
+  { Draw. }
+    al_rectfill (Bmp, x, y, x2, y2, SELF.BackgroundTextBoxColor);
     IF Checked THEN
     BEGIN
-      al_line (Bmp, x1, y1, x2, y2, TextColor);
-      al_line (Bmp, x2, y1, x1, y2, TextColor)
+      Size := al_text_height (SELF.TextFont) DIV 4;
+      DrawText (Bmp, 'x', x + Size, y + Size, TextColor, FALSE)
     END;
-    al_hline (Bmp, x1, y2, x2, LightColor);
-    al_vline (Bmp, X2, y1, y2, LightColor);
-    al_vline (Bmp, X1, y1, y2, DarkColor);
-    al_hline (Bmp, x1, y1, x2, DarkColor);
+    al_hline (Bmp, x, y2, x2, LightColor);
+    al_vline (Bmp, X2, y, y2, LightColor);
+    al_vline (Bmp, X, y, y2, DarkColor);
+    al_hline (Bmp, x, y, x2, DarkColor);
   END;
 
 END.

@@ -152,7 +152,7 @@ IMPLEMENTATION
       FOR Ndx := 0 TO Length (Buttons) - 1 DO
 	Dialog.AddButton (Buttons[Ndx]);
     { Let's go. }
-      Dialog.SetDefaultColors;
+      Dialog.Controls.SetDefaultColors;
       Dialog.Run (0);
       RESULT := Dialog.Focus
     FINALLY

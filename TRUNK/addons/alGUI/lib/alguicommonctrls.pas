@@ -113,6 +113,8 @@ INTERFACE
   (* A checkbox. *)
     TalGUI_CheckBox = CLASS (TalGUI_CustomCheckBox)
     PUBLIC
+    (* Creates a checkbox. *)
+      CONSTRUCTOR CreateCheckbox (CONST aCaption: STRING);
     (* Draws the control in the given bitmap. *)
       PROCEDURE Draw (Bmp: AL_BITMAPptr); OVERRIDE;
     END;
@@ -573,17 +575,41 @@ IMPLEMENTATION
  * TalGUI_CheckBox
  ****************************************************************************)
 
+(* Creates a checkbox. *)
+  CONSTRUCTOR TalGUI_CheckBox.CreateCheckbox (CONST aCaption: STRING);
+  BEGIN
+    INHERITED Create;
+    SELF.Caption := aCaption
+  END;
+
+
+
 (* Draws the control in the given bitmap. *)
   PROCEDURE TalGUI_CheckBox.Draw (Bmp: AL_BITMAPptr);
+  VAR
+    Size, Left, Top: INTEGER;
   BEGIN
-    Dialog.Style.DrawCheckbox (
-      Bmp, X, Y, X + Width - 1, Y + Height - 1, SELF.Checked
-    );
-    IF HasFocus THEN
+    IF BackgroundColor <> -1 THEN
+      al_rectfill (
+	Bmp, X, Y, x + Width - 1, Y + Height - 1,
+	SELF.BackgroundColor
+      );
+    Size := al_text_height (Dialog.Style.TextFont) DIV 2;
+    Left := Dialog.Style.DrawCheckbox (Bmp, X, Y, SELF.Checked) + Size;
+    Top := (Height DIV 2) - Size;
+    IF SELF.Enabled THEN
+      Dialog.Style.DrawText (
+	Bmp, Caption, X + Left, Y + Top, SELF.Color, FALSE
+      )
+    ELSE
+      Dialog.Style.DrawDisabledText (
+	Bmp, Caption, X + Left , Y + Top, FALSE
+      );
+    IF SELF.HasFocus THEN
       Dialog.Style.DrawFocusRect (
 	Bmp,
-	X + 1, Y + 1,
-	X + Width - 2, Y + Height - 2
+	X, Y,
+	X + Width - 1, Y + Height - 1
       )
   END;
 
