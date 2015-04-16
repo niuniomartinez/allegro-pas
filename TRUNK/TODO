@@ -9,7 +9,9 @@ New features
    version of loader.
  * Get information about available graphics modes.
  * Display switch modes.
+ * Sound recording/input.
  * Add IDs for controllers (Windows and Linux).  This needs new units.
+ * Add functions and procedures to deal with specific Windows an Linux API.
 
 
 Other

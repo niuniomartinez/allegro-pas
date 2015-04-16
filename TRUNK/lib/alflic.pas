@@ -41,11 +41,11 @@ INTERFACE
 
   CONST
   (* @exclude Values returnded by FLIC player functions. *)
-    AL_FLI_OK	  =  0;
+    AL_FLI_OK =  0;
   { @exclude }
-    AL_FLI_EOF	  = -1;
+    AL_FLI_EOF = -1;
   { @exclude }
-    AL_FLI_ERROR	  = -2;
+    AL_FLI_ERROR = -2;
   { @exclude }
     AL_FLI_NOT_OPEN = -3;
 
@@ -60,7 +60,8 @@ INTERFACE
    @returns(@code(AL_FLI_OK) if it reached the end of the file,
     @code(AL_FLI_ERROR) if something went wrong, or the value returned by the
     @code(callback) function if that was what stopped it.)
-   @seealso(al_play_memory_fli) @link(al_install_timer) @link(al_fli_frame) *)
+   @seealso(al_play_memory_fli) @seealso(al_install_timer)
+   @seealso(al_fli_frame) *)
   FUNCTION al_play_fli (CONST filename: AL_STR; bmp: AL_BITMAPptr; loop: AL_BOOL; callback: AL_SIMPLE_FUNC): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'play_fli';
 
