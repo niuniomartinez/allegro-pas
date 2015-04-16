@@ -176,6 +176,7 @@ END;
    @param(system_id Identification of the system.)
    @returns(@true on success or @false on failure @(e.g. no system driver
      could be used@).)
+   @seealso(alWin)
    @seealso(al_exit) @seealso(al_set_uformat) @seealso(al_set_config_file) *)
   FUNCTION al_install (system_id: AL_INT): BOOLEAN;
     INLINE;
@@ -1055,8 +1056,15 @@ VAR
  *)
 
   CONST
-  (* To be used at @code(al_install_joystick). *)
+  (* Attempts to autodetect your joystick hardware. It will use information
+     from the configuration file if one is available (this can be created using
+     the setup utility or by calling the @code(al_save_joystick_data)
+     function), so you can always use @code(AL_JOY_TYPE_AUTODETECT) in your
+     code and then select the exact hardware type from the setup program.
+     @seealso(al_save_joystick_data) @seealso(al_install_joystick). *)
     AL_JOY_TYPE_AUTODETECT = -1;
+  (* Dummy driver for machines without any joystick.
+     @seealso(al_install_joystick) *)
     AL_JOY_TYPE_NONE = 0;
 
   (* Maximun number of elements. *)
@@ -1216,7 +1224,8 @@ VAR
      @link(al_calibrate_joystick) functions to measure the exact range of the
      inputs.)
      @seealso(al_remove_joystick) @seealso(al_num_joysticks)
-     @seealso(al_load_joystick_data) @seealso(al_poll_joystick) *)
+     @seealso(al_load_joystick_data) @seealso(al_poll_joystick)
+     @seealso(AL_JOY_TYPE_AUTODETECT) @seealso(alWin) *)
   FUNCTION al_install_joystick (CONST atype: AL_INT): BOOLEAN;
 
 (* Removes the joystick handler. You don't normally need to bother calling
@@ -2172,6 +2181,7 @@ END.
 
    @returns(@true on success.  On failure returns @false and stores a
      description of the problem in @link(al_error).)
+   @seealso(AL_GFX_AUTODETECT) @seealso(AL_GFX_DIRECTX)
    @seealso(al_gfx_capabilities) @seealso(al_get_desktop_resolution) *)
   FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: AL_INT): BOOLEAN;
 

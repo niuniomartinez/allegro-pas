@@ -97,12 +97,12 @@ INTERFACE
 
 (* Converts strings from ASCII into the current encoding format.
    @seealso(al_uconvert) @seealso(al_uconvert_toascii) *)
-  FUNCTION al_uconvert_ascii (CONST s: STRING): STRING;
+  FUNCTION al_uconvert_ascii (CONST s: AL_STR): STRING;
     INLINE;
 
 (* Converts strings from the current encoding format into ASCII.
    @seealso(al_uconvert) @seealso(al_uconvert_ascii) *)
-  FUNCTION al_uconvert_toascii (CONST s: STRING): STRING;
+  FUNCTION al_uconvert_toascii (CONST s: AL_STR): STRING;
     INLINE;
 
 
@@ -125,12 +125,12 @@ IMPLEMENTATION
     StrDispose (Buffer)
   END;
 
-  FUNCTION al_uconvert_ascii (CONST s: STRING): STRING;
+  FUNCTION al_uconvert_ascii (CONST s: AL_STR): STRING;
   BEGIN
     al_uconvert_ascii := al_uconvert (s, AL_U_ASCII, AL_U_CURRENT);
   END;
 
-  FUNCTION al_uconvert_toascii (CONST s: STRING): STRING;
+  FUNCTION al_uconvert_toascii (CONST s: AL_STR): STRING;
   BEGIN
     al_uconvert_toascii := al_uconvert (s, AL_U_CURRENT, AL_U_ASCII);
   END;
