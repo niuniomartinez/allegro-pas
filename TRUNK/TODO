@@ -10,15 +10,10 @@ New features
  * Get information about available graphics modes.
  * Display switch modes.
  * Sound recording/input.
- * Add IDs for controllers (Windows and Linux).  This needs new units.
- * Add functions and procedures to deal with specific Windows an Linux API.
 
 
 Other
 =====
- * Change STRING by AL_STR and AL_STRptr, and remove wrapper
-   procedures/functions.  Use AL_STR on parameters and AL_STRptr on return
-   values.
  * Remove (if possible) the MANY hint messages about C ARRAYs.
  * Check the "inverse logic" used by some functions.  In most cases they're
    "inversed" using NOT but may be it's better not to do that in some cases.
