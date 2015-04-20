@@ -5,12 +5,14 @@ UNIT alWin;
   this unit; however, if it also needs to directly call non portable Win32 API
   functions, it must include this Windows-specific unit.
 
+  @bold(Windows integration)
+
   When creating the main window, Allegro searches the executable for an
   @code(ICON) resource named @italic("allegro_icon"). If it is present, Allegro
   automatically loads it and uses it as its application icon; otherwise,
   Allegro uses the default @code(IDI_APPLICATION) icon. See the manual of your
   compiler for a method to create an @code(ICON) resource, or use the
-  @code(wfixicon) utility from the tools/win directory.
+  @code(wfixicon) utility from the @code(tools/win) directory.
 
   DirectX requires that system and video bitmaps (including the screen) be
   locked before you can draw onto them. This will be done automatically, but
@@ -29,6 +31,34 @@ UNIT alWin;
   @code(32). This means that 15-bit and 16-bit desktops cannot be
   differentiated and are both reported as 16-bit desktops. See below for the
   consequences for windowed and overlay DirectX drivers.
+
+  @bold(GDI routines)
+
+  The GDI routines are a very platform specific thing, to allow drawing
+  Allegro memory bitmaps onto a Windows device context. When you want to use
+  this, you'll have to install the neutral system driver (@code(AL_SYSTEM_NONE))
+  or attach Allegro to an external window with @link(al_win_set_window).
+
+  There are two ways to draw your Allegro bitmaps to the Windows GDI. When you
+  are using static bitmaps (for example just some pictures loaded from a
+  datafile), you can convert them to DDB (device-dependent bitmaps) with
+  @link(al_convert_bitmap_to_hbitmap) and then just use Win32's @code(BitBlt)
+  to draw it.
+
+  When you are using dynamic bitmaps (for example some things which react to
+  user input), it's better to use @link(al_set_palette_to_hdc) and
+  @link(al_blit_to_hdc) functions, which work with DIB (device-independent
+  bitmaps).
+
+  There are also functions to blit from a device context into an Allegro
+  @code(AL_BITMAP), so you can do things like screen capture.
+
+  All the drawing and conversion functions use the current palette as a color
+  conversion table. You can alter the current palette with the
+  @code(al_set_palette_to_hdc) or @link(al_select_palette) functions.
+  @bold(Warning:) when the GDI system color palette is explicitly changed, (by
+  another application, for example) the current Allegro palette is not updated
+  along with it!
 *)
 
 {$INCLUDE allegro.cfg }
@@ -201,6 +231,81 @@ INTERFACE
   continue in Allegro's default window callback procedure. *)
   PROCEDURE al_win_set_msg_pre_proc (proc: __AL_WIN_MESSAGE_PROC__);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_set_msg_pre_proc';
+
+(* Retrieves a handle to the device context of a DirectX video or system
+  bitmap. @seealso(al_win_release_dc) *)
+  FUNCTION al_win_get_dc (bmp: AL_BITMAPptr): HDC;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_get_dc';
+(* Releases a handle to the device context of the bitmap that was previously
+  retrieved with @code(al_win_get_dc). @seealso(al_win_get_dc) *)
+  PROCEDURE al_win_release_dc (bmp: AL_BITMAPptr; dc: HDC);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'win_release_dc';
+
+(* Tells Allegro to use the GDI color layout for truecolor images. This is
+  optional, but it will make the conversions work faster. If you are going to
+  call this, you should do it right after initialising Allegro and before
+  creating any graphics. *)
+  PROCEDURE al_set_gdi_color_format;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_gdi_color_format';
+(* Selects and realizes an Allegro palette on the specified device context. *)
+  PROCEDURE al_set_palette_to_hdc (dc: HDC; VAR pal: AL_PALETTE);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_palette_to_hdc';
+(* Converts an Allegro palette to a Windows palette and returns a handle to it.
+   You should call @code(DeleteObject) when you no longer need it.
+   @seealso(al_convert_hpalette_to_palette) *)
+  FUNCTION al_convert_palette_to_hpalette (VAR pal: AL_PALETTE): HPALETTE;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'convert_palette_to_hpalette';
+(* Converts a Windows palette to an Allegro palette.
+    @seealso(al_convert_palette_to_hpalette) *)
+  PROCEDURE al_convert_hpalette_to_palette (hpal: HPALETTE; VAR pal: AL_PALETTE);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'convert_hpalette_to_palette';
+(* Converts an Allegro memory bitmap to a Windows DDB and returns a handle to
+  it. This bitmap uses its own memory, so you can destroy the original bitmap
+  without affecting the converted one. You should call @code(DeleteObject) when
+  you no longer need this bitmap. @seealso(al_convert_hbitmap_to_bitmap) *)
+  FUNCTION al_convert_bitmap_to_hbitmap (bitmap: AL_BITMAPptr): HBITMAP;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'convert_bitmap_to_hbitmap';
+(* Creates an Allegro memory bitmap from a Windows DDB.
+  @seealso(al_convert_bitmap_to_hbitmap) *)
+  FUNCTION al_convert_hbitmap_to_bitmap (bitmap: HBITMAP): AL_BITMAPptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'convert_hbitmap_to_bitmap';
+(* Draws an entire Allegro bitmap to a Windows device context, using the same
+  parameters as the @code(al_draw_sprite) procedure.
+  @seealso(al_blit_to_hdc) @seealso(al_stretch_blit_to_hdc)
+  @seealso(al_draw_sprite) *)
+  PROCEDURE al_draw_to_hdc (dc: HDC; bitmap: AL_BITMAPptr; x, y: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'draw_to_hdc';
+(* Blits an Allegro memory bitmap to a Windows device context, using the same
+  parameters as the @code(al_blit) procedure.
+  @seealso(al_draw_to_hdc) @seealso(al_stretch_blit_to_hdc)
+  @seealso(al_blit_from_hdc) @seealso(al_blit) *)
+  PROCEDURE al_blit_to_hdc (bitmap: AL_BITMAPptr; dc: HDC;
+    src_x, src_y, dest_x, dest_y, w, h: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'blit_to_hdc';
+(* Blits an Allegro memory bitmap to a Windows device context, using the same
+  parameters as the @seealso(al_stretch_blit) procedure.
+  @seealso(al_draw_to_hdc) @seealso(al_blit_to_hdc)
+  @seealso(al_stretch_blit_from_hdc) @seealso(al_stretch_blit) *)
+  PROCEDURE al_stretch_blit_to_hdc (bitmap: AL_BITMAPptr; dc: HDC;
+    src_x, src_y, src_x, src_y, dest_x, dest_y, dest_w, dest_h: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stretchblit_to_hdc';
+(* Blits from a Windows device context to an Allegro memory bitmap, using the
+  same parameters as the @code(al_blit) procedure.
+  @seealso(al_stretch_blit_from_hdc) @seealso(al_blit_to_hdc) @seealso(al_blit)
+ *)
+  PROCEDURE al_blit_from_hdc (dc: HDC; bitmap: AL_BITMAPptr;
+    src_x, src_y, dest_x, dest_y, w, h: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'blit_from_hdc';
+(* Blits from a Windows device context to an Allegro memory bitmap, using the
+  same parameters as the @code(al_stretch_blit) procedure. It uses the current
+  Allegro palette and does conversion to this palette, regardless of the
+  current DC palette. So if you are blitting from 8-bit mode, you should first
+  set the DC palette with the @link(al_set_palette_to_hdc) procedure.
+  @seealso(al_blit_from_hdc) @seealso(al_stretch_blit_to_hdc)
+  @seealso(al_stretch_blit) *)
+  PROCEDURE al_stretch_blit_from_hdc (dc: HDC; bitmap: AL_BITMAPptr;
+    src_x, src_y, src_x, src_y, dest_x, dest_y, dest_w, dest_h: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stretchblit_from_hdc';
 
 IMPLEMENTATION
 

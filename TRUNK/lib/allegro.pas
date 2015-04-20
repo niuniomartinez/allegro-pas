@@ -176,8 +176,8 @@ END;
    @param(system_id Identification of the system.)
    @returns(@true on success or @false on failure @(e.g. no system driver
      could be used@).)
-   @seealso(alWin)
-   @seealso(al_exit) @seealso(al_set_uformat) @seealso(al_set_config_file) *)
+   @seealso(al_exit) @seealso(al_set_uformat) @seealso(al_set_config_file)
+   @seealso(alUNIX) @seealso(alWin) *)
   FUNCTION al_install (system_id: AL_INT): BOOLEAN;
     INLINE;
 
@@ -1225,7 +1225,7 @@ VAR
      inputs.)
      @seealso(al_remove_joystick) @seealso(al_num_joysticks)
      @seealso(al_load_joystick_data) @seealso(al_poll_joystick)
-     @seealso(AL_JOY_TYPE_AUTODETECT) @seealso(alWin) *)
+     @seealso(AL_JOY_TYPE_AUTODETECT) @seealso(alWin) @seealso(alUNIX) *)
   FUNCTION al_install_joystick (CONST atype: AL_INT): BOOLEAN;
 
 (* Removes the joystick handler. You don't normally need to bother calling
@@ -2181,8 +2181,9 @@ END.
 
    @returns(@true on success.  On failure returns @false and stores a
      description of the problem in @link(al_error).)
-   @seealso(AL_GFX_AUTODETECT) @seealso(AL_GFX_DIRECTX)
-   @seealso(al_gfx_capabilities) @seealso(al_get_desktop_resolution) *)
+   @seealso(AL_GFX_AUTODETECT)
+   @seealso(al_gfx_capabilities) @seealso(al_get_desktop_resolution)
+   @seealso(alUNIX) @seealso(alWin) *)
   FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: AL_INT): BOOLEAN;
 
 (* Requests a hardware scroll request.  Attempts to scroll the hardware screen
@@ -4385,7 +4386,7 @@ END;
      @link(al_error).)
    @seealso(al_remove_sound) @seealso(al_reserve_voices)
    @seealso(al_set_volume) @seealso(al_play_sample) @seealso(al_play_midi)
-   @seealso(al_set_mixer_quality) *)
+   @seealso(al_set_mixer_quality) @seealso(alWin) @seealso(alUNIX) *)
   FUNCTION al_install_sound (digi, midi: AL_INT): BOOLEAN;
     INLINE;
 
