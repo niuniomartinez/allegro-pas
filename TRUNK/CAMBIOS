@@ -22,6 +22,7 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
   + Added al_request_refresh_rate and al_get_refresh_rate.
   + Added controllers ID for Linux and Windows.
   + Added Windows and UNIX/Linux specific procedures.
+  + Added control to console switching.
 
   Otros
   -----

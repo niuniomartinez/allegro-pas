@@ -1,7 +1,7 @@
 UNIT alDrv;
 (*<Defines structs and variables used internally by Allegro and the add-ons.
 
-  Note that this unit is FOR INTERNAL USE ONLY.
+  Note that this unit is @bold(FOR INTERNAL USE ONLY).
 
   Note that some parts of this unit are platform-dependent so they aren't
   available in all platforms. *)
@@ -58,6 +58,40 @@ TYPE
   (* Pointer to the system driver. *)
     al_system_driver: __AL_SYSTEM_DRIVER__ptr;
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'system_driver';
+
+
+
+(*****************************************************************************
+ * gfx.h
+ *     Graphics driver.
+ *)
+
+  TYPE
+  (* Pointer to __AL_GFX_DRIVER__. *)
+    __AL_GFX_DRIVER__ptr = ^__AL_GFX_DRIVER__;
+  (* Creates and manages the screen bitmap. *)
+    __AL_GFX_DRIVER__ = RECORD
+      id: AL_INT;
+      name, desc, ascii_name: AL_STRptr;
+      init, exit, scroll, vsync, set_palette, request_scroll, poll_scroll,
+      enable_triple_buffer, create_video_bitmap, destroy_video_bitmap,
+      show_video_bitmap, request_video_bitmap, create_system_bitmap,
+      destroy_system_bitmap, set_mouse_sprite, show_mouse, hide_mouse,
+      move_mouse, drawing_mode, save_video_state, restore_video_state,
+      set_blender_mode, fetch_mode_list: AL_POINTER;
+      w, h: AL_INT;                     (*<physical (not virtual!) screen size *)
+      linear: AL_BOOL;                  (*<true if video memory is linear *)
+      bank_size: AL_LONG;               (* bank size, in bytes *)
+      bank_gran: AL_LONG;               (* bank granularity, in bytes *)
+      vid_mem: AL_LONG;                 (* video memory size, in bytes *)
+      vid_phys_base: AL_LONG;           (* physical address of video memory *)
+      windowed: AL_BOOL;                (* true if driver runs windowed *)
+    END;
+
+  VAR
+  (* Pointer to the current graphics driver. *)
+    al_gfx_driver: __AL_GFX_DRIVER__ptr;
+      EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gfx_driver';
 
 IMPLEMENTATION
 

@@ -178,7 +178,7 @@ END;
      could be used@).)
    @seealso(al_exit) @seealso(al_set_uformat) @seealso(al_set_config_file)
    @seealso(alUNIX) @seealso(alWin) *)
-  FUNCTION al_install (system_id: AL_INT): BOOLEAN;
+  FUNCTION al_install (system_id: AL_INT): AL_BOOL;
     INLINE;
 
 (* Function which initialises the Allegro library.  This is the same thing as
@@ -186,7 +186,7 @@ END;
    @returns(@true on success or @false on failure @(e.g. no system driver
      could be used@).)
    @seealso(al_exit) *)
-  FUNCTION al_init: BOOLEAN;
+  FUNCTION al_init: AL_BOOL;
     INLINE;
 
 (* Closes down the Allegro system.  This includes returning the system to text
@@ -261,7 +261,7 @@ END;
    @returns(@true on success or @false on failure @(e.g. the feature is not
      supported by the platform@).)
    @seealso(al_set_window_title) *)
-  FUNCTION al_set_close_button_callback (proc: AL_SIMPLE_PROC): BOOLEAN;
+  FUNCTION al_set_close_button_callback (proc: AL_SIMPLE_PROC): AL_BOOL;
     INLINE;
 
 
@@ -408,7 +408,7 @@ END;
    does not apply, in which case the values stored in the variables you
    provided for `width' and `height' are undefined.)
    @seealso(al_desktop_color_depth) @seealso(al_set_gfx_mode) *)
-  FUNCTION al_get_desktop_resolution (VAR w, h: AL_INT): BOOLEAN;
+  FUNCTION al_get_desktop_resolution (VAR w, h: AL_INT): AL_BOOL;
     INLINE;
 
 
@@ -612,7 +612,7 @@ VAR
    @returns(@true on success, or @false on failure @(but you may decide not to
      check the return value as this function is very unlikely to fail@).)
    @seealso(al_remove_timer) @seealso(al_install_int) *)
-  FUNCTION al_install_timer: BOOLEAN;
+  FUNCTION al_install_timer: AL_BOOL;
     INLINE;
 
 (* Removes the Allegro timer handler.  You don't normally need to bother
@@ -649,7 +649,7 @@ VAR
      timer.)
    @seealso(al_remove_int) @seealso(al_install_int)
    @seealso(al_install_param_int_ex) *)
-  FUNCTION al_install_int_ex (proc: AL_SIMPLE_PROC; speed: AL_LONG): BOOLEAN;
+  FUNCTION al_install_int_ex (proc: AL_SIMPLE_PROC; speed: AL_LONG): AL_BOOL;
     INLINE;
 
 (* Installs a user timer handler, with the speed given as the number of
@@ -662,7 +662,7 @@ VAR
      timer.)
    @seealso(al_remove_int) @seealso(al_install_int_ex)
    @seealso(al_install_param_int) *)
-  FUNCTION al_install_int (proc: AL_SIMPLE_PROC; speed: AL_LONG): BOOLEAN;
+  FUNCTION al_install_int (proc: AL_SIMPLE_PROC; speed: AL_LONG): AL_BOOL;
     INLINE;
 
 (* Removes a function from the list of user interrupt routines.
@@ -675,14 +675,14 @@ VAR
    copy of the specified void pointer parameter.  To disable the handler, use
    @link(al_remove_param_int) instead of @link(al_remove_int). *)
   FUNCTION al_install_param_int_ex
-    (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): BOOLEAN;
+    (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): AL_BOOL;
     INLINE;
 
 (* Like @link(al_install_int), but the callback routine will be passed a copy
    of the specified void pointer parameter.  To disable the handler, use
    @link(al_remove_param_int) instead of @link(al_remove_int). *)
   FUNCTION al_install_param_int
-    (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): BOOLEAN;
+    (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): AL_BOOL;
     INLINE;
 
 (* Like @link(al_remove_int), but for use with timer callbacks that have
@@ -755,7 +755,7 @@ VAR
    @seealso(al_keyboard_lowlevel_callback) @seealso(al_three_finger_flag)
    @seealso(al_key_led_flag) @seealso(al_set_leds)
    @seealso(al_set_keyboard_rate) *)
-  FUNCTION al_install_keyboard: BOOLEAN;
+  FUNCTION al_install_keyboard: AL_BOOL;
     INLINE;
 
 (* Removes the keyboard handler, returning control to the operating system.
@@ -1226,7 +1226,8 @@ VAR
      @seealso(al_remove_joystick) @seealso(al_num_joysticks)
      @seealso(al_load_joystick_data) @seealso(al_poll_joystick)
      @seealso(AL_JOY_TYPE_AUTODETECT) @seealso(alWin) @seealso(alUNIX) *)
-  FUNCTION al_install_joystick (CONST atype: AL_INT): BOOLEAN;
+  FUNCTION al_install_joystick (CONST atype: AL_INT): AL_BOOL;
+    INLINE;
 
 (* Removes the joystick handler. You don't normally need to bother calling
    this, because @link(al_exit) will do it for you.
@@ -1275,7 +1276,7 @@ END;
    @returns(@true on success, @false if the calibration could not be performed
      successfully.)
     @seealso(al_num_joysticks) *)
-  FUNCTION al_calibrate_joystick (n: AL_INT): BOOLEAN;
+  FUNCTION al_calibrate_joystick (n: AL_INT): AL_BOOL;
     INLINE;
 
 (* After all the headache of calibrating the joystick, you may not want to make
@@ -1286,7 +1287,7 @@ END;
    currently selected configuration file.
    @returns(@true on success, @false if the data could not be saved.)
    @seealso(al_calibrate_joystick) *)
-  FUNCTION al_save_joystick_data (CONST filename: AL_STR): BOOLEAN;
+  FUNCTION al_save_joystick_data (CONST filename: AL_STR): AL_BOOL;
     INLINE;
 
 (* Restores calibration data previously stored by @link(al_save_joystick_data)
@@ -1297,7 +1298,7 @@ END;
    @returns(@true on success:  if it fails the joystick state is undefined and
      you must reinitialise it from scratch.)
    @seealso(al_calibrate_joystick) *)
-  FUNCTION al_load_joystick_data (CONST filename: AL_STR): BOOLEAN;
+  FUNCTION al_load_joystick_data (CONST filename: AL_STR): AL_BOOL;
 
 (* The joystick handler is not interrupt driven, so you need to call this
    function every now and again to update the global position values.
@@ -2003,8 +2004,6 @@ END.
      custom cursor. @seealso(al_gfx_capabilities) *)
     AL_GFX_SYSTEM_CURSOR		= $00400000;
 
-
-
   VAR
   (* Bitfield describing the capabilities of the current graphics driver and
      video hardware.  This may contain combination any of the @code(AL_GFX_* )
@@ -2184,7 +2183,7 @@ END.
    @seealso(AL_GFX_AUTODETECT)
    @seealso(al_gfx_capabilities) @seealso(al_get_desktop_resolution)
    @seealso(alUNIX) @seealso(alWin) *)
-  FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: AL_INT): BOOLEAN;
+  FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: AL_INT): AL_BOOL;
 
 (* Requests a hardware scroll request.  Attempts to scroll the hardware screen
    to display a different part of the virtual screen (initially it will be
@@ -2285,7 +2284,7 @@ END.
    which will activate the triple buffering functions.
    @returns(@true if triple buffering is enabled, @false otherwise.)
    @seealso(al_request_scroll) @seealso(al_request_video_bitmap) *)
-  FUNCTION al_enable_triple_buffer: BOOLEAN;
+  FUNCTION al_enable_triple_buffer: AL_BOOL;
     INLINE;
 
 (* Creates a memory bitmap sized @code(w) by @code(h).  The bitmap will have
@@ -2422,11 +2421,177 @@ END.
   PROCEDURE al_vsync;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'vsync';
 
+  CONST
+  (* Bitfield for relaying graphics driver type information *)
+    AL_GFX_TYPE_UNKNOWN    = 0; {<@exclude }
+    AL_GFX_TYPE_WINDOWED   = 1; {<@exclude }
+    AL_GFX_TYPE_FULLSCREEN = 2; {<@exclude }
+    AL_GFX_TYPE_DEFINITE   = 4; {<@exclude }
+    AL_GFX_TYPE_MAGIC      = 8; {<@exclude }
+
+  (* Lets you determine the types of operating modes that a specific graphics
+    card driver operates in.  It will tell you whether it is a windowed,
+    fullscreen, definitely windowed or fullscreen, and/or a magic driver.
+
+    The value returned is a bitfield consisting of these fields:
+@unorderedList(
+  @item(AL_GFX_TYPE_UNKNOWN)
+  @item(AL_GFX_TYPE_WINDOWED)
+  @item(AL_GFX_TYPE_FULLSCREEN)
+  @item(AL_GFX_TYPE_DEFINITE)
+  @item(AL_GFX_TYPE_MAGIC)
+)
+    The return value will only be equivalent to @code(AL_GFX_TYPE_UNKNOWN) when
+    it is a driver unrecognized on that platform, or it is a bogus value. Test
+    for the other types by using a bitwise @code(AND). If the driver is windowed
+    or fullscreen, it will also have the definite flag set. For example,
+@longcode(#
+  aGfxType := al_get_gfx_mode_type (AL_GFX_AUTODETECT_WINDOWED);
+#)
+    @code(aGfxType) would have the @code(AL_GFX_TYPE_WINDOWED),
+    @code(AL_GFX_TYPE_DEFINITE), and @code(AL_GFX_TYPE_MAGIC) flags set.
+
+    Allegro needs to be initialized first. Example:
+@longcode(@
+// Accept the use of only windowed drivers in our selection dialog.
+  FUNCTION AcceptWindowed (CardId, w, h, ColorDepth: AL_INT): AL_INT;
+  BEGIN
+    IF (al_get_gfx_mode_type (CardId) AND AL_GFX_TYPE_WINDOWED) <> 0 THEN
+      EXIT (0);
+    RESULT := -1;
+  END;
+
+// In program:
+  al_gfx_mode_select_filter (Card, w, h, ColorDepth, @AcceptWindowed);
+#)
+    @param(graphics_card Identifier of the graphics card to check.)
+    @return(a bitfield describing the graphics mode type.)
+    @seealso(al_gfx_mode_select_filter) @seealso(al_get_gfx_mode)
+    @seealso(al_set_gfx_mode) @seealso(al_is_windowed_mode) *)
+  FUNCTION al_get_gfx_mode_type (graphics_card: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_gfx_mode_type';
+(* Lets you determine which graphics driver is currently set by allegro. If no
+   graphics driver is set, it will return @code(AL_GFX_NONE).
+   @return(the @code(id) of the current graphics driver if there is one, or
+     @link(AL_GFX_NONE) if none is set.)
+   @seealso(al_set_gfx_mode) @seealso(al_is_windowed_mode)
+ *)
+  FUNCTION al_get_gfx_mode: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_gfx_mode';
+
+  CONST
+    AL_SWITCH_NONE        = 0; {<@exclude }
+    AL_SWITCH_PAUSE       = 1; {<@exclude }
+    AL_SWITCH_AMNESIA     = 2; {<@exclude }
+    AL_SWITCH_BACKGROUND  = 3; {<@exclude }
+    AL_SWITCH_BACKAMNESIA = 4; {<@exclude }
+
+    AL_SWITCH_IN  = 0; {<@exclude }
+    AL_SWITCH_OUT = 1; {<@exclude }
+
+(* Sets how the program should handle being switched into the background, if
+   the user tabs away from it. Not all of the possible modes will be supported
+   by every graphics driver on every platform. The available modes are:
+@unorderedList(
+  @item(@bold(AL_SWITCH_NONE) Disables switching. This is the default in
+	single-tasking systems like DOS. It may be supported on other
+	platforms, but you should use it with caution, because your users won't
+	be impressed if they want to switch away from your program, but you
+	don't let them!)
+  @item(@bold(AL_SWITCH_PAUSE) Pauses the program whenever it is in the
+	background. Execution will be resumed as soon as the user switches back
+	to it. This is the default in most fullscreen multitasking
+	environments, for example the Linux console, but not under Windows.)
+  @item(@bold(AL_SWITCH_AMNESIA) Like @code(AL_SWITCH_PAUSE), but this mode
+	doesn't bother to remember the contents of video memory, so the screen,
+	and any video bitmaps that you have created, will be erased after the
+	user switches away and then back to your program. This is not a
+	terribly useful mode to have, but it is the default for the fullscreen
+	drivers under Windows because DirectDraw is too dumb to implement
+	anything better.)
+  @item(@bold(AL_SWITCH_BACKGROUND) The program will carry on running in the
+	background, with the screen bitmap temporarily being pointed at a
+	memory buffer for the fullscreen drivers. You must take special care
+	when using this mode, because bad things will happen if the screen
+	bitmap gets changed around when your program isn't expecting it (see
+	below).)
+  @item(@bold(AL_SWITCH_BACKAMNESIA) Like @code(SWITCH_BACKGROUND), but this
+	mode doesn't bother to remember the contents of video memory (see
+	@code(AL_SWITCH_AMNESIA)). It is again the only mode supported by the
+	fullscreen drivers under Windows that lets the program keep running in
+	the background.)
+)
+    Note that you should be very careful when you are using graphics routines
+    in the switching context: you must always call @link(al_acquire_screen)
+    before the start of any drawing code onto the screen and not release it
+    until you are completely finished, because the automatic locking mechanism
+    may not be good enough to work when the program runs in the background or
+    has just been raised in the foreground.
+    @param(mode The switching mode.)
+    @return(@true on success, invalidating at the same time all callbacks
+      previously registered with @code(al_set_display_switch_callback). @false
+      if the requested mode is not currently possible.)
+    @seealso(al_set_display_switch_callback) @seealso(al_get_display_switch_mode)
+ *)
+  FUNCTION al_set_display_switch_mode (mode: AL_INT): AL_BOOL;
+    INLINE;
+(* Returns the current display switching mode, in the same format passed to
+   @code(al_set_display_switch_mode). @seealso(al_set_display_switch_mode) *)
+  FUNCTION al_get_display_switch_mode: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_display_switch_mode';
+(* Installs a notification callback for the switching mode that was previously
+   selected by calling @code(al_set_display_switch_mode). The direction
+   parameter can either be @code(AL_SWITCH_IN) or @code(AL_SWITCH_OUT),
+   depending whether you want to be notified about switches away from your
+   program or back to your program. You can sometimes install callbacks for
+   both directions at the same time, but not every platform supports this. You
+   can install several switch callbacks, but no more than eight on any
+   platform.
+   @param(dir Direction of the notification.)
+   @param(cb Callback procedure.)
+   @return(@true on success, decreasing the number of empty callback slots by
+     one. @false if the request is impossible for the current platform or you
+     have reached the maximum number of allowed callbacks.)
+   @seealso(al_remove_display_switch_callback) @seealso(al_set_display_switch_mode)
+ *)
+  FUNCTION al_set_display_switch_callback (dir: AL_INT; cb: AL_SIMPLE_PROC): AL_BOOL;
+    INLINE;
+(* Removes a notification callback that was previously installed by calling
+   @code(al_set_display_switch_callback). All the callbacks will automatically
+   be removed when you call @code(al_set_display_switch_mode). You can safely
+   call this function even if the callback you want to remove is not installed.
+   @param(cb Callback procedure to remove.)
+   @seealso(al_set_display_switch_callback)
+ *)
+  PROCEDURE al_remove_display_switch_callback (cb: AL_SIMPLE_PROC);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'remove_display_switch_callback';
+
 
 
 (******************************************************************************
  * gfx.inl
  *)
+
+(* Tells if you are running in windowed mode.  You should not call this
+   function if you are not in graphics mode.
+
+   Example:
+@longcode(#
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 640, 480, 0, 0) THEN
+    abort_on_error ('Couldn''t set graphic mode!');
+  IF al_windowed_mode THEN
+  BEGIN
+    // Windowed mode stuff.
+  END
+  ELSE BEGIN
+    // Fullscreen mode stuff.
+  END;
+#)
+  @return(@true if the current graphics mode is a windowed mode, or @false if
+    it is a fullscreen mode.)
+  @seealso(al_set_gfx_mode) *)
+  FUNCTION al_is_windowed_mode: AL_BOOL;
+    INLINE;
 
 (* Clears the bitmap to the specified color. @seealso(al_clear_bitmap)
   @seealso(al_makecol) *)
@@ -2451,32 +2616,31 @@ END.
 (* Returns @true if the two bitmaps describe the same drawing surface, ie.
     the pointers are equal, one is a sub-bitmap of the other, or they are both
     sub-bitmaps of a common parent. @seealso(al_create_sub_bitmap) *)
-  FUNCTION al_is_same_bitmap (CONST bmp1, bmp2: AL_BITMAPptr): BOOLEAN;
-    INLINE;
+  FUNCTION al_is_same_bitmap (CONST bmp1, bmp2: AL_BITMAPptr): AL_BOOL;
 
 (* Returns @true if bmp is a memory bitmap, ie. it was created by calling
     @link(al_create_bitmap) or loaded from a grabber datafile or image file. *)
-  FUNCTION al_is_memory_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_is_memory_bitmap (CONST bmp: AL_BITMAPptr): AL_BOOL;
     INLINE;
 
 (* Returns @true if @code(bmp) is the screen bitmap, or a sub-bitmap of the
    screen. @seealso(al_screen) @seealso(al_create_sub_bitmap) *)
-  FUNCTION al_is_screen_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_is_screen_bitmap (CONST bmp: AL_BITMAPptr): AL_BOOL;
     INLINE;
 
 (* Returns @true if bmp is the screen bitmap, a video memory bitmap, or a
    sub-bitmap of either. @seealso(al_screen)
    @seealso(al_create_video_bitmap) @seealso(al_create_sub_bitmap) *) 
-  FUNCTION al_is_video_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_is_video_bitmap (CONST bmp: AL_BITMAPptr): AL_BOOL;
     INLINE;
 
 (* Returns @true if bmp is a system bitmap object, or a sub-bitmap of one.
   @seealso(al_create_system_bitmap) @seealso(al_create_sub_bitmap) *)
-  FUNCTION al_is_system_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_is_system_bitmap (CONST bmp: AL_BITMAPptr): AL_BOOL;
     INLINE;
 
 (* Returns @true if bmp is a sub-bitmap. @seealso(al_create_sub_bitmap) *)
-  FUNCTION al_is_sub_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_is_sub_bitmap (CONST bmp: AL_BITMAPptr): AL_BOOL;
     INLINE;
 
 (* Acquires the specified video bitmap prior to drawing onto it.  You never
@@ -2565,13 +2729,13 @@ END.
    beyond the edges of the bitmap. @seealso(al_set_clip_rect)
    @seealso(al_get_clip_rect) @seealso(al_add_clip_rect)
    @seealso(al_get_clip_state) *)
-  PROCEDURE al_set_clip_state (bmp: AL_BITMAPptr; state: BOOLEAN);
+  PROCEDURE al_set_clip_state (bmp: AL_BITMAPptr; state: AL_BOOL);
     INLINE;
 
 (* Returns the clipping state.
    @seealso(al_get_clip_rect) @seealso(al_add_clip_rect)
    @seealso(al_set_clip_state) *)
-  FUNCTION al_get_clip_state (bmp: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_get_clip_state (bmp: AL_BITMAPptr): AL_BOOL;
     INLINE;
 
 
@@ -2675,24 +2839,24 @@ VAR
     @param(pal Palette of bitmap or @nil if none is used (i.e. true color bitmap).)
     @return(@true on success, @false on failure.)
   *)
-  FUNCTION al_save_bitmap (filename: STRING; bmp: AL_BITMAPptr; pal: AL_PALETTEptr): BOOLEAN;
+  FUNCTION al_save_bitmap (filename: STRING; bmp: AL_BITMAPptr; pal: AL_PALETTEptr): AL_BOOL;
     INLINE;
 
 (* Writes a bitmap into a 256-color or 24-bit truecolor BMP file.
    @returns(non-zero on error.)
    @seealso(al_save_bitmap) @seealso(al_save_bmp_pf) *)
-  FUNCTION al_save_bmp (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): BOOLEAN;
+  FUNCTION al_save_bmp (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
     INLINE;
 
 (* Writes a bitmap into a 256-color or 24-bit truecolor PCX file.
    @seealso(al_save_bitmap) @seealso(al_save_pcx_pf) *)
-  FUNCTION al_save_pcx (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): BOOLEAN;
+  FUNCTION al_save_pcx (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
     INLINE;
 
 (* Writes a bitmap into a 256-color, 15-bit hicolor, 24-bit truecolor, or
    32-bit truecolor+alpha TGA file.
    @seealso(al_save_bitmap) @seealso(al_save_tga_pf) *)
-  FUNCTION al_save_tga (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): BOOLEAN;
+  FUNCTION al_save_tga (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
     INLINE;
 
 
@@ -3055,7 +3219,7 @@ VAR
 
    @returns(@true if a system cursor is being displayed after the function
      returns, or @false otherwise.) *)
-  FUNCTION al_show_os_cursor (cursor: AL_INT): BOOLEAN;
+  FUNCTION al_show_os_cursor (cursor: AL_INT): AL_BOOL;
     INLINE;
 
 (* Tells you whether the mouse pointer is currently on screen.
@@ -4160,7 +4324,7 @@ END;
   @return(@true on success, @false on failure.)
   @seealso(al_get_font_range_begin) @seealso(al_get_font_range_end)
   @seealso(al_merge_fonts) @seealso(al_extract_font_range) *)
-  FUNCTION al_transpose_font (f: AL_FONTptr; drange: AL_INT): BOOLEAN;
+  FUNCTION al_transpose_font (f: AL_FONTptr; drange: AL_INT): AL_BOOL;
     INLINE;
 
 
@@ -4387,7 +4551,7 @@ END;
    @seealso(al_remove_sound) @seealso(al_reserve_voices)
    @seealso(al_set_volume) @seealso(al_play_sample) @seealso(al_play_midi)
    @seealso(al_set_mixer_quality) @seealso(alWin) @seealso(alUNIX) *)
-  FUNCTION al_install_sound (digi, midi: AL_INT): BOOLEAN;
+  FUNCTION al_install_sound (digi, midi: AL_INT): AL_BOOL;
     INLINE;
 
 (* Cleans up after you are finished with the sound routines.  You don't
@@ -4563,7 +4727,7 @@ END;
    @seealso(al_install_sound) @seealso(al_load_midi) @seealso(al_stop_midi)
    @seealso(al_play_looped_midi) @seealso(al_midi_pause) @seealso(al_midi_seek)
    @seealso(al_midi_pos) @seealso(al_midi_time) @seealso(al_midi_msg_callback) *)
-  FUNCTION al_play_midi (midi: AL_MIDIptr; loop: BOOLEAN): BOOLEAN;
+  FUNCTION al_play_midi (midi: AL_MIDIptr; loop: AL_BOOL): AL_BOOL;
     INLINE;
 
 (* Starts playing a MIDI file with a user-defined loop position.  When the
@@ -4574,7 +4738,7 @@ END;
 
    @returns(@false if an error occurs, @true otherwise.)
    @seealso(al_play_midi) @seealso(al_midi_pos) @seealso(al_midi_loop_start) *)
-  FUNCTION al_play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: AL_INT): BOOLEAN;
+  FUNCTION al_play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: AL_INT): AL_BOOL;
     INLINE;
 
 (* Stops whatever music is currently playing. This is the same thing as calling
@@ -4630,7 +4794,7 @@ END;
    before sending any program change messages via the @link(al_midi_out)
    command.
    @returns(@false if an error occurred.) @seealso(al_install_sound) *)
-  FUNCTION al_load_midi_patches: BOOLEAN;
+  FUNCTION al_load_midi_patches: AL_BOOL;
     INLINE;
 
 
@@ -4743,7 +4907,7 @@ END;
 
    @returns(@true on success, @false otherwise.)
    @seealso(al_create_sample) @seealso(al_destroy_sample) *)
-  FUNCTION al_save_sample (CONST filename: STRING; spl: AL_SAMPLEptr): BOOLEAN;
+  FUNCTION al_save_sample (CONST filename: STRING; spl: AL_SAMPLEptr): AL_BOOL;
     INLINE;
 
 (* Constructs a new sample structure of the specified type.
@@ -5054,7 +5218,7 @@ IMPLEMENTATION
 
 
 (* Initialises the Allegro library. *)
-  FUNCTION al_install (system_id: AL_INT): BOOLEAN;
+  FUNCTION al_install (system_id: AL_INT): AL_BOOL;
   BEGIN
     RESULT := NOT _install_allegro_version_check (
 	system_id, @NumError, NIL,
@@ -5065,7 +5229,7 @@ IMPLEMENTATION
 
 
 (* Initialises the Allegro library. *)
-  FUNCTION al_init: BOOLEAN;
+  FUNCTION al_init: AL_BOOL;
   BEGIN
     RESULT := NOT _install_allegro_version_check (
 	AL_SYSTEM_AUTODETECT, @NumError, NIL,
@@ -5103,7 +5267,7 @@ IMPLEMENTATION
 
 (* On platforms that have a close button, this routine installs a callback
    function to handle the close event. *)
-  FUNCTION al_set_close_button_callback (proc: AL_SIMPLE_PROC): BOOLEAN;
+  FUNCTION al_set_close_button_callback (proc: AL_SIMPLE_PROC): AL_BOOL;
   BEGIN
     RESULT := NOT _set_close_button_callback (proc)
   END;
@@ -5133,7 +5297,7 @@ IMPLEMENTATION
 
 
 (* Finds out the currently selected desktop resolution. *)
-  FUNCTION al_get_desktop_resolution (VAR w, h: AL_INT): BOOLEAN;
+  FUNCTION al_get_desktop_resolution (VAR w, h: AL_INT): AL_BOOL;
   BEGIN
     IF system_driver^.get_desktop_resolution <> NIL THEN
       RESULT := NOT system_driver^.get_desktop_resolution (w, h)
@@ -5180,7 +5344,7 @@ IMPLEMENTATION
   FUNCTION install_timer: AL_BOOL; CDECL;
     EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_install_timer: BOOLEAN;
+  FUNCTION al_install_timer: AL_BOOL;
   BEGIN
     RESULT := NOT install_timer
   END;
@@ -5190,7 +5354,7 @@ IMPLEMENTATION
   FUNCTION install_int_ex (proc: AL_SIMPLE_PROC; speed: AL_LONG): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_install_int_ex (proc: AL_SIMPLE_PROC; speed: AL_LONG): BOOLEAN;
+  FUNCTION al_install_int_ex (proc: AL_SIMPLE_PROC; speed: AL_LONG): AL_BOOL;
   BEGIN
     RESULT := NOT install_int_ex (proc, speed)
   END;
@@ -5200,7 +5364,7 @@ IMPLEMENTATION
   FUNCTION install_int (proc: AL_SIMPLE_PROC; speed: AL_LONG): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_install_int (proc: AL_SIMPLE_PROC; speed: AL_LONG): BOOLEAN;
+  FUNCTION al_install_int (proc: AL_SIMPLE_PROC; speed: AL_LONG): AL_BOOL;
   BEGIN
     RESULT := NOT install_int (proc, speed)
   END;
@@ -5212,7 +5376,7 @@ IMPLEMENTATION
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_install_param_int_ex
-    (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): BOOLEAN;
+    (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): AL_BOOL;
   BEGIN
     RESULT := NOT install_param_int_ex (proc, param, speed)
   END;
@@ -5224,7 +5388,7 @@ IMPLEMENTATION
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
   FUNCTION al_install_param_int
-    (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): BOOLEAN;
+    (proc: AL_PARAM_PROC; param: AL_VOIDptr; speed: AL_LONG): AL_BOOL;
   BEGIN
     RESULT := NOT install_param_int (proc, param, speed)
   END;
@@ -5263,7 +5427,7 @@ IMPLEMENTATION
   FUNCTION install_keyboard: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_install_keyboard: BOOLEAN;
+  FUNCTION al_install_keyboard: AL_BOOL;
   BEGIN
     RESULT := NOT install_keyboard;
   END;
@@ -5277,7 +5441,7 @@ IMPLEMENTATION
   FUNCTION install_joystick (atype: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_install_joystick (CONST atype: AL_INT): BOOLEAN;
+  FUNCTION al_install_joystick (CONST atype: AL_INT): AL_BOOL;
   BEGIN
     RESULT := NOT install_joystick (atype)
   END;
@@ -5287,7 +5451,7 @@ IMPLEMENTATION
   FUNCTION calibrate_joystick (n: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_calibrate_joystick (n: AL_INT): BOOLEAN;
+  FUNCTION al_calibrate_joystick (n: AL_INT): AL_BOOL;
   BEGIN
     RESULT := NOT calibrate_joystick (n)
   END;
@@ -5297,7 +5461,7 @@ IMPLEMENTATION
   FUNCTION save_joystick_data (filename: AL_STR): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_save_joystick_data (CONST filename: AL_STR): BOOLEAN;
+  FUNCTION al_save_joystick_data (CONST filename: AL_STR): AL_BOOL;
   BEGIN
     RESULT := NOT save_joystick_data (filename)
   END;
@@ -5307,7 +5471,7 @@ IMPLEMENTATION
   FUNCTION load_joystick_data (filename: AL_STRptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_load_joystick_data (CONST filename: AL_STR): BOOLEAN;
+  FUNCTION al_load_joystick_data (CONST filename: AL_STR): AL_BOOL;
   BEGIN
     IF filename <> '' THEN
       RESULT :=  NOT load_joystick_data (AL_STRptr (filename))
@@ -5339,7 +5503,7 @@ CONST
   FUNCTION set_gfx_mode (card, w, h, v_w, v_h: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: AL_INT): BOOLEAN;
+  FUNCTION al_set_gfx_mode (card, w, h, v_w, v_h: AL_INT): AL_BOOL;
   BEGIN
     IF set_gfx_mode (card, w, h, v_w, v_h) THEN EXIT (FALSE);
     IF al_screen <> NIL THEN
@@ -5357,9 +5521,30 @@ CONST
   FUNCTION enable_triple_buffer: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_enable_triple_buffer: BOOLEAN;
+  FUNCTION al_enable_triple_buffer: AL_BOOL;
   BEGIN
     RESULT := NOT enable_triple_buffer
+  END;
+
+
+(* Sets how the program should handle being switched into the background. *)
+  FUNCTION set_display_switch_mode (mode: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_set_display_switch_mode (mode: AL_INT): AL_BOOL;
+  BEGIN
+    RESULT := NOT set_display_switch_mode (mode)
+  END;
+
+
+
+(* Installs a notification callback for the switching mode. *)
+  FUNCTION set_display_switch_callback (dir: AL_INT; cb: AL_SIMPLE_PROC): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
+
+  FUNCTION al_set_display_switch_callback (dir: AL_INT; cb: AL_SIMPLE_PROC): AL_BOOL;
+  BEGIN
+    RESULT := NOT set_display_switch_callback (dir, cb)
   END;
 
 
@@ -5367,6 +5552,14 @@ CONST
 (******************************************************************************
  * gfx.inl
  *)
+
+(* Tells if you are running in windowed mode. *)
+  FUNCTION al_is_windowed_mode: AL_BOOL;
+  BEGIN
+    RESULT := al_gfx_driver^.windowed
+  END;
+
+
 
 (* Clears the bitmap to the specified color. @seealso(al_clear_bitmap)*)
   PROCEDURE al_clear_to_color (bitmap: AL_BITMAPptr; CONST color: AL_INT);
@@ -5390,7 +5583,7 @@ CONST
 
 
 
-  FUNCTION al_is_same_bitmap (CONST bmp1, bmp2: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_is_same_bitmap (CONST bmp1, bmp2: AL_BITMAPptr): AL_BOOL;
   VAR
     m1, m2: AL_ULONG;
   BEGIN
@@ -5403,35 +5596,35 @@ CONST
 
 
 
-  FUNCTION al_is_memory_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_is_memory_bitmap (CONST bmp: AL_BITMAPptr): AL_BOOL;
   BEGIN
     RESULT := (bmp^.id AND (AL_BMP_ID_VIDEO OR AL_BMP_ID_SYSTEM)) = 0
   END;
 
 
 
-  FUNCTION al_is_screen_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_is_screen_bitmap (CONST bmp: AL_BITMAPptr): AL_BOOL;
   BEGIN
     RESULT := al_is_same_bitmap (bmp, al_screen)
   END;
 
 
 
-  FUNCTION al_is_video_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_is_video_bitmap (CONST bmp: AL_BITMAPptr): AL_BOOL;
   BEGIN
     RESULT := (bmp^.id AND AL_BMP_ID_VIDEO) <> 0
   END;
 
 
 
-  FUNCTION al_is_system_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_is_system_bitmap (CONST bmp: AL_BITMAPptr): AL_BOOL;
   BEGIN
     RESULT := (bmp^.id AND AL_BMP_ID_SYSTEM) <> 0
   END;
 
 
 
-  FUNCTION al_is_sub_bitmap (CONST bmp: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_is_sub_bitmap (CONST bmp: AL_BITMAPptr): AL_BOOL;
   BEGIN
     RESULT := (bmp^.id AND AL_BMP_ID_SUB) <> 0
   END;
@@ -5470,14 +5663,14 @@ CONST
 
 
 
-  PROCEDURE al_set_clip_state (bmp: AL_BITMAPptr; state: BOOLEAN);
+  PROCEDURE al_set_clip_state (bmp: AL_BITMAPptr; state: AL_BOOL);
   BEGIN
     bmp^.clip := state
   END;
 
 
 
-  FUNCTION al_get_clip_state (bmp: AL_BITMAPptr): BOOLEAN;
+  FUNCTION al_get_clip_state (bmp: AL_BITMAPptr): AL_BOOL;
   BEGIN
     RESULT := bmp^.clip
   END;
@@ -5491,7 +5684,7 @@ CONST
   FUNCTION save_bitmap (filename: AL_STR; bmp: AL_BITMAPptr; pal: AL_PALETTEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_save_bitmap (filename: STRING; bmp: AL_BITMAPptr; pal: AL_PALETTEptr): BOOLEAN;
+  FUNCTION al_save_bitmap (filename: STRING; bmp: AL_BITMAPptr; pal: AL_PALETTEptr): AL_BOOL;
   BEGIN
     RESULT := NOT save_bitmap (filename, bmp, pal)
   END;
@@ -5499,7 +5692,7 @@ CONST
   FUNCTION save_bmp (filename: AL_STR; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_save_bmp (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): BOOLEAN;
+  FUNCTION al_save_bmp (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
   BEGIN
     RESULT := NOT save_bmp (filename, bmp, palette)
   END;
@@ -5507,7 +5700,7 @@ CONST
   FUNCTION save_pcx (filename: AL_STR; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_save_pcx (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): BOOLEAN;
+  FUNCTION al_save_pcx (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
   BEGIN
     RESULT := NOT save_pcx (filename, bmp, palette)
   END;
@@ -5515,7 +5708,7 @@ CONST
   FUNCTION save_tga (filename: AL_STR; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_save_tga (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): BOOLEAN;
+  FUNCTION al_save_tga (filename: STRING; bmp: AL_BITMAPptr; palette: AL_PALETTEptr): AL_BOOL;
   BEGIN
     RESULT := NOT save_tga (filename, bmp, palette)
   END;
@@ -5529,7 +5722,7 @@ CONST
   FUNCTION show_os_cursor (cursor: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_show_os_cursor (cursor: AL_INT): BOOLEAN;
+  FUNCTION al_show_os_cursor (cursor: AL_INT): AL_BOOL;
   BEGIn
     RESULT := NOT show_os_cursor (cursor)
   END;
@@ -5847,7 +6040,7 @@ CONST
   FUNCTION transpose_font (f: AL_FONTptr; drange: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_transpose_font (f: AL_FONTptr; drange: AL_INT): BOOLEAN;
+  FUNCTION al_transpose_font (f: AL_FONTptr; drange: AL_INT): AL_BOOL;
   BEGIN
     RESULT := NOT transpose_font (f, drange)
   END;
@@ -5885,7 +6078,7 @@ CONST
   FUNCTION install_sound (digi, midi: AL_INT; CONST c: AL_STRptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_install_sound (digi, midi: AL_INT): BOOLEAN;
+  FUNCTION al_install_sound (digi, midi: AL_INT): AL_BOOL;
   BEGIN
     RESULT := NOT install_sound (digi, midi, NIL)
   END;
@@ -5899,7 +6092,7 @@ CONST
   FUNCTION play_midi (midi: AL_MIDIptr; loop: AL_BOOL): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_play_midi (midi: AL_MIDIptr; loop: BOOLEAN): BOOLEAN;
+  FUNCTION al_play_midi (midi: AL_MIDIptr; loop: AL_BOOL): AL_BOOL;
   BEGIN
     RESULT := NOT play_midi (midi, loop)
   END;
@@ -5909,7 +6102,7 @@ CONST
   FUNCTION play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: AL_INT): BOOLEAN;
+  FUNCTION al_play_looped_midi (midi: AL_MIDIptr; loop_start, loop_end: AL_INT): AL_BOOL;
   BEGIN
     RESULT := NOT play_looped_midi (midi, loop_start, loop_end)
   END;
@@ -5919,7 +6112,7 @@ CONST
   FUNCTION load_midi_patches: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_load_midi_patches: BOOLEAN;
+  FUNCTION al_load_midi_patches: AL_BOOL;
   BEGIN
     RESULT := NOT load_midi_patches
   END;
@@ -5933,7 +6126,7 @@ CONST
   FUNCTION save_sample (CONST filename: AL_STR; spl: AL_SAMPLEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME;
 
-  FUNCTION al_save_sample (CONST filename: STRING; spl: AL_SAMPLEptr): BOOLEAN;
+  FUNCTION al_save_sample (CONST filename: STRING; spl: AL_SAMPLEptr): AL_BOOL;
   BEGIN
     RESULT := NOT save_sample (filename, spl)
   END;
