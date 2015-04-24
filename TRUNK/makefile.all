@@ -11,20 +11,20 @@ all: adbanner examples demo
 examples: $(EXMFILES)
 	@echo "Finished all examples"
 
-# Demo game.
-demo: $(DEMO)
+# Demo games.
+demo: $(ALEXDEMO)
 
 # Library documentation.
 docs:
 	pasdoc -T Allegro.pas -O html --cache-dir $(OBJDIR) -E $(DOCDIR) --auto-abstract $(LIBFILES)
 
 # Executables.
-$(EXMDIR)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMDIR) -FU$(OBJDIR) $< -o$@
+$(EXMBIN)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(EXMBIN) -FU$(OBJDIR) $< -o$@
 	@echo Example $@ ready!
 
-$(DEMODIR)%$(BINSUF): $(DEMOSRC) $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(DEMODIR) -FU$(OBJDIR) $< -o$@
+$(ALEXBIN)%$(BINSUF): $(ALEXSRC) $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(ALEXBIN) -FU$(OBJDIR) $< -o$@
 	@echo Demo game ready!
 
 # Returns some variables.
@@ -37,7 +37,7 @@ status: adbanner
 	@echo "  Compiler options : $(FLAGS)"
 	@echo "  Units : $(LIBFILES)"
 	@echo "  Examples : $(EXMFILES)"
-	@echo "  Demo game : $(DEMO)"
+	@echo "  Alex demo game : $(ALEXDEMO)"
 
 # Cleans everything.
 veryclean: clean

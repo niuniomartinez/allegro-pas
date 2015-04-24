@@ -16,18 +16,16 @@ TEM2 = $(wildcard $(EXMDIR)*.pp)
 ifeq ($(strip $(TEM2)),)
 $(error ERROR: No source code found at $(EXMDIR))
 endif
-EXMFILES = $(addprefix $(EXMDIR),$(addsuffix $(BINSUF), $(basename $(notdir $(TEM2) ) ) ) )
+EXMFILES = $(addprefix $(EXMBIN),$(addsuffix $(BINSUF), $(basename $(notdir $(TEM2) ) ) ) )
 
-GLEXMFILES = $(EXMDIR)agl/exbasic$(BINSUF)
-
-# For the demo game.
-TEM3 = $(wildcard $(DEMODIR)*.pas)
+# For the demo games.
+TEM3 = $(wildcard $(ALEXDIR)*.pas)
 ifeq ($(strip $(TEM3)),)
-$(error ERROR: No source code found at $(DEMODIR))
+$(error ERROR: No source code found at $(ALEXDIR))
 endif
-TEM4 = $(wildcard $(DEMODIR)*.pp)
+TEM4 = $(wildcard $(ALEXDIR)*.pp)
 ifeq ($(strip $(TEM4)),)
-$(error ERROR: No source code found at $(DEMODIR))
+$(error ERROR: No source code found at $(ALEXDIR))
 endif
-DEMOSRC = $(DEMODIR)%.pp $(TEM3)
-DEMO = $(addprefix $(DEMODIR),$(addsuffix $(BINSUF), $(basename $(notdir $(TEM4) ) ) ) )
+ALEXSRC = $(ALEXDIR)%.pp $(TEM3)
+ALEXDEMO = $(addprefix $(ALEXBIN),$(addsuffix $(BINSUF), $(basename $(notdir $(TEM4) ) ) ) )
