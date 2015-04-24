@@ -8,8 +8,8 @@ New features
  * Load MIDI using IFF instead of current.  This way we can add a "packed"
    version of loader.
  * Get information about available graphics modes.
- * Display switch modes.
  * Sound recording/input.
+ * Change demo "Alex" credits.  See README.
 
 
 Other

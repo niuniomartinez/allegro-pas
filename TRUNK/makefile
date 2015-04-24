@@ -68,10 +68,15 @@ endif
 # --------------------------
 
 OBJDIR = obj/
-DEMODIR = demo/
+ALEXDIR = demos/alex/
 EXMDIR = examples/
 LIBDIR = lib/
+BINDIR = bin/
 DOCDIR = docs/lib/
+
+EXMBIN = $(BINDIR)$(EXMDIR)
+
+ALEXBIN = $(BINDIR)demo_alex/
 
 #FLAGS = -O3 -Sh -Si -Xs -XX $(EFLAGS)
 # Use next line instead to activate debug.
