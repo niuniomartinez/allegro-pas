@@ -68,7 +68,6 @@ endif
 # --------------------------
 
 OBJDIR = obj/
-ALEXDIR = demos/alex/
 EXMDIR = examples/
 LIBDIR = lib/
 BINDIR = bin/
@@ -76,7 +75,11 @@ DOCDIR = docs/lib/
 
 EXMBIN = $(BINDIR)$(EXMDIR)
 
-ALEXBIN = $(BINDIR)demo_alex/
+ALEXDIR = demos/alex/
+ALEXBIN = $(BINDIR)demoalex/
+
+ZOMBDIR = demos/zombie/
+ZOMBBIN = $(BINDIR)demozombie/
 
 #FLAGS = -O3 -Sh -Si -Xs -XX $(EFLAGS)
 # Use next line instead to activate debug.
