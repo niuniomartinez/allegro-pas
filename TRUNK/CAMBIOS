@@ -17,6 +17,7 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
   Novedades
   ---------
   + Nueva extensión alGUI.
+  + Nuevo juego de demostración "Zombie 3D".
   + El ejemplo al3d es más completo.
   + Añadida identificación del sistema operativo en tiempo de ejecución.
   + Added al_request_refresh_rate and al_get_refresh_rate.
