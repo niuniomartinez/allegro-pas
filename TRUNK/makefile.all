@@ -33,7 +33,7 @@ $(ALEXBIN)%$(BINSUF): $(ALEXSRC) $(LIBFILES)
 
 
 $(ZOMBBIN)%$(BINSUF): $(ZOMBSRC) $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FE$(ZOMBBIN) -FU$(OBJDIR) $< -o$@
+	fpc $(FLAGS) -Mobjfpc -Fu$(LIBDIR) -Fu$(ZOMBDIR)* -FE$(ZOMBBIN) -FU$(OBJDIR) $< -o$@
 	@echo Zombie 3D demo game ready!
 
 # Returns some variables.

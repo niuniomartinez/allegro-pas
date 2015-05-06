@@ -29,12 +29,12 @@ VAR
 	  'Original game concept: Ken Silverman (http://www.advsys.net/ken/) ',
 	  'Programming and graphics: '#176'u'#208'o Mart'#204'nez (http://www.burdjia.com/) ',
 	  'Alex the Allegator character courtesy from:  Johan Peitz (http://www.freelunchdesign.com/) ',
-	  'Title music (provisional):  Garret Thomsom (g@sirsonic.com) (ripped from the original Allegro demo game) ',
+	  'Title music:  Garret Thomsom (g@sirsonic.com) (ripped from the original Allegro demo game) ',
 	  'Game music:  Partners In Rhyme (http://www.partnersinrhyme.com/) ',
-	  'Sound FX ripped from games by Shawn Hargreaves and Johan Peitz ',
+	  'Sound FX ripped from Shawn Hargreaves and Johan Peitz''s games ',
 	  'Allegro originally created by Shawn Hargreaves (http://talula.demon.co.uk/) and currently mantained by the Allegro Development Team (http://alleg.sourceforge.net/) ',
 	  'Allegro.pas:  '#176'u'#208'o Mart'#204'nez (again...) ',
-	  'Thanks to the Spanish Delphi community (http://www.clubdelphi.net/) and the Allegro community (http://www.allegro.cc/) '
+	  'Thanks to the Spanish Delphi community (http://www.clubdelphi.net/), the Free Pascal community (http://www.freepascal.org/), the Pascal Game Development community (http://www.pascalgamedevelopment.com/), and the Allegro community (http://www.allegro.cc/) '
   );
 
 

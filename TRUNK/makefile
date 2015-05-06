@@ -78,8 +78,8 @@ EXMBIN = $(BINDIR)$(EXMDIR)
 ALEXDIR = demos/alex/
 ALEXBIN = $(BINDIR)demoalex/
 
-ZOMBDIR = demos/zombie/
-ZOMBBIN = $(BINDIR)demozombie/
+ZOMBDIR = demos/zombie3d/
+ZOMBBIN = $(BINDIR)demozombie3d/
 
 #FLAGS = -O3 -Sh -Si -Xs -XX $(EFLAGS)
 # Use next line instead to activate debug.
