@@ -27,19 +27,21 @@ PROGRAM Zombie3D;
  *)
 
   USES
-    Math3D, Collision,
+    Game, Scene,
     sysutils;
 
-  CONST
-    FormatStr = '%8.4f';
 
 (* Formatted vector. *)
+{
   FUNCTION FormatVect (CONST V: TVector3D): STRING;
   CONST
-    Frm = '<'+FormatStr+', '+FormatStr+', '+FormatStr+'> ';
+    FmtStr = '<%8.4f, %8.4f, %8.4f> ';
   BEGIN
-    RESULT := Format (Frm, [V.X, V.Y, V.Z])
+    RESULT := Format (FmtStr; [V.X, V.Y, V.Z])
   END;
-
+}
 BEGIN
+{ Much like Delphi and Lazarus. }
+  Zombie3DGame.Initialize;
+  Zombie3DGame.Run
 END.
