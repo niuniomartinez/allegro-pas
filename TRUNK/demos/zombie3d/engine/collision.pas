@@ -377,7 +377,6 @@ IMPLEMENTATION
 
 
 
-
 (*
  * TCollisionSquare
  ****************************************************************************)
@@ -428,7 +427,7 @@ IMPLEMENTATION
       BEGIN
 	nArea := AreaTriangle (fP1, fP3, Point) + AreaTriangle (fP3, fP4, Point)
 		+ AreaTriangle (fP4, fP1, Point);
-	IF ABS (nArea - fArea2) >= FLOAT_THRESHOLD THEN
+	IF ABS (nArea - fArea2) > FLOAT_THRESHOLD THEN
 	{ The point is outside both triangles. }
 	  RESULT := - 1
       END
@@ -459,7 +458,7 @@ IMPLEMENTATION
       BEGIN
 	nArea := AreaTriangle (fP1, fP3, cPoint) + AreaTriangle (fP3,fP4,cPoint)
 		+ AreaTriangle (fP4, fP1, cPoint);
-	IF ABS (nArea - fArea2) >= FLOAT_THRESHOLD THEN
+	IF ABS (nArea - fArea2) > FLOAT_THRESHOLD THEN
 	{ The point is outside both triangles. }
 	  EXIT (FALSE)
       END;
