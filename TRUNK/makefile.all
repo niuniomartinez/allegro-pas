@@ -12,11 +12,11 @@ examples: $(EXMFILES)
 	@echo "Finished all examples"
 
 # Demo games.
-demogames: $(ALEXDEMO) $(ZOMBDEMO)
+demogames: demoalex demozombie
 
 demoalex: $(ALEXDEMO)
 
-demozombie: $(ZOMBDEMO)
+demozombie: $(ZOMBEDIT) $(ZOMBDEMO)
 
 # Library documentation.
 docs:
@@ -32,7 +32,11 @@ $(ALEXBIN)%$(BINSUF): $(ALEXSRC) $(LIBFILES)
 	@echo Alex demo game ready!
 
 
-$(ZOMBBIN)%$(BINSUF): $(ZOMBSRC) $(LIBFILES)
+$(ZOMBEDIT): $(ZOMMSRC) $(LIBFILES)
+	fpc $(FLAGS) -Mobjfpc -Fu$(LIBDIR) -Fu$(ZOMBDIR)* -FE$(ZOMBBIN) -FU$(OBJDIR) $< -o$@
+	@echo Zombie 3D demo map maker ready!
+
+$(ZOMBDEMO): $(ZOMBSRC) $(LIBFILES)
 	fpc $(FLAGS) -Mobjfpc -Fu$(LIBDIR) -Fu$(ZOMBDIR)* -FE$(ZOMBBIN) -FU$(OBJDIR) $< -o$@
 	@echo Zombie 3D demo game ready!
 
@@ -47,7 +51,7 @@ status: adbanner
 	@echo "  Units : $(LIBFILES)"
 	@echo "  Examples : $(EXMFILES)"
 	@echo "  Alex demo game : $(ALEXDEMO)"
-	@echo "  Zombie 3D demo game : $(ZOMBDEMO)"
+	@echo "  Zombie 3D demo game : $(ZOMBDEMO) $(ZOMBEDIT)"
 
 # Cleans everything.
 veryclean: clean
