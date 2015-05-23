@@ -222,17 +222,18 @@ INTERFACE
   (* Default game speed. *)
     FPS = 50;
 
-  VAR
-  (* Public access to the game object.  It's assigned by
-    @link(TCustomGameApplication.Create) and destroyed at
-    @code(FINALIZATION). *)
-    GameApplication: TCustomGameApplication;
-
 IMPLEMENTATION
 
 (*
  * TCustomGameApplication
  ****************************************************************************)
+
+  VAR
+  (* Access to the game object.
+     It's assigned by TCustomGameApplication.Create. *)
+    GameApplication: TCustomGameApplication;
+
+
 
 (* Timer interruption. *)
   PROCEDURE TickInt; CDECL;

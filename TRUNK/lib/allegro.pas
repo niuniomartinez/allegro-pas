@@ -408,7 +408,7 @@ END;
    does not apply, in which case the values stored in the variables you
    provided for `width' and `height' are undefined.)
    @seealso(al_desktop_color_depth) @seealso(al_set_gfx_mode) *)
-  FUNCTION al_get_desktop_resolution (VAR w, h: AL_INT): AL_BOOL;
+  FUNCTION al_get_desktop_resolution (OUT w, h: AL_INT): AL_BOOL;
     INLINE;
 
 
@@ -5297,7 +5297,7 @@ IMPLEMENTATION
 
 
 (* Finds out the currently selected desktop resolution. *)
-  FUNCTION al_get_desktop_resolution (VAR w, h: AL_INT): AL_BOOL;
+  FUNCTION al_get_desktop_resolution (OUT w, h: AL_INT): AL_BOOL;
   BEGIN
     IF system_driver^.get_desktop_resolution <> NIL THEN
       RESULT := NOT system_driver^.get_desktop_resolution (w, h)

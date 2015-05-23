@@ -1,8 +1,5 @@
-PROGRAM Zombie3D;
-(* An example game for Allegro.pas 4.
-
-  This game is Object Oriented and uses Allegro's 3D software renderer.
- *)
+PROGRAM MapMaker;
+(* Main unit of the Zombie3D map editor. *)
 (*
   Copyright (c) 2015 Guillermo Martínez J.
 
@@ -27,21 +24,10 @@ PROGRAM Zombie3D;
  *)
 
   USES
-    Game,
-    sysutils;
+    MapApp;
 
-
-(* Formatted vector. *)
-{
-  FUNCTION FormatVect (CONST V: TVector3D): STRING;
-  CONST
-    FmtStr = '<%8.4f, %8.4f, %8.4f> ';
-  BEGIN
-    RESULT := Format (FmtStr; [V.X, V.Y, V.Z])
-  END;
-}
 BEGIN
-{ Much like Delphi and Lazarus. }
-  Zombie3DGame.Initialize;
-  Zombie3DGame.Run
+{ The MapMakerApplication object is created at MapApp INITIALIZATION section. }
+  MapMakerApplication.Initialize;
+  MapMakerApplication.Run
 END.

@@ -37,15 +37,11 @@ PROGRAM excamera;
 
   TYPE
   (* A vector. *)
-    TVector = CLASS (TObject)
-    PRIVATE
-      fx, fy, fz: AL_FIXED;
+    TVector = OBJECT
     PUBLIC
-      CONSTRUCTOR Create (ax, ay, az: AL_FIXED);
+      x, y, z: AL_FIXED;
 
-      PROPERTY x: AL_FIXED READ fx WRITE fx;
-      PROPERTY y: AL_FIXED READ fy WRITE fY;
-      PROPERTY z: AL_FIXED READ fz WRITE fz;
+      PROCEDURE SetAll (ax, ay, az: AL_FIXED);
     END;
 
 
@@ -62,13 +58,11 @@ PROGRAM excamera;
     (* Camera matrix. *)
       fMatrix: AL_MATRIX;
 
-    (* Returns matrix. *)
-      FUNCTION GetMatrix: AL_MATRIXptr;
+    (* Calculates. *)
+      FUNCTION GetMatrix: AL_MATRIX;
     PUBLIC
     (* Creates the camera. *)
       CONSTRUCTOR Create;
-    (* Releases resources. *)
-      DESTRUCTOR Destroy; OVERRIDE;
 
     (* Camera position. *)
       PROPERTY Position: TVector READ fPosition;
@@ -87,22 +81,8 @@ PROGRAM excamera;
     (* Aspect ratio. *)
       PROPERTY Aspect: AL_FIXED READ fAspect WRITE fAspect;
     (* Camera matrix. *)
-      PROPERTY Matrix: AL_MATRIXptr READ GetMatrix;
+      PROPERTY Matrix: AL_MATRIX READ GetMatrix;
     END;
-
-
-
-  (* Displays a nice 8x8 chessboard grid. *)
-    TChessBoard = CLASS (TObject)
-    PRIVATE
-    (* Draws a single square. *)
-      PROCEDURE DrawSquare (OutBmp: AL_BITMAPptr; CameraMatrix: AL_MATRIX; X, Z: INTEGER);
-	INLINE;
-    PUBLIC
-    (* Draws the grid. *)
-      PROCEDURE Draw (OutBmp: AL_BITMAPptr; CameraMatrix: AL_MATRIX);
-    END;
-
 
 
 
@@ -112,9 +92,8 @@ PROGRAM excamera;
   VAR
   (* Frame count. *)
     FPS, FrameCount: INTEGER;
-  (* Camera and  grid. *)
+  (* Camera. *)
     Camera: TCamera;
-    Grid: TChessBoard;
   (* Backbuffer. *)
     Backbuffer: AL_BITMAPptr;
   (* Use or not to use... *)
@@ -127,11 +106,10 @@ PROGRAM excamera;
 (***********
  * TVector *
  ***********)
-  CONSTRUCTOR TVector.Create (ax, ay, az: AL_FIXED);
+
+  PROCEDURE TVector.SetAll (ax, ay, az: AL_FIXED);
   BEGIN
-    fx := ax;
-    fy := ay;
-    fz := az;
+    x := ax; y := ay; z := az
   END;
 
 
@@ -141,33 +119,33 @@ PROGRAM excamera;
  ***********)
 
 (* Returns matrix. *)
-  FUNCTION TCamera.GetMatrix: AL_MATRIXptr;
+  FUNCTION TCamera.GetMatrix: AL_MATRIX;
   VAR
     Roller: AL_MATRIX;
     XFront, YFront, ZFront,
     XUp, YUp, ZUp: AL_FIXED;
   BEGIN
-    { calculate the in-front vector }
-      XFront := al_fixmul (al_fixsin (fAngle.y),  al_fixcos (fAngle.x));
-      YFront := al_fixsin (fAngle.x);
-      ZFront := al_fixmul (al_fixcos (fAngle.y), al_fixcos (fAngle.x));
+  { calculate the in-front vector }
+    XFront := al_fixmul (al_fixsin (fAngle.y),  al_fixcos (fAngle.x));
+    YFront := al_fixsin (fAngle.x);
+    ZFront := al_fixmul (al_fixcos (fAngle.y), al_fixcos (fAngle.x));
 
-    { rotate the up vector around the in-front vector by the roll angle }
-      al_get_vector_rotation_matrix (Roller, XFront, YFront, ZFront, fAngle.z);
-      al_apply_matrix (Roller, 0, al_itofix (-1), 0, XUp, YUp, ZUp);
+  { rotate the up vector around the in-front vector by the roll angle }
+    al_get_vector_rotation_matrix (Roller, XFront, YFront, ZFront, fAngle.z);
+    al_apply_matrix (Roller, 0, al_itofix (-1), 0, XUp, YUp, ZUp);
 
-    { build the camera matrix }
-      al_get_camera_matrix (
+  { build the camera matrix }
+    al_get_camera_matrix (
 	fMatrix,
 	fPosition.x, fPosition.y, fPosition.z, { camera position }
 	XFront, YFront, ZFront,                { in-front vector }
 	XUp, YUp, ZUp,                         { up vector }
 	al_itofix (fFOV),                      { field of view }
 	fAspect                                { aspect ratio }
-      );
+    );
 
-      fFront.X := XFront; fFront.Y := YFront; fFront.Z := ZFront;
-      fUp.X := XUp; fUp.Y := YUp; fUp.Z := ZUp;
+    fFront.X := XFront; fFront.Y := YFront; fFront.Z := ZFront;
+    fUp.X := XUp; fUp.Y := YUp; fUp.Z := ZUp;
 
 { Next is a hack that implements a working camera matrix using rotation instead
   of Front/Up matrices.  FOV an Aspect can be simulated by scaling.
@@ -185,7 +163,7 @@ PROGRAM excamera;
 
   End of hack. }
 
-    GetMatrix := @fMatrix;
+    RESULT := fMatrix
   END;
 
 
@@ -194,10 +172,7 @@ PROGRAM excamera;
   CONSTRUCTOR TCamera.Create;
   BEGIN
     INHERITED Create;
-    fPosition := TVector.Create (0, al_itofix (-2), al_itofix (-4));
-    fAngle := TVector.Create (0, 0, 0);
-    fFront := TVector.Create (0, 0, 0);
-    fUp := TVector.Create (0, 0, 0);
+    fPosition.SetAll (0, al_itofix (-2), al_itofix (-4));
     fViewportW := 320; fViewportH := 240;
     fFOV := 48;
     fAspect := al_ftofix (1.33);
@@ -205,143 +180,123 @@ PROGRAM excamera;
 
 
 
-(* Releases resources. *)
-  DESTRUCTOR TCamera.Destroy;
-  BEGIN
-    fPosition.Free;
-    fAngle.Free;
-    fFront.Free;
-    fUp.Free;
-    INHERITED Destroy;
-  END;
-
-
-
-(***************
- * TChessBoard *
- ***************)
+(****************************************************************************)
 
   CONST
     GRID_SIZE = 8;
 
-(* Displays a nice 8x8 chessboard grid. *)
-  PROCEDURE TChessBoard.DrawSquare (OutBmp: AL_BITMAPptr; CameraMatrix: AL_MATRIX; X, Z: INTEGER);
-  VAR
-    _V: ARRAY [1..4] OF AL_V3D;
-    _VOut, _VTmp: ARRAY [1..8] OF AL_V3D;
-    V: ARRAY [1..4] OF AL_V3Dptr;
-    VOut, VTmp: ARRAY [1..8] OF AL_V3Dptr;
-    Flags: ARRAY [1..4] OF INTEGER;
-    Out_: ARRAY [1..8] OF INTEGER;
-    Ndx, VCnt: INTEGER;
-  BEGIN
-    FOR Ndx := LOW (V) TO HIGH (V) DO
-      V[Ndx] := @_V[Ndx];
-    FOR Ndx := LOW (VOut) TO HIGH (VOut) DO
-    BEGIN
-      VOut[Ndx] := @_VOut[Ndx];
-      VTmp[Ndx] := @_VTmp[Ndx];
-    END;
-  { Set up four vertices with the world-space position of the tile }
-    v[1]^.x := al_ftofix (x - GRID_SIZE / 2);
-    v[1]^.y := 0;
-    v[1]^.z := al_ftofix (z - GRID_SIZE / 2);
-
-    v[2]^.x := al_ftofix (x - GRID_SIZE / 2 + 1);
-    v[2]^.y := 0;
-    v[2]^.z := al_ftofix (z - GRID_SIZE / 2);
-
-    v[3]^.x := al_ftofix (x - GRID_SIZE / 2 + 1);
-    v[3]^.y := 0;
-    v[3]^.z := al_ftofix (z - GRID_SIZE / 2 + 1);
-
-    v[4]^.x := al_ftofix (x - GRID_SIZE / 2);
-    v[4]^.y := 0;
-    v[4]^.z := al_ftofix (z - GRID_SIZE / 2 + 1);
-
-  { apply the camera matrix, translating world space -> view space }
-    FOR Ndx := LOW (V) TO HIGH (V) DO
-    BEGIN
-      al_apply_matrix (
-	CameraMatrix,
-	V[Ndx]^.x, V[Ndx]^.y, V[Ndx]^.z,
-	V[Ndx]^.x, V[Ndx]^.y, V[Ndx]^.z
-      );
-
-    { set flags if this vertex is off the edge of the screen }
-      Flags[Ndx] := 0;
-
-      IF V[Ndx]^.x < -V[Ndx]^.z THEN
-	 Flags[Ndx] := Flags[Ndx] OR 1
-      ELSE IF V[Ndx]^.x > V[Ndx]^.z THEN
-	 Flags[Ndx] := Flags[Ndx] OR 2;
-
-      IF V[Ndx]^.y < -V[Ndx]^.z THEN
-	 Flags[Ndx] := Flags[Ndx] OR 4
-      ELSE IF V[Ndx]^.y > V[Ndx]^.z THEN
-	 Flags[Ndx] := Flags[Ndx] OR 8;
-
-      IF V[Ndx]^.z < al_ftofix (0.1) THEN
-	 Flags[Ndx] := Flags[Ndx] OR 16;
-    END;
-
-  { quit if all vertices are off the same edge of the screen }
-    IF (Flags[1] <> 0) AND (Flags[2] <> 0) AND (Flags[3] <> 0) AND (Flags[4] <> 0) THEN
-      EXIT;
-
-    IF (Flags[1] <> 0) OR (Flags[2] <> 0) OR (Flags[3] <> 0) OR (Flags[4] <> 0) THEN
-    BEGIN
-    { clip if any vertices are off the edge of the screen }
-      VCnt := al_clip3d (
-	AL_POLYTYPE_FLAT, al_ftofix (0.1), al_ftofix (0.1), 4, v,
-	VOut, VTmp, Out_
-      );
-
-      IF VCnt <= 0 THEN
-	EXIT;
-    END
-    ELSE BEGIN
-    { no need to bother clipping this one }
-      VOut[1] := v[1];
-      VOut[2] := v[2];
-      VOut[3] := v[3];
-      VOut[4] := v[4];
-
-      VCnt := 4;
-    END;
-
-  { project view space -> screen space }
-   FOR Ndx := LOW (VOut) TO VCnt DO
-     al_persp_project (
-       VOut[Ndx]^.x, VOut[Ndx]^.y, VOut[Ndx]^.z,
-       VOut[Ndx]^.x, VOut[Ndx]^.y
-     );
-
-  { set the color }
-    IF ((X + Z) AND 1) <> 0 THEN
-      VOut[1]^.c := ClrGreen
-    ELSE
-      VOut[1]^.c := ClrYellow;
-
-  { render the polygon }
-    al_polygon3d (OutBmp, AL_POLYTYPE_FLAT, NIL, VCnt, VOut);
-  END;
-
-
-
 (* Draws the grid. *)
-  PROCEDURE TChessBoard.Draw (OutBmp: AL_BITMAPptr; CameraMatrix: AL_MATRIX);
+  PROCEDURE DrawGrid (OutBmp: AL_BITMAPptr; CameraMatrix: AL_MATRIX);
+
+  (* Displays a grid square. *)
+    PROCEDURE DrawSquare (X, Z: INTEGER);
+    VAR
+      _V: ARRAY [1..4] OF AL_V3D;
+      _VOut, _VTmp: ARRAY [1..8] OF AL_V3D;
+      V: ARRAY [1..4] OF AL_V3Dptr;
+      VOut, VTmp: ARRAY [1..8] OF AL_V3Dptr;
+      Flags: ARRAY [1..4] OF INTEGER;
+      Out_: ARRAY [1..8] OF INTEGER;
+      Ndx, VCnt: INTEGER;
+    BEGIN
+      FOR Ndx := LOW (V) TO HIGH (V) DO
+	V[Ndx] := @_V[Ndx];
+      FOR Ndx := LOW (VOut) TO HIGH (VOut) DO
+      BEGIN
+	VOut[Ndx] := @_VOut[Ndx];
+	VTmp[Ndx] := @_VTmp[Ndx];
+      END;
+    { Set up four vertices with the world-space position of the tile }
+      v[1]^.x := al_ftofix (x - GRID_SIZE / 2);
+      v[1]^.y := 0;
+      v[1]^.z := al_ftofix (z - GRID_SIZE / 2);
+
+      v[2]^.x := al_ftofix (x - GRID_SIZE / 2 + 1);
+      v[2]^.y := 0;
+      v[2]^.z := al_ftofix (z - GRID_SIZE / 2);
+
+      v[3]^.x := al_ftofix (x - GRID_SIZE / 2 + 1);
+      v[3]^.y := 0;
+      v[3]^.z := al_ftofix (z - GRID_SIZE / 2 + 1);
+
+      v[4]^.x := al_ftofix (x - GRID_SIZE / 2);
+      v[4]^.y := 0;
+      v[4]^.z := al_ftofix (z - GRID_SIZE / 2 + 1);
+
+    { apply the camera matrix, translating world space -> view space }
+      FOR Ndx := LOW (V) TO HIGH (V) DO
+      BEGIN
+	al_apply_matrix (
+	  CameraMatrix,
+	  V[Ndx]^.x, V[Ndx]^.y, V[Ndx]^.z,
+	  V[Ndx]^.x, V[Ndx]^.y, V[Ndx]^.z
+        );
+
+      { set flags if this vertex is off the edge of the screen }
+	Flags[Ndx] := 0;
+
+	IF V[Ndx]^.x < -V[Ndx]^.z THEN
+	  Flags[Ndx] := Flags[Ndx] OR 1
+	ELSE IF V[Ndx]^.x > V[Ndx]^.z THEN
+	  Flags[Ndx] := Flags[Ndx] OR 2;
+
+	IF V[Ndx]^.y < -V[Ndx]^.z THEN
+	  Flags[Ndx] := Flags[Ndx] OR 4
+	ELSE IF V[Ndx]^.y > V[Ndx]^.z THEN
+	  Flags[Ndx] := Flags[Ndx] OR 8;
+
+	IF V[Ndx]^.z < al_ftofix (0.1) THEN
+	  Flags[Ndx] := Flags[Ndx] OR 16;
+      END;
+
+    { quit if all vertices are off the same edge of the screen }
+      IF (Flags[1] <> 0) AND (Flags[2] <> 0) AND (Flags[3] <> 0) AND (Flags[4] <> 0) THEN
+        EXIT;
+
+      IF (Flags[1] <> 0) OR (Flags[2] <> 0) OR (Flags[3] <> 0) OR (Flags[4] <> 0) THEN
+      BEGIN
+      { clip if any vertices are off the edge of the screen }
+	VCnt := al_clip3d (
+	  AL_POLYTYPE_FLAT, al_ftofix (0.1), al_ftofix (0.1), 4, v,
+	  VOut, VTmp, Out_
+	);
+
+	IF VCnt <= 0 THEN EXIT
+      END
+      ELSE BEGIN
+      { no need to bother clipping this one }
+	VOut[1] := v[1];
+	VOut[2] := v[2];
+	VOut[3] := v[3];
+	VOut[4] := v[4];
+
+	VCnt := 4
+      END;
+
+    { project view space -> screen space }
+      FOR Ndx := LOW (VOut) TO VCnt DO
+	al_persp_project (
+	  VOut[Ndx]^.x, VOut[Ndx]^.y, VOut[Ndx]^.z,
+	  VOut[Ndx]^.x, VOut[Ndx]^.y
+	);
+
+    { set the color }
+      IF ((X + Z) AND 1) <> 0 THEN
+	VOut[1]^.c := ClrGreen
+      ELSE
+	VOut[1]^.c := ClrYellow;
+
+    { render the polygon }
+      al_polygon3d (OutBmp, AL_POLYTYPE_FLAT, NIL, VCnt, VOut);
+    END;
+
   VAR
     X, Y: INTEGER;
   BEGIN
     FOR X := 1 TO GRID_SIZE DO
       FOR Y := 1 TO GRID_SIZE DO
-        SELF.DrawSquare (OutBmp, CameraMatrix, X - 1, Y - 1);
+        DrawSquare (X - 1, Y - 1);
   END;
-
-
-
-(****************************************************************************)
 
 
 
@@ -364,7 +319,7 @@ PROGRAM excamera;
     al_set_clip_rect  (OutBmp, x, y, x + w - 1, y + h - 1);
 
   { Draw grid. }
-    Grid.Draw (OutBmp, Camera.Matrix^);
+    DrawGrid (OutBmp, Camera.Matrix);
 
   { overlay some text }
     al_set_clip_rect (OutBmp, 0, 0, OutBmp^.w, OutBmp^.h);
@@ -617,7 +572,6 @@ BEGIN { The program starts here. }
   Backbuffer := al_create_bitmap (AL_SCREEN_W, AL_SCREEN_H);
 
   Camera := TCamera.Create;
-  Grid := TChessBoard.Create;
 
   al_install_int_ex (@FPSCheck, AL_BPS_TO_TIMER (FPS_INT));
 
@@ -626,8 +580,7 @@ BEGIN { The program starts here. }
     BEGIN
       Render (Backbuffer);
 
-      IF UseVSync THEN
-        al_vsync;
+      IF UseVSync THEN al_vsync;
 
       al_blit (Backbuffer, al_screen, 0, 0, 0, 0, AL_SCREEN_W, AL_SCREEN_H);
       INC (FrameCount);
@@ -635,7 +588,6 @@ BEGIN { The program starts here. }
       ProcessInput;
     END
   FINALLY
-    Grid.Free;
     Camera.Free;
     al_destroy_bitmap (Backbuffer);
   END;

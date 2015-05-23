@@ -142,6 +142,9 @@ TYPE
 
 (* Trigonometry. *)
 CONST
+(* Fixed point PI value.  Note that this is not used by this unit or
+  Allegro, since Allegro uses binary angles (full circle is 256 degrees). *)
+  al_fixpi: AL_FIXED = 205887; { al_ftofix (pi) }
 (* This constant gives a ratio which can be used to convert a fixed point
    number in binary angle format to a fixed point number in radians. *)
   al_fixtorad: AL_FIXED = 1608;	   { al_ftofix (2pi/256) }

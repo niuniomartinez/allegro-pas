@@ -79,6 +79,8 @@ ALEXDIR = demos/alex/
 ALEXBIN = $(BINDIR)demoalex/
 
 ZOMBDIR = demos/zombie3d/
+ZOMBENG = $(ZOMBDIR)engine/
+ZOMBMAP = $(ZOMBDIR)mapmaker/
 ZOMBBIN = $(BINDIR)demozombie3d/
 
 #FLAGS = -O3 -Sh -Si -Xs -XX $(EFLAGS)
