@@ -12,6 +12,7 @@ New features
 
 Other
 =====
+ * Revisit the "classic" alGUI unit.
  * Remove (if possible) the MANY hint messages about C ARRAYs.
  * Check the "inverse logic" used by some functions.  In most cases they're
    "inversed" using NOT but may be it's better not to do that in some cases.

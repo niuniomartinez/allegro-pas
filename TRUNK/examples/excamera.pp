@@ -428,8 +428,8 @@ PROGRAM excamera;
       END;
     END;
 
-     IF al_key[AL_KEY_H] THEN
-     BEGIN
+    IF al_key[AL_KEY_H] THEN
+    BEGIN
       IF al_key_shifts AND AL_KB_SHIFT_FLAG <> 0 THEN
       BEGIN
 	IF Camera.ViewportH < AL_SCREEN_H THEN
@@ -442,6 +442,7 @@ PROGRAM excamera;
     END;
 
     IF al_key[AL_KEY_F] THEN
+    BEGIN
       IF al_key_shifts AND AL_KB_SHIFT_FLAG <> 0 THEN
       BEGIN
 	IF Camera.FOV < 96 THEN
@@ -450,7 +451,8 @@ PROGRAM excamera;
       ELSE BEGIN
 	IF Camera.FOV > 16 THEN
 	  Camera.FOV := Camera.FOV - 1;
-      END;
+      END
+    END;
 
     IF al_key[AL_KEY_A] THEN
     BEGIN

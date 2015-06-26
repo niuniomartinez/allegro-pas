@@ -1,9 +1,9 @@
 # Makefile generic - build rules
 
-.PHONY: all examples demogames demoalex demozombie docs
+.PHONY: all examples demo docs
 
 # Main objective: the whole project
-all: adbanner examples demogames
+all: adbanner examples demo
 	@echo "Finished $(PROJECT)"
 	@echo "To create the documentation, run 'make docs'."
 
@@ -11,12 +11,8 @@ all: adbanner examples demogames
 examples: $(EXMFILES)
 	@echo "Finished all examples"
 
-# Demo games.
-demogames: demoalex demozombie
-
-demoalex: $(ALEXDEMO)
-
-demozombie: $(ZOMBEDIT) $(ZOMBDEMO)
+# Demo game.
+demo: $(ALEXDEMO)
 
 # Library documentation.
 docs:
@@ -32,14 +28,6 @@ $(ALEXBIN)%$(BINSUF): $(ALEXSRC) $(LIBFILES)
 	@echo Alex demo game ready!
 
 
-$(ZOMBEDIT): $(ZOMMSRC) $(LIBFILES)
-	fpc $(FLAGS) -Mobjfpc -Fu$(LIBDIR) -Fu$(ZOMBDIR)* -FE$(ZOMBBIN) -FU$(OBJDIR) $< -o$@
-	@echo Zombie 3D demo map maker ready!
-
-$(ZOMBDEMO): $(ZOMBSRC) $(LIBFILES)
-	fpc $(FLAGS) -Mobjfpc -Fu$(LIBDIR) -Fu$(ZOMBDIR)* -FE$(ZOMBBIN) -FU$(OBJDIR) $< -o$@
-	@echo Zombie 3D demo game ready!
-
 # Returns some variables.
 status: adbanner
 	@echo "-----------------"
@@ -50,14 +38,12 @@ status: adbanner
 	@echo "  Compiler options : $(FLAGS)"
 	@echo "  Units : $(LIBFILES)"
 	@echo "  Examples : $(EXMFILES)"
-	@echo "  Alex demo game : $(ALEXDEMO)"
-	@echo "  Zombie 3D demo game : $(ZOMBDEMO) $(ZOMBEDIT)"
+	@echo "  Demo game : $(ALEXDEMO)"
 
 # Cleans everything.
 veryclean: clean
 	$(DELETE) $(EXMFILES)
 	$(DELETE) $(ALEXDEMO)
-	$(DELETE) $(ZOMBDEMO)
 
 # Clean temporary files.
 clean:
@@ -73,9 +59,7 @@ help: adbanner
 	@echo "--------"
 	@echo "make all            } Builds the whole project."
 	@echo "make examples       } Builds the examples only."
-	@echo "make demogames      } Builds both demonstration games."
-	@echo "make demoalex       } Builds Alex the Allegrator demonstration game only."
-	@echo "make demozombie     } Builds Zombie 3D demonstration game only."
+	@echo "make demo           } Builds Alex the Allegrator demonstration game only."
 	@echo "make docs           } Builds the internal documentation."
 	@echo "make clean          } Deletes temporary files."
 	@echo "make veryclean      } Deletes all builded files."
