@@ -75,13 +75,8 @@ DOCDIR = docs/lib/
 
 EXMBIN = $(BINDIR)$(EXMDIR)
 
-ALEXDIR = demos/alex/
-ALEXBIN = $(BINDIR)demoalex/
-
-ZOMBDIR = demos/zombie3d/
-ZOMBENG = $(ZOMBDIR)engine/
-ZOMBMAP = $(ZOMBDIR)mapmaker/
-ZOMBBIN = $(BINDIR)demozombie3d/
+ALEXDIR = demo/
+ALEXBIN = $(BINDIR)demo/
 
 #FLAGS = -O3 -Sh -Si -Xs -XX $(EFLAGS)
 # Use next line instead to activate debug.

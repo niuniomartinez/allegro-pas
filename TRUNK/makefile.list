@@ -18,7 +18,7 @@ $(error ERROR: No source code found at $(EXMDIR))
 endif
 EXMFILES = $(addprefix $(EXMBIN),$(addsuffix $(BINSUF), $(basename $(notdir $(TEM2) ) ) ) )
 
-# For the demo games.
+# For the demo game.
 TEM3 = $(wildcard $(ALEXDIR)*.pas)
 ifeq ($(strip $(TEM3)),)
 $(error ERROR: No source code found at $(ALEXDIR))
@@ -29,31 +29,3 @@ $(error ERROR: No source code found at $(ALEXDIR))
 endif
 ALEXSRC = $(ALEXDIR)%.pp $(TEM3)
 ALEXDEMO = $(addprefix $(ALEXBIN),$(addsuffix $(BINSUF), $(basename $(notdir $(TEM4) ) ) ) )
-
-TEMZENG = $(wildcard $(ZOMBENG)*.pas)
-ifeq ($(strip $(TEMZENG)),)
-$(error ERROR: No source code found at $(ZOMBDIR))
-endif
-ZOMBENGSRC = $(TEMZENG)
-
-TEM5 = $(wildcard $(ZOMBDIR)*.pas)
-ifeq ($(strip $(TEM5)),)
-$(error ERROR: No source code found at $(ZOMBDIR))
-endif
-TEMZBIN = $(wildcard $(ZOMBDIR)*.pp)
-ifeq ($(strip $(TEMZBIN)),)
-$(error ERROR: No source code found at $(ZOMBDIR))
-endif
-ZOMBSRC = $(ZOMBDIR)zombie3d.pp $(TEM5) $(ZOMBENGSRC)
-ZOMBDEMO = $(addprefix $(ZOMBBIN),$(addsuffix $(BINSUF), $(basename $(notdir $(TEMZBIN) ) ) ) )
-
-TEMZMAP = $(wildcard $(ZOMBMAP)*.pas)
-ifeq ($(strip $(TEMZMAP)),)
-$(error ERROR: No source code found at $(ZOMBMAP))
-endif
-TEMZMBIN = $(wildcard $(ZOMBMAP)*.pp)
-ifeq ($(strip $(TEMZMBIN)),)
-$(error ERROR: No source code found at $(ZOMBMAP))
-endif
-ZOMMSRC = $(ZOMBMAP)mapmaker.pp $(TEMZMAP) $(ZOMBENGSRC)
-ZOMBEDIT = $(addprefix $(ZOMBBIN),$(addsuffix $(BINSUF), $(basename $(notdir $(TEMZMBIN) ) ) ) )
