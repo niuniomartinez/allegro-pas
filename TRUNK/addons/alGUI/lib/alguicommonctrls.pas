@@ -75,7 +75,20 @@ INTERFACE
     TalGUI_ListBox = CLASS (TalGUI_CustomItemListControl)
     PRIVATE
       fSelBgColor, fSelTxtColor: LONGINT;
+      fFirstItem, fLastItem: INTEGER;
+      fScrollBar: TalGUI_ScrollBar;
+
+      PROCEDURE FixScroll;
+      PROCEDURE onScrollBarChange (Sender: TalGUI_Control);
     PROTECTED
+    (* Sets owner dialog. *)
+      PROCEDURE SetOwner (aDlg: TalGUI_Dialog); OVERRIDE;
+    (* Sent when a key is pressed and the object has the input focus.
+      @return(@true if the object deals with the keypress, otherwise it
+      should return @false to allow the default keyboard interface to operate.)
+      @param(aKey Key pressed with an @code(al_readkey) format character code
+      @(ASCII value in the low byte, scancode in the high byte@).) *)
+      FUNCTION MsgKeyChar (aKey: INTEGER): BOOLEAN; OVERRIDE;
     (* Informs the object that a mouse button has been clicked while the mouse
       was on top of the object.  Typically an object will perform its own
       mouse tracking as long as the button is held down, and only return from
@@ -278,6 +291,7 @@ IMPLEMENTATION
 
   VAR
     sX1, sY1, sX2, sY2, NewPos: INTEGER;
+    mX, mY, mB: INTEGER;
 
     PROCEDURE DoHorizontal;
     BEGIN
@@ -287,13 +301,13 @@ IMPLEMENTATION
       IF (sX1 <= aX) AND (aX <= sX2) AND (sY1 <= aY) AND (aY <= sY2) THEN
       BEGIN
 	REPEAT
-	  IF al_mouse_needs_poll THEN al_poll_mouse;
-	  NewPos := TRUNC ((al_mouse_x - SELF.X) / fSliderFactor);
+	  Dialog.GetMouseState (mX, mY, mB);
+	  NewPos := TRUNC ((mX - SELF.X) / fSliderFactor);
 	  IF NewPos <> Position THEN
 	  BEGIN
 	    Position := NewPos; MyDraw
 	  END;
-	UNTIL al_mouse_b <> Button;
+	UNTIL mB <> Button;
 	EXIT;
       END
       ELSE BEGIN
@@ -305,8 +319,8 @@ IMPLEMENTATION
 	MyDraw;
       { Wait until mouse release. }
 	REPEAT
-	  IF al_mouse_needs_poll THEN al_poll_mouse
-	UNTIL al_mouse_b <> Button
+	  Dialog.GetMouseState (mX, mY, mB)
+	UNTIL mB <> Button
       END
     END;
 
@@ -319,13 +333,13 @@ IMPLEMENTATION
       IF (sX1 <= aX) AND (aX <= sX2) AND (sY1 <= aY) AND (aY <= sY2) THEN
       BEGIN
 	REPEAT
-	  IF al_mouse_needs_poll THEN al_poll_mouse;
-	  NewPos := TRUNC ((al_mouse_y - SELF.Y) / fSliderFactor);
+	  Dialog.GetMouseState (mX, mY, mB);
+	  NewPos := TRUNC ((mY - SELF.Y) / fSliderFactor);
 	  IF NewPos <> Position THEN
 	  BEGIN
 	    Position := NewPos; MyDraw
 	  END
-	UNTIL al_mouse_b <> Button;
+	UNTIL mB <> Button;
 	EXIT;
       END
       ELSE BEGIN
@@ -337,8 +351,8 @@ IMPLEMENTATION
 	MyDraw;
       { Wait until mouse release. }
 	REPEAT
-	  IF al_mouse_needs_poll THEN al_poll_mouse
-	UNTIL al_mouse_b <> Button
+	  Dialog.GetMouseState (mX, mY, mB)
+	UNTIL mB <> Button
       END
     END;
 
@@ -454,14 +468,108 @@ IMPLEMENTATION
  * TalGUI_ListBox
  ****************************************************************************)
 
+  TYPE
+  (* Extends the a slider so it can be used by listbox. *)
+    TListBoxSlider = CLASS (TalGUI_ScrollBar)
+    PRIVATE
+      fListBox: TalGUI_ListBox;
+    PUBLIC
+    (* Constructor. *)
+      CONSTRUCTOR Create (aLB: TalGUI_ListBox);
+    (* Tells the dialog that should redraw the control. *)
+      PROCEDURE RedrawMe; OVERRIDE;
+    END;
+
+(* Constructor. *)
+  CONSTRUCTOR TListBoxSlider.Create (aLB: TalGUI_ListBox);
+  BEGIN
+    INHERITED Create;
+    fListBox := aLB
+  END;
+
+(* Tells the dialog that should redraw the control. *)
+  PROCEDURE TListBoxSlider.RedrawMe;
+  BEGIN
+  { The listbox is what should be redrawn. }
+    IF fListBox <> NIL THEN fListBox.RedrawMe
+  END;
+
+
+
+  PROCEDURE TalGUI_ListBox.FixScroll;
+  VAR
+    NumItems, ItemHeight: INTEGER;
+  BEGIN
+  { Limits. }
+    ItemHeight := al_text_height (Dialog.Style.TextFont);
+    NumItems := SELF.Height DIV ItemHeight;
+    fLastItem := fFirstItem + NumItems - 1;
+    IF fLastItem >= Items.Count THEN fLastItem := Items.Count - 1;
+  { Scroll bar. }
+    fScrollBar.Max := (Items.Count - 1) - (fLastItem - fFirstItem);
+    fScrollBar.Page := NumItems;
+    fScrollBar.Position := fFirstItem
+  END;
+
+
+
+(* Scroll control. *)
+  PROCEDURE TalGUI_ListBox.onScrollBarChange (Sender: TalGUI_Control);
+  BEGIN
+    fFirstItem := TalGUI_CustomSlider (Sender).Position;
+    SELF.FixScroll
+  END;
+
+
+
+(* Sets owner dialog. *)
+  PROCEDURE TalGUI_ListBox.SetOwner (aDlg: TalGUI_Dialog);
+  BEGIN
+    INHERITED SetOwner (aDlg);
+    fScrollBar.SetOwner (aDlg)
+  END;
+
+
+
+(* Key message. *)
+  FUNCTION TalGUI_ListBox.MsgKeyChar (aKey: INTEGER): BOOLEAN;
+  BEGIN
+    IF INHERITED MsgKeyChar (aKey) THEN
+    BEGIN
+    { Selecting with keyboard must follow scroll. }
+      IF fFirstItem > Selected THEN
+	fFirstItem := Selected
+      ELSE IF fLastItem < Selected THEN
+	fFirstItem := Selected - (fLastItem - fFirstItem);
+      FixScroll;
+      RESULT := TRUE
+    END
+    ELSE IF fScrollBar.Enabled AND fScrollBar.MsgKeyChar (aKey) THEN
+    BEGIN
+      RESULT := TRUE
+    END
+    ELSE
+      RESULT := FALSE
+  END;
+
+
+
 (* Informs the object that a mouse button has been clicked. *)
   FUNCTION TalGUI_ListBox.MsgClick (CONST aX, aY, Button: INTEGER): BOOLEAN;
   VAR
     TextHeight, NewSel: INTEGER;
   BEGIN
     TextHeight := al_text_height (Dialog.Style.TextFont);
+  { Check scroll bar. }
+    IF fScrollBar.Enabled AND fScrollBar.Inside (aX, aY) THEN
+      IF fScrollBar.MsgClick (aX, aY, Button) THEN
+      BEGIN
+	SELF.RedrawMe;
+	EXIT (TRUE)
+      END;
+  { Else, select new. }
     NewSel := (aY - Y - (TextHeight DIV 2)) DIV TextHeight;
-    SELF.selected := NewSel;
+    SELF.Selected := NewSel;
     RESULT := TRUE
   END;
 
@@ -471,6 +579,7 @@ IMPLEMENTATION
   CONSTRUCTOR TalGUI_ListBox.Create;
   BEGIN
     INHERITED Create;
+    fScrollBar := TListBoxSlider.Create (SELF)
   END;
 
 
@@ -480,7 +589,8 @@ IMPLEMENTATION
     (CONST aX, aY, aW, aH: INTEGER);
   BEGIN
     SELF.Create;
-    X := aX; Y := aY; Width := aW; Height := aH
+    X := aX; Y := aY; Width := aW; Height := aH;
+    fScrollBar := TListBoxSlider.Create (SELF)
   END;
 
 
@@ -488,6 +598,7 @@ IMPLEMENTATION
 (* Destructor. *)
   DESTRUCTOR TalGUI_ListBox.Destroy;
   BEGIN
+    fScrollBar.Free;
     INHERITED Destroy
   END;
 
@@ -511,7 +622,16 @@ IMPLEMENTATION
       Width := Max + (Tmp * 3)
     END;
     IF Height < 0 THEN
-      Height := (SELF.Items.Count + 1) * al_text_height (Dialog.Style.TextFont)
+      Height := (SELF.Items.Count + 1) * al_text_height (Dialog.Style.TextFont);
+
+    fScrollBar.Enabled := TRUE;
+    fScrollBar.X := SELF.X + SELF.Width - 16; fScrollBar.Y := SELF.Y;
+    fScrollBar.Width := 16; fScrollBar.Height := SELF.Height;
+    fScrollBar.Direction := agdVertical;
+    fScrollBar.Min := 0;
+    fScrollBar.onChange := @SELF.onScrollBarChange;
+
+    fFirstItem := 0; FixScroll
   END;
 
 
@@ -523,7 +643,9 @@ IMPLEMENTATION
     BorderColor     := Dialog.Style.BorderColor;
     BackgroundColor := Dialog.Style.BackgroundTextBoxColor;
     fSelTxtColor    := Dialog.Style.SelectedTextColor;
-    fSelBgColor     := Dialog.Style.SelectedBackgroundColor
+    fSelBgColor     := Dialog.Style.SelectedBackgroundColor;
+
+    fScrollBar.SetDefaultColors
   END;
 
 
@@ -532,41 +654,43 @@ IMPLEMENTATION
   PROCEDURE TalGUI_ListBox.Draw (Bmp: AL_BITMAPptr);
   VAR
     SubBmp: AL_BITMAPptr;
-    Ndx, Line, Increment: INTEGER;
+    Ndx, Line, ItemHeight: INTEGER;
   BEGIN
   { Set clipping, so text doesn't overloads the control }
-    SubBmp := al_create_sub_bitmap (Bmp, X, Y, X + Width - 1, Y + Height - 1);
+    SubBmp := al_create_sub_bitmap (Bmp, X, Y, Width, Height);
     TRY
     { Background. }
-      al_rectfill (SubBmp, 0, 0, Width - 1, Height - 1, BackgroundColor);
+      al_clear_to_color (SubBmp, BackgroundColor);
     { Items. }
-      Increment := al_text_height (Dialog.Style.TextFont);
-      Line := Increment DIV 2;
-      FOR Ndx := 0 TO Items.Count - 1 DO
+      ItemHeight := al_text_height (Dialog.Style.TextFont);
+      Line := 0;
+      FOR Ndx := fFirstItem TO fLastItem DO
       BEGIN
 	IF Ndx = Selected THEN
 	BEGIN
 	  al_rectfill (
-	    SubBmp, 0, Line, Width - 1, Line + Increment - 1, fSelBgColor
+	    SubBmp, 0, Line, Width - 1, Line + ItemHeight - 1, fSelBgColor
 	  );
 	  Dialog.Style.DrawText (
-	    SubBmp, Items[Ndx], Increment DIV 2, Line, fSelTxtColor, FALSE
+	    SubBmp, Items[Ndx], ItemHeight DIV 2, Line, fSelTxtColor, FALSE
 	  )
 	END
 	ELSE
 	  Dialog.Style.DrawText (
-	    SubBmp, Items[Ndx], Increment DIV 2, Line, SELF.Color, FALSE
+	    SubBmp, Items[Ndx], ItemHeight DIV 2, Line, SELF.Color, FALSE
 	  );
-	INC (Line, Increment)
+	INC (Line, ItemHeight)
       END;
     { Border. }
-      al_rect (SubBmp, 0, 0, Width - 1, Height - 1, BorderColor);
+      al_rect (SubBmp, 0, 0, Width - 17, Height - 1, BorderColor);
       IF HasFocus THEN
-	Dialog.Style.DrawFocusRect (SubBmp, 1, 1, Width - 2, Height - 2)
+	Dialog.Style.DrawFocusRect (SubBmp, 1, 1, Width - 18, Height - 2)
     FINALLY
     { Restore clipping. }
       al_destroy_bitmap (SubBmp)
-    END
+    END;
+  { The scroll bar. }
+    fScrollBar.Draw (Bmp)
   END;
 
 
