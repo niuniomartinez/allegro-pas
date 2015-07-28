@@ -163,6 +163,8 @@ INTERFACE
       fX, fY, fW, fH, fKeyShortCut, fTag: INTEGER;
       fHasFocus, fHasMouse, fEnabled, fRedraw: BOOLEAN;
     PROTECTED
+    (* Sets owner dialog. *)
+      PROCEDURE SetOwner (aDlg: TalGUI_Dialog); VIRTUAL;
     (* Sets X position. *)
       PROCEDURE SetX (CONST aX: INTEGER); VIRTUAL;
     (* Sets Y position. *)
@@ -321,7 +323,9 @@ INTERFACE
     (* Helper method to know if control wants focus.
 
        This method doesn't just call the @code(WantFocus) method of the control,
-       but it also checks other important states. *)
+       but it also checks other important states.
+       @param(Ndx Index of control to test.)
+       @return(@true if control wants focus, @false elsewere.) *)
       FUNCTION WantsFocus (CONST Ndx: INTEGER): BOOLEAN; INLINE;
 
     (* How many controls are in the list.  This may include NULL controls. *)
@@ -382,7 +386,20 @@ INTERFACE
       CONSTRUCTOR Create; VIRTUAL;
     (* Destructor. *)
       DESTRUCTOR Destroy; OVERRIDE;
-
+    (* Method used by the GUI system to access the mouse state.  By default it
+       just returns a copy of the @code(al_mouse_* ) variables, but it could be
+       used to offset or scale the mouse position, or read input from a
+       different source entirely.
+       @param(X X coordinate of mouse.)
+       @param(Y Y coordinate of mouse.)
+       @param(B Buttons states.) *)
+      PROCEDURE GetMouseState (OUT X, Y, B: INTEGER); VIRTUAL;
+    (* Method used by the GUI system to access the mouse wheel state.  By
+       default it just returns a copy of the @code(al_mouse_* ) variables, but
+       it could be used to read input from a different source entirely.
+       @param(Z Mouse vertical wheel position.)
+       @param(W Mouse horizontal wheel position.) *)
+      PROCEDURE GetMouseWheelState (OUT Z, W: INTEGER); VIRTUAL;
     (* Draw the dialog.  You don't need to do this as @code(Run) will do it for
        you. @seealso(Update) *)
       PROCEDURE Draw;
@@ -399,9 +416,9 @@ INTERFACE
      *)
        FUNCTION Run (CONST FocusCtrl: INTEGER): INTEGER; VIRTUAL;
 
-    (* Tells the dialog that it should redraw all controls. *)
+    (* Tells to the dialog that it should redraw all controls. *)
        PROCEDURE RedrawAll; INLINE;
-    (* Closes the dialog. *)
+    (* Tells to the dialog that it should be closed. *)
        PROCEDURE Close; INLINE;
 
     (* Bitmap where the dialog will be drawn.  By default it's the
@@ -803,6 +820,14 @@ IMPLEMENTATION
  * TalGUI_Control
  *****************************************************************************)
 
+(* Sets owner dialog. *)
+  PROCEDURE TalGUI_Control.SetOwner (aDlg: TalGUI_Dialog);
+  BEGIN
+    fOwner := aDlg
+  END;
+
+
+
 (* Sets control X position. *)
   PROCEDURE TalGUI_Control.SetX (CONST aX: INTEGER);
   BEGIN
@@ -1018,7 +1043,7 @@ IMPLEMENTATION
     fControlList.Extract (fControlList.Items[Ndx]);
   { Set the control. }
     fControlList.Items[Ndx] := aControl;
-    aControl.fOwner := SELF.fOwner
+    aControl.SetOwner (SELF.fOwner)
   END;
 
 
@@ -1054,7 +1079,7 @@ IMPLEMENTATION
   FUNCTION TalGUI_ControlList.Add (aControl: TalGUI_Control): INTEGER;
   BEGIN
     RESULT := fControlList.Add (aControl);
-    aControl.fOwner := SELF.fOwner
+    aControl.SetOwner (SELF.fOwner)
   END;
 
 
@@ -1242,24 +1267,26 @@ IMPLEMENTATION
       END
     END;
 
+  VAR
+    mX, mY, mZ, mW, mB: INTEGER;
   BEGIN
   { Check if dialog was closed. }
     IF fClosed THEN EXIT (TRUE);
     DoIddle := TRUE;
   { Check mouse. }
-    IF al_mouse_needs_poll THEN al_poll_mouse;
+    GetMouseState (mX, mY, mB);
+    GetMouseWheelState (mZ, mW);
     FOR CtrNdx := 0 TO (fControlList.Count - 1) DO
     BEGIN
-      IF fControlList[CtrNdx].Inside (al_mouse_x, al_mouse_y) THEN
+      IF fControlList[CtrNdx].Inside (mX, mY) THEN
       BEGIN
 	DoIddle := FALSE;
 	fControlList[CtrNdx].MsgGotMouse;
-	IF (al_mouse_b <> 0) AND fControlList[CtrNdx].Enabled THEN
+	IF (mB <> 0) AND fControlList[CtrNdx].Enabled THEN
 	BEGIN
-	  IF fControlList[CtrNdx].MsgClick (al_mouse_x, al_mouse_y, al_mouse_b)
+	  IF fControlList[CtrNdx].MsgClick (mX, mY, mB)
 	  THEN BEGIN
 	    SetFocus (CtrNdx);
-	    DoIddle := FALSE;
 	    BREAK
 	  END
 	END
@@ -1343,6 +1370,25 @@ IMPLEMENTATION
     fControlList.Free;
     IF fStyle <> NIL THEN fStyle.Free;
     INHERITED Destroy;
+  END;
+
+
+
+(* Access to mouse state. *)
+  PROCEDURE TalGUI_Dialog.GetMouseState (OUT X, Y, B: INTEGER);
+  BEGIN
+    IF al_mouse_needs_poll THEN al_poll_mouse;
+    X := al_mouse_x; Y := al_mouse_y;
+    B := al_mouse_b
+  END;
+
+
+
+(* Access to mouse wheel state. *)
+  PROCEDURE TalGUI_Dialog.GetMouseWheelState (OUT Z, W: INTEGER);
+  BEGIN
+    IF al_mouse_needs_poll THEN al_poll_mouse;
+    Z := al_mouse_z; W := al_mouse_w
   END;
 
 
@@ -1598,16 +1644,17 @@ IMPLEMENTATION
       END
     END;
 
+  VAR
+    mX, mY, mB: INTEGER;
   BEGIN
     fPressed := TRUE;
     MyDraw;
   { Control the control. }
-    WHILE al_mouse_b <> 0 DO
-    BEGIN
-      IF al_mouse_needs_poll THEN al_poll_mouse;
+    REPEAT
+      Dialog.GetMouseState (mX, mY, mB);
       IF HasMouse THEN
       BEGIN
-	IF NOT Inside (al_mouse_x, al_mouse_y) THEN
+	IF NOT Inside (mX, mY) THEN
 	BEGIN
 	  SELF.MsgLostMouse;
 	  fPressed := FALSE;
@@ -1615,18 +1662,18 @@ IMPLEMENTATION
 	END
       END
       ELSE BEGIN
-	IF Inside (al_mouse_x, al_mouse_y) THEN
+	IF Inside (mX, mY) THEN
 	BEGIN
 	  SELF.MsgGotMouse;
 	  fPressed := TRUE;
 	  MyDraw
 	END
       END
-    END;
+    UNTIL mB = 0;
     fPressed := FALSE;
     MyDraw;
   { Events. }
-    IF Inside (al_mouse_x, al_mouse_y) THEN
+    IF Inside (mX, mY) THEN
     BEGIN
       RESULT := TRUE;
       IF Assigned (fonClick) THEN fonClick (SELF)
@@ -1706,11 +1753,13 @@ IMPLEMENTATION
       al_scare_mouse; SELF.Draw (SELF.Dialog.Bmp); al_unscare_mouse
     END;
 
+  VAR
+    mX, mY, mB: INTEGER;
   BEGIN
   { Control the control. }
-    REPEAT IF al_mouse_needs_poll THEN al_poll_mouse UNTIL al_mouse_b = 0;
+    REPEAT Dialog.GetMouseState (mX, mY, mB) UNTIL mB = 0;
   { Events. }
-    IF Inside (al_mouse_x, al_mouse_y) THEN
+    IF Inside (mX, mY) THEN
     BEGIN
       RESULT := TRUE;
       SetChecked (NOT fChecked)

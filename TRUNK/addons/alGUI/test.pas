@@ -207,6 +207,11 @@ PROGRAM Test;
       Items.Add ('Three');
       Items.Add ('Four');
       Items.Add ('Five');
+      Items.Add ('Six');
+      Items.Add ('Seven');
+      Items.Add ('Eight');
+      Items.Add ('Nine');
+      Items.Add ('Ten');
       Height := 48
     END;
 
