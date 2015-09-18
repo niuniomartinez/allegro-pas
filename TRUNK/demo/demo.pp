@@ -4,15 +4,15 @@ PROGRAM demo;
  * Author: Ñuño Martínez <niunio@users.sourceforge.net>
  *)
 
-USES
-  allegro,
-  alflic,   { FLIC animations. }
-  alUnicode,{ UNICODE support. }
-  config,   { Management of the game configuration. }
-  error,    { To show nice error messages. }
-  framectr, { The frame speed controller. }
-  game,     { Game main loop. }
-  gamedata; { Management of the game data: graphics, sound, etc. }
+  USES
+    allegro,
+    alflic,   { FLIC animations. }
+    alUnicode,{ UNICODE support. }
+    config,   { Management of the game configuration. }
+    error,    { To show nice error messages. }
+    framectr, { The frame speed controller. }
+    game,     { Game main loop. }
+    gamedata; { Management of the game data: graphics, sound, etc. }
 
 
 
@@ -98,7 +98,7 @@ USES
     Bmp: AL_BITMAPptr; { This bitmap helps to center the animation. }
   BEGIN
   { Plays the fanfarre. }
-    al_play_sample (Data^[INTRO_SPL].dat, 255, 128, 1000, 0);
+    al_play_sample (Data^[INTRO_SPL].dat, 255, 128, 1000, FALSE);
   { Creates a sub-bitmap in the center of the screen. }
     Bmp := al_create_sub_bitmap (al_screen,
 				AL_SCREEN_W DIV 2 - 160,

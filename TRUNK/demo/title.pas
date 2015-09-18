@@ -60,7 +60,7 @@ VAR
     al_clear_keybuf;
   { Sound. }
     al_play_midi (Data^[TITLE_MUSIC].dat, TRUE);
-    al_play_sample (Data^[WELCOME_SPL].dat, 255, 127, 1000, 0);
+    al_play_sample (Data^[WELCOME_SPL].dat, 255, 127, 1000, FALSE);
   { If "-jumpstart" used then doesn't do the first part of title. }
     IF DoIntro THEN
     BEGIN

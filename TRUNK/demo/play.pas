@@ -12,12 +12,8 @@ INTERFACE
     SCREENW = 256;
     SCREENH = 192;
 
-
-
 (* Runs the play game loop. *)
   PROCEDURE PlayGame;
-
-
 
 IMPLEMENTATION
 
@@ -110,7 +106,7 @@ IMPLEMENTATION
   BEGIN
     al_fade_out (8);
   { Set up the play. }
-    al_play_sample (Data^[GAME_MUSIC].dat, 127, 127, 1000, -1);
+    al_play_sample (Data^[GAME_MUSIC].dat, 127, 127, 1000, TRUE);
     EndLoop := FALSE;
     MapNum := 1;
     Palette := Data^[GAME_PAL].dat;

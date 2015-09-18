@@ -66,6 +66,7 @@ UNIT alWin;
 INTERFACE
 
   USES
+    alBase, Allegro,
     windows;
 
 

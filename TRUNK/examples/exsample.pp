@@ -72,10 +72,8 @@ BEGIN (* The program starts here. *)
       EXIT;
     END;
 
-{
-   IF NOT al_set_display_switch_mode (AL_SWITCH_BACKGROUND) THEN
-      al_set_display_switch_mode (AL_SWITCH_BACKAMNESIA);
-}
+  IF NOT al_set_display_switch_mode (AL_SWITCH_BACKGROUND) THEN
+    al_set_display_switch_mode (AL_SWITCH_BACKAMNESIA);
 
   al_set_palette (al_desktop_palette);
   al_clear_to_color (al_screen, al_makecol (255,255,255));
@@ -86,7 +84,7 @@ BEGIN (* The program starts here. *)
 	AL_SCREEN_W DIV 2, (AL_SCREEN_H * 2) DIV 3, al_makecol (0, 0, 0), -1);
 
 { start up the sample }
-  al_play_sample (TheSample, 255, Pan, Pitch, -1);
+  al_play_sample (TheSample, 255, Pan, Pitch, TRUE);
 
   REPEAT
     al_poll_keyboard;
@@ -104,7 +102,7 @@ BEGIN (* The program starts here. *)
       Pitch := ((Pitch * 511) DIV 512) - 1;
 
   { adjust the sample }
-    al_adjust_sample (TheSample, 255, Pan, Pitch, -1);
+    al_adjust_sample (TheSample, 255, Pan, Pitch, FALSE);
 
   { delay a bit }
     al_rest (2);

@@ -113,7 +113,7 @@ VAR
     next := al_keypressed;
 
     IF frame_number = 0 THEN
-      al_play_sample (running_data^[SOUND_01].dat, 128, 128, 1000, 0);
+      al_play_sample (running_data^[SOUND_01].dat, 128, 128, 1000, FALSE);
 
   { Increase frame number, or if it's equal 9 (last frame) set it to 0. }
     IF frame_number = 9 THEN
