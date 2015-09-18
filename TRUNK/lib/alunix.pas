@@ -9,6 +9,9 @@ UNIT alUNIX;
 
 INTERFACE
 
+  USES
+    alBase,
+
   VAR
   (* This is a pointer to the Allegro X11 icon, which is in the format of
     standard .xpm bitmap data. You do not normally have to bother with this at

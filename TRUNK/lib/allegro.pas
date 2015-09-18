@@ -1866,6 +1866,27 @@ END.
   (* No graphics mode. *)
     AL_GFX_NONE			= $4E4F4E45; { AL_ID('NONE') }
 
+
+
+  TYPE
+    AL_GFX_MODEptr = ^AL_GFX_MODE;
+
+  (* Graphics mode description. *)
+    AL_GFX_MODE = RECORD
+      width, height, bpp: AL_INT;
+    END;
+
+    AL_GFX_MODE_LISTptr = ^AL_GFX_MODE_LIST;
+
+  (* Graphics mode list. *)
+    AL_GFX_MODE_LIST = RECORD
+    (* Number of graphics modes. *)
+      num_modes: AL_INT;
+    (* Pointer to the actual mode list array. *)
+      mode: AL_GFX_MODEptr;
+    END;
+
+  CONST
   (* @exclude Drawing modes for al_draw_sprite_ex. *)
     AL_DRAW_SPRITE_NORMAL_MODE = 0;
     AL_DRAW_SPRITE_LIT_MODE    = 1; {< @exclude }
@@ -2012,6 +2033,13 @@ END.
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gfx_capabilities';
 
 
+(* *)
+  FUNCTION al_get_gfx_mode_list (card: AL_INT): AL_GFX_MODE_LISTptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_gfx_mode_list';
+
+(* *)
+  PROCEDURE al_destroy_gfx_mode_list (gfx_mode_list: AL_GFX_MODE_LISTptr);
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_gfx_mode_list';
 
 (* Sets the pixel format to be used by subsequent calls to
    @link(al_set_gfx_mode) and @link(al_create_bitmap).  Valid depths are 8 (the
@@ -4937,12 +4965,13 @@ END;
    parameters @code(vol) and @code(pan) range from 0 (min/left) to 255
    (max/right).  Frequency is relative rather than absolute:  1000 represents
    the frequency that the sample was recorded at, 2000 is twice this, etc.  If
-   @code(loop) is not zero, the sample will repeat until you call
+   @code(loop) is @true, the sample will repeat until you call
    @link(al_stop_sample), and can be manipulated while it is playing by calling
    @code(al_adjust_sample).
    @returns(the voice number that was allocated for the sample or negative if
      no voices were available.) *)
-  FUNCTION al_play_sample (CONST spl: AL_SAMPLEptr; vol, pan, freq, loop: AL_INT): AL_INT;
+  FUNCTION al_play_sample
+    (CONST spl: AL_SAMPLEptr; vol, pan, freq: AL_INT; CONST loop: AL_BOOL): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'play_sample';
 
 (* Stop a sample from playing, which is required if you have set a sample going
@@ -4959,7 +4988,8 @@ END;
    those of @link(al_play_sample).  If there are several copies of the same
    sample playing, this will adjust the first one it comes across.  If the
    sample is not playing it has no effect. *)
-  PROCEDURE al_adjust_sample (CONST spl: AL_SAMPLEptr; vol, pan, freq, loop: AL_INT);
+  PROCEDURE al_adjust_sample
+    (CONST spl: AL_SAMPLEptr; vol, pan, freq: AL_INT; CONST loop: AL_BOOL);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'adjust_sample';
 
 

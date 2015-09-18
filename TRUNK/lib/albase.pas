@@ -18,13 +18,13 @@ CONST
    {$IFDEF UNIX}
      {$IFDEF DARWIN}
        {$ERROR Can't compile on MacOS X. }
+  (* TODO: Add support for MacOS X dynamic libraries. *)
      {$ELSE}
 { @exclude }
        ALLEGRO_SHARED_LIBRARY_NAME = 'liballeg.so.4.4';
      {$ENDIF}
    {$ELSE}
      {$ERROR Can't compile this platform. }
-  (* TODO: Add support for MacOS X dynamic libraries. *)
    {$ENDIF}
  {$ENDIF}
 
@@ -41,7 +41,7 @@ CONST
    but Delphi doesn't has it so I prefer to do it by hand.
 
    First: it defines some integers with specific lenght.
-   Then: it defines the types used by C declarations.
+   Then: it defines the types used by Allegro.
  *)
 
 TYPE
@@ -161,7 +161,7 @@ TYPE
 
    A call-back procedure must be declared as @code(CDECL) since Allegro is
    written in C. *)
-  AL_INT_PROC	 = PROCEDURE (x: AL_INT); CDECL;
+  AL_INT_PROC   = PROCEDURE (x: AL_INT); CDECL;
 (* This is used to define call-back parameters or pointers to call-back
    procedures.
 

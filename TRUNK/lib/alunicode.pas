@@ -1,5 +1,8 @@
 UNIT alUnicode;
-(*<Unicode support routines. *)
+(*<Unicode support routines.
+
+  @bold(Note:) I'm not sure how much this is compatible with FPC's Unicode support.
+ *)
 
 {$INCLUDE allegro.cfg}
 

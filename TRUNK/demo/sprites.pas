@@ -9,8 +9,6 @@ INTERFACE
   USES
     allegro;
 
-
-
   TYPE
   (* Sprite information. *)
     TSPRITEptr = ^TSPRITE;
@@ -31,8 +29,6 @@ INTERFACE
 
      Don't set length directly, call @link (InitSprites) instead. *)
     SpritePlane: ARRAY OF TSPRITE;
-
-
 
 (* Starts all sprites.  That is moves them out the board and sets them as
    "inactive".
@@ -489,7 +485,7 @@ VAR
   { Calculates the 'pan'. }
     Pan := (SpritePlane[Spr].x - LastScrollX) * 256 DIV 320;
   { Plays the sample. }
-    al_play_sample (Sample, 127, Pan, 1000, 0);
+    al_play_sample (Sample, 127, Pan, 1000, FALSE);
   END;
 
 END.
