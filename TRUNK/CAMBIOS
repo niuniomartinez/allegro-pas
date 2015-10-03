@@ -17,9 +17,9 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
   Novedades
   ---------
   + Nueva extensión alGUI.
-  + Nuevo juego de demostración "Zombie 3D".
   + El ejemplo al3d es más completo.
   + Añadida identificación del sistema operativo en tiempo de ejecución.
+  + Añadida la identificación de modos gráficos (resolución y profundidad).
   + Added al_request_refresh_rate and al_get_refresh_rate.
   + Added controllers ID for Linux and Windows.
   + Added Windows and UNIX/Linux specific procedures.
@@ -41,9 +41,10 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
     "OUT" parameters and avoid some "Variable X doesn't seems to be
     initialized" hint messages.
   - Removed a lot of wrapper functions and procedures, as the C ones can be
-    called directly.
+    called directly now.
  + Added another BOOLEAN type (8 bit), so now ARRAY al_key can be used as 
    BOOLEAN instead of INTEGER, avoiding the use of "<> 0" when testing.
+   Also a lot of functions and procedures uses that new BOOLEAN type.
    This means that should change old code, but I think it worths it.
  * Functions al_poll_keyboard return AL_BOOL now.
  * Variables al_three_finger_flag and al_key_led_flag are AL_BOOL now.
@@ -60,6 +61,7 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
    + al_scene_plolygon3d<_f>
    + al_request_scrool
    + al_request_video_bitmap
+ * Algunos metodos de GUI usan ARRAY OF... en vez de punteros.
 
    Documentacion actualizada (mucho).
 
