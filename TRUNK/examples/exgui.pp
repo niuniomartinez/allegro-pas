@@ -303,7 +303,7 @@ VAR
 
 VAR
   i: INTEGER;
-  buf: STRING;
+  buf: ANSISTRING;
   Palette: AL_PALETTEptr;
 BEGIN
 { initialise everything }
@@ -327,8 +327,12 @@ BEGIN
     END;
 
 { Load the datafile into memory. }
-{ TODO: Find a better way to get the path. }
-  buf := ExtractFilePath (ParamStr (0)) + 'example.dat';
+{ TODO: Find a better way to get the path.
+
+  NOTE: Don't know why using the full path fails on my system (Fedora 22).
+        The thing is that it worked on Fedora 21...
+        .. And other examples work correctly! }
+  buf := { ExtractFilePath (ParamStr (0)) + } 'example.dat';
   datafile := al_load_datafile (buf);
   IF datafile = NIL THEN
   BEGIN

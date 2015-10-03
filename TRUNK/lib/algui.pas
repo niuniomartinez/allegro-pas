@@ -613,14 +613,14 @@ FUNCTION foo (dp3: AL_VOIDptr; d2: AL_INT): AL_INT; CDECL;
 
 (* Moves an array of dialog objects to the specified screen position (specified
    as the top left corner of the dialog). @seealso(al_centre_dialog) *)
-  PROCEDURE al_position_dialog (dialog: AL_DIALOGptr; x, y: AL_INT);
+  PROCEDURE al_position_dialog (VAR dialog: ARRAY OF AL_DIALOG; x, y: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'position_dialog';
 (* Moves an array of dialog objects so that it is centered in the screen.
    @seealso(al_position_dialog) *)
-  PROCEDURE al_centre_dialog (dialog: AL_DIALOGptr);
+  PROCEDURE al_centre_dialog (VAR dialog: ARRAY OF AL_DIALOG);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'centre_dialog';
 (* Sets the foreground and background colors of an array of dialog objects. *)
-  PROCEDURE al_set_dialog_color (dialog: AL_DIALOGptr; fg, bg: AL_INT);
+  PROCEDURE al_set_dialog_color (VAR dialog: ARRAY OF AL_DIALOG; fg, bg: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'set_dialog_color';
 
 (* Searches the dialog for the object which has the input focus, returning an
@@ -630,7 +630,7 @@ FUNCTION foo (dp3: AL_VOIDptr; d2: AL_INT): AL_INT; CDECL;
    @longcode(#
 al_do_dialog (dlg, al_find_dialog_focus (dlg));
    #) @seealso(al_init_dialog) @seealso(al_offer_focus) *)
-  FUNCTION al_find_dialog_focus (dialog: AL_DIALOGptr): AL_INT;
+  FUNCTION al_find_dialog_focus (VAR dialog: ARRAY OF AL_DIALOG): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'find_dialog_focus';
 (* Offers the input focus to a particular object.  Normally the function sends
    the @code(AL_MSG_WANTFOCUS) message to query whether the object is willing
@@ -654,7 +654,7 @@ al_object_message (@(dialog[1]), AL_MSG_DRAW, 0);
    procedures return values other than @code(AL_D_O_K), it returns the value
    and sets @code(obj) to the index of the object which produced it.
    @seealso(al_object_message) @seealso(al_broadcast_dialog_message) *)
-  FUNCTION al_dialog_message (dialog: AL_DIALOGptr; msg, c: AL_INT; OUT obj: AL_INT): AL_INT;
+  FUNCTION al_dialog_message (VAR dialog: ARRAY OF AL_DIALOG; msg, c: AL_INT; OUT obj: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'dialog_message';
 (* Broadcasts a message to all the objects in the active dialog.  If any of the
    dialog procedures return values other than @code(AL_D_O_K), it returns that
@@ -672,14 +672,14 @@ al_object_message (@(dialog[1]), AL_MSG_DRAW, 0);
    exit, or until ESC is pressed, at which point it returns -1.
    @seealso(al_popup_dialog) @seealso(al_init_dialog)
    @seealso(al_find_dialog_focus) *)
-  FUNCTION al_do_dialog (dialog: AL_DIALOGptr; focus_obj: AL_INT): AL_INT;
+  FUNCTION al_do_dialog (VAR dialog: ARRAY OF AL_DIALOG; focus_obj: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_dialog';
 (* Like @link(al_do_dialog), but it stores the data on the screen before
    drawing the dialog and restores it when the dialog is closed.  The screen
    area to be stored is calculated from the dimensions of the first object in
    the dialog, so all the other objects should lie within this one.
    @seealso(al_init_dialog) *)
-  FUNCTION al_popup_dialog (dialog: AL_DIALOGptr; focus_obj: AL_INT): AL_INT;
+  FUNCTION al_popup_dialog (VAR dialog: ARRAY OF AL_DIALOG; focus_obj: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'popup_dialog';
 
 (* This function provides lower level access to the same functionality as
@@ -701,8 +701,8 @@ END;
    Note that you are responsible for showing and hiding the mouse cursor, which
    @code(al_do_dialog) would otherwise do for you, or saving and restoring the
    screen contents, as @link(al_popup_dialog) would do for you. *)
-  FUNCTION al_init_dialog (dialog: AL_DIALOGptr; focus_obj: AL_INT): AL_DIALOG_PLAYERptr;
-    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'init_dialog';
+  FUNCTION al_init_dialog (VAR dialog: ARRAY OF AL_DIALOG; focus_obj: AL_INT): AL_DIALOG_PLAYERptr;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'popup_dialog';
 (* Updates the status of a dialog object returned by @link(al_init_dialog).
    @returns(@true if the dialog is still active, or @false if it has
      terminated.  Upon a return value of @false, it is up to you whether to
@@ -731,7 +731,7 @@ END;
      multi-level menus.)
      @seealso(al_d_menu_proc) @seealso(al_init_menu)
      @seealso(al_gui_menu_draw_menu) *)
-  FUNCTION al_do_menu (menu: AL_MENUptr; x, y: AL_INT): AL_INT;
+  FUNCTION al_do_menu (VAR menu: ARRAY OF AL_MENU; x, y: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'do_menu';
 
 (* This function provides lower level access to the same functionality as
@@ -750,7 +750,7 @@ BEGIN
   RESULT := al_shutdown_menu (player);
 END;
    #) *)
-  FUNCTION al_init_menu (menu: AL_MENUptr; x, y: AL_INT): AL_MENU_PLAYERptr;
+  FUNCTION al_init_menu (VAR menu: ARRAY OF AL_MENU; x, y: AL_INT): AL_MENU_PLAYERptr;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'init_menu';
 (* Updates the status of a menu object returned by @link(al_init_menu).
    @returns(@true if the menu is still active, or @false if it has terminated.

@@ -288,6 +288,7 @@ PROGRAM mapedit;
 	  AL_BITMAPptr (d^.dp)^.w, AL_BITMAPptr (d^.dp)^.h
 	);
     { Draw map.  Height scroll bar goes "backwards". }
+      SX := 0;
       SY := MainDialog[NdxScrollBarH].d1 - MainDialog[NdxScrollBarH].d2;
       FixScroll (d^.dp, MainDialog[NdxScrollBarW].d2, sY, SX, SY);
     { If map is smaller than editing space, then SX and/or SY became negative,
@@ -757,9 +758,9 @@ PROGRAM mapedit;
   { End of dialog. }
     al_set_dialog_item (DlgHelp, 5, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
   { Center the dialog. }
-    al_centre_dialog (@DlgHelp);
+    al_centre_dialog (DlgHelp);
 
-    al_popup_dialog (@DlgHelp[0], -1);
+    al_popup_dialog (DlgHelp, -1);
 
     Help := AL_D_O_K;
   END;
@@ -861,9 +862,9 @@ PROGRAM mapedit;
   { End of dialog. }
     al_set_dialog_item (dlgColor, 9, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
   { Center the dialog. }
-    al_centre_dialog (@dlgColor);
+    al_centre_dialog (dlgColor);
 
-    IF al_popup_dialog (@dlgColor[0], -1) = 6 THEN
+    IF al_popup_dialog (dlgColor, -1) = 6 THEN
     BEGIN
     { Changes background. }
       al_clear_to_color (MainDialog[NdxMapedit].dp2, al_makecol (
@@ -1018,10 +1019,10 @@ PROGRAM mapedit;
   { End of dialog. }
     al_set_dialog_item (DlgMapSize, 11, NIL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NIL, NIL, NIL);
   { Center the dialog. }
-    al_centre_dialog (@DlgMapSize);
+    al_centre_dialog (DlgMapSize);
 
     REPEAT
-      Option := al_do_dialog (@DlgMapSize[0], -1);
+      Option := al_do_dialog (DlgMapSize, -1);
       IF Option = 10 THEN
 	Option := -1
       ELSE IF Option = 9 THEN
@@ -1252,7 +1253,7 @@ PROGRAM mapedit;
       al_gui_fg_color := CBlack;
       al_gui_mg_color := al_makecol (51, 51, 51);
       al_gui_bg_color := CWhite;
-      al_set_dialog_color (@MainDialog[0], CBlack, CButton);
+      al_set_dialog_color (MainDialog, CBlack, CButton);
       al_gui_mouse_focus := 0;
 
       InitGUI := TRUE;
@@ -1318,7 +1319,7 @@ BEGIN
   IF NOT InitProgram THEN EXIT;
 
   REPEAT
-    al_do_dialog (@MainDialog[0], -1);
+    al_do_dialog (MainDialog, -1);
   UNTIL NOT MapModified
   OR AskYesNo ('The map was changed.', 'Exit anyway?');
 
