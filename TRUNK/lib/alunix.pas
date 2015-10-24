@@ -10,7 +10,7 @@ UNIT alUNIX;
 INTERFACE
 
   USES
-    alBase,
+    alBase;
 
   VAR
   (* This is a pointer to the Allegro X11 icon, which is in the format of

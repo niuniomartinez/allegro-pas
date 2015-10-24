@@ -6,13 +6,15 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
   * Muchos cambios en la extensión "alstream".
   * El ejemplo exalpha funciona ahora correctamente.  El problema era que usaba
     enteros de 16bit cuando necesita 32bit.
-  * En ocasiones, el juego de demostración y el editor de mapas no leían
-    el archivo de datos.  Además, si el juego no cargaba el archivo, el mensaje
-    de error era una excepción EAccessViolation.  Ahora ya funcionan como
-    deberían.
-  * Fixed function al_apply_matrix_f.  Actually a workaround a possible bug
-    in Free Pascal compiler (MUST investigate this).
+  * En ocasiones, el juego de demostración y el editor de mapas no leían el
+    archivo de datos.  Además, si el juego no cargaba el archivo, el mensaje de
+    error era una excepción EAccessViolation.  Ahora ya funcionan como deberían.
+  * Corregida la función al_apply_matrix_f.  En realidad es un posible error en
+    el compilador FreePascal (HAY QUE investigar esto).
   * Corregida la función al_pack_fseek.
+  * Corregidos algunos problemas con los temporizadores en algunos ejemplos.
+     También se ha cambiado el modo gráfico por defecto a ventana en algunos
+     de ellos.
 
   Novedades
   ---------
@@ -20,10 +22,15 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
   + El ejemplo al3d es más completo.
   + Añadida identificación del sistema operativo en tiempo de ejecución.
   + Añadida la identificación de modos gráficos (resolución y profundidad).
-  + Added al_request_refresh_rate and al_get_refresh_rate.
-  + Added controllers ID for Linux and Windows.
-  + Added Windows and UNIX/Linux specific procedures.
-  + Added control to console switching.
+  + Añadido al_request_refresh_rate y al_get_refresh_rate.
+  + Añadidos identificadores de controlador para Linux y Windows.
+  + Añadidos procedimientos específicos para Windows y UNIX/Linux.
+  + Añadido control a "console switching".
+  + Añadido otro tipo BOOLEAN (8 bit), de forma que ahora al_key puede ser
+    utilizado como valor lógico evitando tener que usar "<> 0" en la
+    comprobación.  Así mismo, muchas funciones y procedimientos utilizan este
+    nuevo tipo, por lo que deberás cambiar el código antiguo, pero creo que
+    merece la pena.
 
   Otros
   -----
@@ -33,27 +40,17 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
   * Se ha cambiado la distribución de la documentación.  Además, ahora se
     construye desde el makefile principal, en lugar de tener otro makefile
     diferente.
-  * A lot of procedures changed their "POINTER" parameters to
-    "VAR" and "OUT" parameters.  This way there's no need to use the "@"
-    operator. to reduce HINT messages and to avoid
-   the use of POINTERs (now they're VAR and OUT parameters).
-  + Added {$MODE OBJFPC} to configuration file, so now it is possible to use
-    "OUT" parameters and avoid some "Variable X doesn't seems to be
-    initialized" hint messages.
-  - Removed a lot of wrapper functions and procedures, as the C ones can be
-    called directly now.
- + Added another BOOLEAN type (8 bit), so now ARRAY al_key can be used as 
-   BOOLEAN instead of INTEGER, avoiding the use of "<> 0" when testing.
-   Also a lot of functions and procedures uses that new BOOLEAN type.
-   This means that should change old code, but I think it worths it.
- * Functions al_poll_keyboard return AL_BOOL now.
- * Variables al_three_finger_flag and al_key_led_flag are AL_BOOL now.
+  * Muchos procedimientos han cambiado sus parámetros "POINTER" a parámetros
+    "VAR" y "OUT".  De esta forma no hay necesidad de usar el operador "@".
+    Esto también reduce los mensajes "HINT" del compilador.
+  + Añadido {$MODE OBJFPC} al archivo de configuración, de forma que así pueden
+    usarse parámetros "OUT".
+  - Eliminados muchísimos procedimientos y funciones de enveltorio, ya que ahora
+    se llaman directamente a sus contrapartidas en C.
  * Digital fields of joysticks are AL_BOOL now.
    NOTE:  I'm not able to test joysticks (my Fedora doesn't like my
    arcade-style joystick :_( ) so I don't know if it actually works.
    Please, let me know if you can test it.
- * Fixed some issues with timers on some examples.
-   Also, changed the default graphics mode to windowed in some of them.
  * Procedures _al_pupixel* and _al_getpixel* rewritten to work with pointers
    instead of integers, avoiding weird conversions (I still don't like to play
    with pointers on Pascal anyway).
@@ -61,7 +58,7 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
    + al_scene_plolygon3d<_f>
    + al_request_scrool
    + al_request_video_bitmap
- * Algunos metodos de GUI usan ARRAY OF... en vez de punteros.
+  * Algunos metodos de GUI usan ARRAY OF... en vez de punteros.
 
    Documentacion actualizada (mucho).
 
@@ -84,6 +81,9 @@ Cambios entre las versiones 4.4.3 y 4.4.4
   Novedades
   ---------
   + Añadidas funciones de conversión entre codificaciones de texto.
+  + Añadidas procedimientos "al_textprintf_ex".  En realidad son simples
+    envolventes que usan la función Format, pero simplifican el bastante
+    el código en ocasiones (ver ejemplos).
   + Añadidas algunas funciones de gestión de "clip".
   + Añadida función al_mouse_on_screen.
   + Añadida función al_find_datafile_object.

@@ -19,7 +19,7 @@ PROGRAM exmouse;
  *	so you can still see bits of what's behind when you move the
  *	cursor over the printed text message.
  *
- *	By Guillermo "Ñuño" Martínez
+ *	By Guillermo "Ã‘uÃ±o" MartÃ­nez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
  *
  *	See README file for license and copyright information.
@@ -34,12 +34,10 @@ USES
   (* MyPrintf:
    *   Helper function. *)
   PROCEDURE MyPrintf (x, y: INTEGER; Fmt: STRING; Value: INTEGER);
-  VAR
-    text_buff: STRING;
   BEGIN
-    FmtStr (text_buff, Fmt, [Value]);
-    al_textout_ex (al_screen, al_font, text_buff, x, y, al_makecol(0, 0, 0),
-		   al_makecol (255, 255, 255));
+    al_textprintf_ex (al_screen, al_font, x, y,
+      al_makecol(0, 0, 0), al_makecol (255, 255, 255),
+      Fmt, [Value]);
   END;
 
 

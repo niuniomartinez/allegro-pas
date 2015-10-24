@@ -37,11 +37,11 @@ INTERFACE
 
   TYPE
   (* A simple vector. *)
-    TVector = CLASS (TObject)
+    TVector = OBJECT
     PRIVATE
       fx, fy, fz: AL_FIXED;
     PUBLIC
-      CONSTRUCTOR Create (ax, ay, az: AL_FIXED);
+      CONSTRUCTOR Init (ax, ay, az: AL_FIXED);
     (* Adds the given vector. *)
       PROCEDURE Add (Vector: TVector);
 
@@ -79,8 +79,6 @@ INTERFACE
     (* Creates the cube. *)
       CONSTRUCTOR Create (px, py, pz, aSize: AL_FIXED; aTexture: AL_BITMAPptr);
 	VIRTUAL;
-    (* Destroys the cube. *)
-      DESTRUCTOR Destroy; OVERRIDE;
     (* Sets a color for the cube. *)
       PROCEDURE SetColor (aR, aG, aB: INTEGER);
     (* Updates cube. *)
@@ -89,11 +87,11 @@ INTERFACE
       PROCEDURE Draw (aBitmap: AL_BITMAPptr; aMatrix: AL_MATRIX);
 
     (* Cube position. *)
-      PROPERTY Pos: TVector READ fPosition WRITE fPosition;
+      PROPERTY Pos: TVector READ fPosition;
     (* Cube angle. *)
-      PROPERTY Ang: TVector READ fAngle WRITE fAngle;
+      PROPERTY Ang: TVector READ fAngle;
     (* Cube size. *)
-      PROPERTY Size: AL_FIXED READ fSize WRITE fSize;
+      PROPERTY Size: AL_FIXED READ fSize;
     (* Polygon draw mode. *)
       PROPERTY DrawMode: LONGINT READ fDrawmode WRITE fDrawmode;
     (* Cube texture.  Note it isn't destroyed by the cube. *)
@@ -115,10 +113,7 @@ IMPLEMENTATION
 (* Returns max value. *)
   FUNCTION MyMax (x, y: LONGINT): LONGINT; INLINE;
   BEGIN
-    IF x > y THEN
-      MyMax := x
-    ELSE
-      MyMax := y;
+    IF x > y THEN RESULT := x ELSE RESULT := y;
   END;
 
 
@@ -126,10 +121,7 @@ IMPLEMENTATION
 (* Returns min value. *)
   FUNCTION MyMin (x, y: LONGINT): LONGINT; INLINE;
   BEGIN
-    IF x < y THEN
-      MyMin := x
-    ELSE
-      MyMin := y;
+    IF x < y THEN RESULT := x ELSE RESULT := y;
   END;
 
 
@@ -137,15 +129,16 @@ IMPLEMENTATION
 (* Returns mid value.  Use only when x < z. *)
   FUNCTION MyClamp (x, y, z: LONGINT): LONGINT; INLINE;
   BEGIN
-    MyClamp := MyMax (x, MyMin (y, z));
+    RESULT := MyMax (x, MyMin (y, z));
   END;
 
 
 
-(***********
- * TVector *
- ***********)
-  CONSTRUCTOR TVector.Create (ax, ay, az: AL_FIXED);
+(*
+ * TVector
+ *****************************************************************************)
+
+  CONSTRUCTOR TVector.Init (ax, ay, az: AL_FIXED);
   BEGIN
     fx := ax;
     fy := ay;
@@ -164,9 +157,9 @@ IMPLEMENTATION
 
 
 
-(*********
- * TCube *
- *********)
+(*
+ * TCube
+ *****************************************************************************)
 
   VAR
   (* Coordinates for each vertex of the cube. *)
@@ -223,11 +216,11 @@ IMPLEMENTATION
 (* Constructor. *)
   CONSTRUCTOR TCube.Create (px, py, pz, aSize: AL_FIXED; aTexture: AL_BITMAPptr);
   BEGIN
-    fPosition := TVector.Create (px, py, pz);
-    fAngle := TVector.Create (0, 0, 0);
-    fRotate := TVector.Create (al_ftofix ((Random (32) - 16) / 8),
-			       al_ftofix ((Random (32) - 16) / 8),
-			       al_ftofix ((Random (32) - 16) / 8));
+    fPosition.Init (px, py, pz);
+    fAngle.Init (0, 0, 0);
+    fRotate.Init (al_ftofix ((Random (32) - 16) / 8),
+    	          al_ftofix ((Random (32) - 16) / 8),
+		  al_ftofix ((Random (32) - 16) / 8));
     fSize := aSize;
     fTexture := aTexture;
     fUseZbuff := FALSE;
@@ -243,17 +236,6 @@ IMPLEMENTATION
     fVertexColor[2] := $7F0000;
     fVertexColor[3] := $FF0000;
     fVertexColor[4] := $7F0000;
-  END;
-
-
-
-(* Destructor. *)
-  DESTRUCTOR TCube.Destroy;
-  BEGIN
-    fPosition.Free;
-    fAngle.Free;
-    fRotate.Free;
-    INHERITED Destroy;
   END;
 
 
@@ -372,8 +354,8 @@ IMPLEMENTATION
       OR (fDrawmode = AL_POLYTYPE_PTEX_LIT)
       THEN BEGIN
       { Only faces with positive normals are visible. }
-	IF al_polygon_z_normal_sign (Vertex[v1], Vertex[v2], Vertex[v3]) < 0 THEN
-
+	IF al_polygon_z_normal_sign (Vertex[v1], Vertex[v2], Vertex[v3]) < 0
+        THEN
 	  CONTINUE;
       END;
     { Insert the face in the face list. }
@@ -410,26 +392,23 @@ IMPLEMENTATION
       END;
     END;
   { Draw it. }
-    SELF.DrawFaces (aBitmap);
+    SELF.DrawFaces (aBitmap)
   END;
 
 
 
 CONST
   One = 1 SHL 16; { See al_itofix documentation. }
-VAR
-  Cnt: INTEGER;
 INITIALIZATION
 { Initialize cube coordinates. }
-  PointCoordinates[0] := TVector.Create (-One, -One, -One);
-  PointCoordinates[1] := TVector.Create (-One,  One, -One);
-  PointCoordinates[2] := TVector.Create ( One,  One, -One);
-  PointCoordinates[3] := TVector.Create ( One, -One, -One);
-  PointCoordinates[4] := TVector.Create (-One, -One,  One);
-  PointCoordinates[5] := TVector.Create (-One,  One,  One);
-  PointCoordinates[6] := TVector.Create ( One,  One,  One);
-  PointCoordinates[7] := TVector.Create ( One, -One,  One);
+  PointCoordinates[0].Init (-One, -One, -One);
+  PointCoordinates[1].Init (-One,  One, -One);
+  PointCoordinates[2].Init ( One,  One, -One);
+  PointCoordinates[3].Init ( One, -One, -One);
+  PointCoordinates[4].Init (-One, -One,  One);
+  PointCoordinates[5].Init (-One,  One,  One);
+  PointCoordinates[6].Init ( One,  One,  One);
+  PointCoordinates[7].Init ( One, -One,  One)
 FINALIZATION
-{ Destroy objects. }
-  FOR Cnt := 0 TO 7 DO PointCoordinates[Cnt].Free;
+  ;
 END.

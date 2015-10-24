@@ -12,7 +12,7 @@ PROGRAM exhsvrgb;
  *
  *	This program shows how to convert HSV values on to RGB ones.
  *
- *	By Guillermo "Ñuño" Martínez
+ *	By Guillermo "Ã‘uÃ±o" MartÃ­ez
  *
  *	See readme.txt for license and copyright information.
  *)
@@ -48,7 +48,7 @@ PROGRAM exhsvrgb;
 
     al_clear_to_color (al_screen, al_makecol (0, 0, 0));
 
-    al_textout_ex (al_screen, al_font, INTTOSTR (colordepth)+' bit color...',
+    al_textout_ex (al_screen, al_font, IntToStr (colordepth)+' bit color...',
 		   0, 0, al_makecol (255, 255, 255), -1);
 
     al_textout_centre_ex (al_screen, al_font, 'HSV -> RGB demonstration',

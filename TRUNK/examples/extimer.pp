@@ -114,11 +114,11 @@ BEGIN { The program starts here. }
 { the interrupts are now active... }
   WHILE NOT al_keypressed DO
   BEGIN
-    al_textout_centre_ex (
+    al_textprintf_centre_ex (
       al_screen, al_font,
-      Format ('x=%d, y=%d, z=%d', [x, y, z]),
       AL_SCREEN_W DIV 2, 176,
-      al_makecol (0, 0, 0), al_makecol (255, 255, 255)
+      al_makecol (0, 0, 0), al_makecol (255, 255, 255),
+      'x=%d, y=%d, z=%d', [x, y, z]
     );
     al_rest(1);
   END;

@@ -12,7 +12,7 @@ PROGRAM exsprite;
  *	This example demonstrates how to use datafiles, various sprite drawing
  *	routines and flicker-free animation.
  *
- *	By Guillermo "Ñuño" Martínez
+ *	By Guillermo "Ã‘uÃ±o" MartÃ­nez
  *	from an example of Allegro Game Library by Grzegorz Ludorowski.
  *
  *	See README file for license and copyright information.

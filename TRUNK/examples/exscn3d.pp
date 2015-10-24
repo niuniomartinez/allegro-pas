@@ -273,7 +273,7 @@ BEGIN (* The program starts here. *)
 	BEGIN
 	{ Matrix1: locates cubes }
 	  al_get_translation_matrix_f (matrix1, (j * 40 - CUBE_CUBES * 20 + 20),
-					(i * 40 - CUBE_CUBES * 20 + 20), (tz + k * 40));
+	    (i * 40 - CUBE_CUBES * 20 + 20), (tz + k * 40));
 
 	{ Matrix: rotates cube THEN locates cube THEN turns
 	  head right/left }
@@ -302,7 +302,7 @@ BEGIN (* The program starts here. *)
     IF Tick > 100 THEN
     BEGIN
       FPS := (100.0 * Frame) / Tick;
-      FrameLabel := '('+FloatToStr (FPS)+' fps)';
+      FrameLabel := Format ('(%F fps)', [FPS]);
       Tick := 0;
       Frame := 0;
     END;

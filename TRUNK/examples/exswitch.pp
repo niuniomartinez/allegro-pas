@@ -259,11 +259,11 @@ BEGIN
       LastCounter := Counter;
 
       al_acquire_screen;
-      al_textout_ex (al_screen, al_font,
-		     Format ('Time: %d', [LastCounter]),
-		     (AL_SCREEN_W * 3) DIV 4, (AL_SCREEN_H * 3) DIV 4,
-		     al_palette_color^[255], al_palette_color^[0]
-		    );
+      al_textprintf_ex (al_screen, al_font,
+        (AL_SCREEN_W * 3) DIV 4, (AL_SCREEN_H * 3) DIV 4,
+	al_palette_color^[255], al_palette_color^[0],
+        'Time: %d', [LastCounter]
+      );
       al_release_screen;
 
       al_acquire_bitmap (GraphicsArea);

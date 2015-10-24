@@ -1,7 +1,7 @@
 UNIT alFile;
 (*<Data files and low-level packed file.
 
- Datafiles are created by the @link(grabber) utility, and have a @code(.dat)
+ Datafiles are created by the @code(grabber) utility, and have a @code(.dat)
  extension.  They can contain bitmaps, palettes, fonts, samples, MIDI music,
  FLI/FLC animations, and any other binary data that you import.  You could
  distribute your bitmaps and samples in a myriad of separate files, but packing
@@ -501,7 +501,7 @@ BEGIN
    Remember to free this datafile to avoid memory leaks.
    @returns(a pointer to the @code(AL_DATAFILE), or @nil on error.)
    @seealso(al_unload_datafile) @seealso(al_load_datafile_object)
-   @seealso(al_packfile_password) @seealso(grabber) *)
+   @seealso(al_packfile_password) *)
   FUNCTION al_load_datafile (CONST filename: AL_STR): AL_DATAFILEptr;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_datafile';
 
@@ -529,7 +529,7 @@ VAR
      @code(dat) member points to the object, or @nil if there was an error or
      there was no object with the requested name.)
    @seealso(al_unload_datafile_object) @seealso(al_load_datafile)
-   @seealso(al_set_color_conversion) @seealso(grabber) *)
+   @seealso(al_set_color_conversion) *)
   FUNCTION al_load_datafile_object (CONST filename, objectname: AL_STR): AL_DATAFILE_OBJECTptr;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_datafile_object';
 

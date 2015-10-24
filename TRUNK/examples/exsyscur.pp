@@ -42,8 +42,8 @@ PROGRAM exsyscur;
     ELSE
       Txt2 := 'no SYSTEM_CURSOR';
     al_textout_centre_ex (al_screen, al_font, 'Before: '+Txt1+', '+Txt2,
-		AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 3 + 2 * al_text_height (al_font),
-		black, white);
+      AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 3 + 2 * al_text_height (al_font),
+      black, white);
 
     al_select_mouse_cursor (cursor);
     al_show_mouse (al_screen);
@@ -57,8 +57,8 @@ PROGRAM exsyscur;
     ELSE
       Txt2 := 'no SYSTEM_CURSOR';
     al_textout_centre_ex (al_screen, al_font, 'After: '+Txt1+', '+Txt2,
-		AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 3 + 3 * al_text_height (al_font),
-		black, white);
+      AL_SCREEN_W DIV 2, AL_SCREEN_H DIV 3 + 3 * al_text_height (al_font),
+      black, white);
   END;
 
 

@@ -34,12 +34,7 @@ PROGRAM exalpha;
 (* Helper function. *)
   FUNCTION CLAMP (a, b, c: LONGINT): LONGINT; INLINE;
   BEGIN
-    IF b < a THEN
-      CLAMP := a
-    ELSE IF b > c THEN
-      CLAMP := c
-    ELSE
-      CLAMP := b;
+    IF b < a THEN CLAMP := a ELSE IF b > c THEN CLAMP := c ELSE CLAMP := b;
   END;
 
 
@@ -179,8 +174,8 @@ BEGIN { The program starts here. }
   al_stretch_blit (background, buffer, 0, 0, background^.w, background^.h,
 	0, 0, AL_SCREEN_W, AL_SCREEN_H);
 
-  al_textout_ex (buffer, al_font, Format ('%dx%d, %dpp', [AL_SCREEN_W, AL_SCREEN_H, bpp]),
-	0, 0, al_makecol (255, 255, 255), -1);
+  al_textprintf_ex (buffer, al_font, 0, 0, al_makecol (255, 255, 255), -1,
+     '%dx%d, %dpp', [AL_SCREEN_W, AL_SCREEN_H, bpp]);
 
   al_destroy_bitmap(background);
   background := al_create_bitmap (AL_SCREEN_W, AL_SCREEN_H);

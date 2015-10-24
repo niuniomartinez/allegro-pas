@@ -443,22 +443,29 @@ BEGIN
     MoveStars;
     DrawStars;
 
-    al_textout_centre_ex (buffer, al_font, '     direction: <' +
-	FloatToStrF (al_fixtof (Direction.x), ffFixed, 2, 2) + ', ' +
-	FloatToStrF (al_fixtof (Direction.y), ffFixed, 2, 2) + ', '+
-	FloatToStrF (al_fixtof (Direction.z), ffFixed, 2, 2) + '>     ',
+    al_textprintf_centre_ex (buffer, al_font,
 	AL_SCREEN_W DIV 2, AL_SCREEN_H - 10,
-	al_palette_color^[17], 0);
-    al_textout_centre_ex (buffer, al_font, '   delta: <' +
-	FloatToStrF (al_fixtof (Delta.x), ffFixed, 2, 2) + ', ' +
-	FloatToStrF (al_fixtof (Delta.y), ffFixed, 2, 2) + ', ' +
-	FloatToStrF (al_fixtof (Delta.z), ffFixed, 2, 2) + '>   ',
+	al_palette_color^[17], 0,
+        '     direction: <%F, %F, %F>   ', [
+          al_fixtof (Direction.x),
+          al_fixtof (Direction.y),
+          al_fixtof (Direction.z)
+        ]
+    );
+    al_textprintf_centre_ex (buffer, al_font,
 	AL_SCREEN_W DIV 2, AL_SCREEN_H - 20,
-	al_palette_color^[17], 0);
-    al_textout_centre_ex (buffer, al_font,
-	'   velocity: ' + IntToStr (Ship.velocity) + '   ',
+	al_palette_color^[17], 0,
+        '     delta: <%F, %F, %F>   ', [
+          al_fixtof (Delta.x),
+          al_fixtof (Delta.y),
+          al_fixtof (Delta.z)
+        ]
+    );
+    al_textprintf_centre_ex (buffer, al_font,
 	AL_SCREEN_W DIV 2, AL_SCREEN_H - 30,
-	al_palette_color^[17], 0);
+	al_palette_color^[17], 0,
+      	'   velocity: %d   ', [Ship.velocity]
+    );
 
     al_textout_centre_ex (buffer, al_font,
 	'Press ESC to exit', AL_SCREEN_W DIV 2, 16,

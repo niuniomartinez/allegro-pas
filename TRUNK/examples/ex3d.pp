@@ -303,8 +303,7 @@ BEGIN (* The program starts here. *)
       TheCubes[Cnt].Draw (Buffer, al_identity_matrix);
     al_textout_ex (Buffer, al_font, 'Poly type: '+DrawModeName[DrawMode + 1],
 		   1, 1, -1, -1);
-    al_textout_ex (Buffer, al_font, 'Color depth: '+IntToStr (bpp)+'bpp',
-		   1, 9, -1, -1);
+    al_textprintf_ex (Buffer, al_font, 1,9,-1,-1, 'Color depth: %dbpp', [bpp]);
     al_vsync;
     al_blit (Buffer, al_screen, 0, 0, 0, 0, AL_SCREEN_W, AL_SCREEN_H);
 

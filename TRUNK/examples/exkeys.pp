@@ -147,7 +147,7 @@ BEGIN
 
 { Keyboard input can be accessed with the al_readkey function }
   al_textout_ex (al_screen, al_font, 'Press some keys (ESC to finish)',
-		 8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
+    8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
   Scroll;
 
   REPEAT
@@ -155,15 +155,17 @@ BEGIN
     k := al_readkey;
     al_acquire_screen;
     Scroll;
-    al_textout_ex (al_screen, al_font, 'al_readkey returned ' + IntToStr (k)
-		   + '($' + IntToHex (k,4) + ')',
-		   8, AL_SCREEN_H-16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
+    al_textprintf_ex (
+      al_screen, al_font,
+      8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255),
+      'al_readkey returned %d (h%.4X)', [k, k]
+    );
   UNTIL (k AND $FF) = 27;
 
 { The ASCII code is in the low byte of the return value }
   Scroll; Scroll; Scroll;
   al_textout_ex (al_screen, al_font, 'Press some more keys (ESC to finish)',
-		 8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
+    8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
   Scroll;
 
   REPEAT
@@ -171,14 +173,16 @@ BEGIN
     k := al_readkey;
     al_acquire_screen;
     Scroll;
-    al_textout_ex (al_screen, al_font, 'ASCII code is ' + IntToStr (k AND $FF),
-		   8, AL_SCREEN_H-16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
+    al_textprintf_ex (al_screen, al_font,
+      8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255),
+      'ASCII code is %d', [k AND $FF]
+    );
   UNTIL (k AND $FF) = 27;
 
 { The hardware scan code is in the high byte of the return value }
   Scroll; Scroll; Scroll;
   al_textout_ex (al_screen, al_font, 'Press some more keys (ESC to finish)',
-		 8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
+    8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
   Scroll;
 
   REPEAT
@@ -186,9 +190,10 @@ BEGIN
     k := al_readkey;
     al_acquire_screen;
     Scroll;
-    al_textout_ex (al_screen, al_font, 'Scan code is ' + IntToStr (k SHR 8)
-		   + '(' + KeyNames[k SHR 8] + ')',
-		   8, AL_SCREEN_H-16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
+    al_textprintf_ex (al_screen, al_font,
+      8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255),
+      'Scan code is %d (%s)', [k SHR 8, KeyNames[k SHR 8]]
+    );
   UNTIL (k AND $FF) = 27;
 
 { key qualifiers are stored in the al_key_shifts variable.  Note that this
@@ -197,7 +202,7 @@ BEGIN
   ASCII range, for example to support Russian or Chinese. }
   Scroll; Scroll; Scroll;
   al_textout_ex (al_screen, al_font, 'Press some more keys (ESC to finish)',
-		 8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
+    8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
   Scroll;
 
   REPEAT
@@ -222,13 +227,13 @@ BEGIN
     IF (al_key_shifts AND AL_KB_SCROLOCK_FLAG) <> 0 THEN Buf := buf + ' scrl';
     Scroll;
     al_textout_ex (al_screen, al_font, Buf, 8, AL_SCREEN_H-16,
-		   al_makecol (0, 0, 0), al_makecol (255, 255, 255));
+      al_makecol (0, 0, 0), al_makecol (255, 255, 255));
   UNTIL k = 27;
 
 { Various scan codes are defined in allegro as AL_KEY_* constants }
   Scroll; Scroll; Scroll;
   al_textout_ex (al_screen, al_font, 'Press F6',
-		 8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
+    8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
   Scroll;
 
   al_release_screen;
@@ -238,8 +243,9 @@ BEGIN
   WHILE ((k SHR 8) <> AL_KEY_F6) AND ((k SHR 8) <> AL_KEY_ESC) DO
   BEGIN
     Scroll();
-    al_textout_ex (al_screen, al_font, 'You pressed the wrong key. Press F6 instead.',
-		   8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
+    al_textout_ex (al_screen, al_font,
+      'You pressed the wrong key. Press F6 instead.',
+      8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
     al_release_screen;
     k := al_readkey;
     al_acquire_screen
@@ -248,7 +254,7 @@ BEGIN
 { For detecting multiple simultaneous key presses, use the key[] array }
   Scroll; Scroll; Scroll;
   al_textout_ex (al_screen, al_font, 'Press a combination of numbers',
-		 8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
+    8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
   Scroll; Scroll;
 
   al_release_screen;
@@ -266,7 +272,7 @@ BEGIN
     IF al_key[AL_KEY_9] THEN Buf[9] := '9';
     IF al_key[AL_KEY_0] THEN Buf[10]:= '0';
     al_textout_ex (al_screen, al_font, Buf,
-		   8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
+      8, AL_SCREEN_H - 16, al_makecol (0, 0, 0), al_makecol (255, 255, 255));
     al_rest(1);
   UNTIL al_keypressed AND al_key[AL_KEY_ESC];
 

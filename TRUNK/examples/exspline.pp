@@ -168,18 +168,24 @@ VAR
 
     al_clear_to_color (al_screen, al_makecol (255, 255, 255));
 
-    al_textout_centre_ex (al_screen, al_font, 'Spline curve path', AL_SCREEN_W DIV 2, 8,
-		al_palette_color^[255], al_palette_color^[0]);
-    al_textout_centre_ex (al_screen, al_font, Format ('Curviness = %.2f', [al_fixtof (Curviness)]),
-		AL_SCREEN_W DIV 2, 32, al_palette_color^[255], al_palette_color^[0]);
-    al_textout_centre_ex (al_screen, al_font, 'Up/down keys to alter', AL_SCREEN_W DIV 2, 44,
-		     al_palette_color^[255], al_palette_color^[0]);
-    al_textout_centre_ex (al_screen, al_font, 'Space to walk', AL_SCREEN_W DIV 2, 68,
-		     al_palette_color^[255], al_palette_color^[0]);
-    al_textout_centre_ex (al_screen, al_font, 'C to display control points', AL_SCREEN_W DIV 2,
-		     92, al_palette_color^[255], al_palette_color^[0]);
-    al_textout_centre_ex (al_screen, al_font, 'T to display tangents', AL_SCREEN_W DIV 2, 104,
-		     al_palette_color^[255], al_palette_color^[0]);
+    al_textout_centre_ex (al_screen, al_font, 'Spline curve path',
+      AL_SCREEN_W DIV 2, 8,
+      al_palette_color^[255], al_palette_color^[0]);
+    al_textprintf_centre_ex (al_screen, al_font,
+      AL_SCREEN_W DIV 2, 32, al_palette_color^[255], al_palette_color^[0],
+      'Curviness = %F', [al_fixtof (Curviness)]);
+    al_textout_centre_ex (al_screen, al_font, 'Up/down keys to alter',
+      AL_SCREEN_W DIV 2, 44,
+      al_palette_color^[255], al_palette_color^[0]);
+    al_textout_centre_ex (al_screen, al_font,
+      'Space to walk', AL_SCREEN_W DIV 2, 68,
+      al_palette_color^[255], al_palette_color^[0]);
+    al_textout_centre_ex (al_screen, al_font,
+      'C to display control points', AL_SCREEN_W DIV 2,
+      92, al_palette_color^[255], al_palette_color^[0]);
+    al_textout_centre_ex (al_screen, al_font,
+      'T to display tangents', AL_SCREEN_W DIV 2, 104,
+      al_palette_color^[255], al_palette_color^[0]);
 
     FOR Index := 1 TO NodeCount - 3 DO
       DrawSpline (Nodes[Index], Nodes[Index+1]);
@@ -221,10 +227,12 @@ VAR
   BEGIN
     al_clear_to_color (al_screen, al_makecol (255, 255, 255));
 
-    al_textout_centre_ex (al_screen, al_font, 'Click the left mouse button to add path nodes',
-		     AL_SCREEN_W DIV 2, 8, al_palette_color^[255], al_palette_color^[0]);
-    al_textout_centre_ex (al_screen, al_font, 'Right mouse button or any key to finish',
-		     AL_SCREEN_W DIV 2, 24, al_palette_color^[255], al_palette_color^[0]);
+    al_textout_centre_ex (al_screen, al_font,
+      'Click the left mouse button to add path nodes',
+      AL_SCREEN_W DIV 2, 8, al_palette_color^[255], al_palette_color^[0]);
+    al_textout_centre_ex (al_screen, al_font,
+      'Right mouse button or any key to finish',
+      AL_SCREEN_W DIV 2, 24, al_palette_color^[255], al_palette_color^[0]);
 
     NodeCount := 1;
 
@@ -254,8 +262,8 @@ VAR
       ELSE IF ((al_mouse_b AND 2) <> 0) OR al_keypressed THEN
       BEGIN
 	IF NodeCount < 3 THEN
-	  al_alert ('You must enter at least two nodes',
-		    '', '', 'Ok', '', 13, 0)
+	  al_alert ('', 'You must enter at least two nodes', '',
+                    'Ok', '', 13, 0)
 	ELSE
 	  ExitLoop := TRUE;
       END;
@@ -284,7 +292,7 @@ VAR
     FOR i := 1 TO NodeCount - 2 DO
       DrawNode (i);
 
-    al_release_screen();
+    al_release_screen;
 
     ClearUserInput;
 
