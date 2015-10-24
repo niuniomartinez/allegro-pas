@@ -21,7 +21,7 @@ PROGRAM extrans;
  *	because additive drawing mode uses a different set of routines for
  *	truecolor modes.
  *
- *	By Guillermo "Ñuño" Martínez
+ *	By Guillermo "Ã‘uÃ±o" MartÃ­nez
  *	from an example of the Allegro Game Library, by Owen Embury.
  *
  *	See README file for license and copyright information.

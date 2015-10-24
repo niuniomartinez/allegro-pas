@@ -13,7 +13,7 @@ PROGRAM exdbuf;
  *	It moves a circle across the screen, first just erasing and
  *	redrawing directly to the screen, then with a double buffer.
  *
- *	By Guillermo "Ñuño" Martínez
+ *	By Guillermo "Ã‘uÃ±o" MartÃ­nez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
  *
  *	See README file for license and copyright information.

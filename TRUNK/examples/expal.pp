@@ -13,7 +13,7 @@ PROGRAM expal;
  *	of concentric circles onto the screen and animates them by cycling
  *	the palette.
  *
- *	By Guillermo "Ñuño" Martínez
+ *	By Guillermo "Ã‘uÃ±o" MartÃ­nez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
  *
  *	See README file for license and copyright information.

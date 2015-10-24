@@ -728,7 +728,7 @@ PROGRAM mapedit;
 
 
 (*****************************************************************************
- * Program stuff:  loading, saveing, quitting, etc.
+ * Program stuff:  loading, saving, quitting, etc.
  *)
 
 (* Shows help. *)

@@ -15,7 +15,7 @@ PROGRAM extruec;
  *	modes supported by your video card. The more color depth you have,
  *	the less banding you will see in the gradients.
  *	
- *	By Guillermo "Ñuño" Martínez
+ *	By Guillermo "Ã‘uÃ±o" MartÃ­nez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
  *
  *	See README file for license and copyright information.
@@ -50,8 +50,8 @@ USES
 
     al_clear_to_color (al_screen, al_makecol (0, 0, 0));
 
-    al_textout_ex (al_screen, al_font, INTTOSTR (colordepth)+' bit color...',
-		   0, 0, al_makecol (255, 255, 255), -1);
+    al_textprintf_ex (al_screen, al_font, 0, 0, al_makecol (255, 255, 255), -1,
+      '%d bit color...', [colordepth]);
 
   { use the al_makecol function to specify RGB values... }
     al_textout_ex (al_screen, al_font, 'Red',     32,  80, al_makecol (255,   0,   0), al_makecol (0, 0, 0));

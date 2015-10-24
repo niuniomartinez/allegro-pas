@@ -20,7 +20,7 @@ PROGRAM expal;
 USES
   allegro;
 
-
+(* Helper procedure to draw patterns. *)
   PROCEDURE DrawPattern (bitmap: AL_BITMAPptr; message: ANSISTRING; color: LONGINT);
   VAR
     pattern: AL_BITMAPptr;

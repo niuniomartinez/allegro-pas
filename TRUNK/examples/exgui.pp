@@ -248,11 +248,11 @@ VAR
 
   FUNCTION Info1: LONGINT; CDECL;
   VAR
-    buf1, buf2: STRING;
+    buf: STRING;
     i, n: INTEGER;
     s: BOOLEAN;
   BEGIN
-    buf2 := '';
+    buf := '';
     s := FALSE;
     ListboxGetter (-1, @n);
   { query the list proc }
@@ -260,42 +260,45 @@ VAR
     BEGIN
       IF Sel[i] <> 0 THEN
       BEGIN
-	buf1 := IntToStr (i);
-	buf2 := buf2 + buf1;
+	buf := buf + IntToStr (i);
 	s := TRUE;
       END;
     END;
     IF s THEN
-      buf2 := buf2 + ' are in the multiple selection!'
+      buf := buf + ' are in the multiple selection!'
     ELSE
-      buf2 := buf2 + 'There is no multiple selection!';
-    buf1 := 'Item number '+ IntToStr (TheDialog[LIST_OBJECT].d1) +
-	    ' is selected!';
-    al_alert ('Info about the list:', buf1, buf2, 'Ok', '', 0, 0);
+      buf := buf + 'There is no multiple selection!';
+    al_alert (
+      'Info about the list:',
+       Format ('Item number %d is selected!', [TheDialog[LIST_OBJECT].d1]),
+       buf,
+       'Ok', '', 0, 0);
     Info1 := AL_D_O_K;
   END;
 
 
 
   FUNCTION Info2: LONGINT; CDECL;
-  VAR
-    buf: STRING;
   BEGIN
   { query the textlist proc }
-    buf := 'Item number ' + IntToStr (TheDialog[TEXTLIST_OBJECT].d1) + ' is selected!';
-    al_alert ('Info about the text list:', '', buf, 'Ok', '', 0, 0);
+    al_alert (
+      'Info about the text list:',
+      '',
+      Format ('Item number %d is selected!', [TheDialog[TEXTLIST_OBJECT].d1]),
+      'Ok', '', 0, 0);
     Info2 := AL_D_O_K;
   END;
 
 
 
   FUNCTION Info3: LONGINT; CDECL;
-  VAR
-    buf: STRING;
   BEGIN
   { query the slider proc }
-    buf := 'lider position is ' + IntToStr (TheDialog[SLIDER_OBJECT].d2) + '!';
-    al_alert ('Info about the slider:', '', buf, 'Ok', '', 0, 0);
+    al_alert (
+      'Info about the slider:',
+      '',
+      Format ('slider position is %d!', [TheDialog[SLIDER_OBJECT].d2]),
+      'Ok', '', 0, 0);
     Info3 := AL_D_O_K;
   END;
 

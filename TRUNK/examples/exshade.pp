@@ -112,7 +112,10 @@ BEGIN
 	Distance (ScreenW, SpriteH, al_mouse_x, al_mouse_y));
 
     al_textout_ex (Buffer, al_font, 'Gouraud Shaded Sprite Demo', 0, 0,
-		   al_palette_color^[10], -1);
+      al_palette_color^[10], -1);
+    al_textout_centre_ex (al_screen, al_font,
+      'Move mouse to move the light point',
+      AL_SCREEN_W DIV 2, 8, al_palette_color^[10], -1);
 
     al_circle (Buffer, al_mouse_x, al_mouse_y, 4, al_palette_color^[10]);
     al_blit (Buffer, al_screen, 0, 0, 0, 0, AL_SCREEN_W, AL_SCREEN_H);

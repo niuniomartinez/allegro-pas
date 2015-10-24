@@ -323,76 +323,74 @@ PROGRAM excamera;
 
   { overlay some text }
     al_set_clip_rect (OutBmp, 0, 0, OutBmp^.w, OutBmp^.h);
-    al_textout_ex (
+    al_textprintf_ex (
       OutBmp, al_font,
-      Format ('Viewport width: %d (w/W changes)', [Camera.ViewportW]),
-      0,  0, ClrBlack, -1
+      0,  0, ClrBlack, -1,
+      'Viewport width: %d (w/W changes)', [Camera.ViewportW]
     );
-    al_textout_ex (
+    al_textprintf_ex (
       OutBmp, al_font,
-      Format ('Viewport height: %d (h/H changes)', [Camera.ViewportH]),
-      0,  8, ClrBlack, -1
+      0,  8, ClrBlack, -1,
+      'Viewport height: %d (h/H changes)', [Camera.ViewportH]
     );
-    al_textout_ex (
+    al_textprintf_ex (
       OutBmp, al_font,
-      Format ('Field of view: %d (f/F changes)', [Camera.FOV]),
-      0, 16, ClrBlack, -1
+      0, 16, ClrBlack, -1,
+      'Field of view: %d (f/F changes)', [Camera.FOV]
     );
-    al_textout_ex (
+    al_textprintf_ex (
       OutBmp, al_font,
-      Format ('Aspect ratio: %.2f (a/A changes)', [al_fixtof (Camera.Aspect)]),
-      0, 24, ClrBlack, -1
+      0, 24, ClrBlack, -1,
+      'Aspect ratio: %.2f (a/A changes)', [al_fixtof (Camera.Aspect)]
     );
-    al_textout_ex (
+    al_textprintf_ex (
       OutBmp, al_font,
-      Format ('X position: %.2f (x/X changes)', [al_fixtof (Camera.Position.X)]),
-      0, 32, ClrBlack, -1
+      0, 32, ClrBlack, -1,
+      'X position: %.2f (x/X changes)', [al_fixtof (Camera.Position.X)]
     );
-    al_textout_ex (
+    al_textprintf_ex (
       OutBmp, al_font,
-      Format ('Y position: %.2f (y/Y changes)', [al_fixtof (Camera.Position.Y)]),
-      0, 40, ClrBlack, -1
+      0, 40, ClrBlack, -1,
+      'Y position: %.2f (y/Y changes)', [al_fixtof (Camera.Position.Y)]
     );
-    al_textout_ex (
+    al_textprintf_ex (
       OutBmp, al_font,
-      Format ('Z position: %.2f (z/Z changes)', [al_fixtof (Camera.Position.Z)]),
-      0, 48, ClrBlack, -1
+      0, 48, ClrBlack, -1,
+      'Z position: %.2f (z/Z changes)', [al_fixtof (Camera.Position.Z)]
     );
-    al_textout_ex (
+    al_textprintf_ex (
       OutBmp, al_font,
-      Format ('Heading: %.2f (left/right changes)', [al_fixtof (Camera.Angle.Y)]),
-      0, 56, ClrBlack, -1
+      0, 56, ClrBlack, -1,
+      'Heading: %.2f (left/right changes)', [al_fixtof (Camera.Angle.Y)]
     );
-    al_textout_ex (
+    al_textprintf_ex (
       OutBmp, al_font,
-      Format ('Pitch: %.2f (pgup/pgdn changes)', [al_fixtof (Camera.Angle.X)]),
-      0, 64, ClrBlack, -1
+      0, 64, ClrBlack, -1,
+      'Pitch: %.2f (pgup/pgdn changes)', [al_fixtof (Camera.Angle.X)]
     );
-    al_textout_ex (
+    al_textprintf_ex (
       OutBmp, al_font,
-      Format ('Roll: %.2f (r/R changes)', [al_fixtof (Camera.Angle.Z)]),
-      0, 72, ClrBlack, -1
+      0, 72, ClrBlack, -1,
+      'Roll: %.2f (r/R changes)', [al_fixtof (Camera.Angle.Z)]
     );
-    al_textout_ex (
+    al_textprintf_ex (
       OutBmp, al_font,
-      Format (
-	'Front vector: %.2f, %.2f, %.2f',
-	[al_fixtof (Camera.Front.X), al_fixtof (Camera.Front.Y), al_fixtof (Camera.Front.Z)]
-      ),
-      0, 80, ClrBlack, -1
+      0, 80, ClrBlack, -1,
+      'Front vector: %.2f, %.2f, %.2f',
+      [al_fixtof (Camera.Front.X), al_fixtof (Camera.Front.Y),
+       al_fixtof (Camera.Front.Z)]
     );
-    al_textout_ex (
+    al_textprintf_ex (
       OutBmp, al_font,
-      Format (
-	'Up vector: %.2f, %.2f, %.2f',
-	[al_fixtof (Camera.Up.X), al_fixtof (Camera.Up.Y), al_fixtof (Camera.Up.Z)]
-      ),
-      0, 88, ClrBlack, -1
+      0, 88, ClrBlack, -1,
+      'Up vector: %.2f, %.2f, %.2f',
+      [al_fixtof (Camera.Up.X), al_fixtof (Camera.Up.Y),
+       al_fixtof (Camera.Up.Z)]
     );
-    al_textout_ex (
+    al_textprintf_ex (
       OutBmp, al_font,
-      Format ('Frames per second: %d', [FPS]),
-      0, 96, ClrBlack, -1
+      0, 96, ClrBlack, -1,
+      'Frames per second: %d', [FPS]
     );
     IF UseVSync THEN
       al_textout_ex (

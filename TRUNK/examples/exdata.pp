@@ -14,7 +14,7 @@ PROGRAM exdata;
  *	`example.dat', then blits a bitmap and shows a font, both from this
  *	datafile.
  *
- *	By Guillermo "Ñuño" Martínez
+ *	By Guillermo "Ã‘uÃ±o" MartÃ­nez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
  *
  *	See README file for license and copyright information.

@@ -78,9 +78,9 @@ EXMBIN = $(BINDIR)$(EXMDIR)
 ALEXDIR = demo/
 ALEXBIN = $(BINDIR)demo/
 
-#FLAGS = -O3 -Sh -Si -Xs -XX $(EFLAGS)
+FLAGS = -O3 -Sh -Si -Xs -XX $(EFLAGS)
 # Use next line instead to activate debug.
-FLAGS = -gl -O1 -Sh -Si -vh -vw $(EFLAGS)
+#FLAGS = -gl -O1 -Sh -Si -vh -vw $(EFLAGS)
 
 # -- Source files list --
 include makefile.list

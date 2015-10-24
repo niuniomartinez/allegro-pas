@@ -81,7 +81,7 @@ PROGRAM excustom;
       w := bmp^.w DIV 2;
       h := bmp^.h DIV 2;
 
-      al_line (bmp, w, h, w + al_fixtoi(x*w), h + al_fixtoi(y*h), Clr);
+      al_line (bmp, w, h, w + al_fixtoi (x*w), h + al_fixtoi (y*h), Clr);
     END;
 
   VAR

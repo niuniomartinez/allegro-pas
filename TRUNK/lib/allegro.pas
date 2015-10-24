@@ -3,8 +3,8 @@ UNIT Allegro;
 
   This is the main module of the Allegro library.  There are very different
   stuff on this unit, but procedures, functions, types, variables and constants
-  are grouped to make it easer to find them.  Read the @link(intro Introduction)
-  section for a brief description of this unit. *)
+  are grouped to make it easer to find them.  Read the @code(How to use
+  Allegro.pas) section for a brief description of this unit. *)
 
 {$INCLUDE allegro.cfg }
 
@@ -4073,7 +4073,7 @@ VAR
   TYPE
   (* A pointer to a structure holding an Allegro font, usually created beforehand
      with the grabber tool or Allegro's default font.  Read introduction of
-     @link(text) for a description on how to load/destroy fonts, and how to
+     @code(text) for a description on how to load/destroy fonts, and how to
      show text. *)
     AL_FONTptr = AL_POINTER;
 
@@ -4386,10 +4386,12 @@ END;
    color is ignored and always treated as -1.
    @param(bmp The output bitmap.)
    @param(f The font to render.)
+   @param(str The text to draw.)
    @param(x Horizontal position.) @param(y Vertical position.)
    @param(color Foreground color.  Set to -1 to use multicolor fonts.)
    @param(bg Background color.  Set to -1 to use transparent background.)
-   @seealso(al_textout_centre_ex) @seealso(al_textout_right_ex) @seealso(al_textout_justify_ex)*)
+   @seealso(al_textprintf_ex) @seealso(al_textout_centre_ex) @seealso(al_textout_right_ex)
+   @seealso(al_textout_justify_ex) @seealso(al_text_height) @(al_text_length) *)
   PROCEDURE al_textout_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: AL_STR; x, y, color, bg: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_ex';
 
@@ -4411,6 +4413,60 @@ END;
    @seealso(al_textout_ex) @seealso(al_textout_centre_ex) @seealso(al_textout_right_ex)*)
   PROCEDURE al_textout_justify_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST str: AL_STR; x1, x2, y, diff, color, bg: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'textout_justify_ex';
+
+
+
+(* Formatted text output, using a @code(Format) style format string. Example:
+@longcode(#
+  VAR
+    PlayerScore: INTEGER;
+  BEGIN
+  ...
+    al_textprintf_ex (al_screen, al_font, 10, 10, al_makecol (255, 100, 200), -1, 'Score: %d', [PlayerScore]);
+  ...
+  END;
+  #)
+  @param(bmp The output bitmap.)
+  @param(f The font to render.)
+  @param(x Horizontal position.) @param(y Vertical position.)
+  @param(color Foreground color.  Set to -1 to use multicolor fonts.)
+  @param(bg Background color.  Set to -1 to use transparent background.)
+  @param(aFormat The format string.) @param(Params The list of parameters.)
+  @seealso(al_textout_ex) @seealso(al_textprintf_centre_ex) @seealso(al_textprintf_right_ex) *)
+PROCEDURE al_textprintf_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST x, y, color, bg: AL_INT; CONST aFormat: STRING; Params: ARRAY OF CONST);
+{ TODO: Not yet supported (FPC 2.6.4)
+  INLINE;
+}
+
+(* Like @code(al_textprintf_ex), but interprets the x coordinate as the centre
+   rather than the left edge of the string. Example:
+@longcode(#
+  al_textprintf_centre_ex (al_screen, al_font, AL_SCREEN_W DIV 2, 120,
+			   al_makecol (0, 100, 243), -1,
+			   'Your best score so far was %d!',
+			   [TotalMaxPoints]);
+  #)
+  @seealso(al_textout_ex) @seealso(al_textout_centre_ex)
+  @seealso(al_textprintf_ex) @seealso(al_textprintf_right_ex) *)
+PROCEDURE al_textprintf_centre_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST x, y, color, bg: AL_INT; CONST aFormat: STRING; Params: ARRAY OF CONST);
+{ TODO: Not yet supported (FPC 2.6.4)
+  INLINE;
+}
+
+(* Like @code(al_textprintf_ex), but interprets the x coordinate as the right
+   rather than the left edge of the string. Example:
+@longcode(#
+  al_textprintf_right_ex (al_screen, al_font, AL_SCREEN_W -10, 10,
+			  al_makecol (200, 200, 20), -1,
+			  '%d bullets left', [PlayerAmmo]);
+  #)
+  @seealso(al_textout_ex) @seealso(al_textout_right_ex)
+  @seealso(al_textprintf_ex) @seealso(al_textprintf_centre_ex) *)
+PROCEDURE al_textprintf_right_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST x, y, color, bg: AL_INT; CONST aFormat: STRING; Params: ARRAY OF CONST);
+{ TODO: Not yet supported (FPC 2.6.4)
+  INLINE;
+}
+
 
 (* Returns the length (in pixels) of a string in the specified font.
   @seealso(al_text_height) *)
@@ -4570,8 +4626,8 @@ END;
    @link(AL_DIGI_AUTODETECT) and @link(AL_MIDI_AUTODETECT) as the driver
    parameters to this function, in which case Allegro will read hardware
    settings from the current configuration file.  This allows the user to
-   select different values with the setup utility:  see the @link(configuration
-   configuration section) for details.
+   select different values with the setup utility:  see the @code(configuration
+   section) for details.
 
    @returns (@true if the sound is successfully installed, and @false on
      failure.  If it fails it will store a description of the problem in
@@ -6073,6 +6129,27 @@ CONST
   FUNCTION al_transpose_font (f: AL_FONTptr; drange: AL_INT): AL_BOOL;
   BEGIN
     RESULT := NOT transpose_font (f, drange)
+  END;
+
+
+
+(******************************************************************************
+ * text.h
+ *)
+
+  PROCEDURE al_textprintf_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST x, y, color, bg: AL_INT; CONST aFormat: STRING; Params: ARRAY OF CONST);
+  BEGIN
+    al_textout_ex (bmp, f, Format (aformat, Params), x, y, color, bg)
+  END;
+
+  PROCEDURE al_textprintf_centre_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST x, y, color, bg: AL_INT; CONST aFormat: STRING; Params: ARRAY OF CONST);
+  BEGIN
+    al_textout_centre_ex (bmp, f, Format (aformat, Params), x, y, color, bg)
+  END;
+
+  PROCEDURE al_textprintf_right_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST x, y, color, bg: AL_INT; CONST aFormat: STRING; Params: ARRAY OF CONST);
+  BEGIN
+    al_textout_right_ex (bmp, f, Format (aformat, Params), x, y, color, bg)
   END;
 
 

@@ -15,7 +15,7 @@ PROGRAM exblend;
  *	tinted to different colors.  The other image will be faded out with a
  *	varying alpha strength, and drawn on top of the other image.
  *
- *	By Guillermo "Ñuño" Martínez
+ *	By Guillermo "Ã‘uÃ±o" MartÃ­nez
  *	from an example of Allegro Game Library by Shawn Hargreaves.
  *
  *	See README file for license and copyright information.
@@ -30,20 +30,14 @@ USES
 
   FUNCTION MIN (a, b: LONGINT): LONGINT;
   BEGIN
-    IF a < b THEN
-      MIN := a
-    ELSE
-      MIN := b;
+    IF a < b THEN MIN := a ELSE MIN := b;
   END;
 
 
 
   FUNCTION MAX (a, b: LONGINT): LONGINT;
   BEGIN
-    IF a > b THEN
-      MAX := a
-    ELSE
-      MAX := b;
+    IF a > b THEN MAX := a ELSE MAX := b;
   END;
 
 
@@ -153,7 +147,10 @@ BEGIN { The program starts here. }
 
   prevx1 := 0; prevy1 := 0; prevx2 := 0; prevy2 := 0;
 
-  al_textout_ex (al_screen, al_font, INTTOSTR (bpp) + ' bpp', 0, AL_SCREEN_H - 8, al_makecol(255, 255, 255), al_makecol (0, 0, 0));
+  al_textprintf_ex (al_screen, al_font, 0, AL_SCREEN_H - 8,
+    al_makecol(255, 255, 255), al_makecol (0, 0, 0),
+    '%d bpp', [bpp]);
+
 
   WHILE NOT al_keypressed DO
   BEGIN
@@ -169,7 +166,10 @@ BEGIN { The program starts here. }
     a  := 127 - al_fixtoi (al_fixcos (al_itofix (timer) DIV  9) * 127);
     al_set_trans_blender (r, g, b, 0);
     al_draw_lit_sprite (buffer, image1, x1, y1, a);
-    al_textout_ex (al_screen, al_font, 'light: ' + INTTOSTR (a) + ' ', 0, 0, al_makecol (r, g, b), al_makecol (0, 0, 0));
+    al_textprintf_ex (al_screen, al_font,
+      0, 0, al_makecol (r, g, b), al_makecol (0, 0, 0),
+      'light: %d ', [a]);
+
 
   { The second image moves in a faster circle while the alpha value
     fades in and out... }
@@ -179,7 +179,9 @@ BEGIN { The program starts here. }
 
     al_set_trans_blender (0, 0, 0, a);
     al_draw_trans_sprite (buffer, image2, x2, y2);
-    al_textout_ex (al_screen, al_font, 'alpha: ' + INTTOSTR (a) + ' ', 0, 8, al_makecol(a, a, a), al_makecol(0, 0, 0));
+    al_textprintf_ex (al_screen, al_font,
+      0, 8, al_makecol(a, a, a), al_makecol(0, 0, 0),
+     'alpha: %d ', [a]);
 
   { Copy the double buffer across to the screen. }
     al_vsync;

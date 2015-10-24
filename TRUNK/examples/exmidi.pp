@@ -122,12 +122,14 @@ BEGIN (* The program starts here. *)
     Position := al_midi_time;
     Beat := al_midi_pos;
     al_rectfill (al_screen, x - tw DIV 2, y, x + tw DIV 2, y + th * 2, BackgroundColor);
-    al_textout_centre_ex (al_screen, al_font,
-	Format ('%d:%02d / %d:%02d', [Position DIV 60, Position MOD 60, TheLength DIV 60, TheLength MOD 60]),
-	x, y, TextColor, -1);
-    al_textout_centre_ex (al_screen, al_font,
-	Format ('beat %d /%d', [Beat, Beats]),
-	x, y + th, TextColor, -1);
+    al_textprintf_centre_ex (al_screen, al_font,
+      x, y, TextColor, -1,
+      '%d:%02d / %d:%02d', [
+        Position DIV 60, Position MOD 60, TheLength DIV 60, TheLength MOD 60
+      ]);
+    al_textprintf_centre_ex (al_screen, al_font,
+      x, y + th, TextColor, -1,
+      'beat %d /%d', [Beat, Beats]);
   { We have nothing else to do. }
     al_rest (100);
   END;
