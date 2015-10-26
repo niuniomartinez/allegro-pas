@@ -65,7 +65,7 @@ BEGIN
   al_install_keyboard;
   al_install_mouse;
 
-  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT, 320, 240, 0, 0) THEN
+  IF NOT al_set_gfx_mode (AL_GFX_AUTODETECT_WINDOWED, 320, 240, 0, 0) THEN
     IF NOT al_set_gfx_mode (AL_GFX_SAFE, 320, 240, 0, 0) THEN
     BEGIN
       al_set_gfx_mode (AL_GFX_TEXT, 0, 0, 0, 0);
@@ -113,7 +113,7 @@ BEGIN
 
     al_textout_ex (Buffer, al_font, 'Gouraud Shaded Sprite Demo', 0, 0,
       al_palette_color^[10], -1);
-    al_textout_centre_ex (al_screen, al_font,
+    al_textout_centre_ex (Buffer, al_font,
       'Move mouse to move the light point',
       AL_SCREEN_W DIV 2, 8, al_palette_color^[10], -1);
 
