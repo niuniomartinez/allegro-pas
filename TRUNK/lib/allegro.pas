@@ -1869,16 +1869,23 @@ END.
 
 
   TYPE
+  (* Pointer to @code(AL_GFX_MODE). *)
     AL_GFX_MODEptr = ^AL_GFX_MODE;
 
-  (* Graphics mode description. *)
+  (* Graphics mode description. @seealso(AL_GFX_MODE_LIST) *)
     AL_GFX_MODE = RECORD
-      width, height, bpp: AL_INT;
+    (* Mode width in pixels. *)
+      width
+    (* Mode height in pixels. *),
+      height,
+    (* Bits per pixel. *)
+      bpp: AL_INT;
     END;
 
+  (* Pointer to @code(AL_GFX_MODE_LIST). *)
     AL_GFX_MODE_LISTptr = ^AL_GFX_MODE_LIST;
 
-  (* Graphics mode list. *)
+  (* Graphics mode list. @seealso(al_get_gfx_mode_list) *)
     AL_GFX_MODE_LIST = RECORD
     (* Number of graphics modes. *)
       num_modes: AL_INT;
@@ -2033,11 +2040,23 @@ END.
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gfx_capabilities';
 
 
-(* *)
+(* Attempts to create a list of all the supported video modes for a certain
+  graphics driver, made up from the @code(AL_GFX_MODE_LIST) structure.  This
+  list of video modes is terminated with an @code([ 0, 0, 0 ]) entry.  Note
+  that the card parameter must refer to a @italic(real) driver.  This function
+  fails if you pass @link(AL_GFX_SAFE), @link(AL_GFX_AUTODETECT), or any other
+  "magic" driver.
+  @return(A pointer to a list structure of the type @code(AL_GFX_MODE_LIST) or
+  @nil if the request could not be satisfied.)
+  @seealso(al_destroy_gfx_mode_list) @seealso(al_set_gfx_mode)
+  @seealso(al_set_color_depth) *)
   FUNCTION al_get_gfx_mode_list (card: AL_INT): AL_GFX_MODE_LISTptr;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'get_gfx_mode_list';
 
-(* *)
+(* Removes the mode list created by @code(al_get_gfx_mode_list) from memory.
+   Use this once you are done with the generated mode list to avoid memory
+   leaks in your program. @seealso(al_get_gfx_mode_list)
+   @seealso(al_set_gfx_mode) @seealso(al_set_color_depth) *)
   PROCEDURE al_destroy_gfx_mode_list (gfx_mode_list: AL_GFX_MODE_LISTptr);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'destroy_gfx_mode_list';
 
@@ -4783,11 +4802,25 @@ PROCEDURE al_textprintf_right_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST 
 
 
 
+(* Detects whether the specified MIDI sound device is available.  This function
+   must be called @italic(before) @code(al_install_sound).
+   @Return(The maximum number of voices that the driver can provide, or zero if
+     the hardware is not present.
+
+     There are two special-case return values that you should watch out for: if
+     this function returns -1 it is a note-stealing driver (eg. @code(DIGMID))
+     that shares voices with the current digital sound driver, and if it
+     returns @code($FFFF) it is an external device like an MPU-401 where there
+     is no way to determine how many voices are available.)
+     @seealso(al_install_sound) @seealso(al_reserve_voices) *)
+  FUNCTION al_detect_midi_driver (driver_id: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'detect_midi_driver';
+
 (* Loads a MIDI file (handles both format 0 and format 1).
    @returns(a pointer to a @link(AL_MIDI) structure, or @nil on error.
      Remember to free this MIDI file later to avoid memory leaks.)
    @seealso(al_destroy_midi) @seealso(al_play_midi)
-   @seealso(al_get_midi_length) *)
+   @seealso(al_get_midi_length) @seealso(al_load_midi_pf) *)
   FUNCTION al_load_midi (CONST filename: AL_STR): AL_MIDIptr;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_midi';
 
@@ -4952,6 +4985,17 @@ PROCEDURE al_textprintf_right_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST 
   (* Used by @link(al_register_sample_file_type).  Should return zero on
     success or non-zero otherwise. *)
     AL_SAMPLE_SAVE_FUNC = FUNCTION (CONST filename: AL_STR; spl: AL_SAMPLEptr): AL_INT; CDECL;
+
+
+
+(* Detects whether the specified digital sound device is available.  This
+  function must be called @italic(before) @code(al_install_sound).
+  @return(The maximum number of voices that the driver can provide, or zero if
+    the hardware is not present.)
+  @seealso(al_install_sound) @seealso(al_reserve_voices) *)
+  FUNCTION al_detect_digi_driver (driver_id: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'detect_digi_driver';
+
 
 
 (* Loads a sample from a file, supporting both mono and stereo WAV and mono VOC
