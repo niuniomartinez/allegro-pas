@@ -68,7 +68,7 @@ BEGIN { The program starts here. }
 { Should we use a windowed mode?
   In the config file this is stored as either FALSE or TRUE.
   So we need to read a string and see what it contains.
-  If the entry is not found, we use "FALSE" by default. }
+  If the entry is not found, we use "TRUE" by default. }
   IF al_get_config_string ('graphics', 'windowed', 'TRUE') = 'FALSE' THEN
     windowed := AL_GFX_AUTODETECT_FULLSCREEN
   ELSE

@@ -64,6 +64,22 @@ endif
 
 
 # --------------------------
+# -- Some optimization
+# --------------------------
+
+# Optimization options.
+OPTOPT = -O3 -Xs -XX
+
+# Next can be used to optimize for almost any current 32bit PC with Linux or
+# Windows, doing it pretty well.  Of course, it will prevent your executable to
+# run in anything older than Pentium.
+# OPTOPT += -CpPENTIUM -CfSSE
+
+# Next one can be used to optimize for 64bit PC with Linux or Windows.
+# OPTOPT += -CpATHLON64
+
+
+# --------------------------
 # -- No platform specific --
 # --------------------------
 
@@ -78,7 +94,8 @@ EXMBIN = $(BINDIR)$(EXMDIR)
 ALEXDIR = demo/
 ALEXBIN = $(BINDIR)demo/
 
-FLAGS = -O3 -Sh -Si -Xs -XX $(EFLAGS)
+# Optimized compilation
+FLAGS = $(OPTOPT) -Sh -Si $(EFLAGS)
 # Use next line instead to activate debug.
 #FLAGS = -gl -O1 -Sh -Si -vh -vw $(EFLAGS)
 
