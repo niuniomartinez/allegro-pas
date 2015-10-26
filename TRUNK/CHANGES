@@ -1,3 +1,63 @@
+Changes between versions 4.4.4 y 4.4.5 (WIP)
+======================================
+
+  Bugfixing
+  ---------
+  * A lot of changes in "alstream" extension.
+  * Example exalpha runs correctly now.  The problem was use 16bit instead of
+    32bit in a variable.
+  * Some times, the demonstration game and the map editor didn't load the
+    datafile.  Also, if the game wasn't able to load it, the message was an
+    EAccessViolation.  Now they work properly.
+  * Fixed al_apply_matrix_f.  Note that it looks like a bug in FreePascal!
+  * Fixed al_pack_fseek.
+  * Fixed some issues with timers on several examples.  Also, default graphics
+    mode is windowed now in some of them.
+
+  News
+  ----
+  + New extension alGUI.
+  + The example ex3d is more complex.
+  + Added runtime identificatio nof operating system.
+  + Added identification of graphic modes, digital sound and MIDI.
+  + Added al_request_refresh_rate and al_get_refresh_rate.
+  + Added identifiers for several Linux and Windows drivers.
+  + Added procedures for Windows and UNIX/Linux.
+  + Added console switching.
+
+  API changes
+  -----------
+  + Added another BOOLEAN type (8 bit), so now al_key can be checked as logic
+    value avoiding the use of "<> 0".  Also, a lot of functions and procedures
+    use this new type, so you'll be forced to change your old code,
+    but it worth it:  Smaller, faster and cleaner!
+  * Datafile type objects are constants now.  This way it's faster (again!),
+    uses less memory and they can be used as CASE labels.
+  * A lot of procedures changed theyr "POINTER" parameters to "VAR" or "OUT".
+    This way you don't need to use the "@" operator.  Also removes a lot of
+    "HINT" messages from compiler.
+  * Digital fields of joysticks are AL_BOOL now.
+    NOTE:  I'm not able to test joysticks (my Fedora doesn't like my
+    arcade-style joystick :_( ) so I don't know if it actually works.
+    Please, let me know if you can test it.
+  * Some functions use now "inverse logic", that may be better:
+    + al_scene_plolygon3d<_f>
+    + al_request_scrool
+    + al_request_video_bitmap
+  * Some GUI procedures use ARRAY OF... instead of pointers now.
+
+  Otros
+  -----
+  * A lot of changes on documentation.  Also, it's build from the main makefile
+    instead of use it's own makefile.
+  - A lot of wrapper procedures and functions.  Now the C function is called
+    directly.
+  *  Procedures _al_pupixel* and _al_getpixel* rewritten to work with pointers
+    instead of integers, avoiding weird conversions (I still don't like to play
+    with pointers on Pascal anyway).
+
+
+
 Changes between versions 4.4.3 y 4.4.4
 ======================================
 

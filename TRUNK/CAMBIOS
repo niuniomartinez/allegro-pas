@@ -19,48 +19,52 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
   Novedades
   ---------
   + Nueva extensión alGUI.
-  + El ejemplo al3d es más completo.
+  + El ejemplo ex3d es más completo.
   + Añadida identificación del sistema operativo en tiempo de ejecución.
-  + Añadida la identificación de modos gráficos (resolución y profundidad).
+  + Añadida la identificación de modos gráficos (resolución y profundidad), y
+    de controladores de sonido y MIDI.
   + Añadido al_request_refresh_rate y al_get_refresh_rate.
   + Añadidos identificadores de controlador para Linux y Windows.
   + Añadidos procedimientos específicos para Windows y UNIX/Linux.
   + Añadido control a "console switching".
+
+  Cambios en el API
+  -----------------
   + Añadido otro tipo BOOLEAN (8 bit), de forma que ahora al_key puede ser
     utilizado como valor lógico evitando tener que usar "<> 0" en la
     comprobación.  Así mismo, muchas funciones y procedimientos utilizan este
     nuevo tipo, por lo que deberás cambiar el código antiguo, pero creo que
-    merece la pena.
-
-  Otros
-  -----
+    merece la pena:  ¡Menos código, más rápido y más claro!
   * Ahora los mnemónicos tipo de dato de archivo de datos son constantes.
-    Esto hace que sea más rápido, que se use algo menos de memoria, y que
-    puedan utilizarse como etiquetas en sentencias CASE.
-  * Se ha cambiado la distribución de la documentación.  Además, ahora se
-    construye desde el makefile principal, en lugar de tener otro makefile
-    diferente.
+    Esto hace que sea más rápido (¡de nuevo!), que se use algo menos de
+    memoria, y que  puedan utilizarse como etiquetas en sentencias CASE.
   * Muchos procedimientos han cambiado sus parámetros "POINTER" a parámetros
     "VAR" y "OUT".  De esta forma no hay necesidad de usar el operador "@".
     Esto también reduce los mensajes "HINT" del compilador.
-  + Añadido {$MODE OBJFPC} al archivo de configuración, de forma que así pueden
-    usarse parámetros "OUT".
-  - Eliminados muchísimos procedimientos y funciones de enveltorio, ya que ahora
-    se llaman directamente a sus contrapartidas en C.
- * Digital fields of joysticks are AL_BOOL now.
-   NOTE:  I'm not able to test joysticks (my Fedora doesn't like my
-   arcade-style joystick :_( ) so I don't know if it actually works.
-   Please, let me know if you can test it.
- * Procedures _al_pupixel* and _al_getpixel* rewritten to work with pointers
-   instead of integers, avoiding weird conversions (I still don't like to play
-   with pointers on Pascal anyway).
- * Some functions use now "inverse logic", that may be better:
-   + al_scene_plolygon3d<_f>
-   + al_request_scrool
-   + al_request_video_bitmap
+  * Los campos digitales de los mandos de juego (joysticks) ahora son AL_BOOL.
+    NOTA:  No puedo comprobar el funcionamiento de estas rutinas (mi Fedora no
+    es capaz de identificar mi mando arcade :_( ) así que no estoy seguro de que
+    funcione.  Por favor, avísame si haces alguna prueba.
+  * Algunas funciones usan "lógica inversa" ahora, lo cual puede ser mejor:
+    + al_scene_plolygon3d<_f>
+    + al_request_scrool
+    + al_request_video_bitmap
   * Algunos metodos de GUI usan ARRAY OF... en vez de punteros.
 
-   Documentacion actualizada (mucho).
+  Otros
+  -----
+  * Muchos cambios en la documentación.  Además, ahora se construye desde el
+    makefile principal, en lugar de tener un makefile propio.
+  + Añadido {$MODE OBJFPC} al archivo de configuración, de forma que así pueden
+    usarse parámetros "OUT".  En principio, no debería afectar si el resto de
+    unidades usan otros dialectos.
+  - Eliminados muchísimos procedimientos y funciones de envoltorio, ya que ahora
+    se llaman directamente a sus contrapartidas en C.
+  * Los procedimientos _al_pupixel* y _al_getpixel* han sido re-escritos para
+    que usen punteros en lugar de enteros, lo que evita conversiones extrañas
+    (aun así, sigue sin gustarme usar punteros en Pascal).
+
+
 
 Cambios entre las versiones 4.4.3 y 4.4.4
 =========================================
