@@ -580,10 +580,10 @@ FUNCTION foo (dp3: AL_VOIDptr; d2: AL_INT): AL_INT; CDECL;
       EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_mouse_b';
 
 
-(* This function can be used to change the bitmap surface the GUI routines draw
-   to.  This can be useful if you are using a double buffering or page flipping
-   system.  Passing @nil will cause the default surface (@link(al_screen)) to
-   be used again. @seealso(al_gui_get_screen) *)
+(* This procedure can be used to change the bitmap surface the GUI routines
+   draw to.  This can be useful if you are using a double buffering or page
+   flipping system.  Passing @nil will cause the default surface
+   (@link(al_screen)) to be used again. @seealso(al_gui_get_screen) *)
   PROCEDURE al_gui_set_screen (bmp: AL_BITMAPptr);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'gui_set_screen';
 (* This function returns the current bitmap surface the GUI routines will use
