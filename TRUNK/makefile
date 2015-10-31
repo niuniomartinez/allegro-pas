@@ -87,7 +87,7 @@ OBJDIR = obj/
 EXMDIR = examples/
 LIBDIR = lib/
 BINDIR = bin/
-DOCDIR = docs/lib/
+DOCDIR = docs/
 
 EXMBIN = $(BINDIR)$(EXMDIR)
 

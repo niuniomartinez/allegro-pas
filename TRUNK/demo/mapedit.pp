@@ -4,7 +4,7 @@ PROGRAM mapedit;
   It's designed in a way that should be easy to expand and upgrade, so you can
   use it in your own projects.
 
-  By Ñuño Martínez.
+  By Ñuño Martínez <niunio@users.sourceforge.net>
  *)
 
   USES
@@ -998,7 +998,7 @@ PROGRAM mapedit;
   { Warns if map was modified. }
     IF MapModified THEN
       IF NOT AskYesNo ('The map was changed.', 'Create without saving?') THEN
-        EXIT;
+        EXIT (AL_D_O_K);
   { Reserve space for input. }
     WidthInput := StrAlloc (10); HeightInput := StrAlloc (10);
   { Now, copy the last map size as default. }
@@ -1061,7 +1061,7 @@ PROGRAM mapedit;
   { Warns if map was modified. }
     IF MapModified THEN
       IF NOT AskYesNo ('The map was changed.', 'Load without saving?') THEN
-        EXIT;
+        EXIT (AL_D_O_K);
   { The file selector. }
     IF MapName <> '<noname>' THEN
       FileName := MapName;
@@ -1152,7 +1152,7 @@ PROGRAM mapedit;
 	  { Shows an error message.
 	    Can't use 'ErrorMessage' because the graphic mode isn't up. }
 	    al_message (al_error);
-	    EXIT;
+	    EXIT (FALSE);
 	  END;
     { Calculate few common colors. }
       CWhite := al_makecol (255, 255, 255);
@@ -1209,8 +1209,7 @@ PROGRAM mapedit;
       IF al_install_mouse < 1 THEN
       BEGIN
 	ErrorMessage ('Unable to set up a mouse.', 'You need a mouse or similar to use this editor!');
-	InitGUI := FALSE;
-	EXIT;
+	EXIT (FALSE);
       END;
     { Try to use hardware cursor. }
       al_enable_hardware_cursor;
@@ -1260,12 +1259,11 @@ PROGRAM mapedit;
     END;
 
   BEGIN
-    InitProgram := FALSE;
   { Initializes Allegro. }
     IF NOT al_init THEN
     BEGIN
       WriteLn ('Can''t initialize Allegro!');
-      EXIT;
+      EXIT (FALSE);
     END;
     al_install_keyboard;
     al_install_timer;
@@ -1273,12 +1271,12 @@ PROGRAM mapedit;
     IF NOT LoadData THEN
     BEGIN
       al_message ('Can''t load the game data.');
-      EXIT;
+      EXIT (FALSE);
     END;
   { Init graphics. }
     IF NOT InitGraphics THEN
     { InitGraphics shows its own messages. }
-      EXIT;
+      EXIT (FALSE);
   { Set the default tileset. }
     SetTileset ('');
     MapName := '<noname>';
@@ -1288,8 +1286,7 @@ PROGRAM mapedit;
   { Set default size, to show if select NewMap first. }
     MapWidth := 100; MapHeight := 100;
   { Set up the GUI system. }
-    IF NOT InitGUI THEN
-      EXIT;
+    IF NOT InitGUI THEN EXIT (FALSE);
 
   { If we're here, we're done. }
     InitProgram := TRUE;

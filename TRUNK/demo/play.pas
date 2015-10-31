@@ -49,7 +49,6 @@ IMPLEMENTATION
   (* Helper function to set up the board. *)
     FUNCTION NewMap (MapNum: INTEGER): BOOLEAN;
     BEGIN
-      NewMap := FALSE;
     { Load the board. }
       IF LoadMap ('level'+IntToStr (MapNum)+'.map') THEN
       BEGIN
@@ -57,12 +56,12 @@ IMPLEMENTATION
 	IF StartX = -1 THEN
 	BEGIN
 	  ErrorMessage ('No start point in map "level'+IntToStr (MapNum)+'.map"!');
-	  EXIT;
+	  EXIT (FALSE)
 	END;
 	IF EndX = -1 THEN
 	BEGIN
 	  ErrorMessage ('Not end point in map "level'+IntToStr (MapNum)+'.map"!');
-	  EXIT;
+	  EXIT (FALSE)
 	END;
       { Initialize game objects. }
 	InitSprites (10);

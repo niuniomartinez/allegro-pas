@@ -21,13 +21,12 @@ PROGRAM demo;
   VAR
     GDriver, Sw, Sh: INTEGER;
   BEGIN
-    InitProgram := FALSE;
   { Installs Allegro. }
     al_set_uformat (AL_U_ASCII);
     IF NOT al_init THEN
     BEGIN
       WriteLn ('Can''t initialize Allegro!');
-      EXIT;
+      EXIT (FALSE);
     END;
   { Gets the configuration. }
     GetConfiguration;
@@ -62,7 +61,7 @@ PROGRAM demo;
 	{ Shows an error message.
 	  Can't use 'ErrorMessage' because the graphic mode isn't up. }
 	  al_message (al_error);
-	  EXIT;
+	  EXIT (FALSE);
 	END;
     { Sets the screen scale factor.  See the play loop. }
       ScaleSc := 2;
@@ -74,13 +73,13 @@ PROGRAM demo;
     IF NOT InstallFrameRate THEN
     BEGIN
       ErrorMessage ('Can''t install frame controller.  More timer interrupts needed.');
-      EXIT;
+      EXIT (FALSE);
     END;
   { Loads the game data. }
     IF NOT LoadData THEN
     BEGIN
       ErrorMessage ('Can''t load the game data.');
-      EXIT;
+      EXIT (FALSE);
     END;
   { Initializes the random number generator. }
     RANDOMIZE;

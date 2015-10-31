@@ -129,15 +129,14 @@ IMPLEMENTATION
     mId: LONGINT;
     X, Y: INTEGER;
   BEGIN
-    LoadMapPf := FALSE;
   { First, the file ID. }
     mId := al_pack_mgetl (PackFile);
     IF mId <> AL_ID ('MAP ') THEN
-      EXIT;
+      EXIT (FALSE);
   { Second, load map size. }
     MapWidth := al_pack_mgetw (PackFile); MapHeight := al_pack_mgetw (PackFile);
     IF al_pack_ferror (PackFile) <> 0 THEN
-      EXIT;
+      EXIT (FALSE);
     CreateMap (MapWidth, MapHeight);
   { Now, the map. }
     FOR Y := 0 TO MapHeight - 1 DO
@@ -249,12 +248,11 @@ IMPLEMENTATION
   VAR
     X, Y: INTEGER;
   BEGIN
-    SaveMapPf := FALSE;
   { Check map sizes. }
     IF (0 >= MapWidth) OR (MapWidth > MAX_SIZE)
     OR (0 >= MapHeight) OR (MapHeight > MAX_SIZE)
     THEN
-      EXIT;
+      EXIT (FALSE);
   { Set start and end markers. }
     IF StartX >= 0 THEN
       Map[StartX, StartY] := T_START;
