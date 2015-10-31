@@ -20,9 +20,8 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
   ---------
   + Nueva extensión alGUI.
   + El ejemplo ex3d es más completo.
-  + Añadida identificación del sistema operativo en tiempo de ejecución.
-  + Añadida la identificación de modos gráficos (resolución y profundidad), y
-    de controladores de sonido y MIDI.
+  + Añadida identificación del sistema operativo, de modos gráficos (resolución
+    y profundidad), y de controladores de sonido y MIDI en tiempo de ejecución.
   + Añadido al_request_refresh_rate y al_get_refresh_rate.
   + Añadidos identificadores de controlador para Linux y Windows.
   + Añadidos procedimientos específicos para Windows y UNIX/Linux.
@@ -63,6 +62,7 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
   * Los procedimientos _al_pupixel* y _al_getpixel* han sido re-escritos para
     que usen punteros en lugar de enteros, lo que evita conversiones extrañas
     (aun así, sigue sin gustarme usar punteros en Pascal).
+  * Tamabién se han ralizado cambios en el estilo de programación.
 
 
 

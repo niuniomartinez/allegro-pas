@@ -4820,7 +4820,7 @@ PROCEDURE al_textprintf_right_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST 
    @returns(a pointer to a @link(AL_MIDI) structure, or @nil on error.
      Remember to free this MIDI file later to avoid memory leaks.)
    @seealso(al_destroy_midi) @seealso(al_play_midi)
-   @seealso(al_get_midi_length) @seealso(al_load_midi_pf) *)
+   @seealso(al_get_midi_length) *)
   FUNCTION al_load_midi (CONST filename: AL_STR): AL_MIDIptr;
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'load_midi';
 

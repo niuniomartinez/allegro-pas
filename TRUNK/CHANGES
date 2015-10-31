@@ -4,8 +4,8 @@ Changes between versions 4.4.4 y 4.4.5 (WIP)
   Bugfixing
   ---------
   * A lot of changes in "alstream" extension.
-  * Example exalpha runs correctly now.  The problem was use 16bit instead of
-    32bit in a variable.
+  * Example exalpha runs correctly now.  The problem was it used 16bit variable
+    instead of 32bit one.
   * Some times, the demonstration game and the map editor didn't load the
     datafile.  Also, if the game wasn't able to load it, the message was an
     EAccessViolation.  Now they work properly.
@@ -18,8 +18,8 @@ Changes between versions 4.4.4 y 4.4.5 (WIP)
   ----
   + New extension alGUI.
   + The example ex3d is more complex.
-  + Added runtime identificatio nof operating system.
-  + Added identification of graphic modes, digital sound and MIDI.
+  + Added runtime identification of operating system, graphic modes (color
+    depth and resolution), and digital sound and MIDI.
   + Added al_request_refresh_rate and al_get_refresh_rate.
   + Added identifiers for several Linux and Windows drivers.
   + Added procedures for Windows and UNIX/Linux.
@@ -55,6 +55,7 @@ Changes between versions 4.4.4 y 4.4.5 (WIP)
   *  Procedures _al_pupixel* and _al_getpixel* rewritten to work with pointers
     instead of integers, avoiding weird conversions (I still don't like to play
     with pointers on Pascal anyway).
+  * Programmin style revised in some places.
 
 
 

@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 4.4.4                 \_/__/                 \/_/
+     Version 4.4.5                 \_/__/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Ñuño Martínez, December 11th, 2012.
+  by Ñuño Martínez, October 31th, 2015.
 
 
 
@@ -192,7 +192,7 @@ Documentation
 =============
 
   If you have "pasdoc" (http://pasdoc.sipsolutions.net/) you can build all
-  documentation in HTML format using the "makefile" at "docs" subdirectory.
+  documentation in HTML format using "makefile docs" at command line.
 
   Else you can download the documentation from the "Downloads" page of the
   project (http://allegro-pas.sourceforge.net/download) or read it on-line

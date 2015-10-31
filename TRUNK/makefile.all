@@ -16,7 +16,7 @@ demo: $(ALEXDEMO)
 
 # Library documentation.
 docs:
-	pasdoc -T Allegro.pas -O html --cache-dir $(OBJDIR) -E $(DOCDIR) --auto-abstract $(LIBFILES)
+	pasdoc -T Allegro.pas -O html --cache-dir $(OBJDIR) -E $(DOCDIR)$(LIBDIR) --auto-abstract --introduction $(DOCDIR)intro.txt --conclusion $(DOCDIR)progs.txt $(LIBFILES)
 
 # Executables.
 $(EXMBIN)%$(BINSUF): $(EXMDIR)%.pp $(LIBFILES)

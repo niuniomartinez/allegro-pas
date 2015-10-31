@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Versión 4.4.4                 \_/__/                 \/_/
+     Versión 4.4.5                 \_/__/                 \/_/
 
   Un envoltorio para utilizar la biblioteca Allegro en Pascal
-  por Ñuño Martínez, 11 de Diciembre de 2012.
+  por Ñuño Martínez, 31 de Octubre de 2015.
 
 
 
@@ -140,11 +140,11 @@ El compilador de Pascal
   NOTA: La versión actual NO es compatible con Delphi, debido a que este
 	compilador no es capaz de compartir variables con bibliotecas de
 	enlace dinámcio (al menos no en las versiones de Delphi que he usado).
-	La versión anterior de Allegro.pas (4.2) lo permitía usando una
+	Una versión anterior de Allegro.pas (4.2) lo permitía usando una
 	biblioteca intermedia, pero obligaba al uso de punteros y más funciones
 	de una forma muy poco natural y cómoda, por lo que se avandonó.
 	La versión 5.0 de Allegro, al no usar variables, volverá a ser
-	utilizable junto con Delphi.
+	compatible con Delphi.
 
 
   Puede obtener el compilador Free Pascal desde su página web sita en
@@ -211,8 +211,8 @@ Documentación
 =============
 
   Si dispone de la utilidad pasdoc (http://pasdoc.sipsolutions.net/), puede
-  generar la documentación en formato HTML utilizando el archivo makefile que
-  se encuentra en el subdirectorio "docs".
+  generar la documentación en formato HTML utilizando el archivo makefile.
+  Símplemente escriba el comando "make docs".
 
   Si no, puede descargarse la documentación desde la página de descargas
   del proyecto (http://allegro-pas.sourceforge.net/download) o consultarla
@@ -258,9 +258,8 @@ Información de contacto
   hacer sugerencias, además de páginas "wiki" con documentación adicional.
 
   Otros foros interesantes sobre la programación de juegos, donde también
-  pueden ayudarle si tiene problemas con Allegro.pas, se encuentran en el sitio
-  "GAS" (http://www.gameartspain.es/foro/viewforum.php?f=4) en castellano o en
-  "Pascal Game Development" (http://www.pascalgamedevelopment.com/) en inglés.
+  pueden ayudarle si tiene problemas con Allegro.pas, en "Pascal Game
+  Development" (http://www.pascalgamedevelopment.com/) en inglés.
   Sobre programación Pascal y Object Pascal en general puede visitar el Club
   Delphi (http://www.clubdelphi.com/) o la web Delphi Access
   (http://www.delphiaccess.com/).

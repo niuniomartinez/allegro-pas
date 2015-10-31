@@ -2,7 +2,7 @@ UNIT error;
 (* Program: Demo game for the Allegro.pas library.
  * File: error.pas
  * Description: To show nice error messages.
- * Author: Ñuño Martínez <>
+ * Author: Ñuño Martínez <niunio@users.sourceforge.net>
  *)
 
 INTERFACE
