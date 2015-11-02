@@ -1,0 +1,462 @@
+Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
+=========================================
+
+  Errores corregidos
+  ------------------
+  * Muchos cambios en la extensión "alstream".
+  * El ejemplo exalpha funciona ahora correctamente.  El problema era que usaba
+    enteros de 16bit cuando necesita 32bit.
+  * En ocasiones, el juego de demostración y el editor de mapas no leían el
+    archivo de datos.  Además, si el juego no cargaba el archivo, el mensaje de
+    error era una excepción EAccessViolation.  Ahora ya funcionan como deberían.
+  * Corregida la función al_apply_matrix_f.  En realidad es un posible error en
+    el compilador FreePascal (HAY QUE investigar esto).
+  * Corregida la función al_pack_fseek.
+  * Corregidos algunos problemas con los temporizadores en algunos ejemplos.
+     También se ha cambiado el modo gráfico por defecto a ventana en algunos
+     de ellos.
+
+  Novedades
+  ---------
+  + Nueva extensión alGUI.
+  + El ejemplo ex3d es más completo.
+  + Añadida identificación del sistema operativo, de modos gráficos (resolución
+    y profundidad), y de controladores de sonido y MIDI en tiempo de ejecución.
+  + Añadido al_request_refresh_rate y al_get_refresh_rate.
+  + Añadidos identificadores de controlador para Linux y Windows.
+  + Añadidos procedimientos específicos para Windows y UNIX/Linux.
+  + Añadido control a "console switching".
+
+  Cambios en el API
+  -----------------
+  + Añadido otro tipo BOOLEAN (8 bit), de forma que ahora al_key puede ser
+    utilizado como valor lógico evitando tener que usar "<> 0" en la
+    comprobación.  Así mismo, muchas funciones y procedimientos utilizan este
+    nuevo tipo, por lo que deberás cambiar el código antiguo, pero creo que
+    merece la pena:  ¡Menos código, más rápido y más claro!
+  * Ahora los mnemónicos tipo de dato de archivo de datos son constantes.
+    Esto hace que sea más rápido (¡de nuevo!), que se use algo menos de
+    memoria, y que  puedan utilizarse como etiquetas en sentencias CASE.
+  * Muchos procedimientos han cambiado sus parámetros "POINTER" a parámetros
+    "VAR" y "OUT".  De esta forma no hay necesidad de usar el operador "@".
+    Esto también reduce los mensajes "HINT" del compilador.
+  * Los campos digitales de los mandos de juego (joysticks) ahora son AL_BOOL.
+    NOTA:  No puedo comprobar el funcionamiento de estas rutinas (mi Fedora no
+    es capaz de identificar mi mando arcade :_( ) así que no estoy seguro de que
+    funcione.  Por favor, avísame si haces alguna prueba.
+  * Algunas funciones usan "lógica inversa" ahora, lo cual puede ser mejor:
+    + al_scene_plolygon3d<_f>
+    + al_request_scrool
+    + al_request_video_bitmap
+  * Algunos metodos de GUI usan ARRAY OF... en vez de punteros.
+
+  Otros
+  -----
+  * Muchos cambios en la documentación.  Además, ahora se construye desde el
+    makefile principal, en lugar de tener un makefile propio.
+  + Añadido {$MODE OBJFPC} al archivo de configuración, de forma que así pueden
+    usarse parámetros "OUT".  En principio, no debería afectar si el resto de
+    unidades usan otros dialectos.
+  - Eliminados muchísimos procedimientos y funciones de envoltorio, ya que ahora
+    se llaman directamente a sus contrapartidas en C.
+  * Los procedimientos _al_pupixel* y _al_getpixel* han sido re-escritos para
+    que usen punteros en lugar de enteros, lo que evita conversiones extrañas
+    (aun así, sigue sin gustarme usar punteros en Pascal).
+  * Tamabién se han ralizado cambios en el estilo de programación.
+
+
+
+Cambios entre las versiones 4.4.3 y 4.4.4
+=========================================
+
+  Errores corregidos
+  ------------------
+  * Corregida la definición de al_errno.
+  * Corregidas las funciones al_install_param_int, al_install_param_int_ex y
+    al_remove_param_int.
+  * Corregidas las funciones al_save_bmp_pf, al_save_pcx_pf y al_save_tga_pf.
+  * Pequeño cambio en el ejemplo exhsvrgb.
+  * Corregido aviso '"open array" not yet supported inside inline
+    procedure/function'.
+  * Corregidos varios errores del ejemplo exscn3d.
+  * Corregida definición de matriz identidad en punto flotante.
+  * Corregida función al_draw_sprite_ex.
+
+  Novedades
+  ---------
+  + Añadidas funciones de conversión entre codificaciones de texto.
+  + Añadidas procedimientos "al_textprintf_ex".  En realidad son simples
+    envolventes que usan la función Format, pero simplifican el bastante
+    el código en ocasiones (ver ejemplos).
+  + Añadidas algunas funciones de gestión de "clip".
+  + Añadida función al_mouse_on_screen.
+  + Añadida función al_find_datafile_object.
+  + Añadidas multitud de funciones para manejo de fuentes tipográficas
+    y el ejemplo exfont.
+  + Añadido ejemplos exsample y exmidi.
+  + Añadidas funciones, constantes y variables para la identificación del
+    microprocesador y sus capacidades.
+  + Añadida implementación de "quaternions".
+  + Añadidas funciones para desplazamiento de pantalla y "triple buffer",
+    y ejemplo ex3buf.
+  + Nuevos ejemplos exalpha, excustom, exmem, exquat, exscale, exscroll,
+    exstars, extrans2, extimer, excamera y exxfade.
+  + Soporte para sistemas de 64bit.
+  + Añadidos "Add-ons".
+
+  Otros
+  -----
+  * Corregida y ampliada la documentación.
+  * Ahora los archivos objeto los guarda en otro directorio.
+  * Modificados los parámetros de funciones de generación y obtención de
+    paletas para que use VAR en vez de punteros.
+  * Modificados los parámetros de cálculo y dibujo 3D para que use ARRAY
+    en lugar de punteros.
+  * Uso de "Low" y "High" en varios bucles y otros lugares para determinar los
+    límites de las listas (ARRAY) en lugar de "adivinarlos".
+  * Cambiados los parámetros de al_xor_mode de INTEGER a BOOLEAN.
+  * Cambiado el valor de retorno de al_save_*_pf de INTEGER a BOOLEAN.
+  + Añadido un fotograma a la animación de Alex en la demo, que hace que sea
+    más fluída y muestra una mejor técnica para hacer animaciones de sprites.
+    También se ha añadido un bloque en el tercer mapa para hacerlo menos
+    imposible ;) .
+  * Se ha "optimizado" la propiedad "UseZBuff" del objeto "Cube".
+  * Ahora el ejemplo "ex3d" muestra varios cubos y cambia la iluminación
+    dependiendo del eje Z.
+  * Rehecho el editor de mapas y buena parte del motor del juego de
+    demostración.  Ahora sí es reutilizable.
+
+
+
+Cambios entre las versiones 4.4.2 y 4.4.3
+=========================================
+
+  Errores corregidos
+  ------------------
+  * Corregida o mejorada la implementación de al_set_color, al_set_palette,
+    al_set_palette_range, al_set_config_file y al_override_config_file.
+  * Corregido el tipo de la variable al_fli_bitmap.
+  * Corregido un error en la impementación de al_arc.
+  * Corregidos múltiples errores en _al_putpixel* y _al_getpixel*.
+  * Corregido un error en el ejemplo exrotscl.
+
+  Novedades
+  ---------
+  + Ya no es necesario llamar a al_exit, ya que es llamado en la sección
+    FINALIZATION de la unidad "allegro".
+
+  Otros
+  -----
+  * Ahora el ejemplo "extrans" usa la profundidad de color del escritorio,
+    si es posible.  También permite seleccionar la profundidad de color usando
+    la línea de comandos.
+  * Se han movido las directivas de configuración interna del compilador a un
+    archivo que se incluye en todas las unidades.
+  * Documentación actualizada con algunas correcciones.
+
+
+
+Cambios entre las versiones 4.4.1 y 4.4.2
+=========================================
+
+  Errores corregidos
+  ------------------
+  * Se ha reescrito la función al_polygon_z_normal(_f).
+
+  Novedades
+  ---------
+  + Se han añadido nuevos ejemplos: exflip, exjoy, exconfig, exrotscl y exspline.
+  + Se han añadido la función de dibujo: al_arc, al_spline, al_triangle y
+    multitud de funciones de dibujo de "sprites".
+  + Se han añadido las funciones de trazado de rutas: al_do_line, al_do_circle,
+    al_do_ellipse, al_do_arc y al_calc_spline.
+
+  Otros
+  -----
+  * Se ha modificado ex3d para que no limite el tamaño del modo gráfico.
+  * Se ha añadido el modificador "CONST" a algún parámetro.
+  + Se ha modificado el juego de demostración, simplificando el sistema de
+    mapas y mejorando el entorno del editor.
+
+
+
+Cambios entre las versiones 4.4.0 y 4.4.1
+=========================================
+
+  Novedades
+  ---------
+   + Añadidas versiones de al_getpixel y de al_putpixel de muy bajo nivel.  Son
+     más rápidas.
+   + Nuevo procedimiento al_draw_gouraud_sprite y su correspondiente ejemplo.
+
+  Otros
+  -----
+  + Añadida la directiva "smartlinking" a los archivos, lo cual hace que los
+    ejecutables sean más pequeños al no incluir funciones que no utiliza.
+  * Correcciones en la documentación y los "makefiles".
+  * Corregido el nombre del archivo "shared-object" en Linux, ya que lo han
+    cambiado de nombre.
+
+
+
+Cambios entre las versiones 4.4.0 Beta2 y 4.4.0
+===============================================
+
+  Errores corregidos
+  ------------------
+  * Corregidos parámetros de al_getr_depth, al_getb_depth, al_getb_depth y
+    al_geta_depth, así como el enlace a las funciones correspondientes.
+  * Corregida declaración de la variable al_mouse_w
+
+ Novedades
+ ---------
+  + Añadido ejemplo de integración con Lazarus.
+  + Añadida función al_get_midi_length.
+  + Añadida función al_packfile_password y funciones de bajo nivel para
+    archivos de disco (chunks y vtable).
+  + Añadidas funciones para leer y grabar gráficos y sonidos directamente desde
+    un AL_PACKFILEptr.
+  + Añadido el directorio "resources" con archivos y explicaciones útiles.
+
+ Otros
+ -----
+  - Eliminado el aviso de error en el ejemplo exsprite, ya que la nueva versión
+    de Allegro no falla.
+  - Eliminado el aviso de error en la documentación de las funciones 3D
+    referente a las texturas, pero añadido uno referente al modo "LIT", para
+    reflejar la nueva situación.
+  - Muchas funciones y procedimientos hechos "inline".
+
+
+
+Cambios entre las versiones 4.4.0 Beta y 4.4.0 Beta2
+====================================================
+
+  Errores corregidos
+  ------------------
+  + Añadida la unidad "windows" al módulo aldrv, de forma que ahora sí compila
+    y funciona.
+  + Añadida llamada a vsync en el ejemplo expal, de forma que limita la
+    velocidad incluso en los modos gráficos y sistemas más rápidos.
+
+  Otros
+  -----
+  * Modificado el ejemplo exsprite, puesto que las funciones de giro de
+    "sprites" sí funconan en Windows.
+  * Alguna corrección en la documentación.
+
+
+
+Cambios entre las versiones 4.4.0 Alpha2 y 4.4.0 Beta
+=====================================================
+
+  Errores corregidos
+  ------------------
+  - Corregida definición errónea en función al_gui_mouse_y, al_gui_mouse_z y
+    al_gui_mouse_b.
+  - Algún arreglo en la documentación.
+
+
+
+Cambios entre las versiones 4.4.0 Alpha y 4.4.0 Alpha 2
+=======================================================
+
+  Errores corregidos
+  ------------------
+  - Cambiadas varias declaraciones de variables y parámetros DOUBLE a SINGLE,
+    ya que Allegro espera que los valores en punto flotante sean de 4 octetos.
+
+  Novedades
+  ---------
+  - Añadida la unidad al3d, que permite generar gráficos 3D.
+    NO TIENE RELACIÓN CON OpenGL.
+  - Añadido gancho (hook) al_midi_msg_callback para interceptar mensajes MIDI.
+
+  Otros
+  -----
+  - Eliminado "test"
+  - Eliminadas las herramientas, ya que están incluídas en el Allegro original.
+  - Nueva implementación de al_fixmul sugerida por Martin Kalbfuß, más rápida
+    que la anterior.
+
+
+
+Cambios entre las versiones 4.3.0 Alpha2 y 4.4.0 Alpha
+======================================================
+
+  Novedades
+  ---------
+  - Añadida la unidad algui, que permite utilizar el motor GUI de Allegro y
+    crear entornos gráficos.  NO TIENE RELACIÓN CON LAZARUS.
+  - Añadidos nuevos ejemplos.
+
+  Otros
+  -----
+  - Nueva distribución de unidades, más compacta.
+  - Muchas correcciones menores, tanto en el código fuente como en la
+    documentación y el sistema de compilado.
+
+
+Cambios entre las versiones 4.3.0 Alpha y 4.3.0 Alpha2
+======================================================
+
+  Novedades
+  ---------
+  - Añadido soporte a OpenGL en régimen de pruebas (posiblemente se reescriba
+    desde cero).
+
+  Errores corregidos
+  ------------------
+  - Muchísimas correcciones tanto de código como en la documentación.
+
+  Otros
+  -----
+  - Añadido esqueleto de nueva herramienta de configuración "Setup".
+
+
+
+Cambios entre las versiones 4.2.2 y 4.3.0 Alpha
+===============================================
+
+  Novedades
+  ---------
+  - Nuevo sistema de documentación basada en la herramienta "pasdoc".
+  - Añadidas nuevas funciones.
+  - Añadido soporte básico a UNICODE.
+  - Añadido soporte a "sprites RLE".
+
+  Cambios en el API
+  -----------------
+  - Nuevo API más al estilo Pascal, eliminando muchos punteros y utilizando
+    tipos de datos de Pascal.
+
+  Otros
+  -----
+  - Ya no es necesaria la biblioteca dinámia "alpas".
+  - Añadido esqueleto de nueva herramienta para archivo de datos "Grabber".
+
+
+
+Cambios entre las versiones 4.2.1 y 4.2.2
+=========================================
+
+  Novedades
+  ---------
+  - Añadidas unas cuantas funciones para crear, escribir y leer archivos de
+    disco, permitiendo la compresión de datos mediante el algoritmo LZSS.
+
+
+
+Cambios entre las versiones 4.2.1 BETA 4 y 4.2.1
+================================================
+
+  Novedades
+  ---------
+  - Añadido juego de demostración completo.  No es el mismo que el incluído
+    en Allegro.
+
+  Errores corregidos
+  ------------------
+  - Múltiples cambios internos para reducir el número de avisos y aumentar la
+    compatibilidad con Delphi.
+
+  Cambios en el API
+  -----------------
+  - Cambiado error ortográfico en AL_NO_FLI_OPEN por AL_NO_FLIC_OPEN.
+  - Movida el procedimiento "al_generate_optimized_palette" de "alpalete" a
+    "albitmap", ya que existía una referencia circular (?).
+  - Cambiados los tipos de algunos parámetros que eran AL_RGBptr por
+    AL_PALETTEptr.
+
+  Otros
+  -----
+  - Documentación finalizada.
+
+
+
+Cambios entre las versiones 4.2.1 BETA 3 y 4.2.1 BETA 4
+=======================================================
+
+  Novedades
+  ---------
+  - Añadida la función 'al_poll_joystick', olvidada anteriormente.
+
+  Errores corregidos
+  ------------------
+  - Solucionado fallo en 'alconfig.pas' que impedía compilar dicho módulo.
+  - Corregida confusión entre las variables LFLAGS y LDFLAGS en los makefiles.
+  - Corregidos errores varios en 'aljstick.pas'.
+
+  Otros
+  -----
+  - Al inicializar Allegro, pone los textos en modo ASCII.  Antes había que
+    utilizar UTF-8.
+
+
+Cambios entre las versiones 4.2.1 BETA 2 y 4.2.1 BETA 3
+=======================================================
+
+  Errores corregidos
+  ------------------
+  - Solucionado un fallo que impedía utilizar al_set_window_title.
+  - Corregida la confusión entre al_set_clip y al_set_clip_state.
+
+
+
+Cambios entre las versiones 4.2.1 BETA y 4.2.1 BETA 2
+=====================================================
+
+  Novedades
+  ---------
+  - Añadida la posibilidad de seleccionar la profundidad de color en el ejemplo
+    "exblend".
+  - Añadidas, en el makefile, opciones para optimizar.
+
+  Errores corregidos
+  ------------------
+  - Añadidos parches realizados por Seoane para que compile con Delphi.
+
+  Cambios en el API
+  -----------------
+  - Cambiadas algunas declaraciones de procedimientos añadiéndoles CDECL.
+  - Añadida la directiva {$H+} para utilizar ANSISTRING en lugar de PCHAR.
+  - Definición del símbolo MSWINDOWS para FreePascal en Windows.  Esto aumenta
+    la compatibilidad con Delphi.
+
+  Otros
+  -----
+  - Escrita y corregida parte de la documentación (ya queda menos...).
+
+
+
+Cambios entre las versiones 4.2.0 y 4.2.1 BETA
+==============================================
+
+  Novedades
+  ---------
+  - Creada la unidad "alfont" para manejo de fuentes de texto.
+  - Creada la unidad "albmfile" para la lectura y escritura de imágenes en
+    disco.
+  - Creada la unidad "alsprrle" con soporte para sprites RLE.
+  - Creadas las unidades "al256tra" y "altrutra" con soporte para
+    transparencias e iluminación en modos de 8, 15, 16, 24 y 32 bit.
+  - Añadidos los procedimientos al_desktop_color_depth,
+    al_get_desktop_resolution, al_set_window_title, al_draw_trans_sprite,
+    al_draw_lit_sprite.
+  - Añadidas constantes para la identificación de la versión.
+  - Añadidos modos de dibujo y transparencia.
+  - Añadido soporte para mapas RGB que aceleran la reducción de imágenes a
+    8bit.
+  - Añadidos nuevos ejemplos.
+
+  Errores corregidos
+  ------------------
+  - Corregido el error en el ejemplo "extruec".  Fallaba el tipo de dato.
+  - Corregido nombre "al_putixel" -> "al_putpixel".
+
+  Cambios en el API
+  -----------------
+  - Cambiado "AL_SYS_AUTODETECT" por "AL_SYSTEM_AUTODETECT".
+  - Movida la definición de "AL_FONTptr" a la nueva unidad "alfont".
+  - Movido el procedimiento "al_get_executable_name" a la unidad "alfile".
+
