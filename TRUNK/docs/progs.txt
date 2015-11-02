@@ -332,6 +332,13 @@ This program demonstrates how to draw Gouraud shaded (lit) sprites.  In an appar
 
   @bold(See also:) @link(al_enable_hardware_cursor) @link(al_gfx_capabilities) @link(al_select_mouse_cursor)
 
+  @section(2 exswitch exswitch)
+
+  This program shows how to control the console switching mode, and let your program run in the background. These functions don't apply to every platform and driver, for example you can't control the switching mode from a DOS program.
+
+  @bold(See also:) @link(al_set_display_switch_mode)
+
+
   @section(2 Lazarus Lazarus example)
 
   This program shows a way to use Allegro.pas within Lazarus application.  It
@@ -394,6 +401,12 @@ This program demonstrates how to draw Gouraud shaded (lit) sprites.  In an appar
   4.2.
 
   Martin Kalbfuss: Helped testing and fixing some versions.
+
+  sberinde & carlejt (Allegro.pas' forum nicks) helped a lot finding bugs and testing patches for version 4.4.3.
+
+  torhu y SiegeLord (Allegro.cc forum nicks) helped a lot telling me how to support 64bit systems.
+
+  yamer (from Lazarus forum) Helped to identify and fix a bug in the exalpha example.
 
   Thanks to the Spanish Delphi community (http://www.clubdelphi.net/), the
   Allegro community (http://www.allegro.cc/) and the Pascal game Development

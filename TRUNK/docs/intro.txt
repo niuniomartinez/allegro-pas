@@ -120,8 +120,9 @@
   is best to set it with @link(al_set_uformat) just before you call these.
 
   @bold(Note:)  While UNICODE is almost supported by Free Pascal and Lazarus,
-  you might have bad results using it with Allegro.pas.  See the TODO file
-  for more information.
+  you might have bad results using it with Allegro.pas.  There will be a new
+  version of Free Pascal (3.0) that will improve the UNICODE support.  I hopw
+  I'll be able to update Allegro.pas.
 
 
 
@@ -436,7 +437,7 @@
 
 
 
-@section(2 text text drawing)
+@section(2 text Text drawing)
 
   Allegro provides routines for loading fonts directly from GRX format .fnt
   files, 8x8 or 8x16 BIOS format .fnt files, from bitmap images, from datafiles
