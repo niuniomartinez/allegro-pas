@@ -9,8 +9,8 @@ object Form1: TForm1
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
-  Position = poDefault
-  LCLVersion = '1.2.0.3'
+  Position = poScreenCenter
+  LCLVersion = '1.4.2.0'
   object PaintBox: TPaintBox
     Left = 0
     Height = 281
@@ -42,4 +42,4 @@ object Form1: TForm1
       end
     end
   end
-end
+end
