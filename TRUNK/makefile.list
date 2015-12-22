@@ -5,15 +5,23 @@
 #
 
 # Allegro sources
-TAL5 = $(wildcard $(LIBDIR)*.pas)
-ifeq ($(strip $(TAL5)),)
+LIBFILES = $(wildcard $(LIBDIR)*$(LIBSUF))
+ifeq ($(strip $(LIBFILES)),)
 $(error ERROR: No source code found at $(LIBDIR))
 endif
-LIBFILES = $(TAL5)
 
 # For the examples.
-TEXM = $(wildcard $(EXMDIR)ex*.pas)
+TEXM = $(wildcard $(EXMDIR)ex*$(MAINSUF))
 ifeq ($(strip $(TEXM)),)
 $(error ERROR: No source code found at $(EXMDIR))
 endif
-EXMFILES = $(addprefix $(EXMDIR),$(addsuffix $(BINSUF), $(basename $(notdir $(TEXM) ) ) ) )
+EXMFILES = $(addprefix $(EXMBIN),$(addsuffix $(BINSUF), $(basename $(notdir $(TEXM) ) ) ) )
+
+# Object files et all.
+
+ALLFILES = $(LIBFILES) $(TEXM)
+
+OBJFILES = $(addprefix $(OBJDIR),$(addsuffix .o, $(basename $(notdir $(ALLFILES) ) ) ) )
+OBJFILES += $(addprefix $(OBJDIR),$(addsuffix .ppu, $(basename $(notdir $(ALLFILES) ) ) ) )
+OBJFILES += $(addprefix $(OBJDIR),$(addsuffix .a, $(basename $(notdir $(ALLFILES) ) ) ) )
+

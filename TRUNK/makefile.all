@@ -1,6 +1,6 @@
 # Makefile generic - build rules
 
-.PHONY: all
+.PHONY: all docs
 
 # Main objective: the whole project
 all: adbanner examples
@@ -11,9 +11,13 @@ examples: $(EXMFILES)
 	@echo "Finished all examples."
 
 # Executables
-$(EXMDIR)%$(BINSUF): $(EXMDIR)%.pas $(EXMDIR)common.pas $(LIBFILES)
-	fpc $(FLAGS) $(EFLAGS) -Fu$(LIBDIR) -FU$(OBJDIR) $< -o$@
+$(EXMBIN)%$(BINSUF): $(EXMDIR)%.pas $(EXMDIR)common.pas $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FU$(OBJDIR) $< -o$@
 	@echo Example $@ ready!
+
+# Documentation.
+docs:
+	pasdoc -T "$(PROJECT)" -O html --cache-dir $(OBJDIR) -E $(DOCDIR) --auto-abstract $(LIBFILES)
 
 # Returns some variables.
 status: adbanner
@@ -32,9 +36,7 @@ veryclean: clean
 
 # Clean temporary files.
 clean:
-	$(DELETE) $(OBJDIR)*$(OBJSUF)
-	$(DELETE) $(OBJDIR)*.ppu
-	$(DELETE) $(OBJDIR)*.a
+	$(DELETE) $(OBJFILES)
 
 # Show all options.
 help: adbanner
@@ -43,6 +45,7 @@ help: adbanner
 	@echo "--------"
 	@echo "make all            } Builds the whole project."
 	@echo "make examples       } Builds the examples only."
+	@echo "make docs           } Builds internal documentation."
 	@echo "make clean          } Deletes temporary files."
 	@echo "make veryclean      } Deletes all builded files."
 	@echo "make status         } Shows some configuration variables."

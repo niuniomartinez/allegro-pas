@@ -18,7 +18,6 @@ PROJECT = Allegro.pas 5 alpha
 
 # ===============================================
 
-
 # --------------------------------------
 # -- Platform dependent configuration --
 # --------------------------------------
@@ -32,8 +31,6 @@ ifeq ($(TARGET),WIN32)
 	# Binary sufix
 	BINSUF = .exe
 	LIBSUF = .dll
-	# Object sufix
-	OBJSUF = .o
 	# Extra flags.
 	EFLAGS = -WG
 
@@ -51,15 +48,41 @@ ifeq ($(TARGET),LINUX)
 	PLATFORM=GNU/Linux
 	# Binary sufix
 	BINSUF = 
-	# Object sufix
-	OBJSUF = .o
 	# Extra flags.
 	EFLAGS = 
 
 	# File management
-	DELETE = rm
+	DELETE = rm -rf
 	COPY   = cp
 endif
+
+
+
+# ----------------------------
+# -- Optimization specifics --
+# ----------------------------
+
+# Optimization options, including "smart linking".
+OPTOPT = -O3 -Xs -XX
+
+# Next can be used to optimize for almost any current 32bit PC with Linux or
+# Windows, doing it pretty well.  Of course, it will prevent your executable to
+# run in anything older than PentiumIII.
+# OPTOPT += -CpPENTIUM3
+
+# Next one can be used to optimize for 64bit PC with Linux or Windows.
+# OPTOPT += -CpATHLON64
+
+
+
+# ---------------------
+# -- Debug specifics --
+# ---------------------
+
+# Debugging opetions.
+# Not only adds GDB information to the executable, but also tells the compiler
+# to show ALL warnings and hints.
+DBGOPT = -O- -gl -vh -vw
 
 
 
@@ -67,15 +90,25 @@ endif
 # -- No platform specific --
 # --------------------------
 
+# Sufix for main unit.  See "makefile.list" and "makefile.all".
+MAINSUF = .pas
+LIBSUF  = .pas
+
 # Directories
 LIBDIR = lib/
 EXMDIR = examples/
-
 OBJDIR = obj/
+BINDIR = bin/
+DOCDIR = docs/lib/
 
-#FLAGS = -O3 -Sh -Si -Xs -XX
+EXMBIN = $(BINDIR)$(EXMDIR)
+
+
+
+# Optimized compilation
+# FLAGS = $(OPTOPT) -Sh -Si $(EFLAGS)
 # Use next line instead to activate debug.
-FLAGS = -g -O- -Sh
+FLAGS = $(DBGOPT) -Sh -Si $(EFLAGS)
 
 # -- Source files list --
 include makefile.list
