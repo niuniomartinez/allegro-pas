@@ -1,11 +1,11 @@
-UNIT al5base;
+UNIT al5Base;
 (*<Base definitions to interface with Allegro dynamic module.
 
   This unit includes definitions of data types used by Allegro.  They're used
   internally to be sure they're the correct in any platform (i.e. 32bit or
   64bit).  You may use them if you wish.
  *)
-(* Copyright (c) 2012 Guillermo Martínez J.
+(* Copyright (c) 2012-2016 Guillermo Martínez J. <niunio@users.sourceforge.net>
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -92,9 +92,12 @@ INTERFACE
 {$ENDIF}
 
 
-
+{ TODO: Check wich boolean type does it uses. }
   (* Boolean result. *)
-    AL_BOOL = BYTEBOOL;
+    AL_BOOL = LONGBOOL;
+  (* Another bool type, used if C's declaration is byte sized. *)
+    AL_BOL8 = BYTEBOOL;
+
   (* Signed 8bit integer.
 
     Note that it isn't Pascal's CHAR type! *)
@@ -121,27 +124,32 @@ INTERFACE
   (* Unsigned 32/64bit integer values. *)
     AL_ULONG = AL_UINT64;
   {$ENDIF}
-(* size_t equivalent. *)
-  AL_SIZE_T = AL_UINT64;
-(* Fake pointer type.  It's needed because the need of pointer arithmetics in
-  some inlined methods. *)
-  AL_UINTPTR_T = AL_UINT64;
+  (* size_t equivalent. *)
+    AL_SIZE_T = AL_UINT64;
+  (* Fake pointer type.  It's needed because the need of pointer arithmetics in
+    some inlined methods. *)
+    AL_UINTPTR_T = AL_UINT64;
 {$ELSE}
   (* Signed 32/64bit integer values. *)
     AL_LONG = AL_INT32;
   (* Unsigned 32/64bit integer values. *)
     AL_ULONG = AL_UINT32;
-(* size_t equivalent. *)
-  AL_SIZE_T = AL_UINT32;
-(* Fake pointer type.  It's needed because the need of pointer arithmetics in
-  some inlined methods. *)
-  AL_UINTPTR_T = AL_UINT32;
+  (* size_t equivalent. *)
+    AL_SIZE_T = AL_UINT32;
+  (* Fake pointer type.  It's needed because the need of pointer arithmetics in
+    some inlined methods. *)
+    AL_UINTPTR_T = AL_UINT32;
 {$ENDIF}
 
   (* Float value. *)
     AL_FLOAT = SINGLE;
   (* Double value. *)
     AL_DOUBLE = DOUBLE;
+  (* Strings.  Used in parameters to convert Pascal's @code(STRING) to C's
+    @code(char * )*)
+    AL_STR = ANSISTRING;
+
+
 
   (* Pointer. *)
     AL_VOIDptr = AL_POINTER;
