@@ -1,5 +1,29 @@
 UNIT Allegro5;
-(* Wrapper of the Allegro 5 core library. *)
+(*<Wrapper of the Allegro 5 core library.
+
+  This unit defines core functions, procedures and data types, that aren't in
+  add-ons. *)
+(* Copyright (c) 2012-2016 Guillermo Martínez J. <niunio@users.sourceforge.net>
+
+  This software is provided 'as-is', without any express or implied
+  warranty. In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+    1. The origin of this software must not be misrepresented; you must not
+    claim that you wrote the original software. If you use this software
+    in a product, an acknowledgment in the product documentation would be
+    appreciated but is not required.
+
+    2. Altered source versions must be plainly marked as such, and must not be
+    misrepresented as being the original software.
+
+    3. This notice may not be removed or altered from any source
+    distribution.
+ *)
 
 {$include allegro5.cfg}
 
@@ -9,11 +33,11 @@ INTERFACE
     al5base;
 
   CONST
-  (* Builds library name. *)
-    { @exclude }
+  (* @exclude Builds library name. *)
     ALLEGRO_LIB_NAME = _A5_LIB_PREFIX_+'allegro'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
 
-(* The code is distributed in sections.  Each section wraps with a header file (approx.). *)
+{ The code is distributed in sections.
+   Each section wraps with a header file (approx.). }
 
 (******************************************************************************
  * base.h
@@ -53,7 +77,8 @@ INTERFACE
     ALLEGRO_USER_MAIN = FUNCTION (argc: AL_INT; argv: AL_POINTER): AL_INT; CDECL;
 
 
-  (* Returns the (compiled) version of the Allegro library, packed into a single integer as groups of 8 bits.
+  (* Returns the (compiled) version of the Allegro library, packed into a
+     single integer as groups of 8 bits.
 
      You can use code like this to extract the version number:
 @longcode(#
@@ -68,17 +93,29 @@ INTERFACE
     Release  :=  Version         AND 255;
   END;
 #)
-    The release number is 0 for an unofficial version and 1 or greater for an official release. For example "5.0.2[1]” would be the (first) official 5.0.2 release while “5.0.2[0]” would be a compile of a version from the “5.0.2” branch before the official release.
+    The release number is 0 for an unofficial version and 1 or greater for an
+    official release. For example "5.0.2[1]” would be the (first) official
+    5.0.2 release while “5.0.2[0]” would be a compile of a version from the
+    “5.0.2” branch before the official release.
  *)
   FUNCTION al_get_allegro_version: AL_UINT32; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
-(* This function is useful in cases where you don’t have a @code(main) function but want to run Allegro (mostly useful in a wrapper library).  Under Windows and Linux this is no problem because you simply can call @link(al_install_system).  But some other system (like OSX) don’t allow calling @code(al_install_system) in the main thread.  @code(al_run_main) will know what to do in that case.  The passed @code(argc) and @code(argv) will simply be passed on to @code(user_main) and the return value of @code(user_main) will be returned.
+(* This function is useful in cases where you don’t have a @code(main) function
+   but want to run Allegro (mostly useful in a wrapper library).  Under Windows
+   and Linux this is no problem because you simply can call
+   @link(al_install_system).  But some other system (like OSX) don’t allow
+   calling @code(al_install_system) in the main thread.  @code(al_run_main)
+   will know what to do in that case.  The passed @code(argc) and @code(argv)
+   will simply be passed on to @code(user_main) and the return value of
+   @code(user_main) will be returned.
  *)
   FUNCTION al_run_main (argc: AL_INT; argv: AL_POINTER; user_main: ALLEGRO_USER_MAIN): AL_INT; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
-(* This function can be used to create a packed 32 bit integer from 8 bit characters, on both 32 and 64 bit machines.  These can be used for various things, like custom datafile objects or system IDs. Example:
+(* This function can be used to create a packed 32 bit integer from 8 bit
+   characters, on both 32 and 64 bit machines.  These can be used for various
+   things, like custom datafile objects or system IDs. Example:
 
 VAR
   OSTYPE_LINUX: LONGINT;
@@ -110,19 +147,20 @@ END;
  *     Error handling.
  ***********)
 
-(* Some Allegro functions will set an error number as well as returning an error code.  Call this function to retrieve the last error number set for the calling thread.
- *)
+(* Some Allegro functions will set an error number as well as returning an
+   error code.  Call this function to retrieve the last error number set for
+   the calling thread. @seealso(al_set_errno) *)
   FUNCTION al_get_errno: AL_INT; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
-(* Set the error number for the calling thread. *)
+(* Set the error number for the calling thread. @seealso(al_get_errno) *)
   PROCEDURE al_set_errno (errnum: AL_INT); CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
 (******************************************************************************
- * system.h *
+ * system.h
  ************)
 
   TYPE
@@ -130,24 +168,32 @@ END;
 
   (* Pointer to @link(ALLEGRO_EVENT). *)
     ALLEGRO_EVENT_SOURCEptr = ^ALLEGRO_EVENT_SOURCE;
-  (* An event source is any object which can generate events.  For example, an @link(ALLEGRO_DISPLAY) can generate events, and you can get the @code(ALLEGRO_EVENT_SOURCE) pointer from an @code(ALLEGRO_DISPLAY) with @link(al_get_display_event_source).
+  (* An event source is any object which can generate events.  For example, an
+     @link(ALLEGRO_DISPLAY) can generate events, and you can get the
+     @code(ALLEGRO_EVENT_SOURCE) pointer from an @code(ALLEGRO_DISPLAY) with
+     @link(al_get_display_event_source).
 
      You may create your own “user” event sources that emit custom events.
-     @seealso(ALLEGRO_EVENT) @seealso(al_init_user_event_source) @seealso(al_emit_user_event)
+     @seealso(ALLEGRO_EVENT) @seealso(al_init_user_event_source)
+     @seealso(al_emit_user_event)
    *)
     ALLEGRO_EVENT_SOURCE = RECORD
       __pad : ARRAY [0..31] OF AL_INT;
     END;
 
 
-(* Like @link(al_install_system), but automatically passes in the version and uses the @code(atexit) function visible in the current compilation unit.
- *)
+(* Like @link(al_install_system), but automatically passes in the version and
+   uses the @code(atexit) function visible in the current compilation unit. *)
   FUNCTION al_init: AL_BOOL;
 
-(* Initialize the Allegro system.  No other Allegro functions can be called before this (with one or two exceptions).
+(* Initialize the Allegro system.  No other Allegro functions can be called
+   before this (with one or two exceptions).
    @param(version Should always be set to @link(ALLEGRO_VERSION_INT).)
-   @param(atexit_ptr If non-@nil, and if hasn’t been done already, @code(al_uninstall_system) will be registered as an atexit function.)
-   @returns(@true if Allegro was successfully initialized by this function call @(or already was initialized previously@), @false if Allegro cannot be used.)
+   @param(atexit_ptr If non-@nil, and if hasn’t been done already,
+    @code(al_uninstall_system) will be registered as an atexit function.)
+   @returns(@true if Allegro was successfully initialized by this function
+    call @(or already was initialized previously@), @false if Allegro cannot
+    be used.)
    @seealso(al_init)
  *)
   FUNCTION al_install_system (version: AL_INT; atexit_ptr: AL_POINTER): AL_BOOL; CDECL;
@@ -155,13 +201,14 @@ END;
 
 (* Closes down the Allegro system.
 
-   In most cases you don't need to call this, because it's called by the @code(FINALIZATION) section.
+   In most cases you don't need to call this, because it's called by the
+   @code(FINALIZATION) section.
    @seealso(al_init) @seealso(al_install_system)
  *)
   PROCEDURE al_uninstall_system; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
-(* @returns(@true if Allegro is initialized, otherwise returns @false.) *)
+(* Returns @true if Allegro is initialized, otherwise returns @false. *)
   FUNCTION al_is_system_installed: AL_BOOL; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -172,7 +219,9 @@ END;
   functions for this aren't included.
 }
 
-(* This function allows the user to stop the system screensaver from starting up if @true is passed, or resets the system back to the default state (the state at program start) if @false is passed.
+(* This function allows the user to stop the system screensaver from starting
+   up if @true is passed, or resets the system back to the default state (the
+   state at program start) if @false is passed.
    @returns(@true if the state was set successfully, otherwise @false.)
  *)
   FUNCTION al_inhibit_screensaver (inhibit: AL_BOOL): AL_BOOL; CDECL;
