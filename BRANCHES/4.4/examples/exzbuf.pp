@@ -177,6 +177,7 @@ BEGIN (* The program starts here. *)
 
   Paused := FALSE;
   Tick := 1;
+  Key := 0;
   REPEAT
   { Update. }
     WHILE Tick > 0 DO

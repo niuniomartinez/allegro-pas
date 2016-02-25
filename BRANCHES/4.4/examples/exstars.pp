@@ -464,6 +464,8 @@ BEGIN
     al_textprintf_centre_ex (buffer, al_font,
 	AL_SCREEN_W DIV 2, AL_SCREEN_H - 30,
 	al_palette_color^[17], 0,
+    { You can ignore the "not initialized" warning.
+      It's initialized at InitShip procedure. }
       	'   velocity: %d   ', [Ship.velocity]
     );
 

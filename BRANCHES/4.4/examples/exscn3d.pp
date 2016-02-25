@@ -221,6 +221,8 @@ BEGIN (* The program starts here. *)
 
   Frame := 0; FPS := 0;
 
+  Texture := NIL; { To avoid FreePascal "not initialised" warning. }
+
 { You should always do this at the start of Allegro programs. }
   IF NOT al_init THEN
   BEGIN

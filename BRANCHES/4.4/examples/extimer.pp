@@ -111,6 +111,9 @@ BEGIN { The program starts here. }
 { or in seconds (this is 10 seconds a tick) }
   al_install_int_ex (@inc_z, AL_SECS_TO_TIMER (10));
 
+{ Initialize variables. }
+  x := 0; y := 0; z := 0;
+
 { the interrupts are now active... }
   WHILE NOT al_keypressed DO
   BEGIN

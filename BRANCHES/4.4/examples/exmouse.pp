@@ -79,7 +79,9 @@ BEGIN { The program starts here. }
     EXIT;
   END;
 
-  c := 0;
+{ FreePascal will warn that those variables aren't initialized, so let's assign
+  them some neutral values. }
+  c := 0; mickeyx := 0; mickeyy := 0;
 
   WHILE NOT al_keypressed DO
   BEGIN

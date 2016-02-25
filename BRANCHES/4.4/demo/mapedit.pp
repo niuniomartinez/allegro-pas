@@ -1315,6 +1315,7 @@ BEGIN
 { Initializes the program. }
   IF NOT InitProgram THEN EXIT;
 
+  MapModified := FALSE; { To avoid FPC warning. }
   REPEAT
     al_do_dialog (MainDialog, -1);
   UNTIL NOT MapModified
