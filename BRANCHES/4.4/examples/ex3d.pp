@@ -262,12 +262,13 @@ BEGIN (* The program starts here. *)
 
 { Initialise the cubes. }
   DrawMode := POLYTYPE_WIRED;
+  Texture := NIL; { To avoid FPC warning. }
   CreateTexture;
   Randomize;
   FOR Cnt := LOW (TheCubes) TO HIGH (TheCubes) DO
     TheCubes[Cnt] := TBouncingCube.Create (Texture);
 
-  Tick := 1;
+  Tick := 1; Key := 0;
   REPEAT
   { Update. }
     WHILE Tick > 0 DO

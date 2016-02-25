@@ -276,7 +276,7 @@ IMPLEMENTATION
     Vertex: ARRAY [0..7] OF AL_V3D;
 
   (* Helper procedure to define a face. *)
-    PROCEDURE SetFace (Ndx: INTEGER); INLINE;
+    PROCEDURE SetFace (Ndx: INTEGER);
     VAR
       Clr: INTEGER;
     BEGIN

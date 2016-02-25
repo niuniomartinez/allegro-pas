@@ -396,8 +396,7 @@ END;
 (* Finds out the currently selected desktop resolution.  You can use this
    information to avoid creating windows bigger than the current resolution.
    This is especially important for some windowed drivers which are unable to
-   create windows bigger than the desktop.  Each parameter is a pointer to an
-   integer where one dimension of the screen will be stored.
+   create windows bigger than the desktop.
 
    Under some OSes, switching to a full screen graphics mode may automatically
    change the desktop resolution.  You have, therefore, to call this function
@@ -4648,7 +4647,7 @@ PROCEDURE al_textprintf_right_ex (bmp: AL_BITMAPptr; CONST f: AL_FONTptr; CONST 
    select different values with the setup utility:  see the @code(configuration
    section) for details.
 
-   @returns (@true if the sound is successfully installed, and @false on
+   @return(@true if the sound is successfully installed, and @false on
      failure.  If it fails it will store a description of the problem in
      @link(al_error).)
    @seealso(al_remove_sound) @seealso(al_reserve_voices)

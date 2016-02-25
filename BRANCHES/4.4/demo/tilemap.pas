@@ -37,7 +37,7 @@ INTERFACE
 
   CONST
   (* Max map size in tiles. *)
-    MAX_SIZE = $7FFF;
+    MAX_SIZE = 1024;
   (* Tile size in pixels. *)
     TSIZE = 16;
   (* Max number of tiles.  Tiles 254 and 255 are used as markers. *)

@@ -38,10 +38,14 @@ PROGRAM excamera;
   TYPE
   (* A vector. *)
     TVector = OBJECT
+    PRIVATE
+      fx, fy, fz: AL_FIXED;
     PUBLIC
-      x, y, z: AL_FIXED;
-
       PROCEDURE SetAll (ax, ay, az: AL_FIXED);
+
+      PROPERTY X: AL_FIXED READ fX WRITE fX;
+      PROPERTY Y: AL_FIXED READ fY WRITE fY;
+      PROPERTY Z: AL_FIXED READ fZ WRITE fZ;
     END;
 
 
