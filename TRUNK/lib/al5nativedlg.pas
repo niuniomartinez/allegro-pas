@@ -12,7 +12,7 @@ INTERFACE
   CONST
   (* Builds library name. *)
     { @exclude }
-    ALLEGRO_NATIVE_DLG_LIB_NAME = _A5_LIB_PREFIX_+'allegro_dialog'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
+    ALLEGRO_NATIVE_DLG_LIB_NAME = _A5_LIB_PREFIX_+'allegro_dialog'+_DBG_+_A5_LIB_EXT_;
 
 (******************************************************************************
  * allegro_native_dialog.h

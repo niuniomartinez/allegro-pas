@@ -31,11 +31,11 @@ INTERFACE
   CONST
   (* Builds library name. *)
     { @exclude }
-    ALLEGRO_PRIMITIVES_LIB_NAME = _A5_LIB_PREFIX_+'allegro_primitives'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
+    ALLEGRO_PRIMITIVES_LIB_NAME = _A5_LIB_PREFIX_+'allegro_primitives'+_DBG_+_A5_LIB_EXT_;
 
   TYPE
     ALLEGRO_PRIM_TYPE = (
-      ALLEGRO_PRIM_LINE_LIST,
+      ALLEGRO_PRIM_LINE_LIST := 0,
       ALLEGRO_PRIM_LINE_STRIP,
       ALLEGRO_PRIM_LINE_LOOP,
       ALLEGRO_PRIM_TRIANGLE_LIST,

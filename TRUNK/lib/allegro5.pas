@@ -34,17 +34,17 @@ INTERFACE
 
   CONST
   (* @exclude Builds library name. *)
-    ALLEGRO_LIB_NAME = _A5_LIB_PREFIX_+'allegro'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
+    ALLEGRO_LIB_NAME = _A5_LIB_PREFIX_+'allegro'+_DBG_+_A5_LIB_EXT_;
 
 { The code is distributed in sections.
-   Each section wraps with a header file (approx.). }
+   Each section wraps a header file (approx.). }
 
 (******************************************************************************
  * base.h
  *      Defines basic stuff needed by pretty much everything else.
  *
  *      By Shawn Hargreaves.
- **********)
+ *)
 
   CONST
   (* Major version of Allegro. *)
@@ -53,7 +53,7 @@ INTERFACE
     ALLEGRO_SUB_VERSION  =   0;
   (* Revision number of Allegro. *)
     ALLEGRO_WIP_VERSION  =   10;
-  (* Not sure we need it, but since ALLEGRO_VERSION_STR contains it:
+  (* Not sure we need it, but ALLEGRO_VERSION_STR contains it:
      0 = SVN
      1 = first release
      2... = hotfixes?
@@ -77,6 +77,7 @@ INTERFACE
     ALLEGRO_USER_MAIN = FUNCTION (argc: AL_INT; argv: AL_POINTER): AL_INT; CDECL;
 
 
+
   (* Returns the (compiled) version of the Allegro library, packed into a
      single integer as groups of 8 bits.
 
@@ -85,12 +86,14 @@ INTERFACE
   VAR
     Version: AL_INT;
     Major, Minor, Revision, Release: INTEGER;
+    VersionStr: STRING;
   BEGIN
     Version := al_get_allegro_version;
-    Major    :=  Version SHL 24;
-    Minor    := (Version SHL 16) AND 255;
-    Revision := (Version SHL  8) AND 255;
+    Major    :=  Version SHR 24;
+    Minor    := (Version SHR 16) AND 255;
+    Revision := (Version SHR  8) AND 255;
     Release  :=  Version         AND 255;
+    VersionStr := Format ('%d.%d.%d(%d)', [Major, Minor, Revision, Release])
   END;
 #)
     The release number is 0 for an unofficial version and 1 or greater for an
@@ -129,7 +132,7 @@ END;
 
 (******************************************************************************
  * config.h
- ************)
+ *)
 
 { TODO:
   At the moment I'll not include this header.  Object Pascal defines the
@@ -145,7 +148,7 @@ END;
 (******************************************************************************
  * error.h
  *     Error handling.
- ***********)
+ *)
 
 (* Some Allegro functions will set an error number as well as returning an
    error code.  Call this function to retrieve the last error number set for
@@ -153,7 +156,7 @@ END;
   FUNCTION al_get_errno: AL_INT; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
-(* Set the error number for the calling thread. @seealso(al_get_errno) *)
+(* Sets the error number for the calling thread. @seealso(al_get_errno) *)
   PROCEDURE al_set_errno (errnum: AL_INT); CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -161,12 +164,14 @@ END;
 
 (******************************************************************************
  * system.h
- ************)
+ *)
 
   TYPE
+  (* Pointer to the Allegro system description record.
+     For internal use only. *)
     ALLEGRO_SYSTEMptr = AL_POINTER;
 
-  (* Pointer to @link(ALLEGRO_EVENT). *)
+  (* Pointer to @link(ALLEGRO_EVENT_SOURCE). *)
     ALLEGRO_EVENT_SOURCEptr = ^ALLEGRO_EVENT_SOURCE;
   (* An event source is any object which can generate events.  For example, an
      @link(ALLEGRO_DISPLAY) can generate events, and you can get the
@@ -186,7 +191,7 @@ END;
    uses the @code(atexit) function visible in the current compilation unit. *)
   FUNCTION al_init: AL_BOOL;
 
-(* Initialize the Allegro system.  No other Allegro functions can be called
+(* Initializes the Allegro system.  No other Allegro functions can be called
    before this (with one or two exceptions).
    @param(version Should always be set to @link(ALLEGRO_VERSION_INT).)
    @param(atexit_ptr If non-@nil, and if hasn’t been done already,
@@ -216,8 +221,7 @@ END;
 
 { Modern Pascal compilers (i.e. Free Pascal) has functions and methods to get
   the path of system directories and the application name, so Allegro's
-  functions for this aren't included.
-}
+  functions for this aren't included.  Let me know if you want them. }
 
 (* This function allows the user to stop the system screensaver from starting
    up if @true is passed, or resets the system back to the default state (the
@@ -230,11 +234,13 @@ END;
 
 
 (******************************************************************************
- * color.h *
- ***********)
+ * color.h
+ *)
 
   TYPE
-  (* An @code(ALLEGRO_COLOR) structure describes a color in a device independant way.  Use @link(al_map_rgb) et al. and @link(al_unmap_rgb) et al. to translate from and to various color representations.
+  (* An @code(ALLEGRO_COLOR) structure describes a color in a device independant
+     way.  Use @link(al_map_rgb) et al. and @link(al_unmap_rgb) et al. to
+     translate from and to various color representations.
    *)
     ALLEGRO_COLOR = RECORD
       r, g, b, a: AL_FLOAT;
@@ -243,17 +249,21 @@ END;
 
 
 (******************************************************************************
- * bitmap.h *
- ************)
+ * bitmap.h
+ *)
 
   TYPE
   (* Abstract type representing a bitmap (2D image). *)
     ALLEGRO_BITMAPptr = AL_POINTER;
 
-  (* Pixel formats.  Each pixel format specifies the exact size and bit layout of a pixel in memory.  Components are specified from high bits to low bits, so for example a fully opaque red pixel in ARGB_8888 format is 0xFFFF0000.
+  (* Pixel formats.  Each pixel format specifies the exact size and bit layout
+     of a pixel in memory.  Components are specified from high bits to low
+     bits, so for example a fully opaque red pixel in ARGB_8888 format is
+     0xFFFF0000.
 
     @bold(Note:)
-    The pixel format is independent of endianness.  That is, in the above example you can  always get the red component with
+    The pixel format is independent of endianness.  That is, in the above
+    example you can always get the red component with
 
     @code(@(pixel AND $00ff0000@) SHR 16)
 
@@ -261,100 +271,79 @@ END;
 
     @code(@(PBYTE @(pixel + 2@)@)^)
 
-    It will return the red component on little endian systems, but the green component on big endian systems.
+    It will return the red component on little endian systems, but the green
+    component on big endian systems.
 
-    Also note that Allegro’s naming is different from OpenGL naming here, where a format of @code(GL_RGBA8) merely defines the component order and the
-    exact layout including endianness treatment is specified separately.  Usually @code(GL_RGBA8) will correspond to @code(ALLEGRO_PIXEL_ABGR_8888) though on little endian systems, so care must be taken (note the reversal of RGBA <-> ABGR).
+    Also note that Allegro’s naming is different from OpenGL naming here, where
+    a format of @code(GL_RGBA8) merely defines the component order and the
+    exact layout including endianness treatment is specified separately.
+    Usually @code(GL_RGBA8) will correspond to @code(ALLEGRO_PIXEL_ABGR_8888)
+    though on little endian systems, so care must be taken (note the reversal
+    of RGBA <-> ABGR).
 
-    The only exception to this @code(ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE) which will always have the components as 4 bytes corresponding to red, green, blue and alpha, in this order, independent of the endianness.
-@unorderedlist(
-  @item(ALLEGRO_PIXEL_FORMAT_ANY - Let the driver choose a format. This is the default format at
-program start.)
-  @item(ALLEGRO_PIXEL_FORMAT_ANY_NO_ALPHA - Let the driver choose a format without alpha.)
-  @item(ALLEGRO_PIXEL_FORMAT_ANY_WITH_ALPHA - Let the driver choose a format with alpha.)
-  @item(ALLEGRO_PIXEL_FORMAT_ANY_15_NO_ALPHA - Let the driver choose a 15 bit format without alpha.)
-  @item(ALLEGRO_PIXEL_FORMAT_ANY_16_NO_ALPHA - Let the driver choose a 16 bit format without alpha.)
-  @item(ALLEGRO_PIXEL_FORMAT_ANY_16_WITH_ALPHA - Let the driver choose a 16 bit format with alpha.)
-  @item(ALLEGRO_PIXEL_FORMAT_ANY_24_NO_ALPHA - Let the driver choose a 24 bit format without alpha.)
-  @item(ALLEGRO_PIXEL_FORMAT_ANY_32_NO_ALPHA - Let the driver choose a 32 bit format without alpha.)
-  @item(ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA - Let the driver choose a 32 bit format with alpha.)
-  @item(ALLEGRO_PIXEL_FORMAT_ARGB_8888 - 32 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_RGBA_8888 - 32 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_ARGB_4444 - 16 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_RGB_888 - 24 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_RGB_565 - 16 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_RGB_555 - 15 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_RGBA_5551 - 16 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_ARGB_1555 - 16 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_ABGR_8888 - 32 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_XBGR_8888 - 32 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_BGR_888 - 24 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_BGR_565 - 16 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_BGR_555 - 15 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_RGBX_8888 - 32 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_XRGB_8888 - 32 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_ABGR_F32 - 128 bit)
-  @item(ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE - Like the version without _LE, but the component order is guaranteed to be red, green, blue, alpha. This only makes a difference on big endian systems, on little endian it is just an alias.)
-  @item(ALLEGRO_PIXEL_FORMAT_RGBA_4444 - 16bit)
-)
+    The only exception to this @code(ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE) which
+    will always have the components as 4 bytes corresponding to red, green,
+    blue and alpha, in this order, independent of the endianness.
     @seealso(al_set_new_bitmap_format) @seealso(al_get_bitmap_format)
    *)
     ALLEGRO_PIXEL_FORMAT = (
-    { @exclude }
+    (* Let the driver choose a format. This is the default format at program
+       start. *)
       ALLEGRO_PIXEL_FORMAT_ANY = 0,
-    { @exclude }
+    (* Let the driver choose a format without alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_NO_ALPHA,
-    { @exclude }
+    (* Let the driver choose a format with alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_WITH_ALPHA,
-    { @exclude }
+    (* Let the driver choose a 15 bit format without alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_15_NO_ALPHA,
-    { @exclude }
+    (* Let the driver choose a 16 bit format without alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_16_NO_ALPHA,
-    { @exclude }
+    (* Let the driver choose a 16 bit format with alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_16_WITH_ALPHA,
-    { @exclude }
+    (* Let the driver choose a 24 bit format without alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_24_NO_ALPHA,
-    { @exclude }
+    (* Let the driver choose a 32 bit format without alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_32_NO_ALPHA,
-    { @exclude }
+    (* Let the driver choose a 32 bit format with alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA,
-    { @exclude }
+    (* 32 bit *)
       ALLEGRO_PIXEL_FORMAT_ARGB_8888,
-    { @exclude }
+    (* 32 bit *)
       ALLEGRO_PIXEL_FORMAT_RGBA_8888,
-    { @exclude }
+    (* 24 bit *)
       ALLEGRO_PIXEL_FORMAT_ARGB_4444,
-    { @exclude }
+    (* 24 bit *)
       ALLEGRO_PIXEL_FORMAT_RGB_888,
-    { @exclude }
+    (* 16 bit *)
       ALLEGRO_PIXEL_FORMAT_RGB_565,
-    { @exclude }
+    (* 15 bit *)
       ALLEGRO_PIXEL_FORMAT_RGB_555,
-    { @exclude }
+    (* 16 bit *)
       ALLEGRO_PIXEL_FORMAT_RGBA_5551,
-    { @exclude }
+    (* 16 bit *)
       ALLEGRO_PIXEL_FORMAT_ARGB_1555,
-    { @exclude }
+    (* 32 bit *)
       ALLEGRO_PIXEL_FORMAT_ABGR_8888,
-    { @exclude }
+    (* 32 bit *)
       ALLEGRO_PIXEL_FORMAT_XBGR_8888,
-    { @exclude }
+    (* 24 bit *)
       ALLEGRO_PIXEL_FORMAT_BGR_888,
-    { @exclude }
+    (* 16 bit *)
       ALLEGRO_PIXEL_FORMAT_BGR_565,
-    { @exclude }
+    (* 15 bit *)
       ALLEGRO_PIXEL_FORMAT_BGR_555,
-    { @exclude }
+    (* 32 bit *)
       ALLEGRO_PIXEL_FORMAT_RGBX_8888,
-    { @exclude }
+    (* 32 bit *)
       ALLEGRO_PIXEL_FORMAT_XRGB_8888,
-    { @exclude }
+    (* 128 bit *)
       ALLEGRO_PIXEL_FORMAT_ABGR_F32,
-    { @exclude }
+    (* Like the version without _LE, but the component order is guaranteed to
+       be red, green, blue, alpha. This only makes a difference on big endian
+       systems, on little endian it is just an alias. *)
       ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE,
-    { @exclude }
+    (* 16bit *)
       ALLEGRO_PIXEL_FORMAT_RGBA_4444,
-    { @exclude }
       ALLEGRO_NUM_PIXEL_FORMATS
     );
 
@@ -402,44 +391,44 @@ program start.)
     ALLEGRO_LOCK_WRITEONLY  = 2;
 
   TYPE
-  (* Blending modes.  Documented at al_set_blender. *)
+  (* Blending modes. @seealso(al_set_blender) *)
     ALLEGRO_BLEND_MODE = (
-    { @exclude }
       ALLEGRO_ZERO = 0,
-    { @exclude }
       ALLEGRO_ONE = 1,
-    { @exclude }
       ALLEGRO_ALPHA = 2,
-    { @exclude }
       ALLEGRO_INVERSE_ALPHA = 3
     );
 
 
 
-  (* Blending modes.  Documented at al_set_blender. *)
+  (* Blending modes. @seealso(al_set_blender) *)
     ALLEGRO_BLEND_OPERATIONS = (
-    { @exclude }
       ALLEGRO_ADD = 0,
-    { @exclude }
       ALLEGRO_SRC_MINUS_DEST = 1,
-    { @exclude }
       ALLEGRO_DEST_MINUS_SRC = 2,
-    { @exclude }
       ALLEGRO_NUM_BLEND_OPERATIONS
     );
 
 
   (* Pointer to @link(ALLEGRO_LOCKED_REGION). *)
     ALLEGRO_LOCKED_REGIONptr = ^ALLEGRO_LOCKED_REGION;
-  (* Users who wish to manually edit or read from a bitmap are required to lock it first.  The @code(ALLEGRO_LOCKED_REGION) structure represents the locked region of the bitmap.  This call will work with any bitmap, including memory bitmaps.
-    @seealso(al_lock_bitmap) @seealso(al_lock_bitmap_region) @seealso(al_unlock_bitmap) @seealso(ALLEGRO_PIXEL_FORMAT)
+  (* Users who wish to manually edit or read from a bitmap are required to lock
+     it first.  The @code(ALLEGRO_LOCKED_REGION) structure represents the
+     locked region of the bitmap.  This call will work with any bitmap,
+     including memory bitmaps.
+     @seealso(al_lock_bitmap) @seealso(al_lock_bitmap_region)
+     @seealso(al_unlock_bitmap) @seealso(ALLEGRO_PIXEL_FORMAT)
    *)
     ALLEGRO_LOCKED_REGION = RECORD
-    (* Points to the leftmost pixel of the first row (row 0) of the locked region. *)
+    (* Points to the leftmost pixel of the first row (row 0) of the locked
+       region. *)
       data: AL_VOIDptr;
     (* Indicates the pixel format of the data. *)
       format,
-    (* Gives the size in bytes of a single row (also known as the stride).  The pitch may be greater than @code(width * pixel_size) due to padding; this is not uncommon.  It is also not uncommon for the pitch to be negative (the bitmap may be upside down). *)
+    (* Gives the size in bytes of a single row (also known as the stride).  The
+       pitch may be greater than @code(width * pixel_size) due to padding; this
+       is not uncommon.  It is also not uncommon for the pitch to be negative
+       (the bitmap may be upside down). *)
       pitch,
     (* Number of bytes used to represent a single pixel. *)
       pixel_size: AL_INT;
@@ -447,9 +436,11 @@ program start.)
 
 
 
-(* Sets the pixel format for newly created bitmaps.  The default format is @code(ALLEGRO_PIXEL_FORMAT_ANY) and means the display driver will choose the best format.
-  @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_new_bitmap_format)
-  @seealso(al_get_bitmap_format)
+(* Sets the pixel format for newly created bitmaps.  The default format is
+   @code(ALLEGRO_PIXEL_FORMAT_ANY) and means the display driver will choose the
+   best format.
+   @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_new_bitmap_format)
+   @seealso(al_get_bitmap_format)
  *)
   PROCEDURE al_set_new_bitmap_format (format: ALLEGRO_PIXEL_FORMAT); CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
@@ -526,9 +517,10 @@ Expands to:
     EXTERNAL ALLEGRO_LIB_NAME;
 
 (* A convenience function which does the same as @longcode(#
-  al_set_new_bitmap_flags (al_get_new_bitmap_flags | flag);
+  al_set_new_bitmap_flags (al_get_new_bitmap_flags OR flag);
 #)
-   @seealso(al_set_new_bitmap_flags) @seealso(al_get_new_bitmap_flags) @seealso(al_get_bitmap_flags)
+   @seealso(al_set_new_bitmap_flags) @seealso(al_get_new_bitmap_flags)
+   @seealso(al_get_bitmap_flags)
  *)
   PROCEDURE al_add_new_bitmap_flag (flag: AL_INT); CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
@@ -549,7 +541,7 @@ Expands to:
   FUNCTION al_get_bitmap_format (bitmap: ALLEGRO_BITMAPptr): AL_INT; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
-(* Return the flags user to create the bitmap.
+(* Returns the flags user to create the bitmap.
    @seealso(al_set_new_bitmap_flags)
  *)
   FUNCTION al_get_bitmap_flags (bitmap: ALLEGRO_BITMAPptr): AL_INT; CDECL;
@@ -763,7 +755,7 @@ BEGIN
 
 (******************************************************************************
  * file.h
- ***************)
+ *)
 
 { TODO:
   Actually, this header is needed by Allegro to define new loaders and savers,
@@ -772,8 +764,8 @@ BEGIN
 
 
 (******************************************************************************
- * bitmap_io.h *
- ***************)
+ * bitmap_io.h
+ *)
 
 { TODO: Some functions need the file.h definitions. }
 
@@ -783,8 +775,8 @@ BEGIN
 
 
 (******************************************************************************
- * display.h *
- *************)
+ * display.h
+ *)
 
 
   CONST
@@ -805,9 +797,9 @@ BEGIN
 
   TYPE
   (* Possible parameters for al_set_display_option.
-   * Make sure to update ALLEGRO_EXTRA_DISPLAY_SETTINGS if you modify
-   * anything here.
-   *)
+
+     Make sure to update ALLEGRO_EXTRA_DISPLAY_SETTINGS if you modify
+     anything here.  *)
     ALLEGRO_DISPLAY_OPTIONS = (
       ALLEGRO_RED_SIZE,
       ALLEGRO_GREEN_SIZE,
@@ -985,16 +977,16 @@ BEGIN
 
 
 (******************************************************************************
- * keycodes.h *
- **************)
+ * keycodes.h
+ *)
 
 {$include keycodes.inc}
 
 
 
 (******************************************************************************
- * keyboard.h *
- **************)
+ * keyboard.h
+ *)
 
   TYPE
     ALLEGRO_KEYBOARDptr = AL_POINTER;
@@ -1031,8 +1023,8 @@ BEGIN
 
 
 (******************************************************************************
- * joystick.h *
- **************)
+ * joystick.h
+ *)
 
   CONST
 (* internal values *)
@@ -1105,8 +1097,8 @@ BEGIN
 
 
 (******************************************************************************
- * mouse.h *
- ***********)
+ * mouse.h
+ *)
 
   CONST
   (* Allow up to four extra axes for future expansion. *)
@@ -1217,8 +1209,8 @@ BEGIN
 
 
 (******************************************************************************
- * timer.h *
- ***********)
+ * timer.h
+ *)
 
 (* Converts microseconds to seconds. *)
   FUNCTION ALLEGRO_USECS_TO_SECS (x: AL_DOUBLE): AL_DOUBLE; INLINE;
@@ -1261,8 +1253,8 @@ BEGIN
 
 
 (******************************************************************************
- * altime.h *
- ************)
+ * altime.h
+ *)
 
   TYPE
     ALLEGRO_TIMEOUTptr = ^ALLEGRO_TIMEOUT;
@@ -1283,8 +1275,8 @@ BEGIN
 
 
 (******************************************************************************
- * events.h *
- ************)
+ * events.h
+ *)
 
   TYPE
     ALLEGRO_EVENT_TYPE = AL_UINT;
@@ -1485,8 +1477,8 @@ BEGIN
 
 
 (******************************************************************************
- * transformations.h *
- *********************)
+ * transformations.h
+ *)
 
   TYPE
     ALLEGRO_TRANSFORMptr = ^ALLEGRO_TRANSFORM;
@@ -1523,8 +1515,8 @@ BEGIN
 
 
 (******************************************************************************
- * utf8.h *
- **********)
+ * utf8.h
+ *)
 
   {TODO: Documentation says it's not needed as it's used internally.
 	Only basic functionality is implemented for convenience.
@@ -1582,7 +1574,7 @@ BEGIN
 (******************************************************************************
  * tls.h
  *      Thread local storage routines.
- *********)
+ *)
 
   TYPE
     ALLEGRO_STATE_FLAGS = (
@@ -1615,8 +1607,8 @@ BEGIN
 IMPLEMENTATION
 
 (******************************************************************************
- * base.h *
- **********)
+ * base.h
+ *)
 
   FUNCTION AL_ID (CONST str: SHORTSTRING): AL_INT;
   BEGIN
@@ -1627,8 +1619,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * system.h *
- ************)
+ * system.h
+ *)
 
   FUNCTION al_init: AL_BOOL;
   BEGIN
@@ -1638,8 +1630,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * bitmap_io.h *
- ***************)
+ * bitmap_io.h
+ *)
 
   FUNCTION _al_load_bitmap_ (CONST filename: AL_STRptr): ALLEGRO_BITMAPptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME NAME 'al_load_bitmap';
@@ -1662,8 +1654,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * display.h *
- *************)
+ * display.h
+ *)
 
   PROCEDURE _al_set_window_title_ (display: ALLEGRO_DISPLAYptr; CONST title: AL_STRptr); CDECL;
   EXTERNAL ALLEGRO_LIB_NAME NAME 'al_set_window_title';
@@ -1676,8 +1668,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * timer.h *
- ***********)
+ * timer.h
+ *)
 
   FUNCTION ALLEGRO_USECS_TO_SECS (x: AL_DOUBLE): AL_DOUBLE;
   BEGIN
@@ -1702,8 +1694,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * events.h *
- ************)
+ * events.h
+ *)
 
   FUNCTION ALLEGRO_EVENT_TYPE_IS_USER (t: ALLEGRO_EVENT_TYPE): AL_BOOL;
   BEGIN
@@ -1720,8 +1712,8 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * utf8.h *
- **********)
+ * utf8.h
+ *)
 
   FUNCTION _al_ustr_new_ (CONST s: AL_STRptr): ALLEGRO_USTRptr; CDECL;
   EXTERNAL ALLEGRO_LIB_NAME NAME 'al_ustr_new';
@@ -1752,5 +1744,5 @@ INITIALIZATION
 
 FINALIZATION
 { Ensures that we call it, as Pascal hasn't an "atexit" function. }
-  al_uninstall_system;
+  al_uninstall_system
 END.
