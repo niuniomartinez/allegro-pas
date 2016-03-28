@@ -49,13 +49,12 @@ INTERFACE
 
  (* Builds main library name.  AFAIK it's not needed. *)
     { @exclude }
-    ALLEGRO_MAIN_LIB_NAME = _A5_LIB_PREFIX_+'allegro_main'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
+    ALLEGRO_MAIN_LIB_NAME = _A5_LIB_PREFIX_+'allegro_main'+_DBG_+_A5_LIB_EXT_;
 
 
 
-(*
-   Next are definitions of numeric data types.  We may use FPC's ctype unit,
-   but Delphi doesn't has it so I prefer to do it this way.
+(* Next are definitions of numeric data types.  We may use FPC's ctype unit,
+   but Delphi doesn't has it.
 
    First: it defines some integers with specific lenght.
    Then: it defines the types used by C declarations.
@@ -148,8 +147,6 @@ INTERFACE
   (* Strings.  Used in parameters to convert Pascal's @code(STRING) to C's
     @code(char * )*)
     AL_STR = ANSISTRING;
-
-
 
   (* Pointer. *)
     AL_VOIDptr = AL_POINTER;

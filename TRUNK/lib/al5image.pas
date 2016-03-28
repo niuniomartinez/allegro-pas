@@ -36,7 +36,7 @@ INTERFACE
   CONST
   (* Builds library name. *)
     { @exclude }
-    ALLEGRO_IMAGE_LIB_NAME = _A5_LIB_PREFIX_+'allegro_image'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
+    ALLEGRO_IMAGE_LIB_NAME = _A5_LIB_PREFIX_+'allegro_image'+_DBG_+_A5_LIB_EXT_;
 
 (* Initializes the image addon. *)
   FUNCTION al_init_image_addon: AL_BOOL; CDECL;
