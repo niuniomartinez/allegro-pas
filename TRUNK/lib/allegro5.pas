@@ -36,8 +36,10 @@ INTERFACE
   (* @exclude Builds library name. *)
     ALLEGRO_LIB_NAME = _A5_LIB_PREFIX_+'allegro'+_DBG_+_A5_LIB_EXT_;
 
-{ The code is distributed in sections.
-   Each section wraps a header file (approx.). }
+{ The code is distributed in sections, each one wraps a header file.
+
+  Order of sections is the same as C loads them by including the "allegro.h"
+  header file. }
 
 (******************************************************************************
  * base.h
@@ -50,9 +52,9 @@ INTERFACE
   (* Major version of Allegro. *)
     ALLEGRO_VERSION      =   5;
   (* Minor version of Allegro. *)
-    ALLEGRO_SUB_VERSION  =   0;
+    ALLEGRO_SUB_VERSION  =   2;
   (* Revision number of Allegro. *)
-    ALLEGRO_WIP_VERSION  =   10;
+    ALLEGRO_WIP_VERSION  =   0;
   (* Not sure we need it, but ALLEGRO_VERSION_STR contains it:
      0 = SVN
      1 = first release
@@ -69,8 +71,287 @@ INTERFACE
 	OR (ALLEGRO_WIP_VERSION SHL  8)
 	OR  ALLEGRO_RELEASE_NUMBER
     );
-  (* Allegro PI. *)
+  (* Just to be sure that PI number is available. *)
     ALLEGRO_PI = 3.14159265358979323846;
+
+(* This function can be used to create a packed 32 bit integer from 8 bit
+   characters, on both 32 and 64 bit machines.  These can be used for various
+   things, like custom datafile objects or system IDs. Example:
+
+VAR
+  OSTYPE_LINUX: LONGINT;
+BEGIN
+  OSTYPE_LINUX := AL_ID('TUX ');
+END;
+ *)
+  FUNCTION AL_ID (CONST str: SHORTSTRING): AL_INT;
+
+
+
+(******************************************************************************
+ * altime.h
+ *)
+
+  TYPE
+  (* Represent a timeout value.
+
+     The size of the structure is known so it can be statically allocated.  The
+     contents are private.
+     @seealso(al_init_timeout) *)
+    ALLEGRO_TIMEOUT = RECORD
+      __pad1__, __pad2__: AL_UINT64;
+    END;
+
+
+  (* Return the number of seconds since the Allegro library was initialised.
+     The return value is undefined if Allegro is uninitialised. The resolution
+     depends on the used driver, but typically can be in the order of
+     microseconds. *)
+    FUNCTION al_get_time: AL_DOUBLE; CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  (* Waits for the specified number of seconds.  This tells the system to pause
+     the current thread for the given amount of time.  With some operating
+     systems, the accuracy can be in the order of 10ms.  That is, even
+@longcode(#
+    al_rest(0.000001)
+#)
+     might pause for something like 10ms.  Also see the section on
+     @link(alTimer) routines for easier ways to time your program without using
+     up all CPU. *)
+    PROCEDURE al_rest (seconds: AL_DOUBLE); CDECL;
+      EXTERNAL ALLEGRO_LIB_NAME;
+
+  (* Set timeout value of some number of seconds after the function call.
+
+     For compatibility with all platforms, seconds must be 2,147,483.647
+     seconds or less.
+     @seealso(ALLEGRO_TIMEOUT) @seealso(al_wait_for_event_until) *)
+    PROCEDURE al_init_timeout (OUT timeout: ALLEGRO_TIMEOUT; seconds: AL_DOUBLE);
+      EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * color.h
+ *)
+
+  TYPE
+  (* An @code(ALLEGRO_COLOR) structure describes a color in a device independant
+     way.  Use @link(al_map_rgb) et al. and @link(al_unmap_rgb) et al. to
+     translate from and to various color representations.
+   *)
+    ALLEGRO_COLOR = RECORD
+      r, g, b, a: AL_FLOAT;
+    END;
+
+  (* Pixel formats.  Each pixel format specifies the exact size and bit layout
+     of a pixel in memory.  Components are specified from high bits to low
+     bits, so for example a fully opaque red pixel in ARGB_8888 format is
+     0xFFFF0000.
+
+    @bold(Note:)
+    The pixel format is independent of endianness.  That is, in the above
+    example you can always get the red component with
+
+    @code(@(pixel AND $00ff0000@) SHR 16)
+
+    But you can not rely on this code:
+
+    @code(@(PBYTE @(pixel + 2@)@)^)
+
+    It will return the red component on little endian systems, but the green
+    component on big endian systems.
+
+    Also note that Allegro’s naming is different from OpenGL naming here, where
+    a format of @code(GL_RGBA8) merely defines the component order and the
+    exact layout including endianness treatment is specified separately.
+    Usually @code(GL_RGBA8) will correspond to @code(ALLEGRO_PIXEL_ABGR_8888)
+    though on little endian systems, so care must be taken (note the reversal
+    of RGBA <-> ABGR).
+
+    The only exception to this @code(ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE) which
+    will always have the components as 4 bytes corresponding to red, green,
+    blue and alpha, in this order, independent of the endianness.
+    @seealso(al_set_new_bitmap_format) @seealso(al_get_bitmap_format)
+   *)
+    ALLEGRO_PIXEL_FORMAT = (
+    (* Let the driver choose a format. This is the default format at program
+       start. *)
+      ALLEGRO_PIXEL_FORMAT_ANY = 0,
+    (* Let the driver choose a format without alpha. *)
+      ALLEGRO_PIXEL_FORMAT_ANY_NO_ALPHA,
+    (* Let the driver choose a format with alpha. *)
+      ALLEGRO_PIXEL_FORMAT_ANY_WITH_ALPHA,
+    (* Let the driver choose a 15 bit format without alpha. *)
+      ALLEGRO_PIXEL_FORMAT_ANY_15_NO_ALPHA,
+    (* Let the driver choose a 16 bit format without alpha. *)
+      ALLEGRO_PIXEL_FORMAT_ANY_16_NO_ALPHA,
+    (* Let the driver choose a 16 bit format with alpha. *)
+      ALLEGRO_PIXEL_FORMAT_ANY_16_WITH_ALPHA,
+    (* Let the driver choose a 24 bit format without alpha. *)
+      ALLEGRO_PIXEL_FORMAT_ANY_24_NO_ALPHA,
+    (* Let the driver choose a 32 bit format without alpha. *)
+      ALLEGRO_PIXEL_FORMAT_ANY_32_NO_ALPHA,
+    (* Let the driver choose a 32 bit format with alpha. *)
+      ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA,
+    (* 32 bit *)
+      ALLEGRO_PIXEL_FORMAT_ARGB_8888,
+    (* 32 bit *)
+      ALLEGRO_PIXEL_FORMAT_RGBA_8888,
+    (* 24 bit *)
+      ALLEGRO_PIXEL_FORMAT_ARGB_4444,
+    (* 24 bit *)
+      ALLEGRO_PIXEL_FORMAT_RGB_888,
+    (* 16 bit *)
+      ALLEGRO_PIXEL_FORMAT_RGB_565,
+    (* 15 bit *)
+      ALLEGRO_PIXEL_FORMAT_RGB_555,
+    (* 16 bit *)
+      ALLEGRO_PIXEL_FORMAT_RGBA_5551,
+    (* 16 bit *)
+      ALLEGRO_PIXEL_FORMAT_ARGB_1555,
+    (* 32 bit *)
+      ALLEGRO_PIXEL_FORMAT_ABGR_8888,
+    (* 32 bit *)
+      ALLEGRO_PIXEL_FORMAT_XBGR_8888,
+    (* 24 bit *)
+      ALLEGRO_PIXEL_FORMAT_BGR_888,
+    (* 16 bit *)
+      ALLEGRO_PIXEL_FORMAT_BGR_565,
+    (* 15 bit *)
+      ALLEGRO_PIXEL_FORMAT_BGR_555,
+    (* 32 bit *)
+      ALLEGRO_PIXEL_FORMAT_RGBX_8888,
+    (* 32 bit *)
+      ALLEGRO_PIXEL_FORMAT_XRGB_8888,
+    (* 128 bit *)
+      ALLEGRO_PIXEL_FORMAT_ABGR_F32,
+    (* Like the version without _LE, but the component order is guaranteed to
+       be red, green, blue, alpha. This only makes a difference on big endian
+       systems, on little endian it is just an alias. *)
+      ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE,
+    (* 16bit *)
+      ALLEGRO_PIXEL_FORMAT_RGBA_4444,
+      ALLEGRO_NUM_PIXEL_FORMATS
+    );
+
+(* Convert r, g, b (ranging from 0-255) into an @link(ALLEGRO_COLOR), using 255
+   for alpha.
+   @seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb_f) *)
+  FUNCTION al_map_rgb (r, g, b: AL_UCHAR): ALLEGRO_COLOR; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Convert r, g, b, a (ranging from 0-255) into an @link(ALLEGRO_COLOR).
+   @seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb_f) *)
+  FUNCTION al_map_rgba (r, g, b, a: AL_UCHAR): ALLEGRO_COLOR; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Convert r, g, b (ranging from 0.0f-1.0f) into an @link(ALLEGRO_COLOR), using
+   1.0f for alpha.
+   @seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb) *)
+  FUNCTION al_map_rgb_f (r, g, b: AL_FLOAT): ALLEGRO_COLOR; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Convert r, g, b, a (ranging from 0.0f-1.0f) into an @link(ALLEGRO_COLOR).
+   @seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb) *)
+  FUNCTION al_map_rgba_f (r, g, b, a: AL_FLOAT): ALLEGRO_COLOR; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* This is a shortcut for
+   @code(al_map_rgba (@r * a / 255, g * a / 255, b * a / 255, a@)).
+
+   By default Allegro uses pre-multiplied alpha for transparent blending of
+   bitmaps and primitives (see @link(al_load_bitmap_flags) for a discussion of
+   that feature). This means that if you want to tint a bitmap or primitive to
+   be transparent you need to multiply the color components by the alpha
+   components when you pass them to this function. For example, to draw the
+   bitmap tinted red and half-transparent. }
+
+@longcode(#
+VAR
+  c: ALLEGRO_COLOR;
+  bmp: ALLEGRO_BITMAPptr;
+BEGIN
+  c := al_premul_rgba (255, 0, 0, 127);
+  al_draw_tinted_bitmap (bmp, c, 0, 0, 0);
+END;
+#)
+  @seealso (al_map_rgba) @seealso(al_premul_rgba_f) *)
+  FUNCTION al_premul_rgba (r, g, b: AL_UCHAR): ALLEGRO_COLOR; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* This is a shortcut for @code(al_map_rgba (@r * a, g * a, b * a, a@)).
+
+   By default Allegro uses pre-multiplied alpha for transparent blending of
+   bitmaps and primitives (see @link(al_load_bitmap_flags) for a discussion of
+   that feature). This means that if you want to tint a bitmap or primitive to
+   be transparent you need to multiply the color components by the alpha
+   components when you pass them to this function. For example, to draw the
+   bitmap tinted red and half-transparent. }
+
+@longcode(#
+VAR
+  c: ALLEGRO_COLOR;
+  bmp: ALLEGRO_BITMAPptr;
+BEGIN
+  c := al_premul_rgba_f (1, 0, 0, 0.5);
+  al_draw_tinted_bitmap (bmp, c, 0, 0, 0);
+END;
+#)
+  @seealso (al_map_rgba_f) @seealso(al_premul_rgba) *)
+  FUNCTION al_premul_rgba_f (r, g, b: AL_FLOAT): ALLEGRO_COLOR; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Retrieves components of an @link(ALLEGRO_COLOR), ignoring alpha.  Components
+   will range from 0-255.
+   @seealso(al_unmap_rgba) @seealso(al_unmap_rgba_f) @seealso(al_unmap_rgb_f) *)
+  PROCEDURE al_unmap_rgb (color: ALLEGRO_COLOR; OUT r, g, b: AL_UCHAR); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Retrieves components of an @link(ALLEGRO_COLOR).  Components will range from
+   0-255.
+   @seealso(al_unmap_rgba) @seealso(al_unmap_rgba_f) @seealso(al_unmap_rgb_f) *)
+  PROCEDURE al_unmap_rgba (color: ALLEGRO_COLOR; OUT r, g, b, a: AL_UCHAR); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Retrieves components of an @link(ALLEGRO_COLOR), ignoring alpha.  Components
+   will range from 0.0f-1.0f.
+   @seealso(al_unmap_rgba) @seealso(al_unmap_rgba_f) @seealso(al_unmap_rgb_f) *)
+  PROCEDURE al_unmap_rgb_f (color: ALLEGRO_COLOR; OUT r, g, b: AL_FLOAT); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Retrieves components of an @link(ALLEGRO_COLOR).  Components will range from
+   0.0f-1.0f.
+   @seealso(al_unmap_rgba) @seealso(al_unmap_rgba_f) @seealso(al_unmap_rgb_f) *)
+  PROCEDURE al_unmap_rgba_f (color: ALLEGRO_COLOR; OUT r, g, b, a: AL_FLOAT); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+
+(* Return the number of bytes that a pixel of the given format occupies.  For
+   blocked pixel formats (e.g. compressed formats), this returns 0.
+   @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_pixel_format_bits) *)
+  FUNCTION al_get_pixel_size (format: ALLEGRO_PIXEL_FORMAT): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Return the number of bits that a pixel of the given format occupies.  For
+   blocked pixel formats (e.g. compressed formats), this returns 0.
+   @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_pixel_size) *)
+  FUNCTION al_get_pixel_format_bits (format: ALLEGRO_PIXEL_FORMAT): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Return the number of bytes that a block of pixels with this format occupies.
+   @seealso(ALLEGRO_PIXEL_FORMAT)
+   @seealso(al_get_pixel_block_width) @seealso(al_get_pixel_block_height) *)
+  FUNCTION al_get_pixel_block_size (format: ALLEGRO_PIXEL_FORMAT): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Return the width of the pixel block of this format.
+   @seealso(ALLEGRO_PIXEL_FORMAT)
+   @seealso(al_get_pixel_block_size) @seealso(al_get_pixel_block_height) *)
+  FUNCTION al_get_pixel_block_width (format: ALLEGRO_PIXEL_FORMAT): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Return the height of the pixel block of this format.
+   @seealso(ALLEGRO_PIXEL_FORMAT)
+   @seealso(al_get_pixel_block_width) @seealso(al_get_pixel_block_size) *)
+  FUNCTION al_get_pixel_block_height (format: ALLEGRO_PIXEL_FORMAT): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * THIS WAS MOVED to another header file.
+ *)
+
 
   TYPE
   (* Description of user main function for al_run_main. *)
@@ -115,18 +396,6 @@ INTERFACE
  *)
   FUNCTION al_run_main (argc: AL_INT; argv: AL_POINTER; user_main: ALLEGRO_USER_MAIN): AL_INT; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
-
-(* This function can be used to create a packed 32 bit integer from 8 bit
-   characters, on both 32 and 64 bit machines.  These can be used for various
-   things, like custom datafile objects or system IDs. Example:
-
-VAR
-  OSTYPE_LINUX: LONGINT;
-BEGIN
-  OSTYPE_LINUX := AL_ID('TUX ');
-END;
- *)
-  FUNCTION AL_ID (CONST str: SHORTSTRING): AL_INT;
 
 
 
@@ -234,118 +503,12 @@ END;
 
 
 (******************************************************************************
- * color.h
- *)
-
-  TYPE
-  (* An @code(ALLEGRO_COLOR) structure describes a color in a device independant
-     way.  Use @link(al_map_rgb) et al. and @link(al_unmap_rgb) et al. to
-     translate from and to various color representations.
-   *)
-    ALLEGRO_COLOR = RECORD
-      r, g, b, a: AL_FLOAT;
-    END;
-
-
-
-(******************************************************************************
  * bitmap.h
  *)
 
   TYPE
   (* Abstract type representing a bitmap (2D image). *)
     ALLEGRO_BITMAPptr = AL_POINTER;
-
-  (* Pixel formats.  Each pixel format specifies the exact size and bit layout
-     of a pixel in memory.  Components are specified from high bits to low
-     bits, so for example a fully opaque red pixel in ARGB_8888 format is
-     0xFFFF0000.
-
-    @bold(Note:)
-    The pixel format is independent of endianness.  That is, in the above
-    example you can always get the red component with
-
-    @code(@(pixel AND $00ff0000@) SHR 16)
-
-    But you can not rely on this code:
-
-    @code(@(PBYTE @(pixel + 2@)@)^)
-
-    It will return the red component on little endian systems, but the green
-    component on big endian systems.
-
-    Also note that Allegro’s naming is different from OpenGL naming here, where
-    a format of @code(GL_RGBA8) merely defines the component order and the
-    exact layout including endianness treatment is specified separately.
-    Usually @code(GL_RGBA8) will correspond to @code(ALLEGRO_PIXEL_ABGR_8888)
-    though on little endian systems, so care must be taken (note the reversal
-    of RGBA <-> ABGR).
-
-    The only exception to this @code(ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE) which
-    will always have the components as 4 bytes corresponding to red, green,
-    blue and alpha, in this order, independent of the endianness.
-    @seealso(al_set_new_bitmap_format) @seealso(al_get_bitmap_format)
-   *)
-    ALLEGRO_PIXEL_FORMAT = (
-    (* Let the driver choose a format. This is the default format at program
-       start. *)
-      ALLEGRO_PIXEL_FORMAT_ANY = 0,
-    (* Let the driver choose a format without alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_NO_ALPHA,
-    (* Let the driver choose a format with alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_WITH_ALPHA,
-    (* Let the driver choose a 15 bit format without alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_15_NO_ALPHA,
-    (* Let the driver choose a 16 bit format without alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_16_NO_ALPHA,
-    (* Let the driver choose a 16 bit format with alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_16_WITH_ALPHA,
-    (* Let the driver choose a 24 bit format without alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_24_NO_ALPHA,
-    (* Let the driver choose a 32 bit format without alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_32_NO_ALPHA,
-    (* Let the driver choose a 32 bit format with alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA,
-    (* 32 bit *)
-      ALLEGRO_PIXEL_FORMAT_ARGB_8888,
-    (* 32 bit *)
-      ALLEGRO_PIXEL_FORMAT_RGBA_8888,
-    (* 24 bit *)
-      ALLEGRO_PIXEL_FORMAT_ARGB_4444,
-    (* 24 bit *)
-      ALLEGRO_PIXEL_FORMAT_RGB_888,
-    (* 16 bit *)
-      ALLEGRO_PIXEL_FORMAT_RGB_565,
-    (* 15 bit *)
-      ALLEGRO_PIXEL_FORMAT_RGB_555,
-    (* 16 bit *)
-      ALLEGRO_PIXEL_FORMAT_RGBA_5551,
-    (* 16 bit *)
-      ALLEGRO_PIXEL_FORMAT_ARGB_1555,
-    (* 32 bit *)
-      ALLEGRO_PIXEL_FORMAT_ABGR_8888,
-    (* 32 bit *)
-      ALLEGRO_PIXEL_FORMAT_XBGR_8888,
-    (* 24 bit *)
-      ALLEGRO_PIXEL_FORMAT_BGR_888,
-    (* 16 bit *)
-      ALLEGRO_PIXEL_FORMAT_BGR_565,
-    (* 15 bit *)
-      ALLEGRO_PIXEL_FORMAT_BGR_555,
-    (* 32 bit *)
-      ALLEGRO_PIXEL_FORMAT_RGBX_8888,
-    (* 32 bit *)
-      ALLEGRO_PIXEL_FORMAT_XRGB_8888,
-    (* 128 bit *)
-      ALLEGRO_PIXEL_FORMAT_ABGR_F32,
-    (* Like the version without _LE, but the component order is guaranteed to
-       be red, green, blue, alpha. This only makes a difference on big endian
-       systems, on little endian it is just an alias. *)
-      ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE,
-    (* 16bit *)
-      ALLEGRO_PIXEL_FORMAT_RGBA_4444,
-      ALLEGRO_NUM_PIXEL_FORMATS
-    );
 
   CONST
   (* Bitmap flags.  Documented at al_set_new_bitmap_flags. *)
@@ -684,30 +847,6 @@ BEGIN
   PROCEDURE al_put_blended_pixel (x, y: AL_INT; color: ALLEGRO_COLOR); CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_get_pixel (bitmap: ALLEGRO_BITMAPptr; x, y: AL_INT): ALLEGRO_COLOR; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_pixel_size (format: ALLEGRO_PIXEL_FORMAT): AL_INT;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Pixel mapping *)
-  FUNCTION al_map_rgb (r, g, b: AL_UCHAR): ALLEGRO_COLOR; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_map_rgba (r, g, b, a: AL_UCHAR): ALLEGRO_COLOR; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_map_rgb_f (r, g, b: AL_FLOAT): ALLEGRO_COLOR; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_map_rgba_f (r, g, b, a: AL_FLOAT): ALLEGRO_COLOR; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Pixel unmapping *)
-  PROCEDURE al_unmap_rgb (color: ALLEGRO_COLOR; VAR r, g, b: AL_UCHAR); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_unmap_rgba (color: ALLEGRO_COLOR; VAR r, g, b, a: AL_UCHAR); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_unmap_rgb_f (color: ALLEGRO_COLOR; VAR r, g, b: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_unmap_rgba_f (color: ALLEGRO_COLOR; VAR r, g, b, a: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_pixel_format_bits (format: AL_INT): AL_INT; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
 (* Masking *)
@@ -1253,28 +1392,6 @@ BEGIN
 
 
 (******************************************************************************
- * altime.h
- *)
-
-  TYPE
-    ALLEGRO_TIMEOUTptr = ^ALLEGRO_TIMEOUT;
-  (* This is an abstract data type representing a timer object. *)
-    ALLEGRO_TIMEOUT = RECORD
-      __pad1__, __pad2__: AL_INT64;
-    END;
-
-  FUNCTION al_get_time: AL_DOUBLE; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_rest (seconds: AL_DOUBLE); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* TODO: Change to VAR? *)
-  PROCEDURE al_init_timeout (timeout: ALLEGRO_TIMEOUTptr; seconds: AL_DOUBLE); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-
-
-(******************************************************************************
  * events.h
  *)
 
@@ -1471,7 +1588,7 @@ BEGIN
     EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT; secs: AL_FLOAT): AL_BOOL; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT; timeout: ALLEGRO_TIMEOUTptr): AL_BOOL; CDECL;
+  FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT; VAR timeout: ALLEGRO_TIMEOUT): AL_BOOL; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
 

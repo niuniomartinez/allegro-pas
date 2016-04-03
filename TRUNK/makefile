@@ -14,7 +14,7 @@ SHELL = /bin/sh
 
 # ===============================================
 # Project name
-PROJECT = Allegro.pas 5 alpha
+PROJECT = Allegro.pas 5.2 alpha-2
 
 # ===============================================
 

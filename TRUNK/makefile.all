@@ -54,6 +54,6 @@ help: adbanner
 # Some info.
 adbanner:
 	@echo "$(PROJECT)"
-	@echo "(c) Guillermo Martínez J. 2012-2014"
+	@echo "(c) Guillermo Martínez J. 2012-2016"
 	@echo "http://allegro-pas.sourceforge.net"
 	@echo
