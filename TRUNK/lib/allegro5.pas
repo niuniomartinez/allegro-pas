@@ -179,59 +179,63 @@ END;
        start. *)
       ALLEGRO_PIXEL_FORMAT_ANY = 0,
     (* Let the driver choose a format without alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_NO_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_NO_ALPHA = 1,
     (* Let the driver choose a format with alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_WITH_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_WITH_ALPHA = 2,
     (* Let the driver choose a 15 bit format without alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_15_NO_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_15_NO_ALPHA = 3,
     (* Let the driver choose a 16 bit format without alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_16_NO_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_16_NO_ALPHA = 4,
     (* Let the driver choose a 16 bit format with alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_16_WITH_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_16_WITH_ALPHA = 5,
     (* Let the driver choose a 24 bit format without alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_24_NO_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_24_NO_ALPHA = 6,
     (* Let the driver choose a 32 bit format without alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_32_NO_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_32_NO_ALPHA = 7,
     (* Let the driver choose a 32 bit format with alpha. *)
-      ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA,
+      ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA = 8,
     (* 32 bit *)
-      ALLEGRO_PIXEL_FORMAT_ARGB_8888,
+      ALLEGRO_PIXEL_FORMAT_ARGB_8888 = 9,
     (* 32 bit *)
-      ALLEGRO_PIXEL_FORMAT_RGBA_8888,
+      ALLEGRO_PIXEL_FORMAT_RGBA_8888 = 10,
     (* 24 bit *)
-      ALLEGRO_PIXEL_FORMAT_ARGB_4444,
+      ALLEGRO_PIXEL_FORMAT_ARGB_4444 = 11,
     (* 24 bit *)
-      ALLEGRO_PIXEL_FORMAT_RGB_888,
+      ALLEGRO_PIXEL_FORMAT_RGB_888 = 12,
     (* 16 bit *)
-      ALLEGRO_PIXEL_FORMAT_RGB_565,
+      ALLEGRO_PIXEL_FORMAT_RGB_565 = 13,
     (* 15 bit *)
-      ALLEGRO_PIXEL_FORMAT_RGB_555,
+      ALLEGRO_PIXEL_FORMAT_RGB_555 = 14,
     (* 16 bit *)
-      ALLEGRO_PIXEL_FORMAT_RGBA_5551,
+      ALLEGRO_PIXEL_FORMAT_RGBA_5551 = 15,
     (* 16 bit *)
-      ALLEGRO_PIXEL_FORMAT_ARGB_1555,
+      ALLEGRO_PIXEL_FORMAT_ARGB_1555 = 16,
     (* 32 bit *)
-      ALLEGRO_PIXEL_FORMAT_ABGR_8888,
+      ALLEGRO_PIXEL_FORMAT_ABGR_8888 = 17,
     (* 32 bit *)
-      ALLEGRO_PIXEL_FORMAT_XBGR_8888,
+      ALLEGRO_PIXEL_FORMAT_XBGR_8888 = 18,
     (* 24 bit *)
-      ALLEGRO_PIXEL_FORMAT_BGR_888,
+      ALLEGRO_PIXEL_FORMAT_BGR_888 = 19,
     (* 16 bit *)
-      ALLEGRO_PIXEL_FORMAT_BGR_565,
+      ALLEGRO_PIXEL_FORMAT_BGR_565 = 20,
     (* 15 bit *)
-      ALLEGRO_PIXEL_FORMAT_BGR_555,
+      ALLEGRO_PIXEL_FORMAT_BGR_555 = 21,
     (* 32 bit *)
-      ALLEGRO_PIXEL_FORMAT_RGBX_8888,
+      ALLEGRO_PIXEL_FORMAT_RGBX_8888 = 22,
     (* 32 bit *)
-      ALLEGRO_PIXEL_FORMAT_XRGB_8888,
+      ALLEGRO_PIXEL_FORMAT_XRGB_8888 = 23,
     (* 128 bit *)
-      ALLEGRO_PIXEL_FORMAT_ABGR_F32,
+      ALLEGRO_PIXEL_FORMAT_ABGR_F32 = 24,
     (* Like the version without _LE, but the component order is guaranteed to
        be red, green, blue, alpha. This only makes a difference on big endian
        systems, on little endian it is just an alias. *)
-      ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE,
+      ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE = 25,
     (* 16bit *)
-      ALLEGRO_PIXEL_FORMAT_RGBA_4444,
+      ALLEGRO_PIXEL_FORMAT_RGBA_4444  = 26,
+      ALLEGRO_PIXEL_FORMAT_SINGLE_CHANNEL_8 = 27,
+      ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT1 = 28,
+      ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT3 = 29,
+      ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT5 = 30,
       ALLEGRO_NUM_PIXEL_FORMATS
     );
 
@@ -344,6 +348,347 @@ END;
    @seealso(ALLEGRO_PIXEL_FORMAT)
    @seealso(al_get_pixel_block_width) @seealso(al_get_pixel_block_size) *)
   FUNCTION al_get_pixel_block_height (format: ALLEGRO_PIXEL_FORMAT): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * bitmap.h
+ *)
+
+  TYPE
+  (* Abstract type representing a bitmap (2D image). *)
+    ALLEGRO_BITMAPptr = AL_POINTER;
+
+  CONST
+  (* Bitmap flags.  Documented at al_set_new_bitmap_flags. *)
+  { @exclude }
+    ALLEGRO_MEMORY_BITMAP            = $0001;
+  { @exclude }
+    ALLEGRO_KEEP_BITMAP_FORMAT       = $0002;
+  { @exclude }
+    ALLEGRO_FORCE_LOCKING            = $0004;
+  { @exclude }
+    ALLEGRO_NO_PRESERVE_TEXTURE      = $0008;
+  { @exclude }
+    ALLEGRO_ALPHA_TEST               = $0010;
+  { @exclude }
+    _ALLEGRO_INTERNAL_OPENGL         = $0020;
+  { @exclude }
+    ALLEGRO_MIN_LINEAR               = $0040;
+  { @exclude }
+    ALLEGRO_MAG_LINEAR               = $0080;
+  { @exclude }
+    ALLEGRO_MIPMAP                   = $0100;
+  { @exclude }
+    ALLEGRO_NO_PREMULTIPLIED_ALPHA   = $0200;
+  { @exclude }
+    ALLEGRO_VIDEO_BITMAP             = $0400;
+
+(* Sets the pixel format for newly created bitmaps.  The default format is
+   @code(ALLEGRO_PIXEL_FORMAT_ANY) and means the display driver will choose the
+   best format.
+   @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_new_bitmap_format)
+   @seealso(al_get_bitmap_format)
+ *)
+  PROCEDURE al_set_new_bitmap_format (format: ALLEGRO_PIXEL_FORMAT); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Sets the flags to use for newly created bitmaps. Valid flags are:
+   @unorderedlist(
+     @item(@bold(ALLEGRO_VIDEO_BITMAP) Creates a bitmap that resides in the video card memory. These types of bitmaps receive the greatest benefit from hardware acceleration. @link(al_set_new_bitmap_flags) will implicitly set this flag unless @code(ALLEGRO_MEMORY_BITMAP) is present.)
+     @item(@bold(ALLEGRO_MEMORY_BITMAP) Create a bitmap residing in system memory. Operations on, and with, memory bitmaps will not be hardware accelerated. However, direct pixel access can be relatively quick compared to video bitmaps, which depend on the display driver in use. @italic(Note: Allegro’s software rendering routines are currently very unoptimised.))
+     @item(@bold(ALLEGRO_KEEP_BITMAP_FORMAT) Only used when loading bitmaps from disk files, forces the resulting ALLEGRO_BITMAP to use the same format as the file. @italic(This is not yet honoured.))
+     @item(@bold(ALLEGRO_FORCE_LOCKING) When drawing to a bitmap with this flag set, always use pixel locking and draw to it using Allegro’s software drawing primitives. This should never be used if you plan to draw to the bitmap using Allegro’s graphics primitives as it would cause severe performance penalties. However if you know that the bitmap will only ever be accessed by locking it, no unneeded FBOs will be created for it in the OpenGL drivers.)
+     @item(@bold(ALLEGRO_NO_PRESERVE_TEXTURE) Normally, every effort is taken to preserve the contents of bitmaps, since Direct3D may forget them. This can take extra processing time. If you know it doesn’t matter if a bitmap keeps its pixel data, for example its a temporary buffer, use this flag to tell Allegro not to attempt to preserve its contents. This can increase performance of your game or application, but there is a catch. See ALLEGRO_EVENT_DISPLAY_LOST for further information.)
+     @item(@bold(ALLEGRO_ALPHA_TEST) This is a driver hint only. It tells the graphics driver to do alpha testing instead of alpha blending on bitmaps created with this flag. Alpha testing is usually faster and preferred if your bitmaps have only one level of alpha @(0@). This flag is currently not widely implemented @(i.e., only for memory bitmaps@).)
+     @item(@bold(ALLEGRO_MIN_LINEAR) When drawing a scaled down version of the bitmap, use linear filtering. This usually looks better. You can also combine it with the MIPMAP flag for even better quality.)
+     @item(@bold(ALLEGRO_MAG_LINEAR) When drawing a magnified version of a bitmap, use linear filtering. This will cause the picture to get blurry instead of creating a big rectangle for each pixel. It depends on how you want things to look like whether you want to use this or not.)
+     @item(@bold(ALLEGRO_MIPMAP) This can only be used for bitmaps whose width and height is a power of two. In that case, it will generate mipmaps and use them when drawing scaled down versions. For example if the bitmap is 64x64, then extra bitmaps of sizes 32x32, 16x16, 8x8, 4x4, 2x2 and 1x1 will be created always containing a scaled down version of the original.)
+     @item(@bold(ALLEGRO_NO_PREMULTIPLIED_ALPHA) By default, Allegro pre-multiplies the alpha channel of an image with the images color data when it loads it. Typically that would look something like this:
+@longcode(#
+  r := get_float_byte ();
+  g := get_float_byte ();
+  b := get_float_byte ();
+  a := get_float_byte ();
+
+  r := r * a;
+  g := g * a;
+  b := b * a;
+
+  set_image_pixel (x, y, r, g, b, a);
+#)
+  The reason for this can be seen in the Allegro example ex_premulalpha, ie,
+  using pre-multiplied alpha gives more accurate color results in some cases.
+  To use alpha blending with images loaded with pre-multiplied alpha, you would
+  use the default blending mode, which is set with @code(al_set_blender
+  @(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA@)) to set the correct
+  blender.  This has some caveats.  First, as mentioned above, drawing such an
+  image can result in less accurate color blending @(when drawing an image with
+  linear filtering on, the edges will be darker than they should be@).  Second,
+  the behaviour is somewhat confusing, which is explained in the example below.
+@longcode(#
+// Load and create bitmaps with an alpha channel
+  al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA);
+// Load some bitmap with alpha in it
+  bmp = al_load_bitmap ('some_alpha_bitmap.png');
+// We will draw to this buffer and then draw this buffer to the screen
+  tmp_buffer = al_create_bitmap (SCREEN_W, SCREEN_H);
+// Set the buffer as the target and clear it
+  al_set_target_bitmap (tmp_buffer);
+  al_clear_to_color (al_map_rgba_f (0, 0, 0, 1));
+// Draw the bitmap to the temporary buffer
+  al_draw_bitmap (bmp, 0, 0, 0);
+// Finally, draw the buffer to the screen
+// The output will look incorrect (may take close inspection
+// depending on the bitmap -- it may also be very obvious)
+  al_set_target_bitmap (al_get_backbuffer (display));
+  al_draw_bitmap (tmp_buffer, 0, 0, 0);
+#)
+     )
+   )
+   To explain further, if you have a pixel with 0.5 alpha, and you’re using
+   (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA) for blending, the
+   formula is:
+@longcode(#
+  a := da * dst + sa * src
+#)
+Expands to:
+@longcode(#
+  result_a := dst_a * (1-0.5) + 0.5 * 0.5;
+#)
+   So if you draw the image to the temporary buffer, it is blended once
+   resulting in 0.75 alpha, then drawn again to the screen, blended in the
+   same way, resulting in a pixel has 0.1875 as an alpha value.
+   @seealso(al_get_new_bitmap_flags) @seealso(al_get_bitmap_flags)
+  *)
+  PROCEDURE al_set_new_bitmap_flags (flags: AL_INT); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns the format used for newly created bitmaps.
+   @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_set_new_bitmap_format)
+ *)
+  FUNCTION al_get_new_bitmap_format: ALLEGRO_PIXEL_FORMAT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns the flags used for newly created bitmaps.
+   @seealso(al_set_new_bitmap_flags)
+ *)
+  FUNCTION al_get_new_bitmap_flags: AL_INT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* A convenience function which does the same as @longcode(#
+  al_set_new_bitmap_flags (al_get_new_bitmap_flags OR flag);
+#)
+   @seealso(al_set_new_bitmap_flags) @seealso(al_get_new_bitmap_flags)
+   @seealso(al_get_bitmap_flags)
+ *)
+  PROCEDURE al_add_new_bitmap_flag (flag: AL_INT); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Returns the width of a bitmap in pixels. *)
+  FUNCTION al_get_bitmap_width (bitmap: ALLEGRO_BITMAPptr): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns the height of a bitmap in pixels. *)
+  FUNCTION al_get_bitmap_height (bitmap: ALLEGRO_BITMAPptr): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns the pixel format of a bitmap.
+   @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_set_new_bitmap_flags)
+ *)
+  FUNCTION al_get_bitmap_format (bitmap: ALLEGRO_BITMAPptr): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns the flags user to create the bitmap.
+   @seealso(al_set_new_bitmap_flags)
+ *)
+  FUNCTION al_get_bitmap_flags (bitmap: ALLEGRO_BITMAPptr): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Creates a new bitmap using the bitmap format and flags for the current
+   thread. Blitting between bitmaps of differing formats, or blitting between
+   memory bitmaps and display bitmaps may be slow.
+
+   Unless you set the ALLEGRO_MEMORY_BITMAP flag, the bitmap is created for the
+   current display.  Blitting to another display may be slow.
+
+   If a display bitmap is created, there may be limitations on the allowed
+   dimensions. For example a DirectX or OpenGL backend usually has a maximum
+   allowed texture size - so if bitmap creation fails for very large
+   dimensions, you may want to re-try with a smaller bitmap. Some platforms
+   also dictate a minimum texture size, which is relevant if you plan to use
+   this bitmap with the primitives addon. If you try to create a bitmap smaller
+   than this, this call will not fail but the returned bitmap will be a section
+   of a larger bitmap with the minimum size. This minimum size is 16 by 16.
+
+   Some platforms do not directly support display bitmaps whose dimensions are
+   not powers of two. Allegro handles this by creating a larger bitmap that has
+   dimensions that are powers of two and then returning a section of that
+   bitmap with the dimensions you requested. This can be relevant if you plan
+   to use this bitmap with the primitives addon but shouldn’t be an issue
+   otherwise.
+   @seealso(al_set_new_bitmap_format) @seealso(al_set_new_bitmap_flags)
+   @seealso(al_clone_bitmap) @seealso(al_create_sub_bitmap)
+ *)
+  FUNCTION al_create_bitmap (w, h: AL_INT): ALLEGRO_BITMAPptr; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Destroys the given bitmap, freeing all resources used by it. Does nothing if
+   given the null pointer. *)
+  PROCEDURE al_destroy_bitmap (Bitmap: ALLEGRO_BITMAPptr); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Draw a single pixel on the target bitmap.  This operation is slow on
+   non-memory bitmaps. Consider locking the bitmap if you are going to use this
+   function multiple times on the same bitmap.  This function is not affected
+   by the transformations or the color blenders.
+   @seealso(al_get_pixel) @seealso(al_put_blended_pixel)
+   @seealso(al_lock_bitmap) *)
+  PROCEDURE al_put_pixel (x, y: AL_INT; color: ALLEGRO_COLOR); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Like @link(al_put_pixel), but the pixel color is blended using the current
+   blenders before being drawn. *)
+  PROCEDURE al_put_blended_pixel (x, y: AL_INT; color: ALLEGRO_COLOR); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Get a pixel's color value from the specified bitmap.  This operation is slow
+   on non-memory bitmaps.  Consider locking the bitmap if you are going to use
+   this function multiple times on the same bitmap.
+   @seealso(al_put_pixel) @seealso(al_lock_bitmap) *)
+  FUNCTION al_get_pixel (bitmap: ALLEGRO_BITMAPptr; x, y: AL_INT): ALLEGRO_COLOR; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Convert the given mask color to an alpha channel in the bitmap.  Can be used
+   to convert older 4.2-style bitmaps with magic pink to alpha-ready bitmaps. *)
+  PROCEDURE al_convert_mask_to_alpha (bitmap: ALLEGRO_BITMAPptr; mask_color: ALLEGRO_COLOR); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Set the region of the target bitmap or display that pixels get clipped to.
+   The default is to clip pixels to the entire bitmap.
+  @seealso(al_get_clipping_rectangle) @seealso(al_reset_clipping_rectangle) *)
+  PROCEDURE al_set_clipping_rectangle (x, y, width, height: AL_INT); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Equivalent to calling @code(al_set_clipping_rectangle @(0, 0, w, h@))' where
+   w and h are the width and height of the target bitmap respectively.
+
+   Does nothing if there is no target bitmap.
+   @seealso(al_set_clipping_rectangle) *)
+  PROCEDURE al_reset_clipping_rectangle; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Gets the clipping rectangle of the target bitmap.
+  @seealso(al_set_clipping_rectangle) *)
+  PROCEDURE al_get_clipping_rectangle (VAR x, y, w, h: AL_INT); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Creates a sub-bitmap of the parent, at the specified coordinates and of the
+  specified size. A sub-bitmap is a bitmap that shares drawing memory with a
+  pre-existing (parent) bitmap, but possibly with a different size and clipping
+  settings.
+
+  The sub-bitmap may originate off or extend past the parent bitmap.
+
+  See the discussion in @link(al_get_backbuffer) about using sub-bitmaps of the
+  backbuffer.
+
+  The parent bitmap's clipping rectangles are ignored.
+
+  If a sub-bitmap was not or cannot be created then NULL is returned.
+
+  When you are done with using the sub-bitmap you must call
+  @link(al_destroy_bitmap) on it to free any resources allocated for it.
+
+  Note that destroying parents of sub-bitmaps will not destroy the sub-bitmaps;
+  instead the sub-bitmaps become invalid and should no longer be used for
+  drawing - they still must be destroyed with al_destroy_bitmap however.  It
+  does not matter whether you destroy a sub-bitmap before or after its parent
+  otherwise.
+  @seealso(al_create_bitmap) *)
+  FUNCTION al_create_sub_bitmap (parent: ALLEGRO_BITMAPptr; x, y, w, h: AL_INT): ALLEGRO_BITMAPptr; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns true if the specified bitmap is a sub-bitmap, false otherwise.
+  @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap) *)
+  FUNCTION al_is_sub_bitmap (bitmap: ALLEGRO_BITMAPptr): AL_BOOL; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns the bitmap this bitmap is a sub-bitmap of. Returns NULL if this
+   bitmap is not a sub-bitmap. This function always returns the real bitmap,
+   and never a sub-bitmap. This might NOT match what was passed to
+   @code(al_create_sub_bitmap). Consider this code, for instance:
+@longcode(#
+VAR
+  a, b, c: ALLEGRO_BITMAPptr;
+BEGIN
+  a := al_create_bitmap (512, 512);
+  b := al_create_sub_bitmap (a, 128, 128, 256, 256);
+  c := al_create_sub_bitmap (b, 64, 64, 128, 128);
+  IF (al_get_parent_bitmap (b)== a) AND (al_get_parent_bitmap(c) = a) THEN
+    WriteLn ('b & c are sub-bitmaps of a')
+END;
+#)
+  The message will be printed because only a is a real bitmap, and both b and c
+  are its sub-bitmaps.
+  @seealso(al_create_sub_bitmap) @seealso(al_is_sub_bitmap) *)
+  FUNCTION al_get_parent_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* For a sub-bitmap, return it's x position within the parent.
+  @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap)
+  @seealso(al_get_bitmap_y) *)
+  FUNCTION al_get_bitmap_x (bitmap: ALLEGRO_BITMAPptr): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* For a sub-bitmap, return it's y position within the parent.
+  @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap)
+  @seealso(al_get_bitmap_x) *)
+  FUNCTION al_get_bitmap_y (bitmap: ALLEGRO_BITMAPptr): AL_INT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* For a sub-bitmap, changes the parent, position and size.  This is the same
+   as destroying the bitmap and re-creating it with @code(al_create_sub_bitmap)
+   - except the bitmap pointer stays the same.  This has many uses, for example
+   an animation player could return a single bitmap which can just be
+   re-parented to different animation frames without having to re-draw the
+   contents.  Or a sprite atlas could re-arrange its sprites without having to
+   invalidate all existing bitmaps.
+   @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap) *)
+  PROCEDURE al_reparent_bitmap (bitmap, parent: ALLEGRO_BITMAPptr; x, y, w, h: AL_INT); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Create a new bitmap with al_create_bitmap, and copy the pixel data from the
+   old bitmap across. If the new bitmap is a memory bitmap, its projection
+   bitmap is reset to be orthographic.
+   @seealso(al_create_bitmap) @seealso(al_set_new_bitmap_format)
+   @seealso(al_set_new_bitmap_flags) @seealso(al_convert_bitmap) *)
+  FUNCTION al_clone_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* Converts the bitmap to the current bitmap flags and format.  The bitmap will
+   be as if it was created anew with @code(al_create_bitmap) but retain its
+   contents.  All of this bitmap's sub-bitmaps are also converted.  If the new
+   bitmap type is memory, then the bitmap's projection bitmap is reset to be
+   orthographic.
+
+   If this bitmap is a sub-bitmap, then it, its parent and all the sibling
+   sub-bitmaps are also converted.
+   @seealso(al_create_bitmap) @seealso(al_set_new_bitmap_format)
+   @seealso(al_set_new_bitmap_flags) @seealso(al_clone_bitmap) *)
+  PROCEDURE al_convert_bitmap (bitmap: ALLEGRO_BITMAPptr); CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+(* If you create a bitmap when there is no current display (for example because
+   you have not called @code(al_create_display) in the current thread) and are
+   using the @link(ALLEGRO_CONVERT_BITMAP) bitmap flag (which is set by default)
+   then the bitmap will be created successfully, but as a memory bitmap.  This
+   function converts all such bitmaps to proper video bitmaps belonging to the
+   current display.
+
+   Note that video bitmaps get automatically converted back to memory bitmaps
+   when the last display is destroyed.
+
+   This operation will preserve all bitmap flags except
+   @link(ALLEGRO_VIDEO_BITMAP) and @link(ALLEGRO_MEMORY_BITMAP).
+   @seealso(al_convert_bitmap) @seealso(al_create_bitmap) *)
+  PROCEDURE al_convert_memory_bitmap; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
 
@@ -506,37 +851,7 @@ END;
  * bitmap.h
  *)
 
-  TYPE
-  (* Abstract type representing a bitmap (2D image). *)
-    ALLEGRO_BITMAPptr = AL_POINTER;
-
   CONST
-  (* Bitmap flags.  Documented at al_set_new_bitmap_flags. *)
-  { @exclude }
-    ALLEGRO_MEMORY_BITMAP            = $0001;
-  { @exclude }
-    ALLEGRO_KEEP_BITMAP_FORMAT       = $0002;
-  { @exclude }
-    ALLEGRO_FORCE_LOCKING            = $0004;
-  { @exclude }
-    ALLEGRO_NO_PRESERVE_TEXTURE      = $0008;
-  { @exclude }
-    ALLEGRO_ALPHA_TEST               = $0010;
-  { @exclude }
-    _ALLEGRO_INTERNAL_OPENGL         = $0020;
-  { @exclude }
-    ALLEGRO_MIN_LINEAR               = $0040;
-  { @exclude }
-    ALLEGRO_MAG_LINEAR               = $0080;
-  { @exclude }
-    ALLEGRO_MIPMAP                   = $0100;
-  { @exclude }
-    ALLEGRO_NO_PREMULTIPLIED_ALPHA   = $0200;
-  { @exclude }
-    ALLEGRO_VIDEO_BITMAP             = $0400;
-
-
-
   (* Flags for the blitting functions.  Documented at al_draw_bitmap. *)
   { @exclude }
     ALLEGRO_FLIP_HORIZONTAL = $00001;
@@ -596,136 +911,6 @@ END;
     (* Number of bytes used to represent a single pixel. *)
       pixel_size: AL_INT;
     END;
-
-
-
-(* Sets the pixel format for newly created bitmaps.  The default format is
-   @code(ALLEGRO_PIXEL_FORMAT_ANY) and means the display driver will choose the
-   best format.
-   @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_new_bitmap_format)
-   @seealso(al_get_bitmap_format)
- *)
-  PROCEDURE al_set_new_bitmap_format (format: ALLEGRO_PIXEL_FORMAT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Sets the flags to use for newly created bitmaps. Valid flags are:
-   @unorderedlist(
-     @item(@bold(ALLEGRO_VIDEO_BITMAP) Creates a bitmap that resides in the video card memory. These types of bitmaps receive the greatest benefit from hardware acceleration. @link(al_set_new_bitmap_flags) will implicitly set this flag unless @code(ALLEGRO_MEMORY_BITMAP) is present.)
-     @item(@bold(ALLEGRO_MEMORY_BITMAP) Create a bitmap residing in system memory. Operations on, and with, memory bitmaps will not be hardware accelerated. However, direct pixel access can be relatively quick compared to video bitmaps, which depend on the display driver in use. @italic(Note: Allegro’s software rendering routines are currently very unoptimised.))
-     @item(@bold(ALLEGRO_KEEP_BITMAP_FORMAT) Only used when loading bitmaps from disk files, forces the resulting ALLEGRO_BITMAP to use the same format as the file. @italic(This is not yet honoured.))
-     @item(@bold(ALLEGRO_FORCE_LOCKING) When drawing to a bitmap with this flag set, always use pixel locking and draw to it using Allegro’s software drawing primitives. This should never be used if you plan to draw to the bitmap using Allegro’s graphics primitives as it would cause severe performance penalties. However if you know that the bitmap will only ever be accessed by locking it, no unneeded FBOs will be created for it in the OpenGL drivers.)
-     @item(@bold(ALLEGRO_NO_PRESERVE_TEXTURE) Normally, every effort is taken to preserve the contents of bitmaps, since Direct3D may forget them. This can take extra processing time. If you know it doesn’t matter if a bitmap keeps its pixel data, for example its a temporary buffer, use this flag to tell Allegro not to attempt to preserve its contents. This can increase performance of your game or application, but there is a catch. See ALLEGRO_EVENT_DISPLAY_LOST for further information.)
-     @item(@bold(ALLEGRO_ALPHA_TEST) This is a driver hint only. It tells the graphics driver to do alpha testing instead of alpha blending on bitmaps created with this flag. Alpha testing is usually faster and preferred if your bitmaps have only one level of alpha @(0@). This flag is currently not widely implemented @(i.e., only for memory bitmaps@).)
-     @item(@bold(ALLEGRO_MIN_LINEAR) When drawing a scaled down version of the bitmap, use linear filtering. This usually looks better. You can also combine it with the MIPMAP flag for even better quality.)
-     @item(@bold(ALLEGRO_MAG_LINEAR) When drawing a magnified version of a bitmap, use linear filtering. This will cause the picture to get blurry instead of creating a big rectangle for each pixel. It depends on how you want things to look like whether you want to use this or not.)
-     @item(@bold(ALLEGRO_MIPMAP) This can only be used for bitmaps whose width and height is a power of two. In that case, it will generate mipmaps and use them when drawing scaled down versions. For example if the bitmap is 64x64, then extra bitmaps of sizes 32x32, 16x16, 8x8, 4x4, 2x2 and 1x1 will be created always containing a scaled down version of the original.)
-     @item(@bold(ALLEGRO_NO_PREMULTIPLIED_ALPHA) By default, Allegro pre-multiplies the alpha channel of an image with the images color data when it loads it. Typically that would look something like this:
-@longcode(#
-  r := get_float_byte ();
-  g := get_float_byte ();
-  b := get_float_byte ();
-  a := get_float_byte ();
-
-  r := r * a;
-  g := g * a;
-  b := b * a;
-
-  set_image_pixel (x, y, r, g, b, a);
-#)
-The reason for this can be seen in the Allegro example ex_premulalpha, ie, using pre-multiplied alpha gives more accurate color results in some cases. To use alpha blending with images loaded with pre-multiplied alpha, you would use the default blending mode, which is set with @code(al_set_blender @(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA@)) to set the correct blender. This has some caveats. First, as mentioned above, drawing such an image can result in less accurate color blending @(when drawing an image with linear filtering on, the edges will be darker than they should be@). Second, the behaviour is somewhat confusing, which is explained in the example below.
-@longcode(#
-// Load and create bitmaps with an alpha channel
-  al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA);
-// Load some bitmap with alpha in it
-  bmp = al_load_bitmap ('some_alpha_bitmap.png');
-// We will draw to this buffer and then draw this buffer to the screen
-  tmp_buffer = al_create_bitmap (SCREEN_W, SCREEN_H);
-// Set the buffer as the target and clear it
-  al_set_target_bitmap (tmp_buffer);
-  al_clear_to_color (al_map_rgba_f (0, 0, 0, 1));
-// Draw the bitmap to the temporary buffer
-  al_draw_bitmap (bmp, 0, 0, 0);
-// Finally, draw the buffer to the screen
-// The output will look incorrect (may take close inspection
-// depending on the bitmap -- it may also be very obvious)
-  al_set_target_bitmap (al_get_backbuffer (display));
-  al_draw_bitmap (tmp_buffer, 0, 0, 0);
-#)
-     )
-   )
-   To explain further, if you have a pixel with 0.5 alpha, and you’re using (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA) for blending, the formula is:
-@longcode(#
-  a := da * dst + sa * src
-#)
-Expands to:
-@longcode(#
-  result_a := dst_a * (1-0.5) + 0.5 * 0.5;
-#)
-   So if you draw the image to the temporary buffer, it is blended once resulting in 0.75 alpha, then drawn again to the screen, blended in the same way, resulting in a pixel has 0.1875 as an alpha value.
-   @seealso(al_get_new_bitmap_flags) @seealso(al_get_bitmap_flags)
-  *)
-  PROCEDURE al_set_new_bitmap_flags (flags: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Returns the format used for newly created bitmaps.
-   @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_set_new_bitmap_format)
- *)
-  FUNCTION al_get_new_bitmap_format: ALLEGRO_PIXEL_FORMAT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Returns the flags used for newly created bitmaps.
-   @seealso(al_set_new_bitmap_flags)
- *)
-  FUNCTION al_get_new_bitmap_flags: AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* A convenience function which does the same as @longcode(#
-  al_set_new_bitmap_flags (al_get_new_bitmap_flags OR flag);
-#)
-   @seealso(al_set_new_bitmap_flags) @seealso(al_get_new_bitmap_flags)
-   @seealso(al_get_bitmap_flags)
- *)
-  PROCEDURE al_add_new_bitmap_flag (flag: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-
-
-(* Returns the width of a bitmap in pixels. *)
-  FUNCTION al_get_bitmap_width (bitmap: ALLEGRO_BITMAPptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Returns the height of a bitmap in pixels. *)
-  FUNCTION al_get_bitmap_height (bitmap: ALLEGRO_BITMAPptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Returns the pixel format of a bitmap.
-   @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_set_new_bitmap_flags)
- *)
-  FUNCTION al_get_bitmap_format (bitmap: ALLEGRO_BITMAPptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Returns the flags user to create the bitmap.
-   @seealso(al_set_new_bitmap_flags)
- *)
-  FUNCTION al_get_bitmap_flags (bitmap: ALLEGRO_BITMAPptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-
-
-(* Creates a new bitmap using the bitmap format and flags for the current thread. Blitting between bitmaps of differing formats, or blitting between memory bitmaps and display bitmaps may be slow.
-
-   Unless you set the ALLEGRO_MEMORY_BITMAP flag, the bitmap is created for the current display.  Blitting to another display may be slow.
-If a display bitmap is created, there may be limitations on the allowed dimensions. For example a DirectX or OpenGL backend usually has a maximum allowed texture size - so if bitmap creation fails for very large dimensions, you may want to re-try with a smaller bitmap. Some platforms also dictate a minimum texture size, which is relevant if you plan to use this bitmap with the primitives addon. If you try to create a bitmap smaller than this, this call will not fail but the returned bitmap will be a section of a larger bitmap with the minimum size. This minimum size is 16 by 16.
-
-   Some platforms do not directly support display bitmaps whose dimensions are not powers of two. Allegro handles this by creating a larger bitmap that has dimensions that are powers of two and then returning a section of that bitmap with the dimensions you requested. This can be relevant if you plan to use this bitmap with the primitives addon but shouldn’t be an issue otherwise.
-   @seealso(al_set_new_bitmap_format) @seealso(al_set_new_bitmap_flags) @seealso(al_clone_bitmap) @seealso(al_create_sub_bitmap)
- *)
-  FUNCTION al_create_bitmap (w, h: AL_INT): ALLEGRO_BITMAPptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Destroys the given bitmap, freeing all resources used by it. Does nothing if given the null pointer. *)
-  PROCEDURE al_destroy_bitmap (Bitmap: ALLEGRO_BITMAPptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
@@ -830,8 +1015,6 @@ BEGIN
   PROCEDURE al_draw_tinted_scaled_rotated_bitmap_region (bitmap: ALLEGRO_BITMAPptr; sx, sy, sw, sh: AL_FLOAT; tint: ALLEGRO_COLOR; cx, cy, dx, dy, xscale, yscale, angle: AL_FLOAT; flags: AL_INT); CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
-
-
 (* Locking *)
   FUNCTION al_lock_bitmap (bitmap: ALLEGRO_BITMAPptr; format: ALLEGRO_PIXEL_FORMAT; flags: AL_INT): ALLEGRO_LOCKED_REGIONptr; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
@@ -840,38 +1023,7 @@ BEGIN
   PROCEDURE al_unlock_bitmap (bitmap: ALLEGRO_BITMAPptr); CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
-
-
-  PROCEDURE al_put_pixel (x, y: AL_INT; color: ALLEGRO_COLOR); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_put_blended_pixel (x, y: AL_INT; color: ALLEGRO_COLOR); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_pixel (bitmap: ALLEGRO_BITMAPptr; x, y: AL_INT): ALLEGRO_COLOR; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Masking *)
-  PROCEDURE al_convert_mask_to_alpha (bitmap: ALLEGRO_BITMAPptr; mask_color: ALLEGRO_COLOR); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Clipping *)
-  PROCEDURE al_set_clipping_rectangle (x, y, width, height: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_restore_clipping_rectangle; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_get_clipping_rectangle (VAR x, y, w, h: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Sub bitmaps *)
-  FUNCTION al_create_sub_bitmap (parent: ALLEGRO_BITMAPptr; x, y, w, h: AL_INT): ALLEGRO_BITMAPptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_is_sub_bitmap (bitmap: ALLEGRO_BITMAPptr): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_parent_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
 (* Miscellaneous *)
-  FUNCTION al_clone_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_is_bitmap_locked (bitmap: ALLEGRO_BITMAPptr): AL_BOOL; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
