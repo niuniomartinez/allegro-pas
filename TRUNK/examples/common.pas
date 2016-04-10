@@ -6,6 +6,9 @@ INTERFACE
   USES
     allegro5;
 
+(* Initializes platform specific stuff. *)
+  PROCEDURE InitPlatformSpecific;
+
 (* Exits program with error. *)
   PROCEDURE AbortExample (CONST Message: STRING);
 
@@ -26,24 +29,32 @@ IMPLEMENTATION
   VAR
     TextLog: ALLEGRO_TEXTLOGptr;
 
+(* Platform specific stuff. *)
+  PROCEDURE InitPlatformSpecific;
+  BEGIN
+  { TODO: Android stuff, if android. }
+    ;
+  END;
+
+
 
 (* Exits program with error. *)
   PROCEDURE AbortExample (CONST Message: STRING);
   VAR
     Display: ALLEGRO_DISPLAYptr;
   BEGIN
-    //IF al_init_native_dialog_addon THEN
+    IF al_init_native_dialog_addon THEN
     BEGIN
       IF al_is_system_installed THEN
         Display := al_get_current_display
       ELSE
         Display := NIL;
-      al_show_native_message_box (Display, 'Error', 'Cannot run example', Message, '', 0);
+      al_show_native_message_box
+        (Display, 'Error', 'Cannot run example', Message, '', 0)
     END
-    //ELSE
-     // WriteLn (stderr, Message)
-        ;
-    HALT (1);
+    ELSE
+      WriteLn (stderr, Message);
+    HALT (1)
   END;
 
 

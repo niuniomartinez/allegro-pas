@@ -47,9 +47,8 @@ PROGRAM ex_font;
       ELSE IF Event._type = ALLEGRO_EVENT_KEY_DOWN THEN
 	BEGIN
 	  IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-	    EndLoop := TRUE;
+	    EndLoop := TRUE
 	END
-	
       ELSE IF Event._type = ALLEGRO_EVENT_DISPLAY_EXPOSE THEN
 	BEGIN
 	  x := Event.display.x;
@@ -61,11 +60,11 @@ PROGRAM ex_font;
 	    x, y, w, h,
 	    x, y, 0
 	  );
-	  al_update_display_region (x, y, w, h);
-	END;
+	  al_update_display_region (x, y, w, h)
+	END
     UNTIL EndLoop;
     al_destroy_bitmap (ScreenClone);
-    al_destroy_event_queue (Queue);
+    al_destroy_event_queue (Queue)
   END;
 
 
@@ -73,7 +72,8 @@ PROGRAM ex_font;
 VAR
   Display: ALLEGRO_DISPLAYptr;
   Bitmap, FontBitmap: ALLEGRO_BITMAPptr;
-  Font, A4Font: ALLEGRO_FONTptr;
+  f1, f2, f3: ALLEGRO_FONTptr;
+  Range, Index, X, Y, Start, Stop, Width, R, G, B: INTEGER;
   Ranges: ARRAY [0..7] OF LONGINT = (
     $0020, $007F, { ASCII }
     $00A1, $00FF, { Latin 1 }
@@ -84,41 +84,75 @@ BEGIN
   IF NOT al_init THEN AbortExample ('Could not init Allegro.');
   al_init_image_addon;
   al_init_font_addon;
+  InitPlatformSpecific;
 
-  al_set_new_display_option (ALLEGRO_SINGLE_BUFFER, 0, ALLEGRO_SUGGEST);
+  al_set_new_display_option (ALLEGRO_SINGLE_BUFFER, 1, ALLEGRO_SUGGEST);
   al_set_new_display_flags (ALLEGRO_GENERATE_EXPOSE_EVENTS);
-  Display := al_create_display (320, 200);
+  Display := al_create_display (640, 480);
   IF Display = NIL THEN AbortExample ('Failed to create display.');
 
   Bitmap := al_load_bitmap ('data/mysha.pcx');
   IF Bitmap = NIL THEN AbortExample ('Failed to load misha.pcx.');
 
-  Font := al_load_font ('data/bmpfont.tga', 0, 0);
-  IF Font = NIL THEN AbortExample ('Failed to load bmpfont.tga.');
+  f1 := al_load_font ('data/bmpfont.tga', 0, 0);
+  IF f1 = NIL THEN AbortExample ('Failed to load bmpfont.tga.');
 
   FontBitmap := al_load_bitmap ('data/a4_font.tga');
   IF FontBitmap = NIL THEN AbortExample ('Failed to load a4_font.tga.');
+  f2 := al_grab_font_from_bitmap (FontBitmap, 4, Ranges);
 
-  A4Font := al_grab_font_from_bitmap (FontBitmap, 4, Ranges);
+  f3 := al_create_builtin_font;
+  IF f3 = NIL THEN AbortExample ('Failed to create builtin font.');
+
 
 { Draw background }
-  al_draw_bitmap (Bitmap, 0, 0, 0);
+  al_draw_scaled_bitmap (bitmap, 0, 0, 320, 240, 0, 0, 640, 480, 0);
 
 { Draw red text }
-  al_draw_text (Font, al_map_rgb (255, 0, 0), 10, 10, 0, 'red');
+  al_draw_text (f1, al_map_rgb (255, 0, 0), 10, 10, 0, 'red');
 
 { Draw green text }
-  al_draw_text (Font, al_map_rgb (0, 255, 0), 10, 50, 0, 'green');
+  al_draw_text (f1, al_map_rgb (0, 255, 0), 120, 10, 0, 'green');
 
 { Draw a unicode symbol }
-  al_draw_text (A4Font, al_map_rgb (0, 0, 255), 10, 90, 0, 'Mysha''s 0.02€');
+  al_draw_text (f2, al_map_rgb (0, 0, 255), 60, 60, 0, 'Mysha''s 0.02€');
+
+{ Draw a yellow text with the builtin font. }
+  al_draw_text (f3, al_map_rgb (255, 255, 0), 20, 200, ALLEGRO_ALIGN_CENTER,
+        'a string from builtin font data');
+
+{ Draw all individual glyphs the f2 font's range in rainbow colors. }
+  x := 10; y := 300;
+  al_draw_text (f3, al_map_rgb(0, 255, 255), x,  y - 20, 0, 'Draw glyphs: ');
+  FOR Range := 0 TO 3 DO
+  BEGIN
+    Start := Ranges[2 * Range];
+    Stop  := Ranges[2 * Range + 1];
+    FOR Index := Start TO (Stop - 1) DO
+    BEGIN
+    { Use al_get_glyph_advance for the stride. }
+      Width := al_get_glyph_advance (f2, Index, ALLEGRO_NO_KERNING);
+    { I've translated "fabs" as "TRUNC".  May be it's not the best option. }
+      r := ABS (TRUNC (sin (ALLEGRO_PI * (Index     ) * 36 / 360) * 255));
+      g := ABS (TRUNC (sin (ALLEGRO_PI * (index + 12) * 36 / 360) * 255));
+      b := ABS (TRUNC (sin (ALLEGRO_PI * (index + 24) * 36 / 360) * 255));
+      al_draw_glyph (f2, al_map_rgb (r, g, b), x, y, Index);
+      INC (x, Width);
+      IF x > (al_get_display_width (Display) - 10) THEN
+      BEGIN
+        x := 10;
+        INC (y, al_get_font_line_height (f2))
+      END
+    END
+  END;
 
   al_flip_display;
 
   WaitForEsc (Display);
 
   al_destroy_bitmap (Bitmap);
-  al_destroy_font (Font);
   al_destroy_bitmap (FontBitmap);
-  al_destroy_font (A4Font);
+  al_destroy_font (f1);
+  al_destroy_font (f2);
+  al_destroy_font (f3)
 END.

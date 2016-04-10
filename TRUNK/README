@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 5.0.alpha 1           \/___/                 \/_/
+     Version 5.2.alpha 2           \/___/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Ñuño Martínez, April 24, 2013.
+  by Ñuño Martínez, April 4, 2016.
 
 
 
@@ -109,8 +109,8 @@ Installation
 ============
 
   First you must install Allegro itself.  Current Allegro.pas version is
-  compatible with version 5.0.x only so DON'T install version 5.1.x.  Visit
-  Allegro's project website at http://alleg.sf.net/ to download it.  The
+  compatible with version 5.2.x only so DON'T install version 5.1.x.  Visit
+  Allegro's project website at http://liballeg.org/ to download it.  The
   package includes installation instructions.
 
   Then you need a Pascal compiler.  At the moment only Free Pascal and Delphi
@@ -143,6 +143,7 @@ Contact info
   are forums and a mailing-list you can use.  Also I visit quite often the
   next forums:
 
+  Allegro community - http://www.allegro.cc/
   Pascal Game Development - http://www.pascalgamedevelopment.com/
   Club Delphi - http://www.clubdelphi.com/
   Hispalazarus - http://hispalazarus.forogratis.es/
