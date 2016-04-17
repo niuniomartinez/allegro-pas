@@ -1,7 +1,8 @@
 In no special order
 
-  * Check sizes of BOOLEAN types.  It seems to work (Xubuntu 14.04.4).
+  * Check sizes of BOOLEAN types.  It seems to work (Xubuntu 14.04.4 & WinXP).
 
+  * See the various TODO notes in unit Allegro5.pas.
   * Sometimes it doesn't load samples.
     - It doesn't load on Fedora 64bit, but does on Ubuntu 32bit.
     - Suspect it's a problem with the funcion in C, similar than the problem
