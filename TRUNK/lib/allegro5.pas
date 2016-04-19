@@ -243,7 +243,7 @@ END;
   FUNCTION al_map_rgb (r, g, b: AL_UCHAR): ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* Convert r, g, b, a (ranging from 0-255) into an @link(ALLEGRO_COLOR).
-   @seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb_f) *)
+   @seealso(al_map_rgb) @seealso(al_map_rgba_f) @seealso(al_map_rgb_f) *)
   FUNCTION al_map_rgba (r, g, b, a: AL_UCHAR): ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* Convert r, g, b (ranging from 0.0f-1.0f) into an @link(ALLEGRO_COLOR), using
@@ -256,14 +256,14 @@ END;
   FUNCTION al_map_rgba_f (r, g, b, a: AL_FLOAT): ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* This is a shortcut for
-   @code(al_map_rgba (@r * a / 255, g * a / 255, b * a / 255, a@)).
+   @code(al_map_rgba @(r * a / 255, g * a / 255, b * a / 255, a@)).
 
    By default Allegro uses pre-multiplied alpha for transparent blending of
    bitmaps and primitives (see @link(al_load_bitmap_flags) for a discussion of
    that feature). This means that if you want to tint a bitmap or primitive to
    be transparent you need to multiply the color components by the alpha
    components when you pass them to this function. For example, to draw the
-   bitmap tinted red and half-transparent. }
+   bitmap tinted red and half-transparent.
 
 @longcode(#
 VAR
@@ -277,14 +277,14 @@ END;
   @seealso (al_map_rgba) @seealso(al_premul_rgba_f) *)
   FUNCTION al_premul_rgba (r, g, b: AL_UCHAR): ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* This is a shortcut for @code(al_map_rgba (@r * a, g * a, b * a, a@)).
+(* This is a shortcut for @code(al_map_rgba @(r * a, g * a, b * a, a@)).
 
    By default Allegro uses pre-multiplied alpha for transparent blending of
    bitmaps and primitives (see @link(al_load_bitmap_flags) for a discussion of
    that feature). This means that if you want to tint a bitmap or primitive to
    be transparent you need to multiply the color components by the alpha
    components when you pass them to this function. For example, to draw the
-   bitmap tinted red and half-transparent. }
+   bitmap tinted red and half-transparent.
 
 @longcode(#
 VAR
@@ -891,7 +891,7 @@ The above will only draw the red component of the bitmap.
    parameter of 0.
 
    @bold(Note:) the core Allegro library does not support any image file
-   formats by default. You must use the @link(alImage) addon, or register your
+   formats by default. You must use the @link(al5Image) addon, or register your
    own format handler.
    @return(@nil on error.)
    @seealso(al_load_bitmap_flags) @seealso(al_set_new_bitmap_format)
@@ -951,7 +951,7 @@ The above will only draw the red component of the bitmap.
   // Load and create bitmaps with an alpha channel
     al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA);
   // Load some bitmap with alpha in it
-    bmp := al_load_bitmap ('some_alpha_bitmap.png';
+    bmp := al_load_bitmap ('some_alpha_bitmap.png');
   // We will draw to this buffer and then draw this buffer to the screen
     tmp_buffer := al_create_bitmap (SCREEN_W, SCREEN_H);
   // Set the buffer as the target and clear it
@@ -987,16 +987,16 @@ The above will only draw the red component of the bitmap.
     Force the resulting ALLEGRO_BITMAP to use the same format as the file.
 
     This is not yet honoured.)
-  )
+  ))
    @returns(@nil on error.)
    @seealso(al_load_bitmap) *)
-  FUNCTION al_load_bitmap_flags (CONST filename: AL_STR): ALLEGRO_BITMAPptr;
+  FUNCTION al_load_bitmap_flags (CONST filename: AL_STR; flags: AL_INT): ALLEGRO_BITMAPptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* Saves an ALLEGRO_BITMAP to an image file. The file type is determined by the
    extension.
 
    @bold(Note:) the core Allegro library does not support any image file
-   formats by default. You must use the @link(alImage) addon, or register your
+   formats by default. You must use the @link(al5Image) addon, or register your
    own format handler.
    @return(@true on success, @false on error.)
    @seealso(al_init_image_addon) *)
@@ -1251,7 +1251,7 @@ al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
     Additive blending would be achieved with
 @longcode(#
 al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE);
-
+#)
     Copying the source to the destination (including alpha) unmodified
 @longcode(#
 al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
