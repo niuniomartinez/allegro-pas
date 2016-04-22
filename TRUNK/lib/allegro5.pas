@@ -1312,6 +1312,1064 @@ a = d.a * 0 + s.a * d.a
 
 
 (******************************************************************************
+ * events.h
+ *)
+
+  TYPE
+  (* An integer used to distinguish between different types of events.
+     @seealso(ALLEGRO_EVENT) @seealso(ALLEGRO_GET_EVENT_TYPE)
+     @seealso(ALLEGRO_EVENT_TYPE_IS_USER) *)
+    ALLEGRO_EVENT_TYPE = AL_UINT;
+
+  CONST
+    ALLEGRO_EVENT_JOYSTICK_AXIS          = 1;
+    ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN   = 2;
+    ALLEGRO_EVENT_JOYSTICK_BUTTON_UP     = 3;
+    ALLEGRO_EVENT_JOYSTICK_CONFIGURATION = 4;
+
+    ALLEGRO_EVENT_KEY_DOWN               = 10;
+    ALLEGRO_EVENT_KEY_CHAR               = 11;
+    ALLEGRO_EVENT_KEY_UP                 = 12;
+
+    ALLEGRO_EVENT_MOUSE_AXES             = 20;
+    ALLEGRO_EVENT_MOUSE_BUTTON_DOWN      = 21;
+    ALLEGRO_EVENT_MOUSE_BUTTON_UP        = 22;
+    ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY    = 23;
+    ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY    = 24;
+    ALLEGRO_EVENT_MOUSE_WARPED           = 25;
+
+    ALLEGRO_EVENT_TIMER                  = 30;
+
+    ALLEGRO_EVENT_DISPLAY_EXPOSE         = 40;
+    ALLEGRO_EVENT_DISPLAY_RESIZE         = 41;
+    ALLEGRO_EVENT_DISPLAY_CLOSE          = 42;
+    ALLEGRO_EVENT_DISPLAY_LOST           = 43;
+    ALLEGRO_EVENT_DISPLAY_FOUND          = 44;
+    ALLEGRO_EVENT_DISPLAY_SWITCH_IN      = 45;
+    ALLEGRO_EVENT_DISPLAY_SWITCH_OUT     = 46;
+    ALLEGRO_EVENT_DISPLAY_ORIENTATION    = 47;
+    ALLEGRO_EVENT_DISPLAY_HALT_DRAWING   = 48;
+    ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING = 49;
+
+    ALLEGRO_EVENT_TOUCH_BEGIN            = 50;
+    ALLEGRO_EVENT_TOUCH_END              = 51;
+    ALLEGRO_EVENT_TOUCH_MOVE             = 52;
+    ALLEGRO_EVENT_TOUCH_CANCEL           = 53;
+
+    ALLEGRO_EVENT_DISPLAY_CONNECTED      = 60;
+    ALLEGRO_EVENT_DISPLAY_DISCONNECTED   = 61;
+
+(* Returns @true if the event type is not a builtin event type, i.e. one of
+   those described in @link(ALLEGRO_EVENT_TYPE).*)
+  FUNCTION ALLEGRO_EVENT_TYPE_IS_USER (t: ALLEGRO_EVENT_TYPE): AL_BOOL; INLINE;
+
+(* Makes an event type identifier, which is a 32-bit integer. Usually, but not
+   necessarily, this will be made from four 8-bit character codes, for example:
+@longcode(#
+  MY_EVENT_TYPE := ALLEGRO_GET_EVENT_TYPE ('MINE');
+#)
+   IDs less than 1024 are reserved for Allegro or its addons. Don't use
+   anything lower than @code(ALLEGRO_GET_EVENT_TYPE @(#0#0#4#0@)).
+
+   You should try to make your IDs unique so they don't clash with any 3rd
+   party code you may be using. Be creative. Numbering from 1024 is not
+   creative.
+
+   If you need multiple identifiers, you could define them like this:
+@longcode(#
+  BASE_EVENT := ALLEGRO_GET_EVENT_TYPE ('MINE');
+  BARK_EVENT := BASE_EVENT + 1;
+  MEOW_EVENT := BASE_EVENT + 2;
+  SQUAWK_EVENT := BASE_EVENT + 3;
+#)
+  @seealso(ALLEGRO_EVENT) @seealso(ALLEGRO_USER_EVENT)
+  @seealso(ALLEGRO_EVENT_TYPE_IS_USER) *)
+  FUNCTION ALLEGRO_GET_EVENT_TYPE (CONST str: SHORTSTRING): AL_INT; INLINE;
+
+
+  TYPE
+  (* Pointer to a display. *)
+    ALLEGRO_DISPLAYptr = AL_POINTER;
+  (* Pointer to joystick. *)
+    ALLEGRO_JOYSTICKptr = AL_POINTER;
+  (* Pointer to keyboard. *)
+    ALLEGRO_KEYBOARDptr = AL_POINTER;
+  (* Pointer to mouse. *)
+    ALLEGRO_MOUSEptr = AL_POINTER;
+
+
+  (* Pointer to @link(ALLEGRO_EVENT_SOURCE). *)
+    ALLEGRO_EVENT_SOURCEptr = ^ALLEGRO_EVENT_SOURCE;
+  (* An event source is any object which can generate events.  For example, an
+     @link(ALLEGRO_DISPLAY) can generate events, and you can get the
+     @code(ALLEGRO_EVENT_SOURCE) pointer from an @code(ALLEGRO_DISPLAY) with
+     @link(al_get_display_event_source).
+
+     You may create your own “user” event sources that emit custom events.
+     @seealso(ALLEGRO_EVENT) @seealso(al_init_user_event_source)
+     @seealso(al_emit_user_event)
+   *)
+    ALLEGRO_EVENT_SOURCE = RECORD
+      __pad : ARRAY [0..31] OF AL_INT;
+    END;
+
+
+  { @exclude }
+    ALLEGRO_ANY_EVENT = RECORD
+      _type : ALLEGRO_EVENT_TYPE;
+      source : ALLEGRO_EVENT_SOURCEptr;
+      timestamp : AL_DOUBLE;
+    END;
+
+  (* NOTE: This is defined here instead of in the "display.h" section because
+     it is needed by the display event. *)
+    ALLEGRO_DISPLAY_ORIENTATION = (
+      ALLEGRO_DISPLAY_ORIENTATION_UNKNOWN = 0,
+      ALLEGRO_DISPLAY_ORIENTATION_0_DEGREES = 1,
+      ALLEGRO_DISPLAY_ORIENTATION_90_DEGREES = 2,
+      ALLEGRO_DISPLAY_ORIENTATION_180_DEGREES = 4,
+      ALLEGRO_DISPLAY_ORIENTATION_PORTRAIT = 5,
+      ALLEGRO_DISPLAY_ORIENTATION_270_DEGREES = 8,
+      ALLEGRO_DISPLAY_ORIENTATION_LANDSCAPE = 10,
+      ALLEGRO_DISPLAY_ORIENTATION_ALL = 15,
+      ALLEGRO_DISPLAY_ORIENTATION_FACE_UP = 16,
+      ALLEGRO_DISPLAY_ORIENTATION_FACE_DOWN = 32
+    );
+
+    ALLEGRO_DISPLAY_EVENT = RECORD
+      _type: ALLEGRO_EVENT_TYPE;
+      source: ALLEGRO_DISPLAYptr;
+      timestamp: AL_DOUBLE;
+      x, y: AL_INT;
+      width, height: AL_INT;
+      orientation: ALLEGRO_DISPLAY_ORIENTATION;
+    END;
+
+    ALLEGRO_JOYSTICK_EVENT = RECORD
+      _type: ALLEGRO_EVENT_TYPE;
+      source: ALLEGRO_JOYSTICKptr;
+      timestamp: AL_DOUBLE;
+      id: ALLEGRO_JOYSTICKptr;
+      stick: AL_INT;
+      axis: AL_INT;
+      pos: AL_FLOAT;
+      button: AL_INT;
+    END;
+
+    ALLEGRO_KEYBOARD_EVENT = RECORD
+      _type: ALLEGRO_EVENT_TYPE;
+      source: ALLEGRO_KEYBOARDptr;
+      timestamp: AL_DOUBLE;
+      display: ALLEGRO_DISPLAYptr;
+      keycode: AL_INT;
+      unichar: AL_INT;
+      modifiers: AL_UINT;
+      _repeat: AL_BOOL;
+    END;
+
+    ALLEGRO_MOUSE_EVENT = RECORD
+      _type: ALLEGRO_EVENT_TYPE;
+      source: ALLEGRO_MOUSEptr;
+      timestamp: AL_DOUBLE;
+      display: ALLEGRO_DISPLAYptr;
+      x, y, z, w: AL_INT;
+      dx, dy, dz, dw: AL_INT;
+      button: AL_UINT;
+      pressure: AL_FLOAT;
+    END;
+
+    ALLEGRO_TIMER_EVENT = RECORD
+      _type: ALLEGRO_EVENT_TYPE;
+      source: AL_POINTER;
+      timestamp: AL_DOUBLE;
+      count: AL_INT64;
+      error: AL_DOUBLE;
+    END;
+
+    ALLEGRO_TOUCH_EVENT = RECORD
+      _type: ALLEGRO_EVENT_TYPE;
+      source: AL_POINTER;
+      timestamp: AL_DOUBLE;
+      display: AL_POINTER;
+      id: AL_INT;
+      x, y: AL_DOUBLE;
+      dx, dy: AL_DOUBLE;
+      primary: AL_BOOL;
+    END;
+
+    ALLEGRO_USER_EVENT_DESCRIPTORptr = POINTER;
+
+    ALLEGRO_USER_EVENTptr = ^ALLEGRO_USER_EVENT;
+    ALLEGRO_USER_EVENT = RECORD
+      _type : ALLEGRO_EVENT_TYPE;
+      source : AL_POINTER;
+      timestamp : AL_DOUBLE;
+      __internal__descr : ALLEGRO_USER_EVENT_DESCRIPTORptr;
+      data1 : AL_POINTER;
+      data2 : AL_POINTER;
+      data3 : AL_POINTER;
+      data4 : AL_POINTER;
+    END;
+
+    ALLEGRO_EVENTptr = ^ALLEGRO_EVENT;
+    ALLEGRO_EVENT = RECORD
+      case LONGINT OF
+   (* This must be the same as the first field of _AL_EVENT_HEADER.  *)
+	0: ( _type: ALLEGRO_EVENT_TYPE );
+   (* `any' is to allow the user to access the other fields which are
+    * common to all event types, without using some specific type
+    * structure.
+    *)
+	1: ( any: ALLEGRO_ANY_EVENT );
+	2: ( display: ALLEGRO_DISPLAY_EVENT );
+	3: ( joystick: ALLEGRO_JOYSTICK_EVENT );
+	4: ( keyboard: ALLEGRO_KEYBOARD_EVENT );
+	5: ( mouse: ALLEGRO_MOUSE_EVENT );
+	6: ( timer: ALLEGRO_TIMER_EVENT );
+        7: ( touch: ALLEGRO_TOUCH_EVENT );
+	8: ( user: ALLEGRO_USER_EVENT );
+      END;
+
+    (* User event destructor. @seealso(al_emit_user_event) *)
+      ALLEGRO_EVENT_DTOR_PROC = PROCEDURE (evt: ALLEGRO_USER_EVENTptr); CDECL;
+
+(* Initialices an event source for emitting user events. The space for the event
+   source must already have been allocated.
+
+   One possible way of creating custom event sources is to derive other
+   structures with @code(ALLEGRO_EVENT_SOURCE) at the head, e.g.
+@longcode(#
+TYPE
+  THINGptr = ^THING;
+  THING = RECORD
+    event_source: ALLEGRO_EVENT_SOURCE;
+    field1, field2: INTEGER;
+    // etc.
+  END;
+
+FUNCTION CreateThing: THINGptr;
+BEGIN
+  RESULT := getmem (sizeof (THING));
+  IF RESULT <> NIL THEN
+  BEGIN
+    al_init_user_event_source (@(RESULT^.event_source));
+    RESULT^.field1 := 0;
+    RESULT^.field2 := 0;
+  END
+END;
+#)
+
+  The advantage here is that the @code(THING) pointer will be the same as the
+  @code(ALLEGRO_EVENT_SOURCE) pointer. Events emitted by the event source will
+  have the event source pointer as the source field, from which you can get a
+  pointer to a @code(THING) by a simple cast (after ensuring checking the event
+  is of the correct type).
+
+  However, it is only one technique and you are not obliged to use it.
+
+  The user event source will never be destroyed automatically. You must destroy
+  it manually with @code(al_destroy_user_event_source).
+  @seealso(ALLEGRO_EVENT_SOURCE) @seealso(al_destroy_user_event_source)
+  @seealso(al_emit_user_event) @seealso(ALLEGRO_USER_EVENT) *)
+  PROCEDURE al_init_user_event_source (source: ALLEGRO_EVENT_SOURCEptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Destroys an event source initialised with @link(al_init_user_event_source).
+
+   This does not free the memory, as that was user allocated to begin with.
+   @seealso(ALLEGRO_EVENT_SOURCE) *)
+  PROCEDURE al_destroy_user_event_source (source: ALLEGRO_EVENT_SOURCEptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* The second argument is ALLEGRO_EVENT instead of ALLEGRO_USER_EVENT
+ * to prevent users passing a pointer to a too-short structure.
+ *)
+  FUNCTION al_emit_user_event (source: ALLEGRO_EVENT_SOURCEptr; Event: ALLEGRO_EVENTptr; dtor: ALLEGRO_EVENT_DTOR_PROC): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_unref_user_event (event: ALLEGRO_USER_EVENTptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_set_event_source_data (source: ALLEGRO_EVENT_SOURCEptr; data: AL_POINTER);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_event_source_data (CONST source: ALLEGRO_EVENT_SOURCEptr): AL_POINTER;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+  TYPE
+    ALLEGRO_EVENT_QUEUEptr = AL_POINTER;
+
+  FUNCTION al_create_event_queue: ALLEGRO_EVENT_QUEUEptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_destroy_event_queue (queue: ALLEGRO_EVENT_QUEUEptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_is_event_source_registered (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_register_event_source (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_unregister_event_source (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_pause_event_queue (queue: ALLEGRO_EVENT_QUEUEptr; pause: AL_BOOL);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_is_event_queue_paused (CONST queue: ALLEGRO_EVENT_QUEUEptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_is_event_queue_empty (queue: ALLEGRO_EVENT_QUEUEptr): AL_BOOL;
+    CDECL;EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_next_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT ret_event: ALLEGRO_EVENT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_peek_next_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT ret_event: ALLEGRO_EVENT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_drop_next_event (queue: ALLEGRO_EVENT_QUEUEptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_flush_event_queue (queue: ALLEGRO_EVENT_QUEUEptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT ret_event: ALLEGRO_EVENT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT; secs: AL_FLOAT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT; VAR timeout: ALLEGRO_TIMEOUT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * display.h
+ *)
+
+
+  CONST
+  //  ALLEGRO_DEFAULT_DISPLAY_ADAPTER = -1;
+  (* Possible bit combinations for the flags parameter of al_set_new_display_flags. *)
+    ALLEGRO_DEFAULT                     = 0 SHL 0;
+    ALLEGRO_WINDOWED                    = 1 SHL 0;
+    ALLEGRO_FULLSCREEN                  = 1 SHL 1;
+    ALLEGRO_OPENGL                      = 1 SHL 2;
+    ALLEGRO_DIRECT3D_INTERNAL           = 1 SHL 3;
+    ALLEGRO_RESIZABLE                   = 1 SHL 4;
+    ALLEGRO_FRAMELESS                   = 1 SHL 5;
+    ALLEGRO_NOFRAME                     = ALLEGRO_FRAMELESS;
+    ALLEGRO_GENERATE_EXPOSE_EVENTS      = 1 SHL 6;
+    ALLEGRO_OPENGL_3_0                  = 1 SHL 7;
+    ALLEGRO_OPENGL_FORWARD_COMPATIBLE   = 1 SHL 8;
+    ALLEGRO_FULLSCREEN_WINDOW           = 1 SHL 9;
+    ALLEGRO_MINIMIZED                   = 1 SHL 10;
+    ALLEGRO_PROGRAMMABLE_PIPELINE       = 1 SHL 11;
+    ALLEGRO_GTK_TOPLEVEL_INTERNAL       = 1 SHL 12;
+    ALLEGRO_MAXIMIZED                   = 1 SHL 13;
+    ALLEGRO_OPENGL_ES_PROFILE           = 1 SHL 14;
+
+  TYPE
+  (* Possible parameters for al_set_display_option.
+
+     Make sure to update ALLEGRO_EXTRA_DISPLAY_SETTINGS if you modify
+     anything here.  *)
+    ALLEGRO_DISPLAY_OPTIONS = (
+      ALLEGRO_RED_SIZE = 0,
+      ALLEGRO_GREEN_SIZE = 1,
+      ALLEGRO_BLUE_SIZE = 2,
+      ALLEGRO_ALPHA_SIZE = 3,
+      ALLEGRO_RED_SHIFT = 4,
+      ALLEGRO_GREEN_SHIFT = 5,
+      ALLEGRO_BLUE_SHIFT = 6,
+      ALLEGRO_ALPHA_SHIFT = 7,
+      ALLEGRO_ACC_RED_SIZE = 8,
+      ALLEGRO_ACC_GREEN_SIZE = 9,
+      ALLEGRO_ACC_BLUE_SIZE = 10,
+      ALLEGRO_ACC_ALPHA_SIZE = 11,
+      ALLEGRO_STEREO = 12,
+      ALLEGRO_AUX_BUFFERS = 13,
+      ALLEGRO_COLOR_SIZE = 14,
+      ALLEGRO_DEPTH_SIZE = 15,
+      ALLEGRO_STENCIL_SIZE = 16,
+      ALLEGRO_SAMPLE_BUFFERS = 17,
+      ALLEGRO_SAMPLES = 18,
+      ALLEGRO_RENDER_METHOD = 19,
+      ALLEGRO_FLOAT_COLOR = 20,
+      ALLEGRO_FLOAT_DEPTH = 21,
+      ALLEGRO_SINGLE_BUFFER = 22,
+      ALLEGRO_SWAP_METHOD = 23,
+      ALLEGRO_COMPATIBLE_DISPLAY = 24,
+      ALLEGRO_UPDATE_DISPLAY_REGION = 25,
+      ALLEGRO_VSYNC = 26,
+      ALLEGRO_MAX_BITMAP_SIZE = 27,
+      ALLEGRO_SUPPORT_NPOT_BITMAP = 28,
+      ALLEGRO_CAN_DRAW_INTO_BITMAP = 29,
+      ALLEGRO_SUPPORT_SEPARATE_ALPHA = 30,
+      ALLEGRO_AUTO_CONVERT_BITMAPS = 31,
+      ALLEGRO_SUPPORTED_ORIENTATIONS = 32,
+      ALLEGRO_OPENGL_MAJOR_VERSION = 33,
+      ALLEGRO_OPENGL_MINOR_VERSION = 34,
+      ALLEGRO_DISPLAY_OPTIONS_COUNT
+    );
+
+  CONST
+    ALLEGRO_DONTCARE = 0;
+    ALLEGRO_REQUIRE = 1;
+    ALLEGRO_SUGGEST = 2;
+
+{ enum ALLEGRO_DISPLAY_ORIENTATION declared at section "events.h". }
+
+  { Formally part of the primitives addon. }
+    _ALLEGRO_PRIM_MAX_USER_ATTR = 10;
+
+{ pointer ALLEGRO_DISPLAYptr declared at section "events.h". }
+
+    ALLEGRO_NEW_WINDOW_TITLE_MAX_SIZE = 255;
+
+
+
+  PROCEDURE al_set_new_display_refresh_rate (refresh_rate: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_set_new_display_flags (flags: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_new_display_refresh_rate: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_new_display_flags: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_set_new_window_title (CONST title: AL_STR);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_new_window_title: AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_display_width (display: ALLEGRO_DISPLAYptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_display_height (display: ALLEGRO_DISPLAYptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Gets the pixel format of the display. *)
+  FUNCTION al_get_display_format (display: ALLEGRO_DISPLAYptr): ALLEGRO_PIXEL_FORMAT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_display_refresh_rate (display: ALLEGRO_DISPLAYptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_display_flags (display: ALLEGRO_DISPLAYptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_display_orientation (display: ALLEGRO_DISPLAYptr): ALLEGRO_DISPLAY_ORIENTATION;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_toggle_display_flag (display: ALLEGRO_DISPLAYptr; flag: AL_INT; onoff: AL_BOOL): AL_BOOL; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Creates a display, or window, with the specified dimensions. The parameters
+   of the display are determined by the last calls to
+   @code(al_set_new_display_* ). Default parameters are used if none are set
+   explicitly. Creating a new display will automatically make it the active
+   one, with the backbuffer selected for drawing.
+
+   Each display that uses OpenGL as a backend has a distinct OpenGL rendering
+   context associated with it. See @link(al_set_target_bitmap) for the
+   discussion about rendering contexts.
+   @returns(@nil on error.)
+   @seealso(al_set_new_display_flags) @seealso(al_set_new_display_option)
+   @seealso(al_set_new_display_refresh_rate)
+   @seealso(al_set_new_display_adapter) @seealso(al_set_new_window_title)
+   @seealso(al_destroy_display) *)
+  FUNCTION al_create_display (w, h: AL_INT): ALLEGRO_DISPLAYptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Destroys a display.
+
+   If the target bitmap of the calling thread is tied to the display, then it
+   implies a call to @code(al_set_target_bitmap @(@nil@);) before the display
+   is destroyed.
+
+   That special case notwithstanding, you should make sure no threads are
+   currently targeting a bitmap which is tied to the display before you destroy
+   it.
+   @seealso(al_set_target_bitmap) *)
+  PROCEDURE al_destroy_display (display: ALLEGRO_DISPLAYptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_current_display: ALLEGRO_DISPLAYptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* This function selects the bitmap to which all subsequent drawing operations
+   in the calling thread will draw to. To return to drawing to a display, set
+   the backbuffer of the display as the target bitmap, using
+   @link(al_get_backbuffer). As a convenience, you may also use
+   @link(al_set_target_backbuffer).
+
+   Each video bitmap is tied to a display. When a video bitmap is set to as the
+   target bitmap, the display that the bitmap belongs to is automatically made
+   "current" for the calling thread (if it is not current already). Then
+   drawing other bitmaps which are tied to the same display can be hardware
+   accelerated.
+
+   A single display cannot be current for multiple threads simultaneously. If
+   you need to release a display, so it is not current for the calling thread,
+   call @code(al_set_target_bitmap @(@nil@);)
+
+   Setting a memory bitmap as the target bitmap will not change which display
+   is current for the calling thread.
+
+   On some platforms, Allegro automatically backs up the contents of video
+   bitmaps because they may be occasionally lost (see discussion in
+   @link(al_create_bitmap)'s documentation). If you're completely recreating
+   the bitmap contents often (e.g. every frame) then you will get much better
+   performance by creating the target bitmap with
+   @link(ALLEGRO_NO_PRESERVE_TEXTURE) flag.
+
+   @bold(OpenGL note:)
+
+   Framebuffer objects (FBOs) allow OpenGL to directly draw to a bitmap, which
+   is very fast. When using an OpenGL display, if all of the following
+   conditions are met an FBO will be created for use with the bitmap:
+   @unorderedlist(
+    @item(The @code(GL_EXT_framebuffer_object) OpenGL extension is available.)
+    @item(The bitmap is not a memory bitmap.)
+    @item(The bitmap is not currently locked.)
+   )
+   In Allegro 5.0.0, you had to be careful as an FBO would be kept around until
+   the bitmap is destroyed or you explicitly called @link(al_remove_opengl_fbo)
+   on the bitmap, wasting resources. In newer versions, FBOs will be freed
+   automatically when the bitmap is no longer the target bitmap, unless you
+   have called @link(al_get_opengl_fbo) to retrieve the FBO id.
+
+   In the following example, no FBO will be created:
+@longcode(#
+lock := al_lock_bitmap (bitmap);
+al_set_target_bitmap (bitmap);
+al_put_pixel (x, y, color);
+al_unlock_bitmap (bitmap);
+#)
+   The above allows using @code(al_put_pixel) on a locked bitmap without
+   creating an FBO.
+
+   In this example an FBO is created however:
+@longcode(#
+al_set_target_bitmap(bitmap);
+al_draw_line(x1, y1, x2, y2, color, 0);
+#)
+   An OpenGL command will be used to directly draw the line into the bitmap's
+   associated texture.
+   @seealso(al_get_target_bitmap) @seealso(al_set_target_backbuffer) *)
+  PROCEDURE al_set_target_bitmap (Bitmap: ALLEGRO_BITMAPptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_set_target_backbuffer (display: ALLEGRO_DISPLAYptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_backbuffer (display: ALLEGRO_DISPLAYptr): ALLEGRO_BITMAPptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_target_bitmap: ALLEGRO_BITMAPptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+  FUNCTION al_acknowledge_resize (display: ALLEGRO_DISPLAYptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_resize_display (display: ALLEGRO_DISPLAYptr; width, height: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_flip_display;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_update_display_region (x, y, Width, height: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_is_compatible_bitmap (bitmap: ALLEGRO_BITMAPptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Wait for the beginning of a vertical retrace. Some driver/card/monitor
+   combinations may not be capable of this.
+
+   Note how @code(al_flip_display) usually already waits for the vertical
+   retrace, so unless you are doing something special, there is no reason to
+   call this function.
+   @returns(@false if not possible, @true if successful.)
+   @seealso(al_flip_display) *)
+  FUNCTION al_wait_for_vsync: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Retrieve the associated event source. See the documentation on events for a
+   list of the events displays will generate. *)
+  FUNCTION al_get_display_event_source (display: ALLEGRO_DISPLAYptr): ALLEGRO_EVENT_SOURCEptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+  PROCEDURE al_set_display_icon (display: ALLEGRO_DISPLAYptr; icon: ALLEGRO_BITMAPptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_set_display_icons (display: ALLEGRO_DISPLAYptr; num_icons: AL_INT; VAR icons: ARRAY OF ALLEGRO_BITMAPptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Stuff for multihead/window management *)
+  FUNCTION al_get_new_display_adapter: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_set_new_display_adapter (adapter: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_set_new_window_position (x, y: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_get_new_window_position (OUT x, y: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_set_window_position (display: ALLEGRO_DISPLAYptr; x, y: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_get_window_position (display: ALLEGRO_DISPLAYptr; OUT x, y: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_set_window_constraints (display: ALLEGRO_DISPLAYptr; min_w, min_h, max_w, max_h: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_window_constraints (display: ALLEGRO_DISPLAYptr; OUT min_w, min_h, max_w, max_h: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+  PROCEDURE al_set_window_title (display: ALLEGRO_DISPLAYptr; const title: AL_STR);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+  PROCEDURE al_set_new_display_option (option: ALLEGRO_DISPLAY_OPTIONS; value, importance: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_new_display_option (option: ALLEGRO_DISPLAY_OPTIONS; VAR importance: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_reset_new_display_options;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_set_display_option (display: ALLEGRO_DISPLAYptr; option: ALLEGRO_DISPLAY_OPTIONS; value: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_display_option (display: ALLEGRO_DISPLAYptr; option: ALLEGRO_DISPLAY_OPTIONS): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Deferred drawing *)
+  PROCEDURE al_hold_bitmap_drawing (hold: AL_BOOL);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_is_bitmap_drawing_held: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+  PROCEDURE al_acknowledge_drawing_halt (display: ALLEGRO_DISPLAYptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_acknowledge_drawing_resume (display: ALLEGRO_DISPLAYptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * drawing.h
+ *)
+
+  PROCEDURE al_clear_to_color (color: ALLEGRO_COLOR);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_clear_depth_buffer (x: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_draw_pixel (x, y: AL_FLOAT; color: ALLEGRO_COLOR);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * error.h
+ *     Error handling.
+ *)
+
+(* Some Allegro functions will set an error number as well as returning an
+   error code.  Call this function to retrieve the last error number set for
+   the calling thread. @seealso(al_set_errno) *)
+  FUNCTION al_get_errno: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+(* Sets the error number for the calling thread. @seealso(al_get_errno) *)
+  PROCEDURE al_set_errno (errnum: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * fixed.h
+ *)
+
+ { TODO: Coming soon ;). }
+
+(******************************************************************************
+ * fmath.h
+ *)
+
+ { TODO: Coming soon ;). }
+
+
+(******************************************************************************
+ * fshook.h
+ *
+ * File system hooks.
+ *)
+
+ { TODO: Don't do nothing until file.h is added. }
+
+
+
+(******************************************************************************
+ * fullscreen_mode.h
+ *)
+
+  TYPE
+    ALLEGRO_DISPLAY_MODEptr = ^ALLEGRO_DISPLAY_MODE;
+    ALLEGRO_DISPLAY_MODE = RECORD
+      width, height, format, refresh_rate: AL_INT;
+    END;
+
+  FUNCTION al_get_num_display_modes: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Retrieves a fullscreen mode.  Display parameters should not be changed
+   between a call of @code(al_get_num_display_modes) and
+   @code(al_get_display_mode).
+   @param(index Must be between 0 and the number returned from
+     @code(al_get_num_display_modes - 1).)
+   @param(mode Must be an allocated @code(ALLEGRO_DISPLAY_MODE) structure.)
+   @return(@nil on failure, and the mode parameter that was passed in on
+     success.)
+   @seealso(ALLEGRO_DISPLAY_MODE) @seealso(al_get_num_display_modes) *)
+  FUNCTION al_get_display_mode (index: AL_INT; mode: ALLEGRO_DISPLAY_MODEptr): ALLEGRO_DISPLAY_MODEptr;
+    EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * joystick.h
+ *
+ *   Joystick routines.
+ *)
+
+  CONST
+  (* internal values *)
+    _AL_MAX_JOYSTICK_AXES    =  3;
+    _AL_MAX_JOYSTICK_STICKS  = 16;
+    _AL_MAX_JOYSTICK_BUTTONS = 32;
+
+  TYPE
+    ALLEGRO_JOYSTICK_STATE = RECORD
+      stick: ARRAY [0.._AL_MAX_JOYSTICK_STICKS - 1] OF RECORD
+	axis: ARRAY [0.._AL_MAX_JOYSTICK_AXES - 1] OF AL_FLOAT; { -1.0 to 1.0 }
+      END;
+      button: ARRAY [0.._AL_MAX_JOYSTICK_BUTTONS - 1] OF AL_INT; { 0 to 32767 }
+    END;
+
+
+
+    ALLEGRO_JOYFLAGS = (
+      ALLEGRO_JOYFLAG_DIGITAL  = $01,
+      ALLEGRO_JOYFLAG_ANALOGUE = $02
+    );
+
+  FUNCTION al_install_joystick: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_uninstall_joystick;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_is_joystick_installed: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_reconfigure_joysticks: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_num_joysticks: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_joystick (joyn: AL_INT): ALLEGRO_JOYSTICKptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_release_joystick (j: ALLEGRO_JOYSTICKptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_joystick_active (j: ALLEGRO_JOYSTICKptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_joystick_name (j: ALLEGRO_JOYSTICKptr): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_joystick_num_sticks (j: ALLEGRO_JOYSTICKptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_joystick_stick_flags (j: ALLEGRO_JOYSTICKptr; stick: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_joystick_stick_name (j: ALLEGRO_JOYSTICKptr; stick: AL_INT): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_joystick_num_axes (j: ALLEGRO_JOYSTICKptr; stick: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_joystick_axis_name (j: ALLEGRO_JOYSTICKptr; stick, axis: AL_INT): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_joystick_num_buttons (j: ALLEGRO_JOYSTICKptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_joystick_button_name (j: ALLEGRO_JOYSTICKptr; buttonn: AL_INT): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_get_joystick_state (j: ALLEGRO_JOYSTICKptr; VAR ret_state: ALLEGRO_JOYSTICK_STATE);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_joystick_event_source: ALLEGRO_EVENT_SOURCEptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * keycodes.h
+ *)
+
+{$include keycodes.inc}
+
+
+
+(******************************************************************************
+ * keyboard.h
+ *
+ *   Keyboard routines.
+ *)
+
+  TYPE
+    ALLEGRO_KEYBOARD_STATEptr = ^ALLEGRO_KEYBOARD_STATE;
+    ALLEGRO_KEYBOARD_STATE = RECORD
+      display: ALLEGRO_DISPLAYptr;
+    { @exclude internal }
+      __key_down__internal__: ARRAY [0..((ALLEGRO_KEY_MAX * 31) DIV 32) - 1] OF AL_UINT;
+    END;
+
+  FUNCTION al_is_keyboard_installed: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_install_keyboard: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_uninstall_keyboard;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_set_keyboard_leds (leds: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_keycode_to_name (keycode: AL_INT): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_get_keyboard_state (VAR ret_state: ALLEGRO_KEYBOARD_STATE);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_key_down (VAR state: ALLEGRO_KEYBOARD_STATE; keycode: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  FUNCTION al_get_keyboard_event_source: ALLEGRO_EVENT_SOURCEptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * mouse.h
+ *
+ *  Mouse routines.
+ *)
+
+  CONST
+  (* Allow up to four extra axes for future expansion. *)
+    ALLEGRO_MOUSE_MAX_EXTRA_AXES = 4;
+
+  TYPE
+  (* Type: ALLEGRO_MOUSE_STATE *)
+    ALLEGRO_MOUSE_STATEptr = ^ALLEGRO_MOUSE_STATE;
+    ALLEGRO_MOUSE_STATE = RECORD
+    (* (x, y) Primary mouse position
+     * (z) Mouse wheel position (1D 'wheel'), or,
+     * (w, z) Mouse wheel position (2D 'ball')
+     * display - the display the mouse is on (coordinates are relative to this)
+     * pressure - the pressure appleid to the mouse (for stylus/tablet)
+     *)
+      x, y, z, w: AL_INT;
+      more_axes: ARRAY [0..(ALLEGRO_MOUSE_MAX_EXTRA_AXES - 1)] OF AL_INT;
+      buttons: AL_INT;
+      pressure: AL_FLOAT;
+      display: ALLEGRO_DISPLAYptr;
+    END;
+
+
+
+  FUNCTION al_is_mouse_installed: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_install_mouse: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_uninstall_mouse;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_mouse_num_buttons: AL_UINT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_mouse_num_axes: AL_UINT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_set_mouse_xy (display: ALLEGRO_DISPLAYptr; x, y: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_set_mouse_z (z: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_set_mouse_w (w: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_set_mouse_axis (axis, value: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_get_mouse_state (ret_state: ALLEGRO_MOUSE_STATEptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_mouse_button_down (CONST state: ALLEGRO_MOUSE_STATEptr; button: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_mouse_state_axis (CONST state: ALLEGRO_MOUSE_STATEptr; axis: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_mouse_cursor_position (VAR ret_x, ret_y: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_grab_mouse (display: ALLEGRO_DISPLAYptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_ungrab_mouse: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_set_mouse_wheel_precision (precision: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_mouse_wheel_precision: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+  FUNCTION al_get_mouse_event_source: ALLEGRO_EVENT_SOURCEptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * touch_input.h
+ *
+ *   Touch input routines.
+ *)
+
+{ TODO: Not yet. }
+
+
+
+(******************************************************************************
+ * touch_input.h
+ *
+ *   Touch input routines.
+ *)
+
+{ TODO: Not yet. }
+
+
+
+(******************************************************************************
+ * haptic.h
+ *
+ *   Haptic (that is, force feedback) routines for Allegro.
+ *)
+
+{ TODO: Not yet. }
+
+
+
+(******************************************************************************
+ * memory.h
+ *
+ *   Memory management routines.
+ *)
+
+{ Seems to be for internal use. }
+
+
+
+(******************************************************************************
+ * monitor.h
+ *)
+
+  CONST
+    ALLEGRO_DEFAULT_DISPLAY_ADAPTER = -1;
+
+  TYPE
+    ALLEGRO_MONITOR_INFO = RECORD
+      x1, y1, x2, y2: AL_INT;
+    END;
+
+  FUNCTION al_get_num_video_adapters: AL_INT; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_monitor_info (adapter: AL_INT; OUT info: ALLEGRO_MONITOR_INFO): AL_BOOL; CDECL;
+    EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * mouse_cursor.h
+ *)
+
+  TYPE
+  (* Mouse cursors *)
+    ALLEGRO_MOUSE_CURSORptr = AL_POINTER;
+
+    ALLEGRO_SYSTEM_MOUSE_CURSOR = (
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_NONE        =  0,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT     =  1,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_ARROW       =  2,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_BUSY        =  3,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_QUESTION    =  4,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_EDIT        =  5,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_MOVE        =  6,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_N    =  7,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_W    =  8,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_S    =  9,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_E    = 10,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_NW   = 11,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_SW   = 12,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_SE   = 13,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_NE   = 14,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_PROGRESS    = 15,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_PRECISION   = 16,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK        = 17,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_ALT_SELECT  = 18,
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_UNAVAILABLE = 19,
+      ALLEGRO_NUM_SYSTEM_MOUSE_CURSORS
+    );
+
+  FUNCTION al_create_mouse_cursor (sprite: ALLEGRO_BITMAPptr; xfocus, yfocus: AL_INT): ALLEGRO_MOUSE_CURSORptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_destroy_mouse_cursor (cursor: ALLEGRO_MOUSE_CURSORptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_set_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor: ALLEGRO_MOUSE_CURSORptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_set_system_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor_id: ALLEGRO_SYSTEM_MOUSE_CURSOR): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_show_mouse_cursor (display: ALLEGRO_DISPLAYptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_hide_mouse_cursor (display: ALLEGRO_DISPLAYptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * render_state.h
+ *)
+
+{ TODO: Not yet. }
+
+
+
+(******************************************************************************
+ * transformations.h
+ *)
+
+  TYPE
+    ALLEGRO_TRANSFORMptr = ^ALLEGRO_TRANSFORM;
+    ALLEGRO_TRANSFORM = RECORD
+      m: ARRAY [0..3] OF ARRAY [0..3] OF AL_FLOAT;
+    END;
+
+(* Transformations*)
+{ TODO: 3D transformations. }
+  PROCEDURE al_use_transform (VAR trans: ALLEGRO_TRANSFORM);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_copy_transform (OUT dest: ALLEGRO_TRANSFORM; VAR src: ALLEGRO_TRANSFORM);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_identity_transform (OUT trans: ALLEGRO_TRANSFORM);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_build_transform (OUT trans: ALLEGRO_TRANSFORM; x, y, sx, sy, theta: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_translate_transform (VAR trans: ALLEGRO_TRANSFORM; x, y: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_rotate_transform (VAR trans: ALLEGRO_TRANSFORM; theta: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_scale_transform (VAR trans: ALLEGRO_TRANSFORM; sx, sy: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_transform_coordinates (VAR trans: ALLEGRO_TRANSFORM; VAR x, y: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_compose_transform (VAR trans, other: ALLEGRO_TRANSFORM);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_current_transform: ALLEGRO_TRANSFORMptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_invert_transform (VAR trans: ALLEGRO_TRANSFORM);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_check_inverse (VAR trans: ALLEGRO_TRANSFORM; tol: AL_FLOAT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * shader.h
+ *)
+
+ { TODO: Coming soon. ;) }
+
+
+
+(******************************************************************************
  * THIS WAS MOVED to another header file.
  *)
 
@@ -1378,23 +2436,6 @@ a = d.a * 0 + s.a * d.a
 
 
 (******************************************************************************
- * error.h
- *     Error handling.
- *)
-
-(* Some Allegro functions will set an error number as well as returning an
-   error code.  Call this function to retrieve the last error number set for
-   the calling thread. @seealso(al_set_errno) *)
-  FUNCTION al_get_errno: AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Sets the error number for the calling thread. @seealso(al_get_errno) *)
-  PROCEDURE al_set_errno (errnum: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-
-
-(******************************************************************************
  * system.h
  *)
 
@@ -1402,22 +2443,6 @@ a = d.a * 0 + s.a * d.a
   (* Pointer to the Allegro system description record.
      For internal use only. *)
     ALLEGRO_SYSTEMptr = AL_POINTER;
-
-  (* Pointer to @link(ALLEGRO_EVENT_SOURCE). *)
-    ALLEGRO_EVENT_SOURCEptr = ^ALLEGRO_EVENT_SOURCE;
-  (* An event source is any object which can generate events.  For example, an
-     @link(ALLEGRO_DISPLAY) can generate events, and you can get the
-     @code(ALLEGRO_EVENT_SOURCE) pointer from an @code(ALLEGRO_DISPLAY) with
-     @link(al_get_display_event_source).
-
-     You may create your own “user” event sources that emit custom events.
-     @seealso(ALLEGRO_EVENT) @seealso(al_init_user_event_source)
-     @seealso(al_emit_user_event)
-   *)
-    ALLEGRO_EVENT_SOURCE = RECORD
-      __pad : ARRAY [0..31] OF AL_INT;
-    END;
-
 
 (* Like @link(al_install_system), but automatically passes in the version and
    uses the @code(atexit) function visible in the current compilation unit. *)
@@ -1475,440 +2500,6 @@ a = d.a * 0 + s.a * d.a
 
 
 (******************************************************************************
- * display.h
- *)
-
-
-  CONST
-    ALLEGRO_DEFAULT_DISPLAY_ADAPTER = -1;
-  (* Possible bit combinations for the flags parameter of al_set_new_display_flags. *)
-    ALLEGRO_DEFAULT                     = 0 SHL 0;
-    ALLEGRO_WINDOWED                    = 1 SHL 0;
-    ALLEGRO_FULLSCREEN                  = 1 SHL 1;
-    ALLEGRO_OPENGL                      = 1 SHL 2;
-    ALLEGRO_DIRECT3D_INTERNAL           = 1 SHL 3;
-    ALLEGRO_RESIZABLE                   = 1 SHL 4;
-    ALLEGRO_NOFRAME                     = 1 SHL 5;
-    ALLEGRO_GENERATE_EXPOSE_EVENTS      = 1 SHL 6;
-    ALLEGRO_OPENGL_3_0                  = 1 SHL 7;
-    ALLEGRO_OPENGL_FORWARD_COMPATIBLE   = 1 SHL 8;
-    ALLEGRO_FULLSCREEN_WINDOW           = 1 SHL 9;
-    ALLEGRO_MINIMIZED                   = 1 SHL 10;
-
-  TYPE
-  (* Possible parameters for al_set_display_option.
-
-     Make sure to update ALLEGRO_EXTRA_DISPLAY_SETTINGS if you modify
-     anything here.  *)
-    ALLEGRO_DISPLAY_OPTIONS = (
-      ALLEGRO_RED_SIZE,
-      ALLEGRO_GREEN_SIZE,
-      ALLEGRO_BLUE_SIZE,
-      ALLEGRO_ALPHA_SIZE,
-      ALLEGRO_RED_SHIFT,
-      ALLEGRO_GREEN_SHIFT,
-      ALLEGRO_BLUE_SHIFT,
-      ALLEGRO_ALPHA_SHIFT,
-      ALLEGRO_ACC_RED_SIZE,
-      ALLEGRO_ACC_GREEN_SIZE,
-      ALLEGRO_ACC_BLUE_SIZE,
-      ALLEGRO_ACC_ALPHA_SIZE,
-      ALLEGRO_STEREO,
-      ALLEGRO_AUX_BUFFERS,
-      ALLEGRO_COLOR_SIZE,
-      ALLEGRO_DEPTH_SIZE,
-      ALLEGRO_STENCIL_SIZE,
-      ALLEGRO_SAMPLE_BUFFERS,
-      ALLEGRO_SAMPLES,
-      ALLEGRO_RENDER_METHOD,
-      ALLEGRO_FLOAT_COLOR,
-      ALLEGRO_FLOAT_DEPTH,
-      ALLEGRO_SINGLE_BUFFER,
-      ALLEGRO_SWAP_METHOD,
-      ALLEGRO_COMPATIBLE_DISPLAY,
-      ALLEGRO_UPDATE_DISPLAY_REGION,
-      ALLEGRO_VSYNC,
-      ALLEGRO_MAX_BITMAP_SIZE,
-      ALLEGRO_SUPPORT_NPOT_BITMAP,
-      ALLEGRO_CAN_DRAW_INTO_BITMAP,
-      ALLEGRO_SUPPORT_SEPARATE_ALPHA,
-      ALLEGRO_DISPLAY_OPTIONS_COUNT
-    );
-
-  CONST
-    ALLEGRO_DONTCARE = 0;
-    ALLEGRO_REQUIRE = 1;
-    ALLEGRO_SUGGEST = 2;
-
-  TYPE
-    ALLEGRO_DISPLAY_ORIENTATION = (
-      ALLEGRO_DISPLAY_ORIENTATION_0_DEGREES,
-      ALLEGRO_DISPLAY_ORIENTATION_90_DEGREES,
-      ALLEGRO_DISPLAY_ORIENTATION_180_DEGREES,
-      ALLEGRO_DISPLAY_ORIENTATION_270_DEGREES,
-      ALLEGRO_DISPLAY_ORIENTATION_FACE_UP,
-      ALLEGRO_DISPLAY_ORIENTATION_FACE_DOWN
-    );
-
-
-
-    ALLEGRO_DISPLAYptr = AL_POINTER;
-
-
-
-    ALLEGRO_DISPLAY_MODEptr = ^ALLEGRO_DISPLAY_MODE;
-    ALLEGRO_DISPLAY_MODE = RECORD
-      width, height, format, refresh_rate: AL_INT;
-    END;
-
-
-
-    ALLEGRO_MONITOR_INFO = RECORD
-      x1, y1, x2, y2: AL_INT;
-    END;
-
-  PROCEDURE al_set_new_display_refresh_rate (refresh_rate: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_set_new_display_flags (flags: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_new_display_refresh_rate: AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_new_display_flags: AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-
-
-  FUNCTION al_get_display_width (display: ALLEGRO_DISPLAYptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_display_height (display: ALLEGRO_DISPLAYptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_display_format (display: ALLEGRO_DISPLAYptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_display_refresh_rate (display: ALLEGRO_DISPLAYptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_display_flags (display: ALLEGRO_DISPLAYptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_toggle_display_flag (display: ALLEGRO_DISPLAYptr; flag: AL_INT; onoff: AL_BOOL): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-
-
-  FUNCTION al_create_display (w, h: AL_INT): ALLEGRO_DISPLAYptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_destroy_display (display: ALLEGRO_DISPLAYptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_current_display: ALLEGRO_DISPLAYptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_set_target_bitmap (Bitmap: ALLEGRO_BITMAPptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_set_target_backbuffer (display: ALLEGRO_DISPLAYptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_backbuffer (display: ALLEGRO_DISPLAYptr): ALLEGRO_BITMAPptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_target_bitmap: ALLEGRO_BITMAPptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  FUNCTION al_acknowledge_resize (display: ALLEGRO_DISPLAYptr): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_resize_display (display: ALLEGRO_DISPLAYptr; width, height: AL_INT): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_flip_display; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_update_display_region (x, y, Width, height: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_is_compatible_bitmap (bitmap: ALLEGRO_BITMAPptr): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  FUNCTION al_get_num_display_modes: AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_display_mode (index: AL_INT; mode: ALLEGRO_DISPLAY_MODEptr): ALLEGRO_DISPLAY_MODEptr;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  FUNCTION al_wait_for_vsync: AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  FUNCTION al_get_display_event_source (display: ALLEGRO_DISPLAYptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Primitives *)
-  PROCEDURE al_clear_to_color (color: ALLEGRO_COLOR); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_draw_pixel (x, y: AL_FLOAT; color: ALLEGRO_COLOR); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  PROCEDURE al_set_display_icon (display: ALLEGRO_DISPLAYptr; icon: ALLEGRO_BITMAPptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Stuff for multihead/window management *)
-  FUNCTION al_get_num_video_adapters: AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_monitor_info (adapter: AL_INT; VAR info: ALLEGRO_MONITOR_INFO): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_new_display_adapter: AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_set_new_display_adapter (adapter: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_set_new_window_position (x, y: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_get_new_window_position (VAR x, y: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_set_window_position (display: ALLEGRO_DISPLAYptr; x, y: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_get_window_position (display: ALLEGRO_DISPLAYptr; VAR x, y: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  PROCEDURE al_set_window_title (display: ALLEGRO_DISPLAYptr; CONST title: STRING); INLINE;
-
-  PROCEDURE al_set_new_display_option (option: ALLEGRO_DISPLAY_OPTIONS; value, importance: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_new_display_option (option: ALLEGRO_DISPLAY_OPTIONS; VAR importance: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_reset_new_display_options; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_display_option (display: ALLEGRO_DISPLAYptr; option: ALLEGRO_DISPLAY_OPTIONS): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Deferred drawing *)
-  PROCEDURE al_hold_bitmap_drawing (hold: AL_BOOL); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_is_bitmap_drawing_held: AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-
-
-(******************************************************************************
- * keycodes.h
- *)
-
-{$include keycodes.inc}
-
-
-
-(******************************************************************************
- * keyboard.h
- *)
-
-  TYPE
-    ALLEGRO_KEYBOARDptr = AL_POINTER;
-
-
-    ALLEGRO_KEYBOARD_STATEptr = ^ALLEGRO_KEYBOARD_STATE;
-    ALLEGRO_KEYBOARD_STATE = RECORD
-      display: ALLEGRO_DISPLAYptr;
-    { @exclude internal }
-      __key_down__internal__: ARRAY [0..((ALLEGRO_KEY_MAX * 31) DIV 32) - 1] OF AL_UINT;
-    END;
-
-  FUNCTION al_is_keyboard_installed: AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_install_keyboard: AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_uninstall_keyboard; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  FUNCTION al_set_keyboard_leds (leds: AL_INT): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  FUNCTION al_keycode_to_name (keycode: AL_INT): AL_STRptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  PROCEDURE al_get_keyboard_state (VAR ret_state: ALLEGRO_KEYBOARD_STATE); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_key_down (VAR state: ALLEGRO_KEYBOARD_STATE; keycode: AL_INT): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  FUNCTION al_get_keyboard_event_source: ALLEGRO_EVENT_SOURCEptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-
-
-(******************************************************************************
- * joystick.h
- *)
-
-  CONST
-(* internal values *)
-    _AL_MAX_JOYSTICK_AXES    = 3;
-    _AL_MAX_JOYSTICK_STICKS  = 8;
-    _AL_MAX_JOYSTICK_BUTTONS = 32;
-
-  TYPE
-    ALLEGRO_JOYSTICKptr = AL_POINTER;
-
-
-
-    ALLEGRO_JOYSTICK_STATE = RECORD
-      stick: ARRAY [0.._AL_MAX_JOYSTICK_STICKS - 1] OF RECORD
-	axis: ARRAY [0.._AL_MAX_JOYSTICK_AXES - 1] OF AL_FLOAT; { -1.0 to 1.0 }
-      END;
-      button: ARRAY [0.._AL_MAX_JOYSTICK_BUTTONS - 1] OF AL_INT; { 0 to 32767 }
-    END;
-
-
-
-    ALLEGRO_JOYFLAGS = (
-      ALLEGRO_JOYFLAG_DIGITAL  = $01,
-      ALLEGRO_JOYFLAG_ANALOGUE = $02
-    );
-
-  FUNCTION al_install_joystick: AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_uninstall_joystick; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_is_joystick_installed: AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_reconfigure_joysticks: AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  FUNCTION al_get_num_joysticks: AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_joystick (joyn: AL_INT): ALLEGRO_JOYSTICKptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_release_joystick (j: ALLEGRO_JOYSTICKptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_joystick_active (j: ALLEGRO_JOYSTICKptr): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_joystick_name (j: ALLEGRO_JOYSTICKptr): AL_STRptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  FUNCTION al_get_joystick_num_sticks (j: ALLEGRO_JOYSTICKptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_joystick_stick_flags (j: ALLEGRO_JOYSTICKptr; stick: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_joystick_stick_name (j: ALLEGRO_JOYSTICKptr; stick: AL_INT): AL_STRptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  FUNCTION al_get_joystick_num_axes (j: ALLEGRO_JOYSTICKptr; stick: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_joystick_axis_name (j: ALLEGRO_JOYSTICKptr; stick, axis: AL_INT): AL_STRptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  FUNCTION al_get_joystick_num_buttons (j: ALLEGRO_JOYSTICKptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_joystick_button_name (j: ALLEGRO_JOYSTICKptr; buttonn: AL_INT): AL_STRptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  PROCEDURE al_get_joystick_state (j: ALLEGRO_JOYSTICKptr; VAR ret_state: ALLEGRO_JOYSTICK_STATE); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  FUNCTION al_get_joystick_event_source: ALLEGRO_EVENT_SOURCEptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-
-
-(******************************************************************************
- * mouse.h
- *)
-
-  CONST
-  (* Allow up to four extra axes for future expansion. *)
-    ALLEGRO_MOUSE_MAX_EXTRA_AXES = 4;
-
-  TYPE
-    ALLEGRO_MOUSEptr = AL_POINTER;
-
-  (* Type: ALLEGRO_MOUSE_STATE *)
-    ALLEGRO_MOUSE_STATEptr = ^ALLEGRO_MOUSE_STATE;
-    ALLEGRO_MOUSE_STATE = RECORD
-    (* (x, y) Primary mouse position
-     * (z) Mouse wheel position (1D 'wheel'), or,
-     * (w, z) Mouse wheel position (2D 'ball')
-     * display - the display the mouse is on (coordinates are relative to this)
-     * pressure - the pressure appleid to the mouse (for stylus/tablet)
-     *)
-      x, y, z, w: AL_INT;
-      more_axes: ARRAY [0..(ALLEGRO_MOUSE_MAX_EXTRA_AXES - 1)] OF AL_INT;
-      buttons: AL_INT;
-      pressure: AL_FLOAT;
-      display: ALLEGRO_DISPLAYptr;
-    END;
-
-
-  (* Mouse cursors *)
-    ALLEGRO_MOUSE_CURSORptr = AL_POINTER;
-
-    ALLEGRO_SYSTEM_MOUSE_CURSOR = (
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_NONE        =  0,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT     =  1,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_ARROW       =  2,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_BUSY        =  3,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_QUESTION    =  4,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_EDIT        =  5,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_MOVE        =  6,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_N    =  7,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_W    =  8,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_S    =  9,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_E    = 10,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_NW   = 11,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_SW   = 12,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_SE   = 13,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_RESIZE_NE   = 14,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_PROGRESS    = 15,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_PRECISION   = 16,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_LINK        = 17,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_ALT_SELECT  = 18,
-      ALLEGRO_SYSTEM_MOUSE_CURSOR_UNAVAILABLE = 19,
-      ALLEGRO_NUM_SYSTEM_MOUSE_CURSORS
-    );
-
-  FUNCTION al_is_mouse_installed: AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_install_mouse: AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_uninstall_mouse; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_mouse_num_buttons: AL_UINT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_mouse_num_axes: AL_UINT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_set_mouse_xy (display: ALLEGRO_DISPLAYptr; x, y: AL_INT): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_set_mouse_z (z: AL_INT): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_set_mouse_w (w: AL_INT): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_set_mouse_axis (axis, value: AL_INT): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_get_mouse_state (ret_state: ALLEGRO_MOUSE_STATEptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_mouse_button_down (CONST state: ALLEGRO_MOUSE_STATEptr; button: AL_INT): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_mouse_state_axis (CONST state: ALLEGRO_MOUSE_STATEptr; axis: AL_INT): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  FUNCTION al_get_mouse_event_source: ALLEGRO_EVENT_SOURCEptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(*
- * Cursors:
- *
- * This will probably become part of the display API.  It provides for
- * hardware cursors only; software cursors may or may not be provided
- * for later (it would need significant cooperation from the display
- * API).
- *)
-  FUNCTION al_create_mouse_cursor (sprite: ALLEGRO_BITMAPptr; xfocus, yfocus: AL_INT): ALLEGRO_MOUSE_CURSORptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_destroy_mouse_cursor (cursor: ALLEGRO_MOUSE_CURSORptr);
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_set_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor: ALLEGRO_MOUSE_CURSORptr): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_set_system_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor_id: ALLEGRO_SYSTEM_MOUSE_CURSOR): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_show_mouse_cursor (display: ALLEGRO_DISPLAYptr): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_hide_mouse_cursor (display: ALLEGRO_DISPLAYptr): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_mouse_cursor_position (VAR ret_x, ret_y: AL_INT): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_grab_mouse (display: ALLEGRO_DISPLAYptr): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ungrab_mouse: AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-
-
-(******************************************************************************
  * timer.h
  *)
 
@@ -1948,246 +2539,6 @@ a = d.a * 0 + s.a * d.a
   PROCEDURE al_add_timer_count (timer: ALLEGRO_TIMERptr; diff: AL_INT64); CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_get_timer_event_source (timer: ALLEGRO_TIMERptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-
-
-(******************************************************************************
- * events.h
- *)
-
-  TYPE
-    ALLEGRO_EVENT_TYPE = AL_UINT;
-
-  CONST
-    ALLEGRO_EVENT_JOYSTICK_AXIS          = 1;
-    ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN   = 2;
-    ALLEGRO_EVENT_JOYSTICK_BUTTON_UP     = 3;
-    ALLEGRO_EVENT_JOYSTICK_CONFIGURATION = 4;
-
-    ALLEGRO_EVENT_KEY_DOWN               = 10;
-    ALLEGRO_EVENT_KEY_CHAR               = 11;
-    ALLEGRO_EVENT_KEY_UP                 = 12;
-
-    ALLEGRO_EVENT_MOUSE_AXES             = 20;
-    ALLEGRO_EVENT_MOUSE_BUTTON_DOWN      = 21;
-    ALLEGRO_EVENT_MOUSE_BUTTON_UP        = 22;
-    ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY    = 23;
-    ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY    = 24;
-    ALLEGRO_EVENT_MOUSE_WARPED           = 25;
-
-    ALLEGRO_EVENT_TIMER                  = 30;
-
-    ALLEGRO_EVENT_DISPLAY_EXPOSE         = 40;
-    ALLEGRO_EVENT_DISPLAY_RESIZE         = 41;
-    ALLEGRO_EVENT_DISPLAY_CLOSE          = 42;
-    ALLEGRO_EVENT_DISPLAY_LOST           = 43;
-    ALLEGRO_EVENT_DISPLAY_FOUND          = 44;
-    ALLEGRO_EVENT_DISPLAY_SWITCH_IN      = 45;
-    ALLEGRO_EVENT_DISPLAY_SWITCH_OUT     = 46;
-    ALLEGRO_EVENT_DISPLAY_ORIENTATION    = 47;
-
-(* Function: ALLEGRO_EVENT_TYPE_IS_USER
- *
- *    1 <= n < 512  - builtin events
- *  512 <= n < 1024 - reserved user events (for addons)
- * 1024 <= n        - unreserved user events
- *)
-  FUNCTION ALLEGRO_EVENT_TYPE_IS_USER (t: ALLEGRO_EVENT_TYPE): AL_BOOL; INLINE;
-
-(* Function: ALLEGRO_GET_EVENT_TYPE
- *)
-  FUNCTION ALLEGRO_GET_EVENT_TYPE (CONST str: SHORTSTRING): AL_INT; INLINE;
-
-
-(*
- * Event structures
- *
- * All event types have the following fields in common.
- *
- *  _type     -- the type of event this is
- *  timestamp -- when this event was generated
- *  source    -- which event source generated this event
- *
- * For people writing event sources: The common fields must be at the
- * very start of each event structure.
- *)
-  TYPE
-    ALLEGRO_ANY_EVENT = RECORD
-      _type : ALLEGRO_EVENT_TYPE;
-      source : ALLEGRO_EVENT_SOURCEptr;
-      timestamp : AL_DOUBLE;
-    END;
-
-    ALLEGRO_DISPLAY_EVENT = RECORD
-      _type : ALLEGRO_EVENT_TYPE;
-      source : ALLEGRO_DISPLAYptr;
-      timestamp : AL_DOUBLE;
-      x : AL_INT;
-      y : AL_INT;
-      width : AL_INT;
-      height : AL_INT;
-      orientation : ALLEGRO_DISPLAY_ORIENTATION;
-    END;
-
-    ALLEGRO_JOYSTICK_EVENT = RECORD
-      _type : ALLEGRO_EVENT_TYPE;
-      source : ALLEGRO_JOYSTICKptr;
-      timestamp : AL_DOUBLE;
-      id : ALLEGRO_JOYSTICKptr;
-      stick : AL_INT;
-      axis : AL_INT;
-      pos : AL_FLOAT;
-      button : AL_INT;
-    END;
-
-    ALLEGRO_KEYBOARD_EVENT = RECORD
-      _type : ALLEGRO_EVENT_TYPE;
-      source : ALLEGRO_KEYBOARDptr;
-      timestamp : AL_DOUBLE;
-      display : ALLEGRO_DISPLAYptr;
-      keycode : AL_INT;
-      unichar : AL_INT;
-      modifiers : AL_UINT;
-      _repeat : AL_BOOL;
-    END;
-
-    ALLEGRO_MOUSE_EVENT = RECORD
-      _type : ALLEGRO_EVENT_TYPE;
-      source : ALLEGRO_MOUSEptr;
-      timestamp : AL_DOUBLE;
-      display : ALLEGRO_DISPLAYptr;
-      x, y, z, w : AL_INT;
-      dx, dy, dz, dw : AL_INT;
-      button : AL_UINT;
-      pressure : AL_FLOAT;
-    END;
-
-    ALLEGRO_TIMER_EVENT = RECORD
-      _type : ALLEGRO_EVENT_TYPE;
-      source : ALLEGRO_TIMERptr;
-      timestamp : AL_DOUBLE;
-      count : AL_INT64;
-      error : AL_DOUBLE;
-    END;
-
-    ALLEGRO_USER_EVENT_DESCRIPTORptr = POINTER;
-
-    ALLEGRO_USER_EVENTptr = ^ALLEGRO_USER_EVENT;
-    ALLEGRO_USER_EVENT = RECORD
-      _type : ALLEGRO_EVENT_TYPE;
-      source : ALLEGRO_EVENT_SOURCEptr;
-      timestamp : AL_DOUBLE;
-      __internal__descr : ALLEGRO_USER_EVENT_DESCRIPTORptr;
-      data1 : AL_POINTER;
-      data2 : AL_POINTER;
-      data3 : AL_POINTER;
-      data4 : AL_POINTER;
-    END;
-
-    ALLEGRO_EVENTptr = ^ALLEGRO_EVENT;
-
-    ALLEGRO_EVENT = RECORD
-      case LONGINT OF
-   (* This must be the same as the first field of _AL_EVENT_HEADER.  *)
-	0 : ( _type : ALLEGRO_EVENT_TYPE );
-   (* `any' is to allow the user to access the other fields which are
-    * common to all event types, without using some specific type
-    * structure.
-    *)
-	1 : ( any : ALLEGRO_ANY_EVENT );
-	2 : ( display : ALLEGRO_DISPLAY_EVENT );
-	3 : ( joystick : ALLEGRO_JOYSTICK_EVENT );
-	4 : ( keyboard : ALLEGRO_KEYBOARD_EVENT );
-	5 : ( mouse : ALLEGRO_MOUSE_EVENT );
-	6 : ( timer : ALLEGRO_TIMER_EVENT );
-	7 : ( user : ALLEGRO_USER_EVENT );
-      END;
-
-      ALLEGRO_EVENT_DTOR_PROC = PROCEDURE (evt: ALLEGRO_USER_EVENTptr); CDECL;
-
-(* Event sources *)
-  PROCEDURE al_init_user_event_source (source: ALLEGRO_EVENT_SOURCEptr); CDECL; { TODO: Use VAR parameter? }
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_destroy_user_event_source (source: ALLEGRO_EVENT_SOURCEptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* The second argument is ALLEGRO_EVENT instead of ALLEGRO_USER_EVENT
- * to prevent users passing a pointer to a too-short structure.
- *)
-  FUNCTION al_emit_user_event (source: ALLEGRO_EVENT_SOURCEptr; Event: ALLEGRO_EVENTptr; dtor: ALLEGRO_EVENT_DTOR_PROC): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_unref_user_event (event: ALLEGRO_USER_EVENTptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_set_event_source_data (source: ALLEGRO_EVENT_SOURCEptr; data: AL_POINTER); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_event_source_data (CONST source: ALLEGRO_EVENT_SOURCEptr): AL_POINTER; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-  TYPE
-    ALLEGRO_EVENT_QUEUEptr = AL_POINTER;
-
-  FUNCTION al_create_event_queue: ALLEGRO_EVENT_QUEUEptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_destroy_event_queue (queue: ALLEGRO_EVENT_QUEUEptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_register_event_source (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_unregister_event_source (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_is_event_queue_empty (queue: ALLEGRO_EVENT_QUEUEptr): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_next_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_peek_next_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_drop_next_event (queue: ALLEGRO_EVENT_QUEUEptr): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_flush_event_queue (queue: ALLEGRO_EVENT_QUEUEptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT; secs: AL_FLOAT): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT; VAR timeout: ALLEGRO_TIMEOUT): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-
-
-(******************************************************************************
- * transformations.h
- *)
-
-  TYPE
-    ALLEGRO_TRANSFORMptr = ^ALLEGRO_TRANSFORM;
-    ALLEGRO_TRANSFORM = RECORD
-      m: ARRAY [0..3] OF ARRAY [0..3] OF AL_FLOAT;
-    END;
-
-(* Transformations*)
-  PROCEDURE al_use_transform (VAR trans: ALLEGRO_TRANSFORM); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_copy_transform (OUT dest: ALLEGRO_TRANSFORM; VAR src: ALLEGRO_TRANSFORM); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_identity_transform (OUT trans: ALLEGRO_TRANSFORM); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_build_transform (OUT trans: ALLEGRO_TRANSFORM; x, y, sx, sy, theta: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_translate_transform (VAR trans: ALLEGRO_TRANSFORM; x, y: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_rotate_transform (VAR trans: ALLEGRO_TRANSFORM; theta: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_scale_transform (VAR trans: ALLEGRO_TRANSFORM; sx, sy: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_transform_coordinates (VAR trans: ALLEGRO_TRANSFORM; VAR x, y: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_compose_transform (VAR trans, other: ALLEGRO_TRANSFORM); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_current_transform: ALLEGRO_TRANSFORMptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_invert_transform (VAR trans: ALLEGRO_TRANSFORM); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_check_inverse (VAR trans: ALLEGRO_TRANSFORM; tol: AL_FLOAT): AL_INT; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
 
 
@@ -2303,20 +2654,6 @@ IMPLEMENTATION
   FUNCTION al_init: AL_BOOL;
   BEGIN
     al_init := al_install_system (ALLEGRO_VERSION_INT, NIL)
-  END;
-
-
-
-(******************************************************************************
- * display.h
- *)
-
-  PROCEDURE _al_set_window_title_ (display: ALLEGRO_DISPLAYptr; CONST title: AL_STRptr); CDECL;
-  EXTERNAL ALLEGRO_LIB_NAME NAME 'al_set_window_title';
-
-  PROCEDURE al_set_window_title (display: ALLEGRO_DISPLAYptr; CONST title: STRING);
-  BEGIN
-    _al_set_window_title_ (display, AL_STRptr (Title))
   END;
 
 
