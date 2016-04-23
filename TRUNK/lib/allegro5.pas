@@ -25,6 +25,11 @@ UNIT Allegro5;
     distribution.
  *)
 
+{ There are a lot of unfinished stuff.  Some times I've wrote that "I'll do"
+   something.  In most cases "I" means "me or somebody else".  Since this is
+   free open source you (or anybody) can add or improve this unit in any way.
+   If you do it, please let me know and I would add it to the next release! }
+
 {$include allegro5.cfg}
 
 INTERFACE
@@ -72,6 +77,56 @@ INTERFACE
     );
   (* Just to be sure that PI number is available. *)
     ALLEGRO_PI = 3.14159265358979323846;
+
+  TYPE
+  (* Description of user main function for @link(al_run_main). *)
+    ALLEGRO_USER_MAIN = FUNCTION (argc: AL_INT; argv: AL_POINTER): AL_INT; CDECL;
+
+  (* Returns the (compiled) version of the Allegro library, packed into a
+     single integer as groups of 8 bits.
+
+     You can use code like this to extract the version number:
+@longcode(#
+  VAR
+    Version: AL_INT;
+    Major, Minor, Revision, Release: INTEGER;
+    VersionStr: STRING;
+  BEGIN
+    Version := al_get_allegro_version;
+    Major    :=  Version SHR 24;
+    Minor    := (Version SHR 16) AND 255;
+    Revision := (Version SHR  8) AND 255;
+    Release  :=  Version         AND 255;
+    VersionStr := Format ('%d.%d.%d(%d)', [Major, Minor, Revision, Release])
+  END;
+#)
+    The release number is 0 for an unofficial version and 1 or greater for an
+    official release. For example "5.0.2[1]” would be the (first) official
+    5.0.2 release while “5.0.2[0]” would be a compile of a version from the
+    “5.0.2” branch before the official release.
+ *)
+  FUNCTION al_get_allegro_version: AL_UINT32;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* This function is useful in cases where you don’t have a @code(main) function
+   but want to run Allegro (mostly useful in a wrapper library).  Under Windows
+   and Linux this is no problem because you simply can call
+   @link(al_install_system).  But some other system (like OSX) don’t allow
+   calling @code(al_install_system) in the main thread.  @code(al_run_main)
+   will know what to do in that case.
+
+   The passed @code(argc) and @code(argv) will simply be passed on to
+   @code(user_main) and the return value of @code(user_main) will be
+   returned.
+
+   @bold(Note:)  This is used because the way the C language works.  I didn't
+   test if Pascal do need this kind of stuff.  Future versions of Allegro.pas
+   would not include this function, so don't use it unless your really need to
+   (and tell me if you really need it to remove this warning from
+     documentation). *)
+  FUNCTION al_run_main (argc: AL_INT; argv: AL_POINTER; user_main: ALLEGRO_USER_MAIN): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
 
 (* This function can be used to create a packed 32 bit integer from 8 bit
    characters, on both 32 and 64 bit machines.  These can be used for various
@@ -140,6 +195,7 @@ END;
      way.  Use @link(al_map_rgb) et al. and @link(al_unmap_rgb) et al. to
      translate from and to various color representations. *)
     ALLEGRO_COLOR = RECORD
+    (* Color component. *)
       r, g, b, a: AL_FLOAT;
     END;
 
@@ -274,7 +330,7 @@ BEGIN
   al_draw_tinted_bitmap (bmp, c, 0, 0, 0);
 END;
 #)
-  @seealso (al_map_rgba) @seealso(al_premul_rgba_f) *)
+  @seealso(al_map_rgba) @seealso(al_premul_rgba_f) *)
   FUNCTION al_premul_rgba (r, g, b: AL_UCHAR): ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* This is a shortcut for @code(al_map_rgba @(r * a, g * a, b * a, a@)).
@@ -295,7 +351,7 @@ BEGIN
   al_draw_tinted_bitmap (bmp, c, 0, 0, 0);
 END;
 #)
-  @seealso (al_map_rgba_f) @seealso(al_premul_rgba) *)
+  @seealso(al_map_rgba_f) @seealso(al_premul_rgba) *)
   FUNCTION al_premul_rgba_f (r, g, b: AL_FLOAT): ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -848,21 +904,79 @@ The above will only draw the red component of the bitmap.
 
 
 (******************************************************************************
- * file.h
- *)
-
-{ TODO:
-  Actually, this header is needed by Allegro to define new loaders and savers,
-  but at the moment I'll not add it. }
-
-
-
-(******************************************************************************
  * path.h
  *)
 
 { TODO:
   Actually, this header is needed by Allegro to build file paths,
+  but at the moment I'll not add it. }
+
+
+
+(******************************************************************************
+ * utf8.h
+ *)
+
+  {TODO: Documentation says it's not needed as it's used internally.
+	Only basic functionality is implemented for convenience.
+
+	Use of WIDESTRING and UTFSTRING is recommendable. }
+  {TODO: There are a lot of stuff to add here. }
+
+  TYPE
+    _al_tagbstring = RECORD
+      mlen, slen: AL_INT;
+      data: AL_VOIDptr;
+    END;
+    ALLEGRO_USTRptr = ^ALLEGRO_USTR;
+    ALLEGRO_USTR = _al_tagbstring;
+    ALLEGRO_USTR_INFOptr = ^ALLEGRO_USTR_INFO;
+    ALLEGRO_USTR_INFO = _al_tagbstring;
+
+(* Creating strings *)
+  FUNCTION al_ustr_new (CONST s: AL_STR): ALLEGRO_USTRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_ustr_new_from_buffer (CONST s: AL_STRptr; size: AL_SIZE_T): ALLEGRO_USTRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_ustr_free (us: ALLEGRO_USTRptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_cstr (CONST us: ALLEGRO_USTRptr): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_ustr_to_buffer (CONST us: ALLEGRO_USTRptr; buffer: AL_STRptr; size: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_cstr_dup (CONST us: ALLEGRO_USTRptr): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_ustr_dup (CONST us: ALLEGRO_USTRptr): ALLEGRO_USTRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_ustr_dup_substr (CONST us: ALLEGRO_USTRptr; start_pos, end_pos: AL_INT): ALLEGRO_USTRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Assign *)
+  FUNCTION al_ustr_assign (us1: ALLEGRO_USTRptr; CONST us2: ALLEGRO_USTRptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: AL_STR): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Compare *)
+  FUNCTION al_ustr_equal (CONST us1, us2: ALLEGRO_USTRptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_ustr_compare (CONST u, v: ALLEGRO_USTRptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_ustr_ncompare (CONST u, v: ALLEGRO_USTRptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * file.h
+ *)
+
+{ TODO:
+  Actually, this header is needed by Allegro to define new loaders and savers,
   but at the moment I'll not add it. }
 
 
@@ -1396,13 +1510,15 @@ a = d.a * 0 + s.a * d.a
     ALLEGRO_KEYBOARDptr = AL_POINTER;
   (* Pointer to mouse. *)
     ALLEGRO_MOUSEptr = AL_POINTER;
+  (* Pointer to timer. *)
+    ALLEGRO_TIMERptr = AL_POINTER;
 
 
   (* Pointer to @link(ALLEGRO_EVENT_SOURCE). *)
     ALLEGRO_EVENT_SOURCEptr = ^ALLEGRO_EVENT_SOURCE;
   (* An event source is any object which can generate events.  For example, an
-     @link(ALLEGRO_DISPLAY) can generate events, and you can get the
-     @code(ALLEGRO_EVENT_SOURCE) pointer from an @code(ALLEGRO_DISPLAY) with
+     @link(ALLEGRO_DISPLAYptr) can generate events, and you can get the
+     @code(ALLEGRO_EVENT_SOURCE) pointer from an @code(ALLEGRO_DISPLAYptr) with
      @link(al_get_display_event_source).
 
      You may create your own “user” event sources that emit custom events.
@@ -1480,7 +1596,7 @@ a = d.a * 0 + s.a * d.a
 
     ALLEGRO_TIMER_EVENT = RECORD
       _type: ALLEGRO_EVENT_TYPE;
-      source: AL_POINTER;
+      source: ALLEGRO_TIMERptr;
       timestamp: AL_DOUBLE;
       count: AL_INT64;
       error: AL_DOUBLE;
@@ -1552,7 +1668,7 @@ BEGIN
   RESULT := getmem (sizeof (THING));
   IF RESULT <> NIL THEN
   BEGIN
-    al_init_user_event_source (@(RESULT^.event_source));
+    al_init_user_event_source (@@(RESULT^.event_source));
     RESULT^.field1 := 0;
     RESULT^.field2 := 0;
   END
@@ -1596,12 +1712,25 @@ END;
   TYPE
     ALLEGRO_EVENT_QUEUEptr = AL_POINTER;
 
+(* Creates a new, empty event queue.
+   @return(A pointer to the newly created object if successful, @nil on error.)
+   @seealso(al_register_event_source) @seealso(al_destroy_event_queue)
+   @seealso(ALLEGRO_EVENT_QUEUEptr) *)
   FUNCTION al_create_event_queue: ALLEGRO_EVENT_QUEUEptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Destroys the event queue specified. All event sources currently registered
+   with the queue will be automatically unregistered before the queue is
+   destroyed.
+   @seealso(al_create_event_queue) @seealso(ALLEGRO_EVENT_QUEUEptr) *)
   PROCEDURE al_destroy_event_queue (queue: ALLEGRO_EVENT_QUEUEptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_is_event_source_registered (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Register the event source with the event queue specified. An event source
+   may be registered with any number of event queues simultaneously, or none.
+   Trying to register an event source with the same event queue more than once
+   does nothing.
+   @seealso(al_unregister_event_source) @seealso(ALLEGRO_EVENT_SOURCE) *)
   PROCEDURE al_register_event_source (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_unregister_event_source (queue: ALLEGRO_EVENT_QUEUEptr; source: ALLEGRO_EVENT_SOURCEptr);
@@ -1612,6 +1741,12 @@ END;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_is_event_queue_empty (queue: ALLEGRO_EVENT_QUEUEptr): AL_BOOL;
     CDECL;EXTERNAL ALLEGRO_LIB_NAME;
+(* Takes the next event out of the event queue specified, and copy the contents
+   into @code(ret_event), returning @true.  The original event will be removed
+   from the queue.  If the event queue is empty, returns @false and the
+   contents of @code(ret_event) are unspecified.
+   @seealso(ALLEGRO_EVENT) @seealso(al_peek_next_event)
+   @seealso(al_wait_for_event) *)
   FUNCTION al_get_next_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT ret_event: ALLEGRO_EVENT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_peek_next_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT ret_event: ALLEGRO_EVENT): AL_BOOL;
@@ -1620,6 +1755,10 @@ END;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_flush_event_queue (queue: ALLEGRO_EVENT_QUEUEptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Wait until the event queue specified is non-empty. The first event in the
+   queue will be copied into @code(ret_event) and removed from the queue.
+   @seealso(ALLEGRO_EVENT) @seealso(al_wait_for_event_timed)
+   @seealso(al_wait_for_event_until) @seealso(al_get_next_event) *)
   PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT ret_event: ALLEGRO_EVENT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT; secs: AL_FLOAT): AL_BOOL;
@@ -1635,7 +1774,6 @@ END;
 
 
   CONST
-  //  ALLEGRO_DEFAULT_DISPLAY_ADAPTER = -1;
   (* Possible bit combinations for the flags parameter of al_set_new_display_flags. *)
     ALLEGRO_DEFAULT                     = 0 SHL 0;
     ALLEGRO_WINDOWED                    = 1 SHL 0;
@@ -1706,7 +1844,7 @@ END;
 
 { enum ALLEGRO_DISPLAY_ORIENTATION declared at section "events.h". }
 
-  { Formally part of the primitives addon. }
+  { Formelly part of the primitives addon. }
     _ALLEGRO_PRIM_MAX_USER_ATTR = 10;
 
 { pointer ALLEGRO_DISPLAYptr declared at section "events.h". }
@@ -1942,9 +2080,98 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 (******************************************************************************
+ * clipboard.h
+ *
+ *   Clipboard handling.
+ *)
+
+{ TODO: Do not implement until memory.h is done. }
+
+
+
+(******************************************************************************
+ * config.h
+ *)
+
+{ TODO:
+  At the moment I'll not include this header.  Object Pascal defines the
+  TStrings class that implements a similar functionality.  Also both FCL and
+  VCL define classes that allow to manage INI files too.
+
+  Actually I'll add this unit only if it's necessary because Allegro does need
+  any special configuration file.
+ }
+
+
+
+(******************************************************************************
+ * cpu.h
+ *
+ *   CPU and system information handling.
+ *)
+
+(* Returns the number of CPU cores that the system Allegro is running on has
+   and which could be detected, or a negative number if detection failed.  Even
+   if a positive number is returned, it might be that it is not correct.  For
+   example, Allegro running on a virtual machine will return the amount of
+   CPU's of the VM, and not that of the underlying system.
+
+   Furthermore even if the number is correct, this only gives you information
+   about the total CPU cores of the system Allegro runs on.  The amount of
+   cores available to your program may be less due to circumstances such as
+   programs that are currently running.
+
+   Therefore, it's best to use this for advisory purposes only.  It is
+   certainly a bad idea to make your program exclusive to systems for which
+   this function returns a certain "desirable" number.
+
+   This function may be called prior to @link(al_install_system) or
+   @link(al_init). *)
+  FUNCTION al_get_cpu_count: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns the size in MB of the random access memory that the system Allegro
+   is running on has and which could be detected, or a negative number if
+   detection failed.  Even if a positive number is returned, it might be that
+   it is not correct.  For example, Allegro running on a virtual machine will
+   return the amount of RAM of the VM, and not that of the underlying system.
+
+   Furthermore even if the number is correct, this only gives you information
+   about the total physical memory of the system Allegro runs on.  The memory
+   available to your program may be less due to circumstances such as virtual
+   memory, and other programs that are currently running.
+
+   Therefore, it's best to use this for advisory purposes only.  It is
+   certainly a bad idea to make your program exclusive to systems for which
+   this function returns a certain "desirable" number.
+
+   This function may be called prior to @link(al_install_system) or
+   @link(al_init). *)
+  FUNCTION al_get_ram_size: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(******************************************************************************
+ * debug.h
+ *
+ *   Debug facilities.
+ *
+ *   By Shawn Hargreaves.
+ *)
+
+{ TODO:
+  At the moment I'll not include this header.
+
+  Actually I'll add this unit only if it's necessary or helpful. }
+
+
+
+(******************************************************************************
  * drawing.h
  *)
 
+(* Clears the complete target bitmap, but confined by the clipping rectangle.
+   @seealso(al_set_clipping_rectangle) @seealso(al_clear_depth_buffer) *)
   PROCEDURE al_clear_to_color (color: ALLEGRO_COLOR);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_clear_depth_buffer (x: AL_FLOAT);
@@ -1973,15 +2200,26 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 (******************************************************************************
  * fixed.h
+ *
+ *   Fixed point type.
+ *
+ *   By Shawn Hargreaves.
  *)
 
  { TODO: Coming soon ;). }
+
+
 
 (******************************************************************************
  * fmath.h
+ *
+ *   Fixed point math routines.
+ *
+ *   By Shawn Hargreaves.
  *)
 
  { TODO: Coming soon ;). }
+
 
 
 (******************************************************************************
@@ -2047,6 +2285,9 @@ al_draw_line(x1, y1, x2, y2, color, 0);
       ALLEGRO_JOYFLAG_ANALOGUE = $02
     );
 
+(* Install a joystick driver, returning @true if successful.  If a joystick
+   driver was already installed, returns @true immediately.
+   @seealso(al_uninstall_joystick) *)
   FUNCTION al_install_joystick: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_uninstall_joystick;
@@ -2116,6 +2357,9 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
   FUNCTION al_is_keyboard_installed: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Install a keyboard driver.  Returns @true if successful.  If a driver was
+   already installed, nothing happens and @true is returned.
+   @seealso(al_uninstall_keyboard) @seealso(al_is_keyboard_installed) *)
   FUNCTION al_install_keyboard: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_uninstall_keyboard;
@@ -2168,6 +2412,10 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
   FUNCTION al_is_mouse_installed: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Install a mouse driver.
+
+   Returns @true if successful.  If a driver was already installed, nothing
+   happens and @true is returned. *)
   FUNCTION al_install_mouse: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_uninstall_mouse;
@@ -2219,22 +2467,14 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 (******************************************************************************
- * touch_input.h
- *
- *   Touch input routines.
- *)
-
-{ TODO: Not yet. }
-
-
-
-(******************************************************************************
  * haptic.h
  *
  *   Haptic (that is, force feedback) routines for Allegro.
+ *
+ *   By Beoran.
  *)
 
-{ TODO: Not yet. }
+{ TODO: Not yet.  Needs touch_input.h. }
 
 
 
@@ -2244,7 +2484,12 @@ al_draw_line(x1, y1, x2, y2, color, 0);
  *   Memory management routines.
  *)
 
-{ Seems to be for internal use. }
+{ TODO: Seems to be used to destroy several data returned by Allegro.  The
+	problem is that it uses macros to get information about the source
+	file, procedure and line that calls the memory functions.
+
+	I'll implement this when I (or somebody else) figure a way to get that
+	"debugging" stuff or how to avoid it. }
 
 
 
@@ -2318,7 +2563,7 @@ al_draw_line(x1, y1, x2, y2, color, 0);
  * render_state.h
  *)
 
-{ TODO: Not yet. }
+{ TODO: Not sure if this section is useful yet. }
 
 
 
@@ -2333,7 +2578,7 @@ al_draw_line(x1, y1, x2, y2, color, 0);
     END;
 
 (* Transformations*)
-{ TODO: 3D transformations. }
+{ TODO: Add 3D transformations. }
   PROCEDURE al_use_transform (VAR trans: ALLEGRO_TRANSFORM);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_copy_transform (OUT dest: ALLEGRO_TRANSFORM; VAR src: ALLEGRO_TRANSFORM);
@@ -2370,72 +2615,6 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 (******************************************************************************
- * THIS WAS MOVED to another header file.
- *)
-
-
-  TYPE
-  (* Description of user main function for al_run_main. *)
-    ALLEGRO_USER_MAIN = FUNCTION (argc: AL_INT; argv: AL_POINTER): AL_INT; CDECL;
-
-
-
-  (* Returns the (compiled) version of the Allegro library, packed into a
-     single integer as groups of 8 bits.
-
-     You can use code like this to extract the version number:
-@longcode(#
-  VAR
-    Version: AL_INT;
-    Major, Minor, Revision, Release: INTEGER;
-    VersionStr: STRING;
-  BEGIN
-    Version := al_get_allegro_version;
-    Major    :=  Version SHR 24;
-    Minor    := (Version SHR 16) AND 255;
-    Revision := (Version SHR  8) AND 255;
-    Release  :=  Version         AND 255;
-    VersionStr := Format ('%d.%d.%d(%d)', [Major, Minor, Revision, Release])
-  END;
-#)
-    The release number is 0 for an unofficial version and 1 or greater for an
-    official release. For example "5.0.2[1]” would be the (first) official
-    5.0.2 release while “5.0.2[0]” would be a compile of a version from the
-    “5.0.2” branch before the official release.
- *)
-  FUNCTION al_get_allegro_version: AL_UINT32; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* This function is useful in cases where you don’t have a @code(main) function
-   but want to run Allegro (mostly useful in a wrapper library).  Under Windows
-   and Linux this is no problem because you simply can call
-   @link(al_install_system).  But some other system (like OSX) don’t allow
-   calling @code(al_install_system) in the main thread.  @code(al_run_main)
-   will know what to do in that case.  The passed @code(argc) and @code(argv)
-   will simply be passed on to @code(user_main) and the return value of
-   @code(user_main) will be returned.
- *)
-  FUNCTION al_run_main (argc: AL_INT; argv: AL_POINTER; user_main: ALLEGRO_USER_MAIN): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-
-
-(******************************************************************************
- * config.h
- *)
-
-{ TODO:
-  At the moment I'll not include this header.  Object Pascal defines the
-  TStrings class that implements a similar functionality.  Also both FCL and
-  VCL defines classes that allows to manage INI files too.
-
-  Actually I'll add this unit only if it's necessary because Allegro does need
-  any special configuration file for internal use.
- }
-
-
-
-(******************************************************************************
  * system.h
  *)
 
@@ -2448,6 +2627,8 @@ al_draw_line(x1, y1, x2, y2, color, 0);
    uses the @code(atexit) function visible in the current compilation unit. *)
   FUNCTION al_init: AL_BOOL;
 
+
+
 (* Initializes the Allegro system.  No other Allegro functions can be called
    before this (with one or two exceptions).
    @param(version Should always be set to @link(ALLEGRO_VERSION_INT).)
@@ -2458,145 +2639,103 @@ al_draw_line(x1, y1, x2, y2, color, 0);
     be used.)
    @seealso(al_init)
  *)
-  FUNCTION al_install_system (version: AL_INT; atexit_ptr: AL_POINTER): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
+  FUNCTION al_install_system (version: AL_INT; atexit_ptr: AL_POINTER): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* Closes down the Allegro system.
 
    In most cases you don't need to call this, because it's called by the
    @code(FINALIZATION) section.
    @seealso(al_init) @seealso(al_install_system)
  *)
-  PROCEDURE al_uninstall_system; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_uninstall_system;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 (* Returns @true if Allegro is initialized, otherwise returns @false. *)
-  FUNCTION al_is_system_installed: AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_is_system_installed: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
-{ Modern Pascal compilers (i.e. Free Pascal) has functions and methods to get
-  the path of system directories and the application name, so Allegro's
-  functions for this aren't included.  Let me know if you want them. }
+{ TODO: Some stuff needs the "path.h" section. }
+
+
 
 (* This function allows the user to stop the system screensaver from starting
    up if @true is passed, or resets the system back to the default state (the
    state at program start) if @false is passed.
    @returns(@true if the state was set successfully, otherwise @false.)
  *)
-  FUNCTION al_inhibit_screensaver (inhibit: AL_BOOL): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_inhibit_screensaver (inhibit: AL_BOOL): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
 (******************************************************************************
- * bitmap.h
+ * threads.h
  *)
 
-  PROCEDURE _al_put_pixel (bitmap: ALLEGRO_BITMAPptr; x,y: AL_INT; color: ALLEGRO_COLOR); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
+{ TODO: Modern Pascal compilers have functions and classes to create threads.
+        So, I'll not add them now, but may be in a future I (or somebody else)
+	will.  The MUTEX stuff is pretty nice and useful. }
 
 
 
 (******************************************************************************
  * timer.h
+ *
+ *  Timer routines.
  *)
 
 (* Converts microseconds to seconds. *)
-  FUNCTION ALLEGRO_USECS_TO_SECS (x: AL_DOUBLE): AL_DOUBLE; INLINE;
-
+  FUNCTION ALLEGRO_USECS_TO_SECS (x: AL_INT): AL_DOUBLE; INLINE;
 (* Converts milliseconds to seconds. *)
-  FUNCTION ALLEGRO_MSECS_TO_SECS (x: AL_DOUBLE): AL_DOUBLE; INLINE;
-
+  FUNCTION ALLEGRO_MSECS_TO_SECS (x: AL_INT): AL_DOUBLE; INLINE;
 (* Converts beats per second to seconds. *)
-  FUNCTION ALLEGRO_BPS_TO_SECS (x: AL_DOUBLE): AL_DOUBLE; INLINE;
-
+  FUNCTION ALLEGRO_BPS_TO_SECS (x: AL_INT): AL_DOUBLE; INLINE;
 (* Converts beats per minute to seconds. *)
-  FUNCTION ALLEGRO_BPM_TO_SECS (x: AL_DOUBLE): AL_DOUBLE; INLINE;
-
-  TYPE
-    ALLEGRO_TIMERptr = POINTER;
-
-  FUNCTION al_create_timer (speed_secs: AL_DOUBLE): ALLEGRO_TIMERptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_destroy_timer (timer: ALLEGRO_TIMERptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_start_timer (timer: ALLEGRO_TIMERptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_stop_timer (timer: ALLEGRO_TIMERptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_timer_started (CONST timer: ALLEGRO_TIMERptr): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_timer_speed (CONST timer: ALLEGRO_TIMERptr): AL_DOUBLE; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_set_timer_speed (timer: ALLEGRO_TIMERptr; speed_secs: AL_DOUBLE); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_timer_count (CONST timer: ALLEGRO_TIMERptr): AL_INT64; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_set_timer_count (timer: ALLEGRO_TIMERptr; count: AL_INT64); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_add_timer_count (timer: ALLEGRO_TIMERptr; diff: AL_INT64); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_timer_event_source (timer: ALLEGRO_TIMERptr): ALLEGRO_EVENT_SOURCEptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION ALLEGRO_BPM_TO_SECS (x: AL_INT): AL_DOUBLE; INLINE;
 
 
 
-(******************************************************************************
- * utf8.h
- *)
+(* Allocates and initializes a timer. The new timer is initially stopped.
 
-  {TODO: Documentation says it's not needed as it's used internally.
-	Only basic functionality is implemented for convenience.
-
-	Use of WIDESTRING and UTFSTRING is recommendable. }
-
-  TYPE
-    _al_tagbstring = RECORD
-      mlen, slen: AL_INT;
-      data: AL_VOIDptr;
-    END;
-
-
-
-    ALLEGRO_USTRptr = ^ALLEGRO_USTR;
-    ALLEGRO_USTR = _al_tagbstring;
-
-
-
-    ALLEGRO_USTR_INFOptr = ^ALLEGRO_USTR_INFO;
-    ALLEGRO_USTR_INFO = _al_tagbstring;
-
-(* Creating strings *)
-  FUNCTION al_ustr_new (CONST s: STRING): ALLEGRO_USTRptr; INLINE;
-  FUNCTION al_ustr_new_from_buffer (CONST s: AL_STRptr; size: AL_SIZE_T): ALLEGRO_USTRptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_ustr_free (us: ALLEGRO_USTRptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_cstr (CONST us: ALLEGRO_USTRptr): AL_STRptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_ustr_to_buffer (CONST us: ALLEGRO_USTRptr; buffer: AL_STRptr; size: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_cstr_dup (CONST us: ALLEGRO_USTRptr): AL_STRptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_dup (CONST us: ALLEGRO_USTRptr): ALLEGRO_USTRptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_dup_substr (CONST us: ALLEGRO_USTRptr; start_pos, end_pos: AL_INT): ALLEGRO_USTRptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Assign *)
-  FUNCTION al_ustr_assign (us1: ALLEGRO_USTRptr; CONST us2: ALLEGRO_USTRptr): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: STRING): AL_BOOL; INLINE;
-
-(* Compare *)
-  FUNCTION al_ustr_equal (CONST us1, us2: ALLEGRO_USTRptr): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_compare (CONST u, v: ALLEGRO_USTRptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_ncompare (CONST u, v: ALLEGRO_USTRptr): AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
+   Usage note:  typical granularity is on the order of microseconds, but with
+   some drivers might only be milliseconds.
+   @param(speed_secs Seconds per "tick". Must be positive.)
+   @returns(If successful, a pointer to a new timer object is returned,
+     otherwise @nil is returned.)
+  @seealso(al_start_timer) @seealso(al_destroy_timer) *)
+  FUNCTION al_create_timer (speed_secs: AL_DOUBLE): ALLEGRO_TIMERptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_destroy_timer (timer: ALLEGRO_TIMERptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Starts the timer specified.  From then, the timer's counter will increment
+   at a constant rate, and it will begin generating events.  Starting a timer
+   that is already started does nothing.  Starting a timer that was stopped
+   will reset the timer's counter, effectively restarting the timer from the
+   beginning.
+   @seealso(al_stop_timer) @seealso(al_get_timer_started)
+   @seealso(al_resume_timer) *)
+  PROCEDURE al_start_timer (timer: ALLEGRO_TIMERptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_stop_timer (timer: ALLEGRO_TIMERptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_resume_timer (timer: ALLEGRO_TIMERptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_timer_started (CONST timer: ALLEGRO_TIMERptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_timer_speed (CONST timer: ALLEGRO_TIMERptr): AL_DOUBLE;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_set_timer_speed (timer: ALLEGRO_TIMERptr; speed_secs: AL_DOUBLE);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_timer_count (CONST timer: ALLEGRO_TIMERptr): AL_INT64;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_set_timer_count (timer: ALLEGRO_TIMERptr; count: AL_INT64);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_add_timer_count (timer: ALLEGRO_TIMERptr; diff: AL_INT64);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_timer_event_source (timer: ALLEGRO_TIMERptr): ALLEGRO_EVENT_SOURCEptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
@@ -2615,6 +2754,7 @@ al_draw_line(x1, y1, x2, y2, color, 0);
       ALLEGRO_STATE_BLENDER                = $0010,
       ALLEGRO_STATE_NEW_FILE_INTERFACE     = $0020,
       ALLEGRO_STATE_TRANSFORM              = $0040,
+      ALLEGRO_STATE_PROJECTION_TRANSFORM   = $0100,
 
       ALLEGRO_STATE_ALL                    = $FFFF
     );
@@ -2627,11 +2767,9 @@ al_draw_line(x1, y1, x2, y2, color, 0);
     END;
 
   PROCEDURE al_store_state (VAR state: ALLEGRO_STATE; flags: ALLEGRO_STATE_FLAGS);
-    EXTERNAL ALLEGRO_LIB_NAME;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_restore_state (VAR state: ALLEGRO_STATE);
-    EXTERNAL ALLEGRO_LIB_NAME;
-
-
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 IMPLEMENTATION
 
@@ -2643,43 +2781,6 @@ IMPLEMENTATION
   BEGIN
     AL_ID := (ORD (str[1]) SHL 24) OR (ORD (str[2]) SHL 16)
 	     OR (ORD (str[3]) SHL  8) OR  ORD (str[4])
-  END;
-
-
-
-(******************************************************************************
- * system.h
- *)
-
-  FUNCTION al_init: AL_BOOL;
-  BEGIN
-    al_init := al_install_system (ALLEGRO_VERSION_INT, NIL)
-  END;
-
-
-
-(******************************************************************************
- * timer.h
- *)
-
-  FUNCTION ALLEGRO_USECS_TO_SECS (x: AL_DOUBLE): AL_DOUBLE;
-  BEGIN
-    ALLEGRO_USECS_TO_SECS := x / 1000000
-  END;
-
-  FUNCTION ALLEGRO_MSECS_TO_SECS (x: AL_DOUBLE): AL_DOUBLE;
-  BEGIN
-    ALLEGRO_MSECS_TO_SECS := x / 1000
-  END;
-
-  FUNCTION ALLEGRO_BPS_TO_SECS (x: AL_DOUBLE): AL_DOUBLE;
-  BEGIN
-    ALLEGRO_BPS_TO_SECS := 1 / x
-  END;
-
-  FUNCTION ALLEGRO_BPM_TO_SECS (x: AL_DOUBLE): AL_DOUBLE;
-  BEGIN
-    ALLEGRO_BPM_TO_SECS := 60 / x
   END;
 
 
@@ -2703,25 +2804,38 @@ IMPLEMENTATION
 
 
 (******************************************************************************
- * utf8.h
+ * system.h
  *)
 
-  FUNCTION _al_ustr_new_ (CONST s: AL_STRptr): ALLEGRO_USTRptr; CDECL;
-  EXTERNAL ALLEGRO_LIB_NAME NAME 'al_ustr_new';
-
-  FUNCTION al_ustr_new (CONST s: STRING): ALLEGRO_USTRptr;
+  FUNCTION al_init: AL_BOOL;
   BEGIN
-    al_ustr_new := _al_ustr_new_ (AL_STRptr (s))
+    al_init := al_install_system (ALLEGRO_VERSION_INT, NIL)
   END;
 
 
 
-  FUNCTION _al_ustr_assign_cstr_ (us1: ALLEGRO_USTRptr; CONST s: AL_STRptr): AL_BOOL; CDECL;
-  EXTERNAL ALLEGRO_LIB_NAME NAME 'al_ustr_assign_cstr';
+(******************************************************************************
+ * timer.h
+ *)
 
-  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: STRING): AL_BOOL;
+  FUNCTION ALLEGRO_USECS_TO_SECS (x: AL_INT): AL_DOUBLE;
   BEGIN
-    al_ustr_assign_cstr := _al_ustr_assign_cstr_ (us1, AL_STRptr (s))
+    ALLEGRO_USECS_TO_SECS := x / 1000000
+  END;
+
+  FUNCTION ALLEGRO_MSECS_TO_SECS (x: AL_INT): AL_DOUBLE;
+  BEGIN
+    ALLEGRO_MSECS_TO_SECS := x / 1000
+  END;
+
+  FUNCTION ALLEGRO_BPS_TO_SECS (x: AL_INT): AL_DOUBLE;
+  BEGIN
+    ALLEGRO_BPS_TO_SECS := 1 / x
+  END;
+
+  FUNCTION ALLEGRO_BPM_TO_SECS (x: AL_INT): AL_DOUBLE;
+  BEGIN
+    ALLEGRO_BPM_TO_SECS := 60 / x
   END;
 
 INITIALIZATION
