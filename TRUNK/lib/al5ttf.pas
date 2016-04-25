@@ -1,6 +1,6 @@
 UNIT al5ttf;
 (*<This unit registers TrueType Font format handlers for @link(al_load_font). *)
-(* Copyright (c) 2012 Guillermo Martínez J.
+(* Copyright (c) 2012-2016 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -44,17 +44,21 @@ INTERFACE
     @seealso(al_load_font) @seealso(al_load_ttf_font) *)
     ALLEGRO_TTF_NO_AUTOHINT = 4;
 
+  FUNCTION al_load_ttf_font (filename: AL_STR; size, flags: AL_INT);
+    CDECL;EXTERNAL ALLEGRO_TTF_LIB_NAME;
+  FUNCTION al_load_ttf_font_stretch (filename: AL_STR; w, h, flags: AL_INT);
+    CDECL;EXTERNAL ALLEGRO_TTF_LIB_NAME;
 (* Initializes the TTF addon. *)
-  FUNCTION al_init_ttf_addon: AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_TTF_LIB_NAME;
-
-(* Shut down the TTF addon. This is done automatically at program exit, but can be called any time the user wishes as well. *)
-  PROCEDURE al_shutdown_ttf_addon; CDECL;
-    EXTERNAL ALLEGRO_TTF_LIB_NAME;
-
-(* Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version). *)
-  FUNCTION al_get_allegro_ttf_version: AL_UINT32; CDECL;
-    EXTERNAL ALLEGRO_TTF_LIB_NAME;
+  FUNCTION al_init_ttf_addon: AL_BOOL;
+    CDECL;EXTERNAL ALLEGRO_TTF_LIB_NAME;
+(* Shuts down the TTF addon. This is done automatically at program exit, but
+   can be called any time the user wishes as well. *)
+  PROCEDURE al_shutdown_ttf_addon;
+    CDECL; EXTERNAL ALLEGRO_TTF_LIB_NAME;
+(* Returns the (compiled) version of the addon, in the same format as
+   @link(al_get_allegro_version). *)
+  FUNCTION al_get_allegro_ttf_version: AL_UINT32;
+    CDECL; EXTERNAL ALLEGRO_TTF_LIB_NAME;
 
 IMPLEMENTATION
 

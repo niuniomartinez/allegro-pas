@@ -1,10 +1,15 @@
 UNIT al5image;
-(*<This unit registers bitmap format handlers for @link(al_load_bitmap), @link(al_load_bitmap_f), @link(al_save_bitmap), @link(al_save_bitmap_f).
+(*<This unit registers bitmap format handlers for @link(al_load_bitmap),
+   @link(al_load_bitmap_f), @link(al_save_bitmap), @link(al_save_bitmap_f).
 
-   The following types are built into the Allegro image addon and guaranteed to be available: BMP, PCX, TGA. Every platform also supports JPEG and PNG via external dependencies.
+   The following types are built into the Allegro image addon and guaranteed to
+   be available: BMP, PCX, TGA.  Every platform also supports JPEG and PNG via
+   external dependencies.
 
-   Other formats may be available depending on the operating system and installed libraries, but are not guaranteed and should not be assumed to be universally available. *)
-(* Copyright (c) 2012 Guillermo Martínez J.
+   Other formats may be available depending on the operating system and
+   installed libraries, but are not guaranteed and should not be assumed to be
+   universally available. *)
+(* Copyright (c) 2012-2016 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -39,25 +44,30 @@ INTERFACE
     ALLEGRO_IMAGE_LIB_NAME = _A5_LIB_PREFIX_+'allegro_image'+_DBG_+_A5_LIB_EXT_;
 
 (* Initializes the image addon. *)
-  FUNCTION al_init_image_addon: AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_IMAGE_LIB_NAME;
+  FUNCTION al_init_image_addon: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_IMAGE_LIB_NAME;
+(* Shuts down the image addon.  This is done automatically at program exit, but
+   can be called any time the user wishes as well. *)
+  PROCEDURE al_shutdown_image_addon;
+    CDECL; EXTERNAL ALLEGRO_IMAGE_LIB_NAME;
 
-(* Shut down the image addon. This is done automatically at program exit, but can be called any time the user wishes as well. *)
-  PROCEDURE al_shutdown_image_addon; CDECL;
-    EXTERNAL ALLEGRO_IMAGE_LIB_NAME;
-
-(* Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version). *)
-  FUNCTION al_get_allegro_image_version: AL_UINT32; CDECL;
-    EXTERNAL ALLEGRO_IMAGE_LIB_NAME;
+(* Returns the (compiled) version of the addon, in the same format as @
+   link(al_get_allegro_version). *)
+  FUNCTION al_get_allegro_image_version: AL_UINT32;
+    CDECL; EXTERNAL ALLEGRO_IMAGE_LIB_NAME;
 
 IMPLEMENTATION
 
+{$IF DEFINED(UNIX)}
   USES
-  { Next isn't needed but it must be added to prevent a "/usr/lib/nvidia-96/libGLcore.so.1: undefined reference to `__moddi3'" error. (?) }
+  { Next isn't needed but it must be added to prevent a
+    "/usr/lib/nvidia-96/libGLcore.so.1: undefined reference to `__moddi3'"
+     error. (?) }
 {$IFDEF FPC}
     GL;
 {$ELSE}
     OpenGL;
 {$ENDIF}
 
+{$ENDIF}
 END.
