@@ -1,6 +1,6 @@
 UNIT al5color;
 (*< *)
-(* Copyright (c) 2012 Guillermo Martínez J.
+(* Copyright (c) 2012-2016 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -34,99 +34,54 @@ INTERFACE
     { @exclude }
     ALLEGRO_COLOR_LIB_NAME = _A5_LIB_PREFIX_+'allegro_color'+_DBG_+_A5_LIB_EXT_;
 
-  FUNCTION al_get_allegro_color_version: AL_UINT32; CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_get_allegro_color_version: AL_UINT32;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
 
-  PROCEDURE al_color_hsv_to_rgb (h, s, v: AL_FLOAT; VAR r, g, b: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME;
-  PROCEDURE al_color_rgb_to_hsl (r, g, b: AL_FLOAT; VAR h, s, l: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME;
-  PROCEDURE al_color_rgb_to_hsv (r, g, b: AL_FLOAT; VAR h, s, v: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME;
-  PROCEDURE al_color_hsl_to_rgb (h, s, l: AL_FLOAT; VAR r, g, b: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME;
-  FUNCTION al_color_name_to_rgb (CONST name: STRING; VAR r, g, b: AL_FLOAT): AL_BOOL; INLINE;
-  FUNCTION al_color_rgb_to_name (r, g, b: AL_FLOAT): STRING; INLINE;
-  PROCEDURE al_color_cmyk_to_rgb (c, m, y, k: AL_FLOAT; VAR r, g, b: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME;
-  PROCEDURE al_color_rgb_to_cmyk (r, g, b: AL_FLOAT; VAR c, m, y, k: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME;
-  PROCEDURE al_color_yuv_to_rgb (y, u, v: AL_FLOAT;  VAR r, g, b: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME;
-  PROCEDURE al_color_rgb_to_yuv (r, g, b: AL_FLOAT; VAR y, u, v: AL_FLOAT); CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME;
-  PROCEDURE al_color_rgb_to_html (r, g, b: AL_FLOAT; VAR str: STRING); INLINE;
-  PROCEDURE al_color_html_to_rgb (CONST str: STRING; VAR r, g, b: AL_FLOAT); INLINE;
-  FUNCTION al_color_yuv (y, u, v: AL_FLOAT): ALLEGRO_COLOR; CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME;
-  FUNCTION al_color_cmyk (c, m, y, k: AL_FLOAT): ALLEGRO_COLOR; CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME;
-  FUNCTION al_color_hsl (h, s, l: AL_FLOAT): ALLEGRO_COLOR; CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME;
-  FUNCTION al_color_hsv (h, s, v: AL_FLOAT): ALLEGRO_COLOR; CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME;
-  FUNCTION al_color_name (CONST name: STRING): ALLEGRO_COLOR; INLINE;
-  FUNCTION al_color_html (CONST str: STRING): ALLEGRO_COLOR; INLINE;
+  PROCEDURE al_color_hsv_to_rgb (h, s, v: AL_FLOAT; OUT r, g, b: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  PROCEDURE al_color_rgb_to_hsl (r, g, b: AL_FLOAT; OUT h, s, l: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  PROCEDURE al_color_rgb_to_hsv (r, g, b: AL_FLOAT; OUT h, s, v: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  PROCEDURE al_color_hsl_to_rgb (h, s, l: AL_FLOAT; OUT r, g, b: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_color_name_to_rgb (CONST name: AL_STR; OUT r, g, b: AL_FLOAT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_color_rgb_to_name (r, g, b: AL_FLOAT): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  PROCEDURE al_color_cmyk_to_rgb (c, m, y, k: AL_FLOAT; OUT r, g, b: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  PROCEDURE al_color_rgb_to_cmyk (r, g, b: AL_FLOAT; OUT c, m, y, k: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  PROCEDURE al_color_yuv_to_rgb (y, u, v: AL_FLOAT;  OUT r, g, b: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  PROCEDURE al_color_rgb_to_yuv (r, g, b: AL_FLOAT; OUT y, u, v: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_color_rgb_to_html (r, g, b: AL_FLOAT): AL_STRptr; INLINE;
+  PROCEDURE al_color_html_to_rgb (CONST str: AL_STR; OUT r, g, b: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_color_yuv (y, u, v: AL_FLOAT): ALLEGRO_COLOR;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_color_cmyk (c, m, y, k: AL_FLOAT): ALLEGRO_COLOR;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_color_hsl (h, s, l: AL_FLOAT): ALLEGRO_COLOR;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_color_hsv (h, s, v: AL_FLOAT): ALLEGRO_COLOR;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_color_name (CONST name: AL_STR): ALLEGRO_COLOR;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_color_html (CONST str: al_STR): ALLEGRO_COLOR;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
 
 IMPLEMENTATION
-
-  FUNCTION _al_color_name_to_rgb_ (CONST name: AL_STRptr; r, g, b: AL_FLOATptr): AL_BOOL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME NAME 'al_color_name_to_rgb';
-
-  FUNCTION al_color_name_to_rgb (CONST name: STRING; VAR r, g, b: AL_FLOAT): AL_BOOL;
-  BEGIN
-    al_color_name_to_rgb := _al_color_name_to_rgb_ (AL_STRptr (name), @r, @g, @b);
-  END;
-
-
-
-  FUNCTION _al_color_rgb_to_name_ (r, g, b: AL_FLOAT): AL_STRptr; CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME NAME 'al_color_rgb_to_name';
-
-  FUNCTION al_color_rgb_to_name (r, g, b: AL_FLOAT): STRING;
-  BEGIN
-    al_color_rgb_to_name := _al_color_rgb_to_name_ (r, g, b);
-  END;
-
-
 
   PROCEDURE _al_color_rgb_to_html_ (r, g, b: AL_FLOAT; str: AL_STRptr); CDECL;
     EXTERNAL ALLEGRO_COLOR_LIB_NAME NAME 'al_color_rgb_to_html';
 
-  PROCEDURE al_color_rgb_to_html (r, g, b: AL_FLOAT; VAR str: STRING);
+  FUNCTION al_color_rgb_to_html (r, g, b: AL_FLOAT): AL_STRptr;
   BEGIN
-    str := '      ';
-    _al_color_rgb_to_html_ (r, g, b, AL_STRptr (str));
-  END;
-
-
-
-  PROCEDURE _al_color_html_to_rgb_ (CONST str: AL_STRptr; r, g, b: AL_FLOATptr); CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME NAME 'al_color_html_to_rgb';
-
-  PROCEDURE al_color_html_to_rgb (CONST str: STRING; VAR r, g, b: AL_FLOAT);
-  BEGIN
-    _al_color_html_to_rgb_ (AL_STRptr (str), @r, @g, @b);
-  END;
-
-
-
-  FUNCTION _al_color_name_ (CONST name: AL_STRptr): ALLEGRO_COLOR; CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME NAME 'al_color_name';
-
-  FUNCTION al_color_name (CONST name: STRING): ALLEGRO_COLOR;
-  BEGIN
-    al_color_name := _al_color_name_ (AL_STRptr (name));
-  END;
-
-
-
-  FUNCTION _al_color_html_ (CONST str: AL_STRptr): ALLEGRO_COLOR; CDECL;
-    EXTERNAL ALLEGRO_COLOR_LIB_NAME NAME 'al_color_html';
-
-  FUNCTION al_color_html (CONST str: STRING): ALLEGRO_COLOR;
-  BEGIN
-    al_color_html := _al_color_html_ (AL_STRptr (str));
+    RESULT := '      ';
+    _al_color_rgb_to_html_ (r, g, b, AL_STRptr (RESULT));
   END;
 
 END.

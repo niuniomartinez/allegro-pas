@@ -1,6 +1,6 @@
 UNIT al5gl;
 (*<public OpenGL-related API. *)
-(* Copyright (c) 2012 Guillermo Martínez J.
+(* Copyright (c) 2012-2016 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -35,17 +35,20 @@ INTERFACE
 {$ENDIF}
 
 (******************************************************************************
- * opengl/gl_ext.h *
- ********************)
+ * opengl/gl_ext.h
+ *)
 
-{ TODO: The original extension system uses the C preprocessor to create the
-    structs and constants used.  It's quite complex so I decided to delay it. }
+{ TODO: The extension system uses the C preprocessor to create the structs and
+        constants used.  It's quite complex so I decided to delay it. }
 
 
 
 (******************************************************************************
- * allegro_opengl.h *
- ********************)
+ * allegro_opengl.h
+ *      Main header file for all OpenGL drivers.
+ *
+ *      By Milan Mimica.
+ *)
 
   TYPE
     ALLEGRO_OPENGL_VARIANT = (
@@ -53,43 +56,28 @@ INTERFACE
       ALLEGRO_OPENGL_ES
     );
 
-  FUNCTION al_get_opengl_version: AL_UINT32; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_have_opengl_extension (CONST extension: STRING): AL_BOOL; INLINE;
-  FUNCTION al_get_opengl_proc_address (CONST name: STRING): AL_VOIDptr; INLINE;
-  FUNCTION al_get_opengl_texture (bitmap: ALLEGRO_BITMAPptr): GLuint; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_remove_opengl_fbo (bitmap: ALLEGRO_BITMAPptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_opengl_fbo (bitmap: ALLEGRO_BITMAPptr): GLuint; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_get_opengl_texture_size (bitmap: ALLEGRO_BITMAPptr; OUT w, h: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_get_opengl_texture_position (bitmap: ALLEGRO_BITMAPptr; OUT u, v: AL_INT); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_set_current_opengl_context (display: ALLEGRO_DISPLAYptr); CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_opengl_variant: AL_INT; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_opengl_version: AL_UINT32;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_have_opengl_extension (CONST extension: AL_STR): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_opengl_proc_address (CONST name: AL_STR): AL_VOIDptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_opengl_texture (bitmap: ALLEGRO_BITMAPptr): GLuint;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_remove_opengl_fbo (bitmap: ALLEGRO_BITMAPptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_opengl_fbo (bitmap: ALLEGRO_BITMAPptr): GLuint;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_get_opengl_texture_size (bitmap: ALLEGRO_BITMAPptr; OUT w, h: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_get_opengl_texture_position (bitmap: ALLEGRO_BITMAPptr; OUT u, v: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+{ TODO: al_get_opengl_program_object, when shaders are implemented. }
+  PROCEDURE al_set_current_opengl_context (display: ALLEGRO_DISPLAYptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_opengl_variant: AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 IMPLEMENTATION
-
-  FUNCTION _al_have_opengl_extension_ (CONST extension: AL_STRptr): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME NAME 'al_have_opengl_extension';
-
-  FUNCTION al_have_opengl_extension (CONST extension: STRING): AL_BOOL;
-  BEGIN
-    al_have_opengl_extension := _al_have_opengl_extension_ (AL_STRptr (extension));
-  END;
-
-
-
-  FUNCTION _al_get_opengl_proc_address_ (CONST name: AL_STRptr): AL_VOIDptr; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME NAME 'al_get_opengl_proc_address';
-
-  FUNCTION al_get_opengl_proc_address (CONST name: STRING): AL_VOIDptr;
-  BEGIN
-    al_get_opengl_proc_address := _al_get_opengl_proc_address_ (AL_STRptr (name));
-  END;
 
 END.

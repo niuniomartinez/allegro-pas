@@ -14,6 +14,7 @@ INTERFACE
 
 (* Opens a log window. *)
   PROCEDURE OpenLog;
+  PROCEDURE OpenLogMonospace;
 
 (* Prints a message on the log window. *)
   PROCEDURE LogWrite (Str: STRING);
@@ -62,20 +63,29 @@ IMPLEMENTATION
 (* Opens a log window. *)
   PROCEDURE OpenLog;
   BEGIN
-    TextLog := al_open_native_text_log ('Log', 0);
+    IF al_init_native_dialog_addon THEN
+      TextLog := al_open_native_text_log ('Log', 0)
   END;
+
+
+
+  PROCEDURE OpenLogMonospace;
+  BEGIN
+    IF al_init_native_dialog_addon THEN
+      textlog := al_open_native_text_log ('Log', ALLEGRO_TEXTLOG_MONOSPACE)
+   END;
 
 
 
 (* Prints a message on the log window. *)
   PROCEDURE LogWrite (Str: STRING);
   BEGIN
-    al_append_native_text_log (TextLog, Str);
+    al_append_native_text_log (TextLog, Str)
   END;
 
   PROCEDURE LogWriteLn (Str: STRING);
   BEGIN
-    al_append_native_text_log (TextLog, Str + #10);
+    al_append_native_text_log (TextLog, Str + #10)
   END;
 
 
@@ -93,10 +103,10 @@ IMPLEMENTATION
 	TextLog
       ));
       al_wait_for_event (Queue, Event);
-      al_destroy_event_queue (Queue);
+      al_destroy_event_queue (Queue)
    END;
    al_close_native_text_log (TextLog);
-   TextLog := NIL;
+   TextLog := NIL
   END;
 
 END.

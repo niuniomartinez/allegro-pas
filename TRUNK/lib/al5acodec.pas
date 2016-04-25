@@ -1,7 +1,7 @@
 UNIT al5acodec;
 (* See readme.txt for copyright information.
  *)
-(* Copyright (c) 2012 Guillermo Martínez J.
+(* Copyright (c) 2012-2016 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -36,17 +36,20 @@ INTERFACE
     ALLEGRO_ACODEC_LIB_NAME = _A5_LIB_PREFIX_+'allegro_acodec'+_DBG_+_A5_LIB_EXT_;
 
 
-(* Registers all the known audio file type handlers for @link(al_load_sample), @link(al_save_sample), @link(al_load_audio_stream), etc.
+(* Registers all the known audio file type handlers for @link(al_load_sample),
+   @link(al_save_sample), @link(al_load_audio_stream), etc.
 
-  Depending on what libraries are available, the full set of recognised extensions is: .wav, .flac, .ogg, .it, .mod, .s3m, .xm.
+  Depending on what libraries are available, the full set of recognised
+  extensions is: .wav, .flac, .ogg, .it, .mod, .s3m, .xm.
   @return(@true on success.)
  *)
-  FUNCTION al_init_acodec_addon: AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_ACODEC_LIB_NAME;
+  FUNCTION al_init_acodec_addon: AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_ACODEC_LIB_NAME;
 
-(* Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version). *)
-  FUNCTION al_get_allegro_acodec_version: AL_UINT32; CDECL;
-    EXTERNAL ALLEGRO_ACODEC_LIB_NAME;
+(* Returns the (compiled) version of the addon, in the same format as @
+  link(al_get_allegro_version). *)
+  FUNCTION al_get_allegro_acodec_version: AL_UINT32;
+    CDECL; EXTERNAL ALLEGRO_ACODEC_LIB_NAME;
 
 IMPLEMENTATION
 
