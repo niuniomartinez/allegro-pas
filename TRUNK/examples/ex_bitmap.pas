@@ -1,6 +1,8 @@
 PROGRAM ex_bitmap;
 (*
- * Example with bitmaps.
+ * This example displays a picture on the screen, with support for
+ * command-line parameters, multi-screen, screen-orientation and
+ * zooming.
  *)
 
 USES

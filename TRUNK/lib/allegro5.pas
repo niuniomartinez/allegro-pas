@@ -953,6 +953,74 @@ The above will only draw the red component of the bitmap.
 
 
 
+(* Predefined string *)
+  FUNCTION al_ustr_empty_string: ALLEGRO_USTRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Create a string that references the storage of a C-style string. The
+  information about the string (e.g. its size) is stored in the @code(info)
+  parameter. The string will not have any other storage allocated of its own,
+  so if you allocate the info structure on the stack then no explicit "free"
+  operation is required.
+
+  The string is valid until the underlying C string disappears.
+
+  Example:
+@longcode(#
+VAR
+  Info: ALLEGRO_USTR_INFO;
+  us: ALLEGRO_USTRptr;
+BEGIN
+  us := al_ref_cstr (Info, 'my string')
+END;
+#)
+   @seealso(al_ref_buffer) @seealso(al_ref_ustr) *)
+  FUNCTION al_ref_cstr (OUT info: ALLEGRO_USTR_INFO; CONST s: AL_STR): ALLEGRO_USTRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_ref_buffer (OUT info: ALLEGRO_USTR_INFO; CONST s: AL_STRptr;
+      size: AL_SIZE_T): ALLEGRO_USTRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_ref_ustr (OUT info: ALLEGRO_USTR_INFO;
+      CONST us: ALLEGRO_USTRptr; star_pos, end_pos: AL_INT): ALLEGRO_USTRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
+
+(* Sizes and offsets *)
+  FUNCTION al_ustr_size (CONST us: ALLEGRO_USTRptr): AL_SIZE_T;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_ustr_length (CONST us: ALLEGRO_USTRptr): AL_SIZE_T;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_ustr_offset (CONST us: ALLEGRO_USTRptr;index: AL_INT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Find the byte offset of the next code point in string, beginning at
+   @code(aPos). @code(aPos) does not have to be at the beginning of a code point.
+
+   This function just looks for an appropriate byte; it doesn't check if found
+   offset is the beginning of a valid code point. If you are working with
+   possibly invalid UTF-8 strings then it could skip over some invalid bytes.
+   @return(@true on success, and @code(aPos) will be updated to the found
+   offset. Otherwise returns @false if @code(aPos) was already at the end of
+   the string, and @code(aPos) is unmodified.)
+   @seealso(al_ustr_prev)  *)
+  FUNCTION al_ustr_next (CONST us: ALLEGRO_USTRptr; VAR aPos: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Find the byte offset of the previous code point in string, before
+   @code(aPos). @code(aPos) does not have to be at the beginning of a code point.
+
+   This function just looks for an appropriate byte; it doesn't check if found
+   offset is the beginning of a valid code point. If you are working with
+   possibly invalid UTF-8 strings then it could skip over some invalid bytes.
+   @return(@true on success, and @code(aPos) will be updated to the found
+   offset. Otherwise returns @false if @code(aPos) was already at the end of
+   the string, and @code(aPos) is unmodified.)
+   @seealso(al_ustr_next) *)
+  FUNCTION al_ustr_prev (CONST us: ALLEGRO_USTRptr; VAR aPos: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+
 (* Assign *)
   FUNCTION al_ustr_assign (us1: ALLEGRO_USTRptr; CONST us2: ALLEGRO_USTRptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
