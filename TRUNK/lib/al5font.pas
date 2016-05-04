@@ -149,8 +149,6 @@ END;
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
   PROCEDURE al_draw_justified_ustr (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: AL_FLOAT; flags: AL_INT; CONST str: ALLEGRO_USTRptr);
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
-  PROCEDURE al_draw_textf (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: AL_FLOAT; flags: AL_INT; CONST aFormat: AL_STR; vars: ARRAY OF CONST);
-  PROCEDURE al_draw_justified_textf (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: AL_FLOAT; flags: AL_INT; CONST aFormat: AL_STR; vars: ARRAY OF CONST);
   FUNCTION al_get_text_width (CONST font: ALLEGRO_FONTptr; CONST str: AL_STR): AL_INT;
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
   FUNCTION al_get_ustr_width (CONST font: ALLEGRO_FONTptr; CONST ustr: ALLEGRO_USTRptr): AL_INT;
@@ -193,20 +191,5 @@ END;
     EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
 IMPLEMENTATION
-
-  USES
-    sysutils;
-
-  PROCEDURE al_draw_textf (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: AL_FLOAT; flags: AL_INT; CONST aFormat: AL_STR; vars: ARRAY OF CONST);
-  BEGIN
-    al_draw_text (font, color, x, y, flags, Format (aFormat, vars))
-  END;
-
-
-
-  PROCEDURE al_draw_justified_textf (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: AL_FLOAT; flags: AL_INT; CONST aFormat: AL_STR; vars: ARRAY OF CONST);
-  BEGIN
-    al_draw_justified_text (font, color, x1, x2, y, diff, flags, Format (aFormat, vars))
-  END;
 
 END.

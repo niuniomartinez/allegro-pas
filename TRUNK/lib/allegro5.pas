@@ -2569,6 +2569,7 @@ al_draw_line(x1, y1, x2, y2, color, 0);
     ALLEGRO_DEFAULT_DISPLAY_ADAPTER = -1;
 
   TYPE
+    ALLEGRO_MONITOR_INFOptr = ^ALLEGRO_MONITOR_INFO;
     ALLEGRO_MONITOR_INFO = RECORD
       x1, y1, x2, y2: AL_INT;
     END;

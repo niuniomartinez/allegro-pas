@@ -427,17 +427,5 @@ al_draw_prim(v, NULL, texture, 0, 3, ALLEGRO_PRIM_TRIANGLE_LIST);
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
 
 IMPLEMENTATION
-{$IF DEFINED(UNIX)}
-  USES
-  { Next isn't needed but it must be added to prevent a
-    "/usr/lib/nvidia-96/libGLcore.so.1: undefined reference to `__moddi3'"
-     error. (?) }
-{$IFDEF FPC}
-    GL;
-{$ELSE}
-    OpenGL;
-{$ENDIF}
-
-{$ENDIF}
 
 END.
