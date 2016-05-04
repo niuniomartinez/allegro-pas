@@ -58,16 +58,4 @@ INTERFACE
 
 IMPLEMENTATION
 
-{$IF DEFINED(UNIX)}
-  USES
-  { Next isn't needed but it must be added to prevent a
-    "/usr/lib/nvidia-96/libGLcore.so.1: undefined reference to `__moddi3'"
-     error. (?) }
-{$IFDEF FPC}
-    GL;
-{$ELSE}
-    OpenGL;
-{$ENDIF}
-
-{$ENDIF}
 END.

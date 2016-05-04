@@ -93,9 +93,9 @@ TYPE
 
    PFlair = ^TFlair;
    TFlair = RECORD
+     Next: PFlair;
      EndTime: SINGLE;
      Sprite: TSprite;
-     Next: PFlair;
    END;
 
 
@@ -121,7 +121,7 @@ VAR
    Tokens: ARRAY [0..NUM_TOKENS - 1] OF TToken;
    Buttons: ARRAY [0..NUM_TYPES - 1] OF TToken;
    Glow, GlowOverlay: TSprite;
-   GlowColor: ARRAY [0..NUM_TYPES] OF ALLEGRO_COLOR;
+   GlowColor: ARRAY [0..NUM_TYPES - 1] OF ALLEGRO_COLOR;
    Flairs: PFlair = NIL;
    HoverToken: PToken = NIL;
    SelectedButton: PToken = NIL;
@@ -297,7 +297,7 @@ CONST
  * Flairs                                                                   *
  ****************************************************************************)
 
-   FUNCTION CreateFlair (Image: INTEGER; X, Y, EndTime: SINGLE): PSprite;
+   FUNCTION MakeFlair (Image: INTEGER; X, Y, EndTime: SINGLE): PSprite;
    VAR
       FL: PFlair;
    BEGIN
@@ -306,7 +306,7 @@ CONST
       FL^.EndTime := EndTime;
       FL^.Next := Flairs;
       Flairs := FL;
-      CreateFlair := @(FL^.Sprite);
+      EXIT (@(FL^.Sprite))
    END;
 
 
@@ -353,18 +353,17 @@ CONST
  * Animations                                                               *
  ****************************************************************************)
 
+   VAR
+     DummyAnim: TAnim;
+
    FUNCTION GetNextAnim (CONST Spr: TSprite): PAnim;
    VAR
-      DummyAnim: TAnim;
-      Ndx: LONGWORD;
+     Ndx: LONGWORD;
    BEGIN
-      FOR Ndx := LOW (Spr.Anims) TO HIGH (Spr.Anims) DO
-         IF Spr.Anims[Ndx].lval = NIL THEN
-         BEGIN
-            GetNextAnim := @(Spr.Anims[Ndx]);
-            EXIT;
-         END;
-      GetNextAnim := @DummyAnim;
+     FOR Ndx := LOW (Spr.Anims) TO HIGH (Spr.Anims) DO
+       IF Spr.Anims[Ndx].lval = NIL THEN
+         EXIT (@(Spr.Anims[Ndx]));
+     EXIT (@DummyAnim)
    END;
 
 
@@ -379,15 +378,15 @@ CONST
          Anim := @(Grp.Anims[Ndx]);
          IF Anim^.lVal = lVal THEN
          BEGIN
-         (* If an old animation would overlap with the new one, truncate it
-          * and make it converge to the new animation's starting value. *)
+         { If an old animation would overlap with the new one, truncate it
+           and make it converge to the new animation's starting value. }
             IF Anim^.EndTime > StartTime THEN
             BEGIN
                Anim^.EndTime := StartTime;
                Anim^.EndVal := StartVal;
             END;
-         (* Cancel any old animations which are scheduled to start after the
-          * new one, or which have been reduced to nothing. *)
+         { Cancel any old animations which are scheduled to start after the
+           new one, or which have been reduced to nothing. }
             IF (Anim^.StartTime >= StartTime)
             OR (Anim^.StartTime >= Anim^.EndTime) THEN
                Grp.Anims[Ndx].lVal := NIL;
@@ -404,8 +403,8 @@ CONST
    BEGIN
      StartTime := al_get_time + Delay;
      FixConflictingAnims (Spr, lVal, StartTime, StartVal);
-     Anim := GetNextAnim (Spr);
 
+     Anim := GetNextAnim (Spr);
      Anim^.lVal := lVal;
      Anim^.StartVal := StartVal;
      Anim^.EndVal := EndVal;
@@ -442,7 +441,6 @@ CONST
       R, G, B: SINGLE;
    BEGIN
      al_unmap_rgb_f (Color, R, G, B);
-
      AnimTo (Spr, @(Spr.r), R, Func, Duration);
      AnimTo (Spr, @(Spr.g), G, Func, Duration);
      AnimTo (Spr, @(Spr.b), B, Func, Duration);
@@ -456,18 +454,18 @@ CONST
    BEGIN
       CASE Func OF
          INTERP_LINEAR:
-            Interpolate := t;
+            EXIT (t);
          INTERP_FAST:
-            Interpolate := -t * (t - 2);
+            EXIT (-t * (t - 2));
          INTERP_DOUBLE_FAST:
          BEGIN
             t := t - 1;
-            Interpolate := t * t * t + 1;
+            EXIT (t * t * t + 1);
          END;
          INTERP_SLOW:
-            Interpolate := t * t;
+            EXIT (t * t);
          INTERP_DOUBLE_SLOW:
-            Interpolate := t * t * t;
+            EXIT (t * t * t);
          INTERP_SLOW_IN_OUT:
          BEGIN
          { Quadratic easing in/out - acceleration until halfway, then deceleration. }
@@ -476,11 +474,11 @@ CONST
             d := 1;
             t := t / (d / 2);
             IF t < 1 THEN
-               Interpolate := c / 2 * t * t + b
+               EXIT (c / 2 * t * t + b)
             ELSE BEGIN
                t := t - 1;
-               Interpolate := (-c) / 2 * (t * (t - 2) - 1) + b
-            END;
+               EXIT ((-c) / 2 * (t * (t - 2) - 1) + b)
+            END
          END;
          INTERP_BOUNCE:
          BEGIN { TODO: Next comment may explay the previous TODO (WTF?) }
@@ -488,25 +486,25 @@ CONST
            t: current time, b: beginning value, c: change in position, d: duration
            bounce easing out }
             IF t < (1 / 2.75) THEN
-               Interpolate := 7.5625 * t * t
+               EXIT (7.5625 * t * t)
             ELSE IF t < (2 / 2.75) THEN
             BEGIN
                t := t - (1.5 / 2.75);
-               Interpolate := 7.5625 * t * t + 0.75
+               EXIT (7.5625 * t * t + 0.75)
             END
             ELSE IF t < (2.5 / 2.75) THEN
             BEGIN
                t := t - (2.5 / 2.75);
-               Interpolate := 7.5625 * t * t + 0.9375
+               EXIT (7.5625 * t * t + 0.9375)
             END
             ELSE BEGIN
                t := t - (2.625 / 2.75);
-               Interpolate := 7.5625 * t * t + 0.984375
+               EXIT (7.5625 * t * t + 0.984375)
             END;
          END;
          ELSE
-            Interpolate := 0.0
-      END;
+            EXIT (0.0)
+      END
    END;
 
 
@@ -638,11 +636,12 @@ CONST
       Spr: PSprite;
    BEGIN
       Now := al_get_time;
-      Spr := CreateFlair (IMG_AIR_EFFECT, x, y, Now + 1);
+      Spr := MakeFlair (IMG_AIR_EFFECT, x, y, Now + 1);
       Anim (Spr^, @(Spr^.ScaleX), 0.9, 1.3, INTERP_FAST, 1);
       Anim (Spr^, @(Spr^.ScaleY), 0.9, 1.3, INTERP_FAST, 1);
       Anim (Spr^, @(Spr^.Opacity), 1, 0, INTERP_FAST, 1);
-      Spr := CreateFlair (IMG_AIR_EFFECT, x, y, Now + 1.2);
+
+      Spr := MakeFlair (IMG_AIR_EFFECT, x, y, Now + 1.2);
       Anim (Spr^, @(Spr^.Opacity), 1, 0, INTERP_LINEAR, 1.2);
       Anim (Spr^, @(Spr^.ScaleX), 1.1, 1.5, INTERP_FAST, 1.2);
       Anim (Spr^, @(Spr^.ScaleY), 1.1, 0.5, INTERP_FAST, 1.2);
@@ -658,7 +657,7 @@ CONST
       i: INTEGER;
    BEGIN
       Now := al_get_time;
-      Spr := CreateFlair (IMG_MAIN_FLAME, x, y, Now + 0.8);
+      Spr := MakeFlair (IMG_MAIN_FLAME, x, y, Now + 0.8);
       Spr^.AlignY := 0.75;
       AnimFull (Spr^, @(Spr^.ScaleX),  0.2, 1.3, INTERP_BOUNCE, 0.0, 0.4);
       AnimFull (Spr^, @(Spr^.ScaleY),  0.2, 1.3, INTERP_BOUNCE, 0.0, 0.4);
@@ -667,7 +666,7 @@ CONST
       AnimFull (Spr^, @(Spr^.Opacity), 1.0, 0.0, INTERP_FAST, 0.3, 0.5);
       FOR i := 0 TO 2 DO
       BEGIN
-         Spr := CreateFlair (IMG_FLAME, x, y, Now + 0.7);
+         Spr := MakeFlair (IMG_FLAME, x, y, Now + 0.7);
          Spr^.AlignX := 1.3;
          Spr^.Angle := TWOPI / 3 * i;
          AnimDelta (Spr^, @(Spr^.Angle), -PI, INTERP_DOUBLE_FAST, 0.7);
@@ -683,15 +682,15 @@ CONST
 
       FUNCTION RandomSign: SINGLE;
       BEGIN
-         IF Random (2) < 1 THEN
-            RandomSign := -1
+         IF Random (2) > 0 THEN
+            EXIT (-1)
          ELSE
-            RandomSign := 1
+            EXIT (1)
       END;
 
       FUNCTION RandomFloat (Min, Max: SINGLE): SINGLE;
       BEGIN
-         RandomFloat := Random * (Max - Min) + Min;
+         EXIT (Random * (Max - Min) + Min)
       END;
 
    CONST
@@ -699,7 +698,7 @@ CONST
 
       FUNCTION MRand (Min, Max: SINGLE): SINGLE;
       BEGIN
-         MRand := RandomFloat (Min, Max) * MaxDuration;
+         EXIT (RandomFloat (Min, Max) * MaxDuration)
       END;
 
    VAR
@@ -708,13 +707,13 @@ CONST
       i: INTEGER;
    BEGIN
       Now := al_get_time;
-      Spr := CreateFlair (IMG_WATER, x, y, Now + MaxDuration);
+      Spr := MakeFlair (IMG_WATER, x, y, Now + MaxDuration);
       Anim (Spr^, @(Spr^.ScaleX), 1.0, 2.0, INTERP_FAST, 0.5);
       Anim (Spr^, @(Spr^.ScaleY), 1.0, 2.0, INTERP_FAST, 0.5);
       Anim (Spr^, @(Spr^.Opacity), 0.5, 0.0, INTERP_FAST, 0.5);
       FOR i := 0 TO 8 DO
       BEGIN
-         Spr := CreateFlair (IMG_WATER_DROPS, x, y, Now + MaxDuration);
+         Spr := MakeFlair (IMG_WATER_DROPS, x, y, Now + MaxDuration);
          Spr^.ScaleX := RandomFloat (0.3, 1.2) * RandomSign;
          Spr^.ScaleY := RandomFloat (0.3, 1.2) * RandomSign;
          Spr^.Angle := RandomFloat (0, TWOPI);
@@ -727,9 +726,9 @@ CONST
             AnimTo (Spr^, @(Spr^.Opacity), 0, INTERP_DOUBLE_SLOW, MRand (0.7, 1));
          AnimTo (Spr^, @(Spr^.ScaleX), RandomFloat (0.8, 3), INTERP_FAST, MRand (0.7, 1));
          AnimTo (Spr^, @(Spr^.ScaleY), RandomFloat (0.8, 3), INTERP_FAST, MRand (0.7, 1));
-         AnimTo (Spr^, @(Spr^.X), MRand (0, 20) * RandomSign, INTERP_FAST, MRand (0.7, 1));
-         AnimTo (Spr^, @(Spr^.Y), MRand (0, 20) * RandomSign, INTERP_FAST, MRand (0.7, 1));
-      END;
+         AnimDelta (Spr^, @(Spr^.X), MRand (0, 20) * RandomSign, INTERP_FAST, MRand (0.7, 1));
+         AnimDelta (Spr^, @(Spr^.Y), MRand (0, 20) * RandomSign, INTERP_FAST, MRand (0.7, 1))
+      END
    END;
 
 
@@ -804,24 +803,21 @@ CONST
    VAR
       Half: SINGLE;
    BEGIN
-      Half := Size / 2;
-      IsTouched := (Token.x - Half <= x) AND (x < Token.x + Half)
-               AND (Token.y - Half <= y) AND (y < Token.y + Half)
+     Half := Size / 2;
+     EXIT ((Token.x - Half <= x) AND (x < Token.x + Half)
+           AND (Token.y - Half <= y) AND (y < Token.y + Half))
    END;
 
 
 
    FUNCTION GetTouchedToken (x, y: SINGLE): PToken;
    VAR
-      Ndx: INTEGER;
+     Ndx: INTEGER;
    BEGIN
-      GetTouchedToken := NIL;
-      FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
-         IF IsTouched (Tokens[Ndx], TokenSize, x, y) THEN
-         BEGIN
-            GetTouchedToken := @Tokens[Ndx];
-            EXIT;
-         END;
+     FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
+       IF IsTouched (Tokens[Ndx], TokenSize, x, y) THEN
+         EXIT (@Tokens[Ndx]);
+     EXIT (NIL)
    END;
 
 
@@ -830,52 +826,57 @@ CONST
    VAR
       Ndx: INTEGER;
    BEGIN
-      GetTouchedButton := NIL;
-      FOR Ndx := LOW (Buttons) TO HIGH (Buttons) DO
-         IF IsTouched (Buttons[Ndx], ButtonSize, x, y) THEN
-         BEGIN
-            GetTouchedButton := @Buttons[Ndx];
-            EXIT;
-         END;
+     FOR Ndx := LOW (Buttons) TO HIGH (Buttons) DO
+       IF IsTouched (Buttons[Ndx], ButtonSize, x, y) THEN
+         EXIT (@Buttons[Ndx]);
+     EXIT (NIL)
    END;
 
 
 
-   PROCEDURE SelectToken (Token: PToken);
+  PROCEDURE UnselectToken (VAR token: TToken);
+  VAR
+    Spr: PSprite;
+  BEGIN
+    IF token.TheType <> TYPE_NONE THEN
+    BEGIN
+      spr := @(token.top);
+      AnimFull (Spr^, @(Spr^.Opacity), Spr^.Opacity, 0, INTERP_SLOW, 0.15, 0.15);
+      token.TheType := TYPE_NONE
+    END
+  END;
+
+
+
+  PROCEDURE UnselectAllTokens;
+  VAR
+    Ndx: INTEGER;
+  BEGIN
+    FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
+      UnselectToken (Tokens[Ndx])
+  END;
+
+
+
+   PROCEDURE SelectToken (VAR Token: TToken);
    VAR
-      Spr: PSprite;
+     PrevType: LONGINT;
+     Spr: PSprite;
    BEGIN
-      IF (Token^.TheType = TYPE_NONE) AND (SelectedButton <> NIL) THEN
-      BEGIN
-         Spr := @(Token^.Top);
+     IF SelectedButton <> NIL THEN
+     BEGIN
+       PrevType := Token.TheType;
+       UnselectToken (Token);
+
+     { Unselect only if same type, for touch input. }
+       IF PrevType <> SelectedButton^.TheType THEN
+       BEGIN
+         Spr := @(Token.Top);
          Spr^.Image := SelectedButton^.TheType;
          AnimTo (Spr^, @(Spr^.Opacity), 1, INTERP_FAST, 0.15);
-         Token^.TheType := SelectedButton^.TheType;
-      END;
-   END;
-
-
-
-   PROCEDURE UnselectToken (Token: PToken);
-   VAR
-      Spr: PSprite;
-   BEGIN
-      IF Token^.TheType <> TYPE_NONE THEN
-      BEGIN
-         Spr := @(Token^.Top);
-         AnimFull (Spr^, @(Spr^.Opacity), Spr^.Opacity, 0, INTERP_SLOW, 0.15, 0.15);
-         Token^.TheType := TYPE_NONE;
-      END;
-   END;
-
-
-
-   PROCEDURE UnselectAllTokens;
-   VAR
-      Ndx: INTEGER;
-   BEGIN
-      FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
-         UnselectToken (@Tokens[Ndx]);
+         Token.TheType := SelectedButton^.TheType
+       END
+     END
    END;
 
 
@@ -895,29 +896,34 @@ CONST
    VAR
       Spr: PSprite;
    BEGIN
-      IF Button = SelectedButton THEN
-         EXIT;
-      IF SelectedButton <> NIL THEN
+      IF Button <> SelectedButton THEN
       BEGIN
-         Spr := @(SelectedButton^.Top);
-         AnimTo (Spr^, @(Spr^.ScaleX), ButtonUnselScale, INTERP_SLOW, 0.3);
-         AnimTo (Spr^, @(Spr^.ScaleY), ButtonUnselScale, INTERP_SLOW, 0.3);
-         AnimTo (Spr^, @(Spr^.Opacity), 0.5, INTERP_DOUBLE_SLOW, 0.2);
+        IF SelectedButton <> NIL THEN
+        BEGIN
+           Spr := @(SelectedButton^.Top);
+           AnimTo (Spr^, @(Spr^.ScaleX), ButtonUnselScale, INTERP_SLOW, 0.3);
+           AnimTo (Spr^, @(Spr^.ScaleY), ButtonUnselScale, INTERP_SLOW, 0.3);
+           AnimTo (Spr^, @(Spr^.Opacity), 0.5, INTERP_DOUBLE_SLOW, 0.2);
 
-         Spr := @(SelectedButton^.Bot);
-         AnimTo (Spr^, @(Spr^.ScaleX), DropshadowUnselScale, INTERP_SLOW, 0.3);
-         AnimTo (Spr^, @(Spr^.ScaleY), DropshadowUnselScale, INTERP_SLOW, 0.3);
-      END;
-      SelectedButton := Button;
-      Spr := @(Button^.Top);
-      AnimTo (Spr^, @(Spr^.ScaleX), ButtonSelScale, INTERP_FAST, 0.3);
-      AnimTo (Spr^, @(Spr^.ScaleY), ButtonSelScale, INTERP_FAST, 0.3);
-      AnimTo (Spr^, @(Spr^.Opacity), 1.0, INTERP_FAST, 0.3);
-      Spr := @(Button^.Bot);
-      AnimTo (Spr^, @(Spr^.ScaleX), DropshadowSelScale, INTERP_FAST, 0.3);
-      AnimTo (Spr^, @(Spr^.ScaleY), DropshadowSelScale, INTERP_FAST, 0.3);
-      ChangeHealthyGlow (Button^.TheType, Button^.x);
-      al_play_sample (SelectSample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NIL);
+           Spr := @(SelectedButton^.Bot);
+           AnimTo (Spr^, @(Spr^.ScaleX), DropshadowUnselScale, INTERP_SLOW, 0.3);
+           AnimTo (Spr^, @(Spr^.ScaleY), DropshadowUnselScale, INTERP_SLOW, 0.3);
+        END;
+        SelectedButton := Button;
+
+        Spr := @(Button^.Top);
+        AnimTo (Spr^, @(Spr^.ScaleX), ButtonSelScale, INTERP_FAST, 0.3);
+        AnimTo (Spr^, @(Spr^.ScaleY), ButtonSelScale, INTERP_FAST, 0.3);
+        AnimTo (Spr^, @(Spr^.Opacity), 1.0, INTERP_FAST, 0.3);
+
+        Spr := @(Button^.Bot);
+        AnimTo (Spr^, @(Spr^.ScaleX), DropshadowSelScale, INTERP_FAST, 0.3);
+        AnimTo (Spr^, @(Spr^.ScaleY), DropshadowSelScale, INTERP_FAST, 0.3);
+
+        ChangeHealthyGlow (Button^.TheType, Button^.x);
+
+        al_play_sample (SelectSample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NIL);
+      END
    END;
 
 
@@ -930,7 +936,7 @@ CONST
       BEGIN
          Token := GetTouchedToken (x, y);
          IF Token <> NIL THEN
-            SelectToken (Token)
+            SelectToken (Token^)
          ELSE BEGIN
             Button := GetTouchedButton (x, y);
             IF Button <> NIL THEN
@@ -941,7 +947,7 @@ CONST
       BEGIN
          Token := GetTouchedToken (x, y);
          IF Token <> NIL THEN
-            UnselectToken (Token);
+            UnselectToken (Token^);
       END;
    END;
 
@@ -1055,5 +1061,3 @@ BEGIN
 
    FreeAllFlairs;
 END.
-
-/* vim: set sts=3 sw=3 et: */
