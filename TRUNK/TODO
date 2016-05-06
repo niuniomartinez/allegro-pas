@@ -3,6 +3,7 @@ In no special order
   * Check sizes of BOOLEAN types.  It seems to work (Xubuntu 14.04.4 & WinXP).
 
   * See the various TODO notes in unit Allegro5.pas.
+
   * Sometimes it doesn't load samples.
     - It doesn't load on Fedora 64bit, but does on Ubuntu 32bit.
     - Suspect it's a problem with the funcion in C, similar than the problem
@@ -11,19 +12,16 @@ In no special order
   * Work to merge Gregor A. Cieslak's fork
     (https://github.com/Soldat/allegro-pas5-test)
 
-  * FPC linker can't find public function al_init_native_dialog_addon (?).
-    Once fixed, modify unit Common at examples/.
-
-  * Check error "(...)libGLcore.so.1: undefined reference to `__moddi3'".
-    To fix it I've added al5gl to uses section of al5image and al5primitives.
-
   * Add to documentation a note about to define symbol "DEBUGMODE" if using
     "-g".
 
-  * Units "al5color", "al5gl" have STRING parameters.  Add wrappers to PCHAR.
-
   * There are some "enum" types (sets). Be sure that they have the correct
     sice in bits.  Read FPC and Delphi help.
+
+  * nihGUI may need some changes in API (i.e. what's public and what's not).
+
+  * nihGUI doesn't calculate mouse position correctly.  This seems to be an
+    issue of Allegro in Windows XP.
 
   * Documentation isn't written.
     May be I should find another documentation tool as pasdoc is "dirty".
