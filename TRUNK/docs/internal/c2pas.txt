@@ -46,7 +46,7 @@ Allegro's API description
   Most functions are in dll/so/dylib files so they're external.
 
   Some functions are "inline", and should be "INLINE" in Pascal too.  Also
-  wrapper functions and procedures should bee "INLINE" too.
+  wrapper functions and procedures should be "INLINE" too.
 
 
 
@@ -60,16 +60,15 @@ Data types
   conversions.  By default, C compilers don't activate these exceptions.  That
   results in some issues as discused in an Allegro.cc forum thread[2].
 
-  Pointers in C are marked by "*".  "*char" are a pointer to char, but they
-  actually use it as ANSISTRINGS.  I think it's better to use "PCHAR" and
-  create inlined wrappers for parameters and function returning.  By the way
-  I've defined type AL_STRptr for that cases.
+  Pointers in C are marked by "*".  "*char" are a pointer to char, and most
+  cases it points to an ANSISTRING.  Used as parameter, should be ANSISTRING,
+  used as returned value, should be PCHAR.
 
   C doesn't distiguish between array and pointers.  Actually an array is a
   pointer that points to a "non dynamic" memory space.
 
   "bool" is the bad guy here.  It's a recent addition to the C language
-  (1999 IIRC) and not all compilers support it.  Allegro's defines it as
+  (1999 IIRC) and not all compilers support it.  Allegro 4 defines it as
   "unsigned char" if compiler doesn't supports it.
 
   Enumerations are discussed in next section.
@@ -77,7 +76,7 @@ Data types
   Here you have a list of data types.  First column are C types, second are
   Pascal types.
 
-  bool			BYTEBOOL[3]
+  bool			BOOLEAN[3]
 
   char			CHAR or SHORTINT (depending the use).
   unsigned char		BYTE

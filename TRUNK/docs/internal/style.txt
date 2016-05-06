@@ -49,7 +49,7 @@ Identifiers
 
   Keywords should be UPPERCASE.  I know that modern IDEs (i.e. Delphi and
   Lazarus) write them lowercase but I find sources are easer to read with
-  keywords written in uppercase even with syntax highlighting.
+  keywords written uppercase even with syntax highlighting.
 
   Constants, enumerations and type names should be UPPERCASE too, using “_”
   character to separate words.
@@ -59,7 +59,7 @@ Identifiers
 Indentation
 -----------
 
-  This is a complex issue, but it must be used.
+  This is a complex issue, but it should be used.
 
   I use 2-spaces indentation, using a tab-character for 8 spaces.
 

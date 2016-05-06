@@ -625,7 +625,7 @@ Expands to:
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* Gets the clipping rectangle of the target bitmap.
   @seealso(al_set_clipping_rectangle) *)
-  PROCEDURE al_get_clipping_rectangle (VAR x, y, w, h: AL_INT);
+  PROCEDURE al_get_clipping_rectangle (OUT x, y, w, h: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
@@ -2813,30 +2813,94 @@ al_draw_line(x1, y1, x2, y2, color, 0);
  *      Thread local storage routines.
  *)
 
+  CONST
+  { @exclude }
+    ALLEGRO_STATE_NEW_DISPLAY_PARAMETERS = $0001;
+  { @exclude }
+    ALLEGRO_STATE_NEW_BITMAP_PARAMETERS  = $0002;
+  { @exclude }
+    ALLEGRO_STATE_DISPLAY                = $0004;
+  { @exclude }
+    ALLEGRO_STATE_TARGET_BITMAP          = $0008;
+  { @exclude }
+    ALLEGRO_STATE_BITMAP                 = $000A; { ALLEGRO_STATE_TARGET_BITMAP + ALLEGRO_STATE_NEW_BITMAP_PARAMETERS, }
+  { @exclude }
+  { @exclude }
+    ALLEGRO_STATE_BLENDER                = $0010;
+  { @exclude }
+    ALLEGRO_STATE_NEW_FILE_INTERFACE     = $0020;
+  { @exclude }
+    ALLEGRO_STATE_TRANSFORM              = $0040;
+  { @exclude }
+    ALLEGRO_STATE_PROJECTION_TRANSFORM   = $0100;
+  { @exclude }
+    ALLEGRO_STATE_ALL                    = $FFFF;
+
+
+
   TYPE
-    ALLEGRO_STATE_FLAGS = (
-      ALLEGRO_STATE_NEW_DISPLAY_PARAMETERS = $0001,
-      ALLEGRO_STATE_NEW_BITMAP_PARAMETERS  = $0002,
-      ALLEGRO_STATE_DISPLAY                = $0004,
-      ALLEGRO_STATE_TARGET_BITMAP          = $0008,
-      ALLEGRO_STATE_BITMAP                 = $000A, {<ALLEGRO_STATE_TARGET_BITMAP + ALLEGRO_STATE_NEW_BITMAP_PARAMETERS, }
-      ALLEGRO_STATE_BLENDER                = $0010,
-      ALLEGRO_STATE_NEW_FILE_INTERFACE     = $0020,
-      ALLEGRO_STATE_TRANSFORM              = $0040,
-      ALLEGRO_STATE_PROJECTION_TRANSFORM   = $0100,
+  (* Opaque type which is passed to
+     @link(al_store_state)/@link(al_restore_state).
 
-      ALLEGRO_STATE_ALL                    = $FFFF
-    );
-
-
-
+     The various state kept internally by Allegro can be displayed like this:
+@longcode(#
+  global
+      active system driver
+          current config
+  per thread
+      new bitmap params
+      new display params
+      active file interface
+      errno
+      current blending mode
+      current display
+          deferred drawing
+      current target bitmap
+          current transformation
+          current projection transformation
+          current clipping rectangle
+          bitmap locking
+          current shader
+@)
+     In general, the only real global state is the active system driver. All
+     other global state is per-thread, so if your application has multiple
+     separate threads they never will interfere with each other. (Except if
+     there are objects accessed by multiple threads of course. Usually you want
+     to minimize that though and for the remaining cases use synchronization
+     primitives described in the threads section or events described in the
+     events section to control inter-thread communication.)
+  *)
     ALLEGRO_STATE = RECORD
     { Internally, a thread_local_state structure is placed here. }
       _tls: ARRAY [0..1023] OF AL_CHAR;
     END;
 
-  PROCEDURE al_store_state (VAR state: ALLEGRO_STATE; flags: ALLEGRO_STATE_FLAGS);
+(* Stores part of the state of the current thread in the given
+   @code(ALLEGRO_STATE) object. The flags parameter can take any
+   bit-combination of these flags:
+   @unorderedlist(
+    @item(@code(ALLEGRO_STATE_NEW_DISPLAY_PARAMETERS) - new_display_format,
+      new_display_refresh_rate, new_display_flags)
+    @item(@code(ALLEGRO_STATE_NEW_BITMAP_PARAMETERS) - new_bitmap_format,
+      new_bitmap_flags)
+    @item(@code(ALLEGRO_STATE_DISPLAY) - current_display)
+    @item(@code(ALLEGRO_STATE_TARGET_BITMAP) - target_bitmap)
+    @item(@code(ALLEGRO_STATE_BLENDER) - blender)
+    @item(@code(ALLEGRO_STATE_TRANSFORM) - current_transformation)
+    @item(@code(ALLEGRO_STATE_PROJECTION_TRANSFORM) -
+      current_projection_transformation)
+    @item(@code(ALLEGRO_STATE_NEW_FILE_INTERFACE) - new_file_interface)
+    @item(@code(ALLEGRO_STATE_BITMAP) - same as
+      @code(ALLEGRO_STATE_NEW_BITMAP_PARAMETERS) and
+      @code(ALLEGRO_STATE_TARGET_BITMAP))
+    @item(@code(ALLEGRO_STATE_ALL) - all of the above)
+   )
+   @seealso(al_restore_state) *)
+  PROCEDURE al_store_state (OUT state: ALLEGRO_STATE; flags: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Restores part of the state of the current thread from the given
+   @code(ALLEGRO_STATE) object.
+   @eealso(al_store_state) *)
   PROCEDURE al_restore_state (VAR state: ALLEGRO_STATE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
