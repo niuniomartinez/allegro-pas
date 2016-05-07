@@ -27,12 +27,12 @@ UNIT al5ttf;
 INTERFACE
 
   USES
-    al5base;
+    al5base, al5font;
 
   CONST
   (* Builds library name. *)
     { @exclude }
-    ALLEGRO_TTF_LIB_NAME = _A5_LIB_PREFIX_+'allegro_ttf'+_DBG_+_A5_LIB_VER_+_A5_LIB_EXT_;
+    ALLEGRO_TTF_LIB_NAME = _A5_LIB_PREFIX_+'allegro_ttf'+_DBG_+_A5_LIB_EXT_;
 
   (* Do not use any kerning even if the font file supports it.
     @seealso(al_load_font) @seealso(al_load_ttf_font) *)
@@ -44,9 +44,9 @@ INTERFACE
     @seealso(al_load_font) @seealso(al_load_ttf_font) *)
     ALLEGRO_TTF_NO_AUTOHINT = 4;
 
-  FUNCTION al_load_ttf_font (filename: AL_STR; size, flags: AL_INT);
+  FUNCTION al_load_ttf_font (filename: AL_STR; size, flags: AL_INT): ALLEGRO_FONTptr;
     CDECL;EXTERNAL ALLEGRO_TTF_LIB_NAME;
-  FUNCTION al_load_ttf_font_stretch (filename: AL_STR; w, h, flags: AL_INT);
+  FUNCTION al_load_ttf_font_stretch (filename: AL_STR; w, h, flags: AL_INT): ALLEGRO_FONTptr;
     CDECL;EXTERNAL ALLEGRO_TTF_LIB_NAME;
 (* Initializes the TTF addon. *)
   FUNCTION al_init_ttf_addon: AL_BOOL;

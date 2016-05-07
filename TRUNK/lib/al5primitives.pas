@@ -227,7 +227,7 @@ INTERFACE
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
 (* Draws a subset of the passed vertex array.
 
-   For example to draw a textured triangle you could use:           +
+   For example to draw a textured triangle you could use:
 @longcode(#
 ALLEGRO_COLOR white = al_map_rgb_f(1, 1, 1);
 ALLEGRO_VERTEX v[] = {
@@ -236,18 +236,18 @@ ALLEGRO_VERTEX v[] = {
    {.x = 256, .y = 256, .z = 0, .color = white, .u = 256, .v = 256}};
 al_draw_prim(v, NULL, texture, 0, 3, ALLEGRO_PRIM_TRIANGLE_LIST);
 #)
-   @param(vtxs Pointer to an array of vertices.)
+   @param(vtxs An array of vertices.)
    @param(texture Texture to use, pass @nil to use only color shaded primitves.)
    @param(decl Pointer to a vertex declaration. If set to @nil, the vertices
      are assumed to be of the @code(ALLEGRO_VERTEX) type.)
    @param(start Start index of the subset of the vertex array to draw.)
    @param(end One past the last index of the subset of the vertex array to draw.)
-   @param(type A member of the @code(ALLEGRO_PRIM_TYPE) enumeration, specifying
+   @param(_type A member of the @code(ALLEGRO_PRIM_TYPE) enumeration, specifying
      what kind of primitive to draw.)
    @return(Number of primitives drawn.)
    @seealso(ALLEGRO_VERTEX) @seealso(ALLEGRO_PRIM_TYPE)
    @seealso(ALLEGRO_VERTEX_DECL) @seealso(al_draw_indexed_prim) *)
-  FUNCTION al_draw_prim (CONST vtxs: AL_VOIDptr; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; start, finish: AL_INT; _type: ALLEGRO_PRIM_TYPE): AL_INT;
+  FUNCTION al_draw_prim (VAR vtxs: ARRAY OF ALLEGRO_VERTEX; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; start, finish: AL_INT; _type: ALLEGRO_PRIM_TYPE): AL_INT;
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
   FUNCTION al_draw_indexed_prim (CONST vtxs: AL_VOIDptr; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; VAR indices: ARRAY OF AL_INT; num_vtx: AL_INT; _type: ALLEGRO_PRIM_TYPE): AL_INT;
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;

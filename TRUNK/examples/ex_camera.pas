@@ -5,7 +5,8 @@ PROGRAM ex_camera;
 
   USES
     Common,
-    Allegro5, al5primitives, al5color, al5font;
+    Allegro5, al5primitives, al5color, al5font,
+    math, sysutils;
 
   CONST
     pi = ALLEGRO_PI;
@@ -20,7 +21,7 @@ PROGRAM ex_camera;
       xAxis: RVector; { This represent the direction looking to the right. }
       yAxis: RVector; { This is the up direction. }
       zAxis: RVector; { This is the direction towards the viewer ('backwards'). }
-      verticalFieldOfView: DOUBLE; { In radians. }
+      VerticalFieldOfView: DOUBLE; { In radians. }
     END;
 
     TExample = RECORD
@@ -31,9 +32,9 @@ PROGRAM ex_camera;
       MovementSpeed: DOUBLE;
 
     { Keyboard and mouse state }
-      Button: ARRAY [0..9] OF INTEGER;
-      Key: ARRAY [0..ALLEGRO_KEY_MAX-1] OF INTEGER;
-      Keystate: ARRAY [0..ALLEGRO_KEY_MAX-1] OF INTEGER;
+      Button: ARRAY [0..9] OF BOOLEAN;
+      Key: ARRAY [0..ALLEGRO_KEY_MAX-1] OF BOOLEAN;
+      KeyState: ARRAY [0..ALLEGRO_KEY_MAX-1] OF BOOLEAN;
       MouseDx, MouseDy: INTEGER;
 
     { Control scheme selection }
@@ -41,8 +42,8 @@ PROGRAM ex_camera;
       ControlsNames: ARRAY [0..2] OF STRING;
 
     { the vertex data }
-      n, v_size: INTEGER;
-      v: ALLEGRO_VERTEXptr;
+      n: INTEGER;
+      v: ARRAY OF ALLEGRO_VERTEX;
 
     { used to draw some info text }
       Font: ALLEGRO_FONTptr;
@@ -103,7 +104,7 @@ PROGRAM ex_camera;
 
 (* Rotates the camera around the given axis. *)
   PROCEDURE RotateCameraAroundAxis
-    (VAR c: RCamera; Axis: RVector; Radians: double);
+    (VAR c: RCamera; Axis: RVector; Radians: DOUBLE);
   VAR
     t: ALLEGRO_TRANSFORM;
   BEGIN
@@ -116,425 +117,488 @@ PROGRAM ex_camera;
 
 
 
-/* Move the camera along its x axis and z axis (which corresponds to
- * right and backwards directions).
- */
-static void camera_move_along_direction(Camera *camera, double right,
-   double forward)
-{
-   vector_iadd(&camera->position, vector_mul(camera->xaxis, right));
-   vector_iadd(&camera->position, vector_mul(camera->zaxis, -forward));
-}
+(* Move the camera along its x axis and z axis (which corresponds to
+   right and backwards directions). *)
+  PROCEDURE MoveCameraAlongDirection
+    (VAR Camera: RCamera; aRight, aForward: DOUBLE);
+  BEGIN
+    VectorIadd (Camera.Position, VectorMul (Camera.xAxis, aRight));
+    VectorIadd (Camera.Position, VectorMul (Camera.zAxis, -aForward))
+  END;
 
-/* Get a vector with y = 0 looking in the opposite direction as the camera z
- * axis. If looking straight up or down returns a 0 vector instead.
- */
-static Vector get_ground_forward_vector(Camera *camera)
-{
-   Vector move = vector_mul(camera->zaxis, -1);
-   move.y = 0;
-   return vector_normalize(move);
-}
 
-/* Get a vector with y = 0 looking in the same direction as the camera x axis.
- * If looking straight up or down returns a 0 vector instead.
- */
-static Vector get_ground_right_vector(Camera *camera)
-{
-   Vector move = camera->xaxis;
-   move.y = 0;
-   return vector_normalize(move);
-}
 
-/* Like camera_move_along_direction but moves the camera along the ground plane
- * only.
- */
-static void camera_move_along_ground(Camera *camera, double right,
-   double forward)
-{
-   Vector f = get_ground_forward_vector(camera);
-   Vector r = get_ground_right_vector(camera);
-   camera->position.x += f.x * forward + r.x * right;
-   camera->position.z += f.z * forward + r.z * right;
-}
+(* Get a vector with y = 0 looking in the opposite direction as the camera z
+   axis. If looking straight up or down returns a 0 vector instead. *)
+  FUNCTION  GetGroundForwardVector (CONST Camera: RCamera): RVector;
+  VAR
+    Move: RVector;
+  BEGIN
+    Move := VectorMul (Camera.zAxis, -1);
+    Move.y := 0;
+    EXIT (VectorNormalize (Move))
+  END;
 
-/* Calculate the pitch of the camera. This is the angle between the z axis
- * vector and our direction vector on the y = 0 plane.
- */
-static double get_pitch(Camera *c)
-{
-   Vector f = get_ground_forward_vector(c);
-   return asin(vector_dot_product(f, c->yaxis));
-}
 
-/* Calculate the yaw of the camera. This is basically the compass direction.
- */
-static double get_yaw(Camera *c)
-{
-   return atan2(c->zaxis.x, c->zaxis.z);
-}
 
-/* Calculate the roll of the camera. This is the angle between the x axis
- * vector and its project on the y = 0 plane.
- */
-static double get_roll(Camera *c)
-{
-   Vector r = get_ground_right_vector(c);
-   return asin(vector_dot_product(r, c->yaxis));
-}
+(* Get a vector with y = 0 looking in the same direction as the camera x axis.
+   If looking straight up or down returns a 0 vector instead. *)
+  FUNCTION GetGroundRightVector (CONST Camera: RCamera): RVector;
+  VAR
+    Move: RVector;
+  BEGIN
+    Move := Camera.xAxis;
+    Move.y := 0;
+    EXIT (VectorNormalize (Move))
+  END;
 
-/* Set up a perspective transform. We make the screen span
- * 2 vertical units (-1 to +1) with square pixel aspect and the camera's
- * vertical field of view. Clip distance is always set to 1.
- */
-static void setup_3d_projection(void)
-{
-   ALLEGRO_TRANSFORM projection;
-   ALLEGRO_DISPLAY *display = al_get_current_display();
-   double dw = al_get_display_width(display);
-   double dh = al_get_display_height(display);
-   double f;
-   al_identity_transform(&projection);
-   al_translate_transform_3d(&projection, 0, 0, -1);
-   f = tan(ex.camera.vertical_field_of_view / 2);
-   al_perspective_transform(&projection, -1 * dw / dh * f, f,
+
+
+(* Like CameraMoveAlongDirection but moves the camera along the ground plane
+   only. *)
+  PROCEDURE MoveCameraAlongGround
+    (VAR Camera: RCamera; aRight, aForward: DOUBLE);
+  VAR
+    f, r: RVector;
+  BEGIN
+    f := GetGroundForwardVector (Camera);
+    r := GetGroundRightVector (Camera);
+    Camera.Position.x := Camera.Position.x + (f.x * aForward + r.x * aRight);
+    Camera.position.z := Camera.Position.z + (f.z * aForward + r.z * aRight)
+  END;
+
+
+
+(* Calculate the pitch of the camera. This is the angle between the z axis
+   vector and our direction vector on the y = 0 plane. *)
+  FUNCTION GetPitch (CONST Camera: RCamera): DOUBLE;
+  VAR
+    f: RVector;
+  BEGIN
+    f := GetGroundForwardVector (Camera);
+    EXIT (arcsin (VectorDotProduct (f, Camera.yAxis)))
+  END;
+
+
+
+(* Calculate the yaw of the camera. This is basically the compass direction. *)
+  FUNCTION GetYaw (CONST Camera: RCamera): DOUBLE;
+  BEGIN
+    EXIT (arctan2 (Camera.zAxis.x, Camera.zAxis.z))
+  END;
+
+
+
+(* Calculate the roll of the camera. This is the angle between the x axis
+   vector and its project on the y = 0 plane. *)
+  FUNCTION GetRoll (CONST Camera: RCamera): DOUBLE;
+  VAR
+    R: RVector;
+  BEGIN
+    r := GetGroundRightVector (Camera);
+    EXIT (arcsin (VectorDotProduct (r, Camera.yAxis)))
+  END;
+
+
+
+(* Set up a perspective transform. We make the screen span
+   2 vertical units (-1 to +1) with square pixel aspect and the camera's
+   vertical field of view. Clip distance is always set to 1. *)
+  PROCEDURE Setup3DProjection;
+  VAR
+    Projection: ALLEGRO_TRANSFORM;
+    Display: ALLEGRO_DISPLAYptr;
+    dw, dh, f: DOUBLE;
+  BEGIN
+    Display := al_get_current_display;
+    dw := al_get_display_width (Display);
+    dh := al_get_display_height (Display);
+    al_identity_transform (Projection);
+    al_translate_transform_3d (Projection, 0, 0, -1);
+    f := tan (Example.Camera.VerticalFieldOfView / 2);
+    al_perspective_transform (
+      Projection, -1 * dw / dh * f, f,
       1,
-      f * dw / dh, -f, 1000);
-   al_use_projection_transform(&projection);
-}
+      f * dw / dh, -f, 1000
+    );
+    al_use_projection_transform (Projection)
+  END;
 
-/* Adds a new vertex to our scene. */
-static void add_vertex(double x, double y, double z, ALLEGRO_COLOR color)
-{
-   int i = ex.n++;
-   if (i >= ex.v_size) {
-      ex.v_size += 1;
-      ex.v_size *= 2;
-      ex.v = realloc(ex.v, ex.v_size * sizeof *ex.v);
-   }
-   ex.v[i].x = x;
-   ex.v[i].y = y;
-   ex.v[i].z = z;
-   ex.v[i].color = color;
-}
 
-/* Adds two triangles (6 vertices) to the scene. */
-static void add_quad(double x, double y, double z,
-   double ux, double uy, double uz,
-   double vx, double vy, double vz, ALLEGRO_COLOR c1, ALLEGRO_COLOR c2)
-{
-   add_vertex(x, y, z, c1);
-   add_vertex(x + ux, y + uy, z + uz, c1);
-   add_vertex(x + vx, y + vy, z + vz, c2);
-   add_vertex(x + vx, y + vy, z + vz, c2);
-   add_vertex(x + ux, y + uy, z + uz, c1);
-   add_vertex(x + ux + vx, y + uy + vy, z + uz + vz, c2);
-}
 
-/* Create a checkerboard made from colored quads. */
-static void add_checkerboard(void)
-{
-   int x, y;
-   ALLEGRO_COLOR c1 = al_color_name("yellow");
-   ALLEGRO_COLOR c2 = al_color_name("green");
+(* Adds a new vertex to our scene. *)
+  PROCEDURE AddVertex (x, y, z: DOUBLE; Color: ALLEGRO_COLOR);
+  BEGIN
+    IF Example.n >= Length (Example.v) THEN
+      Setlength (Example.v, (Length (Example.v) + 1) * 2);
+    Example.v[Example.n].x := x;
+    Example.v[Example.n].y := y;
+    Example.v[Example.n].z := z;
+    Example.v[Example.n].color := Color;
+    INC (Example.n);
+  END;
 
-   for (y = 0; y < 20; y++) {
-      for (x = 0; x < 20; x++) {
-         double px = x - 20 * 0.5;
-         double py = 0.2;
-         double pz = y - 20 * 0.5;
-         ALLEGRO_COLOR c = c1;
-         if ((x + y) & 1) {
-            c = c2;
-            py -= 0.1;
-         }
-         add_quad(px, py, pz, 1, 0, 0, 0, 0, 1, c, c);
-      }
-   }
-}
 
-/* Create a skybox. This is simply 5 quads with a fixed distance to the
- * camera.
- */
-static void add_skybox(void)
-{
-   Vector p = ex.camera.position;
-   ALLEGRO_COLOR c1 = al_color_name("black");
-   ALLEGRO_COLOR c2 = al_color_name("blue");
-   ALLEGRO_COLOR c3 = al_color_name("white");
 
-   /* Back skybox wall. */
-   add_quad(p.x - 50, 0, p.z - 50, 100, 0, 0, 0, 50, 0, c1, c2);
-   /* Front skybox wall. */
-   add_quad(p.x - 50, 0, p.z + 50, 100, 0, 0, 0, 50, 0, c1, c2);
-   /* Left skybox wall. */
-   add_quad(p.x - 50, 0, p.z - 50, 0, 0, 100, 0, 50, 0, c1, c2);
-   /* Right skybox wall. */
-   add_quad(p.x + 50, 0, p.z - 50, 0, 0, 100, 0, 50, 0, c1, c2);
+(* Adds two triangles (6 vertices) to the scene. *)
+  PROCEDURE AddQuad
+    (x, y, z, ux, uy, uz, vx, vy, vz: DOUBLE; c1, c2: ALLEGRO_COLOR);
+  BEGIN
+    AddVertex (x, y, z, c1);
+    AddVertex (x + ux, y + uy, z + uz, c1);
+    AddVertex (x + vx, y + vy, z + vz, c2);
+    AddVertex (x + vx, y + vy, z + vz, c2);
+    AddVertex (x + ux, y + uy, z + uz, c1);
+    AddVertex (x + ux + vx, y + uy + vy, z + uz + vz, c2)
+  END;
 
-   /* Top of skybox. */
-   add_vertex(p.x - 50, 50, p.z - 50, c2);
-   add_vertex(p.x + 50, 50, p.z - 50, c2);
-   add_vertex(p.x, 50, p.z, c3);
 
-   add_vertex(p.x + 50, 50, p.z - 50, c2);
-   add_vertex(p.x + 50, 50, p.z + 50, c2);
-   add_vertex(p.x, 50, p.z, c3);
 
-   add_vertex(p.x + 50, 50, p.z + 50, c2);
-   add_vertex(p.x - 50, 50, p.z + 50, c2);
-   add_vertex(p.x, 50, p.z, c3);
+(* Create a checkerboard made from colored quads. *)
+  PROCEDURE AddCheckerboard;
+  VAR
+    x, y: INTEGER;
+    Color: ALLEGRO_COLOR;
+    px, py, pz: DOUBLE;
+  BEGIN
+    FOR y := 0 TO 19 DO
+      FOR x := 0 TO 19 DO
+      BEGIN
+        px := x - 20 * 0.5;
+        py := 0.2;
+        pz := y - 20 * 0.5;
+        IF ((x + y) AND 1) = 0 THEN
+          Color := al_color_name ('yellow')
+        ELSE BEGIN
+          py -= 0.1;
+          Color := al_color_name ('green')
+        END;
+        AddQuad (px, py, pz, 1, 0, 0, 0, 0, 1, Color, Color)
+      END
+  END;
 
-   add_vertex(p.x - 50, 50, p.z + 50, c2);
-   add_vertex(p.x - 50, 50, p.z - 50, c2);
-   add_vertex(p.x, 50, p.z, c3);
-}
 
-static void draw_scene(void)
-{
-   Camera *c = &ex.camera;
-   /* We save Allegro's projection so we can restore it for drawing text. */
-   ALLEGRO_TRANSFORM projection = *al_get_current_projection_transform();
-   ALLEGRO_TRANSFORM t;
-   ALLEGRO_COLOR back = al_color_name("black");
-   ALLEGRO_COLOR front = al_color_name("white");
-   int th;
-   double pitch, yaw, roll;
 
-   setup_3d_projection();
-   al_clear_to_color(back);
+(* Create a skybox. This is simply 5 quads with a fixed distance to the
+   camera. *)
+  PROCEDURE AddSkybox;
+  VAR
+    p: RVector;
+    c1, c2, c3: ALLEGRO_COLOR;
+  BEGIN
+    p := Example.Camera.Position;
+    c1 := al_color_name ('black');
+    c2 := al_color_name ('blue');
+    c3 := al_color_name ('white');
 
-   /* We use a depth buffer. */
-   al_set_render_state(ALLEGRO_DEPTH_TEST, 1);
-   al_clear_depth_buffer(1);
+  { Back skybox wall. }
+    AddQuad (p.x - 50, 0, p.z - 50, 100, 0, 0, 0, 50, 0, c1, c2);
+  { Front skybox wall. }
+    AddQuad (p.x - 50, 0, p.z + 50, 100, 0, 0, 0, 50, 0, c1, c2);
+  { Left skybox wall. }
+    AddQuad (p.x - 50, 0, p.z - 50, 0, 0, 100, 0, 50, 0, c1, c2);
+  { Right skybox wall. }
+    AddQuad (p.x + 50, 0, p.z - 50, 0, 0, 100, 0, 50, 0, c1, c2);
 
-   /* Recreate the entire scene geometry - this is only a very small example
-    * so this is fine.
-    */
-   ex.n = 0;
-   add_checkerboard();
-   add_skybox();
+  { Top of skybox. }
+    AddVertex (p.x - 50, 50, p.z - 50, c2);
+    AddVertex (p.x + 50, 50, p.z - 50, c2);
+    AddVertex (p.x, 50, p.z, c3);
 
-   /* Construct a transform corresponding to our camera. This is an inverse
-    * translation by the camera position, followed by an inverse rotation
-    * from the camera orientation.
-    */
-   al_build_camera_transform(&t, 
-      ex.camera.position.x, ex.camera.position.y, ex.camera.position.z,
-      ex.camera.position.x - ex.camera.zaxis.x,
-      ex.camera.position.y - ex.camera.zaxis.y,
-      ex.camera.position.z - ex.camera.zaxis.z,
-      ex.camera.yaxis.x, ex.camera.yaxis.y, ex.camera.yaxis.z);
-   al_use_transform(&t);
-   al_draw_prim(ex.v, NULL, NULL, 0, ex.n, ALLEGRO_PRIM_TRIANGLE_LIST);
+    AddVertex (p.x + 50, 50, p.z - 50, c2);
+    AddVertex (p.x + 50, 50, p.z + 50, c2);
+    AddVertex (p.x, 50, p.z, c3);
 
-   /* Restore projection. */
-   al_identity_transform(&t);
-   al_use_transform(&t);
-   al_use_projection_transform(&projection);
+    AddVertex (p.x + 50, 50, p.z + 50, c2);
+    AddVertex (p.x - 50, 50, p.z + 50, c2);
+    AddVertex (p.x, 50, p.z, c3);
 
-   /* Draw some text. */
-   th = al_get_font_line_height(ex.font);
-   al_draw_textf(ex.font, front, 0, th * 0, 0,
-      "look: %+3.1f/%+3.1f/%+3.1f (change with left mouse button and drag)",
-         -c->zaxis.x, -c->zaxis.y, -c->zaxis.z);
-   pitch = get_pitch(c) * 180 / pi;
-   yaw = get_yaw(c) * 180 / pi;
-   roll = get_roll(c) * 180 / pi;
-   al_draw_textf(ex.font, front, 0, th * 1, 0,
-      "pitch: %+4.0f yaw: %+4.0f roll: %+4.0f", pitch, yaw, roll);
-   al_draw_textf(ex.font, front, 0, th * 2, 0,
-      "vertical field of view: %3.1f (change with Z/X)",
-         c->vertical_field_of_view * 180 / pi);
-   al_draw_textf(ex.font, front, 0, th * 3, 0, "move with WASD or cursor");
-   al_draw_textf(ex.font, front, 0, th * 4, 0, "control style: %s (space to change)",
-      ex.controls_names[ex.controls]);
-}
+    AddVertex (p.x - 50, 50, p.z + 50, c2);
+    AddVertex (p.x - 50, 50, p.z - 50, c2);
+    AddVertex (p.x, 50, p.z, c3)
+  END;
 
-static void setup_scene(void)
-{
-   ex.camera.xaxis.x = 1;
-   ex.camera.yaxis.y = 1;
-   ex.camera.zaxis.z = 1;
-   ex.camera.position.y = 2;
-   ex.camera.vertical_field_of_view = 60 * pi / 180;
 
-   ex.mouse_look_speed = 0.03;
-   ex.movement_speed = 0.05;
 
-   ex.controls_names[0] = "FPS";
-   ex.controls_names[1] = "airplane";
-   ex.controls_names[2] = "spaceship";
+  PROCEDURE DrawScene;
+  VAR
+    Projection, t: ALLEGRO_TRANSFORM;
+    Back, Front: ALLEGRO_COLOR;
+    th: INTEGER;
+    Pitch, Yaw, Roll: DOUBLE;
+  BEGIN
+  { We save Allegro's projection so we can restore it for drawing text. }
+    Projection := al_get_current_projection_transform^;
+    Back := al_color_name ('black');
+    Front := al_color_name ('white');
 
-   ex.font = al_create_builtin_font();
-}
+    Setup3DProjection;
+    al_clear_to_color (Back);
 
-static void handle_input(void)
-{
-   double x = 0, y = 0;
-   double xy;
-   if (ex.key[ALLEGRO_KEY_A] || ex.key[ALLEGRO_KEY_LEFT]) x = -1;
-   if (ex.key[ALLEGRO_KEY_S] || ex.key[ALLEGRO_KEY_DOWN]) y = -1;
-   if (ex.key[ALLEGRO_KEY_D] || ex.key[ALLEGRO_KEY_RIGHT]) x = 1;
-   if (ex.key[ALLEGRO_KEY_W] || ex.key[ALLEGRO_KEY_UP]) y = 1;
+  { We use a depth buffer. }
+    al_set_render_state (ALLEGRO_DEPTH_TEST, 1);
+    al_clear_depth_buffer (1);
 
-   /* Change field of view with Z/X. */
-   if (ex.key[ALLEGRO_KEY_Z]) {
-      double m = 20 * pi / 180;
-      ex.camera.vertical_field_of_view -= 0.01;
-      if (ex.camera.vertical_field_of_view < m)
-         ex.camera.vertical_field_of_view = m;
-   }
-   if (ex.key[ALLEGRO_KEY_X]) {
-      double m = 120 * pi / 180;
-      ex.camera.vertical_field_of_view += 0.01;
-      if (ex.camera.vertical_field_of_view > m)
-         ex.camera.vertical_field_of_view = m;
-   }
+  { Recreate the entire scene geometry - this is only a very small example
+    so this is fine. }
+    Example.n := 0;
+    AddCheckerboard;
+    AddSkybox;
 
-   /* In FPS style, always move the camera to height 2. */
-   if (ex.controls == 0) {
-      if (ex.camera.position.y > 2)
-         ex.camera.position.y -= 0.1;
-      if (ex.camera.position.y < 2)
-         ex.camera.position.y = 2;
-   }
+  { Construct a transform corresponding to our camera. This is an inverse
+    translation by the camera position, followed by an inverse rotation
+    from the camera orientation. }
+    al_build_camera_transform (t,
+      Example.Camera.Position.x, Example.Camera.Position.y, Example.Camera.Position.z,
+      Example.Camera.Position.x - Example.Camera.zAxis.x,
+      Example.Camera.Position.y - Example.Camera.zAxis.y,
+      Example.Camera.Position.z - Example.Camera.zAxis.z,
+      Example.Camera.yAxis.x, Example.Camera.yAxis.y, Example.Camera.yAxis.z);
+    al_use_transform (t);
+    al_draw_prim (Example.v, NIL, NIL, 0, Example.n, ALLEGRO_PRIM_TRIANGLE_LIST);
 
-   /* Set the roll (leaning) angle to 0 if not in airplane style. */
-   if (ex.controls == 0 || ex.controls == 2) {
-      double roll = get_roll(&ex.camera);
-      camera_rotate_around_axis(&ex.camera, ex.camera.zaxis, roll / 60);
-   }
+  { Restore projection. }
+    al_identity_transform (t);
+    al_use_transform (t);
+    al_use_projection_transform (Projection);
 
-   /* Move the camera, either freely or along the ground. */
-   xy = sqrt(x * x + y * y);
-   if (xy > 0) {
-      x /= xy;
-      y /= xy;
-      if (ex.controls == 0) {
-         camera_move_along_ground(&ex.camera, ex.movement_speed * x,
-            ex.movement_speed * y);
-      }
-      if (ex.controls == 1 || ex.controls == 2) {
-         camera_move_along_direction(&ex.camera, ex.movement_speed * x,
-            ex.movement_speed * y);
-      }
-         
-   }
+  { Draw some text. }
+    th := al_get_font_line_height (Example.font);
+    al_draw_text (
+      Example.Font, Front, 0, th * 0, 0,
+      Format (
+        'look: %3.1f/%3.1f/%3.1f (change with left mouse button and drag)',
+        [
+          -Example.Camera.zAxis.x,
+          -Example.Camera.zAxis.y,
+          -Example.Camera.zAxis.z
+        ]
+      )
+    );
+    Pitch := GetPitch (Example.Camera) * 180 / pi;
+    Yaw   := GetYaw (Example.Camera) * 180 / pi;
+    Roll  := GetRoll (Example.Camera) * 180 / pi;
+    al_draw_text (
+      Example.Font, Front, 0, th * 1, 0,
+      Format (
+        'pitch: %4.0f yaw: %4.0f roll: %4.0f',
+        [ Pitch, Yaw, Roll]
+      )
+    );
+    al_draw_text (
+      Example.Font, Front, 0, th * 2, 0,
+      Format (
+        'vertical field of view: %3.1f (change with Z/X)',
+        [Example.Camera.VerticalFieldOfView * 180 / pi]
+      )
+    );
+    al_draw_text
+      (Example.Font, Front, 0, th * 3, 0, 'move with WASD or cursor');
+    al_draw_text (
+      Example.Font, Front, 0, th * 4, 0,
+      Format (
+        'control style: %s (space to change)',
+        [Example.ControlsNames[Example.Controls]]
+      )
+    )
+  END;
 
-   /* Rotate the camera, either freely or around world up only. */
-   if (ex.button[1]) {
-      if (ex.controls == 0 || ex.controls == 2) {
-         Vector up = {0, 1, 0};
-         camera_rotate_around_axis(&ex.camera, ex.camera.xaxis,
-            -ex.mouse_look_speed * ex.mouse_dy);
-         camera_rotate_around_axis(&ex.camera, up,
-            -ex.mouse_look_speed * ex.mouse_dx);
-      }
-      if (ex.controls == 1) {
-         camera_rotate_around_axis(&ex.camera, ex.camera.xaxis,
-            -ex.mouse_look_speed * ex.mouse_dy);
-         camera_rotate_around_axis(&ex.camera, ex.camera.zaxis,
-            -ex.mouse_look_speed * ex.mouse_dx);
-      }
-   }
-}
 
-int main(int argc, char **argv)
-{
-   ALLEGRO_DISPLAY *display;
-   ALLEGRO_TIMER *timer;
-   ALLEGRO_EVENT_QUEUE *queue;
-   int redraw = 0;
 
-   (void)argc;
-   (void)argv;
+  PROCEDURE SetupScene;
+  BEGIN
+    Example.camera.xAxis.x := 1;
+    Example.camera.yAxis.y := 1;
+    Example.camera.zAxis.z := 1;
+    Example.camera.Position.y := 2;
+    Example.camera.VerticalFieldOfView := 60 * pi / 180;
 
-   if (!al_init()) {
-      abort_example("Could not init Allegro.\n");
-   }
-   al_init_font_addon();
-   al_init_primitives_addon();
-   init_platform_specific();
-   al_install_keyboard();
-   al_install_mouse();
+    Example.MouseLookSpeed := 0.03;
+    Example.MovementSpeed := 0.05;
 
-   al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
-   al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
-   al_set_new_display_option(ALLEGRO_DEPTH_SIZE, 16, ALLEGRO_SUGGEST);
-   al_set_new_display_flags(ALLEGRO_RESIZABLE);
-   display = al_create_display(640, 360);
-   if (!display) {
-      abort_example("Error creating display\n");
-   }
+    Example.ControlsNames[0] := 'FPS';
+    Example.ControlsNames[1] := 'airplane';
+    Example.ControlsNames[2] := 'spaceship';
 
-   timer = al_create_timer(1.0 / 60);
+    Example.Font := al_create_builtin_font
+  END;
 
-   queue = al_create_event_queue();
-   al_register_event_source(queue, al_get_keyboard_event_source());
-   al_register_event_source(queue, al_get_mouse_event_source());
-   al_register_event_source(queue, al_get_display_event_source(display));
-   al_register_event_source(queue, al_get_timer_event_source(timer));
 
-   setup_scene();
 
-   al_start_timer(timer);
-   while (true) {
-      ALLEGRO_EVENT event;
+  PROCEDURE HandleInput;
+  VAR
+    x, y, xy, m, Roll: DOUBLE;
+    up: RVector;
+  BEGIN
+    x := 0; y := 0;
 
-      al_wait_for_event(queue, &event);
-      if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-         break;
-      else if (event.type == ALLEGRO_EVENT_DISPLAY_RESIZE) {
-         al_acknowledge_resize(display);
-      }
-      else if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
-         if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
-            break;
-         if (event.keyboard.keycode == ALLEGRO_KEY_SPACE) {
-            ex.controls++;
-            ex.controls %= 3;
-         }
-         ex.key[event.keyboard.keycode] = 1;
-         ex.keystate[event.keyboard.keycode] = 1;
-      }
-      else if (event.type == ALLEGRO_EVENT_KEY_UP) {
-         /* In case a key gets pressed and immediately released, we will still
-          * have set ex.key so it is not lost.
-          */
-         ex.keystate[event.keyboard.keycode] = 0;
-      }
-      else if (event.type == ALLEGRO_EVENT_TIMER) {
-         int i;
-         handle_input();
-         redraw = 1;
+    IF Example.Key[ALLEGRO_KEY_A] OR Example.Key[ALLEGRO_KEY_LEFT] THEN x := -1;
+    IF Example.Key[ALLEGRO_KEY_S] OR Example.Key[ALLEGRO_KEY_DOWN] THEN y := -1;
+    IF Example.Key[ALLEGRO_KEY_D] OR Example.Key[ALLEGRO_KEY_RIGHT] THEN x := 1;
+    IF Example.Key[ALLEGRO_KEY_W] OR Example.Key[ALLEGRO_KEY_UP] THEN y := 1;
 
-         /* Reset keyboard state for keys not held down anymore. */
-         for (i = 0; i < ALLEGRO_KEY_MAX; i++) {
-            if (ex.keystate[i] == 0)
-               ex.key[i] = 0;
-         }
-         ex.mouse_dx = 0;
-         ex.mouse_dy = 0;
-      }
-      else if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
-         ex.button[event.mouse.button] = 1;
-      }
-      else if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
-         ex.button[event.mouse.button] = 0;
-      }
-      else if (event.type == ALLEGRO_EVENT_MOUSE_AXES) {
-         ex.mouse_dx += event.mouse.dx;
-         ex.mouse_dy += event.mouse.dy;
-      }
+  { Change field of view with Z/X. }
+    IF Example.Key[ALLEGRO_KEY_Z] THEN
+    BEGIN
+      m := 20 * pi / 180;
+      Example.Camera.VerticalFieldOfView :=
+        Example.Camera.VerticalFieldOfView - 0.01;
+      IF Example.Camera.VerticalFieldOfView < m THEN
+        Example.Camera.VerticalFieldOfView := m
+    END;
+    IF Example.Key[ALLEGRO_KEY_X] THEN
+    BEGIN
+      m := 120 * pi / 180;
+      Example.Camera.VerticalFieldOfView :=
+        Example.Camera.VerticalFieldOfView + 0.01;
+      IF Example.Camera.VerticalFieldOfView > m THEN
+        Example.Camera.VerticalFieldOfView := m
+    END;
 
-      if (redraw  && al_is_event_queue_empty(queue)) {
-         draw_scene();
+  { In FPS style, always move the camera to height 2. }
+    IF Example.Controls = 0 THEN
+    BEGIN
+      IF Example.Camera.Position.y > 2 THEN
+        Example.Camera.Position.y := Example.Camera.Position.y - 0.1;
+      IF Example.Camera.Position.y < 2 THEN
+        Example.Camera.Position.y := 2
+    END;
 
-         al_flip_display();
-         redraw = 0;
-      }
-   }
+  { Set the roll (leaning) angle to 0 if not in airplane style. }
+    IF (Example.Controls = 0) OR (Example.Controls = 2) THEN
+    BEGIN
+      Roll := GetRoll (Example.camera);
+      RotateCameraAroundAxis (Example.Camera, Example.Camera.zAxis, Roll / 60)
+    END;
 
-   return 0;
-}
+  { Move the camera, either freely or along the ground. }
+    xy := SQRT (SQR (x) + SQR (y));
+    IF xy > 0 THEN
+    BEGIN
+      x := x / xy;
+      y := y / xy;
+      IF Example.Controls = 0 THEN
+        MoveCameraAlongGround
+          (Example.Camera, Example.MovementSpeed * x, Example.MovementSpeed * y)
+      ELSE IF (Example.Controls = 1) OR (Example.Controls = 2) THEN
+        MoveCameraAlongDirection
+          (Example.Camera, Example.MovementSpeed * x, Example.MovementSpeed * y)
+    END;
+
+  { Rotate the camera, either freely or around world up only. }
+    IF Example.Button[1] THEN
+    BEGIN
+      IF (Example.controls = 0) OR (Example.Controls = 2) THEN
+      BEGIN
+        up.x := 0; up.y := 1; up.z := 0;
+        RotateCameraAroundAxis (
+          Example.Camera, Example.Camera.xAxis,
+          -Example.MouseLookSpeed * Example.MouseDy
+        );
+        RotateCameraAroundAxis (
+          Example.Camera, up,
+          -Example.MouseLookSpeed * Example.MouseDx
+        )
+      END
+      ELSE IF Example.Controls = 1 THEN
+      BEGIN
+        RotateCameraAroundAxis (
+          Example.Camera, Example.Camera.xAxis,
+          -Example.MouseLookSpeed * Example.MouseDy
+        );
+        RotateCameraAroundAxis (
+          Example.Camera, Example.Camera.zAxis,
+          -Example.MouseLookSpeed * Example.MouseDx
+        )
+      END
+    END
+  END;
+
+
+
+VAR
+  Display: ALLEGRO_DISPLAYptr;
+  Timer: ALLEGRO_TIMERptr;
+  Queue: ALLEGRO_EVENT_QUEUEptr;
+  Event: ALLEGRO_EVENT;
+  i: INTEGER;
+  Redraw, EndExample: BOOLEAN;
+BEGIN
+  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  al_init_font_addon;
+  al_init_primitives_addon;
+  InitPlatformSpecific;
+  al_install_keyboard;
+  al_install_mouse;
+
+  al_set_new_display_option (ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
+  al_set_new_display_option (ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
+  al_set_new_display_option (ALLEGRO_DEPTH_SIZE, 16, ALLEGRO_SUGGEST);
+  al_set_new_display_flags (ALLEGRO_RESIZABLE);
+  Display := al_create_display (640, 360);
+  IF Display = NIL THEN AbortExample ('Error creating display');
+
+  Timer := al_create_timer (1.0 / 60);
+
+  Queue := al_create_event_queue;
+  al_register_event_source (Queue, al_get_keyboard_event_source);
+  al_register_event_source (Queue, al_get_mouse_event_source);
+  al_register_event_source (Queue, al_get_display_event_source (Display));
+  al_register_event_source (Queue, al_get_timer_event_source (Timer));
+
+  SetupScene;
+
+  al_start_timer (Timer);
+  EndExample := FALSE;
+  REPEAT
+    al_wait_for_event (Queue, Event);
+    CASE Event._type OF
+    ALLEGRO_EVENT_DISPLAY_CLOSE:
+      EndExample := TRUE;
+    ALLEGRO_EVENT_DISPLAY_RESIZE:
+      al_acknowledge_resize (Display);
+    ALLEGRO_EVENT_KEY_DOWN:
+      BEGIN
+        IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
+          EndExample := TRUE
+        ELSE IF Event.keyboard.keycode = ALLEGRO_KEY_SPACE THEN
+          Example.Controls := (Example.Controls + 1) MOD 3;
+        Example.Key[Event.keyboard.keycode] := TRUE;
+        Example.Keystate[Event.keyboard.keycode] := TRUE
+      END;
+    ALLEGRO_EVENT_KEY_UP:
+    { In case a key gets pressed and immediately released, we will still
+      have set Example.key so it is not lost. }
+      Example.Keystate[Event.keyboard.keycode] := FALSE;
+    ALLEGRO_EVENT_TIMER:
+      BEGIN
+        HandleInput;
+        Redraw := TRUE;
+
+      { Reset keyboard state for keys not held down anymore. }
+        FOR i := LOW (Example.Key) TO HIGH (Example.Key) DO
+          IF NOT Example.Keystate[i] THEN
+            Example.Key[i] := FALSE;
+         Example.MouseDx := 0;
+         Example.MouseDy := 0;
+       END;
+     ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+       Example.Button[1 {Event.mouse.button}] := TRUE;
+     ALLEGRO_EVENT_MOUSE_BUTTON_UP:
+       Example.Button[1 {Event.mouse.button}] := FALSE;
+     ALLEGRO_EVENT_MOUSE_AXES:
+       BEGIN
+         INC (Example.MouseDx, Event.mouse.dx);
+         INC (Example.MouseDy, Event.mouse.dy)
+       END;
+     END;
+
+     IF Redraw AND al_is_event_queue_empty (Queue) THEN
+     BEGIN
+       DrawScene;
+
+       al_flip_display;
+       Redraw := FALSE
+     END
+  UNTIL EndExample
+END.

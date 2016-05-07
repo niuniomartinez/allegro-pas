@@ -2153,7 +2153,13 @@ al_draw_line(x1, y1, x2, y2, color, 0);
  *   Clipboard handling.
  *)
 
-{ TODO: Do not implement until memory.h is done. }
+  FUNCTION al_get_clipboard_text (display: ALLEGRO_DISPLAYptr): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_set_clipboard_text
+    (display: ALLEGRO_DISPLAYptr; CONST text: AL_STR): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_clipboard_has_text (display: ALLEGRO_DISPLAYptr): AL_BOOL
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
@@ -2632,7 +2638,22 @@ al_draw_line(x1, y1, x2, y2, color, 0);
  * render_state.h
  *)
 
-{ TODO: Not sure if this section is useful yet. }
+{ TODO: Not sure if all this section is useful yet. }
+
+  TYPE
+    ALLEGRO_RENDER_STATE = (
+    (* ALLEGRO_ALPHA_TEST was the name of a rare bitmap flag only used on the
+       Wiz port.  Reuse the name but retain the same value. *)
+      ALLEGRO_ALPHA_TEST = $0010,
+      ALLEGRO_WRITE_MASK,
+      ALLEGRO_DEPTH_TEST,
+      ALLEGRO_DEPTH_FUNCTION,
+      ALLEGRO_ALPHA_FUNCTION,
+      ALLEGRO_ALPHA_TEST_VALUE
+    );
+
+    PROCEDURE al_set_render_state (state: ALLEGRO_RENDER_STATE; value: AL_INT);
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
@@ -2647,8 +2668,9 @@ al_draw_line(x1, y1, x2, y2, color, 0);
     END;
 
 (* Transformations*)
-{ TODO: Add 3D transformations. }
   PROCEDURE al_use_transform (VAR trans: ALLEGRO_TRANSFORM);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_use_projection_transform (VAR trans: ALLEGRO_TRANSFORM);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_copy_transform (OUT dest: ALLEGRO_TRANSFORM; VAR src: ALLEGRO_TRANSFORM);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
@@ -2656,21 +2678,46 @@ al_draw_line(x1, y1, x2, y2, color, 0);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_build_transform (OUT trans: ALLEGRO_TRANSFORM; x, y, sx, sy, theta: AL_FLOAT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_build_camera_transform (OUT trans: ALLEGRO_TRANSFORM;
+    position_x, position_y, position_z,
+    look_x, look_y, look_z,
+    up_x, up_y, up_z: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_translate_transform (VAR trans: ALLEGRO_TRANSFORM; x, y: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_translate_transform_3d (VAR trans: ALLEGRO_TRANSFORM; x, y, z: AL_FLOAT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_rotate_transform (VAR trans: ALLEGRO_TRANSFORM; theta: AL_FLOAT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_rotate_transform_3d (VAR trans: ALLEGRO_TRANSFORM; x, y, z, theta: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_scale_transform (VAR trans: ALLEGRO_TRANSFORM; sx, sy: AL_FLOAT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_transform_coordinates (VAR trans: ALLEGRO_TRANSFORM; VAR x, y: AL_FLOAT);
+  PROCEDURE al_scale_transform_3D (VAR trans: ALLEGRO_TRANSFORM; sx, sy, sz: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_transform_coordinates (VAR trans: ALLEGRO_TRANSFORM; OUT x, y: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_transform_coordinates_3d (VAR trans: ALLEGRO_TRANSFORM; OUT x, y, z: AL_FLOAT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_compose_transform (VAR trans, other: ALLEGRO_TRANSFORM);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_get_current_transform: ALLEGRO_TRANSFORMptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_current_inverse_transform: ALLEGRO_TRANSFORMptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_current_projection_transform: ALLEGRO_TRANSFORMptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_invert_transform (VAR trans: ALLEGRO_TRANSFORM);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_check_inverse (VAR trans: ALLEGRO_TRANSFORM; tol: AL_FLOAT): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_orthographic_transform (VAR trans: ALLEGRO_TRANSFORM; left, top, n, right, bottom, f: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_perspective_transform (VAR trans: ALLEGRO_TRANSFORM; left, top, n, right, bottom, f: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_horizontal_shear_transform (VAR trans: ALLEGRO_TRANSFORM; theta: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_vertical_shear_transform (VAR trans: ALLEGRO_TRANSFORM; theta: AL_FLOAT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
