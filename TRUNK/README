@@ -38,21 +38,22 @@ Introduction
 
   This is a WIP (alpha) version of the Allegro.pas 5 version.  It is released
   to show what's done and to allow developers to test it and give feed back.
-  DON'T USE IT FOR FINAL USE, in this case use Allegro.pas 4.4 version, which
-  is the latest stable version released.  Please go to the Allegro.pas' project
-  site at sourceforge for more information.
+  DON'T USE IT FOR FINAL PROJECt, in this case use Allegro.pas 4.4 version,
+  which is the latest stable version released.  Please go to the Allegro.pas'
+  project site at sourceforge for more information.
 
-  Current version was tested only on GNU/Linux + Free Pascal.  An earlier SVN
-  version was tested while development by a volunteer in Windows + Delphi but I
-  can't grant it will work.  Other operanting systems and compilers weren't
-  tested.
+  Current version was tested only with Free Pascal on WindowsXP and GNU/Linux.
+  An earlier SVN version was tested while development by a volunteer in
+  Windows + Delphi but I can't grant it will work.  Other operanting systems
+  and compilers weren't tested.
 
   The goal is to make Allegro.pas 5 compatible with any operating system
-  supported by Allegro, which are Windows, Linux, MacOS and iOS.  AFAIK all
-  these OS have Pascal compilers.
+  supported by Allegro, which are Windows, Linux, MacOS, iOS and Android.
+  AFAIK all these OS have Pascal compilers.
 
   As this is a WIP alpha version, you should remember that at the moment not
-  all functionality are implemented.
+  all functionality are implemented.  Also the API may change to in any moment
+  to fix bugs or grant compatibility.
 
 Implemented
 -----------
@@ -66,7 +67,10 @@ Implemented
 
   + Text drawing.
 
-  + Transformations.
+  + Transformations 2D and 3D.
+
+  + Clipboard.
+
 
 Partially implemented or need more testing
 ------------------------------------------
@@ -83,6 +87,8 @@ Partially implemented or need more testing
 Unimplemented
 -------------
 
+  - Touch-screen support.
+
   - OpenGL extensions.
 
   - kcm audio.
@@ -93,7 +99,7 @@ Unimplemented
 
   - Demonstration game.
 
-  You can read more about this at the "docs/internal" subdirectory.
+  You can read more about this at the "TODO" file.
 
 
 =======
@@ -109,8 +115,8 @@ Installation
 ============
 
   First you must install Allegro itself.  Current Allegro.pas version is
-  compatible with version 5.2.x only so DON'T install version 5.1.x.  Visit
-  Allegro's project website at http://liballeg.org/ to download it.  The
+  compatible with version 5.2.x only so DON'T install version 5.1.x or older.
+  Visit Allegro's project website at http://liballeg.org/ to download it.  The
   package includes installation instructions.
 
   Then you need a Pascal compiler.  At the moment only Free Pascal and Delphi
