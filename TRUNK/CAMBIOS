@@ -1,15 +1,41 @@
 Cambios entre las versiones 5.0 alpha y 5.2 alpha
 =================================================
 
+  Errores corregidos
+  ------------------
+  + Corregida la animación del "agua" en el ejemplo ex_haiku, la de "tierra"
+    sigue sin funcionar.
+  - Eliminada la dependencia a OpenGL en a5image y al5primitives, pues parece
+    que lo han corregido.
 
+  Novedades
+  ---------
+  + Un montón de nuevas cosas en todas las unidades (aunque todavía no he
+    terminado).
+  + Nuevos ejemplos.
+
+  Cambios en el API
+  -----------------
+  * Revisados los tipos de dato definidos en al5base, como se hizo en la
+    versión 4.4.5.  Esto debería corregir algunos porblemas y ayudar en la
+    compatibilidad con Delphi.
+  * Las funciones de conversión de tiempo (como ALLEGRO_MSECS_TO_SECS) ahora
+    reciben valores enteros en vez de reales.
+  * Algún tipo de dato ha cambiado de "enums" o "sets" a simples constantes
+    INTEGER.
+
+  Otros
+  -----
+  * El código de Allegro5.pas se ha reordenado.
+  * Un montón de documentación corregida y añadida (pero sin terminar).
 
 
 
 Cambios entre las versiones 4.4.5 y 5.0 alpha
 =============================================
 
-  Esta versiÃ³n supone el cambio de Allegro a Allegro 5, con una API totalmente
-  redefinida.  Se escribiÃ³ desde cero, y por eso no hay lista de cambios.
+  Esta versión supone el cambio de Allegro a Allegro 5, con una API totalmente
+  redefinida.  Se escribió desde cero, y por eso no hay lista de cambios.
 
 
 
