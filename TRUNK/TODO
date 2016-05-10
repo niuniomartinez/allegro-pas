@@ -9,14 +9,14 @@ In no special order
     - Suspect it's a problem with the funcion in C, similar than the problem
       with 3D rendering on Allegro 4.
 
-  * Work to merge Gregor A. Cieslak's fork
+  * Work to merge Gregor A. Cieslak's fork and test Delphi
     (https://github.com/Soldat/allegro-pas5-test)
 
   * Add to documentation a note about to define symbol "DEBUGMODE" if using
     "-g".
 
   * There are some "enum" types (sets). Be sure that they have the correct
-    sice in bits.  Read FPC and Delphi help.
+    sice in bits & bytes.  Read FPC and Delphi documentation.
 
   * nihGUI may need some changes in API (i.e. what's public and what's not).
 
