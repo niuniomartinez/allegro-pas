@@ -1,5 +1,15 @@
 UNIT al5gl;
-(*<public OpenGL-related API. *)
+(*<OpenGL integration.
+
+  You can disable the detection of any OpenGL extension by Allegro with a
+  section like this in allegro5.cfg:
+@longcode(#
+[opengl_disabled_extensions]
+GL_ARB_texture_non_power_of_two=0
+GL_EXT_framebuffer_object=0
+#)
+  Any extension which appears in the section is treated as not available (it
+  does not matter if you set it to 0 or any other value). *)
 (* Copyright (c) 2012-2016 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
@@ -56,12 +66,63 @@ INTERFACE
       ALLEGRO_OPENGL_ES
     );
 
+(* Returns the OpenGL or OpenGL ES version number of the client (the computer
+   the program is running on), for the current display. "1.0" is returned as
+   @code($01000000), "1.2.1" is returned as @code($01020100), and "1.2.2" as
+   @code($01020200) ,etc.
+
+   A valid OpenGL context must exist for this function to work, which means you
+   may not call it before @link(al_create_display).
+   @seealso(al_get_opengl_variant) *)
   FUNCTION al_get_opengl_version: AL_UINT32;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* This function is a helper to determine whether an OpenGL extension is
+   available on the given display or not.
+
+   @bold(Example)
+@longcode(#
+packedpixels := al_have_opengl_extension ('GL_EXT_packed_pixels');
+#)
+   If @italic(packedpixels) is @true then you can safely use the constants
+   related to the packed pixels extension.
+  @return(@true if the extension is available; @false otherwise.)
+  @seealso(al_get_opengl_proc_address) *)
   FUNCTION al_have_opengl_extension (CONST extension: AL_STR): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Helper to get the address of an OpenGL symbol.
+
+  @bold(Example)
+
+  How to get the function @code(glMultiTexCoord3fARB) that comes with ARB's
+  Multitexture extension:
+@longcode(#
+  TYPE
+  { define the type of the function. }
+    PROCEDURE MULTI_TEX_FUNC (a: GLenum; b, c, d: GLfloat); CDECL;
+  VAR
+  { declare the function pointer }
+    glMultiTexCoord3fARB: MULTI_TEX_FUNC;
+  BEGIN
+  { get the address of the function }
+    glMultiTexCoord3fARB := MULTI_TEX_FUNC (al_get_opengl_proc_address ('glMultiTexCoord3fARB'));
+  END;
+#)
+  If @code(glMultiTexCoord3fARB) is not @nil then it can be used as if it has
+  been defined in the OpenGL core library.
+  @param(name The name of the symbol you want to link to.)
+  @return(A pointer to the symbol if available or @nil otherwise.)
+  @seealso(al_have_opengl_extension) *)
   FUNCTION al_get_opengl_proc_address (CONST name: AL_STR): AL_VOIDptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns the OpenGL texture id internally used by the given bitmap if it uses
+   one, else @code(0).
+
+  @bold(Example)
+@longcode(#
+  Bitmap := al_load_bitmap ('my_texture.png');
+  Texture := al_get_opengl_texture (Bitmap);
+  IF texture <> NIL THEN glBindTexture (GL_TEXTURE_2D, Texture);
+#) *)
   FUNCTION al_get_opengl_texture (bitmap: ALLEGRO_BITMAPptr): GLuint;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_remove_opengl_fbo (bitmap: ALLEGRO_BITMAPptr);

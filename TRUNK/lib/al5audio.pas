@@ -1,5 +1,75 @@
 UNIT al5audio;
-(* See readme.txt for copyright information.
+(*<Audio addon.
+
+  In order to just play some samples, here's how to quick start with Allegro's
+  audio addon: Call @link(al_reserve_samples) with the number of samples you'd
+  like to be able to play simultaneously (don't forget to call
+  @link(al_install_audio) beforehand). If these succeed, you can now call
+  @link(al_play_sample), with data obtained by @link(al_load_sample), for
+  example (don't forget to initialize the @link(al5acodec) addon). You don't
+  need to worry about voices, mixers or sample instances when using this
+  approach. In order to stop samples, you can use the @link(ALLEGRO_SAMPLE_ID)
+  that @code(al_play_sample) returns.
+
+  If you want to play large audio files (e.g. background music) without loading
+  the whole file at once or if you want to output audio generated in real-time,
+  you can use Allegro's audio streams. The easiest way to setup an
+  audio stream is to attach it to the default mixer (created for you by
+  @link(al_reserve_samples)) using @link(al_attach_audio_stream_to_mixer) on
+  the return value of @link(al_get_default_mixer). Allegro will feed streams
+  created from files using @link(al_load_audio_stream) automatically. However,
+  you can also stream audio data you generate on the fly. In this case, audio
+  streams will emit an event when it's time to provide the next fragment
+  (chunk) of audio data. You can control several playback parameters of audio
+  streams (speed, gain, pan, playmode, played/paused; additionally position and
+  loop points when streaming a file).
+
+  For more fine-grained control over audio output, here's a short description
+  of the basic concepts:
+
+  Voices represent audio devices on the system. Basically, every audio output
+  chain that you want to be heard needs to end up in a voice. As voices are on
+  the hardware/driver side of things, there is only limited control over their
+  parameters (frequency, sample format, channel configuration). The number of
+  available voices is limited as well. Typically, you will only use one voice
+  and attach a mixer to it. Calling @link(al_reserve_samples) will do this for
+  you by setting up a default voice and mixer; it can also be achieved by
+  calling @link(al_restore_default_mixer). Although you can attach sample
+  instances and audio streams directly to a voice without using a mixer, it is,
+  as of now, not recommended. In contrast to mixers, you can only attach a
+  single object to a voice anyway.
+
+  Mixers mix several sample instances and/or audio streams into a single output
+  buffer, converting sample data with differing formats according to their
+  output parameters (frequency, depth, channels) in the process. In order to
+  play several samples/streams at once reliably, you will need at least one
+  mixer. A mixer that is not (indirectly) attached to a voice will remain
+  silent. For most use cases, one (default) mixer attached to a single voice
+  will be sufficient. You may attach mixers to other mixers in order to create
+  complex audio chains.
+
+  Samples (@link(ALLEGRO_SAMPLEptr)) just represent "passive" buffers for sample
+  data in memory. In order to play a sample, a sample instance
+  (@link(ALLEGRO_SAMPLE_INSTANCEptr)) needs to be created and attached to a mixer
+  (or voice). Sample instances control how the underlying samples are played.
+  Several playback parameters (position, speed, gain, pan, playmode,
+  playing/paused) can be adjusted. Particularly, multiple instances may be
+  created from the same sample, e.g. with different parameters.
+
+  Audio streams (see above) are similar to sample instances insofar as they
+  respond to the same playback parameters and have to be attached to mixers or
+  voices. A single audio stream can only be played once simultaneously.
+
+  With this in mind, another look at @link(al_reserve_samples) and
+  @link(al_play_sample) is due: What the former does internally is to create a
+  specified number of sample instances that are "empty" at first, i.e. with no
+  sample data set. When @code(al_play_sample) is called, it'll use one of these
+  internal sample instances that is not currently playing to play the requested
+  sample. All of these sample instances will be attached to the default mixer,
+  which can be changed via @link(al_set_default_mixer).
+
+  See Audio recording for Allegro's audio recording API, which is, as of now,
+  still unstable and subject to change.
  *)
 (* Copyright (c) 2012-2016 Guillermo Martínez J.
 
@@ -32,12 +102,12 @@ INTERFACE
     Allegro5, al5base;
 
   CONST
-  (* Builds library name. *)
-    { @exclude }
+  (* @exclude Builds library name. *)
     ALLEGRO_AUDIO_LIB_NAME = _A5_LIB_PREFIX_+'allegro_audio'+_DBG_+_A5_LIB_EXT_;
 
 
-  (* Internal, used to communicate with acodec.
+  (* @exclude
+   * Internal, used to communicate with acodec.
    * Must be in 512 <= n < 1024 *)
     _KCM_STREAM_FEEDER_QUIT_EVENT_TYPE = 512;
 
@@ -309,6 +379,9 @@ INTERFACE
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_attach_sample_instance_to_mixer (sample: ALLEGRO_SAMPLE_INSTANCEptr; mixer: ALLEGRO_MIXERptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+(* Attach an audio stream to a mixer. The stream must not already be attached to anything.
+   @returns(@true on success, @false on failure.)
+   @seealso(al_detach_audio_stream) *)
   FUNCTION al_attach_audio_stream_to_mixer (stream: ALLEGRO_AUDIO_STREAMptr; mixer: ALLEGRO_MIXERptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_attach_mixer_to_mixer (mixerA, mixerB: ALLEGRO_MIXERptr): AL_BOOL;

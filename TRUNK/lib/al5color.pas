@@ -1,5 +1,5 @@
 UNIT al5color;
-(*< *)
+(*<Color management. *)
 (* Copyright (c) 2012-2016 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
@@ -30,8 +30,7 @@ INTERFACE
     Allegro5, al5base;
 
   CONST
-  (* Builds library name. *)
-    { @exclude }
+  (* @exclude Builds library name. *)
     ALLEGRO_COLOR_LIB_NAME = _A5_LIB_PREFIX_+'allegro_color'+_DBG_+_A5_LIB_EXT_;
 
   FUNCTION al_get_allegro_color_version: AL_UINT32;

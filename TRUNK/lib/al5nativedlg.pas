@@ -1,5 +1,13 @@
 UNIT al5nativedlg;
-(*<See readme.txt for copyright information.
+(*<Defines an API that allows to use native dialogs and menus in a
+   cross-platform way.  This includes message dialogs, file choosers, main
+   menu and more.
+
+   You should not use these dialogs if your app is running in full-screen
+   modes.
+
+   Note that this isn't integrated with VCL, CLX, LCL nor fpGUI packages.
+   Integration isn't even planned.
  *)
 (* Copyright (c) 2012-2016 Guillermo Martínez J.
 
