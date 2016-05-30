@@ -1,5 +1,13 @@
 UNIT al5primitives;
-(*<High level drawing routines
+(*<Primitive drawing.
+
+  @bold(Warning:)  Some parts of this add-on don't work correctly.  See the
+  examples to know what primitives work and what ones don't.  Note also that
+  use of the primitives that doesn't work may result in memory corruption and
+  kill your program (and may be your operating system too!).  Of course,
+  @bold(this unit will work perfectly in the next stable version).
+
+@bold(High level drawing routines)
 
   High level drawing routines encompass the most common usage of this addon: to
   draw geometric primitives, both smooth (variations on the circle theme) and
@@ -16,7 +24,7 @@ UNIT al5primitives;
   lines grow symmetrically around the generating shape as thickness is
   increased.
 
-Pixel-precise output
+@bold(Pixel-precise output)
 
   While normally you should not be too concerned with which pixels are
   displayed when the high level primitives are drawn, it is nevertheless

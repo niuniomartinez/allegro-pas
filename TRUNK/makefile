@@ -100,6 +100,7 @@ EXMDIR = examples/
 OBJDIR = obj/
 BINDIR = bin/
 DOCDIR = docs/lib/
+DOCSRC = docs/src/
 
 EXMBIN = $(BINDIR)$(EXMDIR)
 
@@ -109,6 +110,16 @@ EXMBIN = $(BINDIR)$(EXMDIR)
 # FLAGS = $(OPTOPT) -Sh -Si $(EFLAGS)
 # Use next line instead to activate debug.
 FLAGS = $(DBGOPT) -Sh -Si $(EFLAGS)
+
+
+
+# ---------------------------
+# -- Documentation options --
+# ---------------------------
+
+MKSOPT = --package=Allegro.pas --disable-errors --disable-private --disable-seealso
+FPDOPT = --warn-no-node
+
 
 # -- Source files list --
 include makefile.list

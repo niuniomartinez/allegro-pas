@@ -1,3 +1,15 @@
+Cambios entre las versiones 5.2 alpha y 5.2 alpha-2
+===================================================
+
+  * Documentaci?n creada usando fpdoc.  En pruebas.
+  + a?adidos ejemplos:
+    ex_clipboard
+    ex_draw
+  * al_get_bitmap_format devuelve el dato en tipo correcto, no como integer.
+  * A?adida gesti?n de memoria de Allegro.
+
+
+
 Cambios entre las versiones 5.0 alpha y 5.2 alpha
 =================================================
 
@@ -26,7 +38,7 @@ Cambios entre las versiones 5.0 alpha y 5.2 alpha
 
   Otros
   -----
-  * El código de Allegro5.pas se ha reordenado.
+  * El código de Allegro5.pas se ha reorganizado.
   * Un montón de documentación corregida y añadida (pero sin terminar).
 
 

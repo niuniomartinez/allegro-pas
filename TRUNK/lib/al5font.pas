@@ -1,5 +1,9 @@
 UNIT al5font;
-(*<Text font management. *)
+(*<Text font management.
+
+  @bold(See also)
+
+  @link(al5ttf) *)
 (* Copyright (c) 2012-2016 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied

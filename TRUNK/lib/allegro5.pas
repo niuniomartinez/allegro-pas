@@ -541,7 +541,7 @@ Expands to:
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* Returns the pixel format of a bitmap.
    @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_set_new_bitmap_flags) *)
-  FUNCTION al_get_bitmap_format (bitmap: ALLEGRO_BITMAPptr): AL_INT;
+  FUNCTION al_get_bitmap_format (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_PIXEL_FORMAT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* Returns the flags user to create the bitmap.
    @seealso(al_set_new_bitmap_flags) *)
@@ -2558,12 +2558,38 @@ al_draw_line(x1, y1, x2, y2, color, 0);
  *   Memory management routines.
  *)
 
-{ TODO: Seems to be used to destroy several data returned by Allegro.  The
-	problem is that it uses macros to get information about the source
-	file, procedure and line that calls the memory functions.
+ TYPE
+   ALLEGRO_MEMORY_INTERFACE = RECORD
+     mi_malloc: FUNCTION (n: AL_SIZE_T; line: AL_INT; CONST afile, func: AL_STR): AL_POINTER; CDECL;
+     mi_free: PROCEDURE (ptr: AL_POINTER; line: AL_INT; CONST afile, func: AL_STR); CDECL;
+     mi_realloc: FUNCTION (ptr: AL_POINTER; n: AL_SIZE_T; line: AL_INT; CONST afile, func: AL_STR): AL_POINTER; CDECL;
+     mi_calloc: FUNCTION (n, count: AL_SIZE_T; line: AL_INT; CONST afile, func: AL_STR): AL_POINTER; CDECL;
+   END;
 
-	I'll implement this when I (or somebody else) figure a way to get that
-	"debugging" stuff or how to avoid it. }
+  PROCEDURE al_set_memory_interface (VAR iface: ALLEGRO_MEMORY_INTERFACE);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_restory_memory_interface; INLINE;
+
+
+  FUNCTION al_malloc (CONST n: AL_SIZE_T): AL_POINTER; INLINE;
+  PROCEDURE al_free (p: AL_POINTER); INLINE;
+  FUNCTION al_realloc (p: AL_POINTER; CONST n: AL_SIZE_T): AL_POINTER; INLINE;
+  FUNCTION al_calloc (CONST c, n: AL_SIZE_T): AL_POINTER; INLINE;
+
+
+  FUNCTION al_malloc_with_context
+    (n: AL_SIZE_T; line: AL_INT; CONST afile, func: AL_STR): AL_POINTER;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_free_with_context
+    (ptr: AL_POINTER; line: AL_INT; CONST afile, func: AL_STR);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_realloc_with_context
+    (ptr: AL_POINTER; n: AL_SIZE_T; line: AL_INT;
+     CONST afile, func: AL_STR): AL_POINTER;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_calloc_with_context
+    (n, count: AL_SIZE_T; line: AL_INT; CONST afile, func: AL_STR): AL_POINTER;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
@@ -2979,6 +3005,48 @@ IMPLEMENTATION
   FUNCTION ALLEGRO_GET_EVENT_TYPE (CONST str: SHORTSTRING): AL_INT;
   BEGIN
     ALLEGRO_GET_EVENT_TYPE := AL_ID (str)
+  END;
+
+
+
+(******************************************************************************
+ * memory.h
+ *)
+
+  PROCEDURE _al_set_memory_interface_ (iface: AL_POINTER);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME NAME 'al_set_memory_interface';
+
+  PROCEDURE al_restory_memory_interface;
+  BEGIN
+    _al_set_memory_interface_ (NIL)
+  END;
+
+
+
+  FUNCTION al_malloc (CONST n: AL_SIZE_T): AL_POINTER;
+  BEGIN
+    al_malloc := al_malloc_with_context (n, 0, '', '')
+  END;
+
+
+
+  PROCEDURE al_free (p: AL_POINTER);
+  BEGIN
+    al_free_with_context (p, 0, '', '')
+  END;
+
+
+
+  FUNCTION al_realloc (p: AL_POINTER; CONST n: AL_SIZE_T): AL_POINTER;
+  BEGIN
+    al_realloc := al_realloc_with_context (p, n, 0, '', '')
+  END;
+
+
+
+  FUNCTION al_calloc (CONST c, n: AL_SIZE_T): AL_POINTER;
+  BEGIN
+    al_calloc := al_calloc_with_context (c, n, 0, '', '')
   END;
 
 
