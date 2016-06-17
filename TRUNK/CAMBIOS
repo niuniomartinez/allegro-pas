@@ -1,12 +1,14 @@
 Cambios entre las versiones 5.2 alpha y 5.2 alpha-2
 ===================================================
 
-  * Documentaci?n creada usando fpdoc.  En pruebas.
-  + a?adidos ejemplos:
+  * Documentación creada usando fpdoc.  En pruebas.
+  + Añadidos ejemplos:
     ex_clipboard
     ex_draw
+    ex_monitorinfo (¿no funciona en Windows XP?)
+  * ex_blend2 se inicia en un modo blender diferente.
   * al_get_bitmap_format devuelve el dato en tipo correcto, no como integer.
-  * A?adida gesti?n de memoria de Allegro.
+  * Añadida gestión de memoria de Allegro.
 
 
 
@@ -416,7 +418,7 @@ Cambios entre las versiones 4.2.1 BETA 4 y 4.2.1
   Cambios en el API
   -----------------
   - Cambiado error ortográfico en AL_NO_FLI_OPEN por AL_NO_FLIC_OPEN.
-  - Movida el procedimiento "al_generate_optimized_palette" de "alpalete" a
+  - Movido el procedimiento "al_generate_optimized_palette" de "alpalete" a
     "albitmap", ya que existía una referencia circular (?).
   - Cambiados los tipos de algunos parámetros que eran AL_RGBptr por
     AL_PALETTEptr.

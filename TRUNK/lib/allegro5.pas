@@ -46,12 +46,12 @@ INTERFACE
   Order of sections is the same as C loads them by including the "allegro.h"
   header file. }
 
-(******************************************************************************
+(*
  * base.h
  *      Defines basic stuff needed by pretty much everything else.
  *
  *      By Shawn Hargreaves.
- *)
+ *****************************************************************************)
 
   CONST
   (* Major version of Allegro. *)
@@ -142,9 +142,9 @@ END;
 
 
 
-(******************************************************************************
+(*
  * altime.h
- *)
+ *****************************************************************************)
 
   TYPE
   (* Represent a timeout value.
@@ -170,9 +170,9 @@ END;
 @longcode(#
     al_rest(0.000001)
 #)
-     might pause for something like 10ms.  Also see the section on
-     @link(alTimer) routines for easier ways to time your program without using
-     up all CPU. *)
+     might pause for something like 10ms.  Also see the section on timer events
+     (i.e. @link(al_create_timer)) for easier ways to time your program
+     without using up all CPU. *)
     PROCEDURE al_rest (seconds: AL_DOUBLE);
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -186,9 +186,9 @@ END;
 
 
 
-(******************************************************************************
+(*
  * color.h
- *)
+ *****************************************************************************)
 
   TYPE
   (* An @code(ALLEGRO_COLOR) structure describes a color in a device independant
@@ -406,9 +406,9 @@ END;
 
 
 
-(******************************************************************************
+(*
  * bitmap.h
- *)
+ *****************************************************************************)
 
   TYPE
   (* Abstract type representing a bitmap (2D image). *)
@@ -723,7 +723,7 @@ END;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* If you create a bitmap when there is no current display (for example because
    you have not called @code(al_create_display) in the current thread) and are
-   using the @link(ALLEGRO_CONVERT_BITMAP) bitmap flag (which is set by default)
+   using the @code(ALLEGRO_CONVERT_BITMAP) bitmap flag (which is set by default)
    then the bitmap will be created successfully, but as a memory bitmap.  This
    function converts all such bitmaps to proper video bitmaps belonging to the
    current display.
@@ -732,16 +732,16 @@ END;
    when the last display is destroyed.
 
    This operation will preserve all bitmap flags except
-   @link(ALLEGRO_VIDEO_BITMAP) and @link(ALLEGRO_MEMORY_BITMAP).
+   @code(ALLEGRO_VIDEO_BITMAP) and @code(ALLEGRO_MEMORY_BITMAP).
    @seealso(al_convert_bitmap) @seealso(al_create_bitmap) *)
   PROCEDURE al_convert_memory_bitmap;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
-(******************************************************************************
+(*
  * bitmap_draw.h
- *)
+ *****************************************************************************)
 
   CONST
   (* Flags for the blitting functions.  Documented at al_draw_bitmap. *)
@@ -903,9 +903,9 @@ The above will only draw the red component of the bitmap.
 
 
 
-(******************************************************************************
+(*
  * path.h
- *)
+ *****************************************************************************)
 
 { TODO:
   Actually, this header is needed by Allegro to build file paths,
@@ -913,9 +913,9 @@ The above will only draw the red component of the bitmap.
 
 
 
-(******************************************************************************
+(*
  * utf8.h
- *)
+ *****************************************************************************)
 
   {TODO: Documentation says it's not needed as it's used internally.
 	Only basic functionality is implemented for convenience.
@@ -1039,9 +1039,9 @@ END;
 
 
 
-(******************************************************************************
+(*
  * file.h
- *)
+ *****************************************************************************)
 
 { TODO:
   Actually, this header is needed by Allegro to define new loaders and savers,
@@ -1049,9 +1049,9 @@ END;
 
 
 
-(******************************************************************************
+(*
  * bitmap_io.h
- *)
+ *****************************************************************************)
 
 { TODO: Several functions aren't added yet. }
 
@@ -1199,9 +1199,9 @@ END;
 
 
 
-(******************************************************************************
+(*
  * bitmap_lock.h
- *)
+ *****************************************************************************)
 
   CONST
   (* Locking flags. Documented at al_lock_bitmap. *)
@@ -1330,9 +1330,9 @@ END;
 
 
 
-(******************************************************************************
+(*
  * blender.h
- *)
+ *****************************************************************************)
 
   TYPE
   (* Blending modes. @seealso(al_set_blender) *)
@@ -1464,7 +1464,7 @@ a = d.a * 0 + s.a * d.a
   PROCEDURE al_set_blender (op: ALLEGRO_BLEND_OPERATIONS; source, dest: ALLEGRO_BLEND_MODE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* Sets the color to use for blending when using the @code(ALLEGRO_CONST_COLOR)
-   or @link(ALLEGRO_INVERSE_CONST_COLOR) blend functions. See
+   or @code(ALLEGRO_INVERSE_CONST_COLOR) blend functions. See
    @link(al_set_blender) for more information.
    @seealso(al_set_blender) @seealso(al_get_blend_color) *)
   PROCEDURE al_set_blend_color (color: ALLEGRO_COLOR);
@@ -1493,7 +1493,7 @@ a = d.a * 0 + s.a * d.a
 
 
 
-(******************************************************************************
+(*
  * events.h
  *)
 
@@ -1836,9 +1836,9 @@ END;
 
 
 
-(******************************************************************************
+(*
  * display.h
- *)
+ *****************************************************************************)
 
 
   CONST
@@ -2007,7 +2007,7 @@ END;
    @link(al_create_bitmap)'s documentation). If you're completely recreating
    the bitmap contents often (e.g. every frame) then you will get much better
    performance by creating the target bitmap with
-   @link(ALLEGRO_NO_PRESERVE_TEXTURE) flag.
+   @code(ALLEGRO_NO_PRESERVE_TEXTURE) flag.
 
    @bold(OpenGL note:)
 
@@ -2045,10 +2045,26 @@ al_draw_line(x1, y1, x2, y2, color, 0);
    @seealso(al_get_target_bitmap) @seealso(al_set_target_backbuffer) *)
   PROCEDURE al_set_target_bitmap (Bitmap: ALLEGRO_BITMAPptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Same as @code(al_set_target_bitmap@(al_get_backbuffer@(display@)@);).
+   @seealso(al_set_target_bitmap) @seealso(al_get_backbuffer) *)
   PROCEDURE al_set_target_backbuffer (display: ALLEGRO_DISPLAYptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Return a special bitmap representing the back-buffer of the display.
+
+   Care should be taken when using the backbuffer bitmap (and its sub-bitmaps)
+   as the source bitmap (e.g as the bitmap argument to @link(al_draw_bitmap)).
+   Only untransformed operations are hardware accelerated. These consist of
+   @link(al_draw_bitmap) and @link(al_draw_bitmap_region) when the current
+   transformation is the identity. If the tranformation is not the identity, or
+   some other drawing operation is used, the call will be routed through the
+   memory bitmap routines, which are slow. If you need those operations to be
+   accelerated, then first copy a region of the backbuffer into a temporary
+   bitmap (via the @link(al_draw_bitmap) and @link(al_draw_bitmap_region)), and
+   then use that temporary bitmap as the source bitmap. *)
   FUNCTION al_get_backbuffer (display: ALLEGRO_DISPLAYptr): ALLEGRO_BITMAPptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Return the target bitmap of the calling thread.
+   @seealso(al_set_target_bitmap) *)
   FUNCTION al_get_target_bitmap: ALLEGRO_BITMAPptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -2147,11 +2163,11 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * clipboard.h
  *
  *   Clipboard handling.
- *)
+ *****************************************************************************)
 
   FUNCTION al_get_clipboard_text (display: ALLEGRO_DISPLAYptr): AL_STRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
@@ -2163,9 +2179,9 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * config.h
- *)
+ *****************************************************************************)
 
 { TODO:
   At the moment I'll not include this header.  Object Pascal defines the
@@ -2178,11 +2194,11 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * cpu.h
  *
  *   CPU and system information handling.
- *)
+ *****************************************************************************)
 
 (* Returns the number of CPU cores that the system Allegro is running on has
    and which could be detected, or a negative number if detection failed.  Even
@@ -2225,13 +2241,13 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * debug.h
  *
  *   Debug facilities.
  *
  *   By Shawn Hargreaves.
- *)
+ *****************************************************************************)
 
 { TODO:
   At the moment I'll not include this header.
@@ -2240,9 +2256,9 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * drawing.h
- *)
+ *****************************************************************************)
 
 (* Clears the complete target bitmap, but confined by the clipping rectangle.
    @seealso(al_set_clipping_rectangle) @seealso(al_clear_depth_buffer) *)
@@ -2255,10 +2271,10 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * error.h
  *     Error handling.
- *)
+ *****************************************************************************)
 
 (* Some Allegro functions will set an error number as well as returning an
    error code.  Call this function to retrieve the last error number set for
@@ -2272,43 +2288,43 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * fixed.h
  *
  *   Fixed point type.
  *
  *   By Shawn Hargreaves.
- *)
+ *****************************************************************************)
 
  { TODO: Coming soon ;). }
 
 
 
-(******************************************************************************
+(*
  * fmath.h
  *
  *   Fixed point math routines.
  *
  *   By Shawn Hargreaves.
- *)
+ *****************************************************************************)
 
  { TODO: Coming soon ;). }
 
 
 
-(******************************************************************************
+(*
  * fshook.h
  *
  * File system hooks.
- *)
+ *****************************************************************************)
 
  { TODO: Don't do nothing until file.h is added. }
 
 
 
-(******************************************************************************
+(*
  * fullscreen_mode.h
- *)
+ *****************************************************************************)
 
   TYPE
     ALLEGRO_DISPLAY_MODEptr = ^ALLEGRO_DISPLAY_MODE;
@@ -2327,16 +2343,16 @@ al_draw_line(x1, y1, x2, y2, color, 0);
    @return(@nil on failure, and the mode parameter that was passed in on
      success.)
    @seealso(ALLEGRO_DISPLAY_MODE) @seealso(al_get_num_display_modes) *)
-  FUNCTION al_get_display_mode (index: AL_INT; mode: ALLEGRO_DISPLAY_MODEptr): ALLEGRO_DISPLAY_MODEptr;
+  FUNCTION al_get_display_mode (index: AL_INT; OUT mode: ALLEGRO_DISPLAY_MODE): ALLEGRO_DISPLAY_MODEptr;
     EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
-(******************************************************************************
+(*
  * joystick.h
  *
  *   Joystick routines.
- *)
+ *****************************************************************************)
 
   CONST
   (* internal values *)
@@ -2407,19 +2423,19 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * keycodes.h
- *)
+ *****************************************************************************)
 
 {$include keycodes.inc}
 
 
 
-(******************************************************************************
+(*
  * keyboard.h
  *
  *   Keyboard routines.
- *)
+ *****************************************************************************)
 
   TYPE
     ALLEGRO_KEYBOARD_STATEptr = ^ALLEGRO_KEYBOARD_STATE;
@@ -2455,11 +2471,11 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * mouse.h
  *
  *  Mouse routines.
- *)
+ *****************************************************************************)
 
   CONST
   (* Allow up to four extra axes for future expansion. *)
@@ -2530,35 +2546,37 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * touch_input.h
  *
  *   Touch input routines.
- *)
+ *****************************************************************************)
 
 { TODO: Not yet. }
 
 
 
-(******************************************************************************
+(*
  * haptic.h
  *
  *   Haptic (that is, force feedback) routines for Allegro.
  *
  *   By Beoran.
- *)
+ *****************************************************************************)
 
 { TODO: Not yet.  Needs touch_input.h. }
 
 
 
-(******************************************************************************
+(*
  * memory.h
  *
  *   Memory management routines.
- *)
+ *****************************************************************************)
 
  TYPE
+ (* Used to define the memory management functions.
+    @seealso(al_set_memory_interface) *)
    ALLEGRO_MEMORY_INTERFACE = RECORD
      mi_malloc: FUNCTION (n: AL_SIZE_T; line: AL_INT; CONST afile, func: AL_STR): AL_POINTER; CDECL;
      mi_free: PROCEDURE (ptr: AL_POINTER; line: AL_INT; CONST afile, func: AL_STR); CDECL;
@@ -2566,36 +2584,78 @@ al_draw_line(x1, y1, x2, y2, color, 0);
      mi_calloc: FUNCTION (n, count: AL_SIZE_T; line: AL_INT; CONST afile, func: AL_STR): AL_POINTER; CDECL;
    END;
 
+(* Overrides the memory management functions with implementations of
+   @link(al_malloc_with_context), @link(al_free_with_context),
+   @link(al_realloc_with_context) and @link(al_calloc_with_context). The
+   context arguments may be used for debugging. The new functions should be
+   thread safe.
+   @seealso(ALLEGRO_MEMORY_INTERFACE) @seealso(al_restore_memory_interface) *)
   PROCEDURE al_set_memory_interface (VAR iface: ALLEGRO_MEMORY_INTERFACE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_restory_memory_interface; INLINE;
+(* Restores the default behavior of the memory management functions.
+   @seealso(al_set_memory_interface) *)
+  PROCEDURE al_restore_memory_interface; INLINE;
 
 
+(* Like @code(malloc) in the C standard library, but the implementation may be
+   overridden.
+   @seealso(al_free) @seealso(al_realloc) @seealso(al_calloc)
+   @seealso(al_malloc_with_context) @seealso(al_set_memory_interface) *)
   FUNCTION al_malloc (CONST n: AL_SIZE_T): AL_POINTER; INLINE;
+(* Like @code(free) in the C standard library, but the implementation may be
+   overridden.
+
+   Additionally, on Windows, a memory block allocated by one DLL must be freed
+   from the same DLL. In the few places where an Allegro function returns a
+   pointer that must be freed, you must use al_free for portability to Windows.
+   @seealso(al_malloc) @seealso(al_free_with_context) *)
   PROCEDURE al_free (p: AL_POINTER); INLINE;
+(* Like @code(realloc) in the C standard library, but the implementation may be
+   overridden.
+   @seealso(al_malloc) @seealso(al_realloc_with_context) *)
   FUNCTION al_realloc (p: AL_POINTER; CONST n: AL_SIZE_T): AL_POINTER; INLINE;
+(* Like @code(calloc) in the C standard library, but the implementation may be
+   overridden.
+   @seealso(al_malloc) @seealso(al_calloc_with_context) *)
   FUNCTION al_calloc (CONST c, n: AL_SIZE_T): AL_POINTER; INLINE;
 
 
+
+(* This calls @code(malloc) from the Allegro library (this matters on Windows),
+   unless overridden with @link(al_set_memory_interface).
+
+   Generally you should use the @link(al_malloc) function. *)
   FUNCTION al_malloc_with_context
     (n: AL_SIZE_T; line: AL_INT; CONST afile, func: AL_STR): AL_POINTER;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* This calls @code(free) from the Allegro library (this matters on Windows),
+   unless overridden with @link(al_set_memory_interface).
+
+   Generally you should use the @link(al_free) function. *)
   PROCEDURE al_free_with_context
     (ptr: AL_POINTER; line: AL_INT; CONST afile, func: AL_STR);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* This calls @code(realloc) from the Allegro library (this matters on Windows),
+   unless overridden with @link(al_set_memory_interface).
+
+   Generally you should use the @link(al_realloc) function. *)
   FUNCTION al_realloc_with_context
     (ptr: AL_POINTER; n: AL_SIZE_T; line: AL_INT;
      CONST afile, func: AL_STR): AL_POINTER;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* This calls @code(calloc) from the Allegro library (this matters on Windows),
+   unless overridden with @link(al_set_memory_interface).
+
+   Generally you should use the @link(al_calloc) function. *)
   FUNCTION al_calloc_with_context
     (n, count: AL_SIZE_T; line: AL_INT; CONST afile, func: AL_STR): AL_POINTER;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
-(******************************************************************************
+(*
  * monitor.h
- *)
+ *****************************************************************************)
 
   CONST
     ALLEGRO_DEFAULT_DISPLAY_ADAPTER = -1;
@@ -2613,9 +2673,9 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * mouse_cursor.h
- *)
+ *****************************************************************************)
 
   TYPE
   (* Mouse cursors *)
@@ -2660,9 +2720,9 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * render_state.h
- *)
+ *****************************************************************************)
 
 { TODO: Not sure if all this section is useful yet. }
 
@@ -2683,9 +2743,9 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * transformations.h
- *)
+ *****************************************************************************)
 
   TYPE
     ALLEGRO_TRANSFORMptr = ^ALLEGRO_TRANSFORM;
@@ -2748,17 +2808,17 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * shader.h
- *)
+ *****************************************************************************)
 
  { TODO: Coming soon. ;) }
 
 
 
-(******************************************************************************
+(*
  * system.h
- *)
+ *****************************************************************************)
 
   TYPE
   (* Pointer to the Allegro system description record.
@@ -2812,9 +2872,9 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * threads.h
- *)
+ *****************************************************************************)
 
 { TODO: Modern Pascal compilers have functions and classes to create threads.
         So, I'll not add them now, but may be in a future I (or somebody else)
@@ -2822,11 +2882,11 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * timer.h
  *
  *  Timer routines.
- *)
+ *****************************************************************************)
 
 (* Converts microseconds to seconds. *)
   FUNCTION ALLEGRO_USECS_TO_SECS (x: AL_INT): AL_DOUBLE; INLINE;
@@ -2881,10 +2941,10 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-(******************************************************************************
+(*
  * tls.h
  *      Thread local storage routines.
- *)
+ *****************************************************************************)
 
   CONST
   { @exclude }
@@ -2934,7 +2994,7 @@ al_draw_line(x1, y1, x2, y2, color, 0);
           current clipping rectangle
           bitmap locking
           current shader
-@)
+#)
      In general, the only real global state is the active system driver. All
      other global state is per-thread, so if your application has multiple
      separate threads they never will interfere with each other. (Except if
@@ -2973,15 +3033,15 @@ al_draw_line(x1, y1, x2, y2, color, 0);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* Restores part of the state of the current thread from the given
    @code(ALLEGRO_STATE) object.
-   @eealso(al_store_state) *)
+   @seealso(al_store_state) *)
   PROCEDURE al_restore_state (VAR state: ALLEGRO_STATE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 IMPLEMENTATION
 
-(******************************************************************************
+(*
  * base.h
- *)
+ *****************************************************************************)
 
   FUNCTION AL_ID (CONST str: SHORTSTRING): AL_INT;
   BEGIN
@@ -2991,9 +3051,9 @@ IMPLEMENTATION
 
 
 
-(******************************************************************************
+(*
  * events.h
- *)
+ *****************************************************************************)
 
   FUNCTION ALLEGRO_EVENT_TYPE_IS_USER (t: ALLEGRO_EVENT_TYPE): AL_BOOL;
   BEGIN
@@ -3009,14 +3069,14 @@ IMPLEMENTATION
 
 
 
-(******************************************************************************
+(*
  * memory.h
- *)
+ *****************************************************************************)
 
   PROCEDURE _al_set_memory_interface_ (iface: AL_POINTER);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME NAME 'al_set_memory_interface';
 
-  PROCEDURE al_restory_memory_interface;
+  PROCEDURE al_restore_memory_interface;
   BEGIN
     _al_set_memory_interface_ (NIL)
   END;
@@ -3051,9 +3111,9 @@ IMPLEMENTATION
 
 
 
-(******************************************************************************
+(*
  * system.h
- *)
+ *****************************************************************************)
 
   FUNCTION al_init: AL_BOOL;
   BEGIN
@@ -3062,9 +3122,9 @@ IMPLEMENTATION
 
 
 
-(******************************************************************************
+(*
  * timer.h
- *)
+ *****************************************************************************)
 
   FUNCTION ALLEGRO_USECS_TO_SECS (x: AL_INT): AL_DOUBLE;
   BEGIN
