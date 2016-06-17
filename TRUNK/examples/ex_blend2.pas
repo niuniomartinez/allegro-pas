@@ -364,8 +364,11 @@ PROGRAM ex_blend2;
       END;
       fDialog.Add (fOperations[Ndx], 1 + Ndx * 3, 24, 3, 10);
     END;
-    fOperations[2].SelectedItem := 3;
-    fOperations[3].SelectedItem := 3;
+  { Select blender mode to paste beautiful composition. }
+    fOperations[0].SelectedItem := 0; { ONE }
+    fOperations[1].SelectedItem := 4; { SRC_COLOR }
+    fOperations[2].SelectedItem := 3; { INVERSE }
+    fOperations[3].SelectedItem := 5; { DEST_COLOR }
 
     FOR Ndx := 4 TO 5 DO
     BEGIN

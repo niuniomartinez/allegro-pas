@@ -50,9 +50,9 @@ INTERFACE
     @item(Module files @(.it, .mod, .s3m, .xm@) are often composed with
       streaming in mind, and sometimes cannot be easily rendered into a finite
       length sample. Therefore they cannot be loaded with
-      @link(al_load_sample)/@link(al_load_sample_f) and must be streamed with
-      @link(al_load_audio_stream) or @link(al_load_audio_stream_f).)
-    @link(.voc file streaming is unimplemented.)
+      @link(al_load_sample) and must be streamed with
+      @link(al_load_audio_stream).)
+    @item(.voc file streaming is unimplemented.)
   )
   @return(@true on success.)
  *)
