@@ -150,7 +150,8 @@ INTERFACE
       ALLEGRO_PRIM_COLOR_ATTR,
       ALLEGRO_PRIM_TEX_COORD,
       ALLEGRO_PRIM_TEX_COORD_PIXEL,
-      ALLEGRO_PRIM_ATTR_NUM
+      ALLEGRO_PRIM_USER_ATTR,
+      ALLEGRO_PRIM_ATTR_NUM { TODO: Undefined! }
     );
 
 
@@ -158,14 +159,53 @@ INTERFACE
     ALLEGRO_PRIM_STORAGE = (
       ALLEGRO_PRIM_FLOAT_2,
       ALLEGRO_PRIM_FLOAT_3,
-      ALLEGRO_PRIM_SHORT_2
+      ALLEGRO_PRIM_SHORT_2,
+      ALLEGRO_PRIM_FLOAT_1,
+      ALLEGRO_PRIM_FLOAT_4,
+      ALLEGRO_PRIM_UBYTE_4,
+      ALLEGRO_PRIM_SHORT_4,
+      ALLEGRO_PRIM_NORMALIZED_UBYTE_4,
+      ALLEGRO_PRIM_NORMALIZED_SHORT_2,
+      ALLEGRO_PRIM_NORMALIZED_SHORT_4,
+      ALLEGRO_PRIM_NORMALIZED_USHORT_2,
+      ALLEGRO_PRIM_NORMALIZED_USHORT_4,
+      ALLEGRO_PRIM_HALF_FLOAT_2,
+      ALLEGRO_PRIM_HALF_FLOAT_4
     );
 
   CONST
     ALLEGRO_PRIM_STORAGE_NONE = ALLEGRO_PRIM_FLOAT_2;
+
+  TYPE
+    ALLEGRO_LINE_JOIN = (
+      ALLEGRO_LINE_JOIN_NONE,
+      ALLEGRO_LINE_JOIN_BEVEL,
+      ALLEGRO_LINE_JOIN_ROUND,
+      ALLEGRO_LINE_JOIN_MITER
+    );
+
+   CONST
+     ALLEGRO_LINE_JOIN_MITRE = ALLEGRO_LINE_JOIN_MITER;
+
+   TYPE
+     ALLEGRO_LINE_CAP = (
+       ALLEGRO_LINE_CAP_NONE,
+       ALLEGRO_LINE_CAP_SQUARE,
+       ALLEGRO_LINE_CAP_ROUND,
+       ALLEGRO_LINE_CAP_TRIANGLE,
+       ALLEGRO_LINE_CAP_CLOSED
+     );
+
+     ALLEGRO_PRIM_BUFFER_FLAGS = (
+       ALLEGRO_PRIM_BUFFER_NONE         = 0,
+       ALLEGRO_PRIM_BUFFER_STREAM       = $01,
+       ALLEGRO_PRIM_BUFFER_STATIC       = $02,
+       ALLEGRO_PRIM_BUFFER_DYNAMIC      = $04,
+       ALLEGRO_PRIM_BUFFER_READWRITE    = $08
+     );
+
+  CONST
     ALLEGRO_VERTEX_CACHE_SIZE = 256;
-
-
 
     ALLEGRO_PRIM_QUALITY = 10;
 
@@ -237,14 +277,16 @@ INTERFACE
 
    For example to draw a textured triangle you could use:
 @longcode(#
-ALLEGRO_COLOR white = al_map_rgb_f(1, 1, 1);
-ALLEGRO_VERTEX v[] = {
-   {.x = 128, .y = 0, .z = 0, .color = white, .u = 128, .v = 0},
-   {.x = 0, .y = 256, .z = 0, .color = white, .u = 0, .v = 256},
-   {.x = 256, .y = 256, .z = 0, .color = white, .u = 256, .v = 256}};
-al_draw_prim(v, NULL, texture, 0, 3, ALLEGRO_PRIM_TRIANGLE_LIST);
+VAR
+  v: ARRAY [0..2] OF ALLEGRO_VERTEX = (
+   (x: 128, y: 0, z: 0, color: white, u: 128, v: 0),
+   (x: 0, y: 256, z: 0, color: white, u: 0, v: 256),
+   (x: 256, y: 256, z: 0, color: white, u: 256, v: 256));
+BEGIN
+  al_draw_prim (v, NIL, Texture, 0, 3, ALLEGRO_PRIM_TRIANGLE_LIST);
+END; 
 #)
-   @param(vtxs An array of vertices.)
+   @param(vtxs Pointer to an array of vertices.)
    @param(texture Texture to use, pass @nil to use only color shaded primitves.)
    @param(decl Pointer to a vertex declaration. If set to @nil, the vertices
      are assumed to be of the @code(ALLEGRO_VERTEX) type.)
@@ -254,10 +296,12 @@ al_draw_prim(v, NULL, texture, 0, 3, ALLEGRO_PRIM_TRIANGLE_LIST);
      what kind of primitive to draw.)
    @return(Number of primitives drawn.)
    @seealso(ALLEGRO_VERTEX) @seealso(ALLEGRO_PRIM_TYPE)
-   @seealso(ALLEGRO_VERTEX_DECL) @seealso(al_draw_indexed_prim) *)
+   @seealso(ALLEGRO_VERTEX_DECLptr) @seealso(al_draw_indexed_prim) *)
   FUNCTION al_draw_prim (VAR vtxs: ARRAY OF ALLEGRO_VERTEX; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; start, finish: AL_INT; _type: ALLEGRO_PRIM_TYPE): AL_INT;
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
-  FUNCTION al_draw_indexed_prim (CONST vtxs: AL_VOIDptr; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; VAR indices: ARRAY OF AL_INT; num_vtx: AL_INT; _type: ALLEGRO_PRIM_TYPE): AL_INT;
+  FUNCTION al_draw_prim_ex (vtxs: AL_VOIDptr; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; start, finish: AL_INT; _type: ALLEGRO_PRIM_TYPE): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME NAME 'al_draw_prim';
+  FUNCTION al_draw_indexed_prim (VAR vtxs: ARRAY OF ALLEGRO_VERTEX; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; VAR indices: ARRAY OF AL_INT; num_vtx: AL_INT; _type: ALLEGRO_PRIM_TYPE): AL_INT;
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
   FUNCTION al_draw_vertex_buffer (vertex_buffer: ALLEGRO_VERTEX_BUFFERptr; texture: ALLEGRO_BITMAPptr; start, finish: AL_INT; _type: ALLEGRO_PRIM_TYPE): AL_INT;
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
@@ -270,20 +314,22 @@ al_draw_prim(v, NULL, texture, 0, 3, ALLEGRO_PRIM_TRIANGLE_LIST);
    @param(elements An array of ALLEGRO_VERTEX_ELEMENT structures.)
    @param(stride Size of the custom vertex structure.)
    @returns(Newly created vertex declaration.)
-   @seealso(ALLEGRO_VERTEX_ELEMENT) @seealso(ALLEGRO_VERTEX_DECL)
+   @seealso(ALLEGRO_VERTEX_ELEMENT) @seealso(ALLEGRO_VERTEX_DECLptr)
    @seealso(al_destroy_vertex_decl) *)
   FUNCTION al_create_vertex_decl (VAR elements: ARRAY OF ALLEGRO_VERTEX_ELEMENT; stride: AL_INT): ALLEGRO_VERTEX_DECLptr;
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
 (* Destroys a vertex declaration.
-   @seealso(ALLEGRO_VERTEX_ELEMENT) @seealso(ALLEGRO_VERTEX_DECL)
+   @seealso(ALLEGRO_VERTEX_ELEMENT) @seealso(ALLEGRO_VERTEX_DECLptr)
    @seealso(al_create_vertex_decl) *)
   PROCEDURE al_destroy_vertex_decl (decl: ALLEGRO_VERTEX_DECLptr);
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
 
 
 
-  FUNCTION al_create_vertex_buffer (decl: ALLEGRO_VERTEX_DECLptr; const initial_data: AL_VOIDptr; num_vertices, flags: AL_INT): ALLEGRO_VERTEX_BUFFERptr;
+  FUNCTION al_create_vertex_buffer (decl: ALLEGRO_VERTEX_DECLptr; VAR initial_data: ARRAY OF ALLEGRO_VERTEX; num_vertices: AL_INT; flags: ALLEGRO_PRIM_BUFFER_FLAGS): ALLEGRO_VERTEX_BUFFERptr;
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
+  FUNCTION al_create_vertex_buffer_ex (decl: ALLEGRO_VERTEX_DECLptr; CONST initial_data: AL_VOIDptr; num_vertices: AL_INT; flags: ALLEGRO_PRIM_BUFFER_FLAGS): ALLEGRO_VERTEX_BUFFERptr;
+    CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME NAME 'al_create_vertex_buffer';
   PROCEDURE al_destroy_vertex_buffer (buffer: ALLEGRO_VERTEX_BUFFERptr);
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
   FUNCTION al_lock_vertex_buffer (buffer: ALLEGRO_VERTEX_BUFFERptr; offset, length, flags: AL_INT): AL_VOIDptr;
@@ -295,7 +341,7 @@ al_draw_prim(v, NULL, texture, 0, 3, ALLEGRO_PRIM_TRIANGLE_LIST);
 
 
 
-  FUNCTION al_create_index_buffer (decl: ALLEGRO_VERTEX_DECLptr; const initial_data: AL_VOIDptr; num_indices, flags: AL_INT): ALLEGRO_INDEX_BUFFERptr;
+  FUNCTION al_create_index_buffer (index_size: AL_INT; const initial_data: AL_VOIDptr; num_indices: AL_INT; flags: ALLEGRO_PRIM_BUFFER_FLAGS): ALLEGRO_INDEX_BUFFERptr;
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
   PROCEDURE al_destroy_index_buffer (buffer: ALLEGRO_INDEX_BUFFERptr);
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;

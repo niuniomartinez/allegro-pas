@@ -2,6 +2,10 @@
 
 In no special order
 
+  * ex_prim doesn't work as expected.  The last screen (TIndexedBuffers) 
+    affects it in a way that prevents hardware acceleration to work.  If it
+    isn't initialized (Create) everything works.
+
   * Check sizes of BOOLEAN types.  It seems to work (Xubuntu 14.04.4 & WinXP).
 
   * See the various TODO notes in unit Allegro5.pas.

@@ -5,10 +5,17 @@ Cambios entre las versiones 5.2 alpha y 5.2 alpha-2
   + Añadidos ejemplos:
     ex_clipboard
     ex_draw
-    ex_monitorinfo (¿no funciona en Windows XP?)
+    ex_drawpixels
+    ex_monitorinfo
   * ex_blend2 se inicia en un modo blender diferente.
   * al_get_bitmap_format devuelve el dato en tipo correcto, no como integer.
+  * Corregido CDELC en al_get_display_mode.
+  * Modificado parámetro VAR a OUT en:
+      al_get_keyboard_state
+  * Módulo (add-on) al5primitives y exemplo ex_prim revisados, aunque hay 
+   alguna cosa que sigue sin funcionar bien.
   * Añadida gestión de memoria de Allegro.
+  * ex_warp_mouse renombrado como ex_mouse_warp.
 
 
 
