@@ -2344,7 +2344,7 @@ al_draw_line(x1, y1, x2, y2, color, 0);
      success.)
    @seealso(ALLEGRO_DISPLAY_MODE) @seealso(al_get_num_display_modes) *)
   FUNCTION al_get_display_mode (index: AL_INT; OUT mode: ALLEGRO_DISPLAY_MODE): ALLEGRO_DISPLAY_MODEptr;
-    EXTERNAL ALLEGRO_LIB_NAME;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
@@ -2461,7 +2461,7 @@ al_draw_line(x1, y1, x2, y2, color, 0);
   FUNCTION al_keycode_to_name (keycode: AL_INT): AL_STRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-  PROCEDURE al_get_keyboard_state (VAR ret_state: ALLEGRO_KEYBOARD_STATE);
+  PROCEDURE al_get_keyboard_state (OUT ret_state: ALLEGRO_KEYBOARD_STATE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_key_down (VAR state: ALLEGRO_KEYBOARD_STATE; keycode: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
@@ -2869,16 +2869,6 @@ al_draw_line(x1, y1, x2, y2, color, 0);
  *)
   FUNCTION al_inhibit_screensaver (inhibit: AL_BOOL): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-
-
-
-(*
- * threads.h
- *****************************************************************************)
-
-{ TODO: Modern Pascal compilers have functions and classes to create threads.
-        So, I'll not add them now, but may be in a future I (or somebody else)
-	will.  The MUTEX stuff is pretty nice and useful. }
 
 
 

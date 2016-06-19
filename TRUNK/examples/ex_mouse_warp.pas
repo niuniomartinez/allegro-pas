@@ -1,4 +1,4 @@
-PROGRAM ex_warp_mouse;
+PROGRAM ex_mouse_warp;
 (* Copyright (c) 2012 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied

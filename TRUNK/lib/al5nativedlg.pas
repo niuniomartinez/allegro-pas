@@ -156,7 +156,7 @@ INTERFACE
    display is treated as the parent if possible.
 
    This function blocks the calling thread until it returns, so you may want to
-   spawn a threadx and call it from inside that thread.
+   spawn a thread and call it from inside that thread.
    @return(@true on success, @false on failure.)
    @seealso(al_create_native_file_dialog) *)
   FUNCTION al_show_native_file_dialog (display: ALLEGRO_DISPLAYptr; dialog: ALLEGRO_FILECHOOSERptr): AL_BOOL;
