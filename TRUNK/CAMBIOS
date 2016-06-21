@@ -3,7 +3,9 @@ Cambios entre las versiones 5.2 alpha y 5.2 alpha-2
 
   * Documentación creada usando fpdoc.  En pruebas.
   + Añadidos ejemplos:
+    ex_bitmap_flip
     ex_clipboard
+    ex_depth_mask
     ex_draw
     ex_drawpixels
     ex_monitorinfo
@@ -16,6 +18,8 @@ Cambios entre las versiones 5.2 alpha y 5.2 alpha-2
    alguna cosa que sigue sin funcionar bien.
   * Añadida gestión de memoria de Allegro.
   * ex_warp_mouse renombrado como ex_mouse_warp.
+  * ALLEGRO_DISPLAY_ORIENTATION cambiado a constantes, y añadidos nuevos
+    elementos a "render state".
 
 
 
