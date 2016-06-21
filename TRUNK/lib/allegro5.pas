@@ -1605,28 +1605,13 @@ a = d.a * 0 + s.a * d.a
       timestamp : AL_DOUBLE;
     END;
 
-  (* NOTE: This is defined here instead of in the "display.h" section because
-     it is needed by the display event. *)
-    ALLEGRO_DISPLAY_ORIENTATION = (
-      ALLEGRO_DISPLAY_ORIENTATION_UNKNOWN = 0,
-      ALLEGRO_DISPLAY_ORIENTATION_0_DEGREES = 1,
-      ALLEGRO_DISPLAY_ORIENTATION_90_DEGREES = 2,
-      ALLEGRO_DISPLAY_ORIENTATION_180_DEGREES = 4,
-      ALLEGRO_DISPLAY_ORIENTATION_PORTRAIT = 5,
-      ALLEGRO_DISPLAY_ORIENTATION_270_DEGREES = 8,
-      ALLEGRO_DISPLAY_ORIENTATION_LANDSCAPE = 10,
-      ALLEGRO_DISPLAY_ORIENTATION_ALL = 15,
-      ALLEGRO_DISPLAY_ORIENTATION_FACE_UP = 16,
-      ALLEGRO_DISPLAY_ORIENTATION_FACE_DOWN = 32
-    );
-
     ALLEGRO_DISPLAY_EVENT = RECORD
       _type: ALLEGRO_EVENT_TYPE;
       source: ALLEGRO_DISPLAYptr;
       timestamp: AL_DOUBLE;
       x, y: AL_INT;
       width, height: AL_INT;
-      orientation: ALLEGRO_DISPLAY_ORIENTATION;
+      orientation: AL_INT;
     END;
 
     ALLEGRO_JOYSTICK_EVENT = RECORD
@@ -1906,6 +1891,17 @@ END;
     );
 
   CONST
+    ALLEGRO_DISPLAY_ORIENTATION_UNKNOWN = 0;
+    ALLEGRO_DISPLAY_ORIENTATION_0_DEGREES = 1;
+    ALLEGRO_DISPLAY_ORIENTATION_90_DEGREES = 2;
+    ALLEGRO_DISPLAY_ORIENTATION_180_DEGREES = 4;
+    ALLEGRO_DISPLAY_ORIENTATION_PORTRAIT = 5;
+    ALLEGRO_DISPLAY_ORIENTATION_270_DEGREES = 8;
+    ALLEGRO_DISPLAY_ORIENTATION_LANDSCAPE = 10;
+    ALLEGRO_DISPLAY_ORIENTATION_ALL = 15;
+    ALLEGRO_DISPLAY_ORIENTATION_FACE_UP = 16;
+    ALLEGRO_DISPLAY_ORIENTATION_FACE_DOWN = 32;
+
     ALLEGRO_DONTCARE = 0;
     ALLEGRO_REQUIRE = 1;
     ALLEGRO_SUGGEST = 2;
@@ -1946,10 +1942,10 @@ END;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_get_display_flags (display: ALLEGRO_DISPLAYptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_display_orientation (display: ALLEGRO_DISPLAYptr): ALLEGRO_DISPLAY_ORIENTATION;
+  FUNCTION al_get_display_orientation (display: ALLEGRO_DISPLAYptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_toggle_display_flag (display: ALLEGRO_DISPLAYptr; flag: AL_INT; onoff: AL_BOOL): AL_BOOL; CDECL;
-    EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_toggle_display_flag (display: ALLEGRO_DISPLAYptr; flag: AL_INT; onoff: AL_BOOL): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
@@ -2724,22 +2720,84 @@ al_draw_line(x1, y1, x2, y2, color, 0);
  * render_state.h
  *****************************************************************************)
 
-{ TODO: Not sure if all this section is useful yet. }
-
   TYPE
+  { Used by @link(al_set_render_state). }
     ALLEGRO_RENDER_STATE = (
     (* ALLEGRO_ALPHA_TEST was the name of a rare bitmap flag only used on the
        Wiz port.  Reuse the name but retain the same value. *)
+    { If this is set to 1, the values of @code(ALLEGRO_ALPHA_FUNCTION) and
+      @code(ALLEGRO_ALPHA_TEST_VALUE) define a comparison function which is
+      performed for each pixel. Only if it evaluates to true the pixel is
+      written. Otherwise no subsequent processing @(like depth test or
+	blending@) is performed. }
       ALLEGRO_ALPHA_TEST = $0010,
+    { This determines how the framebuffer and depthbuffer are updated whenever
+      a pixel is written @(in case alpha and/or depth testing is enabled: after
+      all such enabled tests succeed@). Depth values are only written if
+      @code(ALLEGRO_DEPTH_TEST) is 1, in addition to the write mask flag being
+      set. }
       ALLEGRO_WRITE_MASK,
+    { If this is set to 1, compare the depth value of any newly written pixels
+      with the depth value already in the buffer, according to
+      @code(ALLEGRO_DEPTH_FUNCTION). Allegro primitives with no explicit z
+      coordinate will write a value of 0 into the depth buffer. }
       ALLEGRO_DEPTH_TEST,
+    { One of @code(ALLEGRO_RENDER_NEVER) @code(ALLEGRO_RENDER_ALWAYS)
+      @code(ALLEGRO_RENDER_LESS) @code(ALLEGRO_RENDER_EQUAL)
+      @code(ALLEGRO_RENDER_LESS_EQUAL) @code(ALLEGRO_RENDER_GREATER)
+      @code(ALLEGRO_RENDER_NOT_EQUAL) @code(ALLEGRO_RENDER_GREATER_EQUAL), only
+      used when @code(ALLEGRO_DEPTH_TEST) is 1. }
       ALLEGRO_DEPTH_FUNCTION,
+    { One of @code(ALLEGRO_RENDER_NEVER) @code(ALLEGRO_RENDER_ALWAYS)
+      @code(ALLEGRO_RENDER_LESS) @code(ALLEGRO_RENDER_EQUAL)
+      @code(ALLEGRO_RENDER_LESS_EQUAL) @code(ALLEGRO_RENDER_GREATER)
+      @code(ALLEGRO_RENDER_NOT_EQUAL) @code(ALLEGRO_RENDER_GREATER_EQUAL), only
+      used when @code(ALLEGRO_ALPHA_TEST) is 1.}
       ALLEGRO_ALPHA_FUNCTION,
+    { Only used when @code(ALLEGRO_ALPHA_TEST) is 1. }
       ALLEGRO_ALPHA_TEST_VALUE
     );
 
-    PROCEDURE al_set_render_state (state: ALLEGRO_RENDER_STATE; value: AL_INT);
-      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  CONST
+    { @exclude }
+    ALLEGRO_RENDER_NEVER = 0;
+    { @exclude }
+    ALLEGRO_RENDER_ALWAYS = 1;
+    { @exclude }
+    ALLEGRO_RENDER_LESS = 2;
+    { @exclude }
+    ALLEGRO_RENDER_EQUAL = 3;
+    { @exclude }
+    ALLEGRO_RENDER_LESS_EQUAL = 4;
+    { @exclude }
+    ALLEGRO_RENDER_GREATER = 5;
+    { @exclude }
+    ALLEGRO_RENDER_NOT_EQUAL = 6;
+    { @exclude }
+    ALLEGRO_RENDER_GREATER_EQUA = 7;
+
+    { @exclude }
+    ALLEGRO_MASK_RED = 1 SHL 0;
+    { @exclude }
+    ALLEGRO_MASK_GREEN = 1 SHL 1;
+    { @exclude }
+    ALLEGRO_MASK_BLUE = 1 SHL 2;
+    { @exclude }
+    ALLEGRO_MASK_ALPHA = 1 SHL 3;
+    { @exclude }
+    ALLEGRO_MASK_DEPTH = 1 SHL 4;
+    { @exclude }
+    ALLEGRO_MASK_RGB = (ALLEGRO_MASK_RED OR ALLEGRO_MASK_GREEN OR ALLEGRO_MASK_BLUE);
+    { @exclude }
+    ALLEGRO_MASK_RGBA = (ALLEGRO_MASK_RGB OR ALLEGRO_MASK_ALPHA);
+
+(* Set one of several render attributes.
+
+   This function does nothing if the target bitmap is a memory bitmap.
+   @param(state Possible render states which can be one of
+     @link(ALLEGRO_RENDER_STATE).) *)
+  PROCEDURE al_set_render_state (state: ALLEGRO_RENDER_STATE; value: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 

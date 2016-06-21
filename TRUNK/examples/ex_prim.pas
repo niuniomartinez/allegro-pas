@@ -297,7 +297,7 @@ PROGRAM ex_prim;
   (* The example object. *)
     Example: TPrimitivesExample;
   (* Some colors. *)
-    SolidWhite, SolidBlack: ALLEGRO_COLOR;
+    White, SolidWhite, SolidBlack: ALLEGRO_COLOR;
 
 
 
@@ -492,6 +492,10 @@ PROGRAM ex_prim;
   BEGIN
     INHERITED Create;
     fDisplay := NIL;
+    fBkg := NIL;
+    fTexture := NIL;
+    fBuffer := NIL;
+
     fUseShader := FALSE;
     fBlend := TRUE;
     fTheta := 0;
@@ -562,7 +566,6 @@ PROGRAM ex_prim;
   { Display. }
     IF fUseShader THEN
       al_set_new_display_flags (ALLEGRO_PROGRAMMABLE_PIPELINE);
-  { Create a window to display things on: 640x480 pixels. }
     fDisplay := al_create_display (ScreenW, ScreenH);
     IF fDisplay = NIL THEN
     BEGIN
@@ -573,6 +576,7 @@ PROGRAM ex_prim;
   { Make and set some color to draw with. }
     SolidBlack := al_map_rgba_f (0, 0, 0, 1);
     SolidWhite := al_map_rgba_f (1, 1, 1, 1);
+    White := al_map_rgb_f (1, 1, 1);
   { Load a font. }
     fFont := al_load_font ('data/fixed_font.tga', 0, 0);
     IF fFont = NIL THEN
@@ -593,7 +597,7 @@ PROGRAM ex_prim;
       ShowErrorMessage ('Error loading "data/texture.tga".');
       EXIT
     END;
-  { Start the event queue to handle keyboard input and our timer. }
+  { Start the event queue. }
     fQueue := al_create_event_queue;
     al_register_event_source (fQueue, al_get_keyboard_event_source);
     al_register_event_source (fQueue, al_get_display_event_source (fDisplay));
@@ -639,7 +643,6 @@ PROGRAM ex_prim;
     Ndx: INTEGER;
   BEGIN
     IF fTerminated THEN EXIT; { Skip execution. }
-    FOR Ndx := LOW (fScreens) TO HIGH (fScreens) DO fScreens[Ndx].Update;
 
     fRealTime := al_get_time;
     fFramesDone := 0;
@@ -700,7 +703,7 @@ PROGRAM ex_prim;
   PROCEDURE TPrimitivesExample.DrawUnsupported;
   BEGIN
     al_draw_text (
-      fFont, al_map_rgb_f (1, 1, 1), 0, 0, 0,
+      fFont, White, 0, 0, 0,
       Format ('%s not supported', [fScreens[fCurScreen].Name])
     )
   END;
