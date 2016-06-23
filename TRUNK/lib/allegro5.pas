@@ -2434,7 +2434,6 @@ al_draw_line(x1, y1, x2, y2, color, 0);
  *****************************************************************************)
 
   TYPE
-    ALLEGRO_KEYBOARD_STATEptr = ^ALLEGRO_KEYBOARD_STATE;
     ALLEGRO_KEYBOARD_STATE = RECORD
       display: ALLEGRO_DISPLAYptr;
     { @exclude internal }
@@ -2479,7 +2478,6 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
   TYPE
   (* Type: ALLEGRO_MOUSE_STATE *)
-    ALLEGRO_MOUSE_STATEptr = ^ALLEGRO_MOUSE_STATE;
     ALLEGRO_MOUSE_STATE = RECORD
     (* (x, y) Primary mouse position
      * (z) Mouse wheel position (1D 'wheel'), or,
@@ -2518,11 +2516,11 @@ al_draw_line(x1, y1, x2, y2, color, 0);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_set_mouse_axis (axis, value: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_get_mouse_state (ret_state: ALLEGRO_MOUSE_STATEptr);
+  PROCEDURE al_get_mouse_state (OUT ret_state: ALLEGRO_MOUSE_STATE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_mouse_button_down (CONST state: ALLEGRO_MOUSE_STATEptr; button: AL_INT): AL_BOOL;
+  FUNCTION al_mouse_button_down (VAR state: ALLEGRO_MOUSE_STATE; button: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_mouse_state_axis (CONST state: ALLEGRO_MOUSE_STATEptr; axis: AL_INT): AL_INT;
+  FUNCTION al_get_mouse_state_axis (VAR state: ALLEGRO_MOUSE_STATE; axis: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_get_mouse_cursor_position (VAR ret_x, ret_y: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
