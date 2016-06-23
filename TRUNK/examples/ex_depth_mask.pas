@@ -55,7 +55,7 @@ PROGRAM ex_depth_mask;
     al_clear_depth_buffer (1);
     al_clear_to_color (al_map_rgb_f (0, 0, 0));
 
-    al_draw_scaled_bitmap (fObp, 0, 0, 532, 416, 0, 0, 640, 416 * 640 / 532, 0);
+    al_draw_scaled_bitmap (fObp, 0, 0, 532, 416, 0, 0, fW, 416 * fW / 532, 0);
 
   { Next we draw all sprites but only to the depth buffer (with a depth value
     of 0). }
@@ -66,9 +66,9 @@ PROGRAM ex_depth_mask;
     FOR i := LOW (fSprites) TO HIGH (fSprites) DO
     BEGIN
       al_hold_bitmap_drawing (TRUE);
-      Y := -480;
+      Y := -fH;
       REPEAT
-	x := -640;
+	x := -fW;
 	REPEAT
 	  al_identity_transform (t);
 	  al_rotate_transform (t, fSprites[i].Angle);
@@ -78,9 +78,9 @@ PROGRAM ex_depth_mask;
 	    fFont, al_map_rgb (0, 0, 0), 0, 0,
 	    ALLEGRO_ALIGN_CENTER, 'Allegro 5'
 	  );
-	  INC (x, 640)
+	  INC (x, fW)
 	UNTIL x > 0;
-	INC (y, 480)
+	INC (y, fH)
       UNTIL y > 0;
       al_hold_bitmap_drawing (FALSE);
     END;
@@ -91,13 +91,13 @@ PROGRAM ex_depth_mask;
     sprites have been drawn before. }
     al_set_render_state (ALLEGRO_DEPTH_FUNCTION, ALLEGRO_RENDER_EQUAL);
     al_set_render_state (ALLEGRO_WRITE_MASK, ALLEGRO_MASK_RGBA);
-    al_draw_scaled_bitmap (fMysha, 0, 0, 320, 200, 0, 0, 320 * 480 / 200, 480, 0);
+    al_draw_scaled_bitmap (fMysha, 0, 0, 320, 200, 0, 0, 320 * fH / 200, fH, 0);
 
   { Finally we draw an FPS counter. }
     al_set_render_state (ALLEGRO_DEPTH_TEST, 0);
 
     al_draw_text (
-      fFont2, al_map_rgb_f (1, 1, 1), 640, 0, ALLEGRO_ALIGN_RIGHT, 
+      fFont2, al_map_rgb_f (1, 1, 1), fW, 0, ALLEGRO_ALIGN_RIGHT,
       Format ('%.1f FPS', [1.0 / fDirectSpeedMeasure])
     )
   END;
@@ -111,7 +111,7 @@ PROGRAM ex_depth_mask;
     BEGIN
       fSprites[i].x := fSprites[i].x - 4;
       IF fSprites[i].x < 80 THEN
-	fSprites[i].x := fSprites[i].x + 640;
+	fSprites[i].x := fSprites[i].x + fW;
       fSprites[i].angle := fSprites[i].angle + i * ALLEGRO_PI / 180 / COUNT
     END
   END;
@@ -192,9 +192,6 @@ PROGRAM ex_depth_mask;
 
     WHILE NOT Done DO
     BEGIN
-      fW := al_get_display_width (fDisplay);
-      fH := al_get_display_height (fDisplay);
-
       IF NOT Background AND NeedRedraw
       AND al_is_event_queue_empty (fQueue) THEN
       BEGIN

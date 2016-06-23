@@ -25,7 +25,7 @@ PROJECT = Allegro.pas 5.2 alpha-2
 # ------------------
 # Win32
 # ------------------
-ifeq ($(TARGET),WIN32)
+ifeq ($(TARGET),WIN)
 	# Platform name
 	PLATFORM=Windows
 	# Binary sufix
@@ -104,12 +104,13 @@ DOCSRC = docs/src/
 
 EXMBIN = $(BINDIR)$(EXMDIR)
 
+PFLAGS = -Sh -Si
 
 
 # Optimized compilation
-# FLAGS = $(OPTOPT) -Sh -Si $(EFLAGS)
+# FLAGS = $(OPTOPT) @(PFLAGS) $(EFLAGS)
 # Use next line instead to activate debug.
-FLAGS = $(DBGOPT) -Sh -Si $(EFLAGS)
+FLAGS = $(DBGOPT) $(PFLAGS) $(EFLAGS)
 
 
 
