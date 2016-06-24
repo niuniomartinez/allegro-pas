@@ -57,7 +57,6 @@ BEGIN
 
   al_set_window_title (Display, FileName);
 
-
 { Load the image and time how long it took for the log. }
   T0 := al_get_time;
   Bitmap := al_load_bitmap (FileName);
@@ -66,7 +65,6 @@ BEGIN
     AbortExample (Format ('"%s" not found or failed to load.', [filename]));
 
   LogWriteLn (Format ('Loading took %.4f seconds', [t1 - t0]));
-    
 
 { Create a timer that fires 30 times a second. }
   Timer := al_create_timer (1.0 / 30);
@@ -143,5 +141,3 @@ BEGIN
 
   CloseLog (FALSE);
 END.
-
-/* vim: set sts=4 sw=4 et: */

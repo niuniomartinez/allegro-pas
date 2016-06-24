@@ -126,11 +126,11 @@ Instalación
   los directorios obj/ y bin/examples/.  Entonces compile (F9 si recuerdo
   correctamente).
 
-  NOTA:  No lo he probado con Delphi así que PUEDE QU NO FUNCIONE.  No me eche
+  NOTA:  No lo he probado con Delphi así que PUEDE QUE NO FUNCIONE.  No me eche
          la culpa:  ¡recuerde que es una versión alfa!
 
-  NOTA 2: La mayor parte de la unidad al5primitives.pas no funciona.
-          Sigo trabajando en ello.
+  NOTA 2: Parte de la unidad al5primitives.pas no funciona.  Sigo trabajando en
+          ello.
 
 
 

@@ -2,6 +2,9 @@
 
 In no special order
 
+  * al_get_keyboard_state seems to fail in some systems (64bits? Only Xubuntu
+    64bit?).
+
   * ex_prim doesn't work as expected.  The last screen (TIndexedBuffers) 
     affects it in a way that prevents hardware acceleration to work.  If it
     isn't initialized (Create) everything works.
@@ -26,14 +29,8 @@ In no special order
 
   * nihGUI may need some changes in API (i.e. what's public and what's not).
 
-  * nihGUI doesn't calculate mouse position correctly.  This seems to be an
-    issue of Allegro in Windows XP.
-
   * Documentation isn't written.
     May be I should find another documentation tool as pasdoc is "dirty".
     Else use pasdoc.
-
-  * Document COLOR issue (can't use functions "_map_" as parameters in
-    Windows (?)).
 
   * MUST normalize types (VAR vs. POINTER, OUT vs. VAR, STRING vs. PCHAR ...).

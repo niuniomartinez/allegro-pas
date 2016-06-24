@@ -26,21 +26,27 @@ PROGRAM ex_drawpixels;
     ProgramStart, Length: DOUBLE;
     Layer, Star, X, Y: INTEGER;
 
-
+    EventQueue: ALLEGRO_EVENT_QUEUEptr;
+    Event: ALLEGRO_EVENT;
+    EndExample: BOOLEAN;
 BEGIN
   IF NOT al_init THEN AbortExample ('Could not init Allegro.');
 
   OpenLog;
 
   al_install_keyboard;
-   
+
   Display := al_create_display (WIDTH, HEIGHT);
   IF Display = NIL THEN AbortExample ('Could not create display.');
+
+  EventQueue := al_create_event_queue;
+  al_register_event_source (EventQueue, al_get_keyboard_event_source);
+  al_register_event_source (EventQueue, al_get_display_event_source (Display));
 
   Colors[1] := al_map_rgba (255, 100, 255, 128);
   Colors[2] := al_map_rgba (255, 100, 100, 255);
   Colors[3] := al_map_rgba (100, 100, 255, 255);
-         
+
   FOR Layer := LOW (Stars) TO HIGH (Stars) DO
   BEGIN
     FOR Star := LOW (Stars[Layer]) TO HIGH (Stars[Layer]) DO
@@ -58,6 +64,7 @@ BEGIN
   ProgramStart := al_get_time;
 
   TotalFrames := 0;
+  EndExample := FALSE;
   REPEAT
     IF FrameCount < (1000 / TARGET_FPS) THEN
       FrameCount := FrameCount + Elapsed
@@ -108,8 +115,21 @@ BEGIN
 
     al_rest (0.001);
 
+  { NOTE: Seems to be a problem with "get_keyboard_state" and this doesn't work
+	  in all systems (i.e. my Xubuntu 14.04.4 64bit), so I (Ñuño) have
+	  changed this by events.
     al_get_keyboard_state (KeyState);
   UNTIL al_key_down (KeyState, ALLEGRO_KEY_ESCAPE);
+  }
+    IF al_get_next_event (EventQueue, Event) THEN
+      CASE Event._type OF
+      ALLEGRO_EVENT_DISPLAY_CLOSE:
+	EndExample := TRUE;
+      ALLEGRO_EVENT_KEY_DOWN:
+	IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
+	  EndExample := TRUE;
+      END
+  UNTIL EndExample;
 
   Length := al_get_time - ProgramStart;
 

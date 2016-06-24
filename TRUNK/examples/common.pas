@@ -4,7 +4,10 @@ UNIT Common;
 INTERFACE
 
   USES
-    allegro5;
+    Allegro5, al5nativedlg;
+
+  VAR
+    TextLog: ALLEGRO_TEXTLOGptr;
 
 (* Initializes platform specific stuff. *)
   PROCEDURE InitPlatformSpecific;
@@ -24,11 +27,6 @@ INTERFACE
   PROCEDURE CloseLog (WaitForUser: BOOLEAN);
 
 IMPLEMENTATION
-
-  USES
-    al5nativedlg;
-  VAR
-    TextLog: ALLEGRO_TEXTLOGptr;
 
 (* Platform specific stuff. *)
   PROCEDURE InitPlatformSpecific;
@@ -72,7 +70,7 @@ IMPLEMENTATION
   PROCEDURE OpenLogMonospace;
   BEGIN
     IF al_init_native_dialog_addon THEN
-      textlog := al_open_native_text_log ('Log', ALLEGRO_TEXTLOG_MONOSPACE)
+      TextLog := al_open_native_text_log ('Log', ALLEGRO_TEXTLOG_MONOSPACE)
    END;
 
 
