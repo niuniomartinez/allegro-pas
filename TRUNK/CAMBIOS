@@ -12,8 +12,10 @@ Cambios entre las versiones 5.2 alpha y 5.2 alpha-2
     ex_draw
     ex_drawpixels
     ex_keyboard_events
+    ex_membmp
     ex_monitorinfo
     ex_mouse
+    ex_saw
   * ex_blend2 se inicia en un modo blender diferente.
   * al_get_bitmap_format devuelve el dato en tipo correcto, no como integer.
   * Corregido CDELC en al_get_display_mode.
@@ -30,6 +32,9 @@ Cambios entre las versiones 5.2 alpha y 5.2 alpha-2
     elementos a "render state".
   * Añadido "fix.cmd" para Windows modernos.
   * Correcciones en guiones de compilación.
+  * Actualizado "keycodes.inc", añadiendo nuevos identificadores y modificando
+    otros.
+  * Corregida la estructura ALLEGRO_KEYBOARD_STATE.
 
 
 

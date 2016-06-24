@@ -208,7 +208,7 @@ PROGRAM ex_draw;
     x := 80;
     y := 40;
     al_draw_scaled_bitmap (Ex.Zoom, 0, 0, w, h, x, y, w * 16, h * 16, 0);
-   
+
   { Draw outlines. }
     FOR i := 0 TO (RectsNum - 1) DO
       Primitive (

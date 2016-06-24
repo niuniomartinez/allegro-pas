@@ -1,6 +1,27 @@
+(*         ______   ___    ___
+ *        /\  _  \ /\_ \  /\_ \
+ *        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
+ *         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
+ *          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
+ *           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
+ *            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
+ *                                           /\____/
+ *                                           \_/__/
+ *
+ *      Keycode constants.
+ *
+ *      See readme.txt for copyright information.
+ *)
+
+{ This is just to help "diff" to find modifications.
+#ifndef __al_included_allegro5_keycodes_h
+#define __al_included_allegro5_keycodes_h
+}
+
+
+
 CONST
-(* Key scan-code identifiers.
-   Note these values are deliberately the same as in Allegro 4.1.x *)
+(* Note these values are deliberately the same as in Allegro 4.1.x *)
   ALLEGRO_KEY_A		= 1;
   ALLEGRO_KEY_B		= 2;
   ALLEGRO_KEY_C		= 3;
@@ -72,17 +93,17 @@ CONST
   ALLEGRO_KEY_OPENBRACE	= 65;
   ALLEGRO_KEY_CLOSEBRACE	= 66;
   ALLEGRO_KEY_ENTER		= 67;
-  ALLEGRO_KEY_COLON		= 68;
+  ALLEGRO_KEY_SEMICOLON		= 68;
   ALLEGRO_KEY_QUOTE		= 69;
   ALLEGRO_KEY_BACKSLASH	= 70;
   ALLEGRO_KEY_BACKSLASH2	= 71; { DirectInput calls this DIK_OEM_102: "< > | on UK/Germany keyboards" }
   ALLEGRO_KEY_COMMA		= 72;
-  ALLEGRO_KEY_STOP		= 73;
+  ALLEGRO_KEY_FULLSTOP		= 73;
   ALLEGRO_KEY_SLASH		= 74;
   ALLEGRO_KEY_SPACE		= 75;
 
   ALLEGRO_KEY_INSERT		= 76;
-  ALLEGRO_KEY_DEL		= 77;
+  ALLEGRO_KEY_DELETE		= 77;
   ALLEGRO_KEY_HOME		= 78;
   ALLEGRO_KEY_END		= 79;
   ALLEGRO_KEY_PGUP		= 80;
@@ -116,7 +137,32 @@ CONST
    ALLEGRO_KEY_BACKQUOTE	= 104;	{ MacOS X }
    ALLEGRO_KEY_SEMICOLON2	= 105;	{ MacOS X -- TODO: ask lillo what this should be }
    ALLEGRO_KEY_COMMAND	= 106;	{ MacOS X }
-   ALLEGRO_KEY_UNKNOWN      = 107;
+
+   ALLEGRO_KEY_BACK = 107;        { Android back key }
+   ALLEGRO_KEY_VOLUME_UP = 108;
+   ALLEGRO_KEY_VOLUME_DOWN = 109;
+
+   { Android game keys }
+   ALLEGRO_KEY_SEARCH       = 110;
+   ALLEGRO_KEY_DPAD_CENTER  = 111;
+   ALLEGRO_KEY_BUTTON_X     = 112;
+   ALLEGRO_KEY_BUTTON_Y     = 113;
+   ALLEGRO_KEY_DPAD_UP      = 114;
+   ALLEGRO_KEY_DPAD_DOWN    = 115;
+   ALLEGRO_KEY_DPAD_LEFT    = 116;
+   ALLEGRO_KEY_DPAD_RIGHT   = 117;
+   ALLEGRO_KEY_SELECT       = 118;
+   ALLEGRO_KEY_START        = 119;
+   ALLEGRO_KEY_BUTTON_L1    = 120;
+   ALLEGRO_KEY_BUTTON_R1    = 121;
+   ALLEGRO_KEY_BUTTON_L2    = 122;
+   ALLEGRO_KEY_BUTTON_R2    = 123;
+   ALLEGRO_KEY_BUTTON_A     = 124;
+   ALLEGRO_KEY_BUTTON_B     = 125;
+   ALLEGRO_KEY_THUMBL       = 126;
+   ALLEGRO_KEY_THUMBR       = 127;
+
+   ALLEGRO_KEY_UNKNOWN      = 128;
 
    { All codes up to before ALLEGRO_KEY_MODIFIERS can be freely
      assignedas additional unknown keys, like various multimedia

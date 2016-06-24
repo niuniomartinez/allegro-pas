@@ -2437,7 +2437,7 @@ al_draw_line(x1, y1, x2, y2, color, 0);
     ALLEGRO_KEYBOARD_STATE = RECORD
       display: ALLEGRO_DISPLAYptr;
     { @exclude internal }
-      __key_down__internal__: ARRAY [0..((ALLEGRO_KEY_MAX * 31) DIV 32) - 1] OF AL_UINT;
+      __key_down__internal__: ARRAY [0..((ALLEGRO_KEY_MAX + 31) DIV 32) - 1] OF AL_UINT;
     END;
 
   FUNCTION al_is_keyboard_installed: AL_BOOL;
