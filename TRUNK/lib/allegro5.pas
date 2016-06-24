@@ -1073,7 +1073,7 @@ END;
    parameter of 0.
 
    @bold(Note:) the core Allegro library does not support any image file
-   formats by default. You must use the @link(al5Image) addon, or register your
+   formats by default. You must use the @link(al5image) addon, or register your
    own format handler.
    @return(@nil on error.)
    @seealso(al_load_bitmap_flags) @seealso(al_set_new_bitmap_format)
@@ -1178,7 +1178,7 @@ END;
    extension.
 
    @bold(Note:) the core Allegro library does not support any image file
-   formats by default. You must use the @link(al5Image) addon, or register your
+   formats by default. You must use the @link(al5image) addon, or register your
    own format handler.
    @return(@true on success, @false on error.)
    @seealso(al_init_image_addon) *)
@@ -2411,7 +2411,7 @@ al_draw_line(x1, y1, x2, y2, color, 0);
   FUNCTION al_get_joystick_button_name (j: ALLEGRO_JOYSTICKptr; buttonn: AL_INT): AL_STRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-  PROCEDURE al_get_joystick_state (j: ALLEGRO_JOYSTICKptr; VAR ret_state: ALLEGRO_JOYSTICK_STATE);
+  PROCEDURE al_get_joystick_state (j: ALLEGRO_JOYSTICKptr; OUT ret_state: ALLEGRO_JOYSTICK_STATE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_get_joystick_event_source: ALLEGRO_EVENT_SOURCEptr;

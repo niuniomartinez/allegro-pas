@@ -11,6 +11,9 @@ Cambios entre las versiones 5.2 alpha y 5.2 alpha-2
     ex_display_options
     ex_draw
     ex_drawpixels
+    ex_icon
+    ex_icon2
+    ex_joystick_events
     ex_keyboard_events
     ex_membmp
     ex_monitorinfo
@@ -22,6 +25,7 @@ Cambios entre las versiones 5.2 alpha y 5.2 alpha-2
   * Modificado parámetro puntero o VAR a OUT en:
       al_get_keyboard_state
       al_get_mouse_state
+      al_get_joystick_state
       al_mouse_button_down
       al_get_mouse_state_axis
   * Módulo (add-on) al5primitives y exemplo ex_prim revisados, aunque hay
