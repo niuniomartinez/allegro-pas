@@ -17,7 +17,9 @@ PROGRAM ex_drawpixels;
 
   VAR
     Display: ALLEGRO_DISPLAYptr;
+  { Read line 120.
     KeyState: ALLEGRO_KEYBOARD_STATE;
+  }
     Stars: ARRAY [1..3] OF ARRAY [1..(NUM_STARS DIV 3)] OF TPoint;
     Speeds: ARRAY [1..3] OF SINGLE = (0.0001, 0.05, 0.15);
     Colors: ARRAY [1..3] OF ALLEGRO_COLOR;

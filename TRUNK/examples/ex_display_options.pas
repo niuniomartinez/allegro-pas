@@ -7,7 +7,6 @@ PROGRAM ex_display_options;
 
   VAR
     Font: ALLEGRO_FONTptr;
-    White: ALLEGRO_COLOR;
     FontH, ModesCount, OptionsCount: INTEGER;
     Status: STRING;
     Flags, OldFlags: INTEGER;
@@ -268,8 +267,6 @@ BEGIN;
   SetOptions;
   InitFlags;
   al_init_primitives_addon;
-
-  White := al_map_rgba_f (1, 1, 1, 1);
 
   al_install_keyboard;
   al_install_mouse;
