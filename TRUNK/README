@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 5.2.alpha             \/___/                 \/_/
+     Version 5.2.alpha-2           \/___/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Ñuño Martínez, May 10, 2016.
+  by Ñuño Martínez, June 26, 2016.
 
 
 
@@ -52,8 +52,8 @@ Introduction
   AFAIK all these OS have Pascal compilers.
 
   As this is a WIP alpha version, you should remember that at the moment not
-  all functionality are implemented.  Also the API may change to in any moment
-  to fix bugs or grant compatibility with plataforms and compilers.
+  all functionality are implemented.  Also the API may change in any moment to
+  fix bugs or grant compatibility with plataforms and compilers.
 
 Implemented
 -----------
@@ -63,17 +63,17 @@ Implemented
   + OpenGL support (except extensions).
   + Software bitmaps.
   + Text drawing.
-  + 2D transformations.
+  + ttf fonts.
+  + 2D and 3D transformations.
   + Clipboard.
+  + Custom memory management.
 
 Partially implemented or need more testing
 ------------------------------------------
 
   * Primitive drawing.
-  * 3D transformations.
   * Audio samples and streams.
   * Native dialogs.
-  * ttf fonts.
   * Joysticks.
 
 Unimplemented
@@ -82,7 +82,6 @@ Unimplemented
   - Touch-screen support.
   - OpenGL extensions.
   - kcm audio.
-  - Custom memory management.
   - Phys file system.
   - Demonstration game.
 
@@ -116,8 +115,8 @@ Installation
   releases.
 
   To compile examples (with Free Pascal), open a console, go to the directory
-  where Allegro.pas is and execute "fix.sh" (on Linux) or "fix.bat" (on
-  Windows) and follow on-screen instructions to configure.  Then run "make".
+  where Allegro.pas is and execute "fix.sh" (on Linux), "fix.bat" or "fix.cmd"
+  (on Windows) and follow on-screen instructions to configure.  Then run "make".
 
   If you use Delphi, open the example with IDE, configure the compiler so it
   can find the Allegro.pas units and set the output to obj/ and bin/examples/
@@ -125,9 +124,6 @@ Installation
 
   NOTE:  I didn't test Delphi yet so IT MAY NOT WORK at all.  Don't blame me:
          remember it is an alpha release!
-
-  NOTE 2: Most stuff of unit al5primitives.pas might not work as spected or
-          just don't work at all.  Still working on it.
 
 
 

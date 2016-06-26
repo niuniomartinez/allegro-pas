@@ -860,7 +860,7 @@ CONST
 
    PROCEDURE SelectToken (VAR Token: TToken);
    VAR
-     PrevType: LONGINT;
+     PrevType: LONGWORD;
      Spr: PSprite;
    BEGIN
      IF SelectedButton <> NIL THEN

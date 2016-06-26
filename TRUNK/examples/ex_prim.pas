@@ -639,8 +639,6 @@ PROGRAM ex_prim;
 
 (* Runs the example. *)
   PROCEDURE TPrimitivesExample.Run;
-  VAR
-    Ndx: INTEGER;
   BEGIN
     IF fTerminated THEN EXIT; { Skip execution. }
 

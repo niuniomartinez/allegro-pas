@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 5.2.alpha             \/___/                 \/_/
+     Version 5.2.alpha-2           \/___/                 \/_/
 
   Un envoltorio para utilizar la biblioteca Allegro en Pascal
-  por Ñuño Martínez, 10 de mayo de 2016.
+  por Ñuño Martínez, 25 de junio de 2016.
 
 
 
@@ -64,8 +64,10 @@ Implementado
   + OpenGL (excepto extensiones).
   + Bitmaps.
   + Dibujo de textos.
-  + Transformaciones bidimensionales.
+  + Fuentes ttf.
+  + Transformaciones bi- y tri-dimensionales.
   + "Clipboard".
+  + Gestión de memoria propia.
 
 Partialmente implementado o necesitado de más pruebas
 -----------------------------------------------------
@@ -74,7 +76,6 @@ Partialmente implementado o necesitado de más pruebas
   * Transformaciones tridimensionales.
   * Corrientes de audio.
   * Diálogos nativos.
-  * Fuentes ttf.
   * Mandos de juego.
 
 Sin implementar
@@ -83,7 +84,6 @@ Sin implementar
   - Soporte de pantallas táctiles.
   - Extensiones OpenGL.
   - Audio kcm.
-  - Gestión de memoria propia.
   - Sistema de archivo Phys.
   - Juego de demostración.
 
@@ -118,8 +118,9 @@ Instalación
   futuras versiones Allegro.pas.
 
   Para compilar los ejemplos con Free Pascal, abra una consola, vaya al
-  directorio donde está Allegro.pas y ejecute "fix.sh" (en Linux) o "fix.bat"
-  (en Windows) y siga las instrucciones de pantalla.  Después ejecute "make".
+  directorio donde está Allegro.pas y ejecute "fix.sh" (en Linux), "fix.bat"
+  o "fix.cmd" (en Windows) y siga las instrucciones de pantalla.  Después
+  ejecute "make".
 
   Si usa Delphi, abra el ejemplo con el IDE, configure el compilador de forma
   que pueda encontrar las unidades de Allegro.pas y establezca las salidas a
@@ -127,10 +128,7 @@ Instalación
   correctamente).
 
   NOTA:  No lo he probado con Delphi así que PUEDE QUE NO FUNCIONE.  No me eche
-         la culpa:  ¡recuerde que es una versión alfa!
-
-  NOTA 2: Parte de la unidad al5primitives.pas no funciona.  Sigo trabajando en
-          ello.
+         la culpa:  ¡Recuerde que es una versión alfa!
 
 
 

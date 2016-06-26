@@ -1,5 +1,59 @@
-Changes between versions 5.0 alpha and 5.2 alpha 2
+Changes between versions 5.2 alpha and 5.2 alpha-2
 ==================================================
+
+  Bugfixing
+  ---------
+  * Fixed flag CDELC in al_get_display_mode.
+  * Add-on al5primitives and example ex_prim revised.  There are still few
+    issues.
+  * Fixed ALLEGRO_KEYBOARD_STATE record.
+  * al_get_bitmap_format returns data in the correct type instead of integer.
+  * Some fixes in build scripts.
+
+  News
+  ----
+  + Added Allegro memory management.
+  + Added new constants for "render state".
+  + Added "fix.cmd" for modern Windows systems.
+  * "keycodes.inc" updated, adding and fixing identifiers.
+  + New examples:
+      ex_bitmap_flip
+      ex_clipboard
+      ex_clip
+      ex_depth_mask
+      ex_display_events
+      ex_display_options
+      ex_draw
+      ex_drawpixels
+      ex_icon
+      ex_icon2
+      ex_joystick_events
+      ex_keyboard_events
+      ex_membmp
+      ex_monitorinfo
+      ex_mouse
+      ex_saw
+
+  API changes
+  -----------
+  * Some parameters changed from pointer/VAR to OUT:
+      al_get_keyboard_state
+      al_get_mouse_state
+      al_get_joystick_state
+      al_mouse_button_down
+      al_get_mouse_state_axis
+  * ALLEGRO_DISPLAY_ORIENTATION values are now CONSTants.
+
+  Other
+  -----
+  * ex_blend2 uses a different blender mode at beginning.
+  * ex_warp_mouse renamed as ex_mouse_warp.
+  * Testing fpdoc.
+
+
+
+Changes between versions 5.0 alpha and 5.2 alpha
+================================================
 
   Bugfixing
   ---------

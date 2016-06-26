@@ -14,7 +14,6 @@ USES
   VAR
      Display: ALLEGRO_DISPLAYptr;
      Buf, Bmp, MemBmp, SrcBmp: ALLEGRO_BITMAPptr;
-     BmpW, BmpH: INTEGER;
      Queue: ALLEGRO_EVENT_QUEUEptr;
      Event: ALLEGRO_EVENT;
      Theta, K: SINGLE;
@@ -65,9 +64,6 @@ BEGIN
    MemBmp := al_load_bitmap ('data/mysha.pcx');
    IF MemBmp = NIL THEN
       AbortExample ('Unable to load image');
-
-   BmpW := al_get_bitmap_width (Bmp);
-   BmpH := al_get_bitmap_height (Bmp);
 
    Queue := al_create_event_queue;
    al_register_event_source (Queue, al_get_keyboard_event_source);
