@@ -2868,7 +2868,306 @@ al_draw_line(x1, y1, x2, y2, color, 0);
  * shader.h
  *****************************************************************************)
 
- { TODO: Coming soon. ;) }
+  TYPE
+  (* An @code(ALLEGRO_SHADER) is a program that runs on the GPU.  It combines
+     both a vertex and a pixel shader. (In OpenGL terms, an
+     @code(ALLEGRO_SHADER) is actually a program which has one or more shaders
+     attached. This can be confusing.)
+
+     The source code for the underlying vertex or pixel shader can be provided
+     either as GLSL or HLSL, depending on the value of
+     @link(ALLEGRO_SHADER_PLATFORM) used when creating it. *)
+    ALLEGRO_SHADERptr = AL_POINTER;
+
+  (* Used with @link(al_attach_shader_source) and
+     @link(al_attach_shader_source_file) to specify how to interpret the
+     attached source.  *)
+    ALLEGRO_SHADER_TYPE = (
+    (* A vertex shader is executed for each vertex it is used with. The program
+       will output exactly one vertex at a time.
+
+       When Allegro's graphics are being used then in addition to all vertices
+       of primitives from the primitives addon, each drawn bitmap also consists
+       of four vertices. *)
+      ALLEGRO_VERTEX_SHADER = 1,
+    (* A pixel shader is executed for each pixel it is used with.  The program
+       will output exactly one pixel at a time - either in the backbuffer or in
+       the current target bitmap.
+
+       With Allegro's builtin graphics this means the shader is for example
+       called for each destination pixel of the output of an
+       @link(al_draw_bitmap) call.
+
+       A more accurate term for pixel shader would be fragment shader since one
+       final pixel in the target bitmap is not necessarily composed of only a
+       single output but of multiple fragments (for example when multi-sampling
+       is being used). *)
+      ALLEGRO_PIXEL_SHADER = 2
+    );
+
+  (* The underlying platform which the @code(ALLEGRO_SHADER) is built on top
+     of, which dictates the language used to program the shader. *)
+    ALLEGRO_SHADER_PLATFORM = (
+      ALLEGRO_SHADER_AUTO = 0,
+    (* OpenGL Shading Language. *)
+      ALLEGRO_SHADER_GLSL = 1,
+    (* High Level Shader Language (for Direct3D). *)
+      ALLEGRO_SHADER_HLSL = 2
+    );
+
+
+  CONST
+  { @exclude }
+    ALLEGRO_SHADER_VAR_COLOR           = 'al_color';
+  { @exclude }
+    ALLEGRO_SHADER_VAR_POS             = 'al_pos';
+  { @exclude }
+    ALLEGRO_SHADER_VAR_PROJVIEW_MATRIX = 'al_projview_matrix';
+  { @exclude }
+    ALLEGRO_SHADER_VAR_TEX             = 'al_tex';
+  { @exclude }
+    ALLEGRO_SHADER_VAR_TEXCOORD        = 'al_texcoord';
+  { @exclude }
+    ALLEGRO_SHADER_VAR_TEX_MATRIX      = 'al_tex_matrix';
+  { @exclude }
+    ALLEGRO_SHADER_VAR_USER_ATTR       = 'al_user_attr_';
+  { @exclude }
+    ALLEGRO_SHADER_VAR_USE_TEX         = 'al_use_tex';
+  { @exclude }
+    ALLEGRO_SHADER_VAR_USE_TEX_MATRIX  = 'al_use_tex_matrix';
+
+  (* Creates a shader object.
+
+     The platform argument is one of the @code(ALLEGRO_SHADER_PLATFORM) values,
+     and specifies the type of shader object to create, and which language is
+     used to program the shader.
+
+     The shader platform must be compatible with the type of display that you
+     will use the shader with.  For example, you cannot create and use a HLSL
+     shader on an OpenGL display, nor a GLSL shader on a Direct3D display.
+
+     The @code(ALLEGRO_SHADER_AUTO) value automatically chooses the appropriate
+     platform for the display currently targeted by the calling thread; there
+     must be such a display.  It will create a GLSL shader for an OpenGL
+     display, and a HLSL shader for a Direct3D display.
+     @return(The shader object on success. Otherwise, returns @nil.)
+     @seealso(al_attach_shader_source) @seealso(al_attach_shader_source_file)
+     @seealso(al_build_shader) @seealso(al_use_shader)
+     @seealso(al_destroy_shader) @seealso(al_get_shader_platform) *)
+  FUNCTION al_create_shader (platform: ALLEGRO_SHADER_PLATFORM): ALLEGRO_SHADERptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Attaches the shader's source code to the shader object and compiles it.
+   Passing @nil deletes the underlying (OpenGL or DirectX) shader.  See also
+   @link(al_attach_shader_source_file) if you prefer to obtain your shader
+   source from an external file.
+
+   If you do not use @code(ALLEGRO_PROGRAMMABLE_PIPELINE) Allegro's graphics
+   functions will not use any shader specific functions themselves. In case of
+   a system with no fixed function pipeline (like OpenGL ES 2 or OpenGL 3 or 4)
+   this means Allegro's drawing functions cannot be used.
+
+   TODO: Is @code(ALLEGRO_PROGRAMMABLE_PIPELINE) set automatically in this
+   case?
+
+   When @code(ALLEGRO_PROGRAMMABLE_PIPELINE) is used the following shader
+   uniforms are provided by Allegro and can be accessed in your shaders:
+   @unorderedlist(
+    @item(@bold(al_projview_matrix) matrix for Allegro's orthographic
+      projection multiplied by the al_use_transform matrix. The type is
+      @code(mat4) in GLSL, and @code(float4x4) in HLSL.)
+    @item(@bold(al_use_tex) whether or not to use the bound texture. The type
+      is @code(bool) in both GLSL and HLSL.)
+    @item(@bold(al_tex) the texture if one is bound. The type is
+      @code(sampler2D) in GLSL and @code(texture) in HLSL.)
+    @item(@bold(al_use_tex_matrix) whether or not to use a texture matrix
+      @(used by the primitives addon@). The type is @code(bool) in both GLSL
+      and HLSL.)
+    @item(@bold(al_tex_matrix) the texture matrix @(used by the primitives
+      addon@). Your shader should multiply the texture coordinates by this
+      matrix. The type is @code(mat4) in GLSL, and @code(float4x4) in HLSL.)
+   )
+
+   For GLSL shaders the vertex attributes are passed using the following variables:
+   @unorderedlist(
+    @item(@bold(al_pos) vertex position attribute. Type is @code(vec4).)
+    @item(@bold(al_texcoord) vertex texture coordinate attribute. Type is
+      @code(vec2).)
+    @item(@bold(al_color) vertex color attribute. Type is @code(vec4).)
+   )
+
+   For HLSL shaders the vertex attributes are passed using the following semantics:
+   @unorderedlist(
+    @item(@bold(POSITION0) vertex position attribute. Type is @code(float4).)
+    @item(@bold(TEXCOORD0) vertex texture coordinate attribute. Type is
+     @code(float2).)
+    @item(@bold(TEXCOORD1) vertex color attribute. Type is @code(float4).)
+   )
+
+   Also, each shader variable has a corresponding macro name that can be used
+   when defining the shaders using string literals. Don't use these macros with
+   the other shader functions as that will lead to undefined behavior.
+   @unorderedlist(
+    @item(@code(ALLEGRO_SHADER_VAR_PROJVIEW_MATRIX) for "al_projview_matrix")
+    @item(@code(ALLEGRO_SHADER_VAR_POS) for "al_pos")
+    @item(@code(ALLEGRO_SHADER_VAR_COLOR) for "al_color")
+    @item(@code(ALLEGRO_SHADER_VAR_TEXCOORD) for "al_texcoord")
+    @item(@code(ALLEGRO_SHADER_VAR_USE_TEX) for "al_use_tex")
+    @item(@code(ALLEGRO_SHADER_VAR_TEX) for "al_tex")
+    @item(@code(ALLEGRO_SHADER_VAR_USE_TEX_MATRIX) for "al_use_tex_matrix")
+    @item(@code(ALLEGRO_SHADER_VAR_TEX_MATRIX for) "al_tex_matrix")
+   )
+   Examine the output of @link(al_get_default_shader_source) for an example of
+   how to use the above uniforms and attributes.
+   @return(@true on success and @false on error, in which case the error log is
+     updated. The error log can be retrieved with @link(al_get_shader_log).)
+   @seealso(al_attach_shader_source_file) @seealso(al_build_shader)
+   @seealso(al_get_default_shader_source) @seealso(al_get_shader_log) *)
+  FUNCTION al_attach_shader_source (shader: ALLEGRO_SHADERptr; aType: ALLEGRO_SHADER_TYPE; CONST Source: AL_STR): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Like @link(al_attach_shader_source) but reads the source code for the shader
+   from the named file.
+   @return(@true on success and @false on error, in which case the error log is
+     updated. The error log can be retrieved with @link(al_get_shader_log).)
+   @seealso(al_attach_shader_source) @seealso(al_build_shader)
+   @seealso(al_get_shader_log) *)
+  FUNCTION al_attach_shader_source_file (shader: ALLEGRO_SHADERptr; aType: ALLEGRO_SHADER_TYPE; CONST filename: AL_STR): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* This is required before the shader can be used with @link(al_use_shader). It
+   should be called after successfully attaching the pixel and/or vertex
+   shaders with @link(al_attach_shader_source) or
+   @link(al_attach_shader_source_file).
+    
+   @bold(Note:) If you are using the @code(ALLEGRO_PROGRAMMABLE_PIPELINE) flag,
+   then you must specify both a pixel and a vertex shader sources for anything
+   to be rendered.
+
+   @return(@true on success and @false on error, in which case the error log is
+     updated. The error log can be retrieved with @link(al_get_shader_log).)
+   @seealso(al_use_shader) @seealso(al_get_shader_log) *)
+  FUNCTION al_build_shader (shader: ALLEGRO_SHADERptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Return a read-only string containing the information log for a shader
+   program. The log is updated by certain functions, such as
+   @code(al_attach_shader_source) or @code(al_build_shader) when there is an
+   error.
+
+   This function never returns @nil.
+   @seealso(al_attach_shader_source) @seealso(al_attach_shader_source_file)
+   @seealso(al_build_shader) *)
+  FUNCTION al_get_shader_log (shader: ALLEGRO_SHADERptr): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns the platform the shader was created with (either
+   @code(ALLEGRO_SHADER_HLSL) or @code(ALLEGRO_SHADER_GLSL)).
+   @seealso(al_create_shader) *)
+  FUNCTION al_get_shader_platform (shader: ALLEGRO_SHADERptr): ALLEGRO_SHADER_PLATFORM;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Uses the shader for subsequent drawing operations on the current target
+   bitmap. Pass @nil to stop using any shader on the current target bitmap.
+
+   @return(@true on success. Otherwise returns @false, e.g. because the shader
+     is incompatible with the target bitmap.)
+   @seealso(al_destroy_shader) @seealso(al_set_shader_sampler)
+   @seealso(al_set_shader_matrix) @seealso(al_set_shader_int)
+   @seealso(al_set_shader_float) @seealso(al_set_shader_bool)
+   @seealso(al_set_shader_int_vector) @seealso(al_set_shader_float_vector) *)
+  FUNCTION al_use_shader (shader: ALLEGRO_SHADERptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Destroy a shader. Any bitmaps which currently use the shader will implicitly
+   stop using the shader. In multi-threaded programs, be careful that no such
+   bitmaps are being accessed by other threads at the time.
+
+   As a convenience, if the target bitmap of the calling thread is using the
+   shader then the shader is implicitly unused before being destroyed.
+
+   This function does nothing if the shader argument is @nil.
+   @seealso(al_create_shader) *)
+  PROCEDURE al_destroy_shader (shader: ALLEGRO_SHADERptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+(* Sets a texture sampler uniform and texture unit of the current target
+   bitmap's shader. The given bitmap must be a video bitmap.
+
+   Different samplers should use different units. The bitmap passed to
+   Allegro's drawing functions uses the 0th unit, so if you're planning on
+   using the @code(al_tex) variable in your pixel shader as well as another
+   sampler, set the other sampler to use a unit different from 0. With the
+   primitives addon, it is possible to free up the 0th unit by passing @nil as
+   the texture argument to the relevant drawing functions. In this case, you
+   may set a sampler to use the 0th unit and thus not use @code(al_tex) (the
+   @code(al_use_tex) variable will be set to false).
+   @return(@true on success. Otherwise returns @false, e.g. if the uniform by
+     that name does not exist in the shader.)
+   @seealso(al_use_shader) *)
+  FUNCTION al_set_shader_sampler (CONST name: AL_STR; bitmap: ALLEGRO_BITMAPptr; aUnit: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Sets a matrix uniform of the current target bitmap's shader.
+   @return(@true on success. Otherwise returns @false, e.g. if the uniform by
+     that name does not exist in the shader.)
+   @seealso(al_use_shader) *)
+  FUNCTION al_set_shader_matrix (CONST name: AL_STR; VAR matrix: ALLEGRO_TRANSFORM): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Sets an integer uniform of the current target bitmap's shader.
+   @return(@true on success. Otherwise returns @false, e.g. if the uniform by
+     that name does not exist in the shader.)
+   @seealso(al_use_shader) *)
+  FUNCTION al_set_shader_int (CONST name: AL_STR; i: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Sets a float uniform of the current target bitmap's shader.
+   @return(@true on success. Otherwise returns @false, e.g. if the uniform by
+     that name does not exist in the shader.)
+   @seealso(al_use_shader) *)
+  FUNCTION al_set_shader_float (CONST name: AL_STR; f: AL_FLOAT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Sets a boolean uniform of the current target bitmap's shader.
+   @return(@true on success. Otherwise returns @false, e.g. if the uniform by
+     that name does not exist in the shader.)
+   @seealso(al_use_shader) *)
+  FUNCTION al_set_shader_bool (CONST name: AL_STR; b: AL_BOOL): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Sets an integer vector array uniform of the current target bitmap's shader.
+   The @code(num_components) parameter can take one of the values 1, 2, 3 or 4.
+   If it is 1 then an array of @code(num_elems) integer elements is added.
+   Otherwise each added array element is assumed to be a vector with 2, 3 or 4
+   components in it.
+
+   For example, if you have a GLSL uniform declared as uniform @code(ivec3
+   flowers[4]) or an HLSL uniform declared as uniform @code(int3 flowers[4]),
+   then you'd use this function from your code like so:
+@longcode(#
+VAR
+  Flowers: ARRAY [0..3] OF ARRAY [0..2] OF AL_INT =
+  (
+   (1, 2, 3),
+   (4, 5, 6),
+   (7, 8, 9),
+   (2, 5, 7)
+  );
+BEGIN
+  ...
+  al_set_shader_int_vector ('flowers', 3, @Flowers, 4);
+  ...
+END
+#)
+   @return(@true on success. Otherwise returns @false, e.g. if the uniform by
+     that name does not exist in the shader.)
+   @seealso(al_set_shader_float_vector) @seealso(al_use_shader) *)
+  FUNCTION al_set_shader_int_vector (CONST name: AL_STR; num_components: AL_INT; i: AL_INTptr; num_elems: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Same as @link(al_set_shader_int_vector) except all values are float instead
+   of intteger.
+   @seealso(al_set_shader_int_vector) @seealso(al_use_shader) *)
+  FUNCTION al_set_shader_float_vector (CONST name: AL_STR; num_components: AL_INT; f: AL_FLOATptr; num_elems: AL_INT): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+(* Returns a string containing the source code to Allegro's default vertex or
+   pixel shader appropriate for the passed platform. The
+   @code(ALLEGRO_SHADER_AUTO) value means GLSL is used if OpenGL is being used
+   otherwise HLSL.  @code(ALLEGRO_SHADER_AUTO) requires that there is a current
+   display set on the calling thread. This function can return @nil if Allegro
+   was built without support for shaders of the selected platform.
+   @seealso(al_attach_shader_source) *)
+  FUNCTION al_get_default_shader_source (platform: ALLEGRO_SHADER_PLATFORM; aType: ALLEGRO_SHADER_TYPE): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 

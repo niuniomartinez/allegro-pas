@@ -1,4 +1,4 @@
-UNIT al5gl;
+UNIT al5opengl;
 (*<OpenGL integration.
 
   You can disable the detection of any OpenGL extension by Allegro with a

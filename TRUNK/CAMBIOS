@@ -1,6 +1,22 @@
 Cambios entre las versiones 5.2 alpha y 5.2 alpha-2
 ===================================================
 
+  Novedades
+  ---------
+  + Añadido manejo de "shaders" (GLSL y HLSL).
+  + Nuevos ejemplos:
+      ex_shader_multitex
+      ex_shader_target
+
+  Cambios en el API
+  -----------------
+  * Módulo al5gl renombrado como al5opengl.
+
+
+
+Cambios entre las versiones 5.2 alpha y 5.2 alpha-2
+===================================================
+
   Errores corregidos
   ------------------
   * Corregido CDELC en al_get_display_mode.
