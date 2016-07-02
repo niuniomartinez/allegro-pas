@@ -28,7 +28,7 @@ PROGRAM ex_gldepth;
 
   USES
     Common,
-    Allegro5, al5image, al5gl, al5font,
+    Allegro5, al5image, al5font, al5opengl,
   {$IFDEF FPC}
     GL,
   {$ELSE}
