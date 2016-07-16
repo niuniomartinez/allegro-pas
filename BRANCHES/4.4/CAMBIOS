@@ -1,4 +1,20 @@
-Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
+Cambios entre las versiones 4.4.5 y 4.4.5.1
+===========================================
+
+  Errores corregidos
+  ------------------
+  * Corregida unidad alWin.  ¡Estaba hecha un desastre!
+  * Actualizado el ejemplo Lazarus a Lazarus 1.6/FPC 3.0.0.
+
+  Otros
+  -----
+  * Documentación corregida.
+  * Corregido flag "Beta" (ups!).
+  * Actualizados los guiones de compilación (ver TRUNK).
+
+
+
+Cambios entre las versiones 4.4.4 y 4.4.5
 =========================================
 
   Errores corregidos
@@ -46,7 +62,7 @@ Cambios entre las versiones 4.4.4 y 4.4.5 (WIP)
     funcione.  Por favor, avísame si haces alguna prueba.
   * Algunas funciones usan "lógica inversa" ahora, lo cual puede ser mejor:
     + al_scene_plolygon3d<_f>
-    + al_request_scrool
+    + al_request_scroll
     + al_request_video_bitmap
   * Algunos metodos de GUI usan ARRAY OF... en vez de punteros.
 

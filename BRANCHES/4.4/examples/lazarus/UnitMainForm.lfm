@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 193
+  Left = 239
   Height = 300
-  Top = 149
+  Top = 113
   Width = 400
   Caption = 'The Allegro''s Lazarus example'
   ClientHeight = 281
@@ -10,7 +10,7 @@ object Form1: TForm1
   OnClose = FormClose
   OnCreate = FormCreate
   Position = poScreenCenter
-  LCLVersion = '1.4.2.0'
+  LCLVersion = '1.6.0.4'
   object PaintBox: TPaintBox
     Left = 0
     Height = 281
@@ -21,12 +21,12 @@ object Form1: TForm1
   end
   object OpenBitmapDialog: TOpenDialog
     Filter = 'Bitmap (*.bmp;*.lbm;*.pcx;*.tga)|*.bmp;*.lbm;*.pcx;*.tga|Windows and OS/2 bitmap (*.bmp)|*.bmp|LBM (*.lbm)|*.lbm|ZSoft bitmap (*.pcx)|*.pcx|TARGA file format (*.tga)|*.tga'
-    left = 56
-    top = 80
+    left = 128
+    top = 24
   end
   object MainMenu1: TMainMenu
-    left = 32
-    top = 19
+    left = 40
+    top = 24
     object MenuItem1: TMenuItem
       Caption = '&File'
       object MenuItem3: TMenuItem
@@ -37,7 +37,7 @@ object Form1: TForm1
     object MenuItem2: TMenuItem
       Caption = '?'
       object MenuItem4: TMenuItem
-        Caption = 'About...'
+        Caption = '&About...'
         OnClick = MenuItem4Click
       end
     end

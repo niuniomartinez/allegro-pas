@@ -1,5 +1,21 @@
-Changes between versions 4.4.4 y 4.4.5 (WIP)
-======================================
+Changes between versions 4.4.5 and 4.4.5.1
+==========================================
+
+  Bugfixing
+  ---------
+  * unit alWin fixed.  It was a mess.
+  * Updated and fixed the Lazarus example.
+
+  Other
+  ------
+  * Documentation fixes.
+  * Fixed the "Beta" flag (Ups!).
+  * Updated the compilation scripts (see TRUNK).
+
+
+
+Changes between versions 4.4.4 and 4.4.5
+========================================
 
   Bugfixing
   ---------
@@ -42,25 +58,25 @@ Changes between versions 4.4.4 y 4.4.5 (WIP)
     Please, let me know if you can test it.
   * Some functions use now "inverse logic", that may be better:
     + al_scene_plolygon3d<_f>
-    + al_request_scrool
+    + al_request_scroll
     + al_request_video_bitmap
   * Some GUI procedures use ARRAY OF... instead of pointers now.
 
-  Otros
+  Other
   -----
   * A lot of changes on documentation.  Also, it's build from the main makefile
     instead of use it's own makefile.
   - A lot of wrapper procedures and functions.  Now the C function is called
     directly.
-  *  Procedures _al_pupixel* and _al_getpixel* rewritten to work with pointers
+  * Procedures _al_pupixel* and _al_getpixel* rewritten to work with pointers
     instead of integers, avoiding weird conversions (I still don't like to play
     with pointers on Pascal anyway).
-  * Programmin style revised in some places.
+  * Programming style revised in some places.
 
 
 
-Changes between versions 4.4.3 y 4.4.4
-======================================
+Changes between versions 4.4.3 and 4.4.4
+========================================
 
   Bugfixing
   ---------
@@ -85,7 +101,7 @@ Changes between versions 4.4.3 y 4.4.4
   + Added exsample & exmidi examples.
   + Added functions, constants and variables for CPU identification.
   + Added quaternions implementation.
-  + Added scrool and triple buffer functions and ex3d example.
+  + Added scroll and triple buffer functions and ex3d example.
   + Added new aexamples: exalpha, excustom, exmem, exquat, exscale, exscroll,
     exstars, extrans2, extimer, excamera, and exxfade.
   + Support for 64bit systems.
@@ -111,8 +127,8 @@ Changes between versions 4.4.3 y 4.4.4
 
 
 
-Changes between versions 4.4.2 y 4.4.3
-======================================
+Changes between versions 4.4.2 and 4.4.3
+========================================
 
   Bugfixing
   ---------
@@ -125,23 +141,23 @@ Changes between versions 4.4.2 y 4.4.3
 
   News
   ----
-  + No need to call al_exit anymor, as it's called at FINALIZATION section.
+  + No need to call al_exit anymore, as it's called at FINALIZATION section.
 
   Other
   -----
   * Now "extrans" uses desktop color depth if available.  It also allows to
     select the color depth by command line.
   * Internal configuration directives moved to its own file.
-  * Documentaiont updated and fixed.
+  * Documentation updated and fixed.
 
 
 
-Changes between versions 4.4.1 y 4.4.2
-======================================
+Changes between versions 4.4.1 and 4.4.2
+========================================
 
   Bugfixing
   ---------
-  * Function al_polygon_z_normal(_f) rewrited.
+  * Function al_polygon_z_normal(_f) rewritten.
 
   News
   ----
@@ -160,8 +176,8 @@ Changes between versions 4.4.1 y 4.4.2
 
 
 
-Changes between versions 4.4.0 an 4.4.1
-=======================================
+Changes between versions 4.4.0 and 4.4.1
+========================================
 
   News
   ----
@@ -173,6 +189,7 @@ Changes between versions 4.4.0 an 4.4.1
   + Added "smartlinking" directive.
   * Fixes on makefiles and documentation.
   * Fixes on Linux's "shared-object" filename, because it changed.
+
 
 
 Changes between versions 4.4.0 Beta2 and 4.4.0
@@ -195,8 +212,8 @@ Changes between versions 4.4.0 Beta2 and 4.4.0
 
  Other
  -----
-  - Deleted warning in ejemplo exsprite.
-  - Deleted warning about 3D textured functions and added a waring for LIT
+  - Deleted warning in example exsprite.
+  - Deleted warning about 3D textured functions and added a warning for LIT
     ones.
   - A lot of functions and procedures defined as "inline".
 
