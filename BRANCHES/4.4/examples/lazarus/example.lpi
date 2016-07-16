@@ -3,14 +3,10 @@
   <ProjectOptions>
     <Version Value="9"/>
     <General>
-      <Flags>
-        <MainUnitHasUsesSectionForAllUnits Value="False"/>
-        <UseDefaultCompilerOptions Value="True"/>
-      </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <AutoCreateForms Value="False"/>
-      <Title Value="Example"/>
+      <Title Value="The Allegro.pas Lazarus example"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
       <Icon Value="0"/>
@@ -43,33 +39,41 @@
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="UnitBitmapInterface.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit1>
-      <Unit2>
         <Filename Value="UnitMainForm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="UnitBitmapInterface.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
+    <PathDelim Value="\"/>
     <Target>
       <Filename Value="example"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)"/>
-      <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+      <IncludeFiles Value="$(ProjOutDir);..\..\lib"/>
+      <OtherUnitFiles Value="..\..\lib"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
         <CStyleOperator Value="False"/>
+        <AllowLabel Value="False"/>
         <CStyleMacros Value="True"/>
       </SyntaxOptions>
     </Parsing>
+    <CodeGeneration>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+    </CodeGeneration>
     <Linking>
       <Options>
         <Win32>

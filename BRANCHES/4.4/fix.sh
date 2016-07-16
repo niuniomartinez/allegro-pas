@@ -10,7 +10,7 @@ proc_help()
 {
    echo "Usage: fix platform"
    echo
-   echo "Where platform is one of: win32 or linux. "
+   echo "Where platform is one of: win or linux. "
    echo
    echo
 }
@@ -29,7 +29,7 @@ proc_fix()
 # prepare for the given platform.
 
 case "$1" in
-   "win32"   ) proc_fix "Windows (FPC)" "WIN32";;
+   "win"     ) proc_fix "Windows (FPC)" "WIN";;
    "linux"   ) proc_fix "Linux (FPC)"   "LINUX";;
    "help"    ) proc_help;;
    *         ) proc_help;;

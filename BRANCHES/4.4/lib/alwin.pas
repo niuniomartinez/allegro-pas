@@ -135,16 +135,16 @@ INTERFACE
 (* Use DirectSound device @code(n) (zero-based) with direct mixing.
    @seealso(al_detect_digi_driver) @seealso(al_install_sound)
    @seealso(al_install_sound_input) *)
-  FUNCTION AL_DIGI_DIRECTX (CONST n: INTEGER): AL_LONGINT; INLINE
+  FUNCTION AL_DIGI_DIRECTX (CONST n: INTEGER): AL_LONG; INLINE;
 (* Use DirectSound device @code(n) (zero-based) with Allegro mixing.
    @seealso(al_detect_digi_driver) @seealso(al_install_sound)
    @seealso(al_install_sound_input) *)
-  FUNCTION AL_DIGI_DIRECTAMX (CONST n: INTEGER): AL_LONGINT; INLINE
+  FUNCTION AL_DIGI_DIRECTAMX (CONST n: INTEGER): AL_LONG; INLINE;
 (* High or low quality WaveOut device.
    @param(HighQuality Tells if use high @(@true@) or low @(@false@) quality.)
    @seealso(al_detect_digi_driver) @seealso(al_install_sound)
    @seealso(al_install_sound_input) *)
-  FUNCTION AL_DIGI_WAVOUTID (CONST HighQuality: BOOLEAN): AL_LONGINT; INLINE
+  FUNCTION AL_DIGI_WAVOUTID (CONST HighQuality: BOOLEAN): AL_LONG; INLINE;
 
   CONST
   (* Use win32 MIDI mapper.
@@ -154,9 +154,9 @@ INTERFACE
 (* Use win32 device @code(n) (zero-based)
     @seealso(al_detect_midi_driver) @seealso(al_install_sound)
     @seealso(al_install_sound_input) *)
-  FUNCTION AL_MIDI_WIN32 (CONST n: INTEGER): AL_LONGINT; INLINE
+  FUNCTION AL_MIDI_WIN32 (CONST n: INTEGER): AL_LONG; INLINE;
 (* @exclude Undocumented(?) *)
-  FUNCTION AL_MIDI_WIN32_IN (CONST n: INTEGER): AL_LONGINT; INLINE
+  FUNCTION AL_MIDI_WIN32_IN (CONST n: INTEGER): AL_LONG; INLINE;
 
   CONST
   (* Use DirectInput to access the joystick. @seealso(al_install_joystick) *)
@@ -288,7 +288,7 @@ INTERFACE
   @seealso(al_draw_to_hdc) @seealso(al_blit_to_hdc)
   @seealso(al_stretch_blit_from_hdc) @seealso(al_stretch_blit) *)
   PROCEDURE al_stretch_blit_to_hdc (bitmap: AL_BITMAPptr; dc: HDC;
-    src_x, src_y, src_x, src_y, dest_x, dest_y, dest_w, dest_h: AL_INT);
+    src_x, src_y, src_w, src_h, dest_x, dest_y, dest_w, dest_h: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stretchblit_to_hdc';
 (* Blits from a Windows device context to an Allegro memory bitmap, using the
   same parameters as the @code(al_blit) procedure.
@@ -305,13 +305,13 @@ INTERFACE
   @seealso(al_blit_from_hdc) @seealso(al_stretch_blit_to_hdc)
   @seealso(al_stretch_blit) *)
   PROCEDURE al_stretch_blit_from_hdc (dc: HDC; bitmap: AL_BITMAPptr;
-    src_x, src_y, src_x, src_y, dest_x, dest_y, dest_w, dest_h: AL_INT);
+    src_x, src_y, src_w, src_h, dest_x, dest_y, dest_w, dest_h: AL_INT);
     CDECL; EXTERNAL ALLEGRO_SHARED_LIBRARY_NAME NAME 'stretchblit_from_hdc';
 
 IMPLEMENTATION
 
 (* DirectSound device. *)
-  FUNCTION AL_DIGI_DIRECTX (CONST n: INTEGER): AL_LONGINT;
+  FUNCTION AL_DIGI_DIRECTX (CONST n: INTEGER): AL_LONG;
   BEGIN
     RESULT := ( ORD ('D')      SHL 24) +
 	      ( ORD ('X')      SHL 16) +
@@ -322,7 +322,7 @@ IMPLEMENTATION
 
 
 (* DirectSound device with Allegro mixing. *)
-  FUNCTION AL_DIGI_DIRECTAMX (CONST n: INTEGER): AL_LONGINT;
+  FUNCTION AL_DIGI_DIRECTAMX (CONST n: INTEGER): AL_LONG;
   BEGIN
     RESULT := ( ORD ('A')      SHL 24) +
 	      ( ORD ('X')      SHL 16) +
@@ -333,9 +333,9 @@ IMPLEMENTATION
 
 
 (* WaveOut device. *)
-  FUNCTION AL_DIGI_WAVOUTID (CONST HighQuality: BOOLEAN): AL_LONGINT;
+  FUNCTION AL_DIGI_WAVOUTID (CONST HighQuality: BOOLEAN): AL_LONG;
   VAR
-    n = INTEGER;
+    n: INTEGER;
   BEGIN
     IF HighQuality THEN n := 0 ELSE n := 1;
     RESULT := ( ORD ('W')      SHL 24) +
@@ -347,7 +347,7 @@ IMPLEMENTATION
 
 
 (* Win32 device. *)
-  FUNCTION AL_MIDI_WIN32 (CONST n: INTEGER): AL_LONGINT;
+  FUNCTION AL_MIDI_WIN32 (CONST n: INTEGER): AL_LONG;
   BEGIN
     RESULT := AL_ID ('W32A') + n
   END;
@@ -355,7 +355,7 @@ IMPLEMENTATION
 
 
 (* Win32 device. *)
-  FUNCTION AL_MIDI_WIN32_IN (CONST n: INTEGER): AL_LONGINT;
+  FUNCTION AL_MIDI_WIN32_IN (CONST n: INTEGER): AL_LONG;
   BEGIN
     RESULT := AL_ID ('W32A') + n
   END;

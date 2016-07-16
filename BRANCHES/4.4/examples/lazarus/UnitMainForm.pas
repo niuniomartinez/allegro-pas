@@ -27,15 +27,15 @@ UNIT UnitMainForm;
 INTERFACE
 
 USES
-  SysUtils, LResources, Forms, Dialogs,
-  Menus, ExtCtrls,
+  Classes, Sysutils, Fileutil, Forms, Controls, Graphics, Dialogs, Menus,
+  ExtCtrls,
   Allegro;
 
 TYPE
 
   { TForm1 }
 
-  TForm1 = CLASS(TForm)
+  TForm1 = CLASS (TForm)
     MainMenu1: TMainMenu;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
@@ -43,35 +43,35 @@ TYPE
     MenuItem4: TMenuItem;
     OpenBitmapDialog: TOpenDialog;
     PaintBox: TPaintBox;
-    PROCEDURE FormCreate(Sender: TObject);
-    PROCEDURE FormClose(Sender: TObject; VAR CloseAction: TCloseAction);
-    PROCEDURE MenuItem3Click(Sender: TObject);
-    PROCEDURE MenuItem4Click(Sender: TObject);
-    PROCEDURE PaintBoxPaint(Sender: TObject);
+    PROCEDURE FormCreate (Sender: TObject);
+    PROCEDURE FormClose (Sender: TObject; VAR CloseAction: TCloseAction);
+    PROCEDURE MenuItem3Click (Sender: TObject);
+    PROCEDURE MenuItem4Click (Sender: TObject);
+    PROCEDURE PaintBoxPaint (Sender: TObject);
   PRIVATE
   (* The bitmap to be shown on the window. *)
     fBitmap: AL_BITMAPptr;
   (* The palette. *)
     fPalette: AL_PALETTE;
   PUBLIC
-    { PUBLIC declarations }
-  END; 
+    { public declarations }
+  END;
 
 VAR
-  Form1: TForm1; 
+  Form1: TForm1;
 
 IMPLEMENTATION
 
 USES
   LCLType, UnitBitmapInterface;
 
-
+{$R *.lfm}
 
 { TForm1 }
 
 (* Initializes the window.  See that Allegro must be initialized before to
    create the form. *)
-PROCEDURE TForm1.FormCreate(Sender: TObject);
+PROCEDURE TForm1.FormCreate (Sender: TObject);
 BEGIN
   fBitmap := NIL; { No bitmap! }
   IF AL_PAS_IS_BETA THEN
@@ -79,21 +79,20 @@ BEGIN
       'This is a beta version, wich means it is a test version.'+
       #10+'To get an stable version visit http://allegro-pas.sourceforge.net',
       'Information', MB_ICONINFORMATION
-    );
+    )
 END;
 
 
 
-
 (* Releases resources. *)
-PROCEDURE TForm1.FormClose(Sender: TObject; VAR CloseAction: TCloseAction);
+PROCEDURE Tform1.FormClose (Sender: Tobject; VAR CloseAction: Tcloseaction);
 BEGIN
 { Destroy the objects if they exist.  Don't destroy an Allegro object in the
   'OnDestroy' event because then it would be called after the calling of
   'al_exit'.  Be careful with the order of callings! }
   IF fBitmap <> NIL THEN
     al_destroy_bitmap (fBitmap);
-  fBitmap := NIL;
+  fBitmap := NIL
 END;
 
 
@@ -101,7 +100,7 @@ END;
 (* Allows to select a bitmap file, loads it and shows it on the window.
    See the file filter in the OpenBitmapDialog's Filter property.  It lists only
    the formats supported by Allegro. *)
-PROCEDURE TForm1.MenuItem3Click(Sender: TObject);
+PROCEDURE TForm1.MenuItem3Click (Sender: TObject);
 BEGIN
   IF OpenBitmapDialog.Execute THEN
   BEGIN
@@ -116,7 +115,7 @@ BEGIN
         'Error', MB_ICONERROR)
     ELSE
     { Forces redrawing of the window to show the new bitmap. }
-      PaintBox.Invalidate;
+      PaintBox.Invalidate
   END;
 END;
 
@@ -129,13 +128,13 @@ BEGIN
     'This is a simple example of how to integrate Allegro.pas with Lazarus.'+
     #10+'Read the source comments for more information.'+
     #10+#10+'Linked with Allegro.pas '+AL_PAS_VERSION_STR,
-    'About...', MB_ICONINFORMATION);
+    'About...', MB_ICONINFORMATION)
 END;
 
 
 
 (* Paints the bitmap if exists. *)
-PROCEDURE TForm1.PaintBoxPaint(Sender: TObject);
+PROCEDURE TForm1.PaintBoxPaint (Sender: TObject);
 VAR
   ZoomedImage: AL_BITMAPptr;
 BEGIN
@@ -160,9 +159,5 @@ BEGIN
   END;
 END;
 
-
-
-INITIALIZATION
-  {$I UnitMainForm.lrs}
 END.
 

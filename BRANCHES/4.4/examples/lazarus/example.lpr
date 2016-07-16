@@ -33,14 +33,12 @@ PROGRAM example;
 
 USES
   {$IFDEF UNIX}{$IFDEF UseCThreads}
-  cthreads,
+  Cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, UnitMainForm, Allegro, LCLType;
-
-{$IFDEF WINDOWS}{$R example.rc}{$ENDIF}
-
-
+  Forms, UnitMainForm,
+{ We add Allegro and LCLType. }
+  Allegro, LCLType;
 
 VAR
 (* Result of Allegro initialisation. *)
@@ -50,6 +48,7 @@ VAR
 
 BEGIN
   Application.Title := 'The Allegro.pas Lazarus example';
+  RequireDerivedFormResource := True;
 { Initialises Allegro, avoiding interferences.
   As we call al_install using "AL_SYSTEM_NONE" we can't use timers, keyboard,
   graphics modes, joysticks, sound, etc.  If you try to initialize them then
@@ -64,11 +63,12 @@ BEGIN
   { Avoids automatic color conversion when loading bitmaps.  This way the
     example shows how to deal with different color formats. }
     al_set_color_conversion (AL_COLORCONV_NONE);
+  { Execute the application. }
+    Application.Run
   END
-  ELSE BEGIN
-    Application.MessageBox ('Can''t initialize Allegro',
-      'Error', MB_ICONERROR);
-  END;
-  Application.Run;
+  ELSE
+  { Otherwise we show a message. }
+    Application.MessageBox
+      ('Can''t initialize Allegro', 'Error', MB_ICONERROR)
 END.
 

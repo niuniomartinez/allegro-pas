@@ -18,7 +18,7 @@ INTERFACE
     (* Returns EOF state. *)
       FUNCTION GetEOF: BOOLEAN;
     PUBLIC
-    (* Creates a stream. *)
+    (* Opens a file stream. *)
       CONSTRUCTOR Create (CONST Filename, Mode: STRING); OVERLOAD;
     (* Creates a stream. *)
       CONSTRUCTOR Create (CONST aPackfile: AL_PACKFILEptr); OVERLOAD;
@@ -26,11 +26,12 @@ INTERFACE
       DESTRUCTOR Destroy; OVERRIDE;
     (* Sets the password.  Read description of al_packfile_password. *)
       PROCEDURE SetPassword (CONST aPassword: STRING);
-    (* Reimplements the Seek method. *)
+    (* Implements the Seek method. *)
       FUNCTION Seek (Offset: LONGINT; Origin: WORD): LONGINT; OVERRIDE;
-    (* Opens a sub-chunk of file.  Read al_pack_fopen_chunk description. *)
+    (* Opens a sub-chunk of file.  Read al_pack_fopen_chunk description.
+      @seealso(CloseChunk)*)
       PROCEDURE OpenChunk (Pack: BOOLEAN);
-    (* Closes a sub-chunk of file. *)
+    (* Closes a sub-chunk of file. @seealso(OpenChunk) *)
       PROCEDURE CloseChunk;
     (* Reads data from the stream to a buffer and returns the number of bytes
       read.
@@ -40,7 +41,7 @@ INTERFACE
       @param(Buffer Buffer to store the data read.)
       @param(Count Number of bytes to read.)
       @returns(the number of bytes actually read.)
-     *)
+      @seealso(Write) *)
       FUNCTION Read (VAR Buffer; Count: LONGINT): LONGINT; OVERRIDE;
     (* Writes data from a buffer to the stream and returns the actual number of bytes
       written.
@@ -50,14 +51,14 @@ INTERFACE
       @param(Buffer Buffer that stores the data to write.)
       @param(Count Number of bytes to write.)
       @returns(the number of bytes actually written.)
-     *)
+      @seealso(Read) *)
       FUNCTION Write (CONST Buffer; Count: LONGINT): LONGINT; OVERRIDE;
 
-    (* Returns the asociated AL_PACKFILE object. *)
+    (* Returns the asociated @code(AL_PACKFILE) object. *)
       PROPERTY Packfile: AL_PACKFILEptr READ fPackfile;
     (* Returns EOF state. *)
       PROPERTY EOF: BOOLEAN READ GetEOF;
-    (* If set to @true it closes the AL_PACKFILE when destroyed. *)
+    (* If set to @true it closes the @code(AL_PACKFILE) when destroyed. *)
       PROPERTY PackfileOwner: BOOLEAN READ fPackfileOwner WRITE fPackfileOwner;
     END;
 
@@ -73,7 +74,7 @@ IMPLEMENTATION
 (* Returns EOF state. *)
   FUNCTION TAllegroStream.GetEOF: BOOLEAN;
   BEGIN
-    GetEOF := al_pack_feof (fPackfile);
+    RESULT := al_pack_feof (fPackfile)
   END;
 
 
@@ -83,9 +84,8 @@ IMPLEMENTATION
   BEGIN
     INHERITED Create;
     fPackfile := al_pack_fopen (Filename, Mode);
-    IF fPackfile = NIL THEN
-      RAISE EStreamError.Create (al_error);
-    fPackfileOwner := TRUE;
+    IF fPackfile = NIL THEN RAISE EStreamError.Create (al_error);
+    fPackfileOwner := TRUE
   END;
 
 
@@ -95,7 +95,7 @@ IMPLEMENTATION
   BEGIN
     INHERITED Create;
     fPackfile := aPackfile;
-    fPackfileOwner := FALSE;
+    fPackfileOwner := FALSE
   END;
 
 
@@ -103,9 +103,8 @@ IMPLEMENTATION
 (* Destructor.  If file was created by the stream, it's closed. *)
   DESTRUCTOR TAllegroStream.Destroy;
   BEGIN
-    IF fPackfileOwner THEN
-      al_pack_fclose (fPackfile);
-    INHERITED Destroy;
+    IF fPackfileOwner THEN al_pack_fclose (fPackfile);
+    INHERITED Destroy
   END;
 
 
@@ -113,7 +112,7 @@ IMPLEMENTATION
 (* Sets the password.  Read description of al_packfile_password. *)
   PROCEDURE TAllegroStream.SetPassword (CONST aPassword: STRING);
   BEGIN
-    al_packfile_password (aPassword);
+    al_packfile_password (aPassword)
   END;
 
 
@@ -132,7 +131,7 @@ IMPLEMENTATION
 	RESULT := -1
     END
     ELSE
-      RAISE EStreamError.Create ('Allegro''s PACKFILE only supports soFromCurrent seeking.');
+      RAISE EStreamError.Create ('Allegro''s PACKFILE only supports soFromCurrent seeking.')
   END;
 
 
@@ -145,7 +144,7 @@ IMPLEMENTATION
     Tmp := al_pack_fopen_chunk (fPackfile, Pack);
     IF Tmp = NIL THEN
       RAISE EStreamError.Create ('Error opening sub-chunk of a PACKFILE.');
-    fPackfile := Tmp; { Note: al_pack_fclose_chunk returns parent! }
+    fPackfile := Tmp
   END;
 
 
@@ -155,42 +154,29 @@ IMPLEMENTATION
   VAR
     Tmp: AL_PACKFILEptr;
   BEGIN
+  { al_pack_fclose_chunk returns parent. }
     Tmp := al_pack_fclose_chunk (fPackfile);
     IF Tmp = NIL THEN
       RAISE EStreamError.Create ('Error closing sub-chunk of a PACKFILE.');
-    fPackfile := Tmp;
+    fPackfile := Tmp
   END;
 
 
 
 (* Reads data from the stream to a buffer and returns the number of bytes
-  read.
-
-  This method should be used when the number of bytes is not determined.  If
-  a specific number of bytes is expected, use @bold(ReadBuffer) instead.
-  @param(Buffer Buffer to store the data read.)
-  @param(Count Number of bytes to read.)
-  @returns(the number of bytes actually read.)
- *)
+  read. *)
   FUNCTION TAllegroStream.Read (VAR Buffer; Count: LONGINT): LONGINT;
   BEGIN
-    Read := al_pack_fread (@Buffer, Count, fPackfile);
+    RESULT := al_pack_fread (@Buffer, Count, fPackfile)
   END;
 
 
 
 (* Writes data from a buffer to the stream and returns the actual number of bytes
-  written.
-
-  This method should be used when the number of bytes is not determined. If
-  a specific number of bytes is expected, use @bold(WriteBuffer) instead.
-  @param(Buffer Buffer that stores the data to write.)
-  @param(Count Number of bytes to write.)
-  @returns(the number of bytes actually written.)
- *)
+  written. *)
   FUNCTION TAllegroStream.Write (CONST Buffer; Count: LONGINT): LONGINT;
   BEGIN
-    Write := al_pack_fwrite (@Buffer, Count, fPackfile);
+    RESULT := al_pack_fwrite (@Buffer, Count, fPackfile)
   END;
 
 END.
