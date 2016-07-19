@@ -368,7 +368,10 @@ END;
 
 
 (* Draws a line segment between two points.
-   @param(x1, y1, x2, y2 Start and end points of the line.)
+   @param(x1 X start point of the line.)
+   @param(y1 Y start point of the line.)
+   @param(x2 X end point of the line.)
+   @param(y2 Y end point of the line.)
    @param(color Color of the line.)
    @param(thickness Thickness of the line, pass <= 0 to draw hairline lines.)
    @seealso(al_draw_soft_line) *)
@@ -381,6 +384,14 @@ END;
    @seealso(al_draw_filled_triangle) @seealso(al_draw_soft_triangle) *)
   PROCEDURE al_draw_triangle (x1, y1, x2, y2, x3, y3: AL_FLOAT; color: ALLEGRO_COLOR; thickness: AL_FLOAT);
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
+(* Draws an outlined rectangle.
+   @param(x1 left of the rectangle.)
+   @param(y1 top of the rectangle.)
+   @param(x2 right of the rectangle.)
+   @param(y2 bottom of the rectangle.)
+   @param(color Color of the rectangle.)
+   @param(thickness Thickness of the lines, pass <= 0 to draw hairline lines.)
+   @seealso(al_draw_filled_rectangle) @seealso(al_draw_rounded_rectangle) *)
   PROCEDURE al_draw_rectangle (x1, y1, x2, y2: AL_FLOAT; color: ALLEGRO_COLOR; thickness: AL_FLOAT);
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
   PROCEDURE al_draw_rounded_rectangle (x1, y1, x2, y2, rx, ry: AL_FLOAT; color: ALLEGRO_COLOR; thickness: AL_FLOAT);
@@ -422,6 +433,13 @@ END;
    @param(al_calculate_ribbon) *)
   PROCEDURE al_calculate_arc (dest: AL_FLOATptr; stride: AL_INT; cx, cy, rx, ry, start_theta, delta_theta, thickness: AL_FLOAT; num_segments: AL_INT);
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
+(* Draws an outlined circle.
+   @param(cx X coordinate of the center of the circle.)
+   @param(cy Y coordinate of the center of the circle.)
+   @param(r Radius of the circle.)
+   @param(color Color of the circle.)
+   @param(thickness Thickness of the circle, pass <= 0 to draw a hairline circle.)
+   @seealso(al_draw_filled_circle) @seealso(al_draw_ellipse) *)
   PROCEDURE al_draw_circle (cx, cy, r: AL_FLOAT; color: ALLEGRO_COLOR; thickness: AL_FLOAT);
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
   PROCEDURE al_draw_ellipse (cx, cy, rx, ry: AL_FLOAT; color: ALLEGRO_COLOR; thickness: AL_FLOAT);

@@ -40,12 +40,19 @@ INTERFACE
     ALLEGRO_FONT_LIB_NAME = _A5_LIB_PREFIX_+'allegro_font'+_DBG_+_A5_LIB_EXT_;
 
   TYPE
+    { @exclude }
     ALLEGRO_FONT_VTABLEptr = AL_POINTER;
-  { TODO: Pubish ALLEGRO_FONT_VTABLE? }
 
 
-  { Pointer to a font. }
+
+  (* Pointer to @link(ALLEGRO_FONT). *)
     ALLEGRO_FONTptr = ^ALLEGRO_FONT;
+  (* A handle identifying any kind of font. Usually you will create it with
+     @link(al_load_font) which supports loading all kinds of TrueType fonts
+     supported by the FreeType library. If you instead pass the filename of
+     a bitmap file, it will be loaded with @link(al_load_bitmap) and a font in
+     Allegro's bitmap font format will be created from it with
+     @link(al_grab_font_from_bitmap). *)
     ALLEGRO_FONT = RECORD
       data : AL_VOIDptr;
       height : AL_INT;
@@ -72,10 +79,27 @@ INTERFACE
   FUNCTION al_register_font_loader (CONST ext: AL_STR; load: FONT_LOADER_FUNCTION): AL_BOOL; CDECL;
     EXTERNAL ALLEGRO_FONT_LIB_NAME;
 }
+(* Loads a bitmap font from a file. This is done by first calling
+   @link(al_load_bitmap_flags) and then @link(al_grab_font_from_bitmap).
+
+   If you wanted to load an old A4 font, for example, it would be better to
+   load the bitmap yourself in order to call @link(al_convert_mask_to_alpha) on
+   it before passing it to al_grab_font_from_bitmap.
+   @seealso(al_load_bitmap_font_flags) @seealso(al_load_font)
+   @seealso(al_load_bitmap_flags) *)
   FUNCTION al_load_bitmap_font (CONST filename: AL_STR): ALLEGRO_FONTptr;
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
   FUNCTION al_load_bitmap_font_flags (CONST filename: AL_STR; flags: AL_INT): ALLEGRO_FONTptr;
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
+(* Loads a font from disk. This will use @link(al_load_bitmap_font_flags) if
+   you pass the name of a known bitmap format, or else @link(al_load_ttf_font).
+
+   The @code(flags) parameter is passed through to either of those functions.
+   Bitmap and TTF fonts are also affected by the current bitmap flags at the
+   time the font is loaded.
+   @seealso(al_destroy_font) @seealso(al_init_font_addon)
+   @seealso(al_register_font_loader) @seealso(al_load_bitmap_font_flags)
+   @seealso(al_load_ttf_font) *)
   FUNCTION al_load_font (CONST filename: AL_STR; size, flags: AL_INT): ALLEGRO_FONTptr;
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
@@ -147,6 +171,25 @@ END;
 
   PROCEDURE al_draw_ustr (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: AL_FLOAT; flags: AL_INT; CONST ustr: ALLEGRO_USTRptr);
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
+(* Writes the string text onto the target bitmap at position @code(x), @code(y),
+   using the specified @code(font).
+
+   The flags parameter can be 0 or one of the following flags:@unorderedlist(
+    @item(@bold(@code(ALLEGRO_ALIGN_LEFT)) - Draw the text left-aligned
+     @(same as 0@).)
+    @item(@bold(@code(ALLEGRO_ALIGN_CENTRE)) - Draw the text centered around
+     the given position.)
+    @item(@bold(@code(ALLEGRO_ALIGN_RIGHT)) - Draw the text right-aligned to
+     the given position.)
+    )
+    It can also be combined with this flag:@unorderedlist(
+     @item(@bold(@code(ALLEGRO_ALIGN_INTEGER)) - Always draw text aligned to an
+      integer pixel position. This was formerly the default behaviour.)
+    )
+    This function does not support newline characters (#10), but you can use
+    @link(al_draw_multiline_text) for multi line text output.
+    @seealso(al_draw_ustr) @seealso(al_draw_justified_text)
+    @seealso(al_draw_multiline_text) *)
   PROCEDURE al_draw_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: AL_FLOAT; flags: AL_INT; CONST str: AL_STR);
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
   PROCEDURE al_draw_justified_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: AL_FLOAT; flags: AL_INT; CONST str: AL_STR);
@@ -169,6 +212,17 @@ END;
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
   PROCEDURE al_get_text_dimensions (CONST f: ALLEGRO_FONTptr; CONST str: AL_STR; VAR bbx, bby, bbw, bbh: AL_INT);
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
+(* Initialise the font addon.
+
+   Note that if you intend to load bitmap fonts, you will need to initialise
+   @link(al5image) separately (unless you are using another library to load
+   images).
+
+   Similarly, if you wish to load truetype-fonts, do not forget to also call
+   @link(al_init_ttf_addon).
+   @return(@true on success, @false on failure.)
+   @seealso(al_init_image_addon) @seealso(al_init_ttf_addon)
+   @seealso(al_shutdown_font_addon) *)
   FUNCTION al_init_font_addon: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
   PROCEDURE al_shutdown_font_addon;

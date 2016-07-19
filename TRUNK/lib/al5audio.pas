@@ -174,6 +174,7 @@ INTERFACE
     ALLEGRO_MAX_CHANNELS = 8;
 
   TYPE
+  (* Sample and stream playback mode. *)
     ALLEGRO_PLAYMODE = (
       ALLEGRO_PLAYMODE_ONCE   = $100,
       ALLEGRO_PLAYMODE_LOOP   = $101,
@@ -195,21 +196,77 @@ INTERFACE
     ALLEGRO_AUDIO_PAN_NONE: AL_FLOAT = -1000.0;
 
   TYPE
+  (* Stores the data necessary for playing pre-defined digital audio. It holds
+     a user-specified PCM data buffer and information about its format (data
+     length, depth, frequency, channel configuration). You can have the same
+     @link(ALLEGRO_SAMPLEptr) playing multiple times simultaneously.
+     @seealso(ALLEGRO_SAMPLE_INSTANCEptr) *)
     ALLEGRO_SAMPLEptr = AL_POINTER;
-
-
 
     ALLEGRO_SAMPLE_IDptr = ^ALLEGRO_SAMPLE_ID;
     ALLEGRO_SAMPLE_ID = RECORD
       _index, _id: AL_INT;
     END;
+  (* Represents a playable instance of a predefined sound effect. It holds
+     information about how the effect should be played: These playback
+     parameters consist of the looping mode, loop start/end points, playing
+     position, speed, gain, pan and the playmode. Whether a sample instance is
+     currently playing or paused is also one of its properties.
 
+     An instance uses the data from an @code(ALLEGRO_SAMPLE) object. Multiple
+     instances may be created from the same @code(ALLEGRO_SAMPLE). An
+     @code(ALLEGRO_SAMPLE) must not be destroyed while there are instances
+     which reference it.
+
+     To actually produce audio output, an @code(ALLEGRO_SAMPLE_INSTANCEptr)
+     must be attached to an @link(ALLEGRO_MIXERptr) which eventually reaches an
+     @link(ALLEGRO_VOICEptr) object.*)
     ALLEGRO_SAMPLE_INSTANCEptr = AL_POINTER;
 
+(* An @code(ALLEGRO_AUDIO_STREAMptr) object is used to stream generated audio
+   to the sound device, in real-time. This is done by reading from a buffer,
+   which is split into a number of fragments. Whenever a fragment has finished
+   playing, the user can refill it with new data.
+
+   As with @link(ALLEGRO_SAMPLE_INSTANCEptr) objects, streams store information
+   necessary for playback, so you may not play the same stream multiple times
+   simultaneously. Streams also need to be attached to an
+   @link(ALLEGRO_MIXERptr), which, eventually, reaches an
+   @link(ALLEGRO_VOICEptr) object.
+
+   While playing, you must periodically fill fragments with new audio data. To
+   know when a new fragment is ready to be filled, you can either directly
+   check with @code(al_get_available_audio_stream_fragments), or listen to
+   events from the stream.
+
+   You can register an audio stream event source to an event queue; see
+   @link(al_get_audio_stream_event_source). An
+   @code(ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT) event is generated whenever a new
+   fragment is ready. When you receive an event, use
+   @link(al_get_audio_stream_fragment) to obtain a pointer to the fragment to
+   be filled. The size and format are determined by the parameters passed to
+   @link(al_create_audio_stream).
+
+   If you're late with supplying new data, the stream will be silent until new
+   data is provided. You must call @link(al_drain_audio_stream) when you're
+   finished with supplying data to the stream.
+
+   If the stream is created by @link(al_load_audio_stream) then it will also
+   generate an @code(ALLEGRO_EVENT_AUDIO_STREAM_FINISHED) event if it reaches
+   the end of the file and is not set to loop. *)
     ALLEGRO_AUDIO_STREAMptr = AL_POINTER;
-
+  (* A mixer mixes together attached streams into a single buffer. In the
+     process, it converts channel configurations, sample frequencies and audio
+     depths of the attached sample instances and audio streams accordingly. You
+     can control the quality of this conversion using
+     @code(ALLEGRO_MIXER_QUALITY). *)
     ALLEGRO_MIXERptr = AL_POINTER;
-
+  (* A voice represents an audio device on the system, which may be a real
+     device, or an abstract device provided by the operating system. To play
+     back audio, you would attach a mixer, sample instance or audio stream to a
+     voice.
+     @seealso(ALLEGRO_MIXERptr) @seealso(ALLEGRO_SAMPLEptr)
+     @seealso(ALLEGRO_AUDIO_STREAMptr) *)
     ALLEGRO_VOICEptr = AL_POINTER;
 
     ALLEGRO_MIXER_CALLBACK = PROCEDURE (buf: AL_VOIDptr; samples: AL_UINT; data: AL_VOIDptr); CDECL;
@@ -443,7 +500,13 @@ INTERFACE
   FUNCTION al_set_voice_playing (voice: ALLEGRO_VOICEptr; val: AL_BOOL): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
-(* Misc. audio functions *)
+(* Install the audio subsystem.
+
+   @bold(Note:) most users will call @code(al_reserve_samples) and
+   @code(al_init_acodec_addon) after this.
+   @return(@true on success, @false on failure.)
+   @seealso(al_reserve_samples) @seealso(al_uninstall_audio)
+   @seealso(al_is_audio_installed) @seealso(al_init_acodec_addon) *)
   FUNCTION al_install_audio: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   PROCEDURE al_uninstall_audio;
@@ -461,7 +524,22 @@ INTERFACE
   PROCEDURE al_fill_silence (bur: AL_VOIDptr; samples: AL_UINT; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF);
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
-(* Simple audio layer *)
+(* Reserves a number of sample instances, attaching them to the default mixer.
+   If no default mixer is set when this function is called, then it will create
+   one and attach it to the default voice. If no default voice has been set,
+   it, too, will be created.
+
+   This diagram illustrates the structures that are set up:
+@longcode(#
+                                      sample instance 1
+                                    / sample instance 2
+default voice <-- default mixer <---         .
+                                    \        .
+                                      sample instance N
+#)
+    @return(@true on success, @false on error. @link(al_install_audio) must
+    have been called first.)
+    @seealso(al_set_default_mixer) @seealso(al_play_sample) *)
   FUNCTION al_reserve_samples (reserve_samples: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_get_default_mixer: ALLEGRO_MIXERptr;
@@ -470,6 +548,21 @@ INTERFACE
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_restore_default_mixer: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+(* Plays a sample on one of the sample instances created by
+   @link(al_reserve_samples).
+   @param(gain relative volume at which the sample is played; 1.0 is normal.)
+   @param(pan 0.0 is centred, -1.0 is left, 1.0 is right, or
+	  @code(ALLEGRO_AUDIO_PAN_NONE).)
+   @param(speed relative speed at which the sample is played; 1.0 is normal.)
+   @param(loop @code(ALLEGRO_PLAYMODE_ONCE), @code(ALLEGRO_PLAYMODE_LOOP), or
+  	  @code(ALLEGRO_PLAYMODE_BIDIR).)
+   @param(ret_id if non-@nil the variable which this points to will be assigned
+	  an id representing the sample being played.)
+   @return(@true on success, @false on failure. Playback may fail because all
+	   the reserved sample instances are currently used.)
+   @seealso(ALLEGRO_PLAYMODE) @seealso(ALLEGRO_AUDIO_PAN_NONE)
+   @seealso(ALLEGRO_SAMPLE_ID) @seealso(al_stop_sample)
+   @seealso(al_stop_samples) *)
   FUNCTION al_play_sample (data: ALLEGRO_SAMPLEptr; gain, pan, speed: AL_FLOAT; loop: ALLEGRO_PLAYMODE; ret_id: ALLEGRO_SAMPLE_IDptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   PROCEDURE al_stop_sample (spl_id: ALLEGRO_SAMPLE_IDptr);
@@ -500,10 +593,36 @@ ALLEGRO_KCM_AUDIO_FUNC(bool, al_register_audio_stream_loader_f, (const char *ext
 	    size_t buffer_count, unsigned int samples)));
 	  }
 
+(* Loads a few different audio file formats based on their extension.
+
+   Note that this stores the entire file in memory at once, which may be time
+   consuming. To read the file as it is needed, use @link(al_load_audio_stream).
+
+   @bold(Note:) the @code(al5audio) library does not support any audio file
+   formats by default. You must use the @link(al5acodec) addon, or register
+   your own format handler.
+   @return(The sample on success, @nil on failure.)
+   @seealso(al_register_sample_loader) @seealso(al_init_acodec_addon) *)
   FUNCTION al_load_sample (CONST filename: AL_STR): ALLEGRO_SAMPLEptr;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_save_sample (CONST filename: AL_STR; spl: ALLEGRO_SAMPLEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+(* Loads an audio file from disk as it is needed.
+
+   Unlike regular streams, the one returned by this function need not be fed by
+   the user; the library will automatically read more of the file as it is
+   needed. The stream will contain @code(buffer_count) buffers with
+   @code(samples) samples.
+
+   The audio stream will start in the playing state. It should be attached to a
+   voice or mixer to generate any output. See @link(ALLEGRO_AUDIO_STREAMptr)
+   for more details.
+
+   @bold(Note:) the @code(al5audio) library does not support any audio file
+   formats by default. You must use the @link(al5acodec) addon, or register
+   your own format handler.
+   @return(the stream on success, @nil on failure.)
+   @seealso(al_init_acodec_addon) *)
   FUNCTION al_load_audio_stream (CONST filename: AL_STR; buffer_count: AL_SIZE_T; samples: AL_UINT): ALLEGRO_AUDIO_STREAMptr;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 

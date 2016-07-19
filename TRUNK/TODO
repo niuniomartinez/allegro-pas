@@ -32,5 +32,3 @@ In no special order
   * Documentation isn't written.
     May be I should find another documentation tool as pasdoc is "dirty".
     Else use pasdoc.
-
-  * MUST normalize types (VAR vs. POINTER, OUT vs. VAR, STRING vs. PCHAR ...).

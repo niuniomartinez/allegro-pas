@@ -48,7 +48,10 @@ INTERFACE
     CDECL;EXTERNAL ALLEGRO_TTF_LIB_NAME;
   FUNCTION al_load_ttf_font_stretch (filename: AL_STR; w, h, flags: AL_INT): ALLEGRO_FONTptr;
     CDECL;EXTERNAL ALLEGRO_TTF_LIB_NAME;
-(* Initializes the TTF addon. *)
+(* Initializes the TTF addon.  Call this after @link(al_init_font_addon) to
+   make @link(al_load_font) recognize ".ttf" and other formats supported by
+   @link(al_load_ttf_font).
+   @return(@true on success, @false on failure.) *)
   FUNCTION al_init_ttf_addon: AL_BOOL;
     CDECL;EXTERNAL ALLEGRO_TTF_LIB_NAME;
 (* Shuts down the TTF addon. This is done automatically at program exit, but
