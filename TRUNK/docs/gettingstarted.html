@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>Allegro.pas - Getting started</title>
+</head>
+<body>
+  <main>
+  <header>
+    <h1>Getting started guide</h1>
+    <nav><ul>
+      <li><a href="#introduction">Introduction</a></li>
+      <li><a href="#libstruct">Structure of the library and its addons</a></li>
+      <li><a href="#init">Initialisation</a></li>
+      <li><a href="#openwindow">Opening a window</a></li>
+      <li><a href="#displayimg">Display an image</a></li>
+      <li><a href="#changetarget">Changing the drawing target</a></li>
+      <li><a href="#events">Event queues and input</a></li>
+      <li><a href="#text">Displaying some text</a></li>
+      <li><a href="#drawingprims">Drawing primitives</a></li>
+      <li><a href="#blending">Blending</a></li>
+      <li><a href="#sound">Sound</a></li>
+      <li><a href="#unstable">Unstable API</a></li>
+      <li><a href="#end">Not the end</a></li>
+    </ul></nav>
+  </header>
+
+  <section id="introduction">
+    <header><h2>Introduction</h2></header>
+    <p>Welcome to Allegro 5!</p>
+    <p>This short guide should point you at the parts of the <a href="./lib/index.html">API</a> that you'll want to know about first. It's not a tutorial, as there isn't much discussion, only links into the manual. The rest you'll have to discover for yourself. Read the examples, and ask questions at <a href="http://www.allegro.cc/">Allegro.cc</a>.</p>
+    <!-- p>There is an unofficial tutorial at the wiki. Be aware that, being on the wiki, it may be a little out of date, but the changes should be minor. Hopefully more will sprout when things stabilise, as they did for earlier versions of Allegro.</p -->
+  </section>
+
+  <section id="libstruct">
+    <header><h2>Structure of the library and its addons</h2></header>
+    <p>Allegro 5.0 is divided into a core library and multiple addons. The addons are bundled together and built at the same time as the core, but they are distinct and kept in separate libraries. The core doesn't depend on anything in the addons, but addons may depend on the core and other addons and additional third party libraries.</p>
+    <p>Here are the addons and their dependencies:</p>
+    <pre>
+allegro_main -> allegro
+
+allegro_image -> allegro
+allegro_primitives -> allegro
+allegro_color -> allegro
+
+allegro_font -> allegro
+allegro_ttf -> allegro_font -> allegro
+
+allegro_audio -> allegro
+allegro_acodec -> allegro_audio -> allegro
+
+allegro_memfile -> allegro
+allegro_physfs -> allegro
+
+allegro_native_dialog -> allegro
+    </pre>
+    <p>The unit for the core library is <code>Allegro5</code>. The units for the addons are named <code>al5image</code>, <code>al5font</code>, etc. The <code>allegro_main</code> addon does not have an unit file.</p>
+  </section>
+
+  <section id="init">
+    <header><h2>Initialisation</h2></header>
+    <p>Before using Allegro you must call <a href="./lib/Allegro5.html#al_init">al_init</a>. Some addons have their own initialisation, e.g. <a href="./lib/al5image.html#al_init_image_addon">al_init_image_addon</a>, <a href="./lib/al5font.html#al_init_font_addon">al_init_font_addon</a>, <a href="./lib/al5ttf.html#al_init_ttf_addon">al_init_ttf_addon</a>.</p>
+    <p>To receive input, you need to initialise some subsystems like <a href="./lib/Allegro5.html#al_install_keyboard">al_install_keyboard</a>, <a href="./lib/Allegro5.html#al_install_mouse">al_install_mouse</a>, <a href="./lib/Allegro5.html#al_install_joystick">al_install_joystick</a>.
+  </section>
+
+  <section id="openwindow">
+    <header><h2>Opening a window</h2></header>
+    <p><a href="./lib/Allegro5.html#al_create_display">al_create_display</a> will open a window and return an <a href="./lib/Allegro5.html#ALLEGRO_DISPLAYptr">ALLEGRO_DISPLAYptr</a>.</p>
+    <p>To clear the display, call <a href="./lib/Allegro5.html#al_clear_to_color">al_clear_to_color</a>. Use <a href="./lib/Allegro5.html#al_map_rgba">al_map_rgba</a> or <a href="./lib/Allegro5.html#al_map_rgba_f">al_map_rgba_f</a> to obtain an <a href="./lib/Allegro5.ALLEGRO_COLOR.html">ALLEGRO_COLOR</a> parameter.
+    <p>Drawing operations are performed on a backbuffer. To make the operations visible, call <a href="./lib/Allegro5.html#al_flip_display">al_flip_display</a>.</p>
+  </section>
+
+  <section id="displayimg">
+    <header><h2>Display an image</h2></header>
+    <p>To load an image from disk, you need to have initialised the image I/O addon with <a href="./lib/al5font.html#al_init_font_addon">al_init_image_addon</a>. Then use <a href="./lib/Allegro5.html#al_load_bitmap">al_load_bitmap</a>, which returns an <a href="./lib/Allegro5.html#ALLEGRO_BITMAPptr">ALLEGRO_BITMAPptr</a>.</p>
+    <p>Use <a href="./lib/Allegro5.html#al_draw_bitmap">al_draw_bitmap</a>, <a href="./lib/Allegro5.html#al_draw_scaled_bitmap">al_draw_scaled_bitmap</a> or <a href="./lib/Allegro5.html#al_draw_scaled_rotated_bitmap">al_draw_scaled_rotated_bitmap</a> to draw the image to the backbuffer. Remember to call <a href="./lib/Allegro5.html#al_flip_display">al_flip_display</a>.</p>
+  </section>
+
+  <section id="changetarget">
+    <header><h2>Changing the drawing target</h2></header>
+    <p>Notice that <a href="./lib/Allegro5.html#al_clear_to_color">al_clear_to_color</a> and <a href="./lib/Allegro5.html#al_draw_bitmap">al_draw_bitmap</a> didn't take destination parameters: the destination is implicit. Allegro remembers the current <em>"target bitmap"</em> for the current thread. To change the target bitmap, call <a href="./lib/Allegro5.html#al_set_target_bitmap">al_set_target_bitmap</a>.</p>
+    <p>The backbuffer of the display is also a bitmap. You can get it with <a href="./lib/Allegro5.html#al_get_backbuffer">al_get_backbuffer</a> and then restore it as the target bitmap.</p>
+    <p>Other bitmaps can be created with <a href="./lib/Allegro5.html#al_create_bitmap">al_create_bitmap</a>, with options which can be adjusted with <a href="./lib/Allegro5.html#al_set_new_bitmap_flags">al_set_new_bitmap_flags</a> and <a href="./lib/Allegro5.html#al_set_new_bitmap_format">al_set_new_bitmap_format</a>.</p>
+  </section>
+
+  <section id="events">
+    <header><h2>Event queues and input</h2></header>
+    <p>Input comes from multiple sources: keyboard, mouse, joystick, timers, etc. Event queues aggregate events from all these sources, then you can query the queue for events.</p>
+    <p>Create an event queue with <a href="./lib/Allegro5.html#al_create_event_queue">al_create_event_queue</a>, then tell input sources to place new events into that queue using <a href="./lib/Allegro5.html#al_register_event_source">al_register_event_source</a>. The usual input event sources can be retrieved with <a href="./lib/Allegro5.html#al_get_keyboard_event_source">al_get_keyboard_event_source</a>, <a href="./lib/Allegro5.html#al_get_mouse_event_source">al_get_mouse_event_source</a> and <a href="./lib/Allegro5.html#al_get_joystick_event_source">al_get_joystick_event_source</a>.</p>
+    <p>Events can be retrieved with <a href="./lib/Allegro5.html#al_wait_for_event">al_wait_for_event</a> or <a href="./lib/Allegro5.html#al_get_next_event">al_get_next_event</a>. Check the event type and other fields of <a href="./lib/Allegro5.ALLEGRO_EVENT.html">ALLEGRO_EVENT</a> to react to the input.</p>
+    <p>Displays are also event sources, which emit events when they are closed or resized. To get these events you'll need to set some special flags with <a href="./lib/Allegro5.html#al_set_new_display_flags">al_set_new_display_flags</a> before creating the display, then register the display with an event queue. When you get a resize event, call <a href="./lib/Allegro5.html#al_acknowledge_resize">al_acknowledge_resize</a>.</p>
+    <p>Timers are event sources which <em>"tick"</em> periodically, causing an event to be inserted into the queues that the timer is registered with. Create some with <a href="./lib/Allegro5.html#al_create_timer">al_create_timer</a>.</p>
+    <p><a href="./lib/Allegro5.html#al_get_time">al_get_time</a> and <a href="./lib/Allegro5.html#al_rest">al_rest</a> are more direct ways to deal with time.</p>
+  </section>
+
+  <section id="text">
+    <header><h2>Displaying some text</h2></header>
+    <p>To display some text, initialise the image and font addons with <a href="./lib/al5image.html#al_init_image_addon">al_init_image_addon</a> and <a href="./lib/al5font.html#al_init_font_addon">al_init_font_addon</a>, then load a bitmap font with <a href="file:///C:/MinGW/msys/1.0/home/Guillermo/Programacion/bibliotecas/allegro/allegro.pas/TRUNK/docs/lib/al5font.html#al_load_font">al_load_font</a>. Use <a href="./lib/al5font.html#al_draw_text">al_draw_text</a>.</p>
+    <p>For TrueType fonts, you'll need to initialise the TTF font addon with <a href="./lib/al5ttf.html#al_init_ttf_addon">al_init_ttf_addon</a> and load a TTF font with <a hraf="./lib/al5ttf.html#al_init_ttf_addon">al_load_ttf_font</a>.</p>
+  </section>
+
+  <section id="drawingprims">
+    <header><h2>Drawing primitives</h2></header>
+    <p>The primitives addon provides some handy routines to draw lines (<a href="./lib/al5primitives.html#al_draw_line">al_draw_line</a>), rectangles (<a href="./lib/al5primitives.html#al_draw_rectangle">al_draw_rectangle</a>), circles (<a href="./lib/al5primitives.html#al_draw_circle">al_draw_circle</a>), etc.</p>
+  </section>
+
+  <section id="blending">
+    <header><h2>Blending</h2></header>
+    <p>To draw translucent or tinted images or primitives, change the blender state with <a href="./lib/Allegro5.html#al_set_blender">al_set_blender</a>.</p>
+    <p>As with <a href="./lib/Allegro5.html#al_set_target_bitmap">al_set_target_bitmap</a>, this changes Allegro's internal state (for the current thread). Often you'll want to save some part of the state and restore it later. The functions <a href="./lib/Allegro5.html#al_store_state">al_store_state</a> and <a href="./lib/Allegro5.html#al_restore_state">al_restore_state</a> provide a convenient way to do that.</p>
+  </section>
+
+  <section id="sound">
+    <header><h2>Sound</h2></header>
+    <p>Use <a href="./lib/al5audio.html#al_install_audio">al_install_audio</a> to initialize sound. To load any sample formats, you will need to initialise the acodec addon with <a href="./lib/al5acodec.html#al_init_acodec_addon">al_init_acodec_addon</a>.</p>
+    <p>After that, you can simply use <a href="./lib/al5audio.html#al_reserve_samples">al_reserve_samples</a> and pass the number of sound effects typically playing at the same time. Then load your sound effects with <a href="./lib/al5audio.html#al_load_sample">al_load_sample</a> and play them with <a href="./lib/al5audio.html#al_play_sample">al_play_sample</a>. To stream large pieces of music from disk, you can use <a href="./lib/al5audio.html#al_load_audio_stream">al_load_audio_stream</a> so the whole piece will not have to be pre-loaded into memory.</p>
+    <p>If the above sounds too simple and you can't help but think about clipping and latency issues, don't worry. Allegro gives you full control over how much or little you want its sound system to do. The <a href="./lib/al5audio.html#al_reserve_samples">al_reserve_samples</a> function mentioned above only sets up a default mixer and a number of sample instances but you don't need to use it.</p>
+    <p>Instead, to get a <em>"direct connection"</em> to the sound system you would use an <a href="./lib/al5audio.html#ALLEGRO_VOICEptr">ALLEGRO_VOICE</a> (but depending on the platform only one such voice is guaranteed to be available and it might require a specific format of audio data). Therefore all sound can be first routed through an <a href="./lib/al5audio.html#ALLEGRO_MIXERptr">ALLEGRO_MIXER</a> which is connected to such a voice (or another mixer) and will mix together all sample data fed to it.</p>
+    <p>You can then directly stream real-time sample data to a mixer or a voice using an <a href="./lib/al5audio.html#ALLEGRO_AUDIO_STREAMptr">ALLEGRO_AUDIO_STREAMptr</a> or play complete sounds using an <a href="./lib/al5audio.html#ALLEGRO_SAMPLE_INSTANCEptr">ALLEGRO_SAMPLE_INSTANCEptr</a>. The latter simply points to an <a href="./lib/al5audio.html#ALLEGRO_SAMPLEptr">ALLEGRO_SAMPLEptr</a> and will stream it for you.</p>
+  </section>
+
+  <section id="unstable">
+    <header><h2>Unstable API</h2></header>
+    <p>Some of Allegro's API is marked as unstable, which means that future versions of Allegro it may change or even be removed entirely! That API isn't included in the Allegro.pas wrappers.</p>
+  </section>
+
+  <section id="end">
+    <header><h2>Not the end</h2></header>
+    <p>There's a heap of stuff we haven't even mentioned yet.</p>
+    <p>Enjoy!</p>
+  </section>
+</body>
+</html>

@@ -101,16 +101,16 @@ INTERFACE
   END;
 #)
     The release number is 0 for an unofficial version and 1 or greater for an
-    official release. For example "5.0.2[1]” would be the (first) official
-    5.0.2 release while “5.0.2[0]” would be a compile of a version from the
-    “5.0.2” branch before the official release.
+    official release. For example "5.0.2[1]" would be the (first) official
+    5.0.2 release while "5.0.2[0]" would be a compile of a version from the
+    "5.0.2" branch before the official release.
  *)
   FUNCTION al_get_allegro_version: AL_UINT32;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* This function is useful in cases where you don’t have a @code(main) function
+(* This function is useful in cases where you don't have a @code(main) function
    but want to run Allegro (mostly useful in a wrapper library).  Under Windows
    and Linux this is no problem because you simply can call
-   @link(al_install_system).  But some other system (like OSX) don’t allow
+   @link(al_install_system).  But some other system (like OSX) don't allow
    calling @code(al_install_system) in the main thread.  @code(al_run_main)
    will know what to do in that case.
 
@@ -157,7 +157,7 @@ END;
     END;
 
 
-  (* Return the number of seconds since the Allegro library was initialised.
+  (* Returns the number of seconds since the Allegro library was initialised.
      The return value is undefined if Allegro is uninitialised. The resolution
      depends on the used driver, but typically can be in the order of
      microseconds. *)
@@ -217,7 +217,7 @@ END;
     It will return the red component on little endian systems, but the green
     component on big endian systems.
 
-    Also note that Allegro’s naming is different from OpenGL naming here, where
+    Also note that Allegro�'s naming is different from OpenGL naming here, where
     a format of @code(GL_RGBA8) merely defines the component order and the
     exact layout including endianness treatment is specified separately.
     Usually @code(GL_RGBA8) will correspond to @code(ALLEGRO_PIXEL_ABGR_8888)
@@ -449,10 +449,10 @@ END;
 (* Sets the flags to use for newly created bitmaps. Valid flags are:
    @unorderedlist(
      @item(@bold(ALLEGRO_VIDEO_BITMAP) Creates a bitmap that resides in the video card memory. These types of bitmaps receive the greatest benefit from hardware acceleration. @link(al_set_new_bitmap_flags) will implicitly set this flag unless @code(ALLEGRO_MEMORY_BITMAP) is present.)
-     @item(@bold(ALLEGRO_MEMORY_BITMAP) Create a bitmap residing in system memory. Operations on, and with, memory bitmaps will not be hardware accelerated. However, direct pixel access can be relatively quick compared to video bitmaps, which depend on the display driver in use. @italic(Note: Allegro’s software rendering routines are currently very unoptimised.))
+     @item(@bold(ALLEGRO_MEMORY_BITMAP) Create a bitmap residing in system memory. Operations on, and with, memory bitmaps will not be hardware accelerated. However, direct pixel access can be relatively quick compared to video bitmaps, which depend on the display driver in use. @italic(Note: Allegro's software rendering routines are currently very unoptimised.))
      @item(@bold(ALLEGRO_KEEP_BITMAP_FORMAT) Only used when loading bitmaps from disk files, forces the resulting ALLEGRO_BITMAP to use the same format as the file. @italic(This is not yet honoured.))
-     @item(@bold(ALLEGRO_FORCE_LOCKING) When drawing to a bitmap with this flag set, always use pixel locking and draw to it using Allegro’s software drawing primitives. This should never be used if you plan to draw to the bitmap using Allegro’s graphics primitives as it would cause severe performance penalties. However if you know that the bitmap will only ever be accessed by locking it, no unneeded FBOs will be created for it in the OpenGL drivers.)
-     @item(@bold(ALLEGRO_NO_PRESERVE_TEXTURE) Normally, every effort is taken to preserve the contents of bitmaps, since Direct3D may forget them. This can take extra processing time. If you know it doesn’t matter if a bitmap keeps its pixel data, for example its a temporary buffer, use this flag to tell Allegro not to attempt to preserve its contents. This can increase performance of your game or application, but there is a catch. See ALLEGRO_EVENT_DISPLAY_LOST for further information.)
+     @item(@bold(ALLEGRO_FORCE_LOCKING) When drawing to a bitmap with this flag set, always use pixel locking and draw to it using Allegro's software drawing primitives. This should never be used if you plan to draw to the bitmap using Allegro's graphics primitives as it would cause severe performance penalties. However if you know that the bitmap will only ever be accessed by locking it, no unneeded FBOs will be created for it in the OpenGL drivers.)
+     @item(@bold(ALLEGRO_NO_PRESERVE_TEXTURE) Normally, every effort is taken to preserve the contents of bitmaps, since Direct3D may forget them. This can take extra processing time. If you know it doesn�'t matter if a bitmap keeps its pixel data, for example its a temporary buffer, use this flag to tell Allegro not to attempt to preserve its contents. This can increase performance of your game or application, but there is a catch. See ALLEGRO_EVENT_DISPLAY_LOST for further information.)
      @item(@bold(ALLEGRO_ALPHA_TEST) This is a driver hint only. It tells the graphics driver to do alpha testing instead of alpha blending on bitmaps created with this flag. Alpha testing is usually faster and preferred if your bitmaps have only one level of alpha @(0@). This flag is currently not widely implemented @(i.e., only for memory bitmaps@).)
      @item(@bold(ALLEGRO_MIN_LINEAR) When drawing a scaled down version of the bitmap, use linear filtering. This usually looks better. You can also combine it with the MIPMAP flag for even better quality.)
      @item(@bold(ALLEGRO_MAG_LINEAR) When drawing a magnified version of a bitmap, use linear filtering. This will cause the picture to get blurry instead of creating a big rectangle for each pixel. It depends on how you want things to look like whether you want to use this or not.)
@@ -499,7 +499,7 @@ END;
 #)
      )
    )
-   To explain further, if you have a pixel with 0.5 alpha, and you’re using
+   To explain further, if you have a pixel with 0.5 alpha, and you're using
    (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA) for blending, the
    formula is:
 @longcode(#
@@ -570,7 +570,7 @@ Expands to:
    not powers of two. Allegro handles this by creating a larger bitmap that has
    dimensions that are powers of two and then returning a section of that
    bitmap with the dimensions you requested. This can be relevant if you plan
-   to use this bitmap with the primitives addon but shouldn’t be an issue
+   to use this bitmap with the primitives addon but shouldn't be an issue
    otherwise.
    @seealso(al_set_new_bitmap_format) @seealso(al_set_new_bitmap_flags)
    @seealso(al_clone_bitmap) @seealso(al_create_sub_bitmap) *)
@@ -816,7 +816,7 @@ BEGIN
   h := al_get_bitmap_height (bitmap);
   al_draw_rotated_bitmap (bitmap, w / 2, h / 2, x, y, ALLEGRO_PI / 2, 0);
 #)
-   The above code draws the bitmap centered on x/y and rotates it 90° clockwise.
+   The above code draws the bitmap centered on x/y and rotates it 90� clockwise.
    @param(bitmap Origin bitmap.)
    @param(cx center x @(relative to the left of bitmap@))
    @param(cy center y @(relative to the top or bitmap@))
@@ -1075,7 +1075,7 @@ END;
    @bold(Note:) the core Allegro library does not support any image file
    formats by default. You must use the @link(al5image) addon, or register your
    own format handler.
-   @return(@nil on error.)
+   @return(A pointer to the loaded bitmap or @nil on error.)
    @seealso(al_load_bitmap_flags) @seealso(al_set_new_bitmap_format)
    @seealso(al_set_new_bitmap_flags) @seealso(al_init_image_addon) *)
   FUNCTION al_load_bitmap (CONST filename: AL_STR): ALLEGRO_BITMAPptr;
@@ -1504,41 +1504,71 @@ a = d.a * 0 + s.a * d.a
     ALLEGRO_EVENT_TYPE = AL_UINT;
 
   CONST
+    {@exclude}
     ALLEGRO_EVENT_JOYSTICK_AXIS          = 1;
+    {@exclude}
     ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN   = 2;
+    {@exclude}
     ALLEGRO_EVENT_JOYSTICK_BUTTON_UP     = 3;
+    {@exclude}
     ALLEGRO_EVENT_JOYSTICK_CONFIGURATION = 4;
 
+    {@exclude}
     ALLEGRO_EVENT_KEY_DOWN               = 10;
+    {@exclude}
     ALLEGRO_EVENT_KEY_CHAR               = 11;
+    {@exclude}
     ALLEGRO_EVENT_KEY_UP                 = 12;
 
+    {@exclude}
     ALLEGRO_EVENT_MOUSE_AXES             = 20;
+    {@exclude}
     ALLEGRO_EVENT_MOUSE_BUTTON_DOWN      = 21;
+    {@exclude}
     ALLEGRO_EVENT_MOUSE_BUTTON_UP        = 22;
+    {@exclude}
     ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY    = 23;
+    {@exclude}
     ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY    = 24;
+    {@exclude}
     ALLEGRO_EVENT_MOUSE_WARPED           = 25;
 
+    {@exclude}
     ALLEGRO_EVENT_TIMER                  = 30;
 
+    {@exclude}
     ALLEGRO_EVENT_DISPLAY_EXPOSE         = 40;
+    {@exclude}
     ALLEGRO_EVENT_DISPLAY_RESIZE         = 41;
+    {@exclude}
     ALLEGRO_EVENT_DISPLAY_CLOSE          = 42;
+    {@exclude}
     ALLEGRO_EVENT_DISPLAY_LOST           = 43;
+    {@exclude}
     ALLEGRO_EVENT_DISPLAY_FOUND          = 44;
+    {@exclude}
     ALLEGRO_EVENT_DISPLAY_SWITCH_IN      = 45;
+    {@exclude}
     ALLEGRO_EVENT_DISPLAY_SWITCH_OUT     = 46;
+    {@exclude}
     ALLEGRO_EVENT_DISPLAY_ORIENTATION    = 47;
+    {@exclude}
     ALLEGRO_EVENT_DISPLAY_HALT_DRAWING   = 48;
+    {@exclude}
     ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING = 49;
 
+    {@exclude}
     ALLEGRO_EVENT_TOUCH_BEGIN            = 50;
+    {@exclude}
     ALLEGRO_EVENT_TOUCH_END              = 51;
+    {@exclude}
     ALLEGRO_EVENT_TOUCH_MOVE             = 52;
+    {@exclude}
     ALLEGRO_EVENT_TOUCH_CANCEL           = 53;
 
+    {@exclude}
     ALLEGRO_EVENT_DISPLAY_CONNECTED      = 60;
+    {@exclude}
     ALLEGRO_EVENT_DISPLAY_DISCONNECTED   = 61;
 
 (* Returns @true if the event type is not a builtin event type, i.e. one of
@@ -1570,7 +1600,9 @@ a = d.a * 0 + s.a * d.a
 
 
   TYPE
-  (* Pointer to a display. *)
+  (* Pointer to a display.
+     
+     An opaque type representing an open display or window. *)
     ALLEGRO_DISPLAYptr = AL_POINTER;
   (* Pointer to joystick. *)
     ALLEGRO_JOYSTICKptr = AL_POINTER;
@@ -1589,7 +1621,7 @@ a = d.a * 0 + s.a * d.a
      @code(ALLEGRO_EVENT_SOURCE) pointer from an @code(ALLEGRO_DISPLAYptr) with
      @link(al_get_display_event_source).
 
-     You may create your own “user” event sources that emit custom events.
+     You may create your own "�user" event sources that emit custom events.
      @seealso(ALLEGRO_EVENT) @seealso(al_init_user_event_source)
      @seealso(al_emit_user_event)
    *)
@@ -1598,71 +1630,165 @@ a = d.a * 0 + s.a * d.a
     END;
 
 
-  { @exclude }
+  (* Contains the common information about events.
+     @seealso(ALLEGRO_EVENT) *)
     ALLEGRO_ANY_EVENT = RECORD
-      _type : ALLEGRO_EVENT_TYPE;
-      source : ALLEGRO_EVENT_SOURCEptr;
-      timestamp : AL_DOUBLE;
+    (* Indicates the type of event. *)
+      _type: ALLEGRO_EVENT_TYPE;
+    (* The event source which generated the event. *)
+      source: ALLEGRO_EVENT_SOURCEptr;
+    (* When the event was generated. *)
+      timestamp: AL_DOUBLE;
     END;
 
+  (* Contains display events information.
+     @seealso(ALLEGRO_EVENT) *)
     ALLEGRO_DISPLAY_EVENT = RECORD
+    (* Indicates the type of event. *)
       _type: ALLEGRO_EVENT_TYPE;
+    (* The display that generated the event. *)
       source: ALLEGRO_DISPLAYptr;
+    (* When the event was generated. *)
       timestamp: AL_DOUBLE;
+    (* The top-left corner of the rectangle which was exposed or the position
+       of the top-level corner of the display. *)
       x, y: AL_INT;
+    (* The width and height of the rectangle which was exposed or the new size
+       of the display. *)
       width, height: AL_INT;
+    (* Contains one of the following values:@unorderedlist(
+       @item(@bold(@code(ALLEGRO_DISPLAY_ORIENTATION_0_DEGREES)))
+       @item(@bold(@code(ALLEGRO_DISPLAY_ORIENTATION_90_DEGREES)))
+       @item(@bold(@code(ALLEGRO_DISPLAY_ORIENTATION_180_DEGREES)))
+       @item(@bold(@code(ALLEGRO_DISPLAY_ORIENTATION_270_DEGREES)))
+       @item(@bold(@code(ALLEGRO_DISPLAY_ORIENTATION_FACE_UP)))
+       @item(@bold(@code(ALLEGRO_DISPLAY_ORIENTATION_FACE_DOWN)))
+       )*)
       orientation: AL_INT;
     END;
 
+  (* Contains the joystick events information.
+     @seealso(ALLEGRO_EVENT) *)
     ALLEGRO_JOYSTICK_EVENT = RECORD
+    (* Indicates the type of event. *)
       _type: ALLEGRO_EVENT_TYPE;
+    (* The joystick which generated the event. *)
       source: ALLEGRO_JOYSTICKptr;
+    (* When the event was generated. *)
       timestamp: AL_DOUBLE;
+    (* The joystick which generated the event. This is not the same as the
+      event source. *)
       id: ALLEGRO_JOYSTICKptr;
+    (* The stick number, counting from zero. Axes on a joystick are grouped
+      into "sticks". *)
       stick: AL_INT;
+    (* The axis number on the stick, counting from zero. *)
       axis: AL_INT;
+    (* The axis position, from -1.0 to +1.0. *)
       pos: AL_FLOAT;
+    (* The button which was pressed, counting from zero. *)
       button: AL_INT;
     END;
 
+  (* Contains the keyboard events information.
+     @seealso(ALLEGRO_EVENT) *)
     ALLEGRO_KEYBOARD_EVENT = RECORD
+    (* Indicates the type of event. *)
       _type: ALLEGRO_EVENT_TYPE;
+    (* The keyboard which generated the event. *)
       source: ALLEGRO_KEYBOARDptr;
+    (* When the event was generated. *)
       timestamp: AL_DOUBLE;
+    (* The display which had keyboard focus when the event occurred. *)
       display: ALLEGRO_DISPLAYptr;
+    (* The code corresponding to the physical key which was pressed or
+       released. See the @link(Keyboard) section for the list of
+       @code(ALLEGRO_KEY_* ) constants. *)
       keycode: AL_INT;
+    (* A Unicode code point (character). This may be zero or negative if the
+       event was generated for a non-visible "character", such as an arrow or
+       Function key. In that case you can act upon the keycode field.
+
+       Some special keys will set the unichar field to their standard ASCII
+       values: Tab=9, Return=13, Escape=27. In addition if you press the
+       Control key together with A to Z the unichar field will have the values
+       1 to 26. For example Ctrl-A will set unichar to 1 and Ctrl-H will set it
+       to 8.
+
+       As of Allegro 5.0.2 there are some inconsistencies in the treatment of
+       Backspace (8 or 127) and Delete (127 or 0) keys on different platforms.
+       These can be worked around by checking the keycode field. *)
       unichar: AL_INT;
+    (* This is a bitfield of the modifier keys which were pressed when the
+       event occurred. See @link(Keyboard modifier flags) for the constants. *)
       modifiers: AL_UINT;
+    (* Indicates if this is a repeated character. *)
       _repeat: AL_BOOL;
     END;
 
+  (* Contains the mouse events information.
+     @seealso(ALLEGRO_EVENT) *)
     ALLEGRO_MOUSE_EVENT = RECORD
+    (* Indicates the type of event. *)
       _type: ALLEGRO_EVENT_TYPE;
+    (* The mouse which generated the event. *)
       source: ALLEGRO_MOUSEptr;
+    (* When the event was generated. *)
       timestamp: AL_DOUBLE;
+    (* The display which had mouse focus. *)
       display: ALLEGRO_DISPLAYptr;
-      x, y, z, w: AL_INT;
+    (* x-coordinate. *)
+      x,
+    (* y-coordinate. *)
+      y,
+    (* z-coordinate. This usually means the vertical axis of a mouse wheel,
+      where up is positive and down is negative. *)
+      z,
+    (* w-coordinate. This usually means the horizontal axis of a mouse wheel. *) 
+      w: AL_INT;
+    (* Change in the coordinates value since the previous
+       @code(ALLEGRO_EVENT_MOUSE_AXES) event. *)
       dx, dy, dz, dw: AL_INT;
+    (* The mouse button which was pressed or released, numbering from 1. *)
       button: AL_UINT;
+    (* Pressure, ranging from 0.0 to 1.0. *)
       pressure: AL_FLOAT;
     END;
 
+  (* Contains the timer events information.
+     @seealso(ALLEGRO_EVENT) *)
     ALLEGRO_TIMER_EVENT = RECORD
+    (* Indicates the type of event. *)
       _type: ALLEGRO_EVENT_TYPE;
+    (* The timer which generated the event. *)
       source: ALLEGRO_TIMERptr;
+    (* When the event was generated. *)
       timestamp: AL_DOUBLE;
+    (* The timer count value. *)
       count: AL_INT64;
+    { @exclude undocumented (?) }
       error: AL_DOUBLE;
     END;
 
+  (* Contains the touch input events information.
+     @seealso(ALLEGRO_EVENT) *)
     ALLEGRO_TOUCH_EVENT = RECORD
+    (* Indicates the type of event. *)
       _type: ALLEGRO_EVENT_TYPE;
+    (* The event source which generated the event. *)
       source: AL_POINTER;
+    (* When the event was generated. *)
       timestamp: AL_DOUBLE;
+    (* The display which was touched.  *)
       display: AL_POINTER;
+    (* An identifier for this touch. If supported by the device it will stay
+       the same for events from the same finger until the touch ends. *)
       id: AL_INT;
+    (* The coordinate of the touch in pixels. *)
       x, y: AL_DOUBLE;
+    (* Movement speed in pixels. *)
       dx, dy: AL_DOUBLE;
+    (* Whether this is the only/first touch or an additional touch. *)
       primary: AL_BOOL;
     END;
 
@@ -1681,21 +1807,188 @@ a = d.a * 0 + s.a * d.a
     END;
 
     ALLEGRO_EVENTptr = ^ALLEGRO_EVENT;
+  (* An ALLEGRO_EVENT is a union of all builtin event structures, i.e. it is an
+     object large enough to hold the data of any event type. All events have
+     the following fields in common:
+     @unorderedlist(
+       @item(@bold(_type @(@link(ALLEGRO_EVENT_TYPE)@)) Indicates the type of
+         event.)
+       @item(@bold(any.source @(ALLEGRO_EVENT_SOURCEptr@)) The event source
+         which generated the event.)
+       @item(@bold(any.timestamp @(DOUBLE@)) When the event was generated.)
+     )
+     By examining the type field you can then access type-specific fields. The
+     @code(any.source) field tells you which event source generated that
+     particular event. The @code(any.timestamp) field tells you when the event
+     was generated. The time is referenced to the same starting point as
+     @link(al_get_time).
+
+     Each event is of one of the following types, with the usable fields given.
+     @unorderedlist(
+       @item(@bold(@code(ALLEGRO_EVENT_JOYSTICK_AXIS)) A joystick axis value
+         changed.)
+       @item(@bold(@code(ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN)) A joystick button
+         was pressed.)
+       @item(@bold(@code(ALLEGRO_EVENT_JOYSTICK_BUTTON_UP)) A joystick button
+         was released.)
+       @item(@bold(@code(ALLEGRO_EVENT_JOYSTICK_CONFIGURATION)) A joystick was
+         plugged in or unplugged. See @link(al_reconfigure_joysticks) for
+	 details.)
+       @item(@bold(@code(ALLEGRO_EVENT_KEY_DOWN)) A keyboard key was pressed.
+
+        @bold(Note:) this event is about the physical keys being pressed on the
+       	keyboard. Look for @code(ALLEGRO_EVENT_KEY_CHAR) events for character
+       	input.)
+       @item(@bold(@code(ALLEGRO_EVENT_KEY_UP)) A keyboard key was released.)
+       @item(@bold(@code(ALLEGRO_EVENT_KEY_CHAR)) A character was typed on the
+         keyboard, or a character was auto-repeated.
+     
+	 @bold(Note:) in many input methods, characters are not entered
+	 one-for-one with physical key presses. Multiple key presses can
+	 combine to generate a single character, e.g. apostrophe + e may
+	 produce '�'. Fewer key presses can also generate more characters, e.g.
+	 macro sequences expanding to common phrases.)
+       @item(@bold(@code(ALLEGRO_EVENT_MOUSE_AXES)) One or more mouse axis
+         values changed.
+
+         @bold(Note:) Calling @link(al_set_mouse_xy) also will result in a
+	 change of axis values, but such a change is reported with
+	 @code(ALLEGRO_EVENT_MOUSE_WARPED) events instead which are identical
+	 except for their type.
+
+         Note: currently @code(mouse.display) may be @nil if an event is
+	 generated in response to al_set_mouse_axis.)
+       @item(@bold(@code(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)) A mouse button was
+         pressed.)
+       @item(@bold(@code(ALLEGRO_EVENT_MOUSE_BUTTON_UP)) A mouse button was
+         released.)
+       @item(@bold(@code(ALLEGRO_EVENT_MOUSE_WARPED)) @link(al_set_mouse_xy)
+         was called to move the mouse. This event is identical to
+	 @code(ALLEGRO_EVENT_MOUSE_AXES) otherwise.)
+       @item(@bold(@code(ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY)) The mouse cursor
+         entered a window opened by the program.)
+       @item(@bold(@code(ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY)) The mouse cursor
+         left the boundaries of a window opened by the program.)
+       @item(@bold(@code(ALLEGRO_EVENT_TOUCH_BEGIN)) The touch input device
+         registered a new touch.)
+       @item(@bold(@code(ALLEGRO_EVENT_TOUCH_END)) A touch ended.)
+       @item(@bold(@code(ALLEGRO_EVENT_TOUCH_MOVE)) The position of a touch
+         changed.)
+       @item(@bold(@code(ALLEGRO_EVENT_TOUCH_CANCEL)) A touch was cancelled.
+         This is device specific but could for example mean that a finger moved
+	 off the border of the device or moved so fast that it could not be
+	 tracked any longer.)
+       @item(@bold(@code(ALLEGRO_EVENT_TIMER)) A timer counter incremented.)
+       @item(@bold(@code(ALLEGRO_EVENT_DISPLAY_EXPOSE)) The display @(or a
+	 portion thereof@) has become visible.
+
+         @bold(Note:) The display needs to be created with
+	 @code(ALLEGRO_GENERATE_EXPOSE_EVENTS) flag for these events to be
+	 generated.)
+       @item(@bold(@code(ALLEGRO_EVENT_DISPLAY_RESIZE)) The window has been resized.
+
+         You should normally respond to these events by calling
+	 @code(al_acknowledge_resize). Note that further resize events may be
+	 generated by the time you process the event, so these fields may hold
+	 outdated information.)
+       @item(@bold(@code(ALLEGRO_EVENT_DISPLAY_CLOSE)) The close button of the
+         window has been pressed.)
+       @item(@bold(@code(ALLEGRO_EVENT_DISPLAY_LOST)) When using Direct3D,
+         displays can enter a "lost" state. In that state, drawing calls are
+	 ignored, and upon entering the state, bitmap's pixel data can become
+	 undefined. Allegro does its best to preserve the correct contents of
+	 bitmaps @(see the @code(ALLEGRO_NO_PRESERVE_TEXTURE) flag@) and
+	 restore them when the device is "found" @(see
+	 @code(ALLEGRO_EVENT_DISPLAY_FOUND)@). However, this is not 100% fool
+	 proof @(see discussion in @link(al_create_bitmap)'s documentation@).
+
+         @bold(Note:) This event merely means that the display was lost, that
+	 is, DirectX suddenly lost the contents of all video bitmaps. In
+	 particular, you can keep calling drawing functions -- they just most
+	 likely won't do anything. If Allegro's restoration of the bitmaps
+	 works well for you then no further action is required when you receive
+	 this event.)
+       @item(@bold(@code(ALLEGRO_EVENT_DISPLAY_FOUND)) Generated when a lost
+         device is restored to operating state. See
+	 @code(ALLEGRO_EVENT_DISPLAY_LOST).)
+       @item(@bold(@code(ALLEGRO_EVENT_DISPLAY_SWITCH_OUT)) The window is no
+         longer active, that is the user might have clicked into another window
+	 or "tabbed" away.)
+       @item(@bold(@code(ALLEGRO_EVENT_DISPLAY_SWITCH_IN)) The window is the
+         active one again.)
+       @item(@bold(@code(ALLEGRO_EVENT_DISPLAY_ORIENTATION)) Generated when the
+         rotation or orientation of a display changes.)
+       @item(@bold(@code(ALLEGRO_EVENT_DISPLAY_HALT_DRAWING)) When a display
+         receives this event it should stop doing any drawing and then call
+	 @link(al_acknowledge_drawing_halt) immediately.
+
+         This is currently only relevant for Android and iOS. It will be sent
+	 when the application is switched to background mode, in addition to
+	 @code(ALLEGRO_EVENT_DISPLAY_SWITCH_OUT). The latter may also be sent
+	 in situations where the application is not active but still should
+	 continue drawing, for example when a popup is displayed in front of
+	 it.
+
+         @bold(Note:) This event means that the next time you call a drawing
+         function, your program will crash. So you must stop drawing and you
+	 must immediately reply with @link(al_acknowledge_drawing_halt).
+	 Allegro sends this event because it cannot handle this automatically.
+	 Your program might be doing the drawing in a different thread from the
+	 event handling, in which case the drawing thread needs to be signaled
+	 to stop drawing before acknowledging this event.
+
+         @bold(Note:) Mobile devices usually never quit an application, so to
+	 prevent the battery from draining while your application is halted it
+	 can be a good idea to call @code(al_stop_timer) on all your timers,
+	 otherwise they will keep generating events. If you are using audio,
+	 you can also stop all audio voices @(or pass @nil to
+	 @link(al_set_default_voice) if you use the default mixer@), otherwise
+	 Allegro will keep streaming silence to the voice even if the stream or
+	 mixer are stopped or detached.)
+       @item(@bold(@code(ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING)) When a display
+         receives this event, it may resume drawing again, and it must call
+	 @link(al_acknowledge_drawing_resume) immediately.
+
+         This is currently only relevant for Android and iOS. The event will be
+	 sent when an application returns from background mode and is allowed
+	 to draw to the display again, in addition to
+	 @code(ALLEGRO_EVENT_DISPLAY_SWITCH_IN). The latter event may also be
+	 sent in a situation where the application is already active, for
+	 example when a popup in front of it closes.
+
+         @bold(Note:) Unlike @code(ALLEGRO_EVENT_DISPLAY_FOUND) it is not
+	 necessary to reload any bitmaps when you receive this event.)
+       @item(@bold(@code(ALLEGRO_EVENT_DISPLAY_CONNECTED)) This event is sent
+         when a physical display is connected to the device Allegro runs on.
+	 Currently, on most platforms, Allegro supports only a single physical
+	 display. However, on iOS, a secondary physical display is suported.)
+       @item(@bold(@code(ALLEGRO_EVENT_DISPLAY_DISCONNECTED)) This event is
+         sent when a physical display is disconnected from the device Allegro
+	 runs on. Currently, on most platforms, Allegro supports only a single
+	 physical display. However, on iOS, a secondary physical display is
+	 suported.)
+     ) *)
     ALLEGRO_EVENT = RECORD
       case LONGINT OF
-   (* This must be the same as the first field of _AL_EVENT_HEADER.  *)
+      (* The event type. *)
 	0: ( _type: ALLEGRO_EVENT_TYPE );
-   (* `any' is to allow the user to access the other fields which are
-    * common to all event types, without using some specific type
-    * structure.
-    *)
+      (* @code(any) is to allow the user to access the other fields which are
+         common to all event types, without using some specific type structure.
+       *)
 	1: ( any: ALLEGRO_ANY_EVENT );
+      (* Information of display events. *)
 	2: ( display: ALLEGRO_DISPLAY_EVENT );
+      (* Information of joysitck events. *)
 	3: ( joystick: ALLEGRO_JOYSTICK_EVENT );
+      (* Information of keyboard events. *)
 	4: ( keyboard: ALLEGRO_KEYBOARD_EVENT );
+      (* Information of mouse events. *)
 	5: ( mouse: ALLEGRO_MOUSE_EVENT );
+      (* Information of timer events. *)
 	6: ( timer: ALLEGRO_TIMER_EVENT );
+      (* Information of touch events. *)
         7: ( touch: ALLEGRO_TOUCH_EVENT );
+      (* Information of user events. *)
 	8: ( user: ALLEGRO_USER_EVENT );
       END;
 
@@ -1828,22 +2121,39 @@ END;
 
   CONST
   (* Possible bit combinations for the flags parameter of al_set_new_display_flags. *)
+    {@exclude}
     ALLEGRO_DEFAULT                     = 0 SHL 0;
+    {@exclude}
     ALLEGRO_WINDOWED                    = 1 SHL 0;
+    {@exclude}
     ALLEGRO_FULLSCREEN                  = 1 SHL 1;
+    {@exclude}
     ALLEGRO_OPENGL                      = 1 SHL 2;
+    {@exclude}
     ALLEGRO_DIRECT3D_INTERNAL           = 1 SHL 3;
+    {@exclude}
     ALLEGRO_RESIZABLE                   = 1 SHL 4;
+    {@exclude}
     ALLEGRO_FRAMELESS                   = 1 SHL 5;
+    {@exclude}
     ALLEGRO_NOFRAME                     = ALLEGRO_FRAMELESS;
+    {@exclude}
     ALLEGRO_GENERATE_EXPOSE_EVENTS      = 1 SHL 6;
+    {@exclude}
     ALLEGRO_OPENGL_3_0                  = 1 SHL 7;
+    {@exclude}
     ALLEGRO_OPENGL_FORWARD_COMPATIBLE   = 1 SHL 8;
+    {@exclude}
     ALLEGRO_FULLSCREEN_WINDOW           = 1 SHL 9;
+    {@exclude}
     ALLEGRO_MINIMIZED                   = 1 SHL 10;
+    {@exclude}
     ALLEGRO_PROGRAMMABLE_PIPELINE       = 1 SHL 11;
+    {@exclude}
     ALLEGRO_GTK_TOPLEVEL_INTERNAL       = 1 SHL 12;
+    {@exclude}
     ALLEGRO_MAXIMIZED                   = 1 SHL 13;
+    {@exclude}
     ALLEGRO_OPENGL_ES_PROFILE           = 1 SHL 14;
 
   TYPE
@@ -1919,6 +2229,83 @@ END;
 
   PROCEDURE al_set_new_display_refresh_rate (refresh_rate: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Sets various flags to be used when creating new displays on the calling
+   thread. flags is a bitfield containing any reasonable combination of the following:
+   @unorderedlist(
+     @item(@bold(@code(ALLEGRO_WINDOWED)) Prefer a windowed mode.
+
+      Under multi-head X (not XRandR/TwinView), the use of more than one
+      adapter is impossible due to bugs in X and GLX. @code(al_create_display)
+      will fail if more than one adapter is attempted to be used.)
+     @item(@bold(@code(ALLEGRO_FULLSCREEN_WINDOW)) Make the window span the
+      entire screen. Unlike @code(ALLEGRO_FULLSCREEN) this will never attempt
+      to modify the screen resolution. Instead the pixel dimensions of the
+      created display will be the same as the desktop.
+
+      The passed width and height are only used if the window is switched out
+      of fullscreen mode later but will be ignored initially.
+
+      Under Windows and X11 a fullscreen display created with this flag will
+      behave differently from one created with the @code(ALLEGRO_FULLSCREEN)
+      flag - even if the @code(ALLEGRO_FULLSCREEN) display is passed the
+      desktop dimensions. The exact difference is platform dependent, but some
+      things which may be different is how alt-tab works, how fast you can
+      toggle between fullscreen/windowed mode or how additional monitors behave
+      while your display is in fullscreen mode.
+
+      Additionally under X, the use of more than one adapter in multi-head mode
+      or with true Xinerama enabled is impossible due to bugs in X/GLX,
+      creation will fail if more than one adapter is attempted to be used.)
+     @item(@bold(@code(ALLEGRO_FULLSCREEN)) Prefer a fullscreen mode.
+
+      Under X the use of more than one FULLSCREEN display when using multi-head
+      X, or true Xinerama is not possible due to bugs in X and GLX, display
+      creation will fail if more than one adapter is attempted to be used.
+
+      @bold(Note:) Prefer using @code(ALLEGRO_FULLSCREEN_WINDOW) as it
+      typically provides a better user experience as the monitor doesn't change
+      resolution and switching away from your game via Alt-Tab works smoothly.
+      @code(ALLEGRO_FULLSCREEN) is typically less well supported compared to
+      @code(ALLEGRO_FULLSCREEN_WINDOW).)
+     @item(@bold(@code(ALLEGRO_RESIZABLE)) The display is resizable @(only
+      applicable if combined with @code(ALLEGRO_WINDOWED)@).)
+     @item(@bold(@code(ALLEGRO_MAXIMIZED)) The display window will be maximized
+      @(only applicable if combined with @code(ALLEGRO_RESIZABLE)@).)
+     @item(@bold(@code(ALLEGRO_OPENGL)) Require the driver to provide an
+      initialized OpenGL context after returning successfully.)
+     @item(@bold(@code(ALLEGRO_OPENGL_3_0)) Require the driver to provide an
+      initialized OpenGL context compatible with OpenGL version 3.0.)
+     @item(@bold(@code(ALLEGRO_OPENGL_FORWARD_COMPATIBLE)) If this flag is set,
+      the OpenGL context created with @code(ALLEGRO_OPENGL_3_0) will be forward
+      compatible only, meaning that all of the OpenGL API declared deprecated
+      in OpenGL 3.0 will not be supported. Currently, a display created with
+      this flag will not be compatible with Allegro drawing routines; the
+      display option @code(ALLEGRO_COMPATIBLE_DISPLAY) will be set to false.)
+     @item(@bold(@code(ALLEGRO_OPENGL_ES_PROFILE)) Used together with
+      @code(ALLEGRO_OPENGL), requests that the OpenGL context uses the OpenGL
+      ES profile. A specific version can be requested with
+      @link(al_set_new_display_option). @bold(Note:) Currently this is only
+      supported by the X11/GLX driver.)
+     @item(@bold(@code(ALLEGRO_DIRECT3D)) Require the driver to do rendering
+      with Direct3D and provide a Direct3D device.)
+     @item(@bold(@code(ALLEGRO_PROGRAMMABLE_PIPELINE)) Require a programmable
+      graphics pipeline. This flag is required to use @code(ALLEGRO_SHADER)
+      objects.)
+     @item(@bold(@code(ALLEGRO_FRAMELESS)) Try to create a window without a
+      frame @(i.e. no border or titlebar@). This usually does nothing for
+      fullscreen modes, and even in windowed modes it depends on the underlying
+      platform whether it is supported or not.)
+     @item(@bold(@code(ALLEGRO_GENERATE_EXPOSE_EVENTS)) Let the display
+      generate expose events.)
+     @item(@bold(@code(ALLEGRO_GTK_TOPLEVEL)) Create a GTK toplevel window for
+      the display, on X. This flag is conditionally defined by the native
+      dialog addon. You must call @link(al_init_native_dialog_addon) for it to
+      succeed. @code(ALLEGRO_GTK_TOPLEVEL) is incompatible with
+      @code(ALLEGRO_FULLSCREEN).)
+   )
+   0 can be used for default values.
+   @seealso(al_set_new_display_option) @seealso(al_get_display_option)
+   @seealso(al_set_display_option) *)
   PROCEDURE al_set_new_display_flags (flags: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_get_new_display_refresh_rate: AL_INT;
@@ -2066,10 +2453,43 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
+(* When the user receives a resize event from a resizable display, if they wish
+   the display to be resized they must call this function to let the graphics
+   driver know that it can now resize the display.
+
+   Adjusts the clipping rectangle to the full size of the backbuffer. This also
+   resets the backbuffers projection transform to default orthographic
+   transform (see @link(al_use_projection_transform)).
+
+   Note that a resize event may be outdated by the time you acknowledge it;
+   there could be further resize events generated in the meantime.
+   @return(@true on success.)
+   @seealso(al_resize_display) @seealso(ALLEGRO_EVENT) *)
   FUNCTION al_acknowledge_resize (display: ALLEGRO_DISPLAYptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_resize_display (display: ALLEGRO_DISPLAYptr; width, height: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Copies or updates the front and back buffers so that what has been drawn
+   previously on the currently selected display becomes visible on screen.
+   Pointers to the special back buffer bitmap remain valid and retain their
+   semantics as the back buffer, although the contents may have changed.
+
+   Several display options change how this function behaves:
+   @unorderedlist(
+    @item(With @code(ALLEGRO_SINGLE_BUFFER), no flipping is done. You still have
+     to call this function to display graphics, depending on how the used
+     graphics system works.)
+    @item(The @code(ALLEGRO_SWAP_METHOD) option may have additional information
+     about what kind of operation is used internally to flip the front and back
+     buffers.)
+    @item(If @code(ALLEGRO_VSYNC) is 1, this function will force waiting for
+     vsync. If @code(ALLEGRO_VSYNC) is 2, this function will not wait for
+     vsync. With many drivers the vsync behavior is controlled by the user and
+     not the application, and @code(ALLEGRO_VSYNC) will not be set; in this
+     case @code(al_flip_display) will wait for vsync depending on the settings
+     set in the system's graphics preferences.)
+   )
+   @seealso(al_set_new_display_flags) @seealso(al_set_new_display_option ) *)
   PROCEDURE al_flip_display;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_update_display_region (x, y, Width, height: AL_INT);
@@ -2414,6 +2834,9 @@ al_draw_line(x1, y1, x2, y2, color, 0);
   PROCEDURE al_get_joystick_state (j: ALLEGRO_JOYSTICKptr; OUT ret_state: ALLEGRO_JOYSTICK_STATE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
+(* Retrieves the global joystick event source. All joystick events are generated
+   by this event source.
+   @seealso(al_register_event_source) *) 
   FUNCTION al_get_joystick_event_source: ALLEGRO_EVENT_SOURCEptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -2442,8 +2865,10 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
   FUNCTION al_is_keyboard_installed: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Install a keyboard driver.  Returns @true if successful.  If a driver was
-   already installed, nothing happens and @true is returned.
+(* Install a keyboard driver.
+  
+   Returns @true if successful.  If a driver was already installed, nothing
+   happens and @true is returned.
    @seealso(al_uninstall_keyboard) @seealso(al_is_keyboard_installed) *)
   FUNCTION al_install_keyboard: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
@@ -2461,6 +2886,10 @@ al_draw_line(x1, y1, x2, y2, color, 0);
   FUNCTION al_key_down (VAR state: ALLEGRO_KEYBOARD_STATE; keycode: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
+(* Retrieve the keyboard event source. All keyboard events are generated by
+   this event source.
+   @return(@nil if the keyboard subsystem was not installed.)
+   @seealso(al_register_event_source) *)
   FUNCTION al_get_keyboard_event_source: ALLEGRO_EVENT_SOURCEptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -2533,8 +2962,10 @@ al_draw_line(x1, y1, x2, y2, color, 0);
   FUNCTION al_get_mouse_wheel_precision: AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-
-
+(* Retrieve the mouse event source. All mouse events are generated by this
+   event source.
+   @return(@nil if the mouse subsystem was not installed.)
+   @seealso(al_register_event_source) *)
   FUNCTION al_get_mouse_event_source: ALLEGRO_EVENT_SOURCEptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -3181,7 +3612,13 @@ END
     ALLEGRO_SYSTEMptr = AL_POINTER;
 
 (* Like @link(al_install_system), but automatically passes in the version and
-   uses the @code(atexit) function visible in the current compilation unit. *)
+   uses the @code(atexit) function visible in the current compilation unit.
+
+   @bold(Note:) It is typically wrong to call al_init anywhere except the final
+   game binary. In particular, do not call it inside a shared library unless
+   you know what you're doing. In those cases, it is better to call
+   @link(al_install_system) either with a @nil @code(atexit_ptr), or with a
+   pointer to @code(atexit) provided by the user of this shared library.  *)
   FUNCTION al_init: AL_BOOL;
 
 
@@ -3189,7 +3626,7 @@ END
 (* Initializes the Allegro system.  No other Allegro functions can be called
    before this (with one or two exceptions).
    @param(version Should always be set to @link(ALLEGRO_VERSION_INT).)
-   @param(atexit_ptr If non-@nil, and if hasn’t been done already,
+   @param(atexit_ptr If non-@nil, and if hasn't been done already,
     @code(al_uninstall_system) will be registered as an atexit function.)
    @returns(@true if Allegro was successfully initialized by this function
     call @(or already was initialized previously@), @false if Allegro cannot
