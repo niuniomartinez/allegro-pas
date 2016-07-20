@@ -1,0 +1,152 @@
+PICT IFF pictures
+
+IFF FORM /CHUNK DESCRIPTION
+===========================
+
+Form/Chunk ID:  FORM  PICT	(PICTure)
+                Chunk VARL	(Picture VARiable List)
+                Chunk CMAP	(Picture Color MAP data [ILBM compatible])
+                Chunk BMP 	(Picture BitMaP data)
+
+
+FORM
+====
+
+FORM ID:	PICT	(PICTure description)
+
+
+FORM Purpose:
+
+To store a picture in a flexible way, easy to save and load.
+
+
+FORM Description:
+
+This format is designed to provide a support for pictures in a flexible way.
+It supports different pixel formats (true color RGB 8, 15 and 24 bits,
+RGBA 32 bits, and indexed 8 bit) and a variety of lossless compression (none,
+RLE, LZSS and deflate/zlib).
+
+
+CHUNKS
+======
+
+Chunk ID:	VARL	(Picture VARiable List)
+
+Chunk Purpose:
+
+Provides information about data contained in the file.  VARL is optional, but
+should be the first chunk if it exists.
+
+Chunk Description:
+
+This chunk contains a list of variable and value pairs.  Each pair is a char
+string in the form "variable=value", separated by a NULL character (ASCII #0).
+If a variable isn't defined, loader should use a default value.  Unsupported
+variables should be ignored.
+
+Variables currently supported are:
+
+  Var name      	Value           	Default value
+  --------------	----------------	----------------
+
+  pixfmt        	indexed         	RGBA32
+                	RGB8
+                	RGB15
+                	RGB24
+                	RGBA32
+
+  width         	Picture width   	(*)
+
+  height        	Picture height  	(**)
+
+  compression   	none            	none
+                	RLE
+                	LZSS
+                	deflat
+
+
+Notes:
+
+ (*)	 Default width is the module of the number of pixels of bitmap divided
+	 by picture height.  For example, for 8 bits per pixel bitmaps, default
+	 width will be:
+
+	 Bitmap.Width := Bmp.Size MOD Bmp.Height;
+
+ (**)	 Default height is the integer part of the square root of the number of
+	 pixels of bitmap.  For example, for 8 bits per pixel bitmap, default
+	 height will be:
+
+	 Bitmap.height := TRUNK (SQRT (Bmp.Size));
+
+
+Chunk ID:	CMAP	(Picture Color MAP)
+
+Chunk Purpose:
+
+Stores color map data.
+
+Chunk Description:
+
+This chunk is optional, but should exists for "pixfmt=indexed".
+
+It contains 256 triplets of red, green and blue intensity values.  The color
+components red, green, and blue are each stored as a byte (8 bits) representing
+fractional intensity values expressed in 256ths in the range 0 through 255.
+
+
+Chunk ID:	BMP 	(Picture BitMaP)
+
+Chunk Purpose:
+
+Stores the actual bitmap data.
+
+Chunk Description:
+
+Depending on the compression value, bitmap data is stored as follows:
+
+  none   : There's no compression, so pixels are stored as a "raster scanned"
+	   bitmap, proceeding left-to-right across scan lines, then top-to-
+	   bottom down columns of scan lines.
+
+  RLE    : Uses a run-length compression system.  It works as follows:
+
+	   An 8 bit integer value: if positive, tells how many uncompressed
+	   pixels follows; if negative, tells the next pixel should be repeated
+	   as many times as the absolute value.
+
+	   Note that it compress pixels, not bytes!
+
+  LZSS   : Pixels are stored as a "raster scanned" bitmap (see "none") but data
+	   are coded using LZSS algorithm.
+
+  deflat : Same than LZSS, but using deflat/zlib algorithm.
+
+
+Depending on the pixfmt variable, each pixel are stored as follows:
+
+  indexed: Each pixel consists in a byte (8 bits) index used to search the
+	   actual RGB color description in a color table (i.e. the CMAP chunk
+	   data).
+
+  RGB8   : Each pixel consists in a byte (8 bits) that packs the RGB
+	   description.  RGB values are packed as 3bit, 3bit and 2bit for each
+	   component.  So, to extract each component:
+
+	 R := (pixel SHR 5) AND $07;
+	 G := (pixel SHR 2) AND $07;
+	 B :=  pixel        AND $03;
+
+  RGB15  : Each pixel consist in a 16 bits big-endian (most significant bit
+	   first) value.  This way they are word-aligned instead of
+	   bit-aligned.
+
+	   Each red, green and blue color component is packed as a 5 bit value
+	   representing fractional intensity values in the range 0 through 31.
+
+  RGB24  : Pixel RGB values are stored as individual bytes.
+
+  RGBA32 : Pixel RGBA (Red, green, blue and alpha) are stored as individual
+           bytes.
+

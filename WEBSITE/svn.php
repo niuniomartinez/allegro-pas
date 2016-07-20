@@ -8,7 +8,7 @@
 # Crear página de salida.  Usa bbCode para formatear.
 # Si prefieres no usar bbCode y usar HTML, eliminar la carga del módulo
 # "formato" y la llamada en la carga de la vista.
-  $SVN_URL = 'https://'.AGORA::Config ('SFname', '').'.svn.sourceforge.net/svnroot/'.AGORA::Config ('SFname', '');
+  $SVN_URL = 'svn://svn.code.sf.net/p/'.AGORA::Config ('SFname', '').'/code';
   $Contenido = AGORA::Config ('nombre', '')."'s source code is maintained in a SVN repository.  You can get clients for most platforms at [url]https://subversion.apache.org/[/url], and there is good [url=\"https://subversion.apache.org/docs/\"]documentation[/url].
 
 To get the current WIP version, use the next command to:
@@ -23,7 +23,7 @@ Where [i]<version-num>[/i] is the version you're looking for (eg: 4.4.2, 4.4.3, 
 You can get, also, the unstable version 5 using the next command:
 [code]svn co {$SVN_URL}/BRANCHES/5.0 allegro-pas.5[/code]
 
-You can browse the source code online at [url]http://sourceforge.net/p/".AGORA::Config ('SFname', '')."/code/[/url]";
+You can browse the source code online at [url]http://sourceforge.net/p/".AGORA::Config ('SFname', '').'/code/[/url]';
 
 # Creamos la página.
   try {

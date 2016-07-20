@@ -106,9 +106,8 @@ EXMBIN = $(BINDIR)$(EXMDIR)
 
 PFLAGS = -Sh -Si
 
-
 # Optimized compilation
-# FLAGS = $(OPTOPT) @(PFLAGS) $(EFLAGS)
+# FLAGS = $(OPTOPT) $(PFLAGS) $(EFLAGS)
 # Use next line instead to activate debug.
 FLAGS = $(DBGOPT) $(PFLAGS) $(EFLAGS)
 

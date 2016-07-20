@@ -1,0 +1,43 @@
+ex3buf      - Triple paginado en "Modo-X" y simulación de interupción de trazo.
+ex3d        - Ejemplo de los cubos 3D.
+exalpha     - Crear y usar 'sprites' de 32 bits RGBA.
+exblend     - Cómo usar las funciones de transparencia en "true-color".
+excamera    - Ver un mundo 3D desde una posición de cámara cualquiera.
+excolmap    - Crear efectos gráficos usando tablas de mapeo de color.
+exconfig    - Usar las rutinas de configuración.
+excustom    - Creación de objetos GUI personalizados.
+exdata      - Acceder al contenido de los archivos de datos (datafiles).
+exdbuf      - Cómo usar doble página para eliminar parpadeos.
+exfixed     - Uso de matemáticas de punto flotante.
+exflip      - Cómo utilizar intercambio de páginas.
+exfont      - Cargar y manipular tipografías.
+exgui       - Uso de los objetos de menú y diálogo.
+exhello     - Sencillo "hello world".
+exhsvrgb    - Transformación del espacio HSV a valores RGB.
+exjoy       - Cómo calibrar y utilizar mandos de juego.
+exkeys      - Muestra diferentes formas de acceder al teclado.
+exmem       - Dibujar en bitmaps de memoria y mostrarlo en pantalla.
+exmidi      - Ejecutar música MIDI.
+exmouse     - Obtener entradas desde el ratón.
+expal       - Efectos de paletas y rotación de colores.
+expat       - Usar plantillas y sub-bitmap.
+exquat      - Comparación entre interpolación de Euler y "quaternions".
+exrotscl    - Girar y cambiar el tamaño de un 'sprite'.  Canal alpha del bitmap.
+exsample    - Ejecutar sonido digital.
+exscale     - Cargar imágenes PCX y cambiar su tamaño.
+exscn3d     - Uso de las funciones "scene".
+exscroll    - Desplazamiénto de pantalla en "Modo-X".
+exshade     - Ejemplo de 'sprite' con sombreado.
+exspline    - Uso de curvas paramétricas ('spline').
+exsprite    - Acceso a archivos de datos y animación de imágenes ('sprites').
+exstars     - Fondo estrellado en 3D y nave espacial iluminada.
+exswitch    - Control del modo de ejecución en segundo plano.
+exsyscur    - Muestra cómo utilizar los cursores del sistema.
+extimer     - Uso del temporizador (pausas e interrupciones).
+extrans     - Efectos de luz y transparencia.
+extrans2    - Dibujo invertido, transparente y tintado de 'sprites'.
+extruec     - Conversión de colores en formato "true-color".
+exxfade     - Carga de imágenes de color real y fundidos.
+exzbuf      - Otro ejemplo de cubos 3D.
+
+lazarus/    - Un ejemplo de cómo utilizar Allegro.pas en programas Lazarus.
