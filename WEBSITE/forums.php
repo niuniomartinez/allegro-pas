@@ -17,7 +17,6 @@ There are some forums you can visit if you need help with Allegro.pas, game prog
 [/list]
 Since I'm Spanish, I also visit:[list]
   [*][b][url="http://www.clubdelphi.com/"]Club Delphi[/url][/b]  Spanish Delphi community.
-  [*][b][url="http://www.gamearspain.com/"]Club Delphi[/url][/b]  Spanish game-making community.
 [/list]
 forums;
 

@@ -15,22 +15,22 @@ You can find more versions and more formats (zip, .tar.gz, .tar.bz2) in the [url
 # Lista de archivos.  La descripción puede usar bbCode.
   $Archivos = array (
     'lib' => array (
-      array ('Archivo' => 'allegro-pas-bin/4.4.4/allegro.pas-demo-4.4.4-bin-win.zip',
-        'Desc' => 'Compiled demo game for Windows 32bit', 'Tamanno' => '1.5 MB'),
-      array ('Archivo' => 'allegro-pas-bin/4.4.4/allegro.pas-4.4.4-bin-win.zip',
-        'Desc' => 'Source code, alleg44.dll file and compiled tools for windows. [b]Not Delphi[/b]', 'Tamanno' => '3.5 MB'),
-      array ('Archivo' => 'allegro-pas/4.4.4/allegro.pas-4.4.4-src-pas.tar.gz',
-        'Desc' => 'Source code for all platforms. tar/gz package. [b]Not Delphi[/b]', 'Tamanno' => '2.8 MB'),
-      array ('Archivo' => 'allegro-pas/4.4.4/allegro.pas-4.4.4-src-pas.tar.bz2',
-        'Desc' => 'Source code for all platforms. tar/bz2 package. [b]Not Delphi[/b]', 'Tamanno' => '2.6 MB'),
-      array ('Archivo' => 'allegro-pas/4.4.4/allegro.pas-4.4.4-src-pas.zip',
-        'Desc' => 'Source code for all platforms. ZIP package. [b]Not Delphi[/b]', 'Tamanno' => '2.8 MB')
+      array ('Archivo' => '4.4.5/allegro-pas-demo-4.4.5-bin-win.zip',
+        'Desc' => 'Compiled demo game for Windows 32bit', 'Tamanno' => '1.4 MiB'),
+      array ('Archivo' => '4.4.5/allegro.pas-4.4.5-bin-win.zip',
+        'Desc' => 'Source code, alleg44.dll file and compiled tools for windows. [b]Not Delphi[/b]', 'Tamanno' => '3.6 MiB'),
+      array ('Archivo' => '4.4.5/allegro.pas-4.4.5-src-pas.tar.gz',
+        'Desc' => 'Source code for all platforms. tar/gz package. [b]Not Delphi[/b]', 'Tamanno' => '2.8 MiB'),
+#      array ('Archivo' => 'allegro-pas/4.4.4/allegro.pas-4.4.4-src-pas.tar.bz2',
+#        'Desc' => 'Source code for all platforms. tar/bz2 package. [b]Not Delphi[/b]', 'Tamanno' => '2.6 MB'),
+      array ('Archivo' => '4.4.5/allegro.pas-4.4.5-src-pas.zip',
+        'Desc' => 'Source code for all platforms. ZIP package. [b]Not Delphi[/b]', 'Tamanno' => '2.8 MiB')
     ),
     'doc' => array (
-      array ('Archivo' => 'allegro-pas-documentation/4.4/allegro.pas-4.4-121211-doc-html.tar.gzip',
-             'Desc' => 'Documentation in HTML format. tar/gz package.', 'Tamanno' => '231.3 MB'),
-      array ('Archivo' => 'allegro-pas-documentation/4.4/allegro.pas-4.4-121211-doc-html.zip',
-             'Desc' => 'Documentation in HTML format.  Zip package.', 'Tamanno' => '267.4 MB')
+      array ('Archivo' => '4.4.5/allegro-pas-4.4.5-151002-docs-html.tar.gzip',
+             'Desc' => 'Documentation in HTML format. tar/gz package.', 'Tamanno' => '347.8 KiB'),
+      array ('Archivo' => '4.4.5/allegro-pas-4.4.5-151002-docs-html.zip',
+             'Desc' => 'Documentation in HTML format.  Zip package.', 'Tamanno' => '402.4 KiB')
     )
   );
 # Creamos la página.

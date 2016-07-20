@@ -88,7 +88,7 @@ Cambios entre las versiones 5.0 alpha y 5.2 alpha
   Cambios en el API
   -----------------
   * Revisados los tipos de dato definidos en al5base, como se hizo en la
-    versión 4.4.5.  Esto debería corregir algunos porblemas y ayudar en la
+    versión 4.4.5.  Esto debería corregir algunos problemas y ayudar en la
     compatibilidad con Delphi.
   * Las funciones de conversión de tiempo (como ALLEGRO_MSECS_TO_SECS) ahora
     reciben valores enteros en vez de reales.

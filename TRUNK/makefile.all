@@ -1,12 +1,13 @@
 # Makefile generic - build rules
 
-.PHONY: all docs makeskel
+.PHONY: all examples docs makeskel
 
 # Main objective: the whole project
 all: adbanner examples
 	@echo "Finished $(PROJECT)."
 	@echo "To create the documentation, run 'make docs'."
 
+# Examples.
 examples: $(EXMFILES)
 	@echo "Finished all examples."
 
@@ -71,6 +72,6 @@ help: adbanner
 # Some info.
 adbanner:
 	@echo "$(PROJECT)"
-	@echo "(c) Guillermo Martínez J. 2012-2016"
+	@echo "(c) Guillermo Martínez J. 2006-2016"
 	@echo "http://allegro-pas.sourceforge.net"
 	@echo
