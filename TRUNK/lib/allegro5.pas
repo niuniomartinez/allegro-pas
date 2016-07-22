@@ -2599,14 +2599,127 @@ al_draw_line(x1, y1, x2, y2, color, 0);
  * config.h
  *****************************************************************************)
 
-{ TODO:
-  At the moment I'll not include this header.  Object Pascal defines the
-  TStrings class that implements a similar functionality.  Also both FCL and
-  VCL define classes that allow to manage INI files too.
+  TYPE
+  (* An abstract configuration structure. *)
+    ALLEGRO_CONFIGptr = AL_POINTER;
+  (* An opaque structure used for iterating across sections in a configuration
+     structure. *)
+    ALLEGRO_CONFIG_SECTIONptr = AL_POINTER;
+  (* An opaque structure used for iterating across entries in a configuration
+     section. *)
+    ALLEGRO_CONFIG_ENTRYptr = AL_POINTER;
 
-  Actually I'll add this unit only if it's necessary because Allegro does need
-  any special configuration file.
- }
+  (* Creates an empty configuration structure.
+     @seealso(al_load_config_file) @seealso(al_destroy_config) *)
+    FUNCTION al_create_config: ALLEGRO_CONFIGptr;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Adds a section to a configuration structure with the given name. If the
+     section already exists then nothing happens. *)
+    PROCEDURE al_add_config_section (config: ALLEGRO_CONFIGptr; CONST name: AL_STR);
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Sets a value in a section of a configuration. If the section doesn't yet
+     exist, it will be created. If a value already existed for the given key,
+     it will be overwritten. The section can be @code('') for the global
+     section.
+
+     For consistency with the on-disk format of config files, any leading and
+     trailing whitespace will be stripped from the value. If you have
+     significant whitespace you wish to preserve, you should add your own quote
+     characters and remove them when reading the values back in.
+     @seealso(al_get_config_value) *)
+    PROCEDURE al_set_config_value (config: ALLEGRO_CONFIGptr; CONST section, key, value: AL_STR);
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Adds a comment in a section of a configuration. If the section doesn't yet
+     exist, it will be created. The section can be @code('') for the global
+     section.
+
+     The comment may or may not begin with a hash character. Any newlines in
+     the comment string will be replaced by space characters.
+     @seealso(al_add_config_section) *)
+    PROCEDURE al_add_config_comment (config: ALLEGRO_CONFIGptr; CONST section, comment: AL_STR);
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Sets a pointer to an internal character buffer that will only remain valid
+     as long as the @link(ALLEGRO_CONFIG) structure is not destroyed. Copy the
+     value if you need a copy.  The section can be @code('') for the global
+     section.
+     @return(@nil if section or key do not exist.)
+     @seealso(al_set_config_value) *)
+    FUNCTION al_get_config_value (CONST config: ALLEGRO_CONFIGptr; CONST section, key: AL_STR): AL_STRptr;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Read a configuration file from disk.
+
+     The configuration structure should be destroyed with
+     @link(al_destroy_config).)
+     @return(Pointer to configuration or @nil on error.)
+     @seealso(al_save_config_file) *)
+    FUNCTION al_load_config_file (CONST filename: AL_STR): ALLEGRO_CONFIGptr;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+{
+AL_FUNC(ALLEGRO_CONFIG*, al_load_config_file_f, (ALLEGRO_FILE *filename));
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+}
+  (* Write out a configuration file to disk.
+     @return(@true on success, @false on error.)
+     @seealso(al_load_config_file) *)
+    FUNCTION al_save_config_file (CONST filename: AL_STR; CONST config: ALLEGRO_CONFIGptr): AL_BOOL;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+{
+AL_FUNC(bool, al_save_config_file_f, (ALLEGRO_FILE *file, const ALLEGRO_CONFIG *config));
+AL_FUNC(void, al_merge_config_into, (ALLEGRO_CONFIG *master, const ALLEGRO_CONFIG *add));
+AL_FUNC(ALLEGRO_CONFIG *, al_merge_config, (const ALLEGRO_CONFIG *cfg1, const ALLEGRO_CONFIG *cfg2));
+}
+  (* Frees the resources used by a configuration structure. Does nothing if
+     passed @nil. *)
+    PROCEDURE al_destroy_config (config: ALLEGRO_CONFIGptr);
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Removes a section of a configuration.
+     @return(@true if the section was removed, or @false if the section did not
+	exist.) *)
+    FUNCTION al_remove_config_section
+      (config: ALLEGRO_CONFIGptr; CONST section: AL_STR): AL_BOOL;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Removes a key and its associated value in a section of a configuration.
+     @return(@true if the entry was removed, or @false if the entry did not
+	exist.) *)
+    FUNCTION al_remove_config_key
+      (config: ALLEGRO_CONFIGptr; CONST section, key: AL_STR): AL_BOOL;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  (* Returns the name of the first section in the given config file. Usually
+     this will return an empty string for the global section, even it contains
+     no values. The iterator parameter will receive an opaque iterator which is
+     used by @link(al_get_next_config_section) to iterate over the remaining
+     sections.
+
+     The returned string and the iterator are only valid as long as no change
+     is made to the passed @code(ALLEGRO_CONFIGptr).
+     @seealso(al_get_next_config_section) *)
+    FUNCTION al_get_first_config_section
+      (CONST config: ALLEGRO_CONFIGptr; OUT iterator: ALLEGRO_CONFIG_SECTIONptr): AL_STRptr;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Returns the name of the next section in the given config file or @nil if
+     there are no more sections. The iterator must have been obtained with
+     @link(al_get_first_config_section) first.
+     @seealso(al_get_first_config_section) *)
+    FUNCTION al_get_next_config_section (VAR iterator: ALLEGRO_CONFIG_SECTIONptr): AL_STRptr;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Returns the name of the first key in the given section in the given config
+     or @nil if the section is empty. The @code(iterator) works like the one
+     for @link(al_get_first_config_section)
+
+     The returned string and the iterator are only valid as long as no change
+     is made to the passed @code(ALLEGRO_CONFIGptr).
+     @seealso(al_get_next_config_entry) *)
+    FUNCTION al_get_first_config_entry (
+      CONST config: ALLEGRO_CONFIGptr; CONST section: AL_STR;
+      OUT iterator: ALLEGRO_CONFIG_ENTRYptr
+    ): AL_STRptr;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Returns the next key for the iterator obtained by
+     @link(al_get_first_config_entry). The iterator works like the one
+     @link(for al_get_next_config_section). *)
+    FUNCTION al_get_next_config_entry (VAR iterator: ALLEGRO_CONFIG_ENTRYptr): AL_STRptr;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
