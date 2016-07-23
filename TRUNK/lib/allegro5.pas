@@ -3580,7 +3580,7 @@ AL_FUNC(ALLEGRO_CONFIG *, al_merge_config, (const ALLEGRO_CONFIG *cfg1, const AL
    should be called after successfully attaching the pixel and/or vertex
    shaders with @link(al_attach_shader_source) or
    @link(al_attach_shader_source_file).
-    
+
    @bold(Note:) If you are using the @code(ALLEGRO_PROGRAMMABLE_PIPELINE) flag,
    then you must specify both a pixel and a vertex shader sources for anything
    to be rendered.
