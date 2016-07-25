@@ -192,7 +192,9 @@ END;
 
             If a dialog window could not be created then this function returns
 	    @nil.) *)
-  FUNCTION al_create_native_file_dialog (CONST initial_path, title, patterns: AL_STR; Mode: AL_INT): ALLEGRO_FILECHOOSERptr;
+  FUNCTION al_create_native_file_dialog (
+    CONST initial_path, title, patterns: AL_STR; Mode: AL_INT
+  ): ALLEGRO_FILECHOOSERptr;
     CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
 (* Shows the dialog window. The display may be @nil, otherwise the given
    display is treated as the parent if possible.
@@ -212,7 +214,8 @@ END;
 (* Returns one of the selected paths with index @code(i). The index should
    range from @code(0) to the return value of
    @code(@link(al_get_native_file_dialog_count) - 1). *)
-  FUNCTION al_get_native_file_dialog_path (CONST dialog: ALLEGRO_FILECHOOSERptr; index: AL_SIZE_T): AL_STRptr;
+  FUNCTION al_get_native_file_dialog_path
+    (CONST dialog: ALLEGRO_FILECHOOSERptr; index: AL_SIZE_T): AL_STRptr;
     CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
 (* Frees up all resources used by the file dialog. *)
   PROCEDURE al_destroy_native_file_dialog (dialog: ALLEGRO_FILECHOOSERptr);
@@ -286,7 +289,8 @@ button := al_show_native_message_box (
    @returns(@nil if there was an error opening the window, or if text log 
 	    windows are not implemented on the platform.)
    @seealso(al_append_native_text_log) @seealso(al_close_native_text_log) *)
-  FUNCTION al_open_native_text_log (CONST title: AL_STR; flags: AL_INT): ALLEGRO_TEXTLOGptr;
+  FUNCTION al_open_native_text_log
+    (CONST title: AL_STR; flags: AL_INT): ALLEGRO_TEXTLOGptr;
     CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
 (* Closes a message log window opened with @code(al_open_native_text_log)
    earlier.
@@ -302,7 +306,8 @@ button := al_show_native_message_box (
    If the window is @nil then this function will fall back to calling
    @code(Write). This makes it convenient to support logging to a window or a
    terminal. *)
-  PROCEDURE al_append_native_text_log (textlog: ALLEGRO_TEXTLOGptr; CONST str: AL_STR);
+  PROCEDURE al_append_native_text_log
+    (textlog: ALLEGRO_TEXTLOGptr; CONST str: AL_STR);
     CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
 (* Get an event source for a text log window. The possible events are:
    @unorderedlist(
@@ -323,9 +328,12 @@ button := al_show_native_message_box (
 
 
 
-  FUNCTION ALLEGRO_MENU_SEPARATOR: ALLEGRO_MENU_INFO;
 (* Helper to build native menus. *)
-  FUNCTION ALLEGRO_ITEM_OF_MENU (CONST caption: AL_STRptr; id, flags: AL_INT; icon: ALLEGRO_BITMAPptr): ALLEGRO_MENU_INFO;
+  FUNCTION ALLEGRO_ITEM_OF_MENU (
+    CONST caption: AL_STRptr; id, flags: AL_INT; icon: ALLEGRO_BITMAPptr
+  ): ALLEGRO_MENU_INFO; INLINE;
+(* Helper to build native menus. *)
+  FUNCTION ALLEGRO_MENU_SEPARATOR: ALLEGRO_MENU_INFO; INLINE;
 (* Helper to build native menus. *)
   FUNCTION ALLEGRO_END_OF_MENU: ALLEGRO_MENU_INFO;
 
@@ -354,7 +362,7 @@ button := al_show_native_message_box (
    for more information.
    @seealso(al_insert_menu_item) @seealso(al_remove_menu_item) *)
   FUNCTION al_append_menu_item (
-    parent: ALLEGRO_MENUptr; CONST title: AL_STR; id: AL_UINT16;
+    parent: ALLEGRO_MENUptr; CONST title: AL_STRptr; id: AL_UINT16;
     flags: AL_INT; icon: ALLEGRO_BITMAPptr; submenu: ALLEGRO_MENUptr
   ): AL_INT;
     CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
@@ -381,8 +389,9 @@ button := al_show_native_message_box (
     @return(@true on success.)
     @seealso(al_append_menu_item) @seealso(al_remove_menu_item) *)
    FUNCTION al_insert_menu_item (
-     parent: ALLEGRO_MENUptr; pos: AL_INT; CONST title: AL_STR; id: AL_UINT16;
-     flags: AL_INT; icon: ALLEGRO_BITMAPptr; submenu: ALLEGRO_MENUptr
+     parent: ALLEGRO_MENUptr; pos: AL_INT; CONST title: AL_STRptr;
+     id: AL_UINT16; flags: AL_INT; icon: ALLEGRO_BITMAPptr;
+     submenu: ALLEGRO_MENUptr
    ): AL_BOOL;
    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
 (* Removes the specified item from the menu and destroys it.  If the item
@@ -542,10 +551,16 @@ ALLEGRO_DIALOG_FUNC(int, al_toggle_menu_item_flags, (ALLEGRO_MENU *menu, int pos
 
 IMPLEMENTATION
 
-  FUNCTION _al_show_native_message_box (display: ALLEGRO_DISPLAYptr; CONST title, heading, str, buttons: AL_STRptr; flags: AL_INT): AL_INT; CDECL;
+  FUNCTION _al_show_native_message_box (
+    display: ALLEGRO_DISPLAYptr; CONST title, heading, str, buttons: AL_STRptr;
+    flags: AL_INT
+  ): AL_INT; CDECL;
   EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME NAME 'al_show_native_message_box';
 
-  FUNCTION al_show_native_message_box (display: ALLEGRO_DISPLAYptr; CONST title, heading, str, buttons: STRING; flags: AL_INT): AL_INT;
+  FUNCTION al_show_native_message_box (
+    display: ALLEGRO_DISPLAYptr; CONST title, heading, str, buttons: STRING;
+    flags: AL_INT
+  ): AL_INT;
   VAR
     ButtonsPtr: AL_STRptr;
   BEGIN
@@ -561,25 +576,24 @@ IMPLEMENTATION
 
 
 (* Menu options. *)
-  FUNCTION ALLEGRO_MENU_SEPARATOR: ALLEGRO_MENU_INFO;
-  VAR
-    Item: ALLEGRO_MENU_INFO;
-  BEGIN
-  { There's an issue here.  Allegro sets it to (-1) but id is unsigned
-    (uint16_t) wich makes FPC to raise a warning.  That's why I set it to
-    maximum value for 16bit integers. }
-    ALLEGRO_MENU_SEPARATOR := ALLEGRO_ITEM_OF_MENU (NIL, $FFFF, 0, NIL)
-  END;
-
-
-
-  FUNCTION ALLEGRO_ITEM_OF_MENU
-    (CONST caption: AL_STRptr; id, flags: AL_INT; icon: ALLEGRO_BITMAPptr): ALLEGRO_MENU_INFO;
+  FUNCTION ALLEGRO_ITEM_OF_MENU (
+    CONST caption: AL_STRptr; id, flags: AL_INT; icon: ALLEGRO_BITMAPptr
+  ): ALLEGRO_MENU_INFO;
   BEGIN
     ALLEGRO_ITEM_OF_MENU.caption := caption;
     ALLEGRO_ITEM_OF_MENU.id := id;
     ALLEGRO_ITEM_OF_MENU.flags := flags;
     ALLEGRO_ITEM_OF_MENU.icon := icon
+  END;
+
+
+
+  FUNCTION ALLEGRO_MENU_SEPARATOR: ALLEGRO_MENU_INFO;
+  BEGIN
+  { There's an issue here.  Allegro sets it to (-1) but id is unsigned
+    (uint16_t) wich makes FPC to raise a warning.  That's why I set it to
+    maximum value for 16bit integers. }
+    ALLEGRO_MENU_SEPARATOR := ALLEGRO_ITEM_OF_MENU (NIL, $FFFF, 0, NIL)
   END;
 
 
