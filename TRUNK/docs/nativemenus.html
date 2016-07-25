@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>Allegro.pas - Native dialogs support - Menus</title>
+</head>
+<body>
+ <article>
+  <header>
+    <h1>Native dialogs support - Menus</h1>
+  </header>
+
+  <p>Menus are implemented on Windows, X and OS X.&nbsp; Menus on X are implemented with GTK, and have a special requirement:&nbsp; you must set the <code>ALLEGRO_GTK_TOPLEVEL</code> display flag prior to creating the display which will have menus attached.</p>
+  <p>A menu can be attached to a single display window or popped up as a context menu.&nbsp; If you wish to use the same menu on multiple displays or use a sub-menu as a context menu, you must make a copy via <a href="./lib/al5nativedlg.html#al_clone_menu">al_clone_menu</a> or <a href="./lib/al5nativedlg.html#al_clone_menu_for_popup">al_clone_menu_for_popup</a>.</p>
+  <p>Top level items in a non-popup menu must have at least one sub-item, or the behavior is undefined.</p>
+  <p>Each menu item can be given an ID of any 16-bit integer greater than zero.&nbsp; When a user clicks on a menu item, an event will be generated only if it has an ID.&nbsp; This ID should be unique per menu; if you duplicate IDs, then there will be no way for you to determine exactly which item generated the event.</p>
+  <p>There are many functions that take pos as a parameter used for locating a particular menu item.&nbsp; In those cases, it represents one of two things: an ID or a zero-based index.&nbsp; Any value greater than zero will always be treated as an ID.&nbsp; Anything else (including zero) will be considered an index based on the absolute value.&nbsp; In other words, <code>0</code> is the first menu item, <code>-1</code> is the second menu item, <code>-2</code> is the third menu item, and so on.</p>
+  <p>The event type is <code>ALLEGRO_EVENT_MENU_CLICK</a>.&nbsp; It contains three fields:</p>
+  <pre><code>
+event.user.data1 := id;
+event.user.data2 := AL_INTPTR_T (display);
+event.user.data3 := AL_INTPTR_T (menu);
+  </code></pre>
+  <p>The display and menu may be <code>NIL</code> if it was not possible to tell exactly which item generated the event.</p>
+  <p>A basic example:</p>
+  <pre><code>
+CONST
+  FILE_EXIT_ID = 1;
+VAR
+  Menu, FileMenu: ALLEGRO_MENUptr;
+  ...
+BEGIN
+  Menu := al_create_menu;
+  FileMenu := al_create_menu;
+  al_append_menu_item (FileMenu, 'Exit', FILE_EXIT_ID, 0, NIL, NIL);
+  al_append_menu_item (Menu, 'File', 0, 0, NILL, FileMenu);
+  al_set_display_menu (Display, Menu);
+  al_register_event_source (Queue, al_get_default_menu_event_source);
+  ...
+  al_wait_for_event (Queue, Event);
+  IF Event._type = ALLEGRO_EVENT_MENU_CLICK THEN
+    IF Event.user.data1 = FILE_EXIT_ID THEN
+     ExitProgram;
+  ...
+END;
+  </code></pre>
+  <p>Because there is no <i>"<code>DISPLAY_DESTROYED</code>"</i> event, you must call <code><a href="./lib/al5nativedlg.html#al_set_display_menu">al_set_display_menu</a> (Display, NIL)</code> before destroying any display with a menu attached, to avoid leaking resources.</p>
+ </article>
+</body>
+</html>

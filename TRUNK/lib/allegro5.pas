@@ -2227,8 +2227,35 @@ END;
 
 
 
-  PROCEDURE al_set_new_display_refresh_rate (refresh_rate: AL_INT);
+(* Creates a display, or window, with the specified dimensions. The parameters
+   of the display are determined by the last calls to
+   @code(al_set_new_display_* ). Default parameters are used if none are set
+   explicitly. Creating a new display will automatically make it the active
+   one, with the backbuffer selected for drawing.
+
+   Each display that uses OpenGL as a backend has a distinct OpenGL rendering
+   context associated with it. See @link(al_set_target_bitmap) for the
+   discussion about rendering contexts.
+   @returns(@nil on error.)
+   @seealso(al_set_new_display_flags) @seealso(al_set_new_display_option)
+   @seealso(al_set_new_display_refresh_rate)
+   @seealso(al_set_new_display_adapter) @seealso(al_set_new_window_title)
+   @seealso(al_destroy_display) *)
+  FUNCTION al_create_display (w, h: AL_INT): ALLEGRO_DISPLAYptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Destroys a display.
+
+   If the target bitmap of the calling thread is tied to the display, then it
+   implies a call to @code(al_set_target_bitmap @(@nil@);) before the display
+   is destroyed.
+
+   That special case notwithstanding, you should make sure no threads are
+   currently targeting a bitmap which is tied to the display before you destroy
+   it.
+   @seealso(al_set_target_bitmap) *)
+  PROCEDURE al_destroy_display (display: ALLEGRO_DISPLAYptr);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
 (* Sets various flags to be used when creating new displays on the calling
    thread. flags is a bitfield containing any reasonable combination of the following:
    @unorderedlist(
@@ -2308,6 +2335,145 @@ END;
    @seealso(al_set_display_option) *)
   PROCEDURE al_set_new_display_flags (flags: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Set an extra display option, to be used when creating new displays on the
+   calling thread.  Display options differ from display flags, and specify some
+   details of the context to be created within the window itself.  These mainly
+   have no effect on Allegro itself, but you may want to specify them, for
+   example if you want to use multisampling.
+
+   The @code(importance) parameter can be either:@unorderedlist(
+    @item(@bold(@code(ALLEGRO_REQUIRE)) - The display will not be created if
+     the setting can not be met.)
+    @item(@bold(@code(ALLEGRO_SUGGEST)) - If the setting is not available, the
+     display will be created anyway with a setting as close as possible to the
+     requested one.  You can query the actual value used in that case by
+     calling @link(al_get_display_option) after the display has been created.)
+    @item(@bold(@code(ALLEGRO_DONTCARE)) - If you added a display option with
+     one of the above two settings before, it will be removed again.  Else this
+     does nothing.)
+   )
+   The supported options are:@unorderedlist(
+    @item(@bold(@code(ALLEGRO_COLOR_SIZE)) - This can be used to ask for a
+     specific bit depth. For example to force a 16-bit framebuffer set this to
+     16.)
+    @item(@bold(@code(ALLEGRO_RED_SIZE, ALLEGRO_GREEN_SIZE, ALLEGRO_BLUE_SIZE,
+     ALLEGRO_ALPHA_SIZE)) - Individual color component size in bits.)
+    @item(@bold(@code(ALLEGRO_RED_SHIFT, ALLEGRO_GREEN_SHIFT,
+     ALLEGRO_BLUE_SHIFT, ALLEGRO_ALPHA_SHIFT)) - Together with the previous
+     settings these can be used to specify the exact pixel layout the display
+     should use. Normally there is no reason to use these.)
+    @item(@bold(@code(ALLEGRO_ACC_RED_SIZE, ALLEGRO_ACC_GREEN_SIZE,
+     ALLEGRO_ACC_BLUE_SIZE, ALLEGRO_ACC_ALPHA_SIZE)) - This can be used to
+     define the required accumulation buffer size.)
+    @item(@bold(@code(ALLEGRO_STEREO)) - Whether the display is a stereo display.)
+    @item(@bold(@code(ALLEGRO_AUX_BUFFERS)) - Number of auxiliary buffers the
+     display should have.)
+    @item(@bold(@code(ALLEGRO_DEPTH_SIZE)) - How many depth buffer @(z-buffer@)
+     bits to use.)
+    @item(@bold(@code(ALLEGRO_STENCIL_SIZE)) - How many bits to use for the
+     stencil buffer.)
+    @item(@bold(@code(ALLEGRO_SAMPLE_BUFFERS)) - Whether to use multisampling
+     @(@code(1)@) or not @(@code(0)@).)
+    @item(@bold(@code(ALLEGRO_SAMPLES)) - If the above is @code(1), the number
+     of samples to use per pixel. Else @code(0).)
+    @item(@bold(@code(ALLEGRO_RENDER_METHOD:)) - @code(0) if hardware
+     acceleration is not used with this display.)
+    @item(@bold(@code(ALLEGRO_FLOAT_COLOR)) - Whether to use floating point
+     color components.)
+    @item(@bold(@code(ALLEGRO_FLOAT_DEPTH)) - Whether to use a floating point
+     depth buffer.)
+    @item(@bold(@code(ALLEGRO_SINGLE_BUFFER)) - Whether the display uses a
+     single buffer @(@code(1)@) or another update method @(@code(0)@).)
+    @item(@bold(@code(ALLEGRO_SWAP_METHOD)) - If the above is @code(0), this is
+     set to @code(1) to indicate the display is using a copying method to make
+     the next buffer in the flip chain available, or to @code(2) to indicate a
+     flipping or other method.)
+    @item(@bold(@code(ALLEGRO_COMPATIBLE_DISPLAY)) - Indicates if Allegro's
+     graphics functions can use this display. If you request a display not
+     useable by Allegro, you can still use for example OpenGL to draw graphics.)
+    @item(@bold(@code(ALLEGRO_UPDATE_DISPLAY_REGION)) - Set to @code(1) if the
+     display is capable of updating just a region, and @code(0) if calling
+     @link(al_update_display_region) is equivalent to @code(al_flip_display).)
+    @item(@bold(@code(ALLEGRO_VSYNC)) - Set to @code(1) to tell the driver to
+     wait for vsync in @link(al_flip_display), or to @code(2) to force vsync
+     off.  The default of @code(0) means that Allegro does not try to modify
+     the vsync behavior so it may be on or off.  Note that even in the case of
+     1 or 2 it is possible to override the vsync behavior in the graphics
+     driver so you should not rely on it.)
+    @item(@bold(@code(ALLEGRO_MAX_BITMAP_SIZE)) - When queried this returns the
+     maximum size @(width as well as height@) a bitmap can have for this
+     display.  Calls to @link(al_create_bitmap) or @link(al_load_bitmap) for
+     bitmaps larger than this size will fail.  It does not apply to memory
+     bitmaps which always can have arbitrary size @(but are slow for drawing@).)
+    @item(@bold(@code(ALLEGRO_SUPPORT_NPOT_BITMAP)) - Set to 1 if textures used
+     for bitmaps on this display can have a size which is not a power of two.
+     This is mostly useful if you use Allegro to load textures as otherwise
+     only power-of-two textures will be used internally as bitmap storage.)
+    @item(@bold(@code(ALLEGRO_CAN_DRAW_INTO_BITMAP)) - Set to @code(1) if you
+     can use @link(al_set_target_bitmap) on bitmaps of this display to draw
+     into them. If this is not the case software emulation will be used when
+     drawing into display bitmaps @(which can be very slow@).)
+    @item(@bold(@code(ALLEGRO_SUPPORT_SEPARATE_ALPHA)) - This is set to
+    @code(1) if the @link(al_set_separate_blender) function is supported.
+     Otherwise the alpha parameters will be ignored.)
+    @item(@bold(@code(ALLEGRO_AUTO_CONVERT_BITMAPS)) - This is on by
+     default. It causes any existing memory bitmaps with the
+     @code(ALLEGRO_CONVERT_BITMAP) flag to be converted to a display bitmap of
+     the newly created display with the option set.)
+    @item(@bold(@code(ALLEGRO_SUPPORTED_ORIENTATIONS)) - This is a
+     bit-combination of the orientations supported by the application. The
+     orientations are the same as for @link(al_get_display_orientation) with
+     the additional possibilities:@unorderedlist(
+
+     @item(@bold(@code(ALLEGRO_DISPLAY_ORIENTATION_PORTRAIT)) - means only the
+      two portrait orientations are supported.)
+     @item(@bold(@code(ALLEGRO_DISPLAY_ORIENTATION_LANDSCAPE)) - means only the
+      two landscape orientations)
+     @item(@bold(@code(ALLEGRO_DISPLAY_ORIENTATION_ALL)) - allows all four
+      orientations.))
+     When the orientation changes between a portrait and a landscape
+     orientation the display needs to be resized.  This is done by sending an
+     @code(ALLEGRO_EVENT_DISPLAY_RESIZE) message which should be handled by
+     calling @link(al_acknowledge_resize).)
+    @item(@bold(@code(ALLEGRO_OPENGL_MAJOR_VERSION)) - Request a specific
+     OpenGL major version.)
+    @item(@bold(@code(ALLEGRO_OPENGL_MINOR_VERSION)) - Request a specific
+     OpenGL minor version.)
+   )
+   @seealso(al_set_new_display_flags) @seealso(al_get_display_option) *)
+  PROCEDURE al_set_new_display_option (option: ALLEGRO_DISPLAY_OPTIONS; value, importance: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+(* Gets the flags of the display.
+
+   In addition to the flags set for the display at creation time with
+   @link(al_set_new_display_flags) it can also have the @code(ALLEGRO_MINIMIZED)
+   flag set, indicating that the window is currently minimized.  This flag is
+   very platform-dependent as even a minimized application may still render a
+   preview version so normally you should not care whether it is minimized or
+   not.
+   @seealso(al_set_new_display_flags) @seealso(al_set_display_flag) *)
+  FUNCTION al_get_display_flags (display: ALLEGRO_DISPLAYptr): AL_INT;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Enable or disable one of the display flags. The flags are the same as for
+   @link(al_set_new_display_flags).  The only flags that can be changed after
+   creation are:
+@longcode(#
+    ALLEGRO_FULLSCREEN_WINDOW
+    ALLEGRO_FRAMELESS
+    ALLEGRO_MAXIMIZED
+#)
+   You can use @code(al_get_display_flags) to query whether the given display
+   property actually changed.
+   @return(@true if the driver supports toggling the specified flag else
+     @false.)
+   @seealso(al_set_new_display_flags) @seealso(al_get_display_flags) *)
+  FUNCTION al_set_display_flag
+    (display: ALLEGRO_DISPLAYptr; flag: AL_INT; onoff: AL_BOOL): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  PROCEDURE al_set_new_display_refresh_rate (refresh_rate: AL_INT);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_get_new_display_refresh_rate: AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_get_new_display_flags: AL_INT;
@@ -2327,8 +2493,6 @@ END;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_get_display_refresh_rate (display: ALLEGRO_DISPLAYptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_display_flags (display: ALLEGRO_DISPLAYptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_get_display_orientation (display: ALLEGRO_DISPLAYptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_toggle_display_flag (display: ALLEGRO_DISPLAYptr; flag: AL_INT; onoff: AL_BOOL): AL_BOOL;
@@ -2336,34 +2500,6 @@ END;
 
 
 
-(* Creates a display, or window, with the specified dimensions. The parameters
-   of the display are determined by the last calls to
-   @code(al_set_new_display_* ). Default parameters are used if none are set
-   explicitly. Creating a new display will automatically make it the active
-   one, with the backbuffer selected for drawing.
-
-   Each display that uses OpenGL as a backend has a distinct OpenGL rendering
-   context associated with it. See @link(al_set_target_bitmap) for the
-   discussion about rendering contexts.
-   @returns(@nil on error.)
-   @seealso(al_set_new_display_flags) @seealso(al_set_new_display_option)
-   @seealso(al_set_new_display_refresh_rate)
-   @seealso(al_set_new_display_adapter) @seealso(al_set_new_window_title)
-   @seealso(al_destroy_display) *)
-  FUNCTION al_create_display (w, h: AL_INT): ALLEGRO_DISPLAYptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Destroys a display.
-
-   If the target bitmap of the calling thread is tied to the display, then it
-   implies a call to @code(al_set_target_bitmap @(@nil@);) before the display
-   is destroyed.
-
-   That special case notwithstanding, you should make sure no threads are
-   currently targeting a bitmap which is tied to the display before you destroy
-   it.
-   @seealso(al_set_target_bitmap) *)
-  PROCEDURE al_destroy_display (display: ALLEGRO_DISPLAYptr);
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_get_current_display: ALLEGRO_DISPLAYptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* This function selects the bitmap to which all subsequent drawing operations
@@ -2489,7 +2625,7 @@ al_draw_line(x1, y1, x2, y2, color, 0);
      case @code(al_flip_display) will wait for vsync depending on the settings
      set in the system's graphics preferences.)
    )
-   @seealso(al_set_new_display_flags) @seealso(al_set_new_display_option ) *)
+   @seealso(al_set_new_display_flags) @seealso(al_set_new_display_option) *)
   PROCEDURE al_flip_display;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_update_display_region (x, y, Width, height: AL_INT);
@@ -2551,8 +2687,6 @@ al_draw_line(x1, y1, x2, y2, color, 0);
 
 
 
-  PROCEDURE al_set_new_display_option (option: ALLEGRO_DISPLAY_OPTIONS; value, importance: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_get_new_display_option (option: ALLEGRO_DISPLAY_OPTIONS; VAR importance: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_reset_new_display_options;
@@ -2639,7 +2773,7 @@ al_draw_line(x1, y1, x2, y2, color, 0);
     PROCEDURE al_add_config_comment (config: ALLEGRO_CONFIGptr; CONST section, comment: AL_STR);
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   (* Sets a pointer to an internal character buffer that will only remain valid
-     as long as the @link(ALLEGRO_CONFIG) structure is not destroyed. Copy the
+     as long as the @link(ALLEGRO_CONFIGptr) structure is not destroyed. Copy the
      value if you need a copy.  The section can be @code('') for the global
      section.
      @return(@nil if section or key do not exist.)
@@ -2716,8 +2850,8 @@ AL_FUNC(ALLEGRO_CONFIG *, al_merge_config, (const ALLEGRO_CONFIG *cfg1, const AL
     ): AL_STRptr;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   (* Returns the next key for the iterator obtained by
-     @link(al_get_first_config_entry). The iterator works like the one
-     @link(for al_get_next_config_section). *)
+     @link(al_get_first_config_entry). The iterator works like the one for
+     @link(al_get_next_config_section). *)
     FUNCTION al_get_next_config_entry (VAR iterator: ALLEGRO_CONFIG_ENTRYptr): AL_STRptr;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
