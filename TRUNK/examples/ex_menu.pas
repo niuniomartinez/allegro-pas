@@ -210,11 +210,11 @@ BEGIN
 	      { append a separator }
 		al_append_menu_item (
 	      { TODO: Caption = NIL for separators? }
-		  al_find_menu (Menu, DYNAMIC_ID), '', 0, 0, NIL, NIL
+		  al_find_menu (Menu, DYNAMIC_ID), NIL, 0, 0, NIL, NIL
 		);
 	      al_append_menu_item (
 		al_find_menu (Menu, DYNAMIC_ID),
-		Format ('New #%d', [dCount]),
+		AL_STRptr (Format ('New #%d', [dCount])),
 		0, 0, NIL, NIL
 	      );
 	      IF dCount = 5 THEN
