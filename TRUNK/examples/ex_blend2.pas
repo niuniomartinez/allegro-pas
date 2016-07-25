@@ -10,7 +10,7 @@ PROGRAM ex_blend2;
 
   USES
     Common, nihGUI,
-    Allegro5, al5Primitives, al5Font, al5Image,
+    Allegro5, al5primitives, al5font, al5image,
     sysutils;
 
   TYPE

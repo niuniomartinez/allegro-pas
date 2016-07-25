@@ -2,6 +2,13 @@
 
 In no special order
 
+  * Check how to detect GTK+ and do correct compilation in ex_menu.
+    Also {$DEFINE} may be useful.  Problem is that I don't see "DEFINES"
+    propagates correctly (FPC).  Ask about it.
+
+  * At ALLEGRO_USER_EVENT, I think that data1..data4 should be in an UNION
+    that defines them as AL_POINTER and also as AL_ULONG/AL_LONG.
+
   * al_get_keyboard_state seems to fail in some systems (64bits? Only Xubuntu
     64bit?).
 

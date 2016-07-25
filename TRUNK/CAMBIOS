@@ -4,7 +4,9 @@ Cambios entre las versiones 5.2 alpha y 5.2 alpha-2
   Novedades
   ---------
   + Añadido manejo de "shaders" (GLSL y HLSL).
+  + Añadido manejo de menús.
   + Nuevos ejemplos:
+      ex_palette
       ex_shader_multitex
       ex_shader_target
 

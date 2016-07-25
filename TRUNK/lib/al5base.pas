@@ -125,8 +125,11 @@ INTERFACE
   {$ENDIF}
   (* size_t equivalent. *)
     AL_SIZE_T = AL_UINT64;
-  (* Fake pointer type.  It's needed because the need of pointer arithmetics in
-    some inlined methods. *)
+  (* Fake pointer type.  It's needed to pass pointers as integer values in some
+     methods. *)
+    AL_INTPTR_T = AL_INT64;
+  (* Fake pointer type.  It's needed to pass pointers as integer values in some
+     methods. *)
     AL_UINTPTR_T = AL_UINT64;
 {$ELSE}
   (* Signed 32/64bit integer values. *)
@@ -135,8 +138,11 @@ INTERFACE
     AL_ULONG = AL_UINT32;
   (* size_t equivalent. *)
     AL_SIZE_T = AL_UINT32;
-  (* Fake pointer type.  It's needed because the need of pointer arithmetics in
-    some inlined methods. *)
+  (* Fake pointer type.  It's needed to pass pointers as integer values in some
+     methods. *)
+    AL_INTPTR_T = AL_INT32;
+  (* Fake pointer type.  It's needed to pass pointers as integer values in some
+     methods. *)
     AL_UINTPTR_T = AL_UINT32;
 {$ENDIF}
 
