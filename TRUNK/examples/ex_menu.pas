@@ -209,7 +209,6 @@ BEGIN
 	      IF dCount = 1 THEN
 	      { append a separator }
 		al_append_menu_item (
-	      { TODO: Caption = NIL for separators? }
 		  al_find_menu (Menu, DYNAMIC_ID), NIL, 0, 0, NIL, NIL
 		);
 	      al_append_menu_item (

@@ -4,6 +4,8 @@ Cambios entre las versiones 5.2 alpha y 5.2 alpha-2
   Novedades
   ---------
   + Añadido manejo de "shaders" (GLSL y HLSL).
+  + Nuevas funciones:
+     al_set_display_flag
   + Añadido manejo de menús.
   + Nuevos ejemplos:
       ex_palette
@@ -13,6 +15,10 @@ Cambios entre las versiones 5.2 alpha y 5.2 alpha-2
   Cambios en el API
   -----------------
   * Módulo al5gl renombrado como al5opengl.
+
+  Otros
+  -----
+  * Multitud de cambios en la documentación.
 
 
 
