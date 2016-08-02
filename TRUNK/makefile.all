@@ -18,7 +18,7 @@ $(EXMBIN)%$(BINSUF): $(EXMDIR)%.pas $(EXMDIR)common.pas $(LIBFILES)
 
 # Documentation.
 docs:
-	pasdoc -T "$(PROJECT)" -O html --cache-dir $(OBJDIR) -E $(DOCDIR) --auto-abstract --use-tipue-search $(LIBFILES)
+	pasdoc -T "$(PROJECT)" -O html --cache-dir $(OBJDIR) -E $(DOCDIR) --auto-abstract --include-creation-time --use-tipue-search -R srcdoc/allegro5.pds $(LIBFILES)
 #	fpdoc $(FPDOPT) --package=Allegro_pas --project=$(DOCSRC)project.xml --format=html --output=$(DOCDIR)
 
 ## This generates skeleton for documentation.

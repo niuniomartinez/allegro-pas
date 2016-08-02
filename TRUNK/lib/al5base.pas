@@ -34,11 +34,9 @@ INTERFACE
   (* Defines some constants to build the correct names of the library files. *)
   CONST
 {$IFDEF DEBUGMODE}
-    { @exclude }
-    _DBG_ = '-debug';
+    _DBG_ = '-debug';{<@exclude }
 {$ELSE}
-    { @exclude }
-    _DBG_ = '';
+    _DBG_ = ''; {<@exclude }
 {$ENDIF}
 
 {$IF DEFINED(UNIX)}
