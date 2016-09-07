@@ -668,9 +668,374 @@ END;
  * file.h
  *****************************************************************************)
 
-{ TODO:
-  Actually, this header is needed by Allegro to define new loaders and savers,
-  but at the moment I'll not add it. }
+  TYPE
+  (* An opaque object representing an open file. This could be a real file on
+     disk or a virtual file. *)
+    ALLEGRO_FILEptr = AL_POINTER;
+
+  (* Pointer to @link(ALLEGRO_FILE_INTERFACE). *)
+    ALLEGRO_FILE_INTERFACEptr = ^ALLEGRO_FILE_INTERFACE;
+  (* A structure containing function pointers to handle a type of "file", real
+     or virtual. See the full discussion in @link(al_set_new_file_interface).
+
+     The @code(fi_open) function must allocate memory for whatever userdata
+     structure it needs.  The pointer to that memory must be returned; it will
+     then be associated with the file. The other functions can access that data
+     by calling @link(al_get_file_userdata) on the file handle. If
+     @code(fi_open) returns @nil then @link(al_fopen) will also return @nil.
+
+     The @code(fi_fclose) function must clean up and free the userdata, but
+     Allegro will free the @code(ALLEGRO_FILEptr) handle.
+
+     If @code(fi_fungetc) is @nil, then Allegro's default implementation of a
+     16 char long buffer will be used.
+     @seealso(al_set_new_file_interface) @seealso(al_fopen_interface)
+     @seealso(al_get_file_userdata) *)
+    ALLEGRO_FILE_INTERFACE = RECORD
+      fi_open: FUNCTION (CONST path, mode: AL_STR): AL_POINTER; CDECL;
+      fi_fclose: FUNCTION (handle: ALLEGRO_FILEptr): AL_BOOL; CDECL;
+      fi_fread: FUNCTION (f: ALLEGRO_FILEptr; ptr: AL_POINTER; size: AL_SIZE_T): AL_SIZE_T; CDECL;
+      fi_fwrite: FUNCTION (f: ALLEGRO_FILEptr; CONST ptr: AL_POINTER; size: AL_SIZE_T): AL_SIZE_T; CDECL;
+      fi_fflush: FUNCTION (f: ALLEGRO_FILEptr): AL_BOOL; CDECL;
+      fi_ftell: FUNCTION (f: ALLEGRO_FILEptr): AL_INT64; CDECL;
+      fi_fseek: FUNCTION (f: ALLEGRO_FILEptr; offset: AL_INT64; whence: AL_INT): AL_BOOL; CDECL;
+      fi_feof: FUNCTION (f: ALLEGRO_FILEptr): AL_BOOL; CDECL;
+      fi_ferror: FUNCTION (f: ALLEGRO_FILEptr): AL_INT; CDECL;
+      fi_ferrmsg: FUNCTION (f: ALLEGRO_FILEptr): AL_STRptr; CDECL;
+      fi_fclearerr: PROCEDURE (f: ALLEGRO_FILEptr); CDECL;
+      fi_fungetc: FUNCTION (f: ALLEGRO_FILEptr; c: AL_INT): AL_INT; CDECL;
+      fi_fsize: FUNCTION (f: ALLEGRO_FILEptr): AL_OFF_T; CDECL;
+    END;
+
+  CONST
+  { @exclude May be these should be an enum. }
+    ALLEGRO_SEEK_SET = 0; (*<Seek relative to beginning of file. *)
+    ALLEGRO_SEEK_CUR = 1; (*<Seek relative to current file position. *)
+    ALLEGRO_SEEK_END = 2; (*<Seek relative to end of file. *)
+
+  (* Creates and opens a file (real or virtual) given the path and mode. The
+     current file interface is used to open the file.
+
+     Depending on the stream type and the mode string, files may be opened in
+     "text" mode. The handling of newlines is particularly important. For
+     example, using the default stdio-based streams on DOS and Windows
+     platforms, where the native end-of-line terminators are @code(CR+LF)
+     sequences, a call to @link(al_fgetc) may return just one character ('\n')
+     where there were two bytes (@code(CR+LF)) in the file. When writing out
+     '\n', two bytes would be written instead. (As an aside, '\n' is not
+     defined to be equal to @code(LF) either.)
+
+     Newline translations can be useful for text files but is disastrous for
+     binary files. To avoid this behaviour you need to open file streams in
+     binary mode by using a mode argument containing a "b", e.g. "rb", "wb".
+     @param(path Path to the file to open.)
+     @param(mode Access mode to open the file in @('r', 'w', etc.@).)
+     @return(a file handle on success, or @nil on error.)
+     @seealso(al_set_new_file_interface) @seealso(al_fclose) *)
+    FUNCTION al_fopen (CONST path, mode: AL_STR): ALLEGRO_FILEptr;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Opens a file using the specified interface, instead of the interface set
+     with @link(al_set_new_file_interface). @seealso(al_fopen) *)
+    FUNCTION al_fopen_interface (
+      CONST vt: ALLEGRO_FILE_INTERFACEptr; CONST path, mode: AL_STR
+    ): ALLEGRO_FILEptr;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Creates an empty, opened file handle with some abstract user data. This
+     allows custom interfaces to extend the @link(ALLEGRO_FILEptr) struct with
+     their own data. You should close the handle with the standard
+     @link(al_fclose) function when you are finished with it.
+     @seealso(al_fopen) @seealso(al_fclose) @seealso(al_set_new_file_interface)
+   *)
+    FUNCTION al_create_file_handle (
+      CONST vt: ALLEGRO_FILE_INTERFACEptr; userdata: AL_POINTER
+    ): ALLEGRO_FILEptr;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Close the given file, writing any buffered output data (if any).
+     @return(@true on success, @false on failure.) *)
+    FUNCTION al_fclose (f: ALLEGRO_FILEptr): AL_BOOL;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Read @code(size) bytes into the buffer pointed to by @code(ptr), from the
+     given file.
+     @return(The number of bytes actually read. If an error occurs, or the
+      end-of-file is reached, the return value is a short byte count @(or
+      zero@).
+
+      @code(al_fread) does not distinguish between EOF and other errors. Use
+      @link(al_feof) and @link(al_ferror) to determine which occurred.)
+     @seealso(al_fgetc) @seealso(al_fread16be) @seealso(al_fread16le)
+     @seealso(al_fread32be) @seealso(al_fread32le) *)
+    FUNCTION al_fread
+      (f: ALLEGRO_FILEptr; ptr: AL_POINTER; size: AL_SIZE_T): AL_SIZE_T;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Write @code(size) bytes from the buffer pointed to by @code(ptr) into the
+     given file.
+
+     @return(The number of bytes actually written. If an error occurs,the
+      return value is a short byte count @(or zero@).)
+     @seealso(al_fputc) @seealso(al_fputs) @seealso(al_fwrite16be)
+     @seealso(al_fwrite16le) @seealso(al_fwrite32be) @seealso(al_fwrite32le) *)
+    FUNCTION al_fwrite
+      (f: ALLEGRO_FILEptr; CONST ptr: AL_POINTER; size: AL_SIZE_T): AL_SIZE_T;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Flush any pending writes to the given file.
+     @return(@true on success, @false otherwise.)
+     @seealso(al_get_errno) *)
+    FUNCTION al_fflush (f: ALLEGRO_FILEptr): AL_BOOL;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Returns the current position in the given file, or @code(-1) on error.
+
+     On some platforms this function may not support large files.
+     @seealso(al_fseek) @seealso(al_get_errno) *)
+    FUNCTION al_ftell (f: ALLEGRO_FILEptr): AL_INT64;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Set the current position of the given file to a position relative to that
+     specified by @code(whence), plus @code(offset) number of bytes.
+     
+     @code(whence) can be:@unorderedlist(
+     @item(@code(ALLEGRO_SEEK_SET) - seek relative to beginning of file)
+     @item(@code(ALLEGRO_SEEK_CUR) - seek relative to current file position)
+     @item(@code(ALLEGRO_SEEK_END) - seek relative to end of file)
+     )
+     After a successful seek, the end-of-file indicator is cleared and all
+     pushback bytes are forgotten.
+
+     On some platforms this function may not support large files.
+     @return(@true on success, @false on failure.)
+     @seealso(al_ftell) @seealso(al_get_errno) *)
+    FUNCTION al_fseek
+      (f: ALLEGRO_FILEptr; offset: AL_INT64; whence: AL_INT): AL_BOOL;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Returns @true if the end-of-file indicator has been set on the file, i.e.
+     we have attempted to read past the end of the file.
+
+     This does not return @true if we simply are at the end of the file. The
+     following code correctly reads two bytes, even when the file contains
+     exactly two bytes:
+@longcode(#
+  b1 := al_fgetc (f);
+  b2 := al_fgetc (f);
+  IF al_feof (f) THEN
+  // At least one byte was unsuccessfully read.
+    ReportError ();
+#)
+     @seealso(al_ferror) @seealso(al_fclearerr) *)
+    FUNCTION al_feof (f: ALLEGRO_FILEptr): AL_BOOL;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Returns non-zero if the error indicator is set on the given file, i.e.
+     there was some sort of previous error. The error code may be system or
+     file interface specific.
+     @seealso(al_feof) @seealso(al_fclearerr) @seealso(al_ferrmsg) *)
+    FUNCTION al_ferror (f: ALLEGRO_FILEptr): AL_INT;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Returns a message string with details about the last error that occurred
+     on the given file handle. The returned string is empty if there was no
+     error, or if the file interface does not provide more information.
+     @seealso(al_fclearerr) @seealso(al_ferror) *)
+    FUNCTION al_ferrmsg (f: ALLEGRO_FILEptr): AL_STRptr;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Clears the error indicator for the given file.
+
+     The standard I/O backend also clears the end-of-file indicator, and other
+     backends should try to do this. However, they may not if it would require
+     too much effort (e.g. PhysicsFS backend), so your code should not rely on
+      it if you need your code to be portable to other backends.
+     @seealso(al_ferror) @seealso(al_feof) *)
+    PROCEDURE al_fclearerr (f: ALLEGRO_FILEptr);
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Ungets a single byte from a file. Pushed-back bytes are not written to the
+     file, only made available for subsequent reads, in reverse order.
+
+     The number of pushbacks depends on the backend. The standard I/O backend
+     only guarantees a single pushback; this depends on the libc implementation.
+
+     For backends that follow the standard behavior, the pushback buffer will
+     be cleared after any seeking or writing; also calls to @link(al_fseek) and
+     @link(al_ftell) are relative to the number of pushbacks. If a pushback
+     causes the position to become negative, the behavior of @code(al_fseek)
+      and @code(al_ftell) are undefined.
+     @seealso(al_fgetc) @seealso(al_get_errno) *)
+    FUNCTION al_fungetc (f: ALLEGRO_FILEptr; c: AL_INT): AL_INT;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Returns the size of the file, if it can be determined, or @code(-1)
+     otherwise. *)
+    FUNCTION al_fsize (f: ALLEGRO_FILEptr): AL_INT64;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  (* Reads and returns next byte in the given file. Returns a negative number
+     on end of file or if an error occurred.
+     @seealso(al_fungetc) *)
+    FUNCTION al_fgetc (f: ALLEGRO_FILEptr): AL_INT;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Writes a single byte to the given file. The byte written is the value of
+     @code(c) cast to an unsigned char.
+     @param(c byte value to write.)
+     @param(f file to write to.)
+     @return(the written byte @(cast back to an @link(AL_INT)@) on success, or
+       negative number on error.) *)
+    FUNCTION al_fputc (f: ALLEGRO_FILEptr; c: AL_INT): AL_INT;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Reads a 16-bit word in little-endian format (LSB first).
+     @return(On success, the 16-bit word. On failure, returns EOF @(-1@). Since
+       -1 is also a valid return value, use @link(al_feof) to check if the end
+       of the file was reached prematurely, or @link(al_ferror) to check if an
+       error occurred.)
+     @seealso(al_fread16be) *)
+    FUNCTION al_fread16le (f: ALLEGRO_FILEptr): AL_INT16;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Reads a 16-bit word in big-endian format (MSB first).
+     @return(On success, the 16-bit word. On failure, returns EOF @(-1@). Since
+       -1 is also a valid return value, use @link(al_feof) to check if the end
+       of the file was reached prematurely, or @link(al_ferror) to check if an
+       error occurred.)
+     @seealso(al_fread16le) *)
+    FUNCTION al_fread16be (f: ALLEGRO_FILEptr): AL_INT16;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Writes a 16-bit word in little-endian format (LSB first).
+     @return(The number of bytes written: 2 on success, less than 2 on an
+       error.)
+     @seealso(al_fwrite16be) *)
+    FUNCTION al_fwrite16le (f: ALLEGRO_FILEptr; w: AL_INT16): AL_SIZE_T;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Writes a 16-bit word in big-endian format (MSB first).
+     @return(The number of bytes written: 2 on success, less than 2 on an
+       error.)
+     @seealso(al_fwrite16le) *)
+    FUNCTION al_fwrite16be (f: ALLEGRO_FILEptr; w: AL_INT16): AL_SIZE_T;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Reads a 32-bit word in little-endian format (LSB first).
+     @return(On success, the 32-bit word. On failure, returns EOF @(-1@). Since
+       -1 is also a valid return value, use @link(al_feof) to check if the end
+       of the file was reached prematurely, or @link(al_ferror) to check if an
+       error occurred.)
+     @seealso(al_fread32be) *)
+    FUNCTION al_fread32le (f: ALLEGRO_FILEptr): AL_INT32;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Reads a 32-bit word in big-endian format (MSB first).
+     @return(On success, the 32-bit word. On failure, returns EOF @(-1@). Since
+       -1 is also a valid return value, use @link(al_feof) to check if the end
+       of the file was reached prematurely, or @link(al_ferror) to check if an
+       error occurred.)
+     @seealso(al_fread32le) *)
+   FUNCTION al_fread32be (f: ALLEGRO_FILEptr): AL_INT32;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Writes a 32-bit word in little-endian format (LSB first).
+     @return(The number of bytes written: 2 on success, less than 2 on an
+       error.)
+     @seealso(al_fwrite32be) *)
+    FUNCTION al_fwrite32le (f: ALLEGRO_FILEptr; l: AL_INT32): AL_SIZE_T;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Writes a 32-bit word in big-endian format (MSB first).
+     @return(The number of bytes written: 2 on success, less than 2 on an
+       error.)
+     @seealso(al_fwrite32le) *)
+    FUNCTION al_fwrite32be (f: ALLEGRO_FILEptr; l: AL_INT32): AL_SIZE_T;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Reads a string of bytes terminated with a newline or end-of-file into the
+     buffer given. The line terminator(s), if any, are included in the returned
+     string. A maximum of @code(max-1) bytes are read, with one byte being
+     reserved for a @code(NUL) terminator.
+
+     See @link(al_fopen) about translations of end-of-line characters.
+     @param(f File to read from.)
+     @param(buf Buffer to fill.)
+     @param(max Maximum size of buffer.)
+     @return(The pointer to @code(buf) on success. Returns @nil if an error
+       occurred or if the end of file was reached without reading any bytes.)
+     @seealso(al_fget_ustr) *)
+    FUNCTION al_fgets
+      (f: ALLEGRO_FILEptr; CONST p: AL_STRptr; max: AL_SIZE_T): AL_STRptr
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Read a string of bytes terminated with a newline or end-of-file. The line
+     terminator(s), if any, are included in the returned string.
+
+     See @link(al_fopen) about translations of end-of-line characters.
+     @return(On success a pointer to a new @link(ALLEGRO_USTR) structure. This
+      must be freed eventually with @link(al_ustr_free). Returns @nil if an
+      error occurred or if the end of file was reached without reading any
+      bytes.)
+     @seealso(al_fgetc) @seealso(al_fgets) *)
+    FUNCTION al_fget_ustr (f: ALLEGRO_FILEptr): ALLEGRO_USTRptr;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Writes a string to file. Apart from the return value, this is equivalent
+     to @code(@link(al_fwrite) @(f, p, Length @(p@)@);)
+
+     @bold(Note:) depending on the stream type and the mode passed to
+     @link(al_fopen), newline characters in the string may or may not be
+     automatically translated to native end-of-line sequences, e.g. @code(CR/LF)
+     instead of @code(LF).
+     @param(f File handle to write to.)
+     @param(p String to write.)
+     @returns(A non-negative integer on success, EOF (-1) on error.)
+     @seealso(al_fwrite) *)
+    FUNCTION al_fputs (f: ALLEGRO_FILEptr; CONST p: AL_STR): AL_INT;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+{
+/* Specific to stdio backend. */
+AL_FUNC(ALLEGRO_FILE*, al_fopen_fd, (int fd, const char *mode));
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
+      ALLEGRO_PATH **ret_path));
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+}
+
+  (* Opens a slice (subset) of an already open random access file as if it were
+     a stand alone file. While the slice is open, the parent file handle must
+     not be used in any way.
+
+     The slice is opened at the current location of the parent file, up through
+     @code(initial_size) bytes. The @code(initial_size) may be any non-negative
+     integer that will not exceed the bounds of the parent file.
+
+     Seeking with ALLEGRO_SEEK_SET will be relative to this starting location.
+     ALLEGRO_SEEK_END will be relative to the starting location plus the size
+     of the slice.
+
+     The mode can be any combination of:@unorderedlist(
+       @item(r: read access)  @item(w: write access) @item(e: expandable)
+     )
+
+     For example, a mode of @code('rw') indicates the file can be read and
+     written. (Note that this is slightly different from the stdio modes.) Keep
+     in mind that the parent file must support random access and be open in
+     normal write mode (not append) for the slice to work in a well defined way.
+
+     If the slice is marked as expandable, then reads and writes can happen
+     after the initial end point, and the slice will grow accordingly.
+     Otherwise, all activity is restricted to the initial size of the slice.
+
+     A slice must be closed with @link(al_fclose). The parent file will then be
+     positioned immediately after the end of the slice.
+     @seealso(al_fopen) *)
+    FUNCTION al_fopen_slice (
+      fp: ALLEGRO_FILEptr; initial_size: AL_SIZE_T; CONST mode: AL_STR
+    ): ALLEGRO_FILEptr;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  (* Return a pointer to the @link(ALLEGRO_FILE_INTERFACEptr) table in effect
+     for the calling thread.
+     @seealso(al_store_state) @seealso(al_restore_state) *)
+    FUNCTION al_get_new_file_interface: ALLEGRO_FILE_INTERFACEptr;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Sets the @link(ALLEGRO_FILE_INTERFACEptr) table for the calling thread.
+     This will change the handler for later calls to @link(al_fopen).
+     @seealso(al_set_standard_file_interface) @seealso(al_store_state)
+     @seealso(al_restore_state) *)
+    PROCEDURE al_set_new_file_interface
+      (CONST file_interface: ALLEGRO_FILE_INTERFACEptr);
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Sets the @link(ALLEGRO_FILE_INTERFACEptr) table to the default, for the
+     calling thread. This will change the handler for later calls to
+     @link(al_fopen).
+     @seealso(al_set_new_file_interface) *)
+    PROCEDURE al_set_standard_file_interface;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  (* Returns a pointer to the custom userdata that is attached to the file
+     handle. This is intended to be used by functions that extend
+     @link(ALLEGRO_FILE_INTERFACEptr). *)
+    FUNCTION al_get_file_userdata (f: ALLEGRO_FILEptr): AL_POINTER;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
@@ -690,6 +1055,90 @@ END;
     ALLEGRO_KEEP_INDEX             = $0800;
 
 
+  TYPE
+  (* Used by @link(al_register_bitmap_loader). *)
+    ALLEGRO_IIO_LOADER_FUNCTION = FUNCTION (CONST filename: AL_STR; flags: AL_INT): ALLEGRO_BITMAPptr; CDECL;
+  (* Used by @link(al_register_bitmap_loader_f). *)
+    ALLEGRO_IIO_FS_LOADER_FUNCTION = FUNCTION (fp: ALLEGRO_FILEptr; flags: AL_INT): ALLEGRO_BITMAPptr; CDECL;
+  (* Used by @link(al_register_bitmap_saver). *)
+    ALLEGRO_IIO_SAVER_FUNCTION = FUNCTION (CONST filename: AL_STR; bitmap: ALLEGRO_BITMAPptr): AL_BOOL; CDECL;
+  (* Used by @link(al_register_bitmap_saver_f). *)
+    ALLEGRO_IIO_FS_SAVER_FUNCTION = FUNCTION (fp: ALLEGRO_FILEptr; bitmap: ALLEGRO_BITMAPptr): AL_BOOL; CDECL;
+  (* Used by @link(al_register_bitmap_identifier). *)
+    ALLEGRO_IIO_IDENTIFIER_FUNCTION = FUNCTION (fp: ALLEGRO_FILEptr): AL_BOOL; CDECL;
+
+(* Registers a handler for @link(al_load_bitmap). The given function will be
+   used to handle the loading of bitmaps files with the given extension.
+
+   The extension should include the leading dot ('.') character. It will be
+   matched case-insensitively.
+
+   The loader argument may be @nil to unregister an entry.
+   @return(@true on success, @false on error. Returns @false if unregistering
+	   an entry that doesn't exist.)
+   @seealso(al_register_bitmap_saver) @seealso(al_register_bitmap_loader_f) *)
+  FUNCTION al_register_bitmap_loader
+    (CONST ext: AL_STR; loader: ALLEGRO_IIO_LOADER_FUNCTION): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Registers a handler for @link(al_save_bitmap). The given function will be
+   used to handle the saving of bitmaps files with the given extension.
+
+   The extension should include the leading dot ('.') character. It will be
+   matched case-insensitively.
+
+   The loader argument may be @nil to unregister an entry.
+   @return(@true on success, @false on error. Returns @false if unregistering
+	   an entry that doesn't exist.)
+   @seealso(al_register_bitmap_loader) @seealso(al_register_bitmap_saver_f) *)
+  FUNCTION al_register_bitmap_saver
+    (CONST ext: AL_STR; saver: ALLEGRO_IIO_SAVER_FUNCTION): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Registers a handler for @link(al_load_bitmap_f). The given function will be
+   used to handle the loading of bitmaps files with the given extension.
+
+   The extension should include the leading dot ('.') character. It will be
+   matched case-insensitively.
+
+   The fs_loader argument may be @nil to unregister an entry.
+   @return(@true on success, @false on error. Returns @false if unregistering
+	   an entry that doesn't exist.)
+   @seealso(al_register_bitmap_loader) *)
+  FUNCTION al_register_bitmap_loader_f
+    (CONST ext: AL_STR; fs_loader: ALLEGRO_IIO_FS_LOADER_FUNCTION): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Registers a handler for @link(al_save_bitmap_f). The given function will be
+   used to handle the saving of bitmaps files with the given extension.
+
+   The extension should include the leading dot ('.') character. It will be
+   matched case-insensitively.
+
+   The fs_saver argument may be @nil to unregister an entry.
+   @return(@true on success, @false on error. Returns @false if unregistering
+	   an entry that doesn't exist.)
+   @seealso(al_register_bitmap_saver) *)
+  FUNCTION al_register_bitmap_saver_f
+    (CONST ext: AL_STR; fs_saver: ALLEGRO_IIO_FS_SAVER_FUNCTION): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Registers an identify handler for @link(al_identify_bitmap). The given
+   function will be used to detect files for the given extension. It will be
+   called with a single argument of type @link(ALLEGRO_FILEptr) which is a file
+   handle opened for reading and located at the first byte of the file. The
+   handler should try to read as few bytes as possible to safely determine if
+   the given file contents correspond to the type with the extension and return
+   @true in that case, @false otherwise. The file handle must not be closed but
+   there is no need to reset it to the beginning.
+
+   The extension should include the leading dot ('.') character. It will be
+   matched case-insensitively.
+
+   The @code(identifier) argument may be @nil to unregister an entry.
+   @return(@true on success, @false on error. Returns @false if unregistering
+	   an entry that doesn't exist.)
+   @seealso(al_identify_bitmap) *)
+  FUNCTION al_register_bitmap_identifier
+    (CONST ext: AL_STR; identifier: ALLEGRO_IIO_IDENTIFIER_FUNCTION): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+    
 (* Loads an image file into a new @code(ALLEGRO_BITMAPptr). The file type is
    determined by the extension, except if the file has no extension in which
    case @code(al_identify_bitmap) is used instead.
@@ -701,6 +1150,7 @@ END;
    formats by default. You must use the @link(al5image) addon, or register your
    own format handler.
    @return(A pointer to the loaded bitmap or @nil on error.)
+   @seealso(al_load_bitmap_f) @seealso(al_register_bitmap_loader)
    @seealso(al_load_bitmap_flags) @seealso(al_set_new_bitmap_format)
    @seealso(al_set_new_bitmap_flags) @seealso(al_init_image_addon) *)
   FUNCTION al_load_bitmap (CONST filename: AL_STR): ALLEGRO_BITMAPptr;
@@ -710,7 +1160,7 @@ END;
    case @link(al_identify_bitmap) is used instead.
 
    @code(Note:) the core Allegro library does not support any image file
-   formats by default. You must use the allegro_image addon, or register your
+   formats by default. You must use the @link(al5image) addon, or register your
    own format handler.
    @param(flags It may be a combination of the following constants:
 @unorderedlist(
@@ -799,6 +1249,41 @@ END;
    @seealso(al_load_bitmap) *)
   FUNCTION al_load_bitmap_flags (CONST filename: AL_STR; flags: AL_INT): ALLEGRO_BITMAPptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Loads an image from an @link(ALLEGRO_FILEptr) stream into a new
+   @link(ALLEGRO_BITMAPptr). The file type is determined by the passed
+   @code(ident) parameter, which is a file name extension including the leading
+   dot. If (and only if) @code(ident) is @nil, the file type is determined with
+   @link(al_identify_bitmap_f) instead.
+
+   This is the same as calling @link(al_load_bitmap_flags_f) with @code(0) for
+   the @code(flags) parameter.
+
+   @bold(Note:) the core Allegro library does not support any image file
+   formats by default. You must use the @link(al5image) addon, or register
+   your own format handler.
+   @return(@nil on error. The file remains open afterwards.)
+   @seealso(al_load_bitmap_flags_f) @seealso(al_load_bitmap)
+   @seealso(al_register_bitmap_loader_f) @seealso(al_init_image_addon) *)
+  FUNCTION al_load_bitmap_f
+    (fp: ALLEGRO_FILEptr; CONST ident: AL_STRptr): ALLEGRO_BITMAPptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Loads an image from an @link(ALLEGRO_FILEptr) stream into a new
+   @link(ALLEGRO_BITMAPptr). The file type is determined by the passed
+   @code(ident) parameter, which is a file name extension including the leading
+   dot. If (and only if) @code(ident) is @nil, the file type is determined with
+   @link(al_identify_bitmap_f) instead.
+
+   The @code(flags) parameter is the same as for @link(al_load_bitmap_flags).
+
+   @bold(Note:) the core Allegro library does not support any image file
+   formats by default. You must use the @link(al5image) addon, or register
+   your own format handler.
+   @return(@nil on error. The file remains open afterwards.)
+   @seealso(al_load_bitmap_f) @seealso(al_load_bitmap_flags) *)
+  FUNCTION al_load_bitmap_flags_f (
+    fp: ALLEGRO_FILEptr; CONST ident: AL_STR; flags: AL_INT
+  ): ALLEGRO_BITMAPptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* Saves an ALLEGRO_BITMAP to an image file. The file type is determined by the
    extension.
 
@@ -806,8 +1291,23 @@ END;
    formats by default. You must use the @link(al5image) addon, or register your
    own format handler.
    @return(@true on success, @false on error.)
+   @seealso(al_save_bitmap_f) @seealso(al_register_bitmap_saver)
    @seealso(al_init_image_addon) *)
   FUNCTION al_save_bitmap (CONST filename: AL_STR; bitmap: ALLEGRO_BITMAPptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Saves an ALLEGRO_BITMAP to an ALLEGRO_FILE stream. The file type is
+   determined by the passed @code(ident) parameter, which is a file name
+   extension including the leading dot.
+
+   @bold(Note:) the core Allegro library does not support any image file
+   formats by default. You must use the @link(al5image) addon, or register your
+   own format handler.
+   @return(@true on success, @false on error.)
+   @seealso(al_save_bitmap) @seealso(al_register_bitmap_saver_f)
+   @seealso(al_init_image_addon) *)
+  FUNCTION al_save_bitmap_f (
+    fp: ALLEGRO_FILEptr; CONST ident: AL_STR; bitmap: ALLEGRO_BITMAPptr
+  ): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* Tries to guess the bitmap file type of the given file by reading the first
    few bytes. The extension, if any, of the passed filename is not taken into
@@ -818,6 +1318,17 @@ END;
    including the leading dot. For example ".png" or ".jpg". Returns @nil if the
    bitmap type cannot be determined.)
    @seealso(al_init_image_addon) @seealso(al_identify_bitmap)
+   @seealso(al_register_bitmap_identifier) *)
+  FUNCTION al_identify_bitmap_f (fp: ALLEGRO_FILEptr): AL_STRptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* This works exactly as @link(al_identify_bitmap_f) but you specify the
+   filename of the file for which to detect the type and not a file handle. The
+   extension, if any, of the passed filename is not taken into account - only
+   the file contents.
+   @returns(a pointer to a static string with a file extension for the type,
+   including the leading dot. For example ".png" or ".jpg". Returns @nil if the
+   bitmap type cannot be determined.)
+   @seealso(al_init_image_addon) @seealso(al_identify_bitmap_f)
    @seealso(al_register_bitmap_identifier) *)
   FUNCTION al_identify_bitmap (CONST filename: AL_STR): AL_STRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
@@ -2414,20 +2925,29 @@ al_draw_line(x1, y1, x2, y2, color, 0);
      The configuration structure should be destroyed with
      @link(al_destroy_config).)
      @return(Pointer to configuration or @nil on error.)
-     @seealso(al_save_config_file) *)
+     @seealso(al_load_config_file_f) @seealso(al_save_config_file) *)
     FUNCTION al_load_config_file (CONST filename: AL_STR): ALLEGRO_CONFIGptr;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-{
-AL_FUNC(ALLEGRO_CONFIG*, al_load_config_file_f, (ALLEGRO_FILE *filename));
+  (* Read a configuration file from an already open file.
+     @return(@nil on error. The configuration structure should be destroyed
+      with @link(al_destroy_config). The file remains open afterwards.)
+     @seealso(al_load_config_file) *)
+    FUNCTION al_load_config_file_f (fp: ALLEGRO_FILEptr): ALLEGRO_CONFIGptr;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-}
   (* Write out a configuration file to disk.
      @return(@true on success, @false on error.)
-     @seealso(al_load_config_file) *)
-    FUNCTION al_save_config_file (CONST filename: AL_STR; CONST config: ALLEGRO_CONFIGptr): AL_BOOL;
+     @seealso(al_save_config_file_f) @seealso(al_load_config_file) *)
+    FUNCTION al_save_config_file 
+      (CONST filename: AL_STR; CONST config: ALLEGRO_CONFIGptr): AL_BOOL;
+      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  (* Write out a configuration file to an already open file.
+     @return(@true on success, @false on error. The file remains open
+	     afterwards.)
+     @seealso(al_save_config_file) *)
+    FUNCTION al_save_config_file_f
+      (fp: ALLEGRO_FILEptr; CONST config: ALLEGRO_CONFIGptr): AL_BOOL;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 {
-AL_FUNC(bool, al_save_config_file_f, (ALLEGRO_FILE *file, const ALLEGRO_CONFIG *config));
 AL_FUNC(void, al_merge_config_into, (ALLEGRO_CONFIG *master, const ALLEGRO_CONFIG *add));
 AL_FUNC(ALLEGRO_CONFIG *, al_merge_config, (const ALLEGRO_CONFIG *cfg1, const ALLEGRO_CONFIG *cfg2));
 }
@@ -3807,7 +4327,8 @@ IMPLEMENTATION
 INITIALIZATION
 { Delphi forces an INITIALIZATION section if FINALIZATION is used. }
   ;
-{ Suggested by FPC mailing list user. }
+{ Next code suggested by FPC mailing list user.  This should fix some issues
+  with memory.  Removed as it seems to be fixed by Allegro itself. }
 
 { $if defined(cpui386) or defined(cpux86_64)}
 { SetExceptionMask(GetExceptionMask + [exZeroDivide, exInvalidOp]); }

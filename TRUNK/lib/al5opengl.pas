@@ -97,13 +97,13 @@ packedpixels := al_have_opengl_extension ('GL_EXT_packed_pixels');
   Multitexture extension:
 @longcode(#
   TYPE
-  { define the type of the function. }
-    PROCEDURE MULTI_TEX_FUNC (a: GLenum; b, c, d: GLfloat); CDECL;
+  // define the type of the function.
+    MULTI_TEX_FUNC: PROCEDURE (a: GLenum; b, c, d: GLfloat); CDECL;
   VAR
-  { declare the function pointer }
+  // declare the function pointer.
     glMultiTexCoord3fARB: MULTI_TEX_FUNC;
   BEGIN
-  { get the address of the function }
+  // get the address of the function.
     glMultiTexCoord3fARB := MULTI_TEX_FUNC (al_get_opengl_proc_address ('glMultiTexCoord3fARB'));
   END;
 #)
