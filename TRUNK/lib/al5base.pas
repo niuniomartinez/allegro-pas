@@ -45,8 +45,7 @@ INTERFACE
   {$INCLUDE al5_win.inc}
 {$ENDIF}
 
- (* Builds main library name.  AFAIK it's not needed. *)
-    { @exclude }
+  (* @exclude Builds main library name.  AFAIK it's not needed. *)
     ALLEGRO_MAIN_LIB_NAME = _A5_LIB_PREFIX_+'allegro_main'+_DBG_+_A5_LIB_EXT_;
 
 
@@ -143,6 +142,8 @@ INTERFACE
      methods. *)
     AL_UINTPTR_T = AL_UINT32;
 {$ENDIF}
+  (* Another 64bit integer to store sizes. *)
+    AL_OFF_T = AL_UINT64;
 
   (* Float value. *)
     AL_FLOAT = SINGLE;
