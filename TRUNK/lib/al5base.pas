@@ -143,7 +143,7 @@ INTERFACE
     AL_UINTPTR_T = AL_UINT32;
 {$ENDIF}
   (* Another 64bit integer to store sizes. *)
-    AL_OFF_T = AL_UINT64;
+    AL_OFF_T = AL_UINT;
 
   (* Float value. *)
     AL_FLOAT = SINGLE;
