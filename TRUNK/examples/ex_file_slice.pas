@@ -47,15 +47,16 @@ PROGRAM ex_file_slice;
   VAR
     Master, Slice: ALLEGRO_FILEptr;
     Buffer: PCHAR;
-    
+    FileName: STRING;
+
 BEGIN
   IF NOT al_init THEN
     AbortExample ('Could not init Allegro.');
 
   OpenLog;
 
-  //Master := al_fopen (GetTempFilename, 'w');
-  Master := al_fopen ('tmp.dat', 'w');
+  FileName := GetTempFilename;
+  Master := al_fopen (FileName, 'w');
   IF Master = NIL THEN
     AbortExample ('Unable to create temporary file.');
 
@@ -63,8 +64,9 @@ BEGIN
   PackObject (Master, PCHAR (FirstString), Length (FirstString));
   PackObject (Master, PCHAR (SecondString), Length (SecondString));
 
-{ Seek back to the beginning of the file, as if we had just opened it. }
-  al_fseek (Master, 0, ALLEGRO_SEEK_SET);
+{ Closes and opens again, so we can read the created data. }
+  al_fclose (Master);
+  Master := al_fopen (FileName, 'r');
 
   Buffer := StrAlloc (BUFFER_SIZE);
 
@@ -83,12 +85,12 @@ BEGIN
          al_fread (Slice, Buffer, al_fsize (Slice));
          Buffer[al_fsize (Slice)] := CHAR (0);
          LogWriteLn (Format (
-	   'Chunk of size %d: ''%s''.', [al_fsize (Slice), STRING (Buffer)]
-	 ));
+	   'Chunk of size %d: ''%s''.', [al_fsize (Slice), Buffer]
+	 ))
       END;
     { The slice must be closed before the next slice is opened. Closing
       the slice will advanced the master file to the end of the slice. }
-      al_fclose (Slice);
+      al_fclose (Slice)
     END
   UNTIL Slice = NIL;
 

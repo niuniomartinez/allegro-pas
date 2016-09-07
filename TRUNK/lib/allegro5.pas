@@ -790,7 +790,7 @@ END;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   (* Set the current position of the given file to a position relative to that
      specified by @code(whence), plus @code(offset) number of bytes.
-     
+
      @code(whence) can be:@unorderedlist(
      @item(@code(ALLEGRO_SEEK_SET) - seek relative to beginning of file)
      @item(@code(ALLEGRO_SEEK_CUR) - seek relative to current file position)
@@ -974,8 +974,7 @@ END;
 /* Specific to stdio backend. */
 AL_FUNC(ALLEGRO_FILE*, al_fopen_fd, (int fd, const char *mode));
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
-      ALLEGRO_PATH **ret_path));
+    FUNCTION al_make_temp_file (CONST tmpl: AL_STR; OUT ret_path: ALLEGRO_PATHptr): ALLEGRO_FILEptr;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 }
 

@@ -82,7 +82,7 @@ OPTOPT = -O3 -Xs -XX
 # Debugging opetions.
 # Not only adds GDB information to the executable, but also tells the compiler
 # to show ALL warnings and hints.
-DBGOPT = -O- -gl -vh -vw
+DBGOPT = -O- -gl -vh -vw -dDEBUGMODE
 
 
 

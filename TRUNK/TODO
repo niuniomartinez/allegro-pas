@@ -1,7 +1,5 @@
 In no special order
 
-  * Check AL_OFF_T data type.
-
   * Check how to detect GTK+ and do correct compilation in ex_menu.
     Also {$DEFINE} may be useful.  Problem is that I don't see "DEFINES"
     propagates correctly (FPC).  Ask about it.

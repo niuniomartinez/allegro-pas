@@ -12,7 +12,9 @@ Cambios entre las versiones 5.2 alpha-2 y 5.2 alpha-3
   + Añadidas nuevas funciones de lectura y escritura de archivos de datos,
     así como registro de nuevos tipos.
   + Nuevos ejemplos:
+      ex_cpu
       ex_file_slice
+      ex_filter
       ex_palette
       ex_shader_multitex
       ex_shader_target
