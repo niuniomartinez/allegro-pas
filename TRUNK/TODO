@@ -1,3 +1,5 @@
+  Revise documentation.  Note that long descriptions are at file allegro.pds.
+
 In no special order
 
   * Check how to detect GTK+ and do correct compilation in ex_menu.
