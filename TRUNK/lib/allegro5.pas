@@ -44,7 +44,10 @@ INTERFACE
 { The code is distributed in sections, each one wraps a header file.
 
   Order of sections is the same as C loads them by including the "allegro.h"
-  header file. }
+  header file.
+ 
+  Most documentation is at file srcdoc/allegro5.pds.  This is to keep this file
+  as clean as possible. }
 
 (*
  * base.h
@@ -87,18 +90,6 @@ INTERFACE
   FUNCTION al_run_main (argc: AL_INT; argv: AL_POINTER; user_main: ALLEGRO_USER_MAIN): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-
-
-(* This function can be used to create a packed 32 bit integer from 8 bit
-   characters, on both 32 and 64 bit machines.  These can be used for various
-   things, like custom datafile objects or system IDs. Example:
-@longcode(#
-VAR
-  OSTYPE_LINUX: LONGINT;
-BEGIN
-  OSTYPE_LINUX := AL_ID('TUX ');
-END;
-#) *)
   FUNCTION AL_ID (CONST str: SHORTSTRING): AL_INT;
 
 
@@ -111,8 +102,7 @@ END;
   (* Represents a timeout value.
 
      The size of the structure is known so it can be statically allocated.  The
-     contents are private.
-     @seealso(al_init_timeout) *)
+     contents are private. @seealso(al_init_timeout) *)
     ALLEGRO_TIMEOUT = RECORD
       __pad1__, __pad2__: AL_UINT64;
     END;
@@ -125,15 +115,7 @@ END;
     FUNCTION al_get_time: AL_DOUBLE;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-  (* Waits for the specified number of seconds.  This tells the system to pause
-     the current thread for the given amount of time.  With some operating
-     systems, the accuracy can be in the order of 10ms.  That is, even
-@longcode(#
-    al_rest(0.000001)
-#)
-     might pause for something like 10ms.  Also see the section on timer events
-     (i.e. @link(al_create_timer)) for easier ways to time your program
-     without using up all CPU. *)
+  (* Waits for the specified number of seconds. *)
     PROCEDURE al_rest (seconds: AL_DOUBLE);
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -370,14 +352,6 @@ END;
   PROCEDURE al_destroy_bitmap (Bitmap: ALLEGRO_BITMAPptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-
-
-(* Draws a single pixel on the target bitmap.  This operation is slow on
-   non-memory bitmaps. Consider locking the bitmap if you are going to use this
-   function multiple times on the same bitmap.  This function is not affected
-   by the transformations or the color blenders.
-   @seealso(al_get_pixel) @seealso(al_put_blended_pixel)
-   @seealso(al_lock_bitmap) *)
   PROCEDURE al_put_pixel (x, y: AL_INT; color: ALLEGRO_COLOR);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* Like @link(al_put_pixel), but the pixel color is blended using the current
@@ -435,24 +409,11 @@ END;
   @seealso(al_get_bitmap_x) *)
   FUNCTION al_get_bitmap_y (bitmap: ALLEGRO_BITMAPptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* For a sub-bitmap, changes the parent, position and size.  This is the same
-   as destroying the bitmap and re-creating it with @code(al_create_sub_bitmap)
-   - except the bitmap pointer stays the same.  This has many uses, for example
-   an animation player could return a single bitmap which can just be
-   re-parented to different animation frames without having to re-draw the
-   contents.  Or a sprite atlas could re-arrange its sprites without having to
-   invalidate all existing bitmaps.
-   @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap) *)
   PROCEDURE al_reparent_bitmap (bitmap, parent: ALLEGRO_BITMAPptr; x, y, w, h: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
-(* Create a new bitmap with al_create_bitmap, and copy the pixel data from the
-   old bitmap across. If the new bitmap is a memory bitmap, its projection
-   bitmap is reset to be orthographic.
-   @seealso(al_create_bitmap) @seealso(al_set_new_bitmap_format)
-   @seealso(al_set_new_bitmap_flags) @seealso(al_convert_bitmap) *)
   FUNCTION al_clone_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_convert_bitmap (bitmap: ALLEGRO_BITMAPptr);
@@ -524,28 +485,52 @@ END;
   {TODO: There are a lot of stuff to add here. }
 
   TYPE
+  (* @exclude *)
     _al_tagbstring = RECORD
       mlen, slen: AL_INT;
       data: AL_VOIDptr;
     END;
+  (* Pointer to @link(ALLEGRO_USTR). *)
     ALLEGRO_USTRptr = ^ALLEGRO_USTR;
+  (* An opaque type representing a string. @code(ALLEGRO_USTR)s normally
+     contain UTF-8 encoded strings, but they may be used to hold any byte
+     sequences, including @nil. *)
     ALLEGRO_USTR = _al_tagbstring;
+  (* Pointer to @link(ALLEGRO_USTR_INFO). *)
     ALLEGRO_USTR_INFOptr = ^ALLEGRO_USTR_INFO;
+  (* A type that holds additional information for an @link(ALLEGRO_USTR) that
+     references an external memory buffer.
+     @seealso(al_ref_cstr) @seealso(al_ref_buffer) @seealso(al_ref_ustr) *)
     ALLEGRO_USTR_INFO = _al_tagbstring;
 
-(* Creating strings *)
+(* Creates a new string containing a copy of the C-style string @code(s). The
+   string must eventually be freed with @link(al_ustr_free).
+   @seealso(al_ustr_new_from_buffer)
+   @seealso(al_ustr_dup) @seealso(al_ustr_new_from_utf16) *)
   FUNCTION al_ustr_new (CONST s: AL_STR): ALLEGRO_USTRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Creates a new string containing a copy of the buffer pointed to by @code(s)
+   of the given size in bytes. The string must eventually be freed with
+   @link(al_ustr_free). @seealso(al_ustr_new) *)
   FUNCTION al_ustr_new_from_buffer (CONST s: AL_STRptr; size: AL_SIZE_T): ALLEGRO_USTRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Frees a previously allocated string. Does nothing if the argument is @nil.
+   @seealso(al_ustr_new) @seealso(al_ustr_new_from_buffer) *)
   PROCEDURE al_ustr_free (us: ALLEGRO_USTRptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_cstr (CONST us: ALLEGRO_USTRptr): AL_STRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Writes the contents of the string into a pre-allocated buffer of the given
+   size in bytes. The result will always be @code(NUL) terminated, so a maximum
+   of @code(size - 1) bytes will be copied.
+   @seealso(al_cstr) @seealso(al_cstr_dup) *)
   PROCEDURE al_ustr_to_buffer (CONST us: ALLEGRO_USTRptr; buffer: AL_STRptr; size: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_cstr_dup (CONST us: ALLEGRO_USTRptr): AL_STRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns a duplicate copy of a string. The new string will need to be freed
+   with @code(al_ustr_free).
+   @seealso(al_ustr_dup_substr) @seealso(al_ustr_free) *)
   FUNCTION al_ustr_dup (CONST us: ALLEGRO_USTRptr): ALLEGRO_USTRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_ustr_dup_substr (CONST us: ALLEGRO_USTRptr; start_pos, end_pos: AL_INT): ALLEGRO_USTRptr;
