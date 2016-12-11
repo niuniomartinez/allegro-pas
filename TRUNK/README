@@ -60,7 +60,8 @@ Implemented
 
   + Event manager, including but not limited to keyboard, mouse, timer and
     display.
-  + OpenGL support (except extensions).
+  + OpenGL (except extensions) and DirectX.
+  + Shaders.
   + Software bitmaps.
   + Text drawing.
   + ttf fonts.

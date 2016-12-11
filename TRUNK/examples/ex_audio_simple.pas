@@ -4,8 +4,8 @@ PROGRAM ex_audio_simple;
  *    Demonstrate 'simple' audio interface.
  *)
 USES
-  Common,
-  Allegro5, al5audio, al5acodec;
+  Allegro5, al5audio, al5acodec, Common,
+  sysutils;
 CONST
   RESERVED_SAMPLES = 16;
   MAX_SAMPLE_DATA  = 10;
@@ -25,7 +25,7 @@ BEGIN
   IF Paramcount < 1 THEN
   BEGIN
     LogWriteLn ('This example needs to be run from the command line.');
-    LogWriteLn ('Usage: ' + ParamStr (0) + ' {audio_files}');
+    LogWriteLn ('Usage: ' + ApplicationName + ' {audio_files}');
     CloseLog (TRUE);
     HALT (1);
   END;
