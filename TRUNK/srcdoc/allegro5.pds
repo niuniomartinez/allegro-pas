@@ -1,3 +1,62 @@
+#Allegro5.al_get_allegro_version
+Returns the (compiled) version of the Allegro library, packed into a single
+integer as groups of 8 bits.
+
+You can use code like this to extract the version number:
+@longcode(#
+  VAR
+    Version: AL_INT;
+    Major, Minor, Revision, Release: INTEGER;
+    VersionStr: STRING;
+  BEGIN
+    Version := al_get_allegro_version;
+    Major    :=  Version SHR 24;
+    Minor    := (Version SHR 16) AND 255;
+    Revision := (Version SHR  8) AND 255;
+    Release  :=  Version         AND 255;
+    VersionStr := Format ('%d.%d.%d(%d)', [Major, Minor, Revision, Release])
+  END;
+#)
+The release number is 0 for an unofficial version and 1 or greater for an
+official release. For example "5.0.2[1]" would be the (first) official 5.0.2
+release while "5.0.2[0]" would be a compile of a version from the "5.0.2"
+branch before the official release.
+#Allegro5.al_run_main
+This function is useful in cases where you don't have a @code(main) function
+but want to run Allegro (mostly useful in a wrapper library).  Under Windows
+and Linux this is no problem because you simply can call
+@link(al_install_system).  But some other system (like OSX) don't allow calling
+@code(al_install_system) in the main thread.  @code(al_run_main) will know what
+to do in that case.
+
+The passed @code(argc) and @code(argv) will simply be passed on to
+@code(user_main) and the return value of @code(user_main) will be returned.
+
+@bold(Note:)  This is used because the way the C language works.  I didn't test
+if Pascal do need this kind of stuff.  Future versions of Allegro.pas would not
+include this function, so don't use it unless your really need to (and tell me
+if you really need it to remove this warning from documentation).
+#Allegro5.AL_ID
+This function can be used to create a packed 32 bit integer from 8 bit
+characters, on both 32 and 64 bit machines.  These can be used for various
+ things, like custom datafile objects or system IDs. Example:
+@longcode(#
+VAR
+  OSTYPE_LINUX: LONGINT;
+BEGIN
+  OSTYPE_LINUX := AL_ID('TUX ');
+END;
+#)
+#Allegro5.al_rest
+This tells the system to pause the current thread for the given amount of time.
+With some operating systems, the accuracy can be in the order of 10ms.  That
+is, even
+@longcode(#
+    al_rest (0.000001)
+#)
+might pause for something like 10ms.  Also see the section on timer events
+(i.e. @link(al_create_timer)) for easier ways to time your program without
+using up all CPU.
 #Allegro5.ALLEGRO_PIXEL_FORMAT
 Each pixel format specifies the exact size and bit layout of a
 pixel in memory.  Components are specified from high bits to low bits, so for
@@ -27,219 +86,6 @@ example a fully opaque red pixel in ARGB_8888 format is @code(0xFFFF0000).
   always have the components as 4 bytes corresponding to red, green, blue and
   alpha, in this order, independent of the endianness.
   @seealso(al_set_new_bitmap_format) @seealso(al_get_bitmap_format)
-#al_create_bitmap
-Creates a new bitmap using the bitmap format and flags for the current
-thread. Blitting between bitmaps of differing formats, or blitting between
-memory bitmaps and display bitmaps may be slow.
-
-Unless you set the @code(ALLEGRO_MEMORY_BITMAP) flag, the bitmap is created for the
-current display.  Blitting to another display may be slow.
-
-If a display bitmap is created, there may be limitations on the allowed
-dimensions. For example a DirectX or OpenGL backend usually has a maximum
-allowed texture size - so if bitmap creation fails for very large
-dimensions, you may want to re-try with a smaller bitmap. Some platforms
-also dictate a minimum texture size, which is relevant if you plan to use
-this bitmap with the primitives addon. If you try to create a bitmap smaller
-than this, this call will not fail but the returned bitmap will be a section
-of a larger bitmap with the minimum size. This minimum size is 16 by 16.
-
-Some platforms do not directly support display bitmaps whose dimensions are
-not powers of two. Allegro handles this by creating a larger bitmap that has
-dimensions that are powers of two and then returning a section of that
-bitmap with the dimensions you requested. This can be relevant if you plan
-to use this bitmap with the primitives addon but shouldn't be an issue
-otherwise.
-@seealso(al_set_new_bitmap_format) @seealso(al_set_new_bitmap_flags)
-@seealso(al_clone_bitmap) @seealso(al_create_sub_bitmap)
-#Allegro5.al_create_sub_bitmap
-Creates a sub-bitmap of the parent, at the specified coordinates and of the
-specified size. A sub-bitmap is a bitmap that shares drawing memory with a
-pre-existing (parent) bitmap, but possibly with a different size and clipping
-settings.
-
-The sub-bitmap may originate off or extend past the parent bitmap.
-
-See the discussion in @link(al_get_backbuffer) about using sub-bitmaps of the
-backbuffer.
-
-The parent bitmap's clipping rectangles are ignored.
-
-If a sub-bitmap was not or cannot be created then NULL is returned.
-
-When you are done with using the sub-bitmap you must call
-@link(al_destroy_bitmap) on it to free any resources allocated for it.
-
-Note that destroying parents of sub-bitmaps will not destroy the sub-bitmaps;
-instead the sub-bitmaps become invalid and should no longer be used for
-drawing - they still must be destroyed with al_destroy_bitmap however.  It
-does not matter whether you destroy a sub-bitmap before or after its parent
-otherwise.
-@seealso(al_create_bitmap)
-#Allegro5.al_draw_bitmap
-Draws an unscaled, unrotated bitmap at the given position to the current
-target bitmap.  @code(flags) can be a combination of:
-@unorderedlist(
-  @item(ALLEGRO_FLIP_HORIZONTAL - flip the bitmap about the y-axis)
-  @item(ALLEGRO_FLIP_VERTICAL - flip the bitmap about the x-axis)
-)
-@bold(Note:) The current target bitmap must be a different bitmap. Drawing a
-bitmap to itself (or to a sub-bitmap of itself) or drawing a sub-bitmap to
-its parent (or another sub-bitmap of its parent) are not currently
-supported. To copy part of a bitmap into the same bitmap simply use a
-temporary bitmap instead.
-
-@bold(Note:) The backbuffer (or a sub-bitmap thereof) can not be
-transformed, blended or tinted. If you need to draw the backbuffer draw it
-to a temporary bitmap first with no active transformation (except
-translation). Blending and tinting settings/parameters will be ignored. This
-does not apply when drawing into a memory bitmap.
-@param(bitmap Origin bitmap.)
-@param(dx Destination x.)
-@param(dy Destination y.)
-@param(flags)
-@seealso(al_set_target_bitmap) @seealso(al_draw_bitmap_region)
-@seealso(al_draw_scaled_bitmap) @seealso(al_draw_rotated_bitmap)
-@seealso(al_draw_scaled_rotated_bitmap)
-#Allegro5.al_draw_bitmap_region
-Draws a region of the given bitmap to the target bitmap.
-@param(bitmap Origin bitmap.)
-@param(sx source x)
-@param(sy source y)
-@param(sw source width @(width of region to blit@))
-@param(sh source height @(height of region to blit@))
-@param(dx destination x)
-@param(dy destination y)
-@param(flags same as for @code(al_draw_bitmap))
-@seealso(al_draw_bitmap) @seealso(al_draw_scaled_bitmap)
-@seealso(al_draw_rotated_bitmap) @seealso(al_draw_scaled_rotated_bitmap)
-#Allegro5.al_draw_rotated_bitmap
-Draws a rotated version of the given bitmap to the target bitmap.
-Example:
-@longcode(#
-VAR
-  w, h: SINGLE;
-BEGIN
-  w := al_get_bitmap_width (bitmap);
-  h := al_get_bitmap_height (bitmap);
-  al_draw_rotated_bitmap (bitmap, w / 2, h / 2, x, y, ALLEGRO_PI / 2, 0);
-#)
-The above code draws the bitmap centered on x/y and rotates it 90° clockwise.
-@param(bitmap Origin bitmap.)
-@param(cx center x @(relative to the left of bitmap@))
-@param(cy center y @(relative to the top or bitmap@))
-@param(dx destination x)
-@param(dy destination y)
-@param(angle angle in radians by which to rotate clockwise)
-@param(flags same as for al_draw_bitmap)
-@seealso(al_draw_bitmap) @seealso(al_draw_bitmap_region)
-@seealso(al_draw_scaled_bitmap) @seealso(al_draw_scaled_rotated_bitmap)
-#Allegro5.al_draw_scaled_bitmap
-Draws a scaled version of the given bitmap to the target bitmap.
-@param(bitmap Origin bitmap.)
-@param(sx source x)
-@param(sy source y)
-@param(sw source width)
-@param(sh source height)
-@param(dx destination x)
-@param(dy destination y)
-@param(dw destination width)
-@param(dh destination height)
-@param(flags same as for al_draw_bitmap)
-@seealso(al_draw_bitmap) @seealso(al_draw_bitmap_region)
-@seealso(al_draw_rotated_bitmap) @seealso(al_draw_scaled_rotated_bitmap)
-#Allegro5.al_draw_scaled_rotated_bitmap
-Like @link(al_draw_rotated_bitmap), but can also scale the bitmap.
-
-The point at cx/cy in the bitmap will be drawn at dx/dy and the bitmap is
-rotated and scaled around this point.
-@param(bitmap Origin bitmap.)
-@param(cx center x @(relative to the left of bitmap@))
-@param(cy center y @(relative to the top or bitmap@))
-@param(dx destination x)
-@param(dy destination y)
-@param(xscale how much to scale on the x-axis @(e.g. 2 for twice the size@))
-@param(yscale how much to scale on the y-axis)
-@param(angle angle in radians by which to rotate clockwise)
-@param(flags same as for al_draw_bitmap)
-@seealso(al_draw_bitmap) @seealso(al_draw_bitmap_region)
-@seealso(al_draw_scaled_bitmap)
-#Allegro5.al_draw_tinted_bitmap
-Like @code(al_draw_bitmap) but multiplies all colors in the bitmap with the
-given color. For example:
-@longcode(#
-al_draw_tinted_bitmap (bitmap, al_map_rgba_f (0.5, 0.5, 0.5, 0.5), x, y, 0);
-#)
-The above will draw the bitmap 50% transparently (r/g/b values need to be
-pre-multiplied with the alpha component with the default blend mode).
-@longcode(#
-al_draw_tinted_bitmap(bitmap, al_map_rgba_f(1, 0, 0, 1), x, y, 0);
-#)
-The above will only draw the red component of the bitmap.
-
-See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be
-drawn where.
-#Allegro5.al_draw_tinted_scaled_rotated_bitmap
-Like @link(al_draw_tinted_scaled_rotated_bitmap) but you specify an area
-within the bitmap to be drawn.
-
-You can get the same effect with a sub bitmap:
-@longcode(#
-  al_draw_tinted_scaled_rotated_bitmap (
-    bitmap, sx, sy, sw, sh, tint, cx, cy, dx, dy, xscale, yscale, angle, flags
-  );
-
-// This draws the same:
-  sub_bitmap := al_create_sub_bitmap (bitmap, sx, sy, sw, sh);
-  al_draw_tinted_scaled_rotated_bitmap (
-    sub_bitmap, tint, cx, cy, dx, dy, xscale, yscale, angle, flags
-  );
-#)
-See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be
-drawn where.
-@seealso(al_draw_tinted_bitmap)
-#Allegro5.al_get_allegro_version
-Returns the (compiled) version of the Allegro library, packed into a single
-integer as groups of 8 bits.
-
-You can use code like this to extract the version number:
-@longcode(#
-  VAR
-    Version: AL_INT;
-    Major, Minor, Revision, Release: INTEGER;
-    VersionStr: STRING;
-  BEGIN
-    Version := al_get_allegro_version;
-    Major    :=  Version SHR 24;
-    Minor    := (Version SHR 16) AND 255;
-    Revision := (Version SHR  8) AND 255;
-    Release  :=  Version         AND 255;
-    VersionStr := Format ('%d.%d.%d(%d)', [Major, Minor, Revision, Release])
-  END;
-#)
-The release number is 0 for an unofficial version and 1 or greater for an
-official release. For example "5.0.2[1]" would be the (first) official 5.0.2
-release while "5.0.2[0]" would be a compile of a version from the "5.0.2"
-branch before the official release.
-#Allegro5.al_get_parent_bitmap
-Returns the bitmap this bitmap is a sub-bitmap of. Returns @nil if this
-bitmap is not a sub-bitmap. This function always returns the real bitmap,
-and never a sub-bitmap. This might NOT match what was passed to
-@code(al_create_sub_bitmap). Consider this code, for instance:
-@longcode(#
-VAR
-  a, b, c: ALLEGRO_BITMAPptr;
-BEGIN
-  a := al_create_bitmap (512, 512);
-  b := al_create_sub_bitmap (a, 128, 128, 256, 256);
-  c := al_create_sub_bitmap (b, 64, 64, 128, 128);
-  IF (al_get_parent_bitmap (b)== a) AND (al_get_parent_bitmap(c) = a) THEN
-    WriteLn ('b & c are sub-bitmaps of a')
-END;
-#)
-The message will be printed because only a is a real bitmap, and both b and c
-are its sub-bitmaps.
-@seealso(al_create_sub_bitmap) @seealso(al_is_sub_bitmap)
 #Allegro5.al_premul_rgba
 This is a shortcut for @code(al_map_rgba @(r * a / 255, g * a / 255, b * a / 255, a@)).
 
@@ -278,21 +124,6 @@ BEGIN
 END;
 #)
 @seealso(al_map_rgba_f) @seealso(al_premul_rgba)
-#Allegro5.al_run_main
-This function is useful in cases where you don't have a @code(main) function
-but want to run Allegro (mostly useful in a wrapper library).  Under Windows
-and Linux this is no problem because you simply can call
-@link(al_install_system).  But some other system (like OSX) don't allow calling
-@code(al_install_system) in the main thread.  @code(al_run_main) will know what
-to do in that case.
-
-The passed @code(argc) and @code(argv) will simply be passed on to
-@code(user_main) and the return value of @code(user_main) will be returned.
-
-@bold(Note:)  This is used because the way the C language works.  I didn't test
-if Pascal do need this kind of stuff.  Future versions of Allegro.pas would not
-include this function, so don't use it unless your really need to (and tell me
-if you really need it to remove this warning from documentation).
 #Allegro5.al_set_new_bitmap_flags
 Sets the flags to use for newly created bitmaps. Valid flags are:
 @definitionlist(
@@ -361,28 +192,98 @@ So if you draw the image to the temporary buffer, it is blended once
 resulting in 0.75 alpha, then drawn again to the screen, blended in the
 same way, resulting in a pixel has 0.1875 as an alpha value.
 @seealso(al_get_new_bitmap_flags) @seealso(al_get_bitmap_flags)
-#Allegro5.al_ref_cstr
-Create a string that references the storage of a C-style string. The
-information about the string (e.g. its size) is stored in the @code(info)
-parameter. The string will not have any other storage allocated of its own,
-so if you allocate the info structure on the stack then no explicit "free"
-operation is required.
+#al_create_bitmap
+Creates a new bitmap using the bitmap format and flags for the current
+thread. Blitting between bitmaps of differing formats, or blitting between
+memory bitmaps and display bitmaps may be slow.
 
-The string is valid until the underlying C string disappears.
+Unless you set the @code(ALLEGRO_MEMORY_BITMAP) flag, the bitmap is created for the
+current display.  Blitting to another display may be slow.
 
-Example:
+If a display bitmap is created, there may be limitations on the allowed
+dimensions. For example a DirectX or OpenGL backend usually has a maximum
+allowed texture size - so if bitmap creation fails for very large
+dimensions, you may want to re-try with a smaller bitmap. Some platforms
+also dictate a minimum texture size, which is relevant if you plan to use
+this bitmap with the primitives addon. If you try to create a bitmap smaller
+than this, this call will not fail but the returned bitmap will be a section
+of a larger bitmap with the minimum size. This minimum size is 16 by 16.
+
+Some platforms do not directly support display bitmaps whose dimensions are
+not powers of two. Allegro handles this by creating a larger bitmap that has
+dimensions that are powers of two and then returning a section of that
+bitmap with the dimensions you requested. This can be relevant if you plan
+to use this bitmap with the primitives addon but shouldn't be an issue
+otherwise.
+@seealso(al_set_new_bitmap_format) @seealso(al_set_new_bitmap_flags)
+@seealso(al_clone_bitmap) @seealso(al_create_sub_bitmap)
+@seealso(al_destroy_bitmap)
+#Allegro5.al_put_pixel
+Draws a single pixel on the target bitmap.  This operation is slow on
+non-memory bitmaps. Consider locking the bitmap if you are going to use this
+function multiple times on the same bitmap.  This function is not affected by
+the transformations or the color blenders.
+@seealso(al_get_pixel) @seealso(al_put_blended_pixel) @seealso(al_lock_bitmap)
+#Allegro5.al_create_sub_bitmap
+Creates a sub-bitmap of the parent, at the specified coordinates and of the
+specified size. A sub-bitmap is a bitmap that shares drawing memory with a
+pre-existing (parent) bitmap, but possibly with a different size and clipping
+settings.
+
+The sub-bitmap may originate off or extend past the parent bitmap.
+
+See the discussion in @link(al_get_backbuffer) about using sub-bitmaps of the
+backbuffer.
+
+The parent bitmap's clipping rectangles are ignored.
+
+If a sub-bitmap was not or cannot be created then NULL is returned.
+
+When you are done with using the sub-bitmap you must call
+@link(al_destroy_bitmap) on it to free any resources allocated for it.
+
+Note that destroying parents of sub-bitmaps will not destroy the sub-bitmaps;
+instead the sub-bitmaps become invalid and should no longer be used for
+drawing - they still must be destroyed with al_destroy_bitmap however.  It
+does not matter whether you destroy a sub-bitmap before or after its parent
+otherwise.
+@seealso(al_create_bitmap)
+#Allegro5.al_get_parent_bitmap
+Returns the bitmap this bitmap is a sub-bitmap of. Returns @nil if this
+bitmap is not a sub-bitmap. This function always returns the real bitmap,
+and never a sub-bitmap. This might NOT match what was passed to
+@code(al_create_sub_bitmap). Consider this code, for instance:
 @longcode(#
 VAR
-  Info: ALLEGRO_USTR_INFO;
-  us: ALLEGRO_USTRptr;
+  a, b, c: ALLEGRO_BITMAPptr;
 BEGIN
-  us := al_ref_cstr (Info, 'my string')
+  a := al_create_bitmap (512, 512);
+  b := al_create_sub_bitmap (a, 128, 128, 256, 256);
+  c := al_create_sub_bitmap (b, 64, 64, 128, 128);
+  IF (al_get_parent_bitmap (b)== a) AND (al_get_parent_bitmap(c) = a) THEN
+    WriteLn ('b & c are sub-bitmaps of a')
 END;
 #)
-@seealso(al_ref_buffer) @seealso(al_ref_ustr)
+The message will be printed because only a is a real bitmap, and both b and c
+are its sub-bitmaps.
+@seealso(al_create_sub_bitmap) @seealso(al_is_sub_bitmap)
+#Allegro5.al_reparent_bitmap
+For a sub-bitmap, changes the parent, position and size.  This is the same as
+destroying the bitmap and re-creating it with @code(al_create_sub_bitmap) -
+except the bitmap pointer stays the same.  This has many uses, for example an
+animation player could return a single bitmap which can just be re-parented to
+different animation frames without having to re-draw the contents.  Or a sprite
+atlas could re-arrange its sprites without having to invalidate all existing
+bitmaps. @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap)
+#Allegro5.al_clone_bitmap
+Create a new bitmap with @code(al_create_bitmap), and copy the pixel data from
+the old bitmap across. If the new bitmap is a memory bitmap, its projection
+bitmap is reset to be orthographic.
+@seealso(al_create_bitmap) @seealso(al_set_new_bitmap_format)
+@seealso(al_set_new_bitmap_flags) @seealso(al_convert_bitmap)
 #Allegro5.al_convert_bitmap
 Converts the bitmap to the current bitmap flags and format.  The bitmap will
-be as if it was created anew with @code(al_create_bitmap) but retain its
+be as if it was created new with @code(al_create_bitmap) but retain its
 contents.  All of this bitmap's sub-bitmaps are also converted.  If the new
 bitmap type is memory, then the bitmap's projection bitmap is reset to be
 orthographic.
@@ -405,6 +306,188 @@ when the last display is destroyed.
 This operation will preserve all bitmap flags except
 @code(ALLEGRO_VIDEO_BITMAP) and @code(ALLEGRO_MEMORY_BITMAP).
 @seealso(al_convert_bitmap) @seealso(al_create_bitmap)
+#Allegro5.al_draw_bitmap
+Draws an unscaled, unrotated bitmap at the given position to the current
+target bitmap.  @code(flags) can be a combination of:
+@unorderedlist(
+  @item(ALLEGRO_FLIP_HORIZONTAL - flip the bitmap about the y-axis)
+  @item(ALLEGRO_FLIP_VERTICAL - flip the bitmap about the x-axis)
+)
+@bold(Note:) The current target bitmap must be a different bitmap. Drawing a
+bitmap to itself (or to a sub-bitmap of itself) or drawing a sub-bitmap to
+its parent (or another sub-bitmap of its parent) are not currently
+supported. To copy part of a bitmap into the same bitmap simply use a
+temporary bitmap instead.
+
+@bold(Note:) The backbuffer (or a sub-bitmap thereof) can not be
+transformed, blended or tinted. If you need to draw the backbuffer draw it
+to a temporary bitmap first with no active transformation (except
+translation). Blending and tinting settings/parameters will be ignored. This
+does not apply when drawing into a memory bitmap.
+@param(bitmap Origin bitmap.)
+@param(dx Destination x.)
+@param(dy Destination y.)
+@param(flags)
+@seealso(al_set_target_bitmap) @seealso(al_draw_bitmap_region)
+@seealso(al_draw_scaled_bitmap) @seealso(al_draw_rotated_bitmap)
+@seealso(al_draw_scaled_rotated_bitmap)
+#Allegro5.al_draw_bitmap_region
+Draws a region of the given bitmap to the target bitmap.
+@param(bitmap Origin bitmap.)
+@param(sx source x)
+@param(sy source y)
+@param(sw source width @(width of region to blit@))
+@param(sh source height @(height of region to blit@))
+@param(dx destination x)
+@param(dy destination y)
+@param(flags same as for @code(al_draw_bitmap))
+@seealso(al_draw_bitmap) @seealso(al_draw_scaled_bitmap)
+@seealso(al_draw_rotated_bitmap) @seealso(al_draw_scaled_rotated_bitmap)
+#Allegro5.al_draw_scaled_bitmap
+Draws a scaled version of the given bitmap to the target bitmap.
+@param(bitmap Origin bitmap.)
+@param(sx source x)
+@param(sy source y)
+@param(sw source width)
+@param(sh source height)
+@param(dx destination x)
+@param(dy destination y)
+@param(dw destination width)
+@param(dh destination height)
+@param(flags same as for al_draw_bitmap)
+@seealso(al_draw_bitmap) @seealso(al_draw_bitmap_region)
+@seealso(al_draw_rotated_bitmap) @seealso(al_draw_scaled_rotated_bitmap)
+#Allegro5.al_draw_rotated_bitmap
+Draws a rotated version of the given bitmap to the target bitmap.
+Example:
+@longcode(#
+VAR
+  w, h: SINGLE;
+BEGIN
+  w := al_get_bitmap_width (bitmap);
+  h := al_get_bitmap_height (bitmap);
+  al_draw_rotated_bitmap (bitmap, w / 2, h / 2, x, y, ALLEGRO_PI / 2, 0);
+#)
+The above code draws the bitmap centered on x/y and rotates it 90° clockwise.
+@param(bitmap Origin bitmap.)
+@param(cx center x @(relative to the left of bitmap@))
+@param(cy center y @(relative to the top or bitmap@))
+@param(dx destination x)
+@param(dy destination y)
+@param(angle angle in radians by which to rotate clockwise)
+@param(flags same as for al_draw_bitmap)
+@seealso(al_draw_bitmap) @seealso(al_draw_bitmap_region)
+@seealso(al_draw_scaled_bitmap) @seealso(al_draw_scaled_rotated_bitmap)
+#Allegro5.al_draw_scaled_rotated_bitmap
+Like @link(al_draw_rotated_bitmap), but can also scale the bitmap.
+
+The point at cx/cy in the bitmap will be drawn at dx/dy and the bitmap is
+rotated and scaled around this point.
+@param(bitmap Origin bitmap.)
+@param(cx center x @(relative to the left of bitmap@))
+@param(cy center y @(relative to the top or bitmap@))
+@param(dx destination x)
+@param(dy destination y)
+@param(xscale how much to scale on the x-axis @(e.g. 2 for twice the size@))
+@param(yscale how much to scale on the y-axis)
+@param(angle angle in radians by which to rotate clockwise)
+@param(flags same as for al_draw_bitmap)
+@seealso(al_draw_bitmap) @seealso(al_draw_bitmap_region)
+@seealso(al_draw_scaled_bitmap)
+#Allegro5.al_draw_tinted_bitmap
+Like @code(al_draw_bitmap) but multiplies all colors in the bitmap with the
+given color. For example:
+@longcode(#
+al_draw_tinted_bitmap (bitmap, al_map_rgba_f (0.5, 0.5, 0.5, 0.5), x, y, 0);
+#)
+The above will draw the bitmap 50% transparently (r/g/b values need to be
+pre-multiplied with the alpha component with the default blend mode).
+@longcode(#
+al_draw_tinted_bitmap(bitmap, al_map_rgba_f(1, 0, 0, 1), x, y, 0);
+#)
+The above will only draw the red component of the bitmap.
+
+See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be
+drawn where.
+#Allegro5.al_draw_tinted_scaled_rotated_bitmap
+Like @link(al_draw_tinted_scaled_rotated_bitmap) but you specify an area
+within the bitmap to be drawn.
+
+You can get the same effect with a sub bitmap:
+@longcode(#
+  al_draw_tinted_scaled_rotated_bitmap (
+    bitmap, sx, sy, sw, sh, tint, cx, cy, dx, dy, xscale, yscale, angle, flags
+  );
+
+// This draws the same:
+  sub_bitmap := al_create_sub_bitmap (bitmap, sx, sy, sw, sh);
+  al_draw_tinted_scaled_rotated_bitmap (
+    sub_bitmap, tint, cx, cy, dx, dy, xscale, yscale, angle, flags
+  );
+#)
+See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be
+drawn where.
+@seealso(al_draw_tinted_bitmap)
+#Allegro5.al_draw_tinted_scaled_rotated_bitmap_region
+Like @link(al_draw_tinted_scaled_rotated_bitmap) but you specify an area within the bitmap to be drawn.
+
+You can get the same effect with a sub bitmap:
+@longcode(#
+  al_draw_tinted_scaled_rotated_bitmap_region (
+    bitmap, sx, sy, sw, sh, tint,
+    cx, cy, dx, dy, xscale, yscale, angle, flags
+  );
+
+{ This draws the same: }
+  sub_bitmap := al_create_sub_bitmap (bitmap, sx, sy, sw, sh);
+  al_draw_tinted_scaled_rotated_bitmap (
+    sub_bitmap, tint, cx, cy,
+    dx, dy, xscale, yscale, angle, flags
+  );
+#)
+See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be drawn where.
+@seealso(al_draw_tinted_bitmap)
+#Allegro5.al_cstr
+Get a @code(AL_STRptr) pointer to the data in a string. This pointer will only be valid while the @code(ALLEGRO_USTR) object is not modified and not destroyed. The pointer may be passed to functions expecting C-style strings, with the following caveats:@unorderedlist(
+  @item(@code(ALLEGRO_USTR)s are allowed to contain embedded @code(NUL) @(@code($00)@) bytes. That means @code(al_ustr_size @(u@)) and @code(strlen @(al_cstr @(u@)@)) may not agree.)
+  @item(An @code(ALLEGRO_USTR) may be created in such a way that it is not @code(NUL) terminated. A string which is dynamically allocated will always be @code(NUL) terminated, but a string which references the middle of another string or region of memory will not be @code(NUL) terminated.)
+  @item(If the @code(ALLEGRO_USTR) references another string, the returned C string will point into the referenced string. Again, no @code(NUL) terminator will be added to the referenced string.)
+) @seealso(al_ustr_to_buffer) @seealso(al_cstr_dup)
+#Allegro5.al_cstr_dup
+Creates a @code(NUL) (@code($00)) terminated copy of the string. Any embedded @code(NUL) bytes will still be presented in the returned string. The new string must eventually be freed with @code(al_free).
+
+If an error occurs @nil is returned.
+@seealso(al_cstr) @seealso(al_ustr_to_buffer) @seealso(al_free)
+#Allegro5.al_ustr_dup_substr
+Return a new copy of a string, containing its contents in the byte interval @code([start_pos, end_pos@)). The new string will be @code(NUL) terminated and will need to be freed with @code(al_ustr_free).
+
+If necessary, use @link(al_ustr_offset) to find the byte offsets for a given code point that you are interested in.
+@seealso(al_ustr_dup) @seealso(al_ustr_free)
+
+
+
+
+
+
+#Allegro5.al_ref_cstr
+Create a string that references the storage of a C-style string. The
+information about the string (e.g. its size) is stored in the @code(info)
+parameter. The string will not have any other storage allocated of its own,
+so if you allocate the info structure on the stack then no explicit "free"
+operation is required.
+
+The string is valid until the underlying C string disappears.
+
+Example:
+@longcode(#
+VAR
+  Info: ALLEGRO_USTR_INFO;
+  us: ALLEGRO_USTRptr;
+BEGIN
+  us := al_ref_cstr (Info, 'my string')
+END;
+#)
+@seealso(al_ref_buffer) @seealso(al_ref_ustr)
 #Allegro5.al_ustr_next
 Find the byte offset of the next code point in string, beginning at
 @code(aPos). @code(aPos) does not have to be at the beginning of a code point.
