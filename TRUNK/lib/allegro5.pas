@@ -2845,32 +2845,48 @@ AL_FUNC(ALLEGRO_CONFIG *, al_merge_config, (const ALLEGRO_CONFIG *cfg1, const AL
  *****************************************************************************)
 
   TYPE
+  (* Holds a "snapshot" of keyboard. This is a structure that is used to hold
+     the keyboard's state at a particular instant.
+
+     You cannot read the state of keys directly. Use the function
+     @link(al_key_down). @seealso(al_get_keyboard_state) *)
     ALLEGRO_KEYBOARD_STATE = RECORD
+    (* points to the display that had keyboard focus at the time the state was
+       saved. If no display was focused, this points to @nil. *)
       display: ALLEGRO_DISPLAYptr;
     { @exclude internal }
       __key_down__internal__: ARRAY [0..((ALLEGRO_KEY_MAX + 31) DIV 32) - 1] OF AL_UINT;
     END;
-
+(* Returns @true if @link(al_install_keyboard) was called successfully. *)
   FUNCTION al_is_keyboard_installed: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Install a keyboard driver.
-  
+(* Installs a keyboard driver.
+
    Returns @true if successful.  If a driver was already installed, nothing
    happens and @true is returned.
    @seealso(al_uninstall_keyboard) @seealso(al_is_keyboard_installed) *)
   FUNCTION al_install_keyboard: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Uninstalls the active keyboard driver, if any. This will automatically
+   unregister the keyboard event source with any event queues.
+
+   This function is automatically called when Allegro is shut down.
+   @seealso(al_install_keyboard) *)
   PROCEDURE al_uninstall_keyboard;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_set_keyboard_leds (leds: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-
+(* Converts the given keycode to a description of the key. *)
   FUNCTION al_keycode_to_name (keycode: AL_INT): AL_STRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-
+(* Save the state of the keyboard specified at the time the function is called
+   into the structure pointed to by ret_state.
+   @seealso(al_key_down) @seealso(ALLEGRO_KEYBOARD_STATE) *)
   PROCEDURE al_get_keyboard_state (OUT ret_state: ALLEGRO_KEYBOARD_STATE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns @true if the key specified was held down in the state specified.
+   @seealso(ALLEGRO_KEYBOARD_STATE) *)
   FUNCTION al_key_down (VAR state: ALLEGRO_KEYBOARD_STATE; keycode: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 

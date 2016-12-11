@@ -127,70 +127,33 @@ END;
 #Allegro5.al_set_new_bitmap_flags
 Sets the flags to use for newly created bitmaps. Valid flags are:
 @definitionlist(
- @itemLabel(ALLEGRO_VIDEO_BITMAP) @item(Creates a bitmap that resides in the video card memory. These types of bitmaps receive the greatest benefit from hardware acceleration. @link(al_set_new_bitmap_flags) will implicitly set this flag unless @code(ALLEGRO_MEMORY_BITMAP) is present.)
- @itemLabel(ALLEGRO_MEMORY_BITMAP) @item(Create a bitmap residing in system memory. Operations on, and with, memory bitmaps will not be hardware accelerated. However, direct pixel access can be relatively quick compared to video bitmaps, which depend on the display driver in use. @italic(Note: Allegro's software rendering routines are currently very unoptimised.))
- @itemLabel(ALLEGRO_KEEP_BITMAP_FORMAT) @item(Only used when loading bitmaps from disk files, forces the resulting ALLEGRO_BITMAP to use the same format as the file. @italic(This is not yet honoured.))
- @itemLabel(ALLEGRO_FORCE_LOCKING) @item(When drawing to a bitmap with this flag set, always use pixel locking and draw to it using Allegro's software drawing primitives. This should never be used if you plan to draw to the bitmap using Allegro's graphics primitives as it would cause severe performance penalties. However if you know that the bitmap will only ever be accessed by locking it, no unneeded FBOs will be created for it in the OpenGL drivers.)
- @itemLabel(ALLEGRO_NO_PRESERVE_TEXTURE) @item(Normally, every effort is taken to preserve the contents of bitmaps, since Direct3D may forget them. This can take extra processing time. If you know it doesnâ't matter if a bitmap keeps its pixel data, for example its a temporary buffer, use this flag to tell Allegro not to attempt to preserve its contents. This can increase performance of your game or application, but there is a catch. See ALLEGRO_EVENT_DISPLAY_LOST for further information.)
- @itemLabel(ALLEGRO_ALPHA_TEST) @item(This is a driver hint only. It tells the graphics driver to do alpha testing instead of alpha blending on bitmaps created with this flag. Alpha testing is usually faster and preferred if your bitmaps have only one level of alpha @(0@). This flag is currently not widely implemented @(i.e., only for memory bitmaps@).)
- @itemLabel(ALLEGRO_MIN_LINEAR) @item(When drawing a scaled down version of the bitmap, use linear filtering. This usually looks better. You can also combine it with the MIPMAP flag for even better quality.)
- @itemLabel(ALLEGRO_MAG_LINEAR) @item(When drawing a magnified version of a bitmap, use linear filtering. This will cause the picture to get blurry instead of creating a big rectangle for each pixel. It depends on how you want things to look like whether you want to use this or not.)
- @itemLabel(ALLEGRO_MIPMAP) @item(This can only be used for bitmaps whose width and height is a power of two. In that case, it will generate mipmaps and use them when drawing scaled down versions. For example if the bitmap is 64x64, then extra bitmaps of sizes 32x32, 16x16, 8x8, 4x4, 2x2 and 1x1 will be created always containing a scaled down version of the original.)
- @itemLabel(ALLEGRO_NO_PREMULTIPLIED_ALPHA) @item(By default, Allegro pre-multiplies the alpha channel of an image with the images color data when it loads it. Typically that would look something like this:
-@longcode(#
-  r := get_float_byte ();
-  g := get_float_byte ();
-  b := get_float_byte ();
-  a := get_float_byte ();
+  @itemlabel(ALLEGRO_MEMORY_BITMAP)
+  @item(Create a bitmap residing in system memory. Operations on, and with, memory bitmaps will not be hardware accelerated. However, direct pixel access can be relatively quick compared to video bitmaps, which depend on the display driver in use.
 
-  r := r * a;
-  g := g * a;
-  b := b * a;
+    Note: Allegro's software rendering routines are currently very unoptimised.)
+  @itemlabel(ALLEGRO_VIDEO_BITMAP)
+  @item(Creates a bitmap that resides in the video card memory. These types of bitmaps receive the greatest benefit from hardware acceleration.
 
-  set_image_pixel (x, y, r, g, b, a);
-#)
-  The reason for this can be seen in the Allegro example ex_premulalpha, ie,
-  using pre-multiplied alpha gives more accurate color results in some cases.
-  To use alpha blending with images loaded with pre-multiplied alpha, you would
-  use the default blending mode, which is set with @code(al_set_blender
-  @(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA@)) to set the correct
-  blender.  This has some caveats.  First, as mentioned above, drawing such an
-  image can result in less accurate color blending @(when drawing an image with
-  linear filtering on, the edges will be darker than they should be@).  Second,
-  the behaviour is somewhat confusing, which is explained in the example below.
-@longcode(#
-// Load and create bitmaps with an alpha channel
-  al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA);
-// Load some bitmap with alpha in it
-  bmp = al_load_bitmap ('some_alpha_bitmap.png');
-// We will draw to this buffer and then draw this buffer to the screen
-  tmp_buffer = al_create_bitmap (SCREEN_W, SCREEN_H);
-// Set the buffer as the target and clear it
-  al_set_target_bitmap (tmp_buffer);
-  al_clear_to_color (al_map_rgba_f (0, 0, 0, 1));
-// Draw the bitmap to the temporary buffer
-  al_draw_bitmap (bmp, 0, 0, 0);
-// Finally, draw the buffer to the screen
-// The output will look incorrect (may take close inspection
-// depending on the bitmap -- it may also be very obvious)
-  al_set_target_bitmap (al_get_backbuffer (display));
-  al_draw_bitmap (tmp_buffer, 0, 0, 0);
-#)
- )
+    @italic(Note:) Creating a video bitmap will fail if there is no current display or the current display driver cannot create the bitmap. The latter will happen if for example the format or dimensions are not supported.
+
+    @italic(Note:) Bitmaps created with this flag will be converted to memory bitmaps when the last display is destroyed. In most cases it is therefore easier to use the @code(ALLEGRO_CONVERT_BITMAP) flag instead.)
+  @itemlabel(ALLEGRO_CONVERT_BITMAP)
+  @item(This is the default. It will try to create a video bitmap and if that fails create a memory bitmap. Bitmaps created with this flag when there is no active display will be converted to video bitmaps next time a display is created. They also will remain video bitmaps if the last display is destroyed and then another is created again.
+
+    @italic(Note:) You can combine this flag with @code(ALLEGRO_MEMORY_BITMAP) or @code(ALLEGRO_VIDEO_BITMAP) to force the initial type (and fail in the latter case if no video bitmap can be created) - but usually neither of those combinations is very useful.
+
+    You can use the display option @code(ALLEGRO_AUTO_CONVERT_BITMAPS) to control which displays will try to auto-convert bitmaps.)
+  @itemlabel(ALLEGRO_NO_PRESERVE_TEXTURE)
+  @item(Normally, every effort is taken to preserve the contents of bitmaps, since some platforms may forget them. This can take extra processing time. If you know it doesn't matter if a bitmap keeps its pixel data, for example when it's a temporary buffer, use this flag to tell Allegro not to attempt to preserve its contents.)
+  @itemlabel(ALLEGRO_ALPHA_TEST)
+  @item(This is a driver hint only. It tells the graphics driver to do alpha testing instead of alpha blending on bitmaps created with this flag. Alpha testing is usually faster and preferred if your bitmaps have only one level of alpha (0). This flag is currently not widely implemented (i.e., only for memory bitmaps).)
+  @itemlabel(ALLEGRO_MIN_LINEAR)
+  @item(When drawing a scaled down version of the bitmap, use linear filtering. This usually looks better. You can also combine it with the MIPMAP flag for even better quality.)
+  @itemlabel(ALLEGRO_MAG_LINEAR)
+  @item(When drawing a magnified version of a bitmap, use linear filtering. This will cause the picture to get blurry instead of creating a big rectangle for each pixel. It depends on how you want things to look like whether you want to use this or not.)
+  @itemlabel(ALLEGRO_MIPMAP)
+  @item(This can only be used for bitmaps whose width and height is a power of two. In that case, it will generate mipmaps and use them when drawing scaled down versions. For example if the bitmap is 64x64, then extra bitmaps of sizes 32x32, 16x16, 8x8, 4x4, 2x2 and 1x1 will be created always containing a scaled down version of the original.)
 )
-To explain further, if you have a pixel with 0.5 alpha, and you're using
-(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA) for blending, the
-formula is:
-@longcode(#
-  a := da * dst + sa * src
-#)
-Expands to:
-@longcode(#
-  result_a := dst_a * (1-0.5) + 0.5 * 0.5;
-#)
-So if you draw the image to the temporary buffer, it is blended once
-resulting in 0.75 alpha, then drawn again to the screen, blended in the
-same way, resulting in a pixel has 0.1875 as an alpha value.
 @seealso(al_get_new_bitmap_flags) @seealso(al_get_bitmap_flags)
 #al_create_bitmap
 Creates a new bitmap using the bitmap format and flags for the current
@@ -464,6 +427,13 @@ Return a new copy of a string, containing its contents in the byte interval @cod
 If necessary, use @link(al_ustr_offset) to find the byte offsets for a given code point that you are interested in.
 @seealso(al_ustr_dup) @seealso(al_ustr_free)
 
+@bold(Note:)  This is used because the way the C language works.  I didn't test
+if Pascal do need this kind of stuff.  Future versions of Allegro.pas would not
+include this function, so don't use it unless your really need to (and tell me
+if you really need it to remove this warning from documentation).
+
+#al_set_keyboard_leds
+Overrides the state of the keyboard LED indicators. Set leds to a combination of the keyboard modifier flags to enable the corresponding LED indicators (@code(ALLEGRO_KEYMOD_NUMLOCK), @code(ALLEGRO_KEYMOD_CAPSLOCK) and @code(ALLEGRO_KEYMOD_SCROLLLOCK) are supported) or to -1 to return to default behavior. False is returned if the current keyboard driver cannot set LED
 
 
 

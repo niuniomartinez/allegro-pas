@@ -2,6 +2,8 @@
 
 In no special order
 
+  * I don't find the list of EVENTS!!!
+
   * Check how to detect GTK+ and do correct compilation in ex_menu.
     Also {$DEFINE} may be useful.  Problem is that I don't see "DEFINES"
     propagates correctly (FPC).  Ask about it.
