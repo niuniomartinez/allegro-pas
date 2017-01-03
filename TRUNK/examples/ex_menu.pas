@@ -38,7 +38,6 @@ PROGRAM ex_menu;
     EndExample, Redraw, MenuVisible, Value: BOOLEAN;
     bg: ALLEGRO_BITMAPptr;
     t, sw, sh, dw, dh, cx, cy: REAL;
-    NewName: STRING;
 BEGIN
 { This is one way to define a menu. The entire system, nested menus and all,
   can be defined by this single array. }

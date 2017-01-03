@@ -62,7 +62,7 @@ INTERFACE
       @param(gm Grid columns.)
       @param(gn Grid rows.) *)
       CONSTRUCTOR Create (aDisplay: ALLEGRO_DISPLAYptr; CONST gm, gn: INTEGER);
-    (* Destructor. *)
+    (* Destructor.  It destroys widgets. *)
       DESTRUCTOR Destroy; OVERRIDE;
     (* Adds a widget to the dialog.
       @param(aWidget Widget to add.)
@@ -422,7 +422,7 @@ IMPLEMENTATION
     al_unregister_event_source
       (fEventQueue, al_get_display_event_source (fDisplay));
     al_destroy_event_queue (fEventQueue);
-    FOR Ndx := LOW (fWidgets) TO HIGH (fWidgets) DO FreeAndNil (fWidgets[Ndx]);
+    FOR Ndx := LOW (fWidgets) TO HIGH (fWidgets) DO fWidgets[Ndx].Free;
     IF fFont <> NIL THEN al_destroy_font (fFont);
     INHERITED Destroy
   END;

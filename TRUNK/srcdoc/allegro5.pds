@@ -255,7 +255,7 @@ If this bitmap is a sub-bitmap, then it, its parent and all the sibling
 sub-bitmaps are also converted.
 @seealso(al_create_bitmap) @seealso(al_set_new_bitmap_format)
 @seealso(al_set_new_bitmap_flags) @seealso(al_clone_bitmap)
-#Allegro5.al_conver_memory_bitmap
+#Allegro5.al_convert_memory_bitmap
 If you create a bitmap when there is no current display (for example because
 you have not called @code(al_create_display) in the current thread) and are
 using the @code(ALLEGRO_CONVERT_BITMAP) bitmap flag (which is set by default)
@@ -431,9 +431,145 @@ If necessary, use @link(al_ustr_offset) to find the byte offsets for a given cod
 if Pascal do need this kind of stuff.  Future versions of Allegro.pas would not
 include this function, so don't use it unless your really need to (and tell me
 if you really need it to remove this warning from documentation).
+#Allegro5.al_set_keyboard_leds
+Overrides the state of the keyboard LED indicators. Set leds to a combination of the keyboard modifier flags to enable the corresponding LED indicators (@code(ALLEGRO_KEYMOD_NUMLOCK), @code(ALLEGRO_KEYMOD_CAPSLOCK) and @code(ALLEGRO_KEYMOD_SCROLLLOCK) are supported) or to @code(-1) to return to default behavior.
+@return(@false if the current keyboard driver cannot set LED.)
 
-#al_set_keyboard_leds
-Overrides the state of the keyboard LED indicators. Set leds to a combination of the keyboard modifier flags to enable the corresponding LED indicators (@code(ALLEGRO_KEYMOD_NUMLOCK), @code(ALLEGRO_KEYMOD_CAPSLOCK) and @code(ALLEGRO_KEYMOD_SCROLLLOCK) are supported) or to -1 to return to default behavior. False is returned if the current keyboard driver cannot set LED
+
+
+#al5audio.ALLEGRO_AUDIO_PAN_NONE
+A special value for the pan property of sample instances and audio streams. Use this value to disable panning on sample instances and audio streams, and play them without attentuation implied by panning support.
+
+@code(ALLEGRO_AUDIO_PAN_NONE) is different from a pan value of 0.0 (centered) because, when panning is enabled, we try to maintain a constant sound power level as a sample is panned from left to right. A sound coming out of one speaker should sound as loud as it does when split over two speakers. As a consequence, a sample with pan value 0.0 will be 3 dB softer than the original level.
+
+(Please correct us if this is wrong.)
+#al5audio.ALLEGRO_CHANNEL_CONF
+Speaker configuration (mono, stereo, 2.1, 3, etc). With regards to behavior, most of this code makes no distinction between, say, 4.1 and 5 speaker setups.. they both have 5 "channels". However, users would like the distinction, and later when the higher-level stuff is added, the differences will become more important. (v>>4)+(v&0xF) should yield the total channel count.
+#al5audio.ALLEGRO_SAMPLE_INSTANCEptr
+An @code(ALLEGRO_SAMPLE_INSTANCEptr) represents a playable instance of a predefined sound effect. It holds information about how the effect should be played: These playback parameters consist of the looping mode, loop start/end points, playing position, speed, gain, pan and the playmode. Whether a sample instance is currently playing or paused is also one of its properties.
+
+An instance uses the data from an @code(ALLEGRO_SAMPLE) object. Multiple instances may be created from the same @code(ALLEGRO_SAMPLE). An @code(ALLEGRO_SAMPLE) must not be destroyed while there are instances which reference it.
+
+To actually produce audio output, an @code(ALLEGRO_SAMPLE_INSTANCEptr) must be attached to an @link(ALLEGRO_MIXERptr) which eventually reaches an @link(ALLEGRO_VOICEptr) object.
+@seealso(ALLEGRO_SAMPLEptr)
+#al5audio.ALLEGRO_AUDIO_STREAMptr
+Pointer to an @code(ALLEGRO_AUDIO_STREAM) object that is used to stream generated audio to the sound device, in real-time. This is done by reading from a buffer, which is split into a number of fragments. Whenever a fragment has finished playing, the user can refill it with new data.
+
+As with @link(ALLEGRO_SAMPLE_INSTANCEptr) objects, streams store information necessary for playback, so you may not play the same stream multiple times simultaneously. Streams also need to be attached to an @link(ALLEGRO_MIXERptr), which, eventually, reaches an @link(ALLEGRO_VOICEptr) object.
+
+While playing, you must periodically fill fragments with new audio data. To know when a new fragment is ready to be filled, you can either directly check with @link(al_get_available_audio_stream_fragments), or listen to events from the stream.
+
+You can register an audio stream event source to an event queue; see @link(al_get_audio_stream_event_source). An @code(ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT) event is generated whenever a new fragment is ready. When you receive an event, use @link(al_get_audio_stream_fragment) to obtain a pointer to the fragment to be filled. The size and format are determined by the parameters passed to @link(al_create_audio_stream).
+
+If you're late with supplying new data, the stream will be silent until new data is provided. You must call @link(al_drain_audio_stream) when you're finished with supplying data to the stream.
+
+If the stream is created by @link(al_load_audio_stream) then it will also generate an @code(ALLEGRO_EVENT_AUDIO_STREAM_FINISHED) event if it reaches the end of the file and is not set to loop.
+#al5audio.al_create_voice
+Creates a voice structure and allocates a voice from the digital sound driver. The passed frequency, sample format and channel configuration are used as a hint to what kind of data will be sent to the voice. However, the underlying sound driver is free to use non-matching values. For example, it may be the native format of the sound hardware.
+
+If a mixer is attached to the voice, the mixer will handle the conversion of all its input streams to the voice format and care does not have to be taken for this. However if you access the voice directly, make sure to not rely on the parameters passed to this function, but instead query the returned voice for the actual settings.
+@seealso(al_destroy_voice)
+#al5audio.al_attach_sample_instance_to_voice
+Attaches a sample instance to a voice, and allows it to play. The instance's gain and loop mode will be ignored, and it must have the same frequency, channel configuration and depth (including signed-ness) as the voice. This function may fail if the selected driver doesn't support preloading sample data.
+
+At this time, we don't recommend attaching sample instances directly to voices. Use a mixer inbetween.
+@return(@true on success, @false on failure.) seealso(al_detach_voice)
+#al5audio.al_attach_audio_stream_to_voice
+Attaches an audio stream to a voice. The same rules as @link(al_attach_sample_instance_to_voice) apply. This may fail if the driver can't create a voice with the buffer count and buffer size the stream uses.
+
+An audio stream attached directly to a voice has a number of limitations: The audio stream plays immediately and cannot be stopped. The stream position, speed, gain and panning cannot be changed. At this time, we don't recommend attaching audio streams directly to voices. Use a mixer inbetween.
+@returns(@true on success, @false on failure.) @seealso(al_detach_voice)
+#al5audio.al_install_audio
+@bold(Note:) most users will call @code(al_reserve_samples) and @code(al_init_acodec_addon) after this.
+@return(@true on success, @false on failure.)
+@seealso(al_reserve_samples) @seealso(al_uninstall_audio) @seealso(al_is_audio_installed) @seealso(al_init_acodec_addon) *)
+#al5audio.al_reserve_samples
+Reserves a number of sample instances, attaching them to the default mixer. If no default mixer is set when this function is called, then it will create one and attach it to the default voice. If no default voice has been set, it, too, will be created.
+
+This diagram illustrates the structures that are set up:
+@longcode(#
+                                      sample instance 1
+                                    / sample instance 2
+default voice <-- default mixer <---         .
+                                    \        .
+                                      sample instance N
+#)
+@return(@true on success, @false on error. @link(al_install_audio) must have been called first.)
+@seealso(al_set_default_mixer) @seealso(al_play_sample)
+
+
+
+
+#Allegro5.al_get_mouse_state
+Saves the state of the mouse specified at the time the function is called into the given structure.
+
+Example:
+@longcode(#
+VAR
+  State: ALLEGRO_MOUSE_STATE;
+BEGIN
+  al_get_mouse_state (State);
+  IF (State.buttons AND 1) <> 0 THEN
+  { Primary (e.g. left) mouse button is held. }
+    WriteLn (Format ('Mouse position: (%d, %d)', [State.x, State.y]));
+  IF (State.buttons AND 2) <> 0 THEN
+  { Secondary (e.g. right) mouse button is held. }
+    ;
+  IF (State.buttons AND 4) <> 0 THEN
+  { Tertiary (e.g. middle) mouse button is held. }
+    ;
+END.
+#)
+@seealso(ALLEGRO_MOUSE_STATE) @seealso(al_get_mouse_state_axis) @seealso(al_mouse_button_down)
+#Allegro5.al_grab_mouse
+Confines the mouse cursor to the given display. The mouse cursor can only be confined to one display at a time.
+
+Returns true if successful, otherwise returns false. Do not assume that the cursor will remain confined until you call @link(al_ungrab_mouse). It may lose the confined status at any time for other reasons.
+
+@bold(Note:) not yet implemented on Mac OS X.
+@seealso(al_ungrab_mouse)
+#Allegro5.al_set_mouse_wheel_precision
+Sets the precision of the mouse wheel (the z and w coordinates). This precision manifests itself as a multiplier on the @code(dz) and @code(dw) fields in mouse events. It also affects the @code(z) and @code(w) fields of events and @link(ALLEGRO_MOUSE_STATE), but not in a simple way if you alter the precision often, so it is suggested to reset those axes to @code(0) when you change precision. Setting this to a high value allows you to detect small changes in those two axes for some high precision mice. A flexible way of using this precision is to set it to a high value (120 is likely sufficient for most, if not all, mice) and use a floating point @code(dz) and @code(dw) like so:
+@longcode(#
+VAR
+  Event: ALLEGRO_EVENT;
+  dz := DOUBLE;
+BEGIN
+  al_set_mouse_wheel_precision (120);
+  al_wait_for_event (EventQueue, Event);
+  IF Event._type = ALLEGRO_EVENT_MOUSE_AXES THEN
+  BEGIN
+    dz := Event.mouse.dz / al_get_mouse_wheel_precision ();
+  { Use dz in some way... }
+  END;
+END.
+#)
+Precision is set to 1 by default. It is impossible to set it to a lower precision than that.
+@seealso(al_get_mouse_wheel_precision)
+#)
+
+
+#Allegro5.al_create_mouse_cursor
+Creates a mouse cursor from the bitmap provided.
+@param(x_focus Describes the bit of the cursor that will represent the actual mouse position.)
+@param(y_focus Describes the bit of the cursor that will represent the actual mouse position.)
+@return(A pointer to the cursor on success, or @nil on failure.)
+@seealso(al_set_mouse_cursor) @seealso(al_destroy_mouse_cursor)
+#Allegro5.al_set_mouse_cursor
+Sets the given mouse cursor to be the current mouse cursor for the given display.
+
+If the cursor is currently 'shown' (as opposed to 'hidden') the change is immediately visible.
+@return(@true on success, @false on failure.)
+@seealso(al_set_system_mouse_cursor) @seealso(al_show_mouse_cursor) @seealso(al_hide_mouse_cursor)
+#Allegro5.al_set_system_mouse_cursor
+Sets the given system mouse cursor to be the current mouse cursor for the given @code(display). If the cursor is currently 'shown' (as opposed to 'hidden') the change is immediately visible.
+
+If the cursor doesn't exist on the current platform another cursor will be silently be substituted.
+@returns(@true on success, @false on failure.)
+@seealso(ALLEGRO_SYSTEM_MOUSE_CURSOR) @seealso(al_set_mouse_cursor) @seealso(al_show_mouse_cursor) @seealso(al_hide_mouse_cursor)
+
+
+
 
 
 
