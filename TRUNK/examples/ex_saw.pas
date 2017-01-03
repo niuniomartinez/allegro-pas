@@ -71,7 +71,7 @@ PROGRAM ex_saw;
 
 
   VAR
-   Stream: ALLEGRO_AUDIO_STREAMptr;
+    Stream: ALLEGRO_AUDIO_STREAMptr;
 BEGIN
   IF NOT al_init THEN AbortExample ('Could not init Allegro.');
 
@@ -92,6 +92,7 @@ BEGIN
 
   CloseLog (FALSE);
 
+  al_drain_audio_stream (Stream);
   al_destroy_audio_stream (Stream);
   al_uninstall_audio;
 END.

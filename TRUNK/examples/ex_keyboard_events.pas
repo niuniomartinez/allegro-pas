@@ -25,7 +25,9 @@ PROGRAM ex_keyboard_events;
 
   PROCEDURE LogKey (CONST How: STRING; KeyCode, UniChar, Modifiers: INTEGER);
   VAR
+  { TODO:
     Multibyte: ANSISTRING = '     ';
+  }
     KeyName: STRING;
   BEGIN
     IF UniChar <= 32 THEN UniChar := 32;

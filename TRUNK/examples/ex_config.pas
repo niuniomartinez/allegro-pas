@@ -9,17 +9,12 @@ PROGRAM ex_config;
     Allegro5, Common,
     sysutils;
 
-  VAR
-    Passed: BOOLEAN = TRUE;
-
   PROCEDURE Test (Name: STRING; Expr: BOOLEAN);
   BEGIN
     IF Expr THEN
       LogWriteLn (Format (' PASS - %s', [Name]))
-    ELSE BEGIN
-      LogWriteLn (Format ('!FAIL - %s', [Name]));
-      Passed := FALSE
-    END
+    ELSE
+      LogWriteLn (Format ('!FAIL - %s', [Name]))
   END;
 
 

@@ -1329,7 +1329,7 @@ a = d.a * 0 + s.a * d.a
 
   TYPE
   (* Pointer to a display.
-     
+
      An opaque type representing an open display or window. *)
     ALLEGRO_DISPLAYptr = AL_POINTER;
   (* Pointer to joystick. *)
@@ -1349,7 +1349,7 @@ a = d.a * 0 + s.a * d.a
      @code(ALLEGRO_EVENT_SOURCE) pointer from an @code(ALLEGRO_DISPLAYptr) with
      @link(al_get_display_event_source).
 
-     You may create your own "œuser" event sources that emit custom events.
+     You may create your own "user" event sources that emit custom events.
      @seealso(ALLEGRO_EVENT) @seealso(al_init_user_event_source)
      @seealso(al_emit_user_event)
    *)
@@ -2910,59 +2910,112 @@ AL_FUNC(ALLEGRO_CONFIG *, al_merge_config, (const ALLEGRO_CONFIG *cfg1, const AL
     ALLEGRO_MOUSE_MAX_EXTRA_AXES = 4;
 
   TYPE
-  (* Type: ALLEGRO_MOUSE_STATE *)
+  (* Stores mouse state.  Fields are read-only.
+     @seealso(al_get_mouse_state) @seealso(al_get_mouse_state_axis)
+     @seealso(al_mouse_button_down) *)
     ALLEGRO_MOUSE_STATE = RECORD
-    (* (x, y) Primary mouse position
-     * (z) Mouse wheel position (1D 'wheel'), or,
-     * (w, z) Mouse wheel position (2D 'ball')
-     * display - the display the mouse is on (coordinates are relative to this)
-     * pressure - the pressure appleid to the mouse (for stylus/tablet)
-     *)
-      x, y, z, w: AL_INT;
+    (* Mouse X position. *)
+      x,
+    (* Mouse Y position. *)
+      y,
+    (* Mouse weel position (2D @italic(ball)). *)
+      z, w: AL_INT;
+    (* @exclude *)
       more_axes: ARRAY [0..(ALLEGRO_MOUSE_MAX_EXTRA_AXES - 1)] OF AL_INT;
+    (* Mouse buttons bitfield.
+
+      The zeroth bit is set if the primary mouse button is held down, the first
+      bit is set if the secondary mouse button is held down, and so on. *)
       buttons: AL_INT;
+    (* Pressure, ranging from 0.0 to 1.0. *)
       pressure: AL_FLOAT;
+    (* Display were the mouse is at the moment(?). *)
       display: ALLEGRO_DISPLAYptr;
     END;
 
 
 
+(* Returns @true if @link(al_install_mouse) was called successfully. *)
   FUNCTION al_is_mouse_installed: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Install a mouse driver.
+(* Installs mouse driver.
 
    Returns @true if successful.  If a driver was already installed, nothing
    happens and @true is returned. *)
   FUNCTION al_install_mouse: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Uninstalls the active mouse driver, if any. This will automatically
+   unregister the mouse event source with any event queues.
+
+   This function is automatically called when Allegro is shut down. *)
   PROCEDURE al_uninstall_mouse;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns the number of buttons on the mouse. The first button is 1.
+   @seealso(al_get_mouse_num_axes) *)
   FUNCTION al_get_mouse_num_buttons: AL_UINT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns the number of axes on the mouse. The first axis is 0.
+   @seealso(al_get_mouse_num_buttons) *)
   FUNCTION al_get_mouse_num_axes: AL_UINT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Tryes to position the mouse at the given coordinates on the given display.
+   The mouse movement resulting from a successful move will generate an
+   @code(ALLEGRO_EVENT_MOUSE_WARPED) event.
+   @return(@true on success, @false on failure.)
+   @seealso(al_set_mouse_z) @seealso(al_set_mouse_w) *)
   FUNCTION al_set_mouse_xy (display: ALLEGRO_DISPLAYptr; x, y: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Sets the mouse wheel position to the given value.
+   @return(@true on success, @false on failure.)
+   @seealso(al_set_mouse_xy) @seealso(al_set_mouse_w) *)
   FUNCTION al_set_mouse_z (z: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Sets the second mouse wheel position to the given value.
+   @return(@true on success, @false on failure.)
+   @seealso(al_set_mouse_xy) @seealso(al_set_mouse_z) *)
   FUNCTION al_set_mouse_w (w: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Sets the given mouse axis to the given value.
+
+   The axis number must not be 0 or 1, which are the X and Y axes. Use
+   @code(al_set_mouse_xy) for that.
+   @returns(@true on success, @false on failure.9
+   @seealso(al_set_mouse_xy) @seealso(al_set_mouse_z,) @seealso(l_set_mouse_w) *)
   FUNCTION al_set_mouse_axis (axis, value: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_get_mouse_state (OUT ret_state: ALLEGRO_MOUSE_STATE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Returns @true if the mouse button specified was held down in the state
+   specified. Unlike most things, the first mouse button is numbered 1.
+   @seealso(ALLEGRO_MOUSE_STATE) @seealso(al_get_mouse_state)
+   @seealso(al_get_mouse_state_axis) *)
   FUNCTION al_mouse_button_down (VAR state: ALLEGRO_MOUSE_STATE; button: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Extracts the mouse axis value from the saved state. The axes are numbered
+   from 0, in this order: x-axis, y-axis, z-axis, w-axis.
+   @seealso(ALLEGRO_MOUSE_STATE) @seealso(al_get_mouse_state)
+   @seealso(al_mouse_button_down) *)
   FUNCTION al_get_mouse_state_axis (VAR state: ALLEGRO_MOUSE_STATE; axis: AL_INT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_mouse_cursor_position (VAR ret_x, ret_y: AL_INT): AL_BOOL;
+(* On platforms where this information is available, this function returns the
+   global location of the mouse cursor, relative to the desktop. You should not
+   normally use this function, as the information is not useful except for
+   special scenarios as moving a window.
+   @return(@true on success, @false on failure.) *)
+  FUNCTION al_get_mouse_cursor_position (OUT ret_x, ret_y: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_grab_mouse (display: ALLEGRO_DISPLAYptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Stop confining the mouse cursor to any display belonging to the program.
+
+   @bold(Note:) not yet implemented on Mac OS X.
+   @seealso(al_grab_mouse) *)
   FUNCTION al_ungrab_mouse: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_set_mouse_wheel_precision (precision: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Gets the precision of the mouse wheel (the z and w coordinates).
+   @seealso(al_set_mouse_wheel_precision) *)
   FUNCTION al_get_mouse_wheel_precision: AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -3107,9 +3160,10 @@ AL_FUNC(ALLEGRO_CONFIG *, al_merge_config, (const ALLEGRO_CONFIG *cfg1, const AL
  *****************************************************************************)
 
   TYPE
-  (* Mouse cursors *)
+  (* Pointer to a custom mouse cursor *)
     ALLEGRO_MOUSE_CURSORptr = AL_POINTER;
 
+  (* Used to identify the mouse cursor. @seealso(al_set_system_mouse_cursor) *)
     ALLEGRO_SYSTEM_MOUSE_CURSOR = (
       ALLEGRO_SYSTEM_MOUSE_CURSOR_NONE        =  0,
       ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT     =  1,
@@ -3136,14 +3190,27 @@ AL_FUNC(ALLEGRO_CONFIG *, al_merge_config, (const ALLEGRO_CONFIG *cfg1, const AL
 
   FUNCTION al_create_mouse_cursor (sprite: ALLEGRO_BITMAPptr; xfocus, yfocus: AL_INT): ALLEGRO_MOUSE_CURSORptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Frees the memory used by the given cursor.
+
+   It has no effect if @code(cursor) is @nil.
+   @seealso(al_create_mouse_cursor) *)
   PROCEDURE al_destroy_mouse_cursor (cursor: ALLEGRO_MOUSE_CURSORptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_set_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor: ALLEGRO_MOUSE_CURSORptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_set_system_mouse_cursor (display: ALLEGRO_DISPLAYptr; cursor_id: ALLEGRO_SYSTEM_MOUSE_CURSOR): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Make a mouse cursor visible in the given display.
+   @return(@true if a mouse cursor is shown as a result of the call @(or one
+    already was visible@), @false otherwise.)
+   @seealso( al_hide_mouse_cursor) *)
   FUNCTION al_show_mouse_cursor (display: ALLEGRO_DISPLAYptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+(* Hide the mouse cursor in the given display. This has no effect on what the
+   current mouse cursor looks like; it just makes it disappear.
+   @return(@true on success @(or if the cursor already was hidden@), @false
+    otherwise.)
+   @seealso(al_show_mouse_cursor) *)
   FUNCTION al_hide_mouse_cursor (display: ALLEGRO_DISPLAYptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
