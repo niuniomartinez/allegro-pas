@@ -5,6 +5,8 @@ PROGRAM ex_bitmap;
  * zooming.
  *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
 USES
   Common,
   allegro5, al5image,

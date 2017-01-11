@@ -3,6 +3,10 @@ PROGRAM ex_audio_simple;
  *
  *    Demonstrate 'simple' audio interface.
  *)
+
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
+
 USES
   Allegro5, al5audio, al5acodec, Common,
   sysutils;

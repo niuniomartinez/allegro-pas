@@ -8,6 +8,9 @@ PROGRAM ex_file_slice;
  *  into a single file, and later read them back via Allegro's image loader. 
  *
  *)
+
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Allegro5, al5base, Common,
     sysutils;

@@ -1,5 +1,7 @@
 PROGRAM ex_filter;
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Allegro5, al5font, al5image, Common;
 

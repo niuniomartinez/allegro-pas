@@ -6,6 +6,8 @@ PROGRAM ex_depth_mask;
   {$ENDIF}
 {$ENDIF}
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5font, al5image, al5ttf,

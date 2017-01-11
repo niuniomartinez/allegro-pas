@@ -1,5 +1,7 @@
 PROGRAM ex_display_events;
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5font, al5primitives,

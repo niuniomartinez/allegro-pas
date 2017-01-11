@@ -1,6 +1,8 @@
 PROGRAM ex_convert;
 (* Image conversion example *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5image,

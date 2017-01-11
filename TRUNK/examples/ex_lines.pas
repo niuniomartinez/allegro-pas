@@ -2,6 +2,9 @@ PROGRAM ex_lines;
 (*
  * This example exercises line drawing, and single buffer mode.
  *)
+
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
 USES
   common,
   Allegro5,

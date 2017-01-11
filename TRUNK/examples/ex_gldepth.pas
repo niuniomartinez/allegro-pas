@@ -26,6 +26,8 @@ PROGRAM ex_gldepth;
     distribution.
  *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5image, al5font, al5opengl,

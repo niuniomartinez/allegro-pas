@@ -1,5 +1,7 @@
 PROGRAM ex_monitorinfo;
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Allegro5,
     Common,

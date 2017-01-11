@@ -7,6 +7,8 @@ PROGRAM ex_keyboard_events;
  *    This program tests keyboard events.
  *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
      Common,
      Allegro5,

@@ -1,6 +1,8 @@
 PROGRAM ex_draw;
 (* Tests some drawing primitives. *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5image, al5font, al5color, al5primitives,

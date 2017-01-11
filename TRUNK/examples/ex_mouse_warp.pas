@@ -21,6 +21,8 @@ PROGRAM ex_mouse_warp;
     distribution.
  *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     common,
     Allegro5, al5font, al5image, al5primitives,

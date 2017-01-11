@@ -1,5 +1,7 @@
 PROGRAM ex_membmp;
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5font, al5Image,

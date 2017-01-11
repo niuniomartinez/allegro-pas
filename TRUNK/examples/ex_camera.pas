@@ -3,6 +3,8 @@ PROGRAM ex_camera;
  * camera.
  *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5primitives, al5color, al5font,

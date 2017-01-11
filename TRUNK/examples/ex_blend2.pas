@@ -6,7 +6,13 @@ PROGRAM ex_blend2;
  * Original by Peter Wang.
  *)
 
-{$MODE DELPHI}
+{$IFDEF FPC}
+{ Needed to support classes. }
+  {$IF NOT DEFINED(FPC_DELPHI)}
+    {$MODE DELPHI}
+  {$ENDIF}
+{$ENDIF}
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 
   USES
     Common, nihGUI,

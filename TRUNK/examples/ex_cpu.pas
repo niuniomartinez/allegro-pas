@@ -1,6 +1,8 @@
 PROGRAM ex_cpu;
 (* An example showing the use of al_get_cpu_count and al_get_ram_size. *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Allegro5, al5font, Common,
     sysutils;
