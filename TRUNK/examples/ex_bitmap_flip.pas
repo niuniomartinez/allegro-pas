@@ -1,6 +1,8 @@
 PROGRAM ex_bitmap_flip;
 (* An example showing bitmap flipping flags, by Steven Wallace. *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5image, al5font;

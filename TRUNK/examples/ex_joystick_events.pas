@@ -6,6 +6,8 @@ PROGRAM ex_joysick_events;
  *    This program tests joystick events.
  *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5font, al5primitives,

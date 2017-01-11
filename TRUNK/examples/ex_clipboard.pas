@@ -2,6 +2,9 @@ PROGRAM ex_clipboard;
 (* An example showing bitmap flipping flags, by Steven Wallace.
 
   NOTE: Previous comment seems misplaced... *)
+
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     allegro5, al5base, al5image, al5font;

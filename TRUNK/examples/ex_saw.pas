@@ -1,6 +1,8 @@
 PROGRAM ex_saw;
 (* Recreate exstream.c from A4. *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5base, al5audio, al5nativedlg;

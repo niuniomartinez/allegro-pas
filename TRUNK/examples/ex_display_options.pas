@@ -1,5 +1,8 @@
 PROGRAM ex_display_options;
 (* Test retrieving and settings possible modes. *)
+
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5font, al5primitives,

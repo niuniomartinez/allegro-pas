@@ -1,5 +1,7 @@
 PROGRAM ex_palette;
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Allegro5, al5base, al5color, al5image,
     Common,

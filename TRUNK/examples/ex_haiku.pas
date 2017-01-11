@@ -18,6 +18,8 @@ PROGRAM haiku;
    as spected.
  *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
 USES
    Common,
    Allegro5,

@@ -1,6 +1,8 @@
 PROGRAM ex_blend;
 (* An example demonstrating different blending modes. *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
 USES
   Common,
   Allegro5, al5Font, al5Image, al5Primitives,

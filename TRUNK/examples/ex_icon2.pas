@@ -7,6 +7,8 @@ PROGRAM ex_icon2;
  *      and the big one for the alt-tab popup, for example.
  *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5image;

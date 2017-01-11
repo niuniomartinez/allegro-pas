@@ -1,5 +1,7 @@
 PROGRAM ex_menu;
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Allegro5, al5base, al5image, al5nativedlg,
     Common, sysutils;

@@ -5,6 +5,8 @@ PROGRAM ex_shader_target;
  *    Test that shaders are applied per target bitmap.
  *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5base, al5image,

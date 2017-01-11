@@ -1,5 +1,7 @@
 PROGRAM ex_icon;
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5image;

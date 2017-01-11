@@ -27,6 +27,8 @@ PROGRAM ex_prim;
   {$ENDIF}
 {$ENDIF}
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5Base, al5font, al5image, al5nativedlg, al5primitives,

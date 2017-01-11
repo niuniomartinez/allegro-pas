@@ -3,6 +3,8 @@ PROGRAM ex_clip;
  * al_set_clipping_rectangle when clipping a bitmap.
  *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Common,
     Allegro5, al5font, al5color,

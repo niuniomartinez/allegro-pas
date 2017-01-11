@@ -1,5 +1,7 @@
 PROGRAM ex_drawpixels;
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Allegro5, Common,
     sysutils;

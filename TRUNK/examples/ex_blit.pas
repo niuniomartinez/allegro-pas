@@ -2,6 +2,9 @@ PROGRAM ex_blit;
 (*
  * An example demonstrating different blending modes.
  *)
+
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
 USES
   Common,
   Allegro5, al5font, al5image, al5color,

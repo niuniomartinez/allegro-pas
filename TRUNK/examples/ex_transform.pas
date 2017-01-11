@@ -1,5 +1,7 @@
 PROGRAM ex_transform;
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
 USES
   common,
   Allegro5, al5image, al5font, al5primitives;

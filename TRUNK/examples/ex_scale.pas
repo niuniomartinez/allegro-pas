@@ -3,6 +3,8 @@ PROGRAM ex_scale;
  *    Example program for the Allegro library, by Peter Wang.
  *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
 USES
    common,
    Allegro5,

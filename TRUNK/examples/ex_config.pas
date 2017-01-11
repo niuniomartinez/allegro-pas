@@ -5,6 +5,8 @@ PROGRAM ex_config;
  *    Test config file reading and writing.
  *)
 
+{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+
   USES
     Allegro5, Common,
     sysutils;
