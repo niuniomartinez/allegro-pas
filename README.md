@@ -1,5 +1,5 @@
 # allegro-pas
-Wrapper to use the Allegro game librery with Pascal/Delphi.  Synced with official.
+Wrapper to use the Allegro game library with Pascal/Delphi.  Synced with official.
 
 Note that the official Allegro.pas wrapper is hosted at SourceForge [http:://allegro-pas.sf.net/].
 
