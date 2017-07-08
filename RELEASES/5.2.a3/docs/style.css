@@ -1,0 +1,36 @@
+/*
+*/
+
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Verdana,Arial;
+  color: black;
+  background-color: white;
+  font-size: 12px;
+  width: 100%;
+}
+
+main, article {
+  border-spacing: 0;
+  margin: 0.2em;
+}
+
+/* Navigation menu. */
+nav {
+  width: 200px;
+  color: white;
+  background-color: #787878;
+  margin: 0 1em 0 0;
+  /* padding-bottom is a little larger, to make navigation column have some
+     nice height even when content column is very small. */
+  padding: 1em 1em 100px 1em;
+  float: left;
+}
+nav p { padding: 0; }
+
+nav a { color: white; text-decoration: none; }
+nav a:hover { font-weight: bold }
