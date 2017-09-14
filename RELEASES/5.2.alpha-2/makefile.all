@@ -1,0 +1,76 @@
+# Makefile generic - build rules
+
+.PHONY: all docs makeskel
+
+# Main objective: the whole project
+all: adbanner examples
+	@echo "Finished $(PROJECT)."
+	@echo "To create the documentation, run 'make docs'."
+
+examples: $(EXMFILES)
+	@echo "Finished all examples."
+
+# Executables
+$(EXMBIN)%$(BINSUF): $(EXMDIR)%.pas $(EXMDIR)common.pas $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FU$(OBJDIR) $< -o$@
+	@echo Example $@ ready!
+
+# Documentation.
+docs:
+	pasdoc -T "$(PROJECT)" -O html --cache-dir $(OBJDIR) -E $(DOCDIR) --auto-abstract $(LIBFILES)
+#	fpdoc $(FPDOPT) --package=Allegro_pas --project=$(DOCSRC)project.xml --format=html --output=$(DOCDIR)
+
+## This generates skeleton for documentation.
+## Skeleton files are written in root.  Actual documentation sources are read
+## from 'docs/src/'.
+makeskel:
+	makeskel $(MKSOPT) --input=$(LIBDIR)allegro5.pas --output=allegro5.xml
+	makeskel $(MKSOPT) --input=$(LIBDIR)al5base.pas --output=al5base.xml
+	makeskel $(MKSOPT) --input=$(LIBDIR)al5acodec.pas --output=al5acodec.xml
+	makeskel $(MKSOPT) --input=$(LIBDIR)al5audio.pas --output=al5audio.xml
+	makeskel $(MKSOPT) --input=$(LIBDIR)al5color.pas --output=al5color.xml
+	makeskel $(MKSOPT) --input=$(LIBDIR)al5font.pas --output=al5font.xml
+	makeskel $(MKSOPT) --input=$(LIBDIR)al5gl.pas --output=al5gl.xml
+	makeskel $(MKSOPT) --input=$(LIBDIR)al5image.pas --output=al5image.xml
+	makeskel $(MKSOPT) --input=$(LIBDIR)al5nativedlg.pas --output=al5nativedlg.xml
+	makeskel $(MKSOPT) --input=$(LIBDIR)al5primitives.pas --output=al5primitives.xml
+	makeskel $(MKSOPT) --input=$(LIBDIR)al5ttf.pas --output=al5ttf.xml
+
+# Returns some variables.
+status: adbanner
+	@echo "-----------------"
+	@echo "- Status Report -"
+	@echo "-----------------"
+	@echo "  Project : $(PROJECT)"
+	@echo "  Platform : $(PLATFORM)"
+	@echo "  Compiler options : $(FLAGS) $(EFLAGS)"
+	@echo "  Library units : $(LIBFILES)"
+	@echo "  Examples : $(EXMFILES)"
+
+# Cleans everything.
+veryclean: clean
+	$(DELETE) $(EXMFILES)
+
+# Clean temporary files.
+clean:
+	$(DELETE) $(OBJFILES)
+
+# Show all options.
+help: adbanner
+	@echo "--------"
+	@echo "- Help -"
+	@echo "--------"
+	@echo "make all            } Builds the whole project."
+	@echo "make examples       } Builds the examples only."
+	@echo "make docs           } Builds internal documentation."
+	@echo "make clean          } Deletes temporary files."
+	@echo "make veryclean      } Deletes all builded files."
+	@echo "make status         } Shows some configuration variables."
+	@echo "make help           } Shows this help."
+
+# Some info.
+adbanner:
+	@echo "$(PROJECT)"
+	@echo "(c) Guillermo Martínez J. 2012-2016"
+	@echo "http://allegro-pas.sourceforge.net"
+	@echo

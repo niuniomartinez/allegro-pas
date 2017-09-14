@@ -1,0 +1,27 @@
+# Makefile generic - Sources
+
+#
+# Builds the list of source files and object files for each bynary type.
+#
+
+# Allegro sources
+LIBFILES = $(wildcard $(LIBDIR)*$(LIBSUF))
+ifeq ($(strip $(LIBFILES)),)
+$(error ERROR: No source code found at $(LIBDIR))
+endif
+
+# For the examples.
+TEXM = $(wildcard $(EXMDIR)ex*$(MAINSUF))
+ifeq ($(strip $(TEXM)),)
+$(error ERROR: No source code found at $(EXMDIR))
+endif
+EXMFILES = $(addprefix $(EXMBIN),$(addsuffix $(BINSUF), $(basename $(notdir $(TEXM) ) ) ) )
+
+# Object files et all.
+
+ALLFILES = $(LIBFILES) $(TEXM)
+
+OBJFILES = $(addprefix $(OBJDIR),$(addsuffix .o, $(basename $(notdir $(ALLFILES) ) ) ) )
+OBJFILES += $(addprefix $(OBJDIR),$(addsuffix .ppu, $(basename $(notdir $(ALLFILES) ) ) ) )
+OBJFILES += $(addprefix $(OBJDIR),$(addsuffix .a, $(basename $(notdir $(ALLFILES) ) ) ) )
+

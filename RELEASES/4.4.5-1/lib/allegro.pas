@@ -35,10 +35,10 @@ INTERFACE
     AL_PAS_VERSION = 5;
   (* Defined to TRUE if current version is a BETA version.  A BETA version is a
      test version and may be uncomplete or untested. *)
-    AL_PAS_IS_BETA = TRUE;
+    AL_PAS_IS_BETA = FALSE;
   (* Defined to a text string containing all version numbers and maybe some
      additional text. *)
-    AL_PAS_VERSION_STR = '4.4.5 SVN';
+    AL_PAS_VERSION_STR = '4.4.5-1';
 
 
 

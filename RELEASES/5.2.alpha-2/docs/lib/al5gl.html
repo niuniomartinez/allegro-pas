@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
+<html>
+<head>
+<title>Allegro.pas 5.2 alpha-2: al5gl</title>
+<meta name="generator" content="PasDoc 0.14.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="StyleSheet" type="text/css" href="pasdoc.css">
+</head>
+<body>
+<table class="container"><tr><td class="navigation">
+<h2>Allegro.pas 5.2 alpha-2</h2><p><a href="AllUnits.html" class="navigation">Units</a></p><p><a href="ClassHierarchy.html" class="navigation">Class Hierarchy</a></p><p><a href="AllClasses.html" class="navigation">Classes, Interfaces, Objects and Records</a></p><p><a href="AllTypes.html" class="navigation">Types</a></p><p><a href="AllVariables.html" class="navigation">Variables</a></p><p><a href="AllConstants.html" class="navigation">Constants</a></p><p><a href="AllFunctions.html" class="navigation">Functions and Procedures</a></p><p><a href="AllIdentifiers.html" class="navigation">Identifiers</a></p></td><td class="content">
+<h1 class="unit">Unit al5gl</h1>
+<table class="sections wide_list">
+<tr>
+<td><a class="section" href="#PasDoc-Description">Description</a></td><td>Uses</td><td>Classes, Interfaces, Objects and Records</td><td><a class="section" href="#PasDoc-FuncsProcs">Functions and Procedures</a></td><td><a class="section" href="#PasDoc-Types">Types</a></td><td>Constants</td><td>Variables</td></tr></table>
+<a name="PasDoc-Description"></a><h2 class="description">Description</h2>
+<p>
+OpenGL integration.
+
+<p>You can disable the detection of any OpenGL extension by Allegro with a section like this in allegro5.cfg: </p>
+
+<pre class="longcode">
+[opengl_disabled_extensions]
+GL_ARB_texture_non_power_of_two=<span class="pascal_numeric">0</span>
+GL_EXT_framebuffer_object=<span class="pascal_numeric">0</span>
+</pre>
+
+<p> Any extension which appears in the section is treated as not available (it does not matter if you set it to 0 or any other value).</p>
+<a name="PasDoc-Uses"></a><h2 class="overview">Overview</h2>
+<a name="PasDoc-FuncsProcs"></a><h3 class="summary">Functions and Procedures</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code>FUNCTION <b><a  href="al5gl.html#al_get_opengl_version">al_get_opengl_version</a></b>: <a  href="al5Base.html#AL_UINT32">AL_UINT32</a>; CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>FUNCTION <b><a  href="al5gl.html#al_have_opengl_extension">al_have_opengl_extension</a></b> (CONST extension: <a  href="al5Base.html#AL_STR">AL_STR</a>): <a  href="al5Base.html#AL_BOOL">AL_BOOL</a>; CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>FUNCTION <b><a  href="al5gl.html#al_get_opengl_proc_address">al_get_opengl_proc_address</a></b> (CONST name: <a  href="al5Base.html#AL_STR">AL_STR</a>): <a  href="al5Base.html#AL_VOIDptr">AL_VOIDptr</a>; CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>FUNCTION <b><a  href="al5gl.html#al_get_opengl_texture">al_get_opengl_texture</a></b> (bitmap: <a  href="Allegro5.html#ALLEGRO_BITMAPptr">ALLEGRO_BITMAPptr</a>): GLuint; CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>PROCEDURE <b><a  href="al5gl.html#al_remove_opengl_fbo">al_remove_opengl_fbo</a></b> (bitmap: <a  href="Allegro5.html#ALLEGRO_BITMAPptr">ALLEGRO_BITMAPptr</a>); CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>FUNCTION <b><a  href="al5gl.html#al_get_opengl_fbo">al_get_opengl_fbo</a></b> (bitmap: <a  href="Allegro5.html#ALLEGRO_BITMAPptr">ALLEGRO_BITMAPptr</a>): GLuint; CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>PROCEDURE <b><a  href="al5gl.html#al_get_opengl_texture_size">al_get_opengl_texture_size</a></b> (bitmap: <a  href="Allegro5.html#ALLEGRO_BITMAPptr">ALLEGRO_BITMAPptr</a>; OUT w, h: <a  href="al5Base.html#AL_INT">AL_INT</a>); CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>PROCEDURE <b><a  href="al5gl.html#al_get_opengl_texture_position">al_get_opengl_texture_position</a></b> (bitmap: <a  href="Allegro5.html#ALLEGRO_BITMAPptr">ALLEGRO_BITMAPptr</a>; OUT u, v: <a  href="al5Base.html#AL_INT">AL_INT</a>); CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr class="list">
+<td class="itemcode"><code>PROCEDURE <b><a  href="al5gl.html#al_set_current_opengl_context">al_set_current_opengl_context</a></b> (display: <a  href="Allegro5.html#ALLEGRO_DISPLAYptr">ALLEGRO_DISPLAYptr</a>); CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr class="list2">
+<td class="itemcode"><code>FUNCTION <b><a  href="al5gl.html#al_get_opengl_variant">al_get_opengl_variant</a></b>: <a  href="al5Base.html#AL_INT">AL_INT</a>; CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+</table>
+<a name="PasDoc-Types"></a><h3 class="summary">Types</h3>
+<table class="summary wide_list">
+<tr class="list">
+<td class="itemcode"><code><b><a  href="al5gl.html#ALLEGRO_OPENGL_VARIANT">ALLEGRO_OPENGL_VARIANT</a></b> = (...);</code></td>
+</tr>
+</table>
+<h2 class="description">Description</h2>
+<h3 class="detail">Functions and Procedures</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><a name="al_get_opengl_version"></a><code>FUNCTION <b>al_get_opengl_version</b>: <a  href="al5Base.html#AL_UINT32">AL_UINT32</a>; CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Returns the OpenGL or OpenGL ES version number of the client (the computer the program is running on), for the current display. &quot;1.0&quot; is returned as <code>$01000000</code>, &quot;1.2.1&quot; is returned as <code>$01020100</code>, and &quot;1.2.2&quot; as <code>$01020200</code> ,etc.
+
+<p>A valid OpenGL context must exist for this function to work, which means you may not call it before <a class="normal" href="Allegro5.html#al_create_display">al_create_display</a>. </p>
+<h6 class="description_section">See also</h6>
+<dl class="see_also">
+  <dt><a class="normal" href="al5gl.html#al_get_opengl_variant">al_get_opengl_variant</a></dt>
+  <dd></dd>
+</dl>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><a name="al_have_opengl_extension"></a><code>FUNCTION <b>al_have_opengl_extension</b> (CONST extension: <a  href="al5Base.html#AL_STR">AL_STR</a>): <a  href="al5Base.html#AL_BOOL">AL_BOOL</a>; CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+This function is a helper to determine whether an OpenGL extension is available on the given display or not.
+
+<p><b>Example</b> </p>
+
+<pre class="longcode">
+packedpixels := al_have_opengl_extension (<span class="pascal_string">'GL_EXT_packed_pixels'</span>);
+</pre>
+
+<p> If <i>packedpixels</i> is <code>True</code> then you can safely use the constants related to the packed pixels extension.  </p>
+<h6 class="description_section">Returns</h6>
+<p class="return"><code>True</code> if the extension is available; <code>False</code> otherwise.</p><h6 class="description_section">See also</h6>
+<dl class="see_also">
+  <dt><a class="normal" href="al5gl.html#al_get_opengl_proc_address">al_get_opengl_proc_address</a></dt>
+  <dd>Helper to get the address of an OpenGL symbol.</dd>
+</dl>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><a name="al_get_opengl_proc_address"></a><code>FUNCTION <b>al_get_opengl_proc_address</b> (CONST name: <a  href="al5Base.html#AL_STR">AL_STR</a>): <a  href="al5Base.html#AL_VOIDptr">AL_VOIDptr</a>; CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Helper to get the address of an OpenGL symbol.
+
+<p><b>Example</b>
+
+<p>How to get the function <code>glMultiTexCoord3fARB</code> that comes with ARB's Multitexture extension: </p>
+
+<pre class="longcode">
+  <span class="pascal_keyword">TYPE</span>
+  <span class="pascal_comment">{ define the type of the function. }</span>
+    <span class="pascal_keyword">PROCEDURE</span> MULTI_TEX_FUNC (a: GLenum; b, c, d: GLfloat); <span class="pascal_keyword">CDECL</span>;
+  <span class="pascal_keyword">VAR</span>
+  <span class="pascal_comment">{ declare the function pointer }</span>
+    glMultiTexCoord3fARB: MULTI_TEX_FUNC;
+  <span class="pascal_keyword">BEGIN</span>
+  <span class="pascal_comment">{ get the address of the function }</span>
+    glMultiTexCoord3fARB := MULTI_TEX_FUNC (al_get_opengl_proc_address (<span class="pascal_string">'glMultiTexCoord3fARB'</span>));
+  <span class="pascal_keyword">END</span>;
+</pre>
+
+<p> If <code>glMultiTexCoord3fARB</code> is not <code>Nil</code> then it can be used as if it has been defined in the OpenGL core library.   </p>
+<h6 class="description_section">Parameters</h6>
+<dl class="parameters">
+<dt>name</dt>
+<dd>The name of the symbol you want to link to.</dd>
+</dl>
+<h6 class="description_section">Returns</h6>
+<p class="return">A pointer to the symbol if available or <code>Nil</code> otherwise.</p><h6 class="description_section">See also</h6>
+<dl class="see_also">
+  <dt><a class="normal" href="al5gl.html#al_have_opengl_extension">al_have_opengl_extension</a></dt>
+  <dd>This function is a helper to determine whether an OpenGL extension is available on the given display or not.</dd>
+</dl>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><a name="al_get_opengl_texture"></a><code>FUNCTION <b>al_get_opengl_texture</b> (bitmap: <a  href="Allegro5.html#ALLEGRO_BITMAPptr">ALLEGRO_BITMAPptr</a>): GLuint; CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+Returns the OpenGL texture id internally used by the given bitmap if it uses one, else <code>0</code>.
+
+<p><b>Example</b> </p>
+
+<pre class="longcode">
+  Bitmap := al_load_bitmap (<span class="pascal_string">'my_texture.png'</span>);
+  Texture := al_get_opengl_texture (Bitmap);
+  <span class="pascal_keyword">IF</span> texture &lt;&gt; <span class="pascal_keyword">NIL</span> <span class="pascal_keyword">THEN</span> glBindTexture (GL_TEXTURE_2D, Texture);
+</pre>
+
+<p></p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><a name="al_remove_opengl_fbo"></a><code>PROCEDURE <b>al_remove_opengl_fbo</b> (bitmap: <a  href="Allegro5.html#ALLEGRO_BITMAPptr">ALLEGRO_BITMAPptr</a>); CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><a name="al_get_opengl_fbo"></a><code>FUNCTION <b>al_get_opengl_fbo</b> (bitmap: <a  href="Allegro5.html#ALLEGRO_BITMAPptr">ALLEGRO_BITMAPptr</a>): GLuint; CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><a name="al_get_opengl_texture_size"></a><code>PROCEDURE <b>al_get_opengl_texture_size</b> (bitmap: <a  href="Allegro5.html#ALLEGRO_BITMAPptr">ALLEGRO_BITMAPptr</a>; OUT w, h: <a  href="al5Base.html#AL_INT">AL_INT</a>); CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><a name="al_get_opengl_texture_position"></a><code>PROCEDURE <b>al_get_opengl_texture_position</b> (bitmap: <a  href="Allegro5.html#ALLEGRO_BITMAPptr">ALLEGRO_BITMAPptr</a>; OUT u, v: <a  href="al5Base.html#AL_INT">AL_INT</a>); CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><a name="al_set_current_opengl_context"></a><code>PROCEDURE <b>al_set_current_opengl_context</b> (display: <a  href="Allegro5.html#ALLEGRO_DISPLAYptr">ALLEGRO_DISPLAYptr</a>); CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+TODO: al_get_opengl_program_object, when shaders are implemented.</p>
+</td></tr>
+</table>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><a name="al_get_opengl_variant"></a><code>FUNCTION <b>al_get_opengl_variant</b>: <a  href="al5Base.html#AL_INT">AL_INT</a>; CDECL; EXTERNAL ALLEGRO_LIB_NAME;</code></td>
+</tr>
+<tr><td colspan="1">
+&nbsp;</td></tr>
+</table>
+<h3 class="detail">Types</h3>
+<table class="detail wide_list">
+<tr class="list">
+<td class="itemcode"><a name="ALLEGRO_OPENGL_VARIANT"></a><code><b>ALLEGRO_OPENGL_VARIANT</b> = (...);</code></td>
+</tr>
+<tr><td colspan="1">
+<p>
+***************************************************************************** * allegro_opengl.h * Main header file for all OpenGL drivers. * * By Milan Mimica.</p>
+<h6 class="description_section">Values</h6>
+<ul>
+<li>
+ALLEGRO_DESKTOP_OPENGL = 0: &nbsp;</li>
+<li>
+ALLEGRO_OPENGL_ES: &nbsp;</li>
+</ul>
+</td></tr>
+</table>
+<hr noshade size="1"><span class="appinfo"><em>Generated by <a  href="http://pasdoc.sourceforge.net/">PasDoc 0.14.0</a>. </em>
+</span>
+</td></tr></table></body></html>
