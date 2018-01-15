@@ -97,12 +97,17 @@ LIBSUF  = .pas
 # Directories
 LIBDIR = lib/
 EXMDIR = examples/
+DEMDIR = demos/
 OBJDIR = obj/
 BINDIR = bin/
 DOCDIR = docs/lib/
 DOCSRC = docs/src/
 
 EXMBIN = $(BINDIR)$(EXMDIR)
+DEMBIN = $(BINDIR)$(DEMDIR)
+
+FPSRC = $(DEMDIR)furiouspaladin/
+FPBIN = $(DEMBIN)furiouspaladin/
 
 PFLAGS = -Sh -Si
 

@@ -549,13 +549,18 @@ ALLEGRO_DIALOG_FUNC(int, al_toggle_menu_item_flags, (ALLEGRO_MENU *menu, int pos
   FUNCTION al_remove_display_menu (display: ALLEGRO_DISPLAYptr): ALLEGRO_MENUptr;
     CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
 
-IMPLEMENTATION
-
+{ DO NOT USE ANY SYMBOL BELOW THIS COMMENT.  They're for internal use only.  In
+  delphi, inline function declared in interface section must not use local
+  symbols, that's why I've defined it here. }
+{@exclude}
   FUNCTION _al_show_native_message_box (
     display: ALLEGRO_DISPLAYptr; CONST title, heading, str, buttons: AL_STRptr;
     flags: AL_INT
   ): AL_INT; CDECL;
   EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME NAME 'al_show_native_message_box';
+
+IMPLEMENTATION
+
 
   FUNCTION al_show_native_message_box (
     display: ALLEGRO_DISPLAYptr; CONST title, heading, str, buttons: STRING;

@@ -1,3 +1,19 @@
+Cambios entre las versión 5.2.a3 y 5.2.beta
+===========================================
+
+  Novedades
+  ---------
+  + Añadido "Furious Paladin", un juego de ejemplo realizado por Handoko.
+  + Añadido subdirectorio lazarus en examples conteniendo archivos de proyecto
+    para Lazarus.
+
+
+  Otros
+  -----
+  + Simplifado el ejemplo ex_depth_mask.
+  + Cambios para permitir el uso con Delphi.
+
+
 Cambios entre las versiones 5.2 alpha-2 y 5.2.a3
 ================================================
 

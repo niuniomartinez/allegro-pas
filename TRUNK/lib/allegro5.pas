@@ -3914,6 +3914,12 @@ END
   PROCEDURE al_restore_state (VAR state: ALLEGRO_STATE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
+{@exclude
+  For internal use only.  In delphi, inline function declared in interface
+  section must not use local symbols, that's why I've defined it here. }
+  PROCEDURE _al_set_memory_interface_ (iface: AL_POINTER);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME NAME 'al_set_memory_interface';
+
 IMPLEMENTATION
 
 (*
@@ -3949,9 +3955,6 @@ IMPLEMENTATION
 (*
  * memory.h
  *****************************************************************************)
-
-  PROCEDURE _al_set_memory_interface_ (iface: AL_POINTER);
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME NAME 'al_set_memory_interface';
 
   PROCEDURE al_restore_memory_interface;
   BEGIN

@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="10"/>
+    <Version Value="9"/>
     <General>
       <Flags>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
-      <SessionStorage Value="InProjectDir"/>
+      <SessionStorage Value="None"/>
       <MainUnit Value="0"/>
-      <Title Value="Furious Paladin"/>
-      <UseAppBundle Value="False"/>
+      <AutoCreateForms Value="False"/>
+      <Title Value="ex_shader_target"/>
       <ResourceType Value="res"/>
     </General>
     <i18n>
@@ -30,37 +32,38 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <Units Count="2">
+    <Units Count="1">
       <Unit0>
-        <Filename Value="FuriousPaladin.lpr"/>
+        <Filename Value="../ex_shader_target.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
-      <Unit1>
-        <Filename Value="../allegro.pas/lib/allegro5.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="Allegro5"/>
-      </Unit1>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
+    <PathDelim Value="/"/>
     <Target>
-      <Filename Value="FuriousPaladin"/>
+      <Filename Value="../../bin/examples/ex_shader_target"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="../allegro.pas/lib"/>
+      <OtherUnitFiles Value="../../lib"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
-    <CodeGeneration>
-      <SmartLinkUnit Value="True"/>
-    </CodeGeneration>
+    <Parsing>
+      <SyntaxOptions>
+        <CStyleOperator Value="False"/>
+        <AllowLabel Value="False"/>
+        <CStyleMacros Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
     <Linking>
-      <Debugging>
-        <GenerateDebugInfo Value="False"/>
-        <StripSymbols Value="True"/>
-      </Debugging>
       <LinkSmart Value="True"/>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
     </Linking>
   </CompilerOptions>
   <Debugging>

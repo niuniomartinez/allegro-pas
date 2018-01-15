@@ -1,5 +1,5 @@
 PROGRAM ex_gldepth;
-(*<An example program showing how to set and use a depth buffer with an OpenGL
+(* An example program showing how to set and use a depth buffer with an OpenGL
  * display.
  *
  * Use arrow keys to rotate, PgUp/PgDown to move closer/farther away.

@@ -101,16 +101,16 @@ begin
 
   // Debug and cheat
   for i := 1 to ParamCount do begin
-    if (LowerCase(ParamStr(i)) = '/debug') then       DebugMode := True;
-    if (LowerCase(ParamStr(i)) = '/fastrecover') then CheatFastRecover := True;
-    if (LowerCase(ParamStr(i)) = '/stoneskin') then   CheatStoneSkin := True;
+    if (LowerCase(ParamStr(i)) = '-debug') then       DebugMode := True;
+    if (LowerCase(ParamStr(i)) = '-fastrecover') then CheatFastRecover := True;
+    if (LowerCase(ParamStr(i)) = '-stoneskin') then   CheatStoneSkin := True;
   end;
 
   // Quit if Allegro fails to start
   if not(al_init) then Halt;
 
   // Get default data path used for loading font, images and sounds
-  DataPath := ExtractFilePath(ParamStr(0))+'Data'+DirectorySeparator;
+  DataPath := ExtractFilePath(ParamStr(0))+'data'+DirectorySeparator;
 
   // Prepare display
   al_get_monitor_info(0, MonitorInfo);
@@ -131,7 +131,7 @@ begin
   // Enable font;
   al_init_font_addon;
   al_init_ttf_addon;
-  SystemFont := al_load_ttf_font(DataPath+'Tuffy_Bold.ttf', 12, 0);
+  SystemFont := al_load_ttf_font(DataPath+'tuffy_bold.ttf', 12, 0);
   // Enable drawing basic shapes
   al_init_primitives_addon;
   // Enable audio
@@ -146,13 +146,13 @@ begin
   al_start_timer(Timer);
 
   // Load background image
-  ImgIntroPage1  := al_load_bitmap(DataPath+'imgIntro1.jpg');
-  ImgIntroPage2  := al_load_bitmap(DataPath+'imgIntro2.jpg');
-  ImgBackground1 := al_load_bitmap(DataPath+'imgDusk.jpg');
-  ImgBackground2 := al_load_bitmap(DataPath+'imgDawn.jpg');
-  ImgPaused      := al_load_bitmap(DataPath+'imgPaused.png');
-  ImgWin         := al_load_bitmap(DataPath+'imgWin.png');
-  ImgFailed      := al_load_bitmap(DataPath+'imgFailed.png');
+  ImgIntroPage1  := al_load_bitmap(DataPath+'imgintro1.jpg');
+  ImgIntroPage2  := al_load_bitmap(DataPath+'imgintro2.jpg');
+  ImgBackground1 := al_load_bitmap(DataPath+'imgdusk.jpg');
+  ImgBackground2 := al_load_bitmap(DataPath+'imgdawn.jpg');
+  ImgPaused      := al_load_bitmap(DataPath+'imgpaused.png');
+  ImgWin         := al_load_bitmap(DataPath+'imgwin.png');
+  ImgFailed      := al_load_bitmap(DataPath+'imgfailed.png');
 
   // Load animation data: Player Walk Left
   with imgPlayerWalkL do begin
@@ -336,10 +336,10 @@ begin
   end;
 
   // Load audio data
-  AudioBackground := al_load_sample(DataPath+'audUntitledremix.ogg');
-  AudioSword      := al_load_sample(DataPath+'audSword sound.wav');
-  AudioHurt       := al_load_sample(DataPath+'audHit1.ogg');
-  AudioFailed     := al_load_sample(DataPath+'audDie1.ogg');
+  AudioBackground := al_load_sample(DataPath+'auduntitledremix.ogg');
+  AudioSword      := al_load_sample(DataPath+'audsword sound.wav');
+  AudioHurt       := al_load_sample(DataPath+'audhit1.ogg');
+  AudioFailed     := al_load_sample(DataPath+'auddie1.ogg');
   AudioInstance   := al_create_sample_instance(AudioBackground);
 
 

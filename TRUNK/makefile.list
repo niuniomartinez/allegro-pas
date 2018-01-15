@@ -17,9 +17,17 @@ $(error ERROR: No source code found at $(EXMDIR))
 endif
 EXMFILES = $(addprefix $(EXMBIN),$(addsuffix $(BINSUF), $(basename $(notdir $(TEXM) ) ) ) )
 
+# For the demonstration games.
+TDEMfp = $(wildcard) $(FPSRC)*.pas
+ifeq ($(strip $(TDEMfp)),)
+$(error ERROR: No source code for demonstration game Furious Paladin
+endif
+
+DEMFILES = $(FPBIN)furiouspaladin$(BINSUF)
+
 # Object files et all.
 
-ALLFILES = $(LIBFILES) $(TEXM)
+ALLFILES = $(LIBFILES) $(TEXM) $(TDEMfp)
 
 OBJFILES = $(addprefix $(OBJDIR),$(addsuffix .o, $(basename $(notdir $(ALLFILES) ) ) ) )
 OBJFILES += $(addprefix $(OBJDIR),$(addsuffix .ppu, $(basename $(notdir $(ALLFILES) ) ) ) )

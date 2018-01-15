@@ -52,7 +52,7 @@ IMPLEMENTATION
         (Display, 'Error', 'Cannot run example', Message, '', 0)
     END
     ELSE
-      WriteLn (stderr, Message);
+      WriteLn (Message);
     HALT (1)
   END;
 

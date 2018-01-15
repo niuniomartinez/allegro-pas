@@ -41,6 +41,8 @@ INTERFACE
 
 {$IF DEFINED(UNIX)}
   {$INCLUDE al5_unix.inc}
+{$ELSEIF DEFINED(LINUX)}
+  {$INCLUDE al5_unix.inc}
 {$ELSEIF DEFINED(WINDOWS)}
   {$INCLUDE al5_win.inc}
 {$ENDIF}

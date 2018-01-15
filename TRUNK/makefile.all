@@ -1,9 +1,9 @@
 # Makefile generic - build rules
 
-.PHONY: all examples docs makeskel
+.PHONY: all demos examples docs makeskel
 
 # Main objective: the whole project
-all: adbanner examples
+all: adbanner examples demos
 	@echo "Finished $(PROJECT)."
 	@echo "To create the documentation, run 'make docs'."
 
@@ -11,10 +11,18 @@ all: adbanner examples
 examples: $(EXMFILES)
 	@echo "Finished all examples."
 
+# Demonstration games.
+demos: $(DEMFILES)
+	@echo "Finished all demonstration games."
+
 # Executables
 $(EXMBIN)%$(BINSUF): $(EXMDIR)%.pas $(EXMDIR)common.pas $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBDIR) -FU$(OBJDIR) $< -o$@
 	@echo Example $@ ready!
+
+$(FPBIN)furiouspaladin$(BINSUF): $(FPSRC)*.pas $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FU$(OBJDIR) $< -o$@
+	@echo Demonstration Game Furious Paladin ready!
 
 # Documentation.
 docs:
@@ -47,10 +55,11 @@ status: adbanner
 	@echo "  Compiler options : $(FLAGS) $(EFLAGS)"
 	@echo "  Library units : $(LIBFILES)"
 	@echo "  Examples : $(EXMFILES)"
+	@echo "  Demo games : $(DEMFILES)"
 
 # Cleans everything.
 veryclean: clean
-	$(DELETE) $(EXMFILES)
+	$(DELETE) $(EXMFILES) $(DEMFILES)
 
 # Clean temporary files.
 clean:
