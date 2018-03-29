@@ -25,11 +25,18 @@ endif
 
 DEMFILES = $(FPBIN)furiouspaladin$(BINSUF)
 
+# Documentation files
+DOCMAIN = $(DOCSRC)allegro5.pds
+DOCINTRO = $(DOCSRC)introduction.pds
+DOCFILES  = $(DOCMAIN) $(DOCINTRO) $(DOCFINAL)
+
 # Object files et all.
 
 ALLFILES = $(LIBFILES) $(TEXM) $(TDEMfp)
 
-OBJFILES = $(addprefix $(OBJDIR),$(addsuffix .o, $(basename $(notdir $(ALLFILES) ) ) ) )
-OBJFILES += $(addprefix $(OBJDIR),$(addsuffix .ppu, $(basename $(notdir $(ALLFILES) ) ) ) )
-OBJFILES += $(addprefix $(OBJDIR),$(addsuffix .a, $(basename $(notdir $(ALLFILES) ) ) ) )
+DOCTMPFILES = $(addprefix $(OBJDIR), $(addsuffix .pduc, $(basename $(notdir $(LIBFILES) ) ) ) )
+
+OBJFILES = $(addprefix $(OBJDIR), $(addsuffix .o, $(basename $(notdir $(ALLFILES) ) ) ) )
+OBJFILES += $(addprefix $(OBJDIR), $(addsuffix .ppu, $(basename $(notdir $(ALLFILES) ) ) ) )
+OBJFILES += $(addprefix $(OBJDIR), $(addsuffix .a, $(basename $(notdir $(ALLFILES) ) ) ) )
 

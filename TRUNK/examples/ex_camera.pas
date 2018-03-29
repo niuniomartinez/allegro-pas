@@ -272,7 +272,7 @@ PROGRAM ex_camera;
         IF ((x + y) AND 1) = 0 THEN
           Color := al_color_name ('yellow')
         ELSE BEGIN
-          py -= 0.1;
+          py := py - 0.1;
           Color := al_color_name ('green')
         END;
         AddQuad (px, py, pz, 1, 0, 0, 0, 0, 1, Color, Color)
@@ -549,6 +549,7 @@ BEGIN
   al_register_event_source (Queue, al_get_timer_event_source (Timer));
 
   SetupScene;
+  Redraw := TRUE;
 
   al_start_timer (Timer);
   EndExample := FALSE;

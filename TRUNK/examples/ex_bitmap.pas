@@ -9,7 +9,7 @@ PROGRAM ex_bitmap;
 
 USES
   Common,
-  allegro5, al5image,
+  Allegro5, al5image,
   sysutils;
 VAR
   FileName: STRING;

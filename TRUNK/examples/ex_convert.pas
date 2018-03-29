@@ -20,7 +20,7 @@ BEGIN
   IF ParamCount < 3 THEN
   BEGIN
     LogWriteLn ('This example needs to be run from the command line.');
-    LogWriteLn (Format ('Usage: %s <infile> <outfile>', [ApplicationName]));
+    LogWriteLn ('Usage: ex_convert <infile> <outfile>');
     LogWriteLn ('    Possible file types: BMP PCX PNG TGA');
     CloseLog (TRUE);
     HALT

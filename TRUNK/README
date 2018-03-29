@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 5.2.a3                \/___/                 \/_/
+     Version 5.2.beta              \/___/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Guillermo "Ñuño" Martínez, July 6, 2016.
+  by Guillermo "Ñuño" Martínez, March 30, 2018.
 
 
 
@@ -19,7 +19,7 @@ Contents
 
  - Introduction
  - License
- - Installation
+ - Installation and use
  - Documentation
  - Contact info
 
@@ -33,27 +33,24 @@ Introduction
   to use the Allegro library.
 
   Note that Allegro 5 is wholly *incompatible* with Allegro 4 and earlier
-  versions, and so is Allegro.pas, but both may be installed at the same time
+  versions, and so Allegro.pas is, but both may be installed at the same time
   without conflicts.
 
-  This is a WIP (alpha) version of the Allegro.pas 5 version.  It is released
+  This is a WIP (beta) version of the Allegro.pas 5 version.  It is released
   to show what's done and to allow developers to test it and give feed-back.
-  DON'T USE IT FOR FINAL PROJECT, in this case use Allegro.pas 4.4 version,
-  which is the latest stable version released.  Please go to the Allegro.pas'
-  project site at sourceforge for more information.
+  Please go to the Allegro.pas' project site at sourceforge to look for more
+  versions.
 
-  Current version was tested only with Free Pascal on WindowsXP, Windows7 and
-  GNU/Linux, both 32bit and 64 bit.  An earlier SVN version was tested while
-  development by a volunteer in Windows + Delphi but I can't grant it will
-  work.  Other operanting systems and compilers weren't tested.
+  Current version was tested with Free Pascal on WindowsXP, Windows7 and
+  GNU/Linux, both 32bit and 64 bit, and with Delphi Tokio Starter Edition on
+  Windows 7 32bit.  Other operating systems and compilers weren't tested.
 
   The goal is to make Allegro.pas 5 compatible with any operating system
   supported by Allegro, which are Windows, Linux, MacOS, iOS and Android.
   AFAIK all these OS have Pascal compilers.
 
-  As this is a WIP alpha version, you should remember that at the moment not
-  all functionality are implemented.  Also the API may change in any moment to
-  fix bugs or grant compatibility with plataforms and compilers.
+  As this is a WIP version you should remember that at the moment not all
+  functionality are implemented.
 
 Implemented
 -----------
@@ -68,23 +65,24 @@ Implemented
   + 2D and 3D transformations.
   + Clipboard.
   + Custom memory management.
+  + Native dialogs.
+  + OpenGL extensions.
+  + Demonstration game.
 
 Partially implemented or need more testing
 ------------------------------------------
 
   * Primitive drawing.
   * Audio samples and streams.
-  * Native dialogs.
   * Joysticks.
 
 Unimplemented
 -------------
 
   - Touch-screen support.
-  - OpenGL extensions.
   - kcm audio.
   - Phys file system.
-  - Demonstration game.
+  - Android support.
 
   You can read more about this at the "TODO" file.
 
@@ -98,50 +96,31 @@ License
 
 
 
-============
-Installation
-============
+====================
+Installation and use
+====================
 
-  First you must install Allegro itself.  Current Allegro.pas version is
-  compatible with version 5.2.x only so DON'T install version 5.1.x or older.
-  Visit Allegro's project website at http://liballeg.org/ to download it.  The
-  package includes installation instructions.  I recommend you to download
-  pre-compiled version from http://download.gna.org/allegro/allegro-bin/
+  Installation and use is different depending on the operating system and
+  compiler you're using.  To make things more easy, I've wrote different
+  documents for each one you can find in the ~/docs/build directory.  For
+  example, read "windows.txt to know how to get and install Allegro in your
+  Windows, then read "lazarus.txt" to know how to use it with the Lazarus IDE.
 
-  Then you need a Pascal compiler.  At the moment only Free Pascal and Delphi
-  were tested but may be other compilers (such as GNU/Pascal) can be used too.
-
-  Each combination of compiler and operating system may need different
-  configuration so if it doesn't compile open file "allegro.cfg" and modify it.
-  REMEMBER what do you change and let me know so I can add it in future
-  releases.
-
-  To compile examples (with Free Pascal), open a console, go to the directory
-  where Allegro.pas is and execute "fix.sh" (on Linux), "fix.bat" or "fix.cmd"
-  (on Windows) and follow on-screen instructions to configure.  Then run "make".
-
-  If you use Delphi, Lazarus, Code Typhon or the FPC IDE, open the example with
-  IDE, configure the compiler so it can find the Allegro.pas units and set the
-  output to obj/ and bin/examples/ directories.  Then compile.
-
-  NOTE:  I didn't test Delphi yet so IT MAY NOT WORK at all.  Don't blame me:
-         remember it is an alpha release!
+  For Lazarus and Free Pascal users it is recommendable to read the
+  "makefile.txt" file too.
 
 
 
-=============
 Documentation
 =============
 
-  At the moment the public documentation isn't complete.  Since symbols have
-  same name than the C version you can use the original Allegro documentation.
-  BTW I've put some information at comments, you can extract by using pasdoc.
-  Run "make help" to know more.
+  At the moment the library documentation isn't complete, but includes most of
+  the library.  You can build it (read ~/docs/build/docs.txt) or download them
+  from the webpage (see Contact info).  If you need more complete documentation
+  you can use the original Allegro documentation at http://liballeg.org/.
 
-  Also, there are a collection of examples.  Open them and read the code.  Some
-  have a lot of comments that explains it.
-
-  Again, remember it is an alpha release.
+  Also, there are a collection of examples and a demonstration game.  Open them
+  and read the code.  Some have a lot of comments that explains it.
 
 
 
@@ -149,10 +128,19 @@ Documentation
 Contact info
 ============
 
-  You can contact me at http://allegro-pas.sourceforge.net.  There
-  are forums and a mailing-list you can use.  Also I visit some forums:
+  The project page is at http://allegro-pas.sourceforge.net.  There
+  are forums and a mailing-list you can use.
+
+  I've created a mirror at GitHub I try to keep up-to-date:
+  https://github.com/niuniomartinez/allegro-pas
+
+  You may find interesting the Game Development portal at the Free Pascal wiki
+  pages: http://wiki.freepascal.org/Portal:Game_Development
+
+  Also I (and other) visit these forums quite often:
 
   Allegro community - http://www.allegro.cc/
   Pascal Game Development - http://www.pascalgamedevelopment.com/
   PGD Telegram Chat - https://t.me/joinchat/AAAAAA53Fi94SyjjD5xYnA
-  Club Delphi - http://www.clubdelphi.com/
+  Lazarus games - https://forum.lazarus.freepascal.org/index.php/board,74.0.html
+  Club Delphi (Spanish only) - http://www.clubdelphi.com/

@@ -142,7 +142,7 @@ BEGIN
     );
     FOR y := 0 TO 1023 DO
     BEGIN
-      Row := PBYTE (Lock^.data + Lock^.pitch * y);
+      Row := PBYTE (Lock^.data) + Lock^.pitch * y;
       Ptr := Row;
       FOR X := 0 TO 1023 DO
       BEGIN

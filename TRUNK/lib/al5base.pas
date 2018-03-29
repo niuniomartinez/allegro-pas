@@ -93,8 +93,6 @@ INTERFACE
 { TODO: Check wich boolean type does it uses. }
   (* Boolean result. *)
     AL_BOOL = LONGBOOL;
-  (* Another bool type, used if C's declaration is byte sized. *)
-    AL_BOL8 = BYTEBOOL;
 
   (* Signed 8bit integer.
 
@@ -159,7 +157,12 @@ INTERFACE
     AL_VOIDptr = AL_POINTER;
   (* Pointer to text strings.  Used to convert Pascal's @code(STRING) to C
     @code(char * ) *)
+
+{$IFDEF ISDELPHI2009ANDUP}
+    AL_STRptr = PAnsiChar;
+{$ELSE}
     AL_STRptr = PCHAR;
+{$ENDIF}
   (* Pointer to integer. *)
     AL_INTptr = ^AL_INT;
   (* Pointer to float. *)

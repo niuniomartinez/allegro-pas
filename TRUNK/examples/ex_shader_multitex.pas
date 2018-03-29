@@ -8,10 +8,13 @@ PROGRAM ex_shader_multitex;
     sysutils;
 
   FUNCTION LoadBitmap (CONST FileName: STRING): ALLEGRO_BITMAPptr;
+  VAR
+    lBitmap: ALLEGRO_BITMAPptr;
   BEGIN
-    LoadBitmap := al_load_bitmap (FileName);
-    IF LoadBitmap = NIL THEN
-      AbortExample (Format ('%s not found or failed to load', [FileName]))
+    lBitmap := al_load_bitmap (FileName);
+    IF lBitmap = NIL THEN
+      AbortExample (Format ('%s not found or failed to load', [FileName]));
+    EXIT (lBitmap)
   END;
 
 

@@ -2,7 +2,9 @@ UNIT Allegro5;
 (*<Wrapper of the Allegro 5 core library.
 
   This unit defines core functions, procedures and data types, that aren't in
-  add-ons. *)
+  add-ons.
+
+  @bold(See also:) @link(getst Getting started) *)
 (* Copyright (c) 2012-2017 Guillermo Martínez J. <niunio@users.sourceforge.net>
 
   This software is provided 'as-is', without any express or implied
@@ -58,7 +60,7 @@ INTERFACE
 
   CONST
   (* Allegro.pas version string. *)
-    ALLEGRO_PAS_VERSION_STR = 'Allegro.pas 5.2.a3';
+    ALLEGRO_PAS_VERSION_STR = 'Allegro.pas 5.2.b';
 
   (* Major version of Allegro. *)
     ALLEGRO_VERSION      =   5;
@@ -3004,7 +3006,7 @@ AL_FUNC(ALLEGRO_CONFIG *, al_merge_config, (const ALLEGRO_CONFIG *cfg1, const AL
    The axis number must not be 0 or 1, which are the X and Y axes. Use
    @code(al_set_mouse_xy) for that.
    @returns(@true on success, @false on failure.)
-   @seealso(al_set_mouse_xy) @seealso(al_set_mouse_z,) @seealso(l_set_mouse_w) *)
+   @seealso(al_set_mouse_xy) @seealso(al_set_mouse_z) @seealso(al_set_mouse_w) *)
   FUNCTION al_set_mouse_axis (axis, value: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_get_mouse_state (OUT ret_state: ALLEGRO_MOUSE_STATE);
@@ -3914,9 +3916,12 @@ END
   PROCEDURE al_restore_state (VAR state: ALLEGRO_STATE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-{@exclude
-  For internal use only.  In delphi, inline function declared in interface
-  section must not use local symbols, that's why I've defined it here. }
+
+
+{ DO NOT USE ANY SYMBOL BELOW THIS COMMENT.  They're for internal use only.  In
+  delphi, inline function declared in interface section must not use local
+  symbols, that's why I've defined it here. }
+{@exclude}
   PROCEDURE _al_set_memory_interface_ (iface: AL_POINTER);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME NAME 'al_set_memory_interface';
 

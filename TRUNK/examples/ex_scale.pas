@@ -176,5 +176,3 @@ BEGIN
 
    CloseLog (FALSE);
 END.
-
-/* vim: set sts=3 sw=3 et: */

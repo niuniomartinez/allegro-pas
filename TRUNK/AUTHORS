@@ -5,8 +5,6 @@ Elias (www.allegro.cc)
  - helped testing the Delphi version (5.0 alpha).
 
 Gregor A. Cieslak
- - did help a lot of porting to Delphi.
+ - did help a lot with Delphi compatibility.
    You can get the original Cieslak's work from GitHub:
    https://github.com/Soldat/allegro-pas5-test
-
-   NOTE: Merging Cieslak work is still WIP.

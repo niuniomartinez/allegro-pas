@@ -62,7 +62,6 @@ BEGIN
 
 
   Start := TRUNC (al_get_time * 1000);
-  Now := Start;
   Elapsed := 0;
   FrameCount := 0;
   ProgramStart := al_get_time;

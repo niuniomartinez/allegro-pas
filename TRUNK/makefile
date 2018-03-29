@@ -101,7 +101,7 @@ DEMDIR = demos/
 OBJDIR = obj/
 BINDIR = bin/
 DOCDIR = docs/lib/
-DOCSRC = docs/src/
+DOCSRC = srcdoc/
 
 EXMBIN = $(BINDIR)$(EXMDIR)
 DEMBIN = $(BINDIR)$(DEMDIR)
@@ -122,8 +122,9 @@ FLAGS = $(DBGOPT) $(PFLAGS) $(EFLAGS)
 # -- Documentation options --
 # ---------------------------
 
-MKSOPT = --package=Allegro.pas --disable-errors --disable-private --disable-seealso
-FPDOPT = --warn-no-node
+DOCFMT = html
+DOCOPTS = --auto-abstract --include-creation-time --use-tipue-search
+
 
 
 # -- Source files list --

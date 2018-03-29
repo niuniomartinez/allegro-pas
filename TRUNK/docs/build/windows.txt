@@ -1,0 +1,35 @@
+
+  This document explains how to install Allegro in Windows operating systems.
+  For GNU/Linux operating systems read "linux.txt".
+
+  First you must install Allegro itself.  Current Allegro.pas version is
+  compatible with version 5.2.x only so DON'T install version 5.1.x or older.
+
+Installing precompiled version
+------------------------------
+
+  Go to https://github.com/liballeg/allegro5/releases and search for the
+  desired version.  There you'll find links to the actual download sites.  To
+  find wich one is the best for you, think you'll need a "dynamic" version and
+  that "x86" is 32bits while "i686" is 64bits.
+
+  Once downloaded, you need only the DLL files in the "bin" subdirectory.  Also
+  note that this version of Allegro.pas doesn't work with the "monolyth"
+  version of the library.
+
+  In most cases you can put the DLL files in to your "C:\windows\system32"
+  directory.
+
+
+
+Installing from sources
+-----------------------
+
+  First you'll need a C/C++ compiler.  I recommend the MinGW, but you may use
+  Visual Studio as well.
+
+  Visit Allegro's project website at http://liballeg.org/ and download it.  The
+  package includes full installation instructions.  Follow them.
+
+  For better results, compile and install both "release" an "debug" versions of
+  the library.

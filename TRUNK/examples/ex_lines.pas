@@ -185,4 +185,3 @@ BEGIN
    al_destroy_event_queue (Queue);
    al_destroy_bitmap (dBuf);
 END.
-/* vim: set sts=3 sw=3 et: */

@@ -1,0 +1,116 @@
+@section(1 getst Getting started)
+  This short guide should point you at the parts of the API that you'll want to know about first. It's not a tutorial, as there isn't much discussion, only links into the manual. The rest you'll have to discover for yourself. Read the examples, and ask questions at @html(<a href="http://www.pascalgamedevelopment.com">Pascal Game Development</a> or <a href="http://www.allegro.cc/">Allegro.cc</a>).
+
+
+
+@section(2 getst_libstruct Structure of the library and its addons)
+  Allegro 5.0 is divided into a core library and multiple addons. The addons are bundled together and built at the same time as the core, but they are distinct and kept in separate libraries. The core doesn't depend on anything in the addons, but addons may depend on the core and other addons and additional third party libraries.
+
+ Here are the addons and their dependencies:
+
+@preformatted(
+allegro_main -> allegro
+
+allegro_image -> allegro
+allegro_primitives -> allegro
+allegro_color -> allegro
+
+allegro_font -> allegro
+allegro_ttf -> allegro_font -> allegro
+
+allegro_audio -> allegro
+allegro_acodec -> allegro_audio -> allegro
+
+allegro_memfile -> allegro
+allegro_physfs -> allegro
+
+allegro_native_dialog -> allegro
+)
+
+  The unit for the core library is @link(Allegro5). The units for the addons are named @link(al5image), @link(al5font), etc. The @code(allegro_main) addon does not have an unit file.
+
+
+
+@section(2 getst_init Initialisation)
+  Before using Allegro you must call @link(al_init). Some addons have their own initialisation, e.g. @link(al_init_image_addon), @link(al_init_font_addon), @link(al_init_ttf_addon).
+
+  To receive input, you need to initialise some subsystems like @link(al_install_keyboard), @link(al_install_mouse), @link(al_install_joystick).
+
+
+
+@section(2 getst_openwindow Opening a window)
+  @link(al_create_display) will open a window and return an @link(ALLEGRO_DISPLAYptr).
+
+  To clear the display, call @link(al_clear_to_color). Use @link(al_map_rgba) or @link(al_map_rgba_f) to obtain an @link(ALLEGRO_COLOR) parameter.
+
+  Drawing operations are performed on a backbuffer. To make the operations visible, call @link(al_flip_display).
+
+  You can get more information about displays in the @link(displays Displays) section.
+
+
+
+@section(2 getst_displaying Displaying an image)
+  To load an image from disk, you need to have initialised the image I/O addon with @link(al_init_image_addon). Then use @link(al_load_bitmap), which returns an @link(ALLEGRO_BITMAPptr).
+
+  Use @link(al_draw_bitmap), @link(al_draw_scaled_bitmap) or @link(al_draw_scaled_rotated_bitmap) to draw the image to the backbuffer. Remember to call @link(al_flip_display).
+
+
+
+@section(2 getst_changetarget Changing the drawing target)
+  Notice that @link(al_clear_to_color) and @link(al_draw_bitmap) didn't take destination parameters: the destination is implicit. Allegro remembers the current @italic("target bitmap") for the current thread. To change the target bitmap, call @link(al_set_target_bitmap).
+
+  The backbuffer of the display is also a bitmap. You can get it with @link(al_get_backbuffer) and then restore it as the target bitmap.
+
+  Other bitmaps can be created with @link(al_create_bitmap), with options which can be adjusted with @link(al_set_new_bitmap_flags) and @link(al_set_new_bitmap_format).
+
+
+
+@section(2 getst_events Event queues and input)
+  Input comes from multiple sources: keyboard, mouse, joystick, timers, etc. Event queues aggregate events from all these sources, then you can query the queue for events.
+
+  Create an event queue with @link(al_create_event_queue), then tell input sources to place new events into that queue using @link(al_register_event_source). The usual input event sources can be retrieved with @link(al_get_keyboard_event_source), @link(al_get_mouse_event_source) and @link(al_get_joystick_event_source).
+
+  Events can be retrieved with @link(al_wait_for_event) or @link(al_get_next_event). Check the event type and other fields of @link(ALLEGRO_EVENT) to react to the input.
+
+  Displays are also event sources, which emit events when they are closed or resized. To get these events you'll need to set some special flags with @link(al_set_new_display_flags) before creating the display, then register the display with an event queue. When you get a resize event, call @link(al_acknowledge_resize).
+
+  Timers are event sources which @italic("tick") periodically, causing an event to be inserted into the queues that the timer is registered with. Create some with @link(al_create_timer).
+
+  @link(al_get_time) and @link(al_rest) are more direct ways to deal with time.
+
+
+
+@section(2 getst_text Displaying some text)
+  To display some text, initialise the image and font addons with @link(al_init_image_addon) and @link(al_init_font_addon), then load a bitmap font with @link(al_load_font). Use @link(al_draw_text).
+
+  For TrueType fonts, you'll need to initialise the TTF font addon with @link(al_init_ttf_addon) and load a TTF font with @link(al_load_ttf_font).
+
+
+
+@section(2 getst_drawingprims Drawing primitives)
+  The primitives addon provides some handy routines to draw lines (@link(al_draw_line)), rectangles (@link(al_draw_rectangle)), circles (@link(al_draw_circle)), etc.
+
+
+
+@section(2 getst_blending Blending)
+  To draw translucent or tinted images or primitives, change the blender state with @link(al_set_blender).
+
+  As with @link(al_set_target_bitmap), this changes Allegro's internal state (for the current thread). Often you'll want to save some part of the state and restore it later. The functions @link(al_store_state) and @link(al_restore_state) provide a convenient way to do that.
+
+
+
+@section(2 getst_sound Sound)
+  Use @link(al_install_audio) to initialize sound. To load any sample formats, you will need to initialise the acodec addon with @link(al_init_acodec_addon).
+
+  After that, you can simply use @link(al_reserve_samples) and pass the number of sound effects typically playing at the same time. Then load your sound effects with @link(al_load_sample) and play them with @link(al_play_sample). To stream large pieces of music from disk, you can use @link(al_load_audio_stream) so the whole piece will not have to be pre-loaded into memory.
+
+  If the above sounds too simple and you can't help but think about clipping and latency issues, don't worry. Allegro gives you full control over how much or little you want its sound system to do. The @code(al_reserve_samples) function mentioned above only sets up a default mixer and a number of sample instances but you don't need to use it.
+
+  Instead, to get a @italic("direct connection") to the sound system you would use an @link(ALLEGRO_VOICEptr) (but depending on the platform only one such voice is guaranteed to be available and it might require a specific format of audio data). Therefore all sound can be first routed through an @link(ALLEGRO_MIXERptr) which is connected to such a voice (or another mixer) and will mix together all sample data fed to it.
+
+  You can then directly stream real-time sample data to a mixer or a voice using an @link(ALLEGRO_AUDIO_STREAMptr) or play complete sounds using an @link(ALLEGRO_SAMPLE_INSTANCEptr). The latter simply points to an @link(ALLEGRO_SAMPLEptr) and will stream it for you.
+
+
+
+@section(2 getst_unstable Unstable API)
+  Some of the original Allegro's API is marked as unstable, which means that future versions of Allegro it may change or even be removed entirely! That API isn't included in the Allegro.pas wrappers.

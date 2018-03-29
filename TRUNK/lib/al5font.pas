@@ -248,17 +248,25 @@ END;
   FUNCTION al_get_glyph_advance (CONST f: ALLEGRO_FONTptr; codepoint1, codepoint2: AL_INT): AL_INT; CDECL;
     EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
-IMPLEMENTATION
 
+
+{ DO NOT USE ANY SYMBOL BELOW THIS COMMENT.  They're for internal use only.  In
+  delphi, inline function declared in interface section must not use local
+  symbols, that's why I've defined it here. }
+{@exclude}
   PROCEDURE _al_draw_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: AL_FLOAT; flags: AL_INT; CONST str: AL_STR);
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME NAME 'al_draw_text';
+{@exclude}
   PROCEDURE _al_draw_justified_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: AL_FLOAT; flags: AL_INT; CONST str: AL_STR);
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME NAME 'al_draw_justified_text';
+{@exclude}
   FUNCTION _al_get_text_width (CONST font: ALLEGRO_FONTptr; CONST str: AL_STR): AL_INT;
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME NAME 'al_get_text_width';
+{@exclude}
   PROCEDURE _al_get_text_dimensions (CONST f: ALLEGRO_FONTptr; CONST str: AL_STR; VAR bbx, bby, bbw, bbh: AL_INT);
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME NAME 'al_get_text_dimensions';
 
+IMPLEMENTATION
 
   PROCEDURE al_draw_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: AL_FLOAT; flags: AL_INT; CONST str: AL_STR);
   BEGIN

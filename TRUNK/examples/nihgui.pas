@@ -10,7 +10,7 @@ UNIT nihGUI;
     the original C++ implementation.  See TODO.
  *)
 
-{$MODE DELPHI}
+{$IFDEF FPC}{$MODE DELPHI}{$ENDIF}
 
 INTERFACE
 
@@ -45,7 +45,7 @@ INTERFACE
 
       fDrawRequested, fTerminated: BOOLEAN;
 
-      FUNCTION GetWidget (CONST Ndx: INTEGER): TWidget; INLINE;
+      FUNCTION GetWidget (Ndx: INTEGER): TWidget; INLINE;
 
       PROCEDURE HandleKeyDown (CONST aEvent: ALLEGRO_KEYBOARD_EVENT);
       PROCEDURE HandleMouseAxes (CONST aEvent: ALLEGRO_MOUSE_EVENT);
@@ -265,7 +265,7 @@ IMPLEMENTATION
  * TDialog
  *)
 
-  FUNCTION TDialog.GetWidget (CONST Ndx: INTEGER): TWidget;
+  FUNCTION TDialog.GetWidget (Ndx: INTEGER): TWidget;
   BEGIN
     RESULT := fWidgets[Ndx]
   END;

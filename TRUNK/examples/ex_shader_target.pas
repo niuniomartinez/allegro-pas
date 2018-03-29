@@ -47,14 +47,17 @@ PROGRAM ex_shader_target;
   FUNCTION MakeRegion
     (parent: ALLEGRO_BITMAPptr; x, y, w, h: INTEGER; Shader: ALLEGRO_SHADERptr)
   : ALLEGRO_BITMAPptr;
+  VAR
+    MR: ALLEGRO_BITMAPptr;
   BEGIN
-    MakeRegion := al_create_sub_bitmap (Parent, x, y, w, h);
-    IF MakeRegion <> NIL THEN
+    MR := al_create_sub_bitmap (Parent, x, y, w, h);
+    IF MR <> NIL THEN
     BEGIN
-      al_set_target_bitmap (MakeRegion);
+      al_set_target_bitmap (MR);
       al_use_shader (Shader)
     { Not bothering to restore old target bitmap. }
-    END
+    END;
+    EXIT (MR)
   END;
 
 

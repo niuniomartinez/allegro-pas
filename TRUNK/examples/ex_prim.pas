@@ -413,7 +413,7 @@ PROGRAM ex_prim;
 
   { Helper to print boolean statuses. }
     PROCEDURE ShowBoolean 
-      (CONST aY: INTEGER; CONST aLabel: STRING; CONST aState: BOOLEAN); INLINE;
+      (CONST aY: INTEGER; CONST aLabel: STRING; CONST aState: BOOLEAN);
     BEGIN
       IF aState THEN
         al_draw_text (fFont, SolidWhite, 0, aY, 0, aLabel + ': TRUE')

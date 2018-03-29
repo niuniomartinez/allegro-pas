@@ -24,25 +24,32 @@ PROGRAM ex_projection;
     FUNCTION MyRnd (VAR Seed: LONGINT): INTEGER;
     BEGIN
       Seed := (Seed + 1) * 1103515245 + 12345;
-      MyRnd := (Seed SHR 16) AND $ffff
+      EXIT ((Seed SHR 16) AND $ffff)
     END;
 
 
 
   (* Load a bitmap and exit with a message if it's missing. *)
     FUNCTION LoadBmp (CONST Path: STRING): ALLEGRO_BITMAPptr;
+    VAR
+      lBmp: ALLEGRO_BITMAPptr;
     BEGIN
-      LoadBmp := al_load_bitmap (Path);
-      IF LoadBmp = NIL THEN AbortExample ('Could not load '+Path)
+      lBmp := al_load_bitmap (Path);
+      IF lBmp = NIL THEN AbortExample ('Could not load '+Path) ELSE EXIT (lBmp)
     END;
 
 
 
   (* Load a font and exit with a message if it's missing. *)
     FUNCTION LoadFont (CONST Path: STRING; Size, Flags: INTEGER): ALLEGRO_FONTptr;
+    VAR
+      lFont: ALLEGRO_FONTptr;
     BEGIN
-      LoadFont := al_load_font (Path, Size, Flags);
-      IF LoadFont = NIL THEN AbortExample ('Could not load '+Path)
+      lFont := al_load_font (Path, Size, Flags);
+      IF lFont = NIL THEN
+	AbortExample ('Could not load '+Path)
+      ELSE
+	EXIT (lFont)
     END;
 
 
@@ -117,7 +124,7 @@ PROGRAM ex_projection;
     bw, bh: INTEGER;
     x, y, c: SINGLE;
 
-    PROCEDURE T (str: STRING); INLINE;
+    PROCEDURE T (str: STRING);
     BEGIN
       y := Print (Font, x, y, 1, 0.9, 0.3, ScrollY, str)
     END;

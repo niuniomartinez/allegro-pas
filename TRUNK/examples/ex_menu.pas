@@ -49,10 +49,28 @@ BEGIN
     MainMenuInfo[3] := ALLEGRO_ITEM_OF_MENU ('E&xit', FILE_EXIT_ID, 0, NIL);
     MainMenuInfo[4] := ALLEGRO_END_OF_MENU;
 
-  MainMenuInfo[5] := ALLEGRO_ITEM_OF_MENU ('&Dynamic Options->', DYNAMIC_ID, 0, NIL);
-    MainMenuInfo[6] := ALLEGRO_ITEM_OF_MENU ('&Checkbox', DYNAMIC_CHECKBOX_ID, ALLEGRO_MENU_ITEM_CHECKED, NIL);
-    MainMenuInfo[7] := ALLEGRO_ITEM_OF_MENU ('&Disabled', DYNAMIC_DISABLED_ID, ALLEGRO_MENU_ITEM_DISABLED, NIL);
-    MainMenuInfo[8] := ALLEGRO_ITEM_OF_MENU ('DELETE ME!', DYNAMIC_DELETE_ID, 0, NIL);
+  MainMenuInfo[5] := ALLEGRO_ITEM_OF_MENU (
+    '&Dynamic Options->',
+    DYNAMIC_ID,
+    0, NIL
+  );
+    MainMenuInfo[6] := ALLEGRO_ITEM_OF_MENU (
+      '&Checkbox',
+      DYNAMIC_CHECKBOX_ID,
+      ALLEGRO_MENU_ITEM_CHECKED,
+      NIL
+    );
+    MainMenuInfo[7] := ALLEGRO_ITEM_OF_MENU (
+      '&Disabled',
+      DYNAMIC_DISABLED_ID,
+      ALLEGRO_MENU_ITEM_DISABLED,
+      NIL
+    );
+    MainMenuInfo[8] := ALLEGRO_ITEM_OF_MENU (
+      'DELETE ME!',
+      DYNAMIC_DELETE_ID,
+      0, NIL
+    );
     MainMenuInfo[9] := ALLEGRO_ITEM_OF_MENU ('Click Me', DYNAMIC_CREATE_ID, 0, NIL);
     MainMenuInfo[10] := ALLEGRO_END_OF_MENU;
 
@@ -114,7 +132,12 @@ BEGIN
     BEGIN
       al_append_menu_item (pMenu, '&Open', FILE_OPEN_ID, 0, NIL, NIL);
       al_append_menu_item (pMenu, '&Resize', FILE_RESIZE_ID, 0, NIL, NIL);
-      al_append_menu_item (pMenu, '&Fullscreen window', FILE_FULLSCREEN_ID, 0, NIL, NIL);
+      al_append_menu_item (
+	pMenu,
+	'&Fullscreen window',
+	FILE_FULLSCREEN_ID,
+	0, NIL, NIL
+      );
       al_append_menu_item (pMenu, 'E&xit', FILE_EXIT_ID, 0, NIL, NIL)
     END
   END;
@@ -183,7 +206,10 @@ BEGIN
 	      al_set_display_menu (TmpDisplay, TmpMenu);
 	      al_clear_to_color (al_map_rgb (0,0,0));
 	      al_flip_display;
-	      al_register_event_source (Queue, al_get_display_event_source (TmpDisplay));
+	      al_register_event_source (
+		Queue,
+		al_get_display_event_source (TmpDisplay)
+	      );
 	      al_set_target_backbuffer (Display);
 	      al_set_window_title (TmpDisplay, 'ex_menu - Child Window')
 	    END
@@ -192,9 +218,11 @@ BEGIN
 	  BEGIN
 	    al_set_menu_item_flags (
 	      Menu, DYNAMIC_DISABLED_ID,
-	      al_get_menu_item_flags (Menu, DYNAMIC_DISABLED_ID) XOR ALLEGRO_MENU_ITEM_DISABLED
+	      al_get_menu_item_flags (Menu, DYNAMIC_DISABLED_ID)
+		XOR ALLEGRO_MENU_ITEM_DISABLED
 	    );
-	    IF (al_get_menu_item_flags (Menu, DYNAMIC_DISABLED_ID) AND ALLEGRO_MENU_ITEM_DISABLED) <> 0
+	    IF (al_get_menu_item_flags (Menu, DYNAMIC_DISABLED_ID)
+	    AND ALLEGRO_MENU_ITEM_DISABLED) <> 0
 	    THEN
 	      al_set_menu_item_caption (Menu, DYNAMIC_DISABLED_ID, '&Disabled')
 	    ELSE
@@ -219,7 +247,11 @@ BEGIN
 	      );
 	      IF dCount = 5 THEN
 	      { disable the option }
-		al_set_menu_item_flags (Menu, DYNAMIC_CREATE_ID, ALLEGRO_MENU_ITEM_DISABLED)
+		al_set_menu_item_flags (
+		  Menu,
+		  DYNAMIC_CREATE_ID,
+		 ALLEGRO_MENU_ITEM_DISABLED
+		)
 	    END
 	  END;
 	HELP_ABOUT_ID:

@@ -27,17 +27,17 @@ PROGRAM ex_clip;
 
   FUNCTION ExampleBitmap (CONST w, h: INTEGER): ALLEGRO_BITMAPptr;
   VAR
+    Bmp: ALLEGRO_BITMAPptr;
     i, j: INTEGER;
     mx, my, a, d, l, hue, sat: SINGLE;
     State: ALLEGRO_STATE;
   BEGIN
     mx := w * 0.5;
     my := h * 0.5;
-    ExampleBitmap := al_create_bitmap (w, h);
+    Bmp := al_create_bitmap (w, h);
     al_store_state (state, ALLEGRO_STATE_TARGET_BITMAP);
-    al_set_target_bitmap (ExampleBitmap);
-    al_lock_bitmap
-      (ExampleBitmap, ALLEGRO_PIXEL_FORMAT_ANY, ALLEGRO_LOCK_WRITEONLY);
+    al_set_target_bitmap (Bmp);
+    al_lock_bitmap (Bmp, ALLEGRO_PIXEL_FORMAT_ANY, ALLEGRO_LOCK_WRITEONLY);
     FOR i := 0 TO w - 1 DO
     BEGIN
       FOR j := 0 TO h - 1 DO
@@ -57,8 +57,9 @@ PROGRAM ex_clip;
 	al_put_pixel (i, j, al_color_hsl (hue, sat, l))
       END
     END;
-    al_unlock_bitmap (ExampleBitmap);
-    al_restore_state (State)
+    al_unlock_bitmap (Bmp);
+    al_restore_state (State);
+    ExampleBitmap := Bmp
   END;
 
 

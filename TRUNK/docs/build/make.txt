@@ -1,0 +1,44 @@
+
+  Before to build Allegro.pas you must install Allegro itself.  If you didn't
+  yet, please read the appropriate document for your operating system.
+
+  This document explains how to compile Allegro.pas documentation, examples and
+  demonstration game using the "make" tool.  Read "fpc.txt", "lazarus.txt" or
+  "delphi.txt" to know how to use such compilers and IDEs.
+
+The make chain
+--------------
+
+  This package includes a simple make chain that builds all examples,
+  demonstration and documentation from the package:
+
+  - makefile:      the initial make file, it defines several variables to
+                   identify directories and set up compiler options.  It also
+                   "calls" the other files of the chain.
+
+  - makefile.list: this is an script that searchs and clasifies the source
+                   files.
+
+  - makefile.all:  This is where the things actually happens, defining the
+                   opeerations needed to build everything.
+
+  "makefile" is the only file you'll need to modify if you want to modify the
+  compilation configuration.  That file is quite simple, as it just defines
+  some variables/macros (name = value).  The whole file includes a lot of
+  comments so it is quite explanatory.  Don't be afraid and take a look to it.
+
+  By default the make chain compiles the examples and the demonstration game
+  with simple optimizations.
+
+
+
+Compilation
+-----------
+
+  To compile examples (with Free Pascal), open a console, go to the directory
+  where Allegro.pas is and execute "fix.sh" (on Linux), "fix.bat" or "fix.cmd"
+  (on Windows) and follow on-screen instructions to configure.  Then run
+  "make".
+
+  To build the documentation, install pasdoc (you can find it here:
+  https://sourceforge.net/projects/pasdoc/) and run "make docs".

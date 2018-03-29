@@ -270,8 +270,11 @@ button := al_show_native_message_box (
 
     If a message box could not be created then this returns 0, as if the window
     was dismissed without activating a button.) *)
-  FUNCTION al_show_native_message_box (display: ALLEGRO_DISPLAYptr; CONST title, heading, str, buttons: STRING; flags: AL_INT): AL_INT;
-    INLINE;
+  FUNCTION al_show_native_message_box (
+    display: ALLEGRO_DISPLAYptr;
+    CONST title, heading, str, buttons: AL_STR;
+    flags: AL_INT
+  ): AL_INT; INLINE;
 
 (* Opens a window to which you can append log messages with
    @link(al_append_native_text_log).  This can be useful for debugging if you
@@ -549,6 +552,8 @@ ALLEGRO_DIALOG_FUNC(int, al_toggle_menu_item_flags, (ALLEGRO_MENU *menu, int pos
   FUNCTION al_remove_display_menu (display: ALLEGRO_DISPLAYptr): ALLEGRO_MENUptr;
     CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
 
+
+
 { DO NOT USE ANY SYMBOL BELOW THIS COMMENT.  They're for internal use only.  In
   delphi, inline function declared in interface section must not use local
   symbols, that's why I've defined it here. }
@@ -563,7 +568,7 @@ IMPLEMENTATION
 
 
   FUNCTION al_show_native_message_box (
-    display: ALLEGRO_DISPLAYptr; CONST title, heading, str, buttons: STRING;
+    display: ALLEGRO_DISPLAYptr; CONST title, heading, str, buttons: AL_STR;
     flags: AL_INT
   ): AL_INT;
   VAR

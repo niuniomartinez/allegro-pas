@@ -73,8 +73,7 @@ PROGRAM ex_palette;
 
 
 
-  PROCEDURE InterpolatePalette
-    (VAR Pal: TPalette; Pal1, Pal2: TPalette; t: AL_FLOAT);
+  FUNCTION InterpolatePalette (Pal1, Pal2: TPalette; t: AL_FLOAT): TPalette;
   VAR
     i: INTEGER;
   BEGIN
@@ -83,7 +82,8 @@ PROGRAM ex_palette;
       Pal[i].r := Pal1[i].r * (1 - t) + Pal2[i].r * t;
       Pal[i].g := Pal1[i].g * (1 - t) + Pal2[i].g * t;
       Pal[i].b := Pal1[i].b * (1 - t) + Pal2[i].b * t
-    END
+    END;
+    EXIT (Pal)
   END;
 
 
@@ -257,7 +257,7 @@ BEGIN
       Redraw := FALSE;
       al_clear_to_color (al_map_rgb_f (0, 0, 0));
 
-      InterpolatePalette (Pal, Pals[p1 * 2], Pals[p2 * 2], Position);
+      Pal := InterpolatePalette (Pals[p1 * 2], Pals[p2 * 2], Position);
 
       al_set_shader_float_vector ('pal', 3, @Pal, 256);
       IF Background <> NIL THEN al_draw_bitmap (Background, 0, 0, 0);
@@ -266,7 +266,9 @@ BEGIN
       BEGIN
 	j := 7 - i;
 	Position := (1 + sin ((t / 60 + Sprites[j].t) * 2 * ALLEGRO_PI)) / 2;
-	InterpolatePalette (Pal, Pals[Sprites[j].i], Pals[Sprites[j].j], Position);
+	Pal := InterpolatePalette (
+		 Pals[Sprites[j].i], Pals[Sprites[j].j], Position
+	       );
 	al_set_shader_float_vector ('pal', 3, @Pal, 256);
 	al_draw_rotated_bitmap (
 	  Bitmap,

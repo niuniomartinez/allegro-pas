@@ -25,25 +25,8 @@ $(FPBIN)furiouspaladin$(BINSUF): $(FPSRC)*.pas $(LIBFILES)
 	@echo Demonstration Game Furious Paladin ready!
 
 # Documentation.
-docs:
-	pasdoc -T "$(PROJECT)" -O html --cache-dir $(OBJDIR) -E $(DOCDIR) --auto-abstract --include-creation-time --use-tipue-search -R srcdoc/allegro5.pds $(LIBFILES)
-#	fpdoc $(FPDOPT) --package=Allegro_pas --project=$(DOCSRC)project.xml --format=html --output=$(DOCDIR)
-
-## This generates skeleton for documentation.
-## Skeleton files are written in root.  Actual documentation sources are read
-## from 'docs/src/'.
-makeskel:
-	makeskel $(MKSOPT) --input=$(LIBDIR)allegro5.pas --output=allegro5.xml
-	makeskel $(MKSOPT) --input=$(LIBDIR)al5base.pas --output=al5base.xml
-	makeskel $(MKSOPT) --input=$(LIBDIR)al5acodec.pas --output=al5acodec.xml
-	makeskel $(MKSOPT) --input=$(LIBDIR)al5audio.pas --output=al5audio.xml
-	makeskel $(MKSOPT) --input=$(LIBDIR)al5color.pas --output=al5color.xml
-	makeskel $(MKSOPT) --input=$(LIBDIR)al5font.pas --output=al5font.xml
-	makeskel $(MKSOPT) --input=$(LIBDIR)al5gl.pas --output=al5gl.xml
-	makeskel $(MKSOPT) --input=$(LIBDIR)al5image.pas --output=al5image.xml
-	makeskel $(MKSOPT) --input=$(LIBDIR)al5nativedlg.pas --output=al5nativedlg.xml
-	makeskel $(MKSOPT) --input=$(LIBDIR)al5primitives.pas --output=al5primitives.xml
-	makeskel $(MKSOPT) --input=$(LIBDIR)al5ttf.pas --output=al5ttf.xml
+docs: $(LIBFILES) $(DOCFILES)
+	pasdoc -T "$(PROJECT)" -O $(DOCFMT) -L en --cache-dir $(OBJDIR) -E $(DOCDIR) $(DOCOPTS) -R $(DOCMAIN) --introduction $(DOCINTRO) $(LIBFILES)
 
 # Returns some variables.
 status: adbanner
@@ -59,11 +42,13 @@ status: adbanner
 
 # Cleans everything.
 veryclean: clean
-	$(DELETE) $(EXMFILES) $(DEMFILES)
+	$(DELETE) $(EXMFILES
+	$(DELETE) $(DEMFILES)
 
 # Clean temporary files.
 clean:
 	$(DELETE) $(OBJFILES)
+	$(DELETE) $(DOCTMPFILES)
 
 # Show all options.
 help: adbanner

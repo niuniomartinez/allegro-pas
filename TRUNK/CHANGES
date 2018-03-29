@@ -1,3 +1,23 @@
+Changes between versions 5.2.a3 and 5.2.beta
+============================================
+
+  News
+  ----
+  + Many changes to archieve full compatibility with Delphi.  Only tested with
+    Delphi Tokio Starter Edition though.
+  + "Furious Paladin" demonstration game by Handoko added.
+  + Added lazarus subdirectories containing Lazarus project files in examples
+    and demo.
+  + Added delphi subdirectories containing Delphi project files in examples and
+    demo.
+
+  Other
+  -----
+  + ex_depth_mask simplified.
+  * New, and hopefully better, documentation distribution.
+
+
+
 Changes between versions 5.2 alpha-2 and 5.2.a3
 ===============================================
 

@@ -72,10 +72,16 @@ INTERFACE
   FUNCTION al_color_html (CONST str: al_STR): ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
 
-IMPLEMENTATION
 
+
+{ DO NOT USE ANY SYMBOL BELOW THIS COMMENT.  They're for internal use only.  In
+  delphi, inline function declared in interface section must not use local
+  symbols, that's why I've defined it here. }
+{@exclude}
   PROCEDURE _al_color_rgb_to_html_ (r, g, b: AL_FLOAT; str: AL_STRptr); CDECL;
     EXTERNAL ALLEGRO_COLOR_LIB_NAME NAME 'al_color_rgb_to_html';
+
+IMPLEMENTATION
 
   FUNCTION al_color_rgb_to_html (r, g, b: AL_FLOAT): AL_STRptr;
   BEGIN

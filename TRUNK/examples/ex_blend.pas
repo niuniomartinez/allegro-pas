@@ -72,18 +72,18 @@ VAR
 (* Create an example bitmap. *)
   FUNCTION CreateExampleBitmap: ALLEGRO_BITMAPptr;
   VAR
+    lBmp: ALLEGRO_BITMAPptr;
     i, j, x, y, r: INTEGER;
     rc: DOUBLE;
     Locked: ALLEGRO_LOCKED_REGIONptr;
     Data: PBYTE;
   BEGIN
-    CreateExampleBitmap := al_create_bitmap (100, 100);
+    lBmp := al_create_bitmap (100, 100);
     Locked := al_lock_bitmap (
-      CreateExampleBitmap,
-      ALLEGRO_PIXEL_FORMAT_ABGR_8888, ALLEGRO_LOCK_WRITEONLY
+      lBmp, ALLEGRO_PIXEL_FORMAT_ABGR_8888, ALLEGRO_LOCK_WRITEONLY
     );
     Data := Locked^.data;
- 
+
     FOR j := 0 TO 99 DO
     BEGIN
       FOR i := 0 TO 99 DO
@@ -99,7 +99,8 @@ VAR
       END;
       Data := Data + Locked^.pitch;
     END;
-    al_unlock_bitmap (CreateExampleBitmap);
+    al_unlock_bitmap (lBmp);
+    EXIT (lBmp)
   END;
 
 
@@ -284,7 +285,7 @@ VAR
               13: ex.mode := 3;
               14: ex.mode := 4;
               15: ex.mode := 5;
-               
+
               16: ex.mode := 6;
               17: ex.mode := 7;
               18: ex.mode := 8;
@@ -343,7 +344,7 @@ BEGIN
    al_register_event_source (Ex.Queue, al_get_mouse_event_source);
    al_register_event_source (Ex.Queue, al_get_display_event_source (Display));
    al_register_event_source (Ex.Queue, al_get_timer_event_source (Timer));
-{
+{ TODO:
    IF al_is_touch_input_installed THEN
      al_register_event_source (
        Ex.Queue, al_get_touch_input_mouse_emulation_event_source

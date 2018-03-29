@@ -218,7 +218,7 @@ PROGRAM ex_gldepth;
     IF Depth = 0 THEN
       al_draw_text (aFont, TextColor, 0, 5, 0, 'No Z-buffer!')
     ELSE
-      al_draw_text (aFont, TextColor, 0, 5, 0, PCHAR ('Z-buffer: '+IntToStr (Depth)+'bits'));
+      al_draw_text (aFont, TextColor, 0, 5, 0, 'Z-buffer: '+IntToStr (Depth)+'bits');
     al_set_target_backbuffer (Display);
     al_destroy_bitmap (tmpBmp);
     al_destroy_font (aFont);

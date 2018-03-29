@@ -6,7 +6,6 @@ PROGRAM ex_audio_simple;
 
 {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 
-
 USES
   Allegro5, al5audio, al5acodec, Common,
   sysutils;
@@ -29,7 +28,7 @@ BEGIN
   IF Paramcount < 1 THEN
   BEGIN
     LogWriteLn ('This example needs to be run from the command line.');
-    LogWriteLn ('Usage: ' + ApplicationName + ' {audio_files}');
+    LogWriteLn ('Usage: ex_audio_simple {audio_files}');
     CloseLog (TRUE);
     HALT (1);
   END;
@@ -97,5 +96,3 @@ BEGIN
   al_uninstall_audio;
   CloseLog (TRUE);
 END.
-
-/* vim: set sts=3 sw=3 et: */

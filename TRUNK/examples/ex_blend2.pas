@@ -100,6 +100,8 @@ PROGRAM ex_blend2;
       EXIT (ALLEGRO_SRC_MINUS_DEST);
     IF aStr = 'DEST_MINUS_SRC' THEN
       EXIT (ALLEGRO_DEST_MINUS_SRC);
+  { Default blend to avoid a warning (actually not needed). }
+    RESULT := ALLEGRO_ADD
   END;
 
 

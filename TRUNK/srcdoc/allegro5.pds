@@ -1,11 +1,11 @@
 #Allegro5.al_get_allegro_version
-Returns the (compiled) version of the Allegro library, packed into a single
+Returns the compiled version of the Allegro library, packed into a single
 integer as groups of 8 bits.
 
 You can use code like this to extract the version number:
 @longcode(#
   VAR
-    Version: AL_INT;
+    Version: LONGINT;
     Major, Minor, Revision, Release: INTEGER;
     VersionStr: STRING;
   BEGIN
@@ -14,13 +14,14 @@ You can use code like this to extract the version number:
     Minor    := (Version SHR 16) AND 255;
     Revision := (Version SHR  8) AND 255;
     Release  :=  Version         AND 255;
-    VersionStr := Format ('%d.%d.%d(%d)', [Major, Minor, Revision, Release])
+    VersionStr := Format ('%d.%d.%d[%d]', [Major, Minor, Revision, Release])
   END;
 #)
 The release number is 0 for an unofficial version and 1 or greater for an
 official release. For example "5.0.2[1]" would be the (first) official 5.0.2
 release while "5.0.2[0]" would be a compile of a version from the "5.0.2"
 branch before the official release.
+
 #Allegro5.al_run_main
 This function is useful in cases where you don't have a @code(main) function
 but want to run Allegro (mostly useful in a wrapper library).  Under Windows
@@ -36,6 +37,7 @@ The passed @code(argc) and @code(argv) will simply be passed on to
 if Pascal do need this kind of stuff.  Future versions of Allegro.pas would not
 include this function, so don't use it unless your really need to (and tell me
 if you really need it to remove this warning from documentation).
+
 #Allegro5.AL_ID
 This function can be used to create a packed 32 bit integer from 8 bit
 characters, on both 32 and 64 bit machines.  These can be used for various
@@ -47,6 +49,7 @@ BEGIN
   OSTYPE_LINUX := AL_ID('TUX ');
 END;
 #)
+
 #Allegro5.al_rest
 This tells the system to pause the current thread for the given amount of time.
 With some operating systems, the accuracy can be in the order of 10ms.  That
@@ -57,6 +60,9 @@ is, even
 might pause for something like 10ms.  Also see the section on timer events
 (i.e. @link(al_create_timer)) for easier ways to time your program without
 using up all CPU.
+
+
+
 #Allegro5.ALLEGRO_PIXEL_FORMAT
 Each pixel format specifies the exact size and bit layout of a
 pixel in memory.  Components are specified from high bits to low bits, so for
