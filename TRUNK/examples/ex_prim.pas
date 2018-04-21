@@ -10,24 +10,57 @@ PROGRAM ex_prim;
  *                                           \_/__/
  *
  *      A sampler of the primitive addon.
- *      All primitives are rendered using the additive blender, so overdraw will manifest itself as overly bright pixels.
- *
+ *      All primitives are rendered using the additive blender, so overdraw
+ *      will manifest itself as overly bright pixels.
  *
  *      By Pavel Sountsov.
  *      Translated to Pascal by Ñuño Martínez.
  *
- *      See readme.txt for copyright information.
+ *      See README for copyright information.
+ *)
+(*
+  Copyright (c) 2012-2018 Guillermo Martínez J.
+
+  This software is provided 'as-is', without any express or implied
+  warranty. In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+    1. The origin of this software must not be misrepresented; you must not
+    claim that you wrote the original software. If you use this software
+    in a product, an acknowledgment in the product documentation would be
+    appreciated but is not required.
+
+    2. Altered source versions must be plainly marked as such, and must not be
+    misrepresented as being the original software.
+
+    3. This notice may not be removed or altered from any source
+    distribution.
  *)
 
-{$LONGSTRINGS ON}
 {$IFDEF FPC}
 { Needed to support classes and C-style pointers. }
-  {$IF NOT DEFINED(FPC_OBJFPC)}
-    {$MODE OBJFPC}
-  {$ENDIF}
+  {$IF NOT DEFINED(FPC_OBJFPC)} {$MODE OBJFPC} {$ENDIF}
+{ Needed to make the executable suitable for  modern Windows OS. }
+  {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-{$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+{$IFDEF DCC}
+{ Pointer arithmetic needed by this example.
+  Not all Delphi versions support it though. }
+  {$IFDEF CONDITIONALEXPRESSIONS}
+    {$IF CompilerVersion >= 20.0}
+      {$POINTERMATH ON}
+    {$ELSE}
+      {$MESSAGE error 'Need pointer arithmetics.'}
+    {$ENDIF}
+  {$ELSE}
+    {$MESSAGE error 'Need pointer arithmetics.'}
+  {$ENDIF}
+{$ENDIF}
 
   USES
     Common,
@@ -38,17 +71,17 @@ PROGRAM ex_prim;
     ScreenW = 800; ScreenH = 600;
     RefreshRate = 60;
     FixedTimestep = 1 / RefreshRate;
-    NUM_SCREENS = 11;
+    NUM_SCREENS = 12;
     ROTATE_SPEED = 0.0001;
 
   TYPE
   (* Base class for example screens. *)
     TCustomScreen = CLASS (TObject)
     PRIVATE
-      fName: STRING;
+      fName: ANSISTRING;
     PUBLIC
     (* Constructor. *)
-      CONSTRUCTOR Create (CONST aName: STRING);
+      CONSTRUCTOR Create (CONST aName: ANSISTRING);
     (* Updates the example.
 
       By default builds MainTrans rotating by Theta angle. *)
@@ -57,12 +90,14 @@ PROGRAM ex_prim;
       PROCEDURE Draw; VIRTUAL; ABSTRACT;
 
     (* Screen name. *)
-      PROPERTY Name: STRING READ fName;
+      PROPERTY Name: ANSISTRING READ fName;
     END;
 
 
 
-  (* The example object. *)
+  (* The example object.
+
+     This is something similar to VCL/LCL TApplication class. *)
     TPrimitivesExample = CLASS (TObject)
     PRIVATE
       fTerminated,
@@ -96,7 +131,7 @@ PROGRAM ex_prim;
     (* Terminates the example. *)
       PROCEDURE Terminate;
     (* Shows an error message box. *)
-      PROCEDURE ShowErrorMessage (CONST aMessage: STRING);
+      PROCEDURE ShowErrorMessage (CONST aMessage: ANSISTRING);
     (* Builds the transformation matrix. *)
       PROCEDURE BuildTransform (ax, ay, sx, sy, aTheta: AL_FLOAT);
     (* Draws text telling the example isn't supported. *)
@@ -296,10 +331,19 @@ PROGRAM ex_prim;
     END;
 
   VAR
-  (* The example object. *)
+  (* The example object.  This is something like the VCL/LCL Application
+     object. *)
     Example: TPrimitivesExample;
   (* Some colors. *)
     White, SolidWhite, SolidBlack: ALLEGRO_COLOR;
+  (* Points used in the spline example at THighPrimitives.Draw and
+     TTransformationsPrimitives.Draw. *)
+    SplinePoints: ALLEGRO_SPLINE_CONTROL_POINTS = (
+      -300, -200,
+      700, 200,
+      -700, 200,
+      300, -200
+    );
 
 
 
@@ -308,7 +352,7 @@ PROGRAM ex_prim;
  ***************************************************************************)
 
 (* Constructor. *)
-  CONSTRUCTOR TCustomScreen.Create (CONST aName: STRING);
+  CONSTRUCTOR TCustomScreen.Create (CONST aName: ANSISTRING);
   BEGIN
     INHERITED Create;
     fName := aName
@@ -412,8 +456,8 @@ PROGRAM ex_prim;
   PROCEDURE TPrimitivesExample.Draw;
 
   { Helper to print boolean statuses. }
-    PROCEDURE ShowBoolean 
-      (CONST aY: INTEGER; CONST aLabel: STRING; CONST aState: BOOLEAN);
+    PROCEDURE ShowBoolean
+      (CONST aY: INTEGER; CONST aLabel: ANSISTRING; CONST aState: BOOLEAN);
     BEGIN
       IF aState THEN
         al_draw_text (fFont, SolidWhite, 0, aY, 0, aLabel + ': TRUE')
@@ -467,17 +511,17 @@ PROGRAM ex_prim;
       fScreens[fCurScreen].Name);
     al_draw_text (
       fFont, SolidWhite, 0, 0, 0,
-      Format ('FPS: %f', [fFramesDone / (al_get_time - fTimeDiff)])
+      Format ('FPS: %.2f', [fFramesDone / (al_get_time - fTimeDiff)])
     );
     al_draw_text (
       fFont, SolidWhite, 0, 20, 0, 'Change Screen (Up/Down). Esc to Quit.');
     al_draw_text (
       fFont, SolidWhite, 0, 40, 0,
-      Format ('Rotation (Left/Right/Space): %f', [fSpeed])
+      Format ('Rotation (Left/Right/Space): %.4f', [fSpeed])
     );
     al_draw_text (
       fFont, SolidWhite, 0, 60, 0,
-      Format ('Thickness (PgUp/PgDown): %f', [fThickness])
+      Format ('Thickness (PgUp/PgDown): %.2f', [fThickness])
     );
     ShowBoolean (80, 'Software (S)', fSoft);
     ShowBoolean (100, 'Blending (L)', fBlend);
@@ -516,8 +560,7 @@ PROGRAM ex_prim;
     Cnt: INTEGER;
   BEGIN
     IF fBuffer <> NIL THEN al_destroy_bitmap (fBuffer);
-    FOR Cnt := LOW (fScreens) TO HIGH (fScreens) DO
-      FreeAndNil (fScreens[Cnt]);
+    FOR Cnt := LOW (fScreens) TO HIGH (fScreens) DO fScreens[Cnt].Free;
     IF fQueue <> NIL THEN al_destroy_event_queue (fQueue);
     IF fTexture <> NIL THEN al_destroy_bitmap (fTexture);
     IF fBkg <> NIL THEN al_destroy_bitmap (fBkg);
@@ -539,9 +582,9 @@ PROGRAM ex_prim;
       IF ParamStr (1) = '--shader' THEN
 	fUseShader := TRUE
       ELSE BEGIN
-	ShowErrorMessage (Format (
-	  'Invalid command line option: %s.', [ParamStr(1)]
-	));
+	ShowErrorMessage (
+	  Format ('Invalid command line option: %s.', [ParamStr (1)])
+	);
 	EXIT
       END
     END;
@@ -618,11 +661,7 @@ PROGRAM ex_prim;
     fScreens[9] := TFilledTexturePrimitives.Create;
     fScreens[10] := TCustomVertexFormatPrimitives.Create;
     fScreens[11] := TVertexBuffers.Create;
-  { There is a problem somewhere that makes the Index Buffers example fail.
-    Until it is fixed, this should be deactivated.  Note also that the
-    fScreens array should be incremented.
     fScreens[12] := TIndexedBuffers.Create;
-  }
   { Backbuffer. }
     Old := al_get_new_bitmap_flags;
     al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
@@ -656,14 +695,16 @@ PROGRAM ex_prim;
       fFrameDuration := al_get_time - fRealTime;
       fRealTime := al_get_time;
       fGameTime := fRealTime;
-      IF fRealTime - fGameTime > fFrameDuration THEN { eliminate excess overflow }
-        fGameTime := fGameTime + FixedTimestep * TRUNC ((fRealTime - fGameTime) / FixedTimestep);
+      IF fRealTime - fGameTime > fFrameDuration THEN
+      { eliminate excess overflow }
+	fGameTime := fGameTime + FixedTimestep * TRUNC ((fRealTime - fGameTime) / FixedTimestep);
       WHILE NOT fTerminated AND (fRealTime - fGameTime >= 0) DO
       BEGIN
 	fStartTime := al_get_time;
 	fGameTime := fGameTime + FixedTimestep;
 	SELF.Update;
-	IF al_get_time - fStartTime >= FixedTimestep THEN { break if we start taking too long }
+	IF al_get_time - fStartTime >= FixedTimestep THEN
+	{ break if we start taking too long }
 	  BREAK
       END;
       SELF.Draw;
@@ -682,7 +723,7 @@ PROGRAM ex_prim;
 
 
 (* Shows an error message box. *)
-  PROCEDURE TPrimitivesExample.ShowErrorMessage (CONST aMessage: STRING);
+  PROCEDURE TPrimitivesExample.ShowErrorMessage (CONST aMessage: ANSISTRING);
   BEGIN
     al_show_native_message_box
       (fDisplay, 'Error', 'Cannot run example', aMessage, '', 0);
@@ -777,12 +818,13 @@ PROGRAM ex_prim;
     BEGIN
       x := TRUNC (200 * cos (Ndx / 13 * 2 * ALLEGRO_PI));
       y := TRUNC (200 * sin (Ndx / 13 * 2 * ALLEGRO_PI));
-         
+
       Color := al_map_rgb (
 	(Ndx + 1) MOD 3 * 64,
 	(Ndx + 2) MOD 3 * 64,
-	(Ndx    ) MOD 3 * 64);
-         
+	(Ndx    ) MOD 3 * 64
+      );
+
       Vtx[Ndx].x := x; Vtx[Ndx].y := y; Vtx[Ndx].z := 0;
       Vtx2[Ndx].x := 0.1 * x; Vtx2[Ndx].y := 0.1 * y;
       Vtx[Ndx].color := color;
@@ -833,13 +875,6 @@ PROGRAM ex_prim;
 
 (* Draws screen. *)
   PROCEDURE THighPrimitives.Draw;
-  VAR
-    Points: ALLEGRO_SPLINE_CONTROL_POINTS = (
-      -300, -200,
-      700, 200,
-      -700, 200,
-      300, -200
-    );
   BEGIN
     al_draw_line (-300, -200, 300, 200, al_map_rgba_f (0, 0.5, 0.5, 1), Example.Thickness);
     al_draw_triangle (-150, -250, 0, 250, 150, -250, al_map_rgba_f (0.5, 0, 0.5, 1), Example.Thickness);
@@ -849,7 +884,7 @@ PROGRAM ex_prim;
     al_draw_ellipse (0, 0, 300, 150, al_map_rgba_f (0, 0.5, 0.5, 1), Example.Thickness);
     al_draw_elliptical_arc (-20, 0, 300, 200, -ALLEGRO_PI / 2, -ALLEGRO_PI, al_map_rgba_f (0.25, 0.25, 0.5, 1), Example.Thickness);
     al_draw_arc (0, 0, 200, -ALLEGRO_PI / 2, ALLEGRO_PI, al_map_rgba_f (0.5, 0.25, 0, 1), Example.Thickness);
-    al_draw_spline (Points, al_map_rgba_f (0.1, 0.2, 0.5, 1), Example.Thickness);
+    al_draw_spline (SplinePoints, al_map_rgba_f (0.1, 0.2, 0.5, 1), Example.Thickness);
     al_draw_pieslice (0, 25, 150, ALLEGRO_PI * 3 / 4, -ALLEGRO_PI / 2, al_map_rgba_f (0.4, 0.3, 0.1, 1), Example.Thickness)
   END;
 
@@ -882,13 +917,6 @@ PROGRAM ex_prim;
 
 (* Draws screen. *)
   PROCEDURE TTransformationsPrimitives.Draw;
-  VAR
-    Points: ALLEGRO_SPLINE_CONTROL_POINTS = (
-      -300, -200,
-      700, 200,
-      -700, 200,
-      300, -200
-    );
   BEGIN
     al_draw_line (-300, -200, 300, 200, al_map_rgba_f (0, 0.5, 0.5, 1), Example.Thickness);
     al_draw_triangle (-150, -250, 0, 250, 150, -250, al_map_rgba_f (0.5, 0, 0.5, 1), Example.Thickness);
@@ -898,7 +926,7 @@ PROGRAM ex_prim;
     al_draw_ellipse (0, 0, 300, 150, al_map_rgba_f (0, 0.5, 0.5, 1), Example.Thickness);
     al_draw_elliptical_arc (-20, 0, 300, 200, -ALLEGRO_PI / 2, -ALLEGRO_PI, al_map_rgba_f (0.25, 0.25, 0.5, 1), Example.Thickness);
     al_draw_arc (0, 0, 200, -ALLEGRO_PI / 2, ALLEGRO_PI, al_map_rgba_f (0.5, 0.25, 0, 1), Example.Thickness);
-    al_draw_spline (Points, al_map_rgba_f (0.1, 0.2, 0.5, 1), Example.Thickness);
+    al_draw_spline (SplinePoints, al_map_rgba_f (0.1, 0.2, 0.5, 1), Example.Thickness);
     al_draw_pieslice (0, 25, 150, ALLEGRO_PI * 3 / 4, -ALLEGRO_PI / 2, al_map_rgba_f (0.4, 0.3, 0.1, 1), Example.Thickness)
   END;
 
@@ -1160,15 +1188,20 @@ PROGRAM ex_prim;
  * TCustomVertexFormatPrimitives
  ***************************************************************************)
 
+VAR
+{ Used to create the vertices by the constructor bellow. }
+  Elems: ARRAY [0..3] OF ALLEGRO_VERTEX_ELEMENT = (
+    (attribute: ALLEGRO_PRIM_POSITION; storage: ALLEGRO_PRIM_SHORT_2; offset: 4),
+    (attribute: ALLEGRO_PRIM_TEX_COORD_PIXEL; storage: ALLEGRO_PRIM_SHORT_2; offset: 0),
+    (attribute: ALLEGRO_PRIM_COLOR_ATTR; storage: ALLEGRO_PRIM_STORAGE_NONE; offset: 8),
+    (attribute: ALLEGRO_PRIM_ATTR_NONE; storage: ALLEGRO_PRIM_STORAGE_NONE; offset: 0)
+  );
+
+
+
 (* Constructor. *)
   CONSTRUCTOR TCustomVertexFormatPrimitives.Create;
   VAR
-   Elems: ARRAY [0..3] OF ALLEGRO_VERTEX_ELEMENT = (
-     (attribute: ALLEGRO_PRIM_POSITION; storage: ALLEGRO_PRIM_SHORT_2; offset: 4),
-     (attribute: ALLEGRO_PRIM_TEX_COORD_PIXEL; storage: ALLEGRO_PRIM_SHORT_2; offset: 0),
-     (attribute: ALLEGRO_PRIM_COLOR_ATTR; storage: ALLEGRO_PRIM_STORAGE_NONE; offset: 8),
-     (attribute: ALLEGRO_PRIM_ATTR_NONE; storage: ALLEGRO_PRIM_STORAGE_NONE; offset: 0)
-    );
     Ndx, x, y: INTEGER;
   BEGIN
     INHERITED Create ('Custom Vertex Format');
@@ -1179,7 +1212,7 @@ PROGRAM ex_prim;
     BEGIN
       x := TRUNC (200 * cos (Ndx / 4 * 2 * ALLEGRO_PI));
       y := TRUNC (200 * sin (Ndx / 4 * 2 * ALLEGRO_PI));
-         
+
       vtx[Ndx].x := x; vtx[Ndx].y := y;
       vtx[Ndx].u := TRUNC (64 * x / 100); vtx[Ndx].v := TRUNC (64 * y / 100);
       vtx[Ndx].color := al_map_rgba_f (1, 1, 1, 1)
@@ -1319,11 +1352,19 @@ PROGRAM ex_prim;
 	    (Ndx + 2) MOD 3 * 64,
 	    (Ndx    ) MOD 3 * 64
 	  );
-
+{$IFDEF DCC}
+	{ Pointer access. }
+	  (vtx + Ndx)^.x := x;
+	  (vtx + Ndx)^.y := y;
+	  (vtx + Ndx)^.z := 0;
+	  (vtx + Ndx)^.color := Color
+{$ELSE}
+	{ Free Pascal can manage it as an ARRAY. }
 	  vtx[Ndx].x := x;
 	  vtx[Ndx].y := y;
 	  vtx[Ndx].z := 0;
 	  vtx[Ndx].color := Color
+{$ENDIF}
 	END
       FINALLY
 	al_unlock_vertex_buffer(vbuff) 
@@ -1355,7 +1396,13 @@ PROGRAM ex_prim;
       Indices := al_lock_index_buffer (ibuff, 0, 8, ALLEGRO_LOCK_WRITEONLY);
 
       FOR Ndx := 0 TO 7 DO
+{$IFDEF DCC}
+	{ Pointer access. }
+	(Indices + Ndx)^ := (t + Ndx) MOD 13;
+{$ELSE}
+	{ Free Pascal can manage it as an ARRAY. }
 	Indices[Ndx] := (t + Ndx) MOD 13;
+{$ENDIF}
       al_unlock_index_buffer (ibuff);
     END;
     INHERITED Update

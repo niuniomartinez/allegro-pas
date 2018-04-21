@@ -1,0 +1,71 @@
+# Makefile generic - build rules
+
+.PHONY: all demos examples docs makeskel
+
+# Main objective: the whole project
+all: adbanner examples demos
+	@echo "Finished $(PROJECT)."
+	@echo "To create the documentation, run 'make docs'."
+
+# Examples.
+examples: $(EXMFILES)
+	@echo "Finished all examples."
+
+# Demonstration games.
+demos: $(DEMFILES)
+	@echo "Finished all demonstration games."
+
+# Executables
+$(EXMBIN)%$(BINSUF): $(EXMDIR)%.pas $(EXMDIR)common.pas $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FU$(OBJDIR) $< -o$@
+	@echo Example $@ ready!
+
+$(FPBIN)furiouspaladin$(BINSUF): $(FPSRC)*.pas $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FU$(OBJDIR) $< -o$@
+	@echo Demonstration Game Furious Paladin ready!
+
+# Documentation.
+docs: $(LIBFILES) $(DOCFILES)
+	pasdoc -T "$(PROJECT)" -O $(DOCFMT) -L en --cache-dir $(OBJDIR) -E $(DOCDIR) $(DOCOPTS) -R $(DOCMAIN) --introduction $(DOCINTRO) $(LIBFILES)
+
+# Returns some variables.
+status: adbanner
+	@echo "-----------------"
+	@echo "- Status Report -"
+	@echo "-----------------"
+	@echo "  Project : $(PROJECT)"
+	@echo "  Platform : $(PLATFORM)"
+	@echo "  Compiler options : $(FLAGS) $(EFLAGS)"
+	@echo "  Library units : $(LIBFILES)"
+	@echo "  Examples : $(EXMFILES)"
+	@echo "  Demo games : $(DEMFILES)"
+
+# Cleans everything.
+veryclean: clean
+	$(DELETE) $(EXMFILES
+	$(DELETE) $(DEMFILES)
+
+# Clean temporary files.
+clean:
+	$(DELETE) $(OBJFILES)
+	$(DELETE) $(DOCTMPFILES)
+
+# Show all options.
+help: adbanner
+	@echo "--------"
+	@echo "- Help -"
+	@echo "--------"
+	@echo "make all            } Builds the whole project."
+	@echo "make examples       } Builds the examples only."
+	@echo "make docs           } Builds internal documentation."
+	@echo "make clean          } Deletes temporary files."
+	@echo "make veryclean      } Deletes all builded files."
+	@echo "make status         } Shows some configuration variables."
+	@echo "make help           } Shows this help."
+
+# Some info.
+adbanner:
+	@echo "$(PROJECT)"
+	@echo "(c) Guillermo Martínez J. 2006-2017"
+	@echo "http://allegro-pas.sourceforge.net"
+	@echo
