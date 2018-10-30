@@ -1,5 +1,5 @@
 UNIT Allegro5;
-(*<Wrapper of the Allegro 5 core library.
+(***<Wrapper of the Allegro 5 core library.
 
   This unit defines core functions, procedures and data types, that aren't in
   add-ons.
@@ -39,13 +39,9 @@ INTERFACE
   USES
     al5base;
 
-  CONST
-  (* @exclude Builds library name. *)
-    ALLEGRO_LIB_NAME = _A5_LIB_PREFIX_+'allegro'+_DBG_+_A5_LIB_EXT_;
-
 { The code is distributed in sections, each one wraps a header file.
 
-  Order of sections is the same as C loads them by including the "allegro.h"
+  Order of sections is the same as C loads them by including the "allegro5.h"
   header file.
 
   Most documentation is at file srcdoc/allegro5.pds.  Eventually all
@@ -59,14 +55,8 @@ INTERFACE
  *****************************************************************************)
 
   CONST
-  (* Allegro.pas version string. *)
-    ALLEGRO_PAS_VERSION_STR = 'Allegro.pas 5.2.b';
-
-  (* Major version of Allegro. *)
     ALLEGRO_VERSION      =   5;
-  (* Minor version of Allegro. *)
     ALLEGRO_SUB_VERSION  =   2;
-  (* Revision number of Allegro. *)
     ALLEGRO_WIP_VERSION  =   0;
   (* Not sure we need it, but ALLEGRO_VERSION_STR contains it:
      0 = SVN
@@ -76,24 +66,29 @@ INTERFACE
      Note x.y.z (= x.y.z.0) has release number 1, and x.y.z.1 has release
      number 2, just to confuse you. *)
     ALLEGRO_RELEASE_NUMBER = 1;
-  (* Packs version number in a simple AL_INT number. *)
+    ALLEGRO_PAS_VERSION_STR = 'Allegro.pas 5.2.b.SVN';
+    ALLEGRO_DATE_STR = '2018';
+    ALLEGRO_DATE = 20180606; { yyyymmdd }
     ALLEGRO_VERSION_INT  = (
 	   (ALLEGRO_VERSION SHL 24)
 	OR (ALLEGRO_SUB_VERSION SHL 16)
 	OR (ALLEGRO_WIP_VERSION SHL  8)
 	OR  ALLEGRO_RELEASE_NUMBER
     );
-  (* Just to be sure that PI number is available. *)
-    ALLEGRO_PI = 3.14159265358979323846;
 
   TYPE
-  (* Description of user main function for @link(al_run_main). *)
     ALLEGRO_USER_MAIN = FUNCTION (argc: AL_INT; argv: AL_POINTER): AL_INT; CDECL;
 
   FUNCTION al_get_allegro_version: AL_UINT32;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_run_main (argc: AL_INT; argv: AL_POINTER; user_main: ALLEGRO_USER_MAIN): AL_INT;
+  FUNCTION al_run_main (
+    argc: AL_INT; argv: AL_POINTER; user_main: ALLEGRO_USER_MAIN
+  ): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
+  CONST
+    ALLEGRO_PI = 3.14159265358979323846;
+    ALLEGRO_TAU = ALLEGRO_PI * 2;
 
   FUNCTION AL_ID (CONST str: SHORTSTRING): AL_INT;
 
@@ -104,33 +99,18 @@ INTERFACE
  *****************************************************************************)
 
   TYPE
-  (* Represents a timeout value.
-
-     The size of the structure is known so it can be statically allocated.  The
-     contents are private. @seealso(al_init_timeout) *)
     ALLEGRO_TIMEOUT = RECORD
       __pad1__, __pad2__: AL_UINT64;
     END;
 
 
-  (* Returns the number of seconds since the Allegro library was initialised.
-     The return value is undefined if Allegro is uninitialised. The resolution
-     depends on the used driver, but typically can be in the order of
-     microseconds. *)
-    FUNCTION al_get_time: AL_DOUBLE;
-      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-  (* Waits for the specified number of seconds. *)
-    PROCEDURE al_rest (seconds: AL_DOUBLE);
-      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-
-  (* Set timeout value of some number of seconds after the function call.
-
-     For compatibility with all platforms, seconds must be 2,147,483.647
-     seconds or less.
-     @seealso(ALLEGRO_TIMEOUT) @seealso(al_wait_for_event_until) *)
-    PROCEDURE al_init_timeout (OUT timeout: ALLEGRO_TIMEOUT; seconds: AL_DOUBLE);
-      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  FUNCTION al_get_time: AL_DOUBLE;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_rest (seconds: AL_DOUBLE);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  PROCEDURE al_init_timeout (OUT timeout: ALLEGRO_TIMEOUT; seconds: AL_DOUBLE);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
@@ -139,95 +119,99 @@ INTERFACE
  *****************************************************************************)
 
   TYPE
-  (* An @code(ALLEGRO_COLOR) structure describes a color in a device independant
-     way.  Use @link(al_map_rgb) et al. and @link(al_unmap_rgb) et al. to
-     translate from and to various color representations. *)
     ALLEGRO_COLOR = RECORD
-    (* Color component. *)
+    (*** Color component. *)
       r, g, b, a: AL_FLOAT;
     END;
-  (* Pixel formats. *)
+
     ALLEGRO_PIXEL_FORMAT = (
-    (* Let the driver choose a format. This is the default format at program
+    (*** Let the driver choose a format. This is the default format at program
        start. *)
       ALLEGRO_PIXEL_FORMAT_ANY = 0,
-    (* Let the driver choose a format without alpha. *)
+    (*** Let the driver choose a format without alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_NO_ALPHA = 1,
-    (* Let the driver choose a format with alpha. *)
+    (*** Let the driver choose a format with alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_WITH_ALPHA = 2,
-    (* Let the driver choose a 15 bit format without alpha. *)
+    (*** Let the driver choose a 15 bit format without alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_15_NO_ALPHA = 3,
-    (* Let the driver choose a 16 bit format without alpha. *)
+    (*** Let the driver choose a 16 bit format without alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_16_NO_ALPHA = 4,
-    (* Let the driver choose a 16 bit format with alpha. *)
+    (*** Let the driver choose a 16 bit format with alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_16_WITH_ALPHA = 5,
-    (* Let the driver choose a 24 bit format without alpha. *)
+    (*** Let the driver choose a 24 bit format without alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_24_NO_ALPHA = 6,
-    (* Let the driver choose a 32 bit format without alpha. *)
+    (*** Let the driver choose a 32 bit format without alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_32_NO_ALPHA = 7,
-    (* Let the driver choose a 32 bit format with alpha. *)
+    (*** Let the driver choose a 32 bit format with alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA = 8,
-    (* 32 bit *)
+    (*** 32 bit *)
       ALLEGRO_PIXEL_FORMAT_ARGB_8888 = 9,
-    (* 32 bit *)
+    (*** 32 bit *)
       ALLEGRO_PIXEL_FORMAT_RGBA_8888 = 10,
-    (* 24 bit *)
+    (*** 24 bit *)
       ALLEGRO_PIXEL_FORMAT_ARGB_4444 = 11,
-    (* 24 bit *)
+    (*** 24 bit *)
       ALLEGRO_PIXEL_FORMAT_RGB_888 = 12,
-    (* 16 bit *)
+    (*** 16 bit *)
       ALLEGRO_PIXEL_FORMAT_RGB_565 = 13,
-    (* 15 bit *)
+    (*** 15 bit *)
       ALLEGRO_PIXEL_FORMAT_RGB_555 = 14,
-    (* 16 bit *)
+    (*** 16 bit *)
       ALLEGRO_PIXEL_FORMAT_RGBA_5551 = 15,
-    (* 16 bit *)
+    (*** 16 bit *)
       ALLEGRO_PIXEL_FORMAT_ARGB_1555 = 16,
-    (* 32 bit *)
+    (*** 32 bit *)
       ALLEGRO_PIXEL_FORMAT_ABGR_8888 = 17,
-    (* 32 bit *)
+    (*** 32 bit *)
       ALLEGRO_PIXEL_FORMAT_XBGR_8888 = 18,
-    (* 24 bit *)
+    (*** 24 bit *)
       ALLEGRO_PIXEL_FORMAT_BGR_888 = 19,
-    (* 16 bit *)
+    (*** 16 bit *)
       ALLEGRO_PIXEL_FORMAT_BGR_565 = 20,
-    (* 15 bit *)
+    (*** 15 bit *)
       ALLEGRO_PIXEL_FORMAT_BGR_555 = 21,
-    (* 32 bit *)
+    (*** 32 bit *)
       ALLEGRO_PIXEL_FORMAT_RGBX_8888 = 22,
-    (* 32 bit *)
+    (*** 32 bit *)
       ALLEGRO_PIXEL_FORMAT_XRGB_8888 = 23,
-    (* 128 bit *)
+    (*** 128 bit *)
       ALLEGRO_PIXEL_FORMAT_ABGR_F32 = 24,
-    (* Like the version without _LE, but the component order is guaranteed to
+    (*** Like the version without _LE, but the component order is guaranteed to
        be red, green, blue, alpha. This only makes a difference on big endian
        systems, on little endian it is just an alias. *)
       ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE = 25,
-    (* 16bit *)
+    (*** 16bit *)
       ALLEGRO_PIXEL_FORMAT_RGBA_4444  = 26,
+    (*** A single 8-bit channel. A pixel value maps onto the red channel when
+       displayed, but it is undefined how it maps onto green, blue and alpha
+       channels. When drawing to bitmaps of this format, only the red channel
+       is taken into account. Allegro may have to use fallback methods to
+       render to bitmaps of this format. This pixel format is mainly intended
+       for storing the color indices of an indexed (paletted) image, usually in
+       conjunction with a pixel shader that maps indices to RGBA values. *)
       ALLEGRO_PIXEL_FORMAT_SINGLE_CHANNEL_8 = 27,
+    (*** Compressed using the DXT1 compression algorithm. Each 4x4 pixel block
+       is encoded in 64 bytes, resulting in 6-8x compression ratio. Only a
+       single bit of alpha per pixel is supported. *)
       ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT1 = 28,
+    (*** Compressed using the DXT3 compression algorithm. Each 4x4 pixel block
+       is encoded in 128 bytes, resulting in 4x compression ratio. This format
+       supports sharp alpha transitions. *)
       ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT3 = 29,
+    (*** Compressed using the DXT5 compression algorithm. Each 4x4 pixel block
+       is encoded in 128 bytes, resulting in 4x compression ratio. This format
+       supports smooth alpha transitions. *)
       ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT5 = 30,
       ALLEGRO_NUM_PIXEL_FORMATS
     );
 
-(* Convert r, g, b (ranging from 0-255) into an @link(ALLEGRO_COLOR), using 255
-   for alpha.
-   @seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb_f) *)
+(* Pixel mapping *)
   FUNCTION al_map_rgb (r, g, b: AL_UCHAR): ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Convert r, g, b, a (ranging from 0-255) into an @link(ALLEGRO_COLOR).
-   @seealso(al_map_rgb) @seealso(al_map_rgba_f) @seealso(al_map_rgb_f) *)
   FUNCTION al_map_rgba (r, g, b, a: AL_UCHAR): ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Convert r, g, b (ranging from 0.0f-1.0f) into an @link(ALLEGRO_COLOR), using
-   1.0f for alpha.
-   @seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb) *)
   FUNCTION al_map_rgb_f (r, g, b: AL_FLOAT): ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Convert r, g, b, a (ranging from 0.0f-1.0f) into an @link(ALLEGRO_COLOR).
-   @seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb) *)
   FUNCTION al_map_rgba_f (r, g, b, a: AL_FLOAT): ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_premul_rgba (r, g, b: AL_UCHAR): ALLEGRO_COLOR;
@@ -235,52 +219,25 @@ INTERFACE
   FUNCTION al_premul_rgba_f (r, g, b: AL_FLOAT): ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-
-
-(* Retrieves components of an @link(ALLEGRO_COLOR), ignoring alpha.  Components
-   will range from 0-255.
-   @seealso(al_unmap_rgba) @seealso(al_unmap_rgba_f) @seealso(al_unmap_rgb_f) *)
+(* Pixel unmapping *)
   PROCEDURE al_unmap_rgb (color: ALLEGRO_COLOR; OUT r, g, b: AL_UCHAR);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Retrieves components of an @link(ALLEGRO_COLOR).  Components will range from
-   0-255.
-   @seealso(al_unmap_rgba) @seealso(al_unmap_rgba_f) @seealso(al_unmap_rgb_f) *)
   PROCEDURE al_unmap_rgba (color: ALLEGRO_COLOR; OUT r, g, b, a: AL_UCHAR);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Retrieves components of an @link(ALLEGRO_COLOR), ignoring alpha.  Components
-   will range from 0.0f-1.0f.
-   @seealso(al_unmap_rgba) @seealso(al_unmap_rgba_f) @seealso(al_unmap_rgb_f) *)
   PROCEDURE al_unmap_rgb_f (color: ALLEGRO_COLOR; OUT r, g, b: AL_FLOAT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Retrieves components of an @link(ALLEGRO_COLOR).  Components will range from
-   0.0f-1.0f.
-   @seealso(al_unmap_rgba) @seealso(al_unmap_rgba_f) @seealso(al_unmap_rgb_f) *)
   PROCEDURE al_unmap_rgba_f (color: ALLEGRO_COLOR; OUT r, g, b, a: AL_FLOAT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-(* Return the number of bytes that a pixel of the given format occupies.  For
-   blocked pixel formats (e.g. compressed formats), this returns 0.
-   @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_pixel_format_bits) *)
+(* Pixel formats *)
   FUNCTION al_get_pixel_size (format: ALLEGRO_PIXEL_FORMAT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Return the number of bits that a pixel of the given format occupies.  For
-   blocked pixel formats (e.g. compressed formats), this returns 0.
-   @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_pixel_size) *)
   FUNCTION al_get_pixel_format_bits (format: ALLEGRO_PIXEL_FORMAT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Return the number of bytes that a block of pixels with this format occupies.
-   @seealso(ALLEGRO_PIXEL_FORMAT)
-   @seealso(al_get_pixel_block_width) @seealso(al_get_pixel_block_height) *)
   FUNCTION al_get_pixel_block_size (format: ALLEGRO_PIXEL_FORMAT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Return the width of the pixel block of this format.
-   @seealso(ALLEGRO_PIXEL_FORMAT)
-   @seealso(al_get_pixel_block_size) @seealso(al_get_pixel_block_height) *)
   FUNCTION al_get_pixel_block_width (format: ALLEGRO_PIXEL_FORMAT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Return the height of the pixel block of this format.
-   @seealso(ALLEGRO_PIXEL_FORMAT)
-   @seealso(al_get_pixel_block_width) @seealso(al_get_pixel_block_size) *)
   FUNCTION al_get_pixel_block_height (format: ALLEGRO_PIXEL_FORMAT): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -291,139 +248,93 @@ INTERFACE
  *****************************************************************************)
 
   TYPE
-  (* Abstract type representing a bitmap (2D image). *)
+  (*** Abstract type representing a bitmap (2D image). *)
     ALLEGRO_BITMAPptr = AL_POINTER;
 
   CONST
-  (* Bitmap flags.  Documented at al_set_new_bitmap_flags. *)
-    ALLEGRO_MEMORY_BITMAP            = $0001; {<@exclude }
-    _ALLEGRO_KEEP_BITMAP_FORMAT      = $0002; {<@exclude }
-    ALLEGRO_FORCE_LOCKING            = $0004; {<@exclude }
-    ALLEGRO_NO_PRESERVE_TEXTURE      = $0008; {<@exclude }
-    _ALLEGRO_ALPHA_TEST              = $0010; {<@exclude }
-    _ALLEGRO_INTERNAL_OPENGL         = $0020; {<@exclude }
-    ALLEGRO_MIN_LINEAR               = $0040; {<@exclude }
-    ALLEGRO_MAG_LINEAR               = $0080; {<@exclude }
-    ALLEGRO_MIPMAP                   = $0100; {<@exclude }
-    _ALLEGRO_NO_PREMULTIPLIED_ALPHA  = $0200; {<@exclude }
-    ALLEGRO_VIDEO_BITMAP             = $0400; {<@exclude }
+    ALLEGRO_MEMORY_BITMAP            = $0001; (***<@exclude *)
+    _ALLEGRO_KEEP_BITMAP_FORMAT      = $0002; (***<@exclude now a bitmap loader flag *)
+    ALLEGRO_FORCE_LOCKING            = $0004; (***<@exclude no longer honoured *)
+    ALLEGRO_NO_PRESERVE_TEXTURE      = $0008; (***<@exclude *)
+    _ALLEGRO_ALPHA_TEST              = $0010; (***<@exclude now a render state flag *)
+    _ALLEGRO_INTERNAL_OPENGL         = $0020; (***<@exclude *)
+    ALLEGRO_MIN_LINEAR               = $0040; (***<@exclude *)
+    ALLEGRO_MAG_LINEAR               = $0080; (***<@exclude *)
+    ALLEGRO_MIPMAP                   = $0100; (***<@exclude *)
+    _ALLEGRO_NO_PREMULTIPLIED_ALPHA  = $0200; (***<@exclude now a bitmap loader flag *)
+    ALLEGRO_VIDEO_BITMAP             = $0400; (***<@exclude *)
+    ALLEGRO_CONVERT_BITMAP           = $1000; (***<@exclude *)
 
-(* Sets the pixel format for newly created bitmaps.  The default format is
-   @code(ALLEGRO_PIXEL_FORMAT_ANY) and means the display driver will choose the
-   best format.
-   @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_new_bitmap_format)
-   @seealso(al_get_bitmap_format) *)
   PROCEDURE al_set_new_bitmap_format (format: ALLEGRO_PIXEL_FORMAT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_set_new_bitmap_flags (flags: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Returns the format used for newly created bitmaps.
-   @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_set_new_bitmap_format) *)
   FUNCTION al_get_new_bitmap_format: ALLEGRO_PIXEL_FORMAT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Returns the flags used for newly created bitmaps.
-   @seealso(al_set_new_bitmap_flags) *)
   FUNCTION al_get_new_bitmap_flags: AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* A convenience function which does the same as @longcode(#
-  al_set_new_bitmap_flags (al_get_new_bitmap_flags OR flag);
-#)
-   @seealso(al_set_new_bitmap_flags) @seealso(al_get_new_bitmap_flags)
-   @seealso(al_get_bitmap_flags) *)
   PROCEDURE al_add_new_bitmap_flag (flag: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-
-
-(* Returns the width of a bitmap in pixels. *)
+(*** Returns the width of a bitmap in pixels. *)
   FUNCTION al_get_bitmap_width (bitmap: ALLEGRO_BITMAPptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Returns the height of a bitmap in pixels. *)
+(*** Returns the height of a bitmap in pixels. *)
   FUNCTION al_get_bitmap_height (bitmap: ALLEGRO_BITMAPptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Returns the pixel format of a bitmap.
-   @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_set_new_bitmap_flags) *)
   FUNCTION al_get_bitmap_format (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_PIXEL_FORMAT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Returns the flags user to create the bitmap.
-   @seealso(al_set_new_bitmap_flags) *)
   FUNCTION al_get_bitmap_flags (bitmap: ALLEGRO_BITMAPptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
   FUNCTION al_create_bitmap (w, h: AL_INT): ALLEGRO_BITMAPptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Destroys the given bitmap, freeing all resources used by it. Does nothing if
-   given the null pointer. *)
   PROCEDURE al_destroy_bitmap (Bitmap: ALLEGRO_BITMAPptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_put_pixel (x, y: AL_INT; color: ALLEGRO_COLOR);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Like @link(al_put_pixel), but the pixel color is blended using the current
-   blenders before being drawn. *)
   PROCEDURE al_put_blended_pixel (x, y: AL_INT; color: ALLEGRO_COLOR);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Get a pixel's color value from the specified bitmap.  This operation is slow
-   on non-memory bitmaps.  Consider locking the bitmap if you are going to use
-   this function multiple times on the same bitmap.
-   @seealso(al_put_pixel) @seealso(al_lock_bitmap) *)
   FUNCTION al_get_pixel (bitmap: ALLEGRO_BITMAPptr; x, y: AL_INT): ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-
-
-(* Converts the given mask color to an alpha channel in the bitmap.  Can be used
-   to convert older 4.2-style bitmaps with magic pink to alpha-ready bitmaps. *)
+(* Masking. *)
   PROCEDURE al_convert_mask_to_alpha (bitmap: ALLEGRO_BITMAPptr; mask_color: ALLEGRO_COLOR);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-
-
-(* Sets the region of the target bitmap or display that pixels get clipped to.
-   The default is to clip pixels to the entire bitmap.
-  @seealso(al_get_clipping_rectangle) @seealso(al_reset_clipping_rectangle) *)
+(* Clipping.*)
   PROCEDURE al_set_clipping_rectangle (x, y, width, height: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Equivalent to calling @code(al_set_clipping_rectangle @(0, 0, w, h@)) where
-   w and h are the width and height of the target bitmap respectively.
-
-   Does nothing if there is no target bitmap.
-   @seealso(al_set_clipping_rectangle) *)
   PROCEDURE al_reset_clipping_rectangle;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Gets the clipping rectangle of the target bitmap.
-  @seealso(al_set_clipping_rectangle) *)
   PROCEDURE al_get_clipping_rectangle (OUT x, y, w, h: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
+(* Sub bitmaps. *)
   FUNCTION al_create_sub_bitmap (parent: ALLEGRO_BITMAPptr; x, y, w, h: AL_INT): ALLEGRO_BITMAPptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Returns true if the specified bitmap is a sub-bitmap, false otherwise.
-  @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap) *)
   FUNCTION al_is_sub_bitmap (bitmap: ALLEGRO_BITMAPptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_get_parent_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* For a sub-bitmap, return it's x position within the parent.
-  @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap)
-  @seealso(al_get_bitmap_y) *)
+(*** For a sub-bitmap, returns it's x position within the parent.
+  @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap) @seealso(al_get_bitmap_y) *)
   FUNCTION al_get_bitmap_x (bitmap: ALLEGRO_BITMAPptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* For a sub-bitmap, return it's y position within the parent.
-  @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap)
-  @seealso(al_get_bitmap_x) *)
+(*** For a sub-bitmap, returns it's y position within the parent.
+  @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap) @seealso(al_get_bitmap_x) *)
   FUNCTION al_get_bitmap_y (bitmap: ALLEGRO_BITMAPptr): AL_INT;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_reparent_bitmap (bitmap, parent: ALLEGRO_BITMAPptr; x, y, w, h: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-
-
+(* Miscelaneous. *)
   FUNCTION al_clone_bitmap (bitmap: ALLEGRO_BITMAPptr): ALLEGRO_BITMAPptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_convert_bitmap (bitmap: ALLEGRO_BITMAPptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_convert_memory_bitmap;
+  PROCEDURE al_convert_memory_bitmaps;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
@@ -434,9 +345,10 @@ INTERFACE
 
   CONST
   (* Flags for the blitting functions.  Documented at al_draw_bitmap. *)
-    ALLEGRO_FLIP_HORIZONTAL = $00001; {<@exclude }
-    ALLEGRO_FLIP_VERTICAL   = $00002; {<@exclude }
+    ALLEGRO_FLIP_HORIZONTAL = $00001; (***<@exclude *)
+    ALLEGRO_FLIP_VERTICAL   = $00002; (***<@exclude *)
 
+(* Blitting *)
   PROCEDURE al_draw_bitmap (bitmap: ALLEGRO_BITMAPptr; dx, dy: AL_FLOAT; flags: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_draw_bitmap_region (bitmap: ALLEGRO_BITMAPptr; sx, sy, sw, sh, dx, dy: AL_FLOAT; flags: AL_INT);
@@ -448,18 +360,13 @@ INTERFACE
   PROCEDURE al_draw_scaled_rotated_bitmap (bitmap: ALLEGRO_BITMAPptr; cx, cy, dx, dy, xscale, yscale, angle: AL_FLOAT; flags: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
+(* Tinted blitting *)
   PROCEDURE al_draw_tinted_bitmap (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; dx, dy: AL_FLOAT; flags: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Like @link(al_draw_bitmap_region) but multiplies all colors in the bitmap
-   with the given color. @seealso(al_draw_tinted_bitmap) *)
   PROCEDURE al_draw_tinted_bitmap_region (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; sx, sy, sw, sh, dx, dy: AL_FLOAT; flags: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Like @link(al_draw_scaled_bitmap) but multiplies all colors in the bitmap
-   with the given color. @seealso(al_draw_tinted_bitmap) *)
   PROCEDURE al_draw_tinted_scaled_bitmap (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; sx, sy, sw, sh, dx, dy, dw, dh: AL_FLOAT; flags: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Like @link(al_draw_rotated_bitmap) but multiplies all colors in the bitmap
-   with the given color. @seealso(al_draw_tinted_bitmap) *)
   PROCEDURE al_draw_tinted_rotated_bitmap (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; cx, cy, dx, dy, angle: AL_FLOAT; flags: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_draw_tinted_scaled_rotated_bitmap (bitmap: ALLEGRO_BITMAPptr; tint: ALLEGRO_COLOR; cx, cy, dx, dy, xscale, yscale, angle: AL_FLOAT; flags: AL_INT);
@@ -474,8 +381,9 @@ INTERFACE
  *****************************************************************************)
 
 { TODO:
-  Actually, this header is needed by Allegro to build file paths,
-  but at the moment I'll not add it. }
+  This header is used by Allegro to build file paths.  AFAIK Delphi and FPC
+  runtime libraries had same functionality so I'll not add it unless it is
+  really needed (i.e. I'm wrong and RTL doesn't include such funtionality). }
 
 
 
@@ -486,69 +394,47 @@ INTERFACE
   {TODO: Documentation says it's not needed as it's used internally.
 	Only basic functionality is implemented for convenience.
 
-	Use of WIDESTRING and UTFSTRING is recommendable. }
+	Use Delphi/FPC native UNICODE support if needed. }
   {TODO: There are a lot of stuff to add here. }
 
   TYPE
-  (* @exclude *)
+  (*** @exclude *)
     _al_tagbstring = RECORD
       mlen, slen: AL_INT;
       data: AL_VOIDptr;
     END;
-  (* Pointer to @link(ALLEGRO_USTR). *)
+  (*** Pointer to @link(ALLEGRO_USTR). *)
     ALLEGRO_USTRptr = ^ALLEGRO_USTR;
-  (* An opaque type representing a string. @code(ALLEGRO_USTR)s normally
-     contain UTF-8 encoded strings, but they may be used to hold any byte
-     sequences, including @nil. *)
     ALLEGRO_USTR = _al_tagbstring;
-  (* Pointer to @link(ALLEGRO_USTR_INFO). *)
+  (*** Pointer to @link(ALLEGRO_USTR_INFO). *)
     ALLEGRO_USTR_INFOptr = ^ALLEGRO_USTR_INFO;
-  (* A type that holds additional information for an @link(ALLEGRO_USTR) that
-     references an external memory buffer.
-     @seealso(al_ref_cstr) @seealso(al_ref_buffer) @seealso(al_ref_ustr) *)
     ALLEGRO_USTR_INFO = _al_tagbstring;
 
-(* Creates a new string containing a copy of the C-style string @code(s). The
-   string must eventually be freed with @link(al_ustr_free).
-   @seealso(al_ustr_new_from_buffer)
-   @seealso(al_ustr_dup) @seealso(al_ustr_new_from_utf16) *)
+(* Creating strings. *)
   FUNCTION al_ustr_new (CONST s: AL_STR): ALLEGRO_USTRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Creates a new string containing a copy of the buffer pointed to by @code(s)
-   of the given size in bytes. The string must eventually be freed with
-   @link(al_ustr_free). @seealso(al_ustr_new) *)
   FUNCTION al_ustr_new_from_buffer (CONST s: AL_STRptr; size: AL_SIZE_T): ALLEGRO_USTRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Frees a previously allocated string. Does nothing if the argument is @nil.
-   @seealso(al_ustr_new) @seealso(al_ustr_new_from_buffer) *)
+(* AL_PRINTFUNC(ALLEGRO_USTR *, al_ustr_newf, (const char *fmt, ...), 1, 2); *)
   PROCEDURE al_ustr_free (us: ALLEGRO_USTRptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_cstr (CONST us: ALLEGRO_USTRptr): AL_STRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Writes the contents of the string into a pre-allocated buffer of the given
-   size in bytes. The result will always be @code(NUL) terminated, so a maximum
-   of @code(size - 1) bytes will be copied.
-   @seealso(al_cstr) @seealso(al_cstr_dup) *)
   PROCEDURE al_ustr_to_buffer (CONST us: ALLEGRO_USTRptr; buffer: AL_STRptr; size: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_cstr_dup (CONST us: ALLEGRO_USTRptr): AL_STRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Returns a duplicate copy of a string. The new string will need to be freed
-   with @code(al_ustr_free).
-   @seealso(al_ustr_dup_substr) @seealso(al_ustr_free) *)
   FUNCTION al_ustr_dup (CONST us: ALLEGRO_USTRptr): ALLEGRO_USTRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_ustr_dup_substr (CONST us: ALLEGRO_USTRptr; start_pos, end_pos: AL_INT): ALLEGRO_USTRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-
-
-(* Predefined string *)
+(* Predefined string. *)
+(*** Return a pointer to a static empty string. The string is read only and must not be freed. *)
   FUNCTION al_ustr_empty_string: ALLEGRO_USTRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-
-
+(* Reference strings. *)
   FUNCTION al_ref_cstr (OUT info: ALLEGRO_USTR_INFO; CONST s: AL_STR): ALLEGRO_USTRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_ref_buffer (OUT info: ALLEGRO_USTR_INFO; CONST s: AL_STRptr;
@@ -557,8 +443,6 @@ INTERFACE
   FUNCTION al_ref_ustr (OUT info: ALLEGRO_USTR_INFO;
       CONST us: ALLEGRO_USTRptr; star_pos, end_pos: AL_INT): ALLEGRO_USTRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-
-
 
 (* Sizes and offsets *)
   FUNCTION al_ustr_size (CONST us: ALLEGRO_USTRptr): AL_SIZE_T;
@@ -572,14 +456,11 @@ INTERFACE
   FUNCTION al_ustr_prev (CONST us: ALLEGRO_USTRptr; VAR aPos: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-
 (* Assign *)
   FUNCTION al_ustr_assign (us1: ALLEGRO_USTRptr; CONST us2: ALLEGRO_USTRptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: AL_STR): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-
-
 
 (* Compare *)
   FUNCTION al_ustr_equal (CONST us1, us2: ALLEGRO_USTRptr): AL_BOOL;
@@ -596,11 +477,9 @@ INTERFACE
  *****************************************************************************)
 
   TYPE
-  (* An opaque object representing an open file. This could be a real file on
-     disk or a virtual file. *)
     ALLEGRO_FILEptr = AL_POINTER;
 
-  (* Pointer to @link(ALLEGRO_FILE_INTERFACE). *)
+  (*** Pointer to @link(ALLEGRO_FILE_INTERFACE). *)
     ALLEGRO_FILE_INTERFACEptr = ^ALLEGRO_FILE_INTERFACE;
     ALLEGRO_FILE_INTERFACE = RECORD
       fi_open: FUNCTION (CONST path, mode: AL_STR): AL_POINTER; CDECL;
@@ -619,246 +498,104 @@ INTERFACE
     END;
 
   CONST
-  { @exclude May be these should be an enum. }
-    ALLEGRO_SEEK_SET = 0; (*<Seek relative to beginning of file. *)
-    ALLEGRO_SEEK_CUR = 1; (*<Seek relative to current file position. *)
-    ALLEGRO_SEEK_END = 2; (*<Seek relative to end of file. *)
+  { May be these should be an enum as the original implementation. }
+    ALLEGRO_SEEK_SET = 0; (***<Seek relative to beginning of file. *)
+    ALLEGRO_SEEK_CUR = 1; (***<Seek relative to current file position. *)
+    ALLEGRO_SEEK_END = 2; (***<Seek relative to end of file. *)
 
+  (* The basic operations. *)
     FUNCTION al_fopen (CONST path, mode: AL_STR): ALLEGRO_FILEptr;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Opens a file using the specified interface, instead of the interface set
-     with @link(al_set_new_file_interface). @seealso(al_fopen) *)
     FUNCTION al_fopen_interface (
       CONST vt: ALLEGRO_FILE_INTERFACEptr; CONST path, mode: AL_STR
     ): ALLEGRO_FILEptr;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Creates an empty, opened file handle with some abstract user data. This
-     allows custom interfaces to extend the @link(ALLEGRO_FILEptr) struct with
-     their own data. You should close the handle with the standard
-     @link(al_fclose) function when you are finished with it.
-     @seealso(al_fopen) @seealso(al_fclose) @seealso(al_set_new_file_interface)
-   *)
     FUNCTION al_create_file_handle (
       CONST vt: ALLEGRO_FILE_INTERFACEptr; userdata: AL_POINTER
     ): ALLEGRO_FILEptr;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Close the given file, writing any buffered output data (if any).
-     @return(@true on success, @false on failure.) *)
     FUNCTION al_fclose (f: ALLEGRO_FILEptr): AL_BOOL;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Read @code(size) bytes into the buffer pointed to by @code(ptr), from the
-     given file.
-     @return(The number of bytes actually read. If an error occurs, or the
-      end-of-file is reached, the return value is a short byte count @(or
-      zero@).
-
-      @code(al_fread) does not distinguish between EOF and other errors. Use
-      @link(al_feof) and @link(al_ferror) to determine which occurred.)
-     @seealso(al_fgetc) @seealso(al_fread16be) @seealso(al_fread16le)
-     @seealso(al_fread32be) @seealso(al_fread32le) *)
     FUNCTION al_fread
       (f: ALLEGRO_FILEptr; ptr: AL_POINTER; size: AL_SIZE_T): AL_SIZE_T;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Write @code(size) bytes from the buffer pointed to by @code(ptr) into the
-     given file.
-
-     @return(The number of bytes actually written. If an error occurs,the
-      return value is a short byte count @(or zero@).)
-     @seealso(al_fputc) @seealso(al_fputs) @seealso(al_fwrite16be)
-     @seealso(al_fwrite16le) @seealso(al_fwrite32be) @seealso(al_fwrite32le) *)
     FUNCTION al_fwrite
       (f: ALLEGRO_FILEptr; CONST ptr: AL_POINTER; size: AL_SIZE_T): AL_SIZE_T;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Flush any pending writes to the given file.
-     @return(@true on success, @false otherwise.)
-     @seealso(al_get_errno) *)
+  (*** Flushes any pending writes to the given file. @return(@true on success, @false otherwise.) @seealso(al_get_errno) *)
     FUNCTION al_fflush (f: ALLEGRO_FILEptr): AL_BOOL;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Returns the current position in the given file, or @code(-1) on error.
-
-     On some platforms this function may not support large files.
-     @seealso(al_fseek) @seealso(al_get_errno) *)
     FUNCTION al_ftell (f: ALLEGRO_FILEptr): AL_INT64;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
     FUNCTION al_fseek
       (f: ALLEGRO_FILEptr; offset: AL_INT64; whence: AL_INT): AL_BOOL;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Returns @true if the end-of-file indicator has been set on the file, i.e.
-     we have attempted to read past the end of the file.
-
-     This does not return @true if we simply are at the end of the file. The
-     following code correctly reads two bytes, even when the file contains
-     exactly two bytes:
-@longcode(#
-  b1 := al_fgetc (f);
-  b2 := al_fgetc (f);
-  IF al_feof (f) THEN
-  // At least one byte was unsuccessfully read.
-    ReportError ();
-#)
-     @seealso(al_ferror) @seealso(al_fclearerr) *)
     FUNCTION al_feof (f: ALLEGRO_FILEptr): AL_BOOL;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Returns non-zero if the error indicator is set on the given file, i.e.
-     there was some sort of previous error. The error code may be system or
-     file interface specific.
-     @seealso(al_feof) @seealso(al_fclearerr) @seealso(al_ferrmsg) *)
     FUNCTION al_ferror (f: ALLEGRO_FILEptr): AL_INT;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Returns a message string with details about the last error that occurred
-     on the given file handle. The returned string is empty if there was no
-     error, or if the file interface does not provide more information.
-     @seealso(al_fclearerr) @seealso(al_ferror) *)
     FUNCTION al_ferrmsg (f: ALLEGRO_FILEptr): AL_STRptr;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Clears the error indicator for the given file.
-
-     The standard I/O backend also clears the end-of-file indicator, and other
-     backends should try to do this. However, they may not if it would require
-     too much effort (e.g. PhysicsFS backend), so your code should not rely on
-      it if you need your code to be portable to other backends.
-     @seealso(al_ferror) @seealso(al_feof) *)
     PROCEDURE al_fclearerr (f: ALLEGRO_FILEptr);
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
     FUNCTION al_fungetc (f: ALLEGRO_FILEptr; c: AL_INT): AL_INT;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Returns the size of the file, if it can be determined, or @code(-1)
-     otherwise. *)
+  (*** Returns the size of the file, if it can be determined, or @code(-1) otherwise. *)
     FUNCTION al_fsize (f: ALLEGRO_FILEptr): AL_INT64;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-  (* Reads and returns next byte in the given file. Returns a negative number
-     on end of file or if an error occurred.
-     @seealso(al_fungetc) *)
+  (* Convenience functions. *)
     FUNCTION al_fgetc (f: ALLEGRO_FILEptr): AL_INT;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Writes a single byte to the given file. The byte written is the value of
-     @code(c) cast to an unsigned char.
-     @param(c byte value to write.)
-     @param(f file to write to.)
-     @return(the written byte @(cast back to an @link(AL_INT)@) on success, or
-       negative number on error.) *)
     FUNCTION al_fputc (f: ALLEGRO_FILEptr; c: AL_INT): AL_INT;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Reads a 16-bit word in little-endian format (LSB first).
-     @return(On success, the 16-bit word. On failure, returns EOF @(-1@). Since
-       -1 is also a valid return value, use @link(al_feof) to check if the end
-       of the file was reached prematurely, or @link(al_ferror) to check if an
-       error occurred.)
-     @seealso(al_fread16be) *)
     FUNCTION al_fread16le (f: ALLEGRO_FILEptr): AL_INT16;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Reads a 16-bit word in big-endian format (MSB first).
-     @return(On success, the 16-bit word. On failure, returns EOF @(-1@). Since
-       -1 is also a valid return value, use @link(al_feof) to check if the end
-       of the file was reached prematurely, or @link(al_ferror) to check if an
-       error occurred.)
-     @seealso(al_fread16le) *)
     FUNCTION al_fread16be (f: ALLEGRO_FILEptr): AL_INT16;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Writes a 16-bit word in little-endian format (LSB first).
-     @return(The number of bytes written: 2 on success, less than 2 on an
-       error.)
-     @seealso(al_fwrite16be) *)
     FUNCTION al_fwrite16le (f: ALLEGRO_FILEptr; w: AL_INT16): AL_SIZE_T;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Writes a 16-bit word in big-endian format (MSB first).
-     @return(The number of bytes written: 2 on success, less than 2 on an
-       error.)
-     @seealso(al_fwrite16le) *)
     FUNCTION al_fwrite16be (f: ALLEGRO_FILEptr; w: AL_INT16): AL_SIZE_T;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Reads a 32-bit word in little-endian format (LSB first).
-     @return(On success, the 32-bit word. On failure, returns EOF @(-1@). Since
-       -1 is also a valid return value, use @link(al_feof) to check if the end
-       of the file was reached prematurely, or @link(al_ferror) to check if an
-       error occurred.)
-     @seealso(al_fread32be) *)
     FUNCTION al_fread32le (f: ALLEGRO_FILEptr): AL_INT32;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Reads a 32-bit word in big-endian format (MSB first).
-     @return(On success, the 32-bit word. On failure, returns EOF @(-1@). Since
-       -1 is also a valid return value, use @link(al_feof) to check if the end
-       of the file was reached prematurely, or @link(al_ferror) to check if an
-       error occurred.)
-     @seealso(al_fread32le) *)
    FUNCTION al_fread32be (f: ALLEGRO_FILEptr): AL_INT32;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Writes a 32-bit word in little-endian format (LSB first).
-     @return(The number of bytes written: 2 on success, less than 2 on an
-       error.)
-     @seealso(al_fwrite32be) *)
     FUNCTION al_fwrite32le (f: ALLEGRO_FILEptr; l: AL_INT32): AL_SIZE_T;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Writes a 32-bit word in big-endian format (MSB first).
-     @return(The number of bytes written: 2 on success, less than 2 on an
-       error.)
-     @seealso(al_fwrite32le) *)
     FUNCTION al_fwrite32be (f: ALLEGRO_FILEptr; l: AL_INT32): AL_SIZE_T;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
     FUNCTION al_fgets
       (f: ALLEGRO_FILEptr; CONST p: AL_STRptr; max: AL_SIZE_T): AL_STRptr
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Read a string of bytes terminated with a newline or end-of-file. The line
-     terminator(s), if any, are included in the returned string.
-
-     See @link(al_fopen) about translations of end-of-line characters.
-     @return(On success a pointer to a new @link(ALLEGRO_USTR) structure. This
-      must be freed eventually with @link(al_ustr_free). Returns @nil if an
-      error occurred or if the end of file was reached without reading any
-      bytes.)
-     @seealso(al_fgetc) @seealso(al_fgets) *)
     FUNCTION al_fget_ustr (f: ALLEGRO_FILEptr): ALLEGRO_USTRptr;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Writes a string to file. Apart from the return value, this is equivalent
-     to @code(@link(al_fwrite) @(f, p, Length @(p@)@);)
-
-     @bold(Note:) depending on the stream type and the mode passed to
-     @link(al_fopen), newline characters in the string may or may not be
-     automatically translated to native end-of-line sequences, e.g. @code(CR/LF)
-     instead of @code(LF).
-     @param(f File handle to write to.)
-     @param(p String to write.)
-     @returns(A non-negative integer on success, EOF (-1) on error.)
-     @seealso(al_fwrite) *)
     FUNCTION al_fputs (f: ALLEGRO_FILEptr; CONST p: AL_STR): AL_INT;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 {
 /* Specific to stdio backend. */
 AL_FUNC(ALLEGRO_FILE*, al_fopen_fd, (int fd, const char *mode));
-      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-    FUNCTION al_make_temp_file (CONST tmpl: AL_STR; OUT ret_path: ALLEGRO_PATHptr): ALLEGRO_FILEptr;
-      CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
+      ALLEGRO_PATH **ret_path));
 }
 
+  (* Specific to slices. *)
     FUNCTION al_fopen_slice (
       fp: ALLEGRO_FILEptr; initial_size: AL_SIZE_T; CONST mode: AL_STR
     ): ALLEGRO_FILEptr;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-  (* Return a pointer to the @link(ALLEGRO_FILE_INTERFACEptr) table in effect
-     for the calling thread.
-     @seealso(al_store_state) @seealso(al_restore_state) *)
+  (* Thread local state. *)
     FUNCTION al_get_new_file_interface: ALLEGRO_FILE_INTERFACEptr;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Sets the @link(ALLEGRO_FILE_INTERFACEptr) table for the calling thread.
-     This will change the handler for later calls to @link(al_fopen).
-     @seealso(al_set_standard_file_interface) @seealso(al_store_state)
-     @seealso(al_restore_state) *)
     PROCEDURE al_set_new_file_interface
       (CONST file_interface: ALLEGRO_FILE_INTERFACEptr);
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  (* Sets the @link(ALLEGRO_FILE_INTERFACEptr) table to the default, for the
-     calling thread. This will change the handler for later calls to
-     @link(al_fopen).
-     @seealso(al_set_new_file_interface) *)
     PROCEDURE al_set_standard_file_interface;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
-  (* Returns a pointer to the custom userdata that is attached to the file
-     handle. This is intended to be used by functions that extend
-     @link(ALLEGRO_FILE_INTERFACEptr). *)
+  (* ALLEGRO_FILE field accessors *)
     FUNCTION al_get_file_userdata (f: ALLEGRO_FILEptr): AL_POINTER;
       CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -868,28 +605,27 @@ AL_FUNC(ALLEGRO_FILE*, al_fopen_fd, (int fd, const char *mode));
  * bitmap_io.h
  *****************************************************************************)
 
-{ TODO: Several functions aren't added yet. }
-
-{ Bitmap loader flag }
+(* Bitmap loader flag. *)
   CONST
-  { @exclude }
+  { May be these should be an enum as the original implementation. }
+  (*** @exclude *)
     ALLEGRO_KEEP_BITMAP_FORMAT     = $0002;
-  { @exclude }
+  (*** @exclude *)
     ALLEGRO_NO_PREMULTIPLIED_ALPHA = $0200;
-  { @exclude }
+  (*** @exclude *)
     ALLEGRO_KEEP_INDEX             = $0800;
 
 
   TYPE
-  (* Used by @link(al_register_bitmap_loader). *)
+  (*** Used by @link(al_register_bitmap_loader). *)
     ALLEGRO_IIO_LOADER_FUNCTION = FUNCTION (CONST filename: AL_STR; flags: AL_INT): ALLEGRO_BITMAPptr; CDECL;
-  (* Used by @link(al_register_bitmap_loader_f). *)
+  (*** Used by @link(al_register_bitmap_loader_f). *)
     ALLEGRO_IIO_FS_LOADER_FUNCTION = FUNCTION (fp: ALLEGRO_FILEptr; flags: AL_INT): ALLEGRO_BITMAPptr; CDECL;
-  (* Used by @link(al_register_bitmap_saver). *)
+  (*** Used by @link(al_register_bitmap_saver). *)
     ALLEGRO_IIO_SAVER_FUNCTION = FUNCTION (CONST filename: AL_STR; bitmap: ALLEGRO_BITMAPptr): AL_BOOL; CDECL;
-  (* Used by @link(al_register_bitmap_saver_f). *)
+  (*** Used by @link(al_register_bitmap_saver_f). *)
     ALLEGRO_IIO_FS_SAVER_FUNCTION = FUNCTION (fp: ALLEGRO_FILEptr; bitmap: ALLEGRO_BITMAPptr): AL_BOOL; CDECL;
-  (* Used by @link(al_register_bitmap_identifier). *)
+  (*** Used by @link(al_register_bitmap_identifier). *)
     ALLEGRO_IIO_IDENTIFIER_FUNCTION = FUNCTION (fp: ALLEGRO_FILEptr): AL_BOOL; CDECL;
 
   FUNCTION al_register_bitmap_loader
@@ -907,18 +643,15 @@ AL_FUNC(ALLEGRO_FILE*, al_fopen_fd, (int fd, const char *mode));
   FUNCTION al_register_bitmap_identifier
     (CONST ext: AL_STR; identifier: ALLEGRO_IIO_IDENTIFIER_FUNCTION): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-    
   FUNCTION al_load_bitmap (CONST filename: AL_STR): ALLEGRO_BITMAPptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_load_bitmap_flags (CONST filename: AL_STR; flags: AL_INT): ALLEGRO_BITMAPptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_load_bitmap_f
-    (fp: ALLEGRO_FILEptr; CONST ident: AL_STRptr): ALLEGRO_BITMAPptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+    (fp: ALLEGRO_FILEptr; CONST ident: AL_STR): ALLEGRO_BITMAPptr;
   FUNCTION al_load_bitmap_flags_f (
     fp: ALLEGRO_FILEptr; CONST ident: AL_STR; flags: AL_INT
   ): ALLEGRO_BITMAPptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_save_bitmap (CONST filename: AL_STR; bitmap: ALLEGRO_BITMAPptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_save_bitmap_f (
@@ -929,6 +662,7 @@ AL_FUNC(ALLEGRO_FILE*, al_fopen_fd, (int fd, const char *mode));
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_identify_bitmap (CONST filename: AL_STR): AL_STRptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+
 
 
 
@@ -3935,6 +3669,42 @@ IMPLEMENTATION
   BEGIN
     AL_ID := (ORD (str[1]) SHL 24) OR (ORD (str[2]) SHL 16)
 	     OR (ORD (str[3]) SHL  8) OR  ORD (str[4])
+  END;
+
+
+
+(*
+ * bitmap_io.h
+ *****************************************************************************)
+
+  FUNCTION _al_load_bitmap_f
+    (fp: ALLEGRO_FILEptr; CONST ident: AL_STRptr): ALLEGRO_BITMAPptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME NAME 'al_load_bitmap_f';
+
+  FUNCTION al_load_bitmap_f
+    (fp: ALLEGRO_FILEptr; CONST ident: AL_STR): ALLEGRO_BITMAPptr;
+  BEGIN
+    IF ident = '' THEN
+      RESULT := _al_load_bitmap_f (fp, NIL)
+    ELSE
+      RESULT := _al_load_bitmap_f (fp, AL_STRptr (ident))
+  END;
+
+
+
+  FUNCTION _al_load_bitmap_flags_f (
+    fp: ALLEGRO_FILEptr; CONST ident: AL_STRptr; flags: AL_INT
+  ): ALLEGRO_BITMAPptr;
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME NAME 'al_load_bitmap_flags_f';
+
+  FUNCTION al_load_bitmap_flags_f (
+    fp: ALLEGRO_FILEptr; CONST ident: AL_STR; flags: AL_INT
+  ): ALLEGRO_BITMAPptr;
+  BEGIN
+    IF ident = '' THEN
+      RESULT := _al_load_bitmap_flags_f (fp, NIL, flags)
+    ELSE
+      RESULT := _al_load_bitmap_flags_f (fp, AL_STRptr (ident), flags)
   END;
 
 

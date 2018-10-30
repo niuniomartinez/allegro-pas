@@ -1,3 +1,22 @@
+Changes between versions 5.2.beta and 5.2.b.1
+=============================================
+
+  News
+  ----
+  F16: Now Windows compiles for "monolith" by default.
+     : Added some new constants with version information.
+     : Added constant with TAU number (2PI).  Look for the Tau Manifesto for
+       more information.
+
+  API changes
+  -----------
+     : Parameter ident of al_load_bitmap_f is AL_STR now, wich is more
+       coherent with other procedures.
+     : Fixed parameter ident of al_load_bitmap_flags_f and
+       al_save_bitmap_flags_f behavior.
+
+
+
 Changes between versions 5.2.a3 and 5.2.beta
 ============================================
 

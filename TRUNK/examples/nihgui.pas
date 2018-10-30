@@ -25,7 +25,27 @@ INTERFACE
 
 
   (* Forward declaration. *)
+    TTheme  = CLASS;
+    TDialog = CLASS;
     TWidget = CLASS;
+
+
+
+  (* Encapsulates a theme. *)
+    TTheme = CLASS (TObject)
+    PRIVATE
+      fbg, ffg, fHighLight: ALLEGRO_COLOR;
+      fFont: ALLEGRO_FONTptr;
+    PUBLIC
+    (* Constructor.
+       NIL font is fine if you don't use a widget that requires text. *)
+      CONSTRUCTOR Create (CONST aFont: ALLEGRO_FONTptr = NIL);
+
+      PROPERTY bg: ALLEGRO_COLOR READ fbg;
+      PROPERTY fg: ALLEGRO_COLOR READ ffg;
+      PROPERTY HighLight: ALLEGRO_COLOR READ fHighLight;
+      PROPERTY Font: ALLEGRO_FONTptr READ fFont;
+    END;
 
 
 
@@ -102,7 +122,7 @@ INTERFACE
 
 
   (* Base class for dialog components. *)
-    TWidget = CLASS (TOBJECT)
+    TWidget = CLASS (TObject)
     PRIVATE
       fOwner: TDialog;
       fGridX, fGridY, fGridW, fGridH: INTEGER;
@@ -261,9 +281,43 @@ IMPLEMENTATION
   USES
     al5primitives;
 
-(*****************************************************************************
+  TYPE
+  (* Helper class to save and restore states. *)
+    TSaveState = CLASS (TObject)
+    PRIVATE
+      fState: ALLEGRO_STATE;
+    PUBLIC
+    (* Constructor.  Saves the state. *)
+      CONSTRUCTOR Create (Save: INTEGER = ALLEGRO_STATE_ALL);
+    (* Destructor.  Restores the state. *)
+      DESTRUCTOR Destroy; OVERRIDE;
+    END;
+
+
+
+  (* Helper class to manage UNICODE strings. *)
+    TUString = CLASS (TObject)
+    (* Implementation note:  Note that this exists because it is a translation
+       from the original example.  May be it is not neccesary.  Once Allegro's
+       UString stuff is integrated with FPC/Delphi WideString stuff this class
+       might use different API and implementation. *)
+    PRIVATE
+      fInfo: ALLEGRO_USTR_INFO;
+      fUStr: ALLEGRO_USTRptr;
+    PUBLIC
+    (* Constructor. *)
+      CONSTRUCTOR Create
+        (S: ALLEGRO_USTRptr; StartPos: INTEGER; EndPos: INTEGER = -1);
+
+    (* Returns UString. *)
+      PROPERTY UStr: ALLEGRO_USTRptr READ fUStr;
+    END;
+
+
+
+(*
  * TDialog
- *)
+ *****************************************************************************)
 
   FUNCTION TDialog.GetWidget (Ndx: INTEGER): TWidget;
   BEGIN
@@ -543,9 +597,9 @@ IMPLEMENTATION
 
 
 
-(*****************************************************************************
+(*
  * TWidget
- *)
+ *****************************************************************************)
 
   FUNCTION TWidget.getWidth: INTEGER;
   BEGIN
@@ -572,7 +626,8 @@ IMPLEMENTATION
   END;
 
 
-
+{$PUSH}
+  {$WARN 5024 OFF : Parameter "$1" not used}
 (* Handles key down event. *)
   PROCEDURE TWidget.HandleKeyDown (aEvent: ALLEGRO_KEYBOARD_EVENT);
   BEGIN
@@ -611,6 +666,7 @@ IMPLEMENTATION
   BEGIN
     ; { Ignore. }
   END;
+{$POP}
 
 
 
@@ -679,9 +735,9 @@ IMPLEMENTATION
 
 
 
-(*****************************************************************************
+(*
  * TLabel
- *)
+ *****************************************************************************)
 
 (* Constructor. *)
   CONSTRUCTOR TLabel.Create;
@@ -735,9 +791,9 @@ IMPLEMENTATION
 
 
 
-(*****************************************************************************
+(*
  * TList
- *)
+ *****************************************************************************)
 
   FUNCTION TList.GetSelectedText: STRING;
   BEGIN
@@ -776,6 +832,8 @@ IMPLEMENTATION
 
 
 (* Handles mouse button click. *)
+{$PUSH}
+  {$WARN 5024 OFF : Parameter "$1" not used}
   PROCEDURE TList.HandleMouseClick (aX, aY: INTEGER);
   VAR
     Ndx: INTEGER;
@@ -790,6 +848,7 @@ IMPLEMENTATION
       END
     END
   END;
+{$POP}
 
 
 
@@ -847,9 +906,9 @@ IMPLEMENTATION
 
 
 
-(*****************************************************************************
+(*
  * TSlider
- *)
+ *****************************************************************************)
 
 (* Handles mouse button hold(?). *)
   PROCEDURE TSlider.HandleMouseButtonHold (aX, aY: INTEGER);
@@ -946,6 +1005,58 @@ IMPLEMENTATION
       al_draw_filled_rectangle
         (Position - 2, fY1, Position + 2, fY2, fDialog.fg)
     END
+  END;
+
+
+
+(*
+ * TSaveState
+ *****************************************************************************)
+
+(* Constructor. *)
+  CONSTRUCTOR TSaveState.Create (Save: INTEGER);
+  BEGIN
+    INHERITED Create;
+    al_store_state (fState, Save)
+  END;
+
+
+
+(* Destructor. *)
+  DESTRUCTOR TSaveState.Destroy;
+  BEGIN
+    al_restore_state (fState);
+    INHERITED Destroy
+  END;
+
+
+
+(*
+ * TTheme
+ *****************************************************************************)
+
+(* Constructor. *)
+  CONSTRUCTOR TTheme.Create (CONST aFont: ALLEGRO_FONTptr);
+  BEGIN
+    INHERITED Create;
+    SELF.fbg := al_map_rgb (255, 255, 255);
+    SELF.ffg := al_map_rgb (0, 0, 0);
+    SELF.fHighLight := al_map_rgb (128, 128, 255);
+    SELF.fFont := aFont
+  END;
+
+
+
+(*
+ * TUString
+ *****************************************************************************)
+
+(* Constructor. *)
+  CONSTRUCTOR TUString.Create (S: ALLEGRO_USTRptr; StartPos, EndPos: INTEGER);
+  BEGIN
+    INHERITED Create;
+    IF EndPos < 0 THEN EndPos := al_ustr_size (S);
+    fUStr := al_ref_ustr (fInfo, S, StartPos, EndPos)
   END;
 
 END.

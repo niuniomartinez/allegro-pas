@@ -1,5 +1,5 @@
 @section(1 cfg_files Config files)
-  Allegro supports reading and writing of configuration files with a simple, INI file-like format.
+  Allegro supports reading and writing of configuration files with a simple, INI file-like format.  These files are fully compatible with the @code(TIniFile) objects defined by Delphi and Free Pascal.  You can use @code(TIniFile), but you should use Allegro's config procedures if you're writting your own Allegro add-on.
 
   A configuration file consists of key-value pairs separated by newlines. Keys are separated from values by an equals sign (@code(=)).  All whitespace before the key, after the value and immediately adjacent to the equals sign is ignored.  Keys and values may have whitespace characters within them.  Keys do not need to be unique, but all but the last one are ignored.
 
@@ -34,6 +34,6 @@ BEGIN
   WriteLn (al_get_config_value (Cfg, 'weapon 1', 'damage')); { Prints: 503 }
   al_destroy_config (Cfg)
 END.
-)
+%)
 
   @bold(See also:) @link(al_load_config_file)

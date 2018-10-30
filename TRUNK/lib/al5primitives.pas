@@ -125,10 +125,6 @@ INTERFACE
 
   USES
     Allegro5, al5base;
-  CONST
-  (* Builds library name. *)
-    { @exclude }
-    ALLEGRO_PRIMITIVES_LIB_NAME = _A5_LIB_PREFIX_+'allegro_primitives'+_DBG_+_A5_LIB_EXT_;
 
   TYPE
     ALLEGRO_PRIM_TYPE = (

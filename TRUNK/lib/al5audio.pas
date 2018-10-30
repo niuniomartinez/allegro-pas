@@ -102,10 +102,6 @@ INTERFACE
     Allegro5, al5base;
 
   CONST
-  (* @exclude Builds library name. *)
-    ALLEGRO_AUDIO_LIB_NAME = _A5_LIB_PREFIX_+'allegro_audio'+_DBG_+_A5_LIB_EXT_;
-
-
   (* @exclude
    * Internal, used to communicate with acodec.
    * Must be in 512 <= n < 1024 *)

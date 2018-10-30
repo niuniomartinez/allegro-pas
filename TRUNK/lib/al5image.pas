@@ -38,11 +38,6 @@ INTERFACE
   USES
     al5base;
 
-  CONST
-  (* Builds library name. *)
-    { @exclude }
-    ALLEGRO_IMAGE_LIB_NAME = _A5_LIB_PREFIX_+'allegro_image'+_DBG_+_A5_LIB_EXT_;
-
 (* Initializes the image addon. This registers bitmap format handlers for
    @link(al_load_bitmap), @link(al_load_bitmap_f), @link(al_save_bitmap),
    @link(al_save_bitmap_f).

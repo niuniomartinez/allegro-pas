@@ -26,7 +26,7 @@ $(FPBIN)furiouspaladin$(BINSUF): $(FPSRC)*.pas $(LIBFILES)
 
 # Documentation.
 docs: $(LIBFILES) $(DOCFILES)
-	pasdoc -T "$(PROJECT)" -O $(DOCFMT) -L en --cache-dir $(OBJDIR) -E $(DOCDIR) $(DOCOPTS) -R $(DOCMAIN) --introduction $(DOCINTRO) $(LIBFILES)
+	pasdoc --staronly -T "$(PROJECT)" -O $(DOCFMT) -L en --cache-dir $(OBJDIR) -E $(DOCDIR) $(DOCOPTS) -R $(DOCMAIN) --introduction $(DOCINTRO) $(LIBFILES)
 
 # Returns some variables.
 status: adbanner
@@ -66,6 +66,6 @@ help: adbanner
 # Some info.
 adbanner:
 	@echo "$(PROJECT)"
-	@echo "(c) Guillermo Martínez J. 2006-2017"
+	@echo "(c) Guillermo Martínez J. 2006-2018"
 	@echo "http://allegro-pas.sourceforge.net"
 	@echo

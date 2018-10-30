@@ -9,4 +9,6 @@
 @include(srcdoc/configfiles.pds)
 @include(srcdoc/displays.pds)
 @include(srcdoc/keyboard.pds)
+@include(srcdoc/utf8.pds)
+@include(srcdoc/fileio.pds)
 @include(srcdoc/nativemenus.pds)

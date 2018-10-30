@@ -34,11 +34,6 @@ INTERFACE
   USES
     Allegro5, al5base;
 
-  CONST
-  (* Builds library name. *)
-    { @exclude }
-    ALLEGRO_FONT_LIB_NAME = _A5_LIB_PREFIX_+'allegro_font'+_DBG_+_A5_LIB_EXT_;
-
   TYPE
     { @exclude }
     ALLEGRO_FONT_VTABLEptr = AL_POINTER;
@@ -137,20 +132,22 @@ INTERFACE
     Examples:
 @longcode(#
 VAR
-  Ranges: ARRAY (0..1) OF AL_INT = (32, 126);
+  Ranges: ARRAY [0..1] OF AL_INT = (32, 126);
+  TextFont: ALLEGRO_FONTptr;
 BEGIN
-  al_grab_font_from_bitmap (Bitmap, 1, Ranges)
+  TextFont := al_grab_font_from_bitmap (Bitmap, 1, Ranges)
 END;
 
 VAR
-  Ranges = ARRAY (0..7) OF AL_INT = (
-    0x0020, 0x007F,  // ASCII
-    0x00A1, 0x00FF,  // Latin 1
-    0x0100, 0x017F,  // Extended-A
-    0x20AC, 0x20AC   // Euro
+  Ranges: ARRAY [0..7] OF AL_INT = (
+    $0020, $007F,  // ASCII
+    $00A1, $00FF,  // Latin 1
+    $0100, $017F,  // Extended-A
+    $20AC, $20AC   // Euro
   );
+  TextFont: ALLEGRO_FONTptr;
 BEGIN
-  al_grab_font_from_bitmap (Bitmap, 4, Ranges)
+  TextFont := al_grab_font_from_bitmap (Bitmap, 4, Ranges)
 END;
 #)
 

@@ -57,6 +57,7 @@ Implemented
 
   + Event manager, including but not limited to keyboard, mouse, timer and
     display.
+  + Joysticks.
   + OpenGL (except extensions).
   + Shaders.
   + Software bitmaps.
@@ -74,7 +75,6 @@ Partially implemented or need more testing
 
   * Primitive drawing.
   * Audio samples and streams.
-  * Joysticks.
 
 Unimplemented
 -------------

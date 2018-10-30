@@ -1,6 +1,31 @@
+#Allegro5.ALLEGRO_PAS_VERSION_STR
+Allegro.pas version string.
+@seealso(al_get_allegro_version)
+@seealso(ALLEGRO_VERSION_INT)
+#Allegro5.ALLEGRO_VERSION
+Major version of Allegro.
+#Allegro5.ALLEGRO_SUB_VERSION
+Minor version of Allegro.
+#Allegro5.ALLEGRO_WIP_VERSION
+Revision number of Allegro.
+#Allegro5.ALLEGRO_DATE_STR
+Release year.
+#Allegro5.ALLEGRO_DATE
+Release date as integer with digits: yyyymmdd.
+#Allegro5.ALLEGRO_VERSION_INT
+Packs version number in a simple @link(AL_INT) number.
+@seealso(al_get_allegro_version)
+@seealso(ALLEGRO_PAS_VERSION_STR)
+@seealso(ALLEGRO_VERSION)
+@seealso(ALLEGRO_SUB_VERSION)
+@seealso(ALLEGRO_WIP_VERSION)
+
+#Allegro5.ALLEGRO_USER_MAIN
+Description of user main function for @link(al_run_main).
+
 #Allegro5.al_get_allegro_version
-Returns the compiled version of the Allegro library, packed into a single
-integer as groups of 8 bits.
+Returns the compiled version of the Allegro library @(i.e. the dll/so/dylib
+file@), packed into a single integer as groups of 8 bits.
 
 You can use code like this to extract the version number:
 @longcode(#
@@ -21,7 +46,7 @@ The release number is 0 for an unofficial version and 1 or greater for an
 official release. For example "5.0.2[1]" would be the (first) official 5.0.2
 release while "5.0.2[0]" would be a compile of a version from the "5.0.2"
 branch before the official release.
-
+@seealso(ALLEGRO_VERSION_INT)
 #Allegro5.al_run_main
 This function is useful in cases where you don't have a @code(main) function
 but want to run Allegro (mostly useful in a wrapper library).  Under Windows
@@ -38,6 +63,11 @@ if Pascal do need this kind of stuff.  Future versions of Allegro.pas would not
 include this function, so don't use it unless your really need to (and tell me
 if you really need it to remove this warning from documentation).
 
+#allegro5.ALLEGRO_PI
+Just to be sure that PI number is available.
+#allegro5.ALLEGRO_TAU
+The @italic(tau) number.
+
 #Allegro5.AL_ID
 This function can be used to create a packed 32 bit integer from 8 bit
 characters, on both 32 and 64 bit machines.  These can be used for various
@@ -50,48 +80,87 @@ BEGIN
 END;
 #)
 
+
+
+#Allegro5.ALLEGRO_TIMEOUT
+Represents a timeout value.
+
+The size of the structure is known so it can be statically allocated.  The
+contents are private. @seealso(al_init_timeout)
+
+#Allegro5.al_get_time
+Returns the number of seconds since the Allegro library was initialised.
+The return value is undefined if Allegro is uninitialised. The resolution
+depends on the used driver, but typically can be in the order of microseconds.
+@seealso(al_rest)
+
 #Allegro5.al_rest
-This tells the system to pause the current thread for the given amount of time.
-With some operating systems, the accuracy can be in the order of 10ms.  That
-is, even
-@longcode(#
-    al_rest (0.000001)
-#)
-might pause for something like 10ms.  Also see the section on timer events
-(i.e. @link(al_create_timer)) for easier ways to time your program without
-using up all CPU.
+Waits for the specified number of seconds. This tells the system to pause the
+current thread for the given amount of time. With some operating systems, the
+accuracy can be in the order of 10ms. That is, even @code(al_rest @(0.000001@))
+might pause for something like 10ms. Also see the other timer rutines (i.e.
+@link(al_create_timer)) for easier ways to time your program without using up
+all CPU.
+@seealso(al_get_time) @seealso(al_init_timeout)
+
+#Allegro5.al_init_timeout
+Set timeout value of some number of seconds after the function call.
+
+For compatibility with all platforms, seconds must be 2,147,483.647 seconds or
+less.
+@seealso(ALLEGRO_TIMEOUT) @seealso(al_wait_for_event_until)
 
 
+
+#Allegro5.ALLEGRO_COLOR
+An @code(ALLEGRO_COLOR) structure describes a color in a device independent
+way.  Use @link(al_map_rgb) et al. and @link(al_unmap_rgb) et al. to translate
+from and to various color representations.
 
 #Allegro5.ALLEGRO_PIXEL_FORMAT
-Each pixel format specifies the exact size and bit layout of a
-pixel in memory.  Components are specified from high bits to low bits, so for
-example a fully opaque red pixel in ARGB_8888 format is @code(0xFFFF0000).
+Pixel formats. Each pixel format specifies the exact size and bit layout of a
+pixel in memory. Components are specified from high bits to low bits, so for
+example a fully opaque red pixel in @code(ARGB_8888) format is @code($FFFF0000).
 
-@bold(Note:)
-  The pixel format is independent of endianness.  That is, in the above example
-  you can always get the red component with
+  @bold(Note:)
+  The pixel format is independent of endianness. That is, in the above example
+  you can always get the red component with @code(@(pixel AND $00ff0000@) SHR
+  16). But you can not rely on this code:  @code(@(pixel + 2@)^) it will return
+  the red component on little endian systems, but the green component on big
+  endian systems.
 
-  @code(@(pixel AND $00ff0000@) SHR 16)
+Also note that Allegro's naming is different from OpenGL naming here, where a
+format of @code(GL_RGBA8) merely defines the component order and the exact
+layout including endianness treatment is specified separately. Usually
+@code(GL_RGBA8) will correspond to @code(ALLEGRO_PIXEL_ABGR_8888) though on
+little endian systems, so care must be taken (note the reversal of
+RGBA <-> ABGR).
 
-  But you can not rely on this code:
+The only exception to this @code(ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE) which will
+always have the components as 4 bytes corresponding to red, green, blue and
+alpha, in this order, independent of the endianness.
 
-  @code(@(PBYTE @(pixel + 2@)@)^)
+Some of the pixel formats represent compressed bitmap formats. Compressed bitmaps take up less space in the GPU memory than bitmaps with regular (uncompressed) pixel formats. This smaller footprint means that you can load more resources into GPU memory, and they will be drawn somewhat faster. The compression is lossy, however, so it is not appropriate for all graphical styles: it tends to work best for images with smooth color gradations. It is possible to compress bitmaps at runtime by passing the appropriate bitmap format in @link(al_set_new_bitmap_format) and then creating, loading, cloning or converting a non-compressed bitmap. This, however, is not recommended as the compression quality differs between different GPU drivers. It is recommended to compress these bitmaps ahead of time using external tools and then load them compressed.
 
-  It will return the red component on little endian systems, but the green
-  component on big endian systems.
+Unlike regular pixel formats, compressed pixel formats are not laid out in memory one pixel row at a time. Instead, the bitmap is subdivided into rectangular blocks of pixels that are then laid out in block rows. This means that regular locking functions cannot use compressed pixel formats as the destination format. Instead, you can use the blocked versions of the bitmap locking functions which do support these formats.
 
-  Also note that Allegro's naming is different from OpenGL naming here, where
-  a format of @code(GL_RGBA8) merely defines the component order and the exact
-  layout including endianness treatment is specified separately.  Usually
-  @code(GL_RGBA8) will correspond to @code(ALLEGRO_PIXEL_ABGR_8888) though on
-  little endian systems, so care must be taken (note the reversal of RGBA <->
-  ABGR).
+It is not recommended to use compressed bitmaps as target bitmaps, as that operation cannot be hardware accelerated. Due to proprietary algorithms used, it is typically impossible to create compressed memory bitmaps.
+@seealso(al_set_new_bitmap_format) @seealso(al_get_bitmap_format)
 
-  The only exception to this @code(ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE) which
-  always have the components as 4 bytes corresponding to red, green, blue and
-  alpha, in this order, independent of the endianness.
-  @seealso(al_set_new_bitmap_format) @seealso(al_get_bitmap_format)
+#Allegro5.al_map_rgb
+Converts r, g, b (ranging from 0-255) into an @link(ALLEGRO_COLOR), using 255
+for alpha.
+ @seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb_f)
+#Allegro5.al_map_rgba
+Convert r, g, b, a (ranging from 0-255) into an @link(ALLEGRO_COLOR).
+@seealso(al_map_rgb) @seealso(al_map_rgba_f) @seealso(al_map_rgb_f)
+#Allegro5.al_map_rgb_f
+Convert r, g, b (ranging from 0.0f-1.0f) into an @link(ALLEGRO_COLOR), using
+1.0f for alpha.
+@seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb)
+#Allegro5.al_map_rgba_f
+Convert r, g, b, a (ranging from 0.0f-1.0f) into an @link(ALLEGRO_COLOR).
+seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb)
 #Allegro5.al_premul_rgba
 This is a shortcut for @code(al_map_rgba @(r * a / 255, g * a / 255, b * a / 255, a@)).
 
@@ -99,14 +168,14 @@ By default Allegro uses pre-multiplied alpha for transparent blending of
 bitmaps and primitives (see @link(al_load_bitmap_flags) for a discussion of
 that feature). This means that if you want to tint a bitmap or primitive to be
 transparent you need to multiply the color components by the alpha components
-when you pass them to this function. For example, to draw the bitmap tinted red
-and half-transparent.
+when you pass them to this function. For example:
 @longcode(#
 VAR
   c: ALLEGRO_COLOR;
   bmp: ALLEGRO_BITMAPptr;
 BEGIN
   c := al_premul_rgba (255, 0, 0, 127);
+{ Draw the bitmap tinted red and half-transparent. }
   al_draw_tinted_bitmap (bmp, c, 0, 0, 0);
 END;
 #)
@@ -118,31 +187,79 @@ By default Allegro uses pre-multiplied alpha for transparent blending of
 bitmaps and primitives (see @link(al_load_bitmap_flags) for a discussion of
 that feature). This means that if you want to tint a bitmap or primitive to be
 transparent you need to multiply the color components by the alpha components
-when you pass them to this function. For example, to draw the bitmap tinted red
-and half-transparent.
+when you pass them to this function. For example:
 @longcode(#
 VAR
   c: ALLEGRO_COLOR;
   bmp: ALLEGRO_BITMAPptr;
 BEGIN
   c := al_premul_rgba_f (1, 0, 0, 0.5);
+{ Draw the bitmap tinted red and half-transparent. }
   al_draw_tinted_bitmap (bmp, c, 0, 0, 0);
 END;
 #)
 @seealso(al_map_rgba_f) @seealso(al_premul_rgba)
+
+#Allegro5.al_unmap_rgb
+Retrieves components of an @link(ALLEGRO_COLOR), ignoring alpha.  Components
+will range from 0-255.
+@seealso(al_unmap_rgba) @seealso(al_unmap_rgb_f)
+#Allegro5.al_unmap_rgba
+Retrieves components of an @link(ALLEGRO_COLOR).  Components will range from
+0-255.
+@seealso(al_unmap_rgb) @seealso(al_unmap_rgba_f)
+#Allegro5.al_unmap_rgb_f
+Retrieves components of an @link(ALLEGRO_COLOR), ignoring alpha.  Components
+will range from 0.0f-1.0f.
+@seealso(al_unmap_rgb) @seealso(al_unmap_rgba_f)
+#Allegro5.al_unmap_rgba_f
+Retrieves components of an @link(ALLEGRO_COLOR).  Components will range from
+0.0f-1.0f.
+@seealso(al_unmap_rgba) @seealso(al_unmap_rgb_f)
+
+#Allegro5.al_get_pixel_size
+Returns the number of bytes that a pixel of the given format occupies.  For
+blocked pixel formats (e.g. compressed formats), this returns 0.
+@seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_pixel_format_bits)
+#Allegro5.al_get_pixel_format_bits
+Returns the number of bits that a pixel of the given format occupies.  For
+blocked pixel formats (e.g. compressed formats), this returns 0.
+@seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_pixel_size)
+#Allegro5.al_get_pixel_block_size
+Returns the number of bytes that a block of pixels with this format occupies.
+@seealso(ALLEGRO_PIXEL_FORMAT)
+@seealso(al_get_pixel_block_width) @seealso(al_get_pixel_block_height)
+#Allegro5.al_get_pixel_block_width
+Returns the width of the pixel block of this format.
+@seealso(ALLEGRO_PIXEL_FORMAT)
+@seealso(al_get_pixel_block_size) @seealso(al_get_pixel_block_height)
+#Allegro5.al_get_pixel_block_height
+Returns the height of the pixel block of this format.
+@seealso(ALLEGRO_PIXEL_FORMAT)
+@seealso(al_get_pixel_block_width) @seealso(al_get_pixel_block_size)
+
+
+
+#Allegro5.al_set_new_bitmap_format
+Sets the pixel format for newly created bitmaps.  The default format is @code(ALLEGRO_PIXEL_FORMAT_ANY) and means the display driver will choose the best format.
+@seealso(al_create_bitmap) @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_new_bitmap_format)
 #Allegro5.al_set_new_bitmap_flags
 Sets the flags to use for newly created bitmaps. Valid flags are:
 @definitionlist(
   @itemlabel(ALLEGRO_MEMORY_BITMAP)
-  @item(Create a bitmap residing in system memory. Operations on, and with, memory bitmaps will not be hardware accelerated. However, direct pixel access can be relatively quick compared to video bitmaps, which depend on the display driver in use.
+  @item(Creates a bitmap residing in system memory. Operations on, and with, memory bitmaps will not be hardware accelerated. However, direct pixel access can be relatively quick compared to video bitmaps, which depend on the display driver in use.
 
-    Note: Allegro's software rendering routines are currently very unoptimised.)
+    @italic(Note:) Allegro's software rendering routines are currently somewhat unoptimised.
+
+    @italic(Note:) Combining @code(ALLEGRO_VIDEO_BITMAP) with @code(ALLEGRO_MEMORY_BITMAP) flags is invalid.)
   @itemlabel(ALLEGRO_VIDEO_BITMAP)
   @item(Creates a bitmap that resides in the video card memory. These types of bitmaps receive the greatest benefit from hardware acceleration.
 
     @italic(Note:) Creating a video bitmap will fail if there is no current display or the current display driver cannot create the bitmap. The latter will happen if for example the format or dimensions are not supported.
 
-    @italic(Note:) Bitmaps created with this flag will be converted to memory bitmaps when the last display is destroyed. In most cases it is therefore easier to use the @code(ALLEGRO_CONVERT_BITMAP) flag instead.)
+    @italic(Note:) Bitmaps created with this flag will be converted to memory bitmaps when the last display is destroyed. In most cases it is therefore easier to use the @code(ALLEGRO_CONVERT_BITMAP) flag instead.
+
+    @italic(Note:) Combining @code(ALLEGRO_VIDEO_BITMAP) with @code(ALLEGRO_MEMORY_BITMAP) flags is invalid.)
   @itemlabel(ALLEGRO_CONVERT_BITMAP)
   @item(This is the default. It will try to create a video bitmap and if that fails create a memory bitmap. Bitmaps created with this flag when there is no active display will be converted to video bitmaps next time a display is created. They also will remain video bitmaps if the last display is destroyed and then another is created again.
 
@@ -152,16 +269,35 @@ Sets the flags to use for newly created bitmaps. Valid flags are:
   @itemlabel(ALLEGRO_NO_PRESERVE_TEXTURE)
   @item(Normally, every effort is taken to preserve the contents of bitmaps, since some platforms may forget them. This can take extra processing time. If you know it doesn't matter if a bitmap keeps its pixel data, for example when it's a temporary buffer, use this flag to tell Allegro not to attempt to preserve its contents.)
   @itemlabel(ALLEGRO_ALPHA_TEST)
-  @item(This is a driver hint only. It tells the graphics driver to do alpha testing instead of alpha blending on bitmaps created with this flag. Alpha testing is usually faster and preferred if your bitmaps have only one level of alpha (0). This flag is currently not widely implemented (i.e., only for memory bitmaps).)
+  @item(This is a driver hint only. It tells the graphics driver to do alpha testing instead of alpha blending on bitmaps created with this flag. Alpha testing is usually faster and preferred if your bitmaps have only one level of alpha (0). This flag is currently not widely implemented @(i.e., only for memory bitmaps@).)
   @itemlabel(ALLEGRO_MIN_LINEAR)
-  @item(When drawing a scaled down version of the bitmap, use linear filtering. This usually looks better. You can also combine it with the MIPMAP flag for even better quality.)
+  @item(When drawing a scaled down version of the bitmap, use linear filtering. This usually looks better. You can also combine it with the @code(ALLEGRO_MIPMAP) flag for even better quality.)
   @itemlabel(ALLEGRO_MAG_LINEAR)
   @item(When drawing a magnified version of a bitmap, use linear filtering. This will cause the picture to get blurry instead of creating a big rectangle for each pixel. It depends on how you want things to look like whether you want to use this or not.)
   @itemlabel(ALLEGRO_MIPMAP)
   @item(This can only be used for bitmaps whose width and height is a power of two. In that case, it will generate mipmaps and use them when drawing scaled down versions. For example if the bitmap is 64x64, then extra bitmaps of sizes 32x32, 16x16, 8x8, 4x4, 2x2 and 1x1 will be created always containing a scaled down version of the original.)
 )
-@seealso(al_get_new_bitmap_flags) @seealso(al_get_bitmap_flags)
-#al_create_bitmap
+@seealso(al_create_bitmap) @seealso(al_add_new_bitmap_flag) @seealso(al_get_new_bitmap_flags) @seealso(al_get_bitmap_flags)
+#Allegro5.al_get_new_bitmap_format
+Returns the format used for newly created bitmaps.
+@seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_set_new_bitmap_format)
+#Allegro5.al_get_new_bitmap_flags
+Returns the format used for newly created bitmaps.
+@seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_set_new_bitmap_flags)
+#Allegro5.al_add_new_bitmap_flag
+A convenience function which does the same as @longcode(#
+  al_set_new_bitmap_flags (al_get_new_bitmap_flags OR flag);
+#)
+@seealso(al_set_new_bitmap_flags) @seealso(al_get_new_bitmap_flags) @seealso(al_get_bitmap_flags)
+
+#Allegro5.al_get_bitmap_format
+Returns the pixel format of a bitmap.
+@seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_set_new_bitmap_format)
+#Allegro5.al_get_bitmap_flags
+Returns the flags user to create the bitmap.
+@seealso(al_set_new_bitmap_flags)
+
+#Allegro5.al_create_bitmap
 Creates a new bitmap using the bitmap format and flags for the current
 thread. Blitting between bitmaps of differing formats, or blitting between
 memory bitmaps and display bitmaps may be slow.
@@ -176,7 +312,7 @@ dimensions, you may want to re-try with a smaller bitmap. Some platforms
 also dictate a minimum texture size, which is relevant if you plan to use
 this bitmap with the primitives addon. If you try to create a bitmap smaller
 than this, this call will not fail but the returned bitmap will be a section
-of a larger bitmap with the minimum size. This minimum size is 16 by 16.
+of a larger bitmap with the minimum size. The minimun size that will work on all platforms is 32 by 32.
 
 Some platforms do not directly support display bitmaps whose dimensions are
 not powers of two. Allegro handles this by creating a larger bitmap that has
@@ -184,15 +320,58 @@ dimensions that are powers of two and then returning a section of that
 bitmap with the dimensions you requested. This can be relevant if you plan
 to use this bitmap with the primitives addon but shouldn't be an issue
 otherwise.
+
+If you create a bitmap without @code(ALLEGRO_MEMORY_BITMAP) set but there is no current display, a temporary memory bitmap will be created instead. You can later convert all such bitmap to video bitmap and assign to a display by calling @link(al_convert_memory_bitmaps).
+
+On some platforms the contents of video bitmaps may be lost when your application loses focus. Allegro has an internal mechanism to restore the contents of these video bitmaps, but it is not foolproof (sometimes bitmap contents can get lost permanently) and has performance implications. If you are using a bitmap as an intermediate buffer this mechanism may be wasteful. In this case, if you do not want Allegro to manage the bitmap contents for you, you can disable this mechanism by creating the bitmap with the @code(ALLEGRO_NO_PRESERVE_TEXTURE) flag. The bitmap contents are lost when you get the @code(ALLEGRO_EVENT_DISPLAY_LOST) and @code(ALLEGRO_EVENT_DISPLAY_HALT_DRAWING) and a should be restored when you get the @code(ALLEGRO_EVENT_DISPLAY_FOUND) and when you call @link(al_acknowledge_drawing_resume) (after @code(ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING) event). You can use those events to implement your own bitmap content restoration mechanism if Allegro's does not work well enough for you (for example, you can reload them all from disk).
+
+@italic(Note:) The contents of a newly created bitmap are undefined - you need to clear the bitmap or make sure all pixels get overwritten before drawing it.
+
+When you are done with using the bitmap you must call @link(al_destroy_bitmap) on it to free any resources allocated for it.
 @seealso(al_set_new_bitmap_format) @seealso(al_set_new_bitmap_flags)
-@seealso(al_clone_bitmap) @seealso(al_create_sub_bitmap)
+@seealso(al_clone_bitmap) @seealso(al_create_sub_bitmap) @seealso(al_convert_memory_bitmaps)
 @seealso(al_destroy_bitmap)
+#Allegro5.al_destroy_bitmap
+Destroys the given bitmap, freeing all resources used by it. This function does nothing if the @code(bitmap) argument is @nil.
+
+As a convenience, if the calling thread is currently targeting the bitmap then the bitmap will be untargeted first.  The new target bitmap is unspecified.
+
+Otherwise, it is an error to destroy a bitmap while it (or a sub-bitmap) is the target bitmap of any thread.
+@seealso(al_create_bitmap)
+
 #Allegro5.al_put_pixel
 Draws a single pixel on the target bitmap.  This operation is slow on
 non-memory bitmaps. Consider locking the bitmap if you are going to use this
 function multiple times on the same bitmap.  This function is not affected by
 the transformations or the color blenders.
-@seealso(al_get_pixel) @seealso(al_put_blended_pixel) @seealso(al_lock_bitmap)
+@seealso(ALLEGRO_COLOR) @seealso(al_get_pixel) @seealso(al_put_blended_pixel) @seealso(al_lock_bitmap)
+#Allegro5.al_put_blended_pixel
+Like @link(al_put_pixel), but the pixel color is blended using the current blenders before being drawn.
+#Allegro5.al_get_pixel
+Gets a pixel's color value from the specified bitmap.  This operation is slow
+on non-memory bitmaps.  Consider locking the bitmap if you are going to use
+this function multiple times on the same bitmap.
+@seealso(ALLEGRO_COLOR) @seealso(al_put_pixel) @seealso(al_lock_bitmap)
+
+#Allegro5.al_convert_mask_to_alpha
+Converts the given mask color to an alpha channel in the bitmap.  Can be used
+to convert older 4.2-style bitmaps with magic pink to alpha-ready bitmaps.
+@seealso(ALLEGRO_COLOR)
+
+#Allegro5.al_set_clipping_rectangle
+Sets the region of the target bitmap or display that pixels get clipped to.
+The default is to clip pixels to the entire bitmap.
+@seealso(al_get_clipping_rectangle) @seealso(al_reset_clipping_rectangle)
+#Allegro5.al_reset_clipping_rectangle
+Equivalent to calling @code(al_set_clipping_rectangle @(0, 0, w, h@)) where
+@code(w) and @code(h) are the width and height of the target bitmap respectively.
+
+Does nothing if there is no target bitmap.
+@seealso(al_set_clipping_rectangle)
+#Allegro5.al_get_clipping_rectangle
+Gets the clipping rectangle of the target bitmap.
+@seealso(al_set_clipping_rectangle)
+
 #Allegro5.al_create_sub_bitmap
 Creates a sub-bitmap of the parent, at the specified coordinates and of the
 specified size. A sub-bitmap is a bitmap that shares drawing memory with a
@@ -206,17 +385,20 @@ backbuffer.
 
 The parent bitmap's clipping rectangles are ignored.
 
-If a sub-bitmap was not or cannot be created then NULL is returned.
+If a sub-bitmap was not or cannot be created then @nil is returned.
 
 When you are done with using the sub-bitmap you must call
 @link(al_destroy_bitmap) on it to free any resources allocated for it.
 
 Note that destroying parents of sub-bitmaps will not destroy the sub-bitmaps;
 instead the sub-bitmaps become invalid and should no longer be used for
-drawing - they still must be destroyed with al_destroy_bitmap however.  It
+drawing - they still must be destroyed with @code(al_destroy_bitmap) however.  It
 does not matter whether you destroy a sub-bitmap before or after its parent
 otherwise.
-@seealso(al_create_bitmap)
+@seealso(al_create_bitmap) @seealso(al_is_sub_bitmap) @seealso(al_get_parent_bitmap)
+#Allegro5.al_is_sub_bitmap
+Returns true if the specified bitmap is a sub-bitmap, false otherwise.
+@seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap)
 #Allegro5.al_get_parent_bitmap
 Returns the bitmap this bitmap is a sub-bitmap of. Returns @nil if this
 bitmap is not a sub-bitmap. This function always returns the real bitmap,
@@ -229,11 +411,11 @@ BEGIN
   a := al_create_bitmap (512, 512);
   b := al_create_sub_bitmap (a, 128, 128, 256, 256);
   c := al_create_sub_bitmap (b, 64, 64, 128, 128);
-  IF (al_get_parent_bitmap (b)== a) AND (al_get_parent_bitmap(c) = a) THEN
+  IF (al_get_parent_bitmap (b) = a) AND (al_get_parent_bitmap (c) = a) THEN
     WriteLn ('b & c are sub-bitmaps of a')
 END;
 #)
-The message will be printed because only a is a real bitmap, and both b and c
+The message will be printed because only @code(a) is a real bitmap, and both @code(b) and @code(c)
 are its sub-bitmaps.
 @seealso(al_create_sub_bitmap) @seealso(al_is_sub_bitmap)
 #Allegro5.al_reparent_bitmap
@@ -244,9 +426,10 @@ animation player could return a single bitmap which can just be re-parented to
 different animation frames without having to re-draw the contents.  Or a sprite
 atlas could re-arrange its sprites without having to invalidate all existing
 bitmaps. @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap)
+
 #Allegro5.al_clone_bitmap
-Create a new bitmap with @code(al_create_bitmap), and copy the pixel data from
-the old bitmap across. If the new bitmap is a memory bitmap, its projection
+Creates a new bitmap with @code(al_create_bitmap), and copyes the pixel data from
+the old bitmap across.  The newly created bitmap will be created with the current new bitmap flags, and not the ones that were used to create the original bitmap.  If the new bitmap is a memory bitmap, its projection
 bitmap is reset to be orthographic.
 @seealso(al_create_bitmap) @seealso(al_set_new_bitmap_format)
 @seealso(al_set_new_bitmap_flags) @seealso(al_convert_bitmap)
@@ -261,9 +444,9 @@ If this bitmap is a sub-bitmap, then it, its parent and all the sibling
 sub-bitmaps are also converted.
 @seealso(al_create_bitmap) @seealso(al_set_new_bitmap_format)
 @seealso(al_set_new_bitmap_flags) @seealso(al_clone_bitmap)
-#Allegro5.al_convert_memory_bitmap
+#Allegro5.al_convert_memory_bitmaps
 If you create a bitmap when there is no current display (for example because
-you have not called @code(al_create_display) in the current thread) and are
+you have not called @link(al_create_display) in the current thread) and are
 using the @code(ALLEGRO_CONVERT_BITMAP) bitmap flag (which is set by default)
 then the bitmap will be created successfully, but as a memory bitmap.  This
 function converts all such bitmaps to proper video bitmaps belonging to the
@@ -275,12 +458,15 @@ when the last display is destroyed.
 This operation will preserve all bitmap flags except
 @code(ALLEGRO_VIDEO_BITMAP) and @code(ALLEGRO_MEMORY_BITMAP).
 @seealso(al_convert_bitmap) @seealso(al_create_bitmap)
+
+
+
 #Allegro5.al_draw_bitmap
 Draws an unscaled, unrotated bitmap at the given position to the current
 target bitmap.  @code(flags) can be a combination of:
 @unorderedlist(
-  @item(ALLEGRO_FLIP_HORIZONTAL - flip the bitmap about the y-axis)
-  @item(ALLEGRO_FLIP_VERTICAL - flip the bitmap about the x-axis)
+  @item(@code(ALLEGRO_FLIP_HORIZONTAL) - flip the bitmap about the y-axis)
+  @item(@code(ALLEGRO_FLIP_VERTICAL) - flip the bitmap about the x-axis)
 )
 @bold(Note:) The current target bitmap must be a different bitmap. Drawing a
 bitmap to itself (or to a sub-bitmap of itself) or drawing a sub-bitmap to
@@ -296,12 +482,14 @@ does not apply when drawing into a memory bitmap.
 @param(bitmap Origin bitmap.)
 @param(dx Destination x.)
 @param(dy Destination y.)
-@param(flags)
+@param(flags Read description above.)
 @seealso(al_set_target_bitmap) @seealso(al_draw_bitmap_region)
 @seealso(al_draw_scaled_bitmap) @seealso(al_draw_rotated_bitmap)
 @seealso(al_draw_scaled_rotated_bitmap)
 #Allegro5.al_draw_bitmap_region
 Draws a region of the given bitmap to the target bitmap.
+
+See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be drawn where.
 @param(bitmap Origin bitmap.)
 @param(sx source x)
 @param(sy source y)
@@ -314,6 +502,8 @@ Draws a region of the given bitmap to the target bitmap.
 @seealso(al_draw_rotated_bitmap) @seealso(al_draw_scaled_rotated_bitmap)
 #Allegro5.al_draw_scaled_bitmap
 Draws a scaled version of the given bitmap to the target bitmap.
+
+See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be drawn where.
 @param(bitmap Origin bitmap.)
 @param(sx source x)
 @param(sy source y)
@@ -328,6 +518,9 @@ Draws a scaled version of the given bitmap to the target bitmap.
 @seealso(al_draw_rotated_bitmap) @seealso(al_draw_scaled_rotated_bitmap)
 #Allegro5.al_draw_rotated_bitmap
 Draws a rotated version of the given bitmap to the target bitmap.
+
+The point at @code(cx/cy) relative to the upper left corner of the bitmap will be drawn at @code(dx/dy) and the bitmap is rotated around this point. If @code(cx,cy) is @code(0,0) the bitmap will rotate around its upper left corner.
+
 Example:
 @longcode(#
 VAR
@@ -335,9 +528,12 @@ VAR
 BEGIN
   w := al_get_bitmap_width (bitmap);
   h := al_get_bitmap_height (bitmap);
-  al_draw_rotated_bitmap (bitmap, w / 2, h / 2, x, y, ALLEGRO_PI / 2, 0);
+  al_draw_rotated_bitmap (bitmap, w / 2, h / 2, x, y, ALLEGRO_PI / 2, 0)
+END;
 #)
-The above code draws the bitmap centered on x/y and rotates it 90° clockwise.
+The above code draws the bitmap centered on @code(x/y) and rotates it 90° clockwise.
+
+See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be drawn where.
 @param(bitmap Origin bitmap.)
 @param(cx center x @(relative to the left of bitmap@))
 @param(cy center y @(relative to the top or bitmap@))
@@ -350,8 +546,10 @@ The above code draws the bitmap centered on x/y and rotates it 90° clockwise.
 #Allegro5.al_draw_scaled_rotated_bitmap
 Like @link(al_draw_rotated_bitmap), but can also scale the bitmap.
 
-The point at cx/cy in the bitmap will be drawn at dx/dy and the bitmap is
+The point at @code(cx/cy) in the bitmap will be drawn at @code(dx/dy) and the bitmap is
 rotated and scaled around this point.
+
+See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be drawn where.
 @param(bitmap Origin bitmap.)
 @param(cx center x @(relative to the left of bitmap@))
 @param(cy center y @(relative to the top or bitmap@))
@@ -363,8 +561,9 @@ rotated and scaled around this point.
 @param(flags same as for al_draw_bitmap)
 @seealso(al_draw_bitmap) @seealso(al_draw_bitmap_region)
 @seealso(al_draw_scaled_bitmap)
+
 #Allegro5.al_draw_tinted_bitmap
-Like @code(al_draw_bitmap) but multiplies all colors in the bitmap with the
+Like @link(al_draw_bitmap) but multiplies all colors in the bitmap with the
 given color. For example:
 @longcode(#
 al_draw_tinted_bitmap (bitmap, al_map_rgba_f (0.5, 0.5, 0.5, 0.5), x, y, 0);
@@ -378,22 +577,25 @@ The above will only draw the red component of the bitmap.
 
 See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be
 drawn where.
+@seealso(al_draw_bitmap) @seealso(al_draw_tinted_bitmap_region) @seealso(al_draw_tinted_scaled_bitmap) @seealso(al_draw_tinted_rotated_bitmap) @seealso(al_draw_tinted_scaled_rotated_bitmap) @seealso(al_draw_tinted_scaled_rotated_bitmap_region)
+#Allegro5.al_draw_tinted_bitmap_region
+Like @link(al_draw_bitmap_region) but multiplies all colors in the bitmap with the given color.
+
+See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be
+@seealso(al_draw_tinted_bitmap)
+#Allegro5.al_draw_tinted_scaled_bitmap
+Like @link(al_draw_scaled_bitmap) but multiplies all colors in the bitmap with the given color.
+
+See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be
+@seealso(al_draw_tinted_bitmap)
+#Allegro5.al_draw_tinted_rotated_bitmap
+Like @link(al_draw_rotated_bitmap) but multiplies all colors in the bitmap with the given color.
+
+See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be
+@seealso(al_draw_tinted_bitmap)
 #Allegro5.al_draw_tinted_scaled_rotated_bitmap
-Like @link(al_draw_tinted_scaled_rotated_bitmap) but you specify an area
-within the bitmap to be drawn.
+Like @link(al_draw_scaled_rotated_bitmap) but multiplies all colors in the bitmap with the given color.
 
-You can get the same effect with a sub bitmap:
-@longcode(#
-  al_draw_tinted_scaled_rotated_bitmap (
-    bitmap, sx, sy, sw, sh, tint, cx, cy, dx, dy, xscale, yscale, angle, flags
-  );
-
-// This draws the same:
-  sub_bitmap := al_create_sub_bitmap (bitmap, sx, sy, sw, sh);
-  al_draw_tinted_scaled_rotated_bitmap (
-    sub_bitmap, tint, cx, cy, dx, dy, xscale, yscale, angle, flags
-  );
-#)
 See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be
 drawn where.
 @seealso(al_draw_tinted_bitmap)
@@ -414,19 +616,55 @@ You can get the same effect with a sub bitmap:
     dx, dy, xscale, yscale, angle, flags
   );
 #)
+
 See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be drawn where.
 @seealso(al_draw_tinted_bitmap)
+
+
+
+#Allegro5.ALLEGRO_USTR
+An opaque type representing a string. @code(ALLEGRO_USTR)s normally
+contain UTF-8 encoded strings, but they may be used to hold any byte
+sequences, including @nil.
+#Allegro5.ALLEGRO_USTR_INFO
+A type that holds additional information for an @link(ALLEGRO_USTR) that
+references an external memory buffer.
+@seealso(al_ref_cstr) @seealso(al_ref_buffer) @seealso(al_ref_ustr)
+
+#Allegro5.al_ustr_new
+Creates a new string containing a copy of the C-style string @code(s). The
+string must eventually be freed with @link(al_ustr_free).
+@seealso(al_ustr_new_from_buffer) @seealso(al_ustr_assign)
+@seealso(al_ustr_dup)
+#Allegro5.al_ustr_new_from_buffer
+Creates a new string containing a copy of the buffer pointed to by @code(s)
+of the given @code(size) in bytes. The string must eventually be freed with
+@link(al_ustr_free).
+@seealso(al_ustr_new)
+#Allegro5.al_ustr_free
+Frees a previously allocated string. Does nothing if the argument is @nil.
+@seealso(al_ustr_new) @seealso(al_ustr_new_from_buffer)
 #Allegro5.al_cstr
 Get a @code(AL_STRptr) pointer to the data in a string. This pointer will only be valid while the @code(ALLEGRO_USTR) object is not modified and not destroyed. The pointer may be passed to functions expecting C-style strings, with the following caveats:@unorderedlist(
-  @item(@code(ALLEGRO_USTR)s are allowed to contain embedded @code(NUL) @(@code($00)@) bytes. That means @code(al_ustr_size @(u@)) and @code(strlen @(al_cstr @(u@)@)) may not agree.)
+  @item(@code(ALLEGRO_USTR)s are allowed to contain embedded @code(NUL) @(@code($00)@) bytes. That means @code(al_ustr_size @(u@)) and @code(Length @(al_cstr @(u@)@)) may not agree.)
   @item(An @code(ALLEGRO_USTR) may be created in such a way that it is not @code(NUL) terminated. A string which is dynamically allocated will always be @code(NUL) terminated, but a string which references the middle of another string or region of memory will not be @code(NUL) terminated.)
   @item(If the @code(ALLEGRO_USTR) references another string, the returned C string will point into the referenced string. Again, no @code(NUL) terminator will be added to the referenced string.)
-) @seealso(al_ustr_to_buffer) @seealso(al_cstr_dup)
+)
+@seealso(al_ustr_to_buffer) @seealso(al_cstr_dup) @seealso(al_ustr_assign_cstr)
+#Allegro5.al_ustr_to_buffer
+Writes the contents of the string into a pre-allocated buffer of the given
+size in bytes. The result will always be @code(NUL) terminated, so a maximum
+of @code(size - 1) bytes will be copied.
+@seealso(al_cstr) @seealso(al_cstr_dup)
 #Allegro5.al_cstr_dup
 Creates a @code(NUL) (@code($00)) terminated copy of the string. Any embedded @code(NUL) bytes will still be presented in the returned string. The new string must eventually be freed with @code(al_free).
 
 If an error occurs @nil is returned.
 @seealso(al_cstr) @seealso(al_ustr_to_buffer) @seealso(al_free)
+#Allegro5.al_ustr_dup
+Returns a duplicate copy of a string. The new string will need to be freed
+with @code(al_ustr_free).
+@seealso(al_ustr_dup_substr) @seealso(al_ustr_free)
 #Allegro5.al_ustr_dup_substr
 Return a new copy of a string, containing its contents in the byte interval @code([start_pos, end_pos@)). The new string will be @code(NUL) terminated and will need to be freed with @code(al_ustr_free).
 
@@ -437,6 +675,599 @@ If necessary, use @link(al_ustr_offset) to find the byte offsets for a given cod
 if Pascal do need this kind of stuff.  Future versions of Allegro.pas would not
 include this function, so don't use it unless your really need to (and tell me
 if you really need it to remove this warning from documentation).
+
+#Allegro5.al_ref_cstr
+Creates a string that references the storage of a C-style string. The
+information about the string (e.g. its size) is stored in the @code(info)
+parameter. The string will not have any other storage allocated of its own,
+so if you allocate the info structure on the stack then no explicit "free"
+operation is required.
+
+The string is valid until the underlying C string disappears.
+
+Example:
+@longcode(#
+VAR
+  Info: ALLEGRO_USTR_INFO;
+  us: ALLEGRO_USTRptr;
+BEGIN
+  us := al_ref_cstr (Info, 'my string')
+END;
+#)
+@seealso(al_ref_buffer) @seealso(al_ref_ustr)
+#Allegro5.al_ref_buffer
+Creates a string that references the storage of an underlying buffer. The size of the buffer is given in bytes. You can use it to reference only part of a string or an arbitrary region of memory.
+
+The string is valid while the underlying memory buffer is valid.
+@seealso(al_ref_cstr) @seealso(al_ref_ustr)
+#Allegro5.al_ref_ustr
+Creates a read-only string that references the storage of another @link(ALLEGRO_USTR) string. The information about the string (e.g. its size) is stored in the structure pointed to by the @code(info) parameter. The new string will not have any other storage allocated of its own, so if you allocate the info structure on the stack then no explicit "free" operation is required.
+
+The referenced interval is @code([start_pos, end_pos@)). Both are byte offsets.
+
+The string is valid until the underlying string is modified or destroyed.
+
+If you need a range of code-points instead of bytes, use @link(al_ustr_offset) to find the byte offsets.
+@seealso(al_ref_cstr) @seealso(al_ref_buffer)
+
+#Allegro5.al_ustr_size
+Returns the size of the string in bytes. This is equal to the number of code points in the string if the string is empty or contains only 7-bit ASCII characters.
+@seealso(al_ustr_length)
+#Allegro5.al_ustr_length
+Returns the number of code points in the string. @seealso(al_ustr_size) @seealso(al_ustr_offset)
+#Allegro5.al_ustr_offset
+Returns the byte offset (from the start of the string) of the code point at the specified @code(index) in the string. A zero index parameter will return the first character of the string. If @code(index) is negative, it counts backward from the end of the string, so an index of -1 will return an offset to the last code point.
+
+If the @code(index) is past the end of the string, returns the offset of the end of the string.
+@seealso(al_ustr_length)
+#Allegro5.al_ustr_next
+Finds the byte offset of the next code point in string, beginning at
+@code(aPos). @code(aPos) does not have to be at the beginning of a code point.
+
+This function just looks for an appropriate byte; it doesn't check if found
+offset is the beginning of a valid code point. If you are working with
+possibly invalid UTF-8 strings then it could skip over some invalid bytes.
+@return(@true on success, and @code(aPos) will be updated to the found
+offset. Otherwise returns @false if @code(aPos) was already at the end of
+the string, and @code(aPos) is unmodified.)
+@seealso(al_ustr_prev)
+#Allegro5.al_ustr_prev
+Finds the byte offset of the previous code point in string, before
+@code(aPos). @code(aPos) does not have to be at the beginning of a code point.
+
+This function just looks for an appropriate byte; it doesn't check if found
+offset is the beginning of a valid code point. If you are working with
+possibly invalid UTF-8 strings then it could skip over some invalid bytes.
+@return(@true on success, and @code(aPos) will be updated to the found
+offset. Otherwise returns @false if @code(aPos) was already at the end of
+the string, and @code(aPos) is unmodified.)
+@seealso(al_ustr_next)
+
+#Allegro5.al_ustr_assign
+Overwrites the string @code(us1) with another string @code(us2).
+@returns(@true on success, @false on error.)
+@seealso(al_ustr_assign_cstr)
+#Allegro5.al_ustr_assign_cstr
+Overwrites the string @code(us1) with the contents of the string @code(s).
+@return(@true on success, @false on error.)
+@seealso(al_ustr_assign)
+
+#Allegro5.al_ustr_equal
+Returns @true if the two strings are equal. This function is more efficient than @link(al_ustr_compare) so is preferable if ordering is not important.
+@seealso(al_ustr_compare)
+#Allegro5.al_ustr_compare
+This function compares @code(us1) and @code(us2) by code point values.  It returns zero if the strings are equal, a positive number if @code(us1) comes after @code(us2), else a negative number.
+
+This does not take into account locale-specific sorting rules. For that you will need to use another library.
+@seealso(al_ustr_ncompare) @seealso(al_ustr_equal)
+#Allegro5.al_ustr_ncompare
+This function compares @code(us1) and @code(us2) by code point values. It returns zero if the strings are equal, a positive number if @code(us1) comes after @code(us2), else a negative number.
+
+This does not take into account locale-specific sorting rules. For that you will need to use another library.
+@seealso(al_ustr_ncompare) @seealso(al_ustr_equal)
+
+
+
+#Allegro5.ALLEGRO_FILEptr
+An opaque object representing an open file. This could be a real file on disk or a virtual file.
+
+#Allegro5.ALLEGRO_FILE_INTERFACE
+A structure containing function pointers to handle a type of "file", real
+or virtual. See the full discussion in @link(al_set_new_file_interface).
+
+The @code(fi_open) function must allocate memory for whatever userdata
+structure it needs.  The pointer to that memory must be returned; it will
+then be associated with the file. The other functions can access that data
+by calling @link(al_get_file_userdata) on the file handle. If
+@code(fi_open) returns @nil then @link(al_fopen) will also return @nil.
+
+The @code(fi_fclose) function must clean up and free the userdata, but
+Allegro will free the @code(ALLEGRO_FILEptr) handle.
+
+If @code(fi_fungetc) is @nil, then Allegro's default implementation of a
+16 char long buffer will be used.
+@seealso(al_set_new_file_interface) @seealso(al_fopen_interface)
+@seealso(al_get_file_userdata)
+#Allegro5.al_fopen
+Creates and opens a file (real or virtual) given the path and mode. The
+current file interface is used to open the file.
+
+Depending on the stream type and the mode string, files may be opened in
+"text" mode. The handling of newlines is particularly important. For
+example, using the default stdio-based streams on DOS and Windows
+platforms, where the native end-of-line terminators are @code(CR+LF)
+sequences, a call to @link(al_fgetc) may return just one character ('\n')
+where there were two bytes (@code(CR+LF)) in the file. When writing out
+'\n', two bytes would be written instead. (As an aside, '\n' is not
+defined to be equal to @code(LF) either.)
+
+Newline translations can be useful for text files but is disastrous for
+binary files. To avoid this behaviour you need to open file streams in
+binary mode by using a mode argument containing a "b", e.g. @code('rb'), @code('wb).
+@param(path Path to the file to open.)
+@param(mode Access mode to open the file in @('r', 'w', etc.@).)
+@return(a file handle on success, or @nil on error.)
+@seealso(al_fclose) @seealso(al_set_new_file_interface) @seealso(al_fopen_interface)
+@seealso(al_fread) @seealso(al_fwrite)
+#Allegro5.al_fopen_interface
+Opens a file using the specified interface, instead of the interface set
+with @link(al_set_new_file_interface). @seealso(al_fopen)
+#Allegro5.al_create_file_handle
+Creates an empty, opened file handle with some abstract user data. This
+allows custom interfaces to extend the @link(ALLEGRO_FILEptr) struct with
+their own data. You should close the handle with the standard
+@link(al_fclose) function when you are finished with it.
+@seealso(al_fopen) @seealso(al_fclose) @seealso(al_set_new_file_interface)
+#Allegro5.al_fclose
+Closes the given file, writing any buffered output data (if any).
+@return(@true on success, @false on failure.) @seealso(al_fopen)
+#Allegro5.al_fread
+Reads @code(size) bytes into the buffer pointed to by @code(ptr), from the given file.
+@return(The number of bytes actually read. If an error occurs, or the end-of-file is reached, the return value is a short byte count @(or zero@).
+
+@code(al_fread) does not distinguish between EOF and other errors. Use @link(al_feof) and @link(al_ferror) to determine which occurred.)
+@seealso(al_fgetc) @seealso(al_fwrite) @seealso(al_fread16be) @seealso(al_fread16le) @seealso(al_fread32be) @seealso(al_fread32le)
+#Allegro5.al_fwrite
+Write @code(size) bytes from the buffer pointed to by @code(ptr) into the given file.
+@return(The number of bytes actually written. If an error occurs, the return value is a short byte count @(or zero@).)
+@seealso(al_fputc) @seealso(al_fputs) @seealso(al_fread) @seealso(al_fwrite16be) @seealso(al_fwrite16le) @seealso(al_fwrite32be) @seealso(al_fwrite32le)
+#Allegro5.al_ftell
+Returns the current position in the given file, or @code(-1) on error.
+
+On some platforms this function may not support large files.
+@seealso(al_fseek) @seealso(al_get_errno)
+#Allegro5.al_fseek
+Set the current position of the given file to a position relative to that
+specified by @code(whence), plus @code(offset) number of bytes.
+
+@code(whence) can be:@unorderedlist(
+     @item(@code(ALLEGRO_SEEK_SET) - seek relative to beginning of file)
+     @item(@code(ALLEGRO_SEEK_CUR) - seek relative to current file position)
+     @item(@code(ALLEGRO_SEEK_END) - seek relative to end of file)
+)
+After a successful seek, the end-of-file indicator is cleared and all
+pushback bytes are forgotten.
+
+On some platforms this function may not support large files.
+@return(@true on success, @false on failure.)
+@seealso(al_ftell) @seealso(al_get_errno)
+#Allegro5.al_feof
+Returns @true if the end-of-file indicator has been set on the file, i.e.
+we have attempted to read @italic(past) the end of the file.
+
+This does @italic(not) return @true if we simply are at the end of the file. The
+following code correctly reads two bytes, even when the file contains
+exactly two bytes:
+@longcode(#
+  b1 := al_fgetc (f);
+  b2 := al_fgetc (f);
+  IF al_feof (f) THEN
+  { At least one byte was unsuccessfully read. }
+    ReportError ();
+#)
+@seealso(al_ferror) @seealso(al_fclearerr)
+#Allegro5.al_ferror
+Returns non-zero if the error indicator is set on the given file, i.e.
+there was some sort of previous error. The error code may be system or
+file interface specific.
+@seealso(al_feof) @seealso(al_fclearerr) @seealso(al_ferrmsg)
+#Allegro5.al_ferrmsg
+Returns a message string with details about the last error that occurred
+on the given file handle. The returned string is empty if there was no
+error, or if the file interface does not provide more information.
+@seealso(al_fclearerr) @seealso(al_ferror)
+#Allegro5.al_fclearerr
+Clears the error indicator for the given file.
+
+The standard I/O backend also clears the end-of-file indicator, and other
+backends should try to do this. However, they may not if it would require
+too much effort (e.g. PhysicsFS backend), so your code should not rely on
+it if you need your code to be portable to other backends.
+@seealso(al_ferror) @seealso(al_feof)
+#Allegro5.al_fungetc
+Ungets a single byte from a file. Pushed-back bytes are not written to the
+file, only made available for subsequent reads, in reverse order.
+
+The number of pushbacks depends on the backend. The standard I/O backend
+only guarantees a single pushback; this depends on the libc implementation.
+
+For backends that follow the standard behavior, the pushback buffer will
+be cleared after any seeking or writing; also calls to @link(al_fseek) and
+@link(al_ftell) are relative to the number of pushbacks. If a pushback
+causes the position to become negative, the behavior of @code(al_fseek)
+and @code(al_ftell) are undefined.
+@seealso(al_fgetc) @seealso(al_get_errno)
+
+#Allegro5.al_fgetc
+Reads and returns next byte in the given file. Returns a negative number on end of file or if an error occurred.
+@seealso(al_fputc) @seealso(al_fungetc)
+#Allegro5.al_fputc
+Writes a single byte to the given file. The byte written is the value of @code(c) cast to an unsigned char.
+@param(c byte value to write.) @param(f file to write to.)
+@return(the written byte @(cast back to an @link(AL_INT)@) on success, or negative number on error.)
+#Allegro5.al_fread16le
+Reads a 16-bit word in little-endian format (LSB first).
+
+@return(On success, the 16-bit word. On failure, returns EOF @(-1@). Since
+  -1 is also a valid return value, use @link(al_feof) to check if the end
+  of the file was reached prematurely, or @link(al_ferror) to check if an
+  error occurred.)
+@seealso(al_fread16be)
+#Allegro5.al_fread16be
+Reads a 16-bit word in big-endian format (MSB first).
+@return(On success, the 16-bit word. On failure, returns EOF @(-1@). Since
+  -1 is also a valid return value, use @link(al_feof) to check if the end
+  of the file was reached prematurely, or @link(al_ferror) to check if an
+  error occurred.)
+@seealso(al_fread16le)
+#Allegro5.al_fwrite16le
+Writes a 16-bit word in little-endian format (LSB first).
+@return(The number of bytes written: 2 on success, less than 2 on an error.)
+@seealso(al_fwrite16be)
+#Allegro5.al_fwrite16be
+Writes a 16-bit word in big-endian format (MSB first).
+@return(The number of bytes written: 2 on success, less than 2 on an error.)
+@seealso(al_fwrite16le)
+#Allegro5.al_fread32le
+Reads a 32-bit word in little-endian format (LSB first).
+@return(On success, the 32-bit word. On failure, returns EOF @(-1@). Since
+  -1 is also a valid return value, use @link(al_feof) to check if the end
+  of the file was reached prematurely, or @link(al_ferror) to check if an
+  error occurred.)
+@seealso(al_fread32be)
+#Allegro5.al_fread32be
+Reads a 32-bit word in big-endian format (MSB first).
+@return(On success, the 32-bit word. On failure, returns EOF @(-1@). Since
+  -1 is also a valid return value, use @link(al_feof) to check if the end
+  of the file was reached prematurely, or @link(al_ferror) to check if an
+  error occurred.)
+@seealso(al_fread32le)
+#Allegro5.al_fwrite32le
+Writes a 32-bit word in little-endian format (LSB first).
+@return(The number of bytes written: 2 on success, less than 2 on an error.)
+@seealso(al_fwrite32be)
+#Allegro5.al_fwrite32be
+Writes a 32-bit word in big-endian format (MSB first).
+@return(The number of bytes written: 2 on success, less than 2 on an error.)
+@seealso(al_fwrite32le)
+#Allegro5.al_fgets
+Reads a string of bytes terminated with a newline or end-of-file into the
+buffer given. The line terminator(s), if any, are included in the returned
+string. A maximum of @code(max-1) bytes are read, with one byte being
+reserved for a @code(NUL) terminator.
+
+See @link(al_fopen) about translations of end-of-line characters.
+@param(f File to read from.)
+@param(buf Buffer to fill.)
+@param(max Maximum size of buffer.)
+@return(The pointer to @code(buf) on success. Returns @nil if an error
+ occurred or if the end of file was reached without reading any bytes.)
+@seealso(al_fget_ustr)
+#Allegro5.al_fget_ustr
+Read a string of bytes terminated with a newline or end-of-file. The line
+terminator(s), if any, are included in the returned string.
+
+See @link(al_fopen) about translations of end-of-line characters.
+@return(On success a pointer to a new @link(ALLEGRO_USTR) structure. This
+ must be freed eventually with @link(al_ustr_free). Returns @nil if an
+ error occurred or if the end of file was reached without reading any
+ bytes.)
+@seealso(al_fgetc) @seealso(al_fgets)
+#Allegro5.al_fputs
+Writes a string to file. Apart from the return value, this is equivalent
+to @code(@link(al_fwrite) @(f, p, Length @(p@)@);)
+
+@bold(Note:) depending on the stream type and the mode passed to
+@link(al_fopen), newline characters in the string may or may not be
+automatically translated to native end-of-line sequences, e.g. @code(CR/LF)
+instead of @code(LF).
+@param(f File handle to write to.)
+@param(p String to write.)
+@returns(A non-negative integer on success, EOF (-1) on error.)
+@seealso(al_fwrite)
+#Allegro5.al_fopen_slice
+Opens a slice (subset) of an already open random access file as if it were
+a stand alone file. While the slice is open, the parent file handle must
+not be used in any way.
+
+The slice is opened at the current location of the parent file, up through
+@code(initial_size) bytes. The @code(initial_size) may be any non-negative
+integer that will not exceed the bounds of the parent file.
+
+Seeking with @code(ALLEGRO_SEEK_SET) will be relative to this starting location.
+@code(ALLEGRO_SEEK_END) will be relative to the starting location plus the size
+of the slice.
+
+The mode can be any combination of:@unorderedlist(
+@item(r: read access)  @item(w: write access) @item(e: expandable)
+)
+
+For example, a mode of @code('rw') indicates the file can be read and
+written. (Note that this is slightly different from the stdio modes.) Keep
+in mind that the parent file must support random access and be open in
+normal write mode (not append) for the slice to work in a well defined way.
+
+If the slice is marked as expandable, then reads and writes can happen
+after the initial end point, and the slice will grow accordingly.
+Otherwise, all activity is restricted to the initial size of the slice.
+
+A slice must be closed with @link(al_fclose). The parent file will then be
+positioned immediately after the end of the slice.
+@seealso(al_fopen)
+#Allegro5.al_get_new_file_interface
+Returns a pointer to the @link(ALLEGRO_FILE_INTERFACE) table in effect
+for the calling thread.
+@seealso(al_store_state) @seealso(al_restore_state) @seealso(al_set_new_file_interface)
+#Allegro5.al_set_new_file_interface
+Sets the @link(ALLEGRO_FILE_INTERFACE) table for the calling thread.
+This will change the handler for later calls to @link(al_fopen).
+@seealso(al_set_standard_file_interface) @seealso(al_store_state)
+@seealso(al_restore_state)
+#Allegro5.al_set_standard_file_interface
+Sets the @link(ALLEGRO_FILE_INTERFACE) table to the default, for the
+calling thread. This will change the handler for later calls to
+@link(al_fopen).
+@seealso(al_set_new_file_interface)
+
+#Allegro5.al_get_file_userdata
+Returns a pointer to the custom userdata that is attached to the file
+handle. This is intended to be used by functions that extend
+@link(ALLEGRO_FILE_INTERFACE).
+
+
+
+#Allegro5.al_register_bitmap_loader
+Registers a handler for @link(al_load_bitmap).
+@param(ext File extension.  It should include the leading dot @('.'@) character. It will be
+matched case-insensitively.)
+@param(loader The given function used to handle the loading of bitmaps files with the given extension.  It may be @nil to unregister an entry.)
+@return(@true on success, @false on error. Returns @false if unregistering an entry that doesn't exist.)
+@seealso(al_register_bitmap_saver) @seealso(al_register_bitmap_loader_f)
+#Allegro5.al_register_bitmap_saver
+Registers a handler for @link(al_save_bitmap).
+@param(ext File extension.  It should include the leading dot @('.'@) character. It will be
+matched case-insensitively.)
+@param(saver The given function used to handle the savint of bitmaps files with the given extension.  It may be @nil to unregister an entry.)
+@return(@true on success, @false on error. Returns @false if unregistering an entry that doesn't exist.)
+@seealso(al_register_bitmap_loader) @seealso(al_register_bitmap_saver_f)
+#Allegro5.al_register_bitmap_loader_f
+Registers a handler for @link(al_load_bitmap_f).
+@param(ext File extension.  It should include the leading dot @('.'@) character. It will be
+matched case-insensitively.)
+@param(fs_loader The given function used to handle the loading of bitmaps files with the given extension.  It may be @nil to unregister an entry.)
+@return(@true on success, @false on error. Returns @false if unregistering an entry that doesn't exist.)
+@seealso(al_register_bitmap_loader)
+#Allegro5.al_register_bitmap_saver_f
+Registers a handler for @link(al_save_bitmap_f).
+@param(ext File extension.  It should include the leading dot @('.'@) character. It will be
+matched case-insensitively.)
+@param(fs_saver The given function used to handle the savint of bitmaps files with the given extension.  It may be @nil to unregister an entry.)
+@return(@true on success, @false on error. Returns @false if unregistering
+	   an entry that doesn't exist.)
+@seealso(al_register_bitmap_saver)
+#Allegro5.al_register_bitmap_identifier
+Registers an identify handler for @link(al_identify_bitmap). The given
+function will be used to detect files for the given extension. It will be
+called with a single argument of type @link(ALLEGRO_FILEptr) which is a file
+handle opened for reading and located at the first byte of the file. The
+handler should try to read as few bytes as possible to safely determine if
+the given file contents correspond to the type with the extension and return
+@true in that case, @false otherwise. The file handle must not be closed but
+there is no need to reset it to the beginning.
+@param(ext The extension. It should include the leading dot @('.'@) character. It will be
+matched case-insensitively.)
+@param(identifier The identifier handler.  It may be @nil to unregister an entry.)
+@return(@true on success, @false on error. Returns @false if unregistering
+	   an entry that doesn't exist.)
+@seealso(al_identify_bitmap)
+#Allegro5.al_load_bitmap
+Loads an image file into a new @code(ALLEGRO_BITMAPptr). The file type is
+determined by the extension, except if the file has no extension in which
+case @code(al_identify_bitmap) is used instead.
+
+This is the same as calling @code(al_load_bitmap_flags) with a flags
+parameter of 0.
+
+@bold(Note:) the core Allegro library does not support any image file
+formats by default. You must use the @link(al5image) addon, or register your
+own format handler.
+@return(A pointer to the loaded bitmap or @nil on error.)
+@seealso(al_load_bitmap_f) @seealso(al_register_bitmap_loader)
+@seealso(al_load_bitmap_flags) @seealso(al_set_new_bitmap_format)
+@seealso(al_set_new_bitmap_flags) @seealso(al_init_image_addon)
+#Allegro5.al_load_bitmap_flags
+Loads an image file into a new @code(ALLEGRO_BITMAPptr). The file type is
+determined by the extension, except if the file has no extension in which
+case @link(al_identify_bitmap) is used instead.
+
+@code(Note:) the core Allegro library does not support any image file
+formats by default. You must use the @link(al5image) addon, or register your
+own format handler.
+@param(filename The file to load.)
+@param(flags It may be a combination of the following constants:
+@unorderedlist(
+   @item(@bold(@code(ALLEGRO_NO_PREMULTIPLIED_ALPHA))
+    By default, Allegro pre-multiplies the alpha channel of an image with the
+    images color data when it loads it. Typically that would look something like
+    this:
+@longcode(#
+    r := get_float_byte;
+    g := get_float_byte;
+    b := get_float_byte;
+    a := get_float_byte;
+
+    r := r * a;
+    g := g * a;
+    b := b * a;
+
+    set_image_pixel (x, y, r, g, b, a);
+#)
+    The reason for this can be seen in the Allegro example @code(ex_premulalpha),
+    ie, using pre-multiplied alpha gives more accurate color results in some
+    cases. To use alpha blending with images loaded with pre-multiplied alpha,
+    you would use the default blending mode, which is set with
+    @code(al_set_blender @(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA@)).
+
+    The @code(ALLEGRO_NO_PREMULTIPLIED_ALPHA) flag being set will ensure that
+    images are not loaded with alpha pre-multiplied, but are loaded with color
+    values direct from the image. That looks like this:
+@longcode(#
+    r := get_float_byte;
+    g := get_float_byte;
+    b := get_float_byte;
+    a := get_float_byte;
+
+    set_image_pixel (x, y, r, g, b, a);
+#)
+    To draw such an image using regular alpha blending, you would use
+    @code(al_set_blender @(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA@))
+    to set the correct blender. This has some caveats. First, as mentioned
+    above, drawing such an image can result in less accurate color blending
+    (when drawing an image with linear filtering on, the edges will be darker
+    than they should be). Second, the behaviour is somewhat confusing, which is
+    explained in the example below.
+@longcode(#
+  { Load and create bitmaps with an alpha channel. }
+    al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA);
+  { Load some bitmap with alpha in it. }
+    bmp := al_load_bitmap ('some_alpha_bitmap.png');
+  { We will draw to this buffer and then draw this buffer to the screen. }
+    tmp_buffer := al_create_bitmap (SCREEN_W, SCREEN_H);
+  { Set the buffer as the target and clear it. }
+    al_set_target_bitmap (tmp_buffer);
+    al_clear_to_color (al_map_rgba_f (0, 0, 0, 1));
+  { Draw the bitmap to the temporary buffer. }
+    al_draw_bitmap (bmp, 0, 0, 0);
+  { Finally, draw the buffer to the screen.
+    The output will look incorrect (may take close inspection
+    depending on the bitmap -- it may also be very obvious). }
+    al_set_target_bitmap (al_get_backbuffer (display));
+    al_draw_bitmap (tmp_buffer, 0, 0, 0);
+#)
+    To explain further, if you have a pixel with 0.5 alpha, and you're using
+    @code(@(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA@)) for blending,
+    the formula is:
+@longcode(#
+    a := da * dst + sa * src
+#)
+    Expands to:
+@longcode(#
+    result_a := dst_a * (1-0.5) + 0.5 * 0.5
+#)
+    So if you draw the image to the temporary buffer, it is blended once
+    resulting in 0.75 alpha, then drawn again to the screen, blended in the
+    same way, resulting in a pixel has 0.1875 as an alpha value.)
+  @item(@bold(@code(ALLEGRO_KEEP_INDEX))
+
+    Load the palette indices of 8-bit .bmp and .pcx files instead of the rgb
+    colors.)
+  @item(@bold(@code(ALLEGRO_KEEP_BITMAP_FORMAT))
+
+    Force the resulting ALLEGRO_BITMAP to use the same format as the file.
+
+    @italic(This is not yet honoured.))
+))
+@return(A pointer to the loaded bitmap or @nil on error.)
+@seealso(al_load_bitmap)
+#Allegro5.al_load_bitmap_f
+Loads an image from an @link(ALLEGRO_FILEptr) stream into a new
+@link(ALLEGRO_BITMAPptr). The file type is determined by the passed
+@code(ident) parameter, which is a file name extension including the leading
+dot. If (and only if) @code(ident) is an empty string, the file type is determined with
+@link(al_identify_bitmap_f) instead.
+
+This is the same as calling @link(al_load_bitmap_flags_f) with @code(0) for
+the @code(flags) parameter.
+
+@bold(Note:) the core Allegro library does not support any image file
+formats by default. You must use the @link(al5image) addon, or register
+your own format handler.
+@return(A pointer to the loaded bitmap or @nil on error. The file remains open afterwards.)
+@seealso(al_load_bitmap_flags_f) @seealso(al_load_bitmap)
+@seealso(al_register_bitmap_loader_f) @seealso(al_init_image_addon)
+#Allegro5.al_load_bitmap_flags_f
+Loads an image from an @link(ALLEGRO_FILEptr) stream into a new
+@link(ALLEGRO_BITMAPptr). The file type is determined by the passed
+@code(ident) parameter, which is a file name extension including the leading
+dot. If (and only if) @code(ident) is an empty string, the file type is determined with
+@link(al_identify_bitmap_f) instead.
+
+The @code(flags) parameter is the same as for @link(al_load_bitmap_flags).
+
+@bold(Note:) the core Allegro library does not support any image file
+formats by default. You must use the @link(al5image) addon, or register
+your own format handler.
+@return(A pointer to the loaded bitmap or @nil on error. The file remains open afterwards.)
+@seealso(al_load_bitmap_f) @seealso(al_load_bitmap_flags)
+#Allegro5.al_save_bitmap
+Saves an @code(ALLEGRO_BITMAP) to an image file. The file type is determined by
+the extension.
+
+@bold(Note:) the core Allegro library does not support any image file
+formats by default. You must use the @link(al5image) addon, or register your
+own format handler.
+@return(@true on success, @false on error.)
+@seealso(al_save_bitmap_f) @seealso(al_register_bitmap_saver)
+@seealso(al_init_image_addon)
+#Allegro5.al_save_bitmap_f
+Saves an ALLEGRO_BITMAP to an ALLEGRO_FILE stream. The file type is
+determined by the passed @code(ident) parameter, which is a file name
+extension including the leading dot.
+
+@bold(Note:) the core Allegro library does not support any image file
+formats by default. You must use the @link(al5image) addon, or register your
+own format handler.
+@return(@true on success, @false on error.  The file remains open afterwards.)
+@seealso(al_save_bitmap) @seealso(al_register_bitmap_saver_f)
+@seealso(al_init_image_addon)
+#Allegro5.al_identify_bitmap_f
+Tries to guess the bitmap file type of the given file by reading the first
+few bytes. The extension, if any, of the passed filename is not taken into
+account - only the file contents. By default Allegro cannot recognize any
+file types, but calling @link(al_init_image_addon) will add detection of
+(some of) the types it can read.  You can also use @link(al_register_bitmap_identifier) to add identification of custom file types.
+@returns(a pointer to a static string with a file extension for the type,
+including the leading dot. For example ".png" or ".jpg". Returns @nil if the
+bitmap type cannot be determined.)
+@seealso(al_init_image_addon) @seealso(al_identify_bitmap)
+@seealso(al_register_bitmap_identifier)
+#Allegro5.al_identify_bitmap
+This works exactly as @link(al_identify_bitmap_f) but you specify the
+filename of the file for which to detect the type and not a file handle. The
+extension, if any, of the passed filename is not taken into account - only
+the file contents.
+@seealso(al_init_image_addon) @seealso(al_identify_bitmap_f)
+@seealso(al_register_bitmap_identifier)
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -623,400 +1454,3 @@ Sets the given system mouse cursor to be the current mouse cursor for the given 
 If the cursor doesn't exist on the current platform another cursor will be silently be substituted.
 @returns(@true on success, @false on failure.)
 @seealso(ALLEGRO_SYSTEM_MOUSE_CURSOR) @seealso(al_set_mouse_cursor) @seealso(al_show_mouse_cursor) @seealso(al_hide_mouse_cursor)
-
-
-
-
-
-
-
-
-#Allegro5.al_ref_cstr
-Create a string that references the storage of a C-style string. The
-information about the string (e.g. its size) is stored in the @code(info)
-parameter. The string will not have any other storage allocated of its own,
-so if you allocate the info structure on the stack then no explicit "free"
-operation is required.
-
-The string is valid until the underlying C string disappears.
-
-Example:
-@longcode(#
-VAR
-  Info: ALLEGRO_USTR_INFO;
-  us: ALLEGRO_USTRptr;
-BEGIN
-  us := al_ref_cstr (Info, 'my string')
-END;
-#)
-@seealso(al_ref_buffer) @seealso(al_ref_ustr)
-#Allegro5.al_ustr_next
-Find the byte offset of the next code point in string, beginning at
-@code(aPos). @code(aPos) does not have to be at the beginning of a code point.
-
-This function just looks for an appropriate byte; it doesn't check if found
-offset is the beginning of a valid code point. If you are working with
-possibly invalid UTF-8 strings then it could skip over some invalid bytes.
-@return(@true on success, and @code(aPos) will be updated to the found
-offset. Otherwise returns @false if @code(aPos) was already at the end of
-the string, and @code(aPos) is unmodified.)
-@seealso(al_ustr_prev)
-#Allegro5.al_ustr_prev
-Find the byte offset of the previous code point in string, before
-@code(aPos). @code(aPos) does not have to be at the beginning of a code point.
-
-This function just looks for an appropriate byte; it doesn't check if found
-offset is the beginning of a valid code point. If you are working with
-possibly invalid UTF-8 strings then it could skip over some invalid bytes.
-@return(@true on success, and @code(aPos) will be updated to the found
-offset. Otherwise returns @false if @code(aPos) was already at the end of
-the string, and @code(aPos) is unmodified.)
-@seealso(al_ustr_next)
-#Allegro5.ALLEGRO_FILE_INTERFACE
-A structure containing function pointers to handle a type of "file", real
-or virtual. See the full discussion in @link(al_set_new_file_interface).
-
-The @code(fi_open) function must allocate memory for whatever userdata
-structure it needs.  The pointer to that memory must be returned; it will
-then be associated with the file. The other functions can access that data
-by calling @link(al_get_file_userdata) on the file handle. If
-@code(fi_open) returns @nil then @link(al_fopen) will also return @nil.
-
-The @code(fi_fclose) function must clean up and free the userdata, but
-Allegro will free the @code(ALLEGRO_FILEptr) handle.
-
-If @code(fi_fungetc) is @nil, then Allegro's default implementation of a
-16 char long buffer will be used.
-@seealso(al_set_new_file_interface) @seealso(al_fopen_interface)
-@seealso(al_get_file_userdata)
-#Allegro5.al_fopen
-Creates and opens a file (real or virtual) given the path and mode. The
-current file interface is used to open the file.
-
-Depending on the stream type and the mode string, files may be opened in
-"text" mode. The handling of newlines is particularly important. For
-example, using the default stdio-based streams on DOS and Windows
-platforms, where the native end-of-line terminators are @code(CR+LF)
-sequences, a call to @link(al_fgetc) may return just one character ('\n')
-where there were two bytes (@code(CR+LF)) in the file. When writing out
-'\n', two bytes would be written instead. (As an aside, '\n' is not
-defined to be equal to @code(LF) either.)
-
-Newline translations can be useful for text files but is disastrous for
-binary files. To avoid this behaviour you need to open file streams in
-binary mode by using a mode argument containing a "b", e.g. "rb", "wb".
-@param(path Path to the file to open.)
-@param(mode Access mode to open the file in @('r', 'w', etc.@).)
-@return(a file handle on success, or @nil on error.)
-@seealso(al_set_new_file_interface) @seealso(al_fclose)
-#Allegro5.al_fseek
-Set the current position of the given file to a position relative to that
-specified by @code(whence), plus @code(offset) number of bytes.
-
-@code(whence) can be:@unorderedlist(
-     @item(@code(ALLEGRO_SEEK_SET) - seek relative to beginning of file)
-     @item(@code(ALLEGRO_SEEK_CUR) - seek relative to current file position)
-     @item(@code(ALLEGRO_SEEK_END) - seek relative to end of file)
-)
-After a successful seek, the end-of-file indicator is cleared and all
-pushback bytes are forgotten.
-
-On some platforms this function may not support large files.
-@return(@true on success, @false on failure.)
-@seealso(al_ftell) @seealso(al_get_errno)
-#Allegro5.al_fungetc
-Ungets a single byte from a file. Pushed-back bytes are not written to the
-file, only made available for subsequent reads, in reverse order.
-
-The number of pushbacks depends on the backend. The standard I/O backend
-only guarantees a single pushback; this depends on the libc implementation.
-
-For backends that follow the standard behavior, the pushback buffer will
-be cleared after any seeking or writing; also calls to @link(al_fseek) and
-@link(al_ftell) are relative to the number of pushbacks. If a pushback
-causes the position to become negative, the behavior of @code(al_fseek)
-and @code(al_ftell) are undefined.
-@seealso(al_fgetc) @seealso(al_get_errno)
-#Allegro5.al_fgets
-Reads a string of bytes terminated with a newline or end-of-file into the
-buffer given. The line terminator(s), if any, are included in the returned
-string. A maximum of @code(max-1) bytes are read, with one byte being
-reserved for a @code(NUL) terminator.
-
-See @link(al_fopen) about translations of end-of-line characters.
-@param(f File to read from.)
-@param(buf Buffer to fill.)
-@param(max Maximum size of buffer.)
-@return(The pointer to @code(buf) on success. Returns @nil if an error
- occurred or if the end of file was reached without reading any bytes.)
-@seealso(al_fget_ustr)
-#Allegro5.al_fopen_slice
-Opens a slice (subset) of an already open random access file as if it were
-a stand alone file. While the slice is open, the parent file handle must
-not be used in any way.
-
-The slice is opened at the current location of the parent file, up through
-@code(initial_size) bytes. The @code(initial_size) may be any non-negative
-integer that will not exceed the bounds of the parent file.
-
-Seeking with ALLEGRO_SEEK_SET will be relative to this starting location.
-ALLEGRO_SEEK_END will be relative to the starting location plus the size
-of the slice.
-
-The mode can be any combination of:@unorderedlist(
-@item(r: read access)  @item(w: write access) @item(e: expandable)
-)
-
-For example, a mode of @code('rw') indicates the file can be read and
-written. (Note that this is slightly different from the stdio modes.) Keep
-in mind that the parent file must support random access and be open in
-normal write mode (not append) for the slice to work in a well defined way.
-
-If the slice is marked as expandable, then reads and writes can happen
-after the initial end point, and the slice will grow accordingly.
-Otherwise, all activity is restricted to the initial size of the slice.
-
-A slice must be closed with @link(al_fclose). The parent file will then be
-positioned immediately after the end of the slice.
-@seealso(al_fopen)
-#Allegro5.al_register_bitmap_loader
-Registers a handler for @link(al_load_bitmap). The given function will be
-used to handle the loading of bitmaps files with the given extension.
-
-The extension should include the leading dot ('.') character. It will be
-matched case-insensitively.
-
-The loader argument may be @nil to unregister an entry.
-@return(@true on success, @false on error. Returns @false if unregistering
-	   an entry that doesn't exist.)
-@seealso(al_register_bitmap_saver) @seealso(al_register_bitmap_loader_f)
-#Allegro5.al_register_bitmap_saver
-Registers a handler for @link(al_save_bitmap). The given function will be
-used to handle the saving of bitmaps files with the given extension.
-
-The extension should include the leading dot ('.') character. It will be
-matched case-insensitively.
-
-The loader argument may be @nil to unregister an entry.
-@return(@true on success, @false on error. Returns @false if unregistering
-	   an entry that doesn't exist.)
-@seealso(al_register_bitmap_loader) @seealso(al_register_bitmap_saver_f)
-#Allegro5.al_register_bitmap_loader_f
-Registers a handler for @link(al_load_bitmap_f). The given function will be
-used to handle the loading of bitmaps files with the given extension.
-
-The extension should include the leading dot ('.') character. It will be
-matched case-insensitively.
-
-The fs_loader argument may be @nil to unregister an entry.
-@return(@true on success, @false on error. Returns @false if unregistering
-	   an entry that doesn't exist.)
-@seealso(al_register_bitmap_loader)
-#Allegro5.al_register_bitmap_saver_f
-Registers a handler for @link(al_save_bitmap_f). The given function will be
-used to handle the saving of bitmaps files with the given extension.
-
-The extension should include the leading dot ('.') character. It will be
-matched case-insensitively.
-
-The fs_saver argument may be @nil to unregister an entry.
-@return(@true on success, @false on error. Returns @false if unregistering
-	   an entry that doesn't exist.)
-@seealso(al_register_bitmap_saver)
-#Allegro5.al_register_bitmap_identifier
-Registers an identify handler for @link(al_identify_bitmap). The given
-function will be used to detect files for the given extension. It will be
-called with a single argument of type @link(ALLEGRO_FILEptr) which is a file
-handle opened for reading and located at the first byte of the file. The
-handler should try to read as few bytes as possible to safely determine if
-the given file contents correspond to the type with the extension and return
-@true in that case, @false otherwise. The file handle must not be closed but
-there is no need to reset it to the beginning.
-
-The extension should include the leading dot ('.') character. It will be
-matched case-insensitively.
-
-The @code(identifier) argument may be @nil to unregister an entry.
-@return(@true on success, @false on error. Returns @false if unregistering
-	   an entry that doesn't exist.)
-@seealso(al_identify_bitmap)
-#Allegro5.al_load_bitmap
-Loads an image file into a new @code(ALLEGRO_BITMAPptr). The file type is
-determined by the extension, except if the file has no extension in which
-case @code(al_identify_bitmap) is used instead.
-
-This is the same as calling @code(al_load_bitmap_flags) with a flags
-parameter of 0.
-
-@bold(Note:) the core Allegro library does not support any image file
-formats by default. You must use the @link(al5image) addon, or register your
-own format handler.
-@return(A pointer to the loaded bitmap or @nil on error.)
-@seealso(al_load_bitmap_f) @seealso(al_register_bitmap_loader)
-@seealso(al_load_bitmap_flags) @seealso(al_set_new_bitmap_format)
-@seealso(al_set_new_bitmap_flags) @seealso(al_init_image_addon)
-#Allegro5.al_load_bitmap_flags
-Loads an image file into a new @code(ALLEGRO_BITMAPptr). The file type is
-determined by the extension, except if the file has no extension in which
-case @link(al_identify_bitmap) is used instead.
-
-@code(Note:) the core Allegro library does not support any image file
-formats by default. You must use the @link(al5image) addon, or register your
-own format handler.
-@param(flags It may be a combination of the following constants:
-@unorderedlist(
-   @item(@bold(@code(ALLEGRO_NO_PREMULTIPLIED_ALPHA))
-    By default, Allegro pre-multiplies the alpha channel of an image with the
-    images color data when it loads it. Typically that would look something like
-    this:
-@longcode(#
-    r := get_float_byte;
-    g := get_float_byte;
-    b := get_float_byte;
-    a := get_float_byte;
-
-    r := r * a;
-    g := g * a;
-    b := b * a;
-
-    set_image_pixel (x, y, r, g, b, a);
-#)
-    The reason for this can be seen in the Allegro example @code(ex_premulalpha),
-    ie, using pre-multiplied alpha gives more accurate color results in some
-    cases. To use alpha blending with images loaded with pre-multiplied alpha,
-    you would use the default blending mode, which is set with
-    @code(al_set_blender @(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA@)).
-
-    The @code(ALLEGRO_NO_PREMULTIPLIED_ALPHA) flag being set will ensure that
-    images are not loaded with alpha pre-multiplied, but are loaded with color
-    values direct from the image. That looks like this:
-@longcode(#
-    r := get_float_byte;
-    g := get_float_byte;
-    b := get_float_byte;
-    a := get_float_byte;
-
-    set_image_pixel (x, y, r, g, b, a);
-#)
-    To draw such an image using regular alpha blending, you would use
-    @code(al_set_blender @(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA@))
-    to set the correct blender. This has some caveats. First, as mentioned
-    above, drawing such an image can result in less accurate color blending
-    (when drawing an image with linear filtering on, the edges will be darker
-    than they should be). Second, the behaviour is somewhat confusing, which is
-    explained in the example below.
-@longcode(#
-  // Load and create bitmaps with an alpha channel
-    al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_ANY_32_WITH_ALPHA);
-  // Load some bitmap with alpha in it
-    bmp := al_load_bitmap ('some_alpha_bitmap.png');
-  // We will draw to this buffer and then draw this buffer to the screen
-    tmp_buffer := al_create_bitmap (SCREEN_W, SCREEN_H);
-  // Set the buffer as the target and clear it
-    al_set_target_bitmap (tmp_buffer);
-    al_clear_to_color (al_map_rgba_f (0, 0, 0, 1));
-  // Draw the bitmap to the temporary buffer
-    al_draw_bitmap (bmp, 0, 0, 0);
-  // Finally, draw the buffer to the screen
-  // The output will look incorrect (may take close inspection
-  // depending on the bitmap -- it may also be very obvious)
-    al_set_target_bitmap (al_get_backbuffer (display));
-    al_draw_bitmap (tmp_buffer, 0, 0, 0);
-#)
-    To explain further, if you have a pixel with 0.5 alpha, and you're using
-    @code(@(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA@)) for blending,
-    the formula is:
-@longcode(#
-    a := da * dst + sa * src
-#)
-    Expands to:
-@longcode(#
-    result_a := dst_a * (1-0.5) + 0.5 * 0.5
-#)
-    So if you draw the image to the temporary buffer, it is blended once
-    resulting in 0.75 alpha, then drawn again to the screen, blended in the
-    same way, resulting in a pixel has 0.1875 as an alpha value.)
-  @item(@bold(@code(ALLEGRO_KEEP_INDEX))
-
-    Load the palette indices of 8-bit .bmp and .pcx files instead of the rgb
-    colors.)
-  @item(@bold(@code(ALLEGRO_KEEP_BITMAP_FORMAT))
-
-    Force the resulting ALLEGRO_BITMAP to use the same format as the file.
-
-    This is not yet honoured.)
-))
-@returns(@nil on error.)
-@seealso(al_load_bitmap)
-#Allegro5.al_load_bitmap_f
-Loads an image from an @link(ALLEGRO_FILEptr) stream into a new
-@link(ALLEGRO_BITMAPptr). The file type is determined by the passed
-@code(ident) parameter, which is a file name extension including the leading
-dot. If (and only if) @code(ident) is @nil, the file type is determined with
-@link(al_identify_bitmap_f) instead.
-
-This is the same as calling @link(al_load_bitmap_flags_f) with @code(0) for
-the @code(flags) parameter.
-
-@bold(Note:) the core Allegro library does not support any image file
-formats by default. You must use the @link(al5image) addon, or register
-your own format handler.
-@return(@nil on error. The file remains open afterwards.)
-@seealso(al_load_bitmap_flags_f) @seealso(al_load_bitmap)
-@seealso(al_register_bitmap_loader_f) @seealso(al_init_image_addon)
-#Allegro5.al_load_bitmap_flags_f
-Loads an image from an @link(ALLEGRO_FILEptr) stream into a new
-@link(ALLEGRO_BITMAPptr). The file type is determined by the passed
-@code(ident) parameter, which is a file name extension including the leading
-dot. If (and only if) @code(ident) is @nil, the file type is determined with
-@link(al_identify_bitmap_f) instead.
-
-The @code(flags) parameter is the same as for @link(al_load_bitmap_flags).
-
-@bold(Note:) the core Allegro library does not support any image file
-formats by default. You must use the @link(al5image) addon, or register
-your own format handler.
-@return(@nil on error. The file remains open afterwards.)
-@seealso(al_load_bitmap_f) @seealso(al_load_bitmap_flags)
-#Allegro5.al_save_bitmap
-Saves an @code(ALLEGRO_BITMAP) to an image file. The file type is determined by
-the extension.
-
-@bold(Note:) the core Allegro library does not support any image file
-formats by default. You must use the @link(al5image) addon, or register your
-own format handler.
-@return(@true on success, @false on error.)
-@seealso(al_save_bitmap_f) @seealso(al_register_bitmap_saver)
-@seealso(al_init_image_addon)
-#Allegro5.al_save_bitmap_f
-Saves an ALLEGRO_BITMAP to an ALLEGRO_FILE stream. The file type is
-determined by the passed @code(ident) parameter, which is a file name
-extension including the leading dot.
-
-@bold(Note:) the core Allegro library does not support any image file
-formats by default. You must use the @link(al5image) addon, or register your
-own format handler.
-@return(@true on success, @false on error.)
-@seealso(al_save_bitmap) @seealso(al_register_bitmap_saver_f)
-@seealso(al_init_image_addon)
-#Allegro5.al_identify_bitmap_f
-Tries to guess the bitmap file type of the given file by reading the first
-few bytes. The extension, if any, of the passed filename is not taken into
-account - only the file contents. By default Allegro cannot recognize any
-file types, but calling @link(al_init_image_addon) will add detection of
-(some of) the types it can read.
-@returns(a pointer to a static string with a file extension for the type,
-including the leading dot. For example ".png" or ".jpg". Returns @nil if the
-bitmap type cannot be determined.)
-@seealso(al_init_image_addon) @seealso(al_identify_bitmap)
-@seealso(al_register_bitmap_identifier)
-#Allegro5.al_identify_bitmap
-This works exactly as @link(al_identify_bitmap_f) but you specify the
-filename of the file for which to detect the type and not a file handle. The
-extension, if any, of the passed filename is not taken into account - only
-the file contents.
-@returns(a pointer to a static string with a file extension for the type,
-including the leading dot. For example ".png" or ".jpg". Returns @nil if the
-bitmap type cannot be determined.)
-@seealso(al_init_image_addon) @seealso(al_identify_bitmap_f)
-@seealso(al_register_bitmap_identifier)

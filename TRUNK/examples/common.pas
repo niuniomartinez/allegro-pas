@@ -11,20 +11,16 @@ INTERFACE
 
 (* Initializes platform specific stuff. *)
   PROCEDURE InitPlatformSpecific;
-
 (* Exits program with error. *)
   PROCEDURE AbortExample (CONST Message: ANSISTRING);
-
 (* Opens a log window. *)
   PROCEDURE OpenLog;
   PROCEDURE OpenLogMonospace;
-
+(* Closes the log window. *)
+  PROCEDURE CloseLog (WaitForUser: BOOLEAN);
 (* Prints a message on the log window. *)
   PROCEDURE LogWrite (Str: ANSISTRING);
   PROCEDURE LogWriteLn (Str: ANSISTRING);
-
-(* Closes the log window. *)
-  PROCEDURE CloseLog (WaitForUser: BOOLEAN);
 
 IMPLEMENTATION
 
@@ -32,7 +28,6 @@ IMPLEMENTATION
   PROCEDURE InitPlatformSpecific;
   BEGIN
   { TODO: Android stuff, if android. }
-    ;
   END;
 
 
@@ -75,19 +70,6 @@ IMPLEMENTATION
 
 
 
-(* Prints a message on the log window. *)
-  PROCEDURE LogWrite (Str: ANSISTRING);
-  BEGIN
-    al_append_native_text_log (TextLog, Str)
-  END;
-
-  PROCEDURE LogWriteLn (Str: ANSISTRING);
-  BEGIN
-    al_append_native_text_log (TextLog, Str + #10)
-  END;
-
-
-
 (* Closes the log window. *)
   PROCEDURE CloseLog (WaitForUser: BOOLEAN);
   VAR
@@ -103,9 +85,24 @@ IMPLEMENTATION
       );
       al_wait_for_event (Queue, Event);
       al_destroy_event_queue (Queue)
-   END;
-   al_close_native_text_log (TextLog);
-   TextLog := NIL
+    END;
+    al_close_native_text_log (TextLog);
+    TextLog := NIL
   END;
+
+
+(* Prints a message on the log window. *)
+  PROCEDURE LogWrite (Str: ANSISTRING);
+  BEGIN
+    al_append_native_text_log (TextLog, Str)
+  END;
+
+  PROCEDURE LogWriteLn (Str: ANSISTRING);
+  BEGIN
+    al_append_native_text_log (TextLog, Str + #10)
+  END;
+
+
+
 
 END.

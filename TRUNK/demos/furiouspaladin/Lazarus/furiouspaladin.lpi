@@ -32,12 +32,17 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <Units Count="1">
+    <Units Count="2">
       <Unit0>
         <Filename Value="../furiouspaladin.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="FuriousPaladin"/>
       </Unit0>
+      <Unit1>
+        <Filename Value="../data.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Data"/>
+      </Unit1>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

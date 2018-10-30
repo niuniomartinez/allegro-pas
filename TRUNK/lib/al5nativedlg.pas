@@ -39,9 +39,6 @@ INTERFACE
     allegro5, al5base;
 
   CONST
-  { @exclude Library name. }
-    ALLEGRO_NATIVE_DLG_LIB_NAME = _A5_LIB_PREFIX_+'allegro_dialog'+_DBG_+_A5_LIB_EXT_;
-
     { @exclude }
     ALLEGRO_FILECHOOSER_FILE_MUST_EXIST = 1;
     { @exclude }

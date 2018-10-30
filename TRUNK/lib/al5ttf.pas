@@ -30,10 +30,6 @@ INTERFACE
     al5base, al5font;
 
   CONST
-  (* Builds library name. *)
-    { @exclude }
-    ALLEGRO_TTF_LIB_NAME = _A5_LIB_PREFIX_+'allegro_ttf'+_DBG_+_A5_LIB_EXT_;
-
   (* Do not use any kerning even if the font file supports it.
     @seealso(al_load_font) @seealso(al_load_ttf_font) *)
     ALLEGRO_TTF_NO_KERNING = 1;

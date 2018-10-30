@@ -1,5 +1,5 @@
 UNIT al5Base;
-(*<Base definitions to interface with Allegro dynamic module.
+(***<Base definitions to interface with Allegro dynamic module.
 
   This unit includes definitions of data types used by Allegro.  They're used
   internally to be sure they're the correct in any platform (i.e. 32bit or
@@ -31,10 +31,10 @@ UNIT al5Base;
 
 INTERFACE
 
-  (* Defines some constants to build the correct names of the library files. *)
   CONST
+  (* Defines some constants to build the correct names of the library files. *)
 {$IFDEF DEBUGMODE}
-    _DBG_ = '-debug';{<@exclude }
+    _DBG_ = '-debug'; {<@exclude }
 {$ELSE}
     _DBG_ = ''; {<@exclude }
 {$ENDIF}
@@ -47,8 +47,28 @@ INTERFACE
   {$INCLUDE al5_win.inc}
 {$ENDIF}
 
-  (* @exclude Builds main library name.  AFAIK it's not needed. *)
-    ALLEGRO_MAIN_LIB_NAME = _A5_LIB_PREFIX_+'allegro_main'+_DBG_+_A5_LIB_EXT_;
+{$IF DEFINED(WINDOWS) AND NOT DEFINED(NO_MONOLITH)}
+  (* @exclude Builds library name. *)
+    ALLEGRO_LIB_NAME = 'allegro_monolith' + _DBG_ + '-5.2.dll';
+    ALLEGRO_ACODEC_LIB_NAME = ALLEGRO_LIB_NAME; {<@exclude }
+    ALLEGRO_AUDIO_LIB_NAME = ALLEGRO_LIB_NAME; {<@exclude }
+    ALLEGRO_COLOR_LIB_NAME = ALLEGRO_LIB_NAME; {<@exclude }
+    ALLEGRO_FONT_LIB_NAME = ALLEGRO_LIB_NAME; {<@exclude }
+    ALLEGRO_IMAGE_LIB_NAME = ALLEGRO_LIB_NAME; {<@exclude }
+    ALLEGRO_NATIVE_DLG_LIB_NAME = ALLEGRO_LIB_NAME; {<@exclude }
+    ALLEGRO_PRIMITIVES_LIB_NAME = ALLEGRO_LIB_NAME; {<@exclude }
+    ALLEGRO_TTF_LIB_NAME = ALLEGRO_LIB_NAME; {<@exclude}
+{$ELSE}
+    ALLEGRO_LIB_NAME = _A5_LIB_PREFIX_+'allegro'+_DBG_+_A5_LIB_EXT_; {<@exclude }
+    ALLEGRO_ACODEC_LIB_NAME = _A5_LIB_PREFIX_+'allegro_acodec'+_DBG_+_A5_LIB_EXT_; {<@exclude }
+    ALLEGRO_AUDIO_LIB_NAME = _A5_LIB_PREFIX_+'allegro_audio'+_DBG_+_A5_LIB_EXT_; {<@exclude }
+    ALLEGRO_COLOR_LIB_NAME = _A5_LIB_PREFIX_+'allegro_color'+_DBG_+_A5_LIB_EXT_; {<@exclude }
+    ALLEGRO_FONT_LIB_NAME = _A5_LIB_PREFIX_+'allegro_font'+_DBG_+_A5_LIB_EXT_; {<@exclude }
+    ALLEGRO_IMAGE_LIB_NAME = _A5_LIB_PREFIX_+'allegro_image'+_DBG_+_A5_LIB_EXT_; {<@exclude }
+    ALLEGRO_NATIVE_DLG_LIB_NAME = _A5_LIB_PREFIX_+'allegro_dialog'+_DBG_+_A5_LIB_EXT_; {<@exclude }
+    ALLEGRO_PRIMITIVES_LIB_NAME = _A5_LIB_PREFIX_+'allegro_primitives'+_DBG_+_A5_LIB_EXT_; {<@exclude }
+    ALLEGRO_TTF_LIB_NAME = _A5_LIB_PREFIX_+'allegro_ttf'+_DBG_+_A5_LIB_EXT_; {<@exclude }
+{$ENDIF}
 
 
 

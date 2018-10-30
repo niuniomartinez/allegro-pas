@@ -30,8 +30,9 @@ program FuriousPaladin;
 {$ENDIF}
 
 uses
+  Data,
   Classes, SysUtils, al5Base, al5image, al5font, al5ttf,
-  al5primitives, al5audio, al5acodec, Allegro5;
+  al5primitives, al5audio, al5acodec, Allegro5, al5nativedlg;
 
 type
 
@@ -121,7 +122,6 @@ procedure ProcessInit;
 var
   MonitorInfo: ALLEGRO_MONITOR_INFO;
   Transform: ALLEGRO_TRANSFORM;
-  DataPath: string;
   i: Integer;
 begin
 
@@ -134,9 +134,6 @@ begin
 
   // Quit if Allegro fails to start
   if not(al_init) then Halt;
-
-  // Get default data path used for loading font, images and sounds
-  DataPath := ExtractFilePath(ParamStr(0))+'data'+DirectorySeparator;
 
   // Prepare display
   al_get_monitor_info(0, MonitorInfo);
@@ -157,7 +154,7 @@ begin
   // Enable font;
   al_init_font_addon;
   al_init_ttf_addon;
-  SystemFont := al_load_ttf_font(DataPath+'tuffy_bold.ttf', 12, 0);
+  SystemFont := LoadFont ('tuffy_bold.ttf', 12);
   // Enable drawing basic shapes
   al_init_primitives_addon;
   // Enable audio
@@ -172,200 +169,200 @@ begin
   al_start_timer(Timer);
 
   // Load background image
-  ImgIntroPage1  := al_load_bitmap(DataPath+'imgintro1.jpg');
-  ImgIntroPage2  := al_load_bitmap(DataPath+'imgintro2.jpg');
-  ImgBackground1 := al_load_bitmap(DataPath+'imgdusk.jpg');
-  ImgBackground2 := al_load_bitmap(DataPath+'imgdawn.jpg');
-  ImgPaused      := al_load_bitmap(DataPath+'imgpaused.png');
-  ImgWin         := al_load_bitmap(DataPath+'imgwin.png');
-  ImgFailed      := al_load_bitmap(DataPath+'imgfailed.png');
+  ImgIntroPage1  := LoadBitmap ('imgintro1.jpg');
+  ImgIntroPage2  := LoadBitmap ('imgintro2.jpg');
+  ImgBackground1 := LoadBitmap ('imgdusk.jpg');
+  ImgBackground2 := LoadBitmap ('imgdawn.jpg');
+  ImgPaused      := LoadBitmap ('imgpaused.png');
+  ImgWin         := LoadBitmap ('imgwin.png');
+  ImgFailed      := LoadBitmap ('imgfailed.png');
 
   // Load animation data: Player Walk Left
   with imgPlayerWalkL do begin
     Delay := 4;
     Count := 8;
     SetLength(Images, Count);
-    Images[0] := al_load_bitmap(DataPath+'hero-walk-w00.png');
-    Images[1] := al_load_bitmap(DataPath+'hero-walk-w01.png');
-    Images[2] := al_load_bitmap(DataPath+'hero-walk-w02.png');
-    Images[3] := al_load_bitmap(DataPath+'hero-walk-w03.png');
-    Images[4] := al_load_bitmap(DataPath+'hero-walk-w04.png');
-    Images[5] := al_load_bitmap(DataPath+'hero-walk-w05.png');
-    Images[6] := al_load_bitmap(DataPath+'hero-walk-w06.png');
-    Images[7] := al_load_bitmap(DataPath+'hero-walk-w07.png');
+    Images[0] := LoadBitmap ('hero-walk-w00.png');
+    Images[1] := LoadBitmap ('hero-walk-w01.png');
+    Images[2] := LoadBitmap ('hero-walk-w02.png');
+    Images[3] := LoadBitmap ('hero-walk-w03.png');
+    Images[4] := LoadBitmap ('hero-walk-w04.png');
+    Images[5] := LoadBitmap ('hero-walk-w05.png');
+    Images[6] := LoadBitmap ('hero-walk-w06.png');
+    Images[7] := LoadBitmap ('hero-walk-w07.png');
   end;
   // Load animation data: Player Walk Right
   with ImgPlayerWalkR do begin
     Delay := 4;
     Count := 8;
     SetLength(Images, Count);
-    Images[0] := al_load_bitmap(DataPath+'hero-walk-e00.png');
-    Images[1] := al_load_bitmap(DataPath+'hero-walk-e01.png');
-    Images[2] := al_load_bitmap(DataPath+'hero-walk-e02.png');
-    Images[3] := al_load_bitmap(DataPath+'hero-walk-e03.png');
-    Images[4] := al_load_bitmap(DataPath+'hero-walk-e04.png');
-    Images[5] := al_load_bitmap(DataPath+'hero-walk-e05.png');
-    Images[6] := al_load_bitmap(DataPath+'hero-walk-e06.png');
-    Images[7] := al_load_bitmap(DataPath+'hero-walk-e07.png');
+    Images[0] := LoadBitmap ('hero-walk-e00.png');
+    Images[1] := LoadBitmap ('hero-walk-e01.png');
+    Images[2] := LoadBitmap ('hero-walk-e02.png');
+    Images[3] := LoadBitmap ('hero-walk-e03.png');
+    Images[4] := LoadBitmap ('hero-walk-e04.png');
+    Images[5] := LoadBitmap ('hero-walk-e05.png');
+    Images[6] := LoadBitmap ('hero-walk-e06.png');
+    Images[7] := LoadBitmap ('hero-walk-e07.png');
   end;
   // Load animation data: Player Attack Left
   with ImgPlayerAttackL do begin
     Delay := 6;
     Count := 7;
     SetLength(Images, Count);
-    Images[0] := al_load_bitmap(DataPath+'hero-attack-w00.png');
-    Images[1] := al_load_bitmap(DataPath+'hero-attack-w03.png');
-    Images[2] := al_load_bitmap(DataPath+'hero-attack-w04.png');
-    Images[3] := al_load_bitmap(DataPath+'hero-attack-w07.png');
-    Images[4] := al_load_bitmap(DataPath+'hero-attack-w09.png');
-    Images[5] := al_load_bitmap(DataPath+'hero-attack-w11.png');
-    Images[6] := al_load_bitmap(DataPath+'hero-attack-w12.png');
+    Images[0] := LoadBitmap ('hero-attack-w00.png');
+    Images[1] := LoadBitmap ('hero-attack-w03.png');
+    Images[2] := LoadBitmap ('hero-attack-w04.png');
+    Images[3] := LoadBitmap ('hero-attack-w07.png');
+    Images[4] := LoadBitmap ('hero-attack-w09.png');
+    Images[5] := LoadBitmap ('hero-attack-w11.png');
+    Images[6] := LoadBitmap ('hero-attack-w12.png');
   end;
   // Load animation data: Player Attack Right
   with ImgPlayerAttackR do begin
     Delay := 6;
     Count := 7;
     SetLength(Images, Count);
-    Images[0] := al_load_bitmap(DataPath+'hero-attack-e00.png');
-    Images[1] := al_load_bitmap(DataPath+'hero-attack-e03.png');
-    Images[2] := al_load_bitmap(DataPath+'hero-attack-e04.png');
-    Images[3] := al_load_bitmap(DataPath+'hero-attack-e07.png');
-    Images[4] := al_load_bitmap(DataPath+'hero-attack-e09.png');
-    Images[5] := al_load_bitmap(DataPath+'hero-attack-e11.png');
-    Images[6] := al_load_bitmap(DataPath+'hero-attack-e12.png');
+    Images[0] := LoadBitmap ('hero-attack-e00.png');
+    Images[1] := LoadBitmap ('hero-attack-e03.png');
+    Images[2] := LoadBitmap ('hero-attack-e04.png');
+    Images[3] := LoadBitmap ('hero-attack-e07.png');
+    Images[4] := LoadBitmap ('hero-attack-e09.png');
+    Images[5] := LoadBitmap ('hero-attack-e11.png');
+    Images[6] := LoadBitmap ('hero-attack-e12.png');
   end;
   // Load animation data: Player Idle Left
   with ImgPlayerIdleL do begin
     Delay := 12;
     Count := 9;
     SetLength(Images, Count);
-    Images[0] := al_load_bitmap(DataPath+'hero-idle-w00.png');
-    Images[1] := al_load_bitmap(DataPath+'hero-idle-w01.png');
-    Images[2] := al_load_bitmap(DataPath+'hero-idle-w02.png');
-    Images[3] := al_load_bitmap(DataPath+'hero-idle-w03.png');
-    Images[4] := al_load_bitmap(DataPath+'hero-idle-w04.png');
-    Images[5] := al_load_bitmap(DataPath+'hero-idle-w05.png');
-    Images[6] := al_load_bitmap(DataPath+'hero-idle-w06.png');
-    Images[7] := al_load_bitmap(DataPath+'hero-idle-w07.png');
-    Images[8] := al_load_bitmap(DataPath+'hero-idle-w07.png');
+    Images[0] := LoadBitmap ('hero-idle-w00.png');
+    Images[1] := LoadBitmap ('hero-idle-w01.png');
+    Images[2] := LoadBitmap ('hero-idle-w02.png');
+    Images[3] := LoadBitmap ('hero-idle-w03.png');
+    Images[4] := LoadBitmap ('hero-idle-w04.png');
+    Images[5] := LoadBitmap ('hero-idle-w05.png');
+    Images[6] := LoadBitmap ('hero-idle-w06.png');
+    Images[7] := LoadBitmap ('hero-idle-w07.png');
+    Images[8] := LoadBitmap ('hero-idle-w07.png');
   end;
   // Load animation data: Player Idle Right
   with ImgPlayerIdleR do begin
     Delay := 12;
     Count := 9;
     SetLength(Images, Count);
-    Images[0] := al_load_bitmap(DataPath+'hero-idle-e00.png');
-    Images[1] := al_load_bitmap(DataPath+'hero-idle-e01.png');
-    Images[2] := al_load_bitmap(DataPath+'hero-idle-e02.png');
-    Images[3] := al_load_bitmap(DataPath+'hero-idle-e03.png');
-    Images[4] := al_load_bitmap(DataPath+'hero-idle-e04.png');
-    Images[5] := al_load_bitmap(DataPath+'hero-idle-e05.png');
-    Images[6] := al_load_bitmap(DataPath+'hero-idle-e06.png');
-    Images[7] := al_load_bitmap(DataPath+'hero-idle-e07.png');
-    Images[8] := al_load_bitmap(DataPath+'hero-idle-e07.png');
+    Images[0] := LoadBitmap ('hero-idle-e00.png');
+    Images[1] := LoadBitmap ('hero-idle-e01.png');
+    Images[2] := LoadBitmap ('hero-idle-e02.png');
+    Images[3] := LoadBitmap ('hero-idle-e03.png');
+    Images[4] := LoadBitmap ('hero-idle-e04.png');
+    Images[5] := LoadBitmap ('hero-idle-e05.png');
+    Images[6] := LoadBitmap ('hero-idle-e06.png');
+    Images[7] := LoadBitmap ('hero-idle-e07.png');
+    Images[8] := LoadBitmap ('hero-idle-e07.png');
   end;
   // Load animation data: Player Been Hit Left
   with ImgPlayerBeenHitL do begin
     Delay := 6;
     Count := 4;
     SetLength(Images, Count);
-    Images[0] := al_load_bitmap(DataPath+'hero-been-hit-w00.png');
-    Images[1] := al_load_bitmap(DataPath+'hero-been-hit-w04.png');
-    Images[2] := al_load_bitmap(DataPath+'hero-been-hit-w07.png');
-    Images[3] := al_load_bitmap(DataPath+'hero-been-hit-w08.png');
+    Images[0] := LoadBitmap ('hero-been-hit-w00.png');
+    Images[1] := LoadBitmap ('hero-been-hit-w04.png');
+    Images[2] := LoadBitmap ('hero-been-hit-w07.png');
+    Images[3] := LoadBitmap ('hero-been-hit-w08.png');
   end;
   // Load animation data: Player Been Hit Right
   with ImgPlayerBeenHitR do begin
     Delay := 6;
     Count := 4;
     SetLength(Images, Count);
-    Images[0] := al_load_bitmap(DataPath+'hero-been-hit-e00.png');
-    Images[1] := al_load_bitmap(DataPath+'hero-been-hit-e04.png');
-    Images[2] := al_load_bitmap(DataPath+'hero-been-hit-e07.png');
-    Images[3] := al_load_bitmap(DataPath+'hero-been-hit-e08.png');
+    Images[0] := LoadBitmap ('hero-been-hit-e00.png');
+    Images[1] := LoadBitmap ('hero-been-hit-e04.png');
+    Images[2] := LoadBitmap ('hero-been-hit-e07.png');
+    Images[3] := LoadBitmap ('hero-been-hit-e08.png');
   end;
   // Load animation data: Zombie Walk Left
   with ImgZombieWalkL do begin
     Delay := 9;
     Count := 8;
     SetLength(Images, Count);
-    Images[0] := al_load_bitmap(DataPath+'zombie-walk-w00.png');
-    Images[1] := al_load_bitmap(DataPath+'zombie-walk-w01.png');
-    Images[2] := al_load_bitmap(DataPath+'zombie-walk-w02.png');
-    Images[3] := al_load_bitmap(DataPath+'zombie-walk-w03.png');
-    Images[4] := al_load_bitmap(DataPath+'zombie-walk-w04.png');
-    Images[5] := al_load_bitmap(DataPath+'zombie-walk-w05.png');
-    Images[6] := al_load_bitmap(DataPath+'zombie-walk-w06.png');
-    Images[7] := al_load_bitmap(DataPath+'zombie-walk-w07.png');
+    Images[0] := LoadBitmap ('zombie-walk-w00.png');
+    Images[1] := LoadBitmap ('zombie-walk-w01.png');
+    Images[2] := LoadBitmap ('zombie-walk-w02.png');
+    Images[3] := LoadBitmap ('zombie-walk-w03.png');
+    Images[4] := LoadBitmap ('zombie-walk-w04.png');
+    Images[5] := LoadBitmap ('zombie-walk-w05.png');
+    Images[6] := LoadBitmap ('zombie-walk-w06.png');
+    Images[7] := LoadBitmap ('zombie-walk-w07.png');
   end;
   // Load animation data: Zombie Walk Right
   with ImgZombieWalkR do begin
     Delay := 9;
     Count := 8;
     SetLength(Images, Count);
-    Images[0] := al_load_bitmap(DataPath+'zombie-walk-e00.png');
-    Images[1] := al_load_bitmap(DataPath+'zombie-walk-e01.png');
-    Images[2] := al_load_bitmap(DataPath+'zombie-walk-e02.png');
-    Images[3] := al_load_bitmap(DataPath+'zombie-walk-e03.png');
-    Images[4] := al_load_bitmap(DataPath+'zombie-walk-e04.png');
-    Images[5] := al_load_bitmap(DataPath+'zombie-walk-e05.png');
-    Images[6] := al_load_bitmap(DataPath+'zombie-walk-e06.png');
-    Images[7] := al_load_bitmap(DataPath+'zombie-walk-e07.png');
+    Images[0] := LoadBitmap ('zombie-walk-e00.png');
+    Images[1] := LoadBitmap ('zombie-walk-e01.png');
+    Images[2] := LoadBitmap ('zombie-walk-e02.png');
+    Images[3] := LoadBitmap ('zombie-walk-e03.png');
+    Images[4] := LoadBitmap ('zombie-walk-e04.png');
+    Images[5] := LoadBitmap ('zombie-walk-e05.png');
+    Images[6] := LoadBitmap ('zombie-walk-e06.png');
+    Images[7] := LoadBitmap ('zombie-walk-e07.png');
   end;
   // Load animation data: Zombie Attack Left
   with ImgZombieAttackL do begin
     Delay := 15;
     Count := 7;
     SetLength(Images, Count);
-    Images[0] := al_load_bitmap(DataPath+'zombie-attack-w00.png');
-    Images[1] := al_load_bitmap(DataPath+'zombie-attack-w02.png');
-    Images[2] := al_load_bitmap(DataPath+'zombie-attack-w04.png');
-    Images[3] := al_load_bitmap(DataPath+'zombie-attack-w06.png');
-    Images[4] := al_load_bitmap(DataPath+'zombie-attack-w08.png');
-    Images[5] := al_load_bitmap(DataPath+'zombie-attack-w09.png');
-    Images[6] := al_load_bitmap(DataPath+'zombie-attack-w10.png');
+    Images[0] := LoadBitmap ('zombie-attack-w00.png');
+    Images[1] := LoadBitmap ('zombie-attack-w02.png');
+    Images[2] := LoadBitmap ('zombie-attack-w04.png');
+    Images[3] := LoadBitmap ('zombie-attack-w06.png');
+    Images[4] := LoadBitmap ('zombie-attack-w08.png');
+    Images[5] := LoadBitmap ('zombie-attack-w09.png');
+    Images[6] := LoadBitmap ('zombie-attack-w10.png');
   end;
   // Load animation data: Zombie Attack Right
   with ImgZombieAttackR do begin
     Delay := 15;
     Count := 7;
     SetLength(Images, Count);
-    Images[0] := al_load_bitmap(DataPath+'zombie-attack-e00.png');
-    Images[1] := al_load_bitmap(DataPath+'zombie-attack-e02.png');
-    Images[2] := al_load_bitmap(DataPath+'zombie-attack-e04.png');
-    Images[3] := al_load_bitmap(DataPath+'zombie-attack-e06.png');
-    Images[4] := al_load_bitmap(DataPath+'zombie-attack-e08.png');
-    Images[5] := al_load_bitmap(DataPath+'zombie-attack-e09.png');
-    Images[6] := al_load_bitmap(DataPath+'zombie-attack-e10.png');
+    Images[0] := LoadBitmap ('zombie-attack-e00.png');
+    Images[1] := LoadBitmap ('zombie-attack-e02.png');
+    Images[2] := LoadBitmap ('zombie-attack-e04.png');
+    Images[3] := LoadBitmap ('zombie-attack-e06.png');
+    Images[4] := LoadBitmap ('zombie-attack-e08.png');
+    Images[5] := LoadBitmap ('zombie-attack-e09.png');
+    Images[6] := LoadBitmap ('zombie-attack-e10.png');
   end;
   // Load animation data: Zombie Killed Left
   with ImgZombieKilledL do begin
     Delay := 10;
     Count := 5;
     SetLength(Images, Count);
-    Images[0] := al_load_bitmap(DataPath+'zombie-killed-w00.png');
-    Images[1] := al_load_bitmap(DataPath+'zombie-killed-w03.png');
-    Images[2] := al_load_bitmap(DataPath+'zombie-killed-w04.png');
-    Images[3] := al_load_bitmap(DataPath+'zombie-killed-w07.png');
-    Images[4] := al_load_bitmap(DataPath+'zombie-killed-w08.png');
+    Images[0] := LoadBitmap ('zombie-killed-w00.png');
+    Images[1] := LoadBitmap ('zombie-killed-w03.png');
+    Images[2] := LoadBitmap ('zombie-killed-w04.png');
+    Images[3] := LoadBitmap ('zombie-killed-w07.png');
+    Images[4] := LoadBitmap ('zombie-killed-w08.png');
   end;
   // Load animation data: Zombie Killed Right
   with ImgZombieKilledR do begin
     Delay := 10;
     Count := 5;
     SetLength(Images, Count);
-    Images[0] := al_load_bitmap(DataPath+'zombie-killed-e00.png');
-    Images[1] := al_load_bitmap(DataPath+'zombie-killed-e03.png');
-    Images[2] := al_load_bitmap(DataPath+'zombie-killed-e04.png');
-    Images[3] := al_load_bitmap(DataPath+'zombie-killed-e07.png');
-    Images[4] := al_load_bitmap(DataPath+'zombie-killed-e08.png');
+    Images[0] := LoadBitmap ('zombie-killed-e00.png');
+    Images[1] := LoadBitmap ('zombie-killed-e03.png');
+    Images[2] := LoadBitmap ('zombie-killed-e04.png');
+    Images[3] := LoadBitmap ('zombie-killed-e07.png');
+    Images[4] := LoadBitmap ('zombie-killed-e08.png');
   end;
 
   // Load audio data
-  AudioBackground := al_load_sample(DataPath+'auduntitledremix.ogg');
-  AudioSword      := al_load_sample(DataPath+'audsword sound.wav');
-  AudioHurt       := al_load_sample(DataPath+'audhit1.ogg');
-  AudioFailed     := al_load_sample(DataPath+'auddie1.ogg');
+  AudioBackground := LoadSample ('auduntitledremix.ogg');
+  AudioSword      := LoadSample ('audsword.wav');
+  AudioHurt       := LoadSample ('audhit1.ogg');
+  AudioFailed     := LoadSample ('auddie1.ogg');
   AudioInstance   := al_create_sample_instance(AudioBackground);
 
 
@@ -865,6 +862,8 @@ end;
 var
   Event: ALLEGRO_EVENT;
 begin
+  TRY
+
   ProcessInit;
   Start(Intro1);
   while (GameIsRunning) do begin
@@ -874,4 +873,18 @@ begin
     ProcessDrawing;
   end;
   ProcessShutdown;
+
+  EXCEPT
+    ON Error: Exception DO
+    BEGIN
+      ProcessShutDown;
+    { This should shutdown Allegro removing all stuff. }
+      al_uninstall_system;
+      al_show_native_message_box (
+        NIL,
+        'Furious Paladin', 'An exception raised', Error.Message,
+        '', ALLEGRO_MESSAGEBOX_ERROR
+      )
+    END;
+  END;
 end.
