@@ -3,7 +3,8 @@
   This works also for Lazarus IDE, but you should read "lazarus.txt" too for
   more information.  For Delphi read "delphi.txt".
 
-  Note that you must install Allegro first.  Read "windows.txt" or "linux.txt".
+  Before to use Allegro.pas you must install Allegro itself.  If you didn't
+  yet, please read the appropriate document for your operating system.
 
 The Allegro.pas units
 ---------------------
@@ -20,7 +21,7 @@ Adding to the project
 
   To keep things ordered I recommend you to keep the Allegro.pas in a
   subdirectory and name it "allegro" and use the FPC option -Fu when compiling.
-  Don't forget to use -Fi too as Allegro.pas units needs to include some files.
+  Don't forget to use -Fi too as Allegro.pas units need to include some files.
 
 Adding to the fpc.cfg file
 --------------------------
@@ -41,11 +42,11 @@ c:\fpc\<version_number>\units\<architecture>
 
 /usr/lib/fpc/<version_number>/units/<architecture>
 
-  Where <version_number> is the version of FPC (i.e. 3.0.0) and <architecture>
-  is the architecture of your operating system (i.e. x86_64-linux, 1386-win32,
-  ...).
+  Where <version_number> is the version of FPC (for example 3.0.0) and
+  <architecture> is the architecture of your operating system (for example
+  x86_64-linux, 1386-win32, ...).
 
-  I recommend you to put files inside a subdirectory named "allegro5".
+  I recommend you to put the files inside a subdirectory named "allegro5".
 
 Differences between Delphi, Free Pascal and Lazarus
 ---------------------------------------------------
@@ -80,7 +81,7 @@ Windows manifest
 
   You don't need to change any of the files, as only installation and few
   administration programs (and not all them) may need some special stuff (which
-  makes Windows permission system even more weirdest and uselessest I thought).
+  makes Windows permission system even more weirdest and uselessest, IMHO).
   Anyway you can open them and see how they are.
 
   This works also for Lazarus.

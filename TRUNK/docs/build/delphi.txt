@@ -2,7 +2,8 @@
   This document explains how to use Allegro.pas with Delphi. For Lazarus read
   "lazarus.txt".  For Free Pascal read "fpc.txt".
 
-  Note that you must install Allegro first.  Read "windows.txt" or "linux.txt".
+  Before to use Allegro.pas you must install Allegro itself.  If you didn't
+  yet, please read the appropriate document for your operating system.
 
   Also note that Allegro.pas was tested ONLY with Delphi 10.2 Tokio Sarter
   Edition.  We tried to make it compatible with most Delphi versions available
@@ -20,16 +21,16 @@ Compiling examples and demonstration game
   NOTE: All examples compile except ex_fileslice and ex_saw.  All the ones that
 	compile run except ex_camera, ex_prim and ex_projection.  I have not
 	much experience with Delphi (last one I used was Delphi 6) so I don't
-	know how to fix them (yet).
+	know how to fix them, but I'm still working on them.  If you find what
+	are the problems, let me know.
 
 Creating a new game project
 ---------------------------
 
   To create a new project using Allegro.pas create a "console" project.  I
-  haven't use Allegro.pas along with VCL or Firemonkey so I have no idea ir it
+  haven't use Allegro.pas along with VCL or Firemonkey so I have no idea if it
   works or bad things may happen.  Experience with Lazarus (FCL and LCL) says
-  that it would not work at all because both use threads and they manage them
-  differently.
+  that it would not work due to incompatible thread management.
 
   All units needed to use Allegro.pas are in the "~/lib" directory.  You'll
   need all "pas", "inc" and "cfg" files.  You can copy such directory to your

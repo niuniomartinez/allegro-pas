@@ -42,7 +42,7 @@ status: adbanner
 
 # Cleans everything.
 veryclean: clean
-	$(DELETE) $(EXMFILES
+	$(DELETE) $(EXMFILES)
 	$(DELETE) $(DEMFILES)
 
 # Clean temporary files.

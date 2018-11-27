@@ -100,6 +100,7 @@ INTERFACE
 
   TYPE
     ALLEGRO_TIMEOUT = RECORD
+    (*** @exclude *)
       __pad1__, __pad2__: AL_UINT64;
     END;
 
@@ -125,8 +126,6 @@ INTERFACE
     END;
 
     ALLEGRO_PIXEL_FORMAT = (
-    (*** Let the driver choose a format. This is the default format at program
-       start. *)
       ALLEGRO_PIXEL_FORMAT_ANY = 0,
     (*** Let the driver choose a format without alpha. *)
       ALLEGRO_PIXEL_FORMAT_ANY_NO_ALPHA = 1,
@@ -176,31 +175,12 @@ INTERFACE
       ALLEGRO_PIXEL_FORMAT_XRGB_8888 = 23,
     (*** 128 bit *)
       ALLEGRO_PIXEL_FORMAT_ABGR_F32 = 24,
-    (*** Like the version without _LE, but the component order is guaranteed to
-       be red, green, blue, alpha. This only makes a difference on big endian
-       systems, on little endian it is just an alias. *)
       ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE = 25,
     (*** 16bit *)
       ALLEGRO_PIXEL_FORMAT_RGBA_4444  = 26,
-    (*** A single 8-bit channel. A pixel value maps onto the red channel when
-       displayed, but it is undefined how it maps onto green, blue and alpha
-       channels. When drawing to bitmaps of this format, only the red channel
-       is taken into account. Allegro may have to use fallback methods to
-       render to bitmaps of this format. This pixel format is mainly intended
-       for storing the color indices of an indexed (paletted) image, usually in
-       conjunction with a pixel shader that maps indices to RGBA values. *)
       ALLEGRO_PIXEL_FORMAT_SINGLE_CHANNEL_8 = 27,
-    (*** Compressed using the DXT1 compression algorithm. Each 4x4 pixel block
-       is encoded in 64 bytes, resulting in 6-8x compression ratio. Only a
-       single bit of alpha per pixel is supported. *)
       ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT1 = 28,
-    (*** Compressed using the DXT3 compression algorithm. Each 4x4 pixel block
-       is encoded in 128 bytes, resulting in 4x compression ratio. This format
-       supports sharp alpha transitions. *)
       ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT3 = 29,
-    (*** Compressed using the DXT5 compression algorithm. Each 4x4 pixel block
-       is encoded in 128 bytes, resulting in 4x compression ratio. This format
-       supports smooth alpha transitions. *)
       ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT5 = 30,
       ALLEGRO_NUM_PIXEL_FORMATS
     );
@@ -395,7 +375,8 @@ INTERFACE
 	Only basic functionality is implemented for convenience.
 
 	Use Delphi/FPC native UNICODE support if needed. }
-  {TODO: There are a lot of stuff to add here. }
+  {TODO: There are a lot of stuff to add here, including WIDESTRING and/or
+	 UNICODESTRING support. }
 
   TYPE
   (*** @exclude *)
@@ -671,127 +652,34 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  *****************************************************************************)
 
   CONST
-  (* Locking flags. Documented at al_lock_bitmap. *)
-  { @exclude }
-    ALLEGRO_LOCK_READWRITE  = 0;
-  { @exclude }
-    ALLEGRO_LOCK_READONLY   = 1;
-  { @exclude }
-    ALLEGRO_LOCK_WRITEONLY  = 2;
+  (* Locking flags. *)
+  { May be these should be an enum as the original implementation. }
+    ALLEGRO_LOCK_READWRITE  = 0; (***<@exclude *)
+    ALLEGRO_LOCK_READONLY   = 1; (***<@exclude *)
+    ALLEGRO_LOCK_WRITEONLY  = 2; (***<@exclude *)
 
   TYPE
-  (* Pointer to @link(ALLEGRO_LOCKED_REGION). *)
+  (*** Pointer to @link(ALLEGRO_LOCKED_REGION). *)
     ALLEGRO_LOCKED_REGIONptr = ^ALLEGRO_LOCKED_REGION;
-  (* Users who wish to manually edit or read from a bitmap are required to lock
-     it first.  The @code(ALLEGRO_LOCKED_REGION) structure represents the
-     locked region of the bitmap.  This call will work with any bitmap,
-     including memory bitmaps.
-     @seealso(al_lock_bitmap) @seealso(al_lock_bitmap_region)
-     @seealso(al_unlock_bitmap) @seealso(ALLEGRO_PIXEL_FORMAT) *)
     ALLEGRO_LOCKED_REGION = RECORD
-    (* Points to the leftmost pixel of the first row (row 0) of the locked
-       region. *)
       data: AL_VOIDptr;
-    (* Indicates the pixel format of the data. *)
       format,
-    (* Gives the size in bytes of a single row (also known as the stride).  The
-       pitch may be greater than @code(width * pixel_size) due to padding; this
-       is not uncommon.  It is also not uncommon for the pitch to be negative
-       (the bitmap may be upside down). *)
       pitch,
-    (* Number of bytes used to represent a single pixel. *)
       pixel_size: AL_INT;
     END;
 
 
 
- (* Lock an entire bitmap for reading or writing. If the bitmap is a display
-    bitmap it will be updated from system memory after the bitmap is unlocked
-    (unless locked read only).
-
-    On some platforms, Allegro automatically backs up the contents of video
-    bitmaps because they may be occasionally lost (see discussion in
-    @link(al_create_bitmap)'s documentation). If you're completely recreating
-    the bitmap contents often (e.g. every frame) then you will get much better
-    performance by creating the target bitmap with
-    @code(ALLEGRO_NO_PRESERVE_TEXTURE) flag.
-
-    @bold(Note:) While a bitmap is locked, you can not use any drawing
-    operations on it (with the sole exception of @link(al_put_pixel) and
-    @link(al_put_blended_pixel)).
-    @returns(@nil if the bitmap cannot be locked, e.g. the bitmap was locked
-    previously and not unlocked. This function also returns @nil if the format
-    is a compressed format.)
-    @param(flags @unorderedlist(
-      @item(@code(ALLEGRO_LOCK_READONLY) The locked region will not be written
-        to. This can be faster if the bitmap is a video texture, as it can be
-        discarded after the lock instead of uploaded back to the card.)
-      @item(@code(ALLEGRO_LOCK_WRITEONLY) The locked region will not be read
-        from. This can be faster if the bitmap is a video texture, as no data
-        need to be read from the video card. You are required to fill in all
-        pixels before unlocking the bitmap again, so be careful when using this
-        flag.)
-      @item(@code(ALLEGRO_LOCK_READWRITE) The locked region can be written to
-        and read from. Use this flag if a partial number of pixels need to be
-        written to, even if reading is not needed.)
-    ))
-    @param(format Indicates the pixel format that the returned buffer will be
-      in. To lock in the same format as the bitmap stores its data internally,
-      call with @code(al_get_bitmap_format @(bitmap@)) as the format or use
-      @code(ALLEGRO_PIXEL_FORMAT_ANY). Locking in the native format will
-      usually be faster. If the bitmap format is compressed, using
-      @code(ALLEGRO_PIXEL_FORMAT_ANY) will choose an implementation defined
-      non-compressed format.)
-    @seealso(ALLEGRO_LOCKED_REGION) @seealso(ALLEGRO_PIXEL_FORMAT)
-    @seealso(al_unlock_bitmap) @seealso(al_lock_bitmap_region)
-    @seealso(al_lock_bitmap_blocked) @seealso(al_lock_bitmap_region_blocked) *)
   FUNCTION al_lock_bitmap (bitmap: ALLEGRO_BITMAPptr; format: ALLEGRO_PIXEL_FORMAT; flags: AL_INT): ALLEGRO_LOCKED_REGIONptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Like @link(al_lock_bitmap), but only locks a specific area of the bitmap. If
-   the bitmap is a video bitmap, only that area of the texture will be updated
-   when it is unlocked. Locking only the region you indend to modify will be
-   faster than locking the whole bitmap.
-
-   @bold(Note:) Using the @code(ALLEGRO_LOCK_WRITEONLY) with a blocked pixel
-   format (i.e. formats for which @link(al_get_pixel_block_width) or
-   @link(al_get_pixel_block_height) do not return 1) requires you to have the
-   region be aligned to the block width for optimal performance. If it is not,
-   then the function will have to lock the region with the
-   @code(ALLEGRO_LOCK_READWRITE) instead in order to pad this region with
-   valid data.
-   @seealso(ALLEGRO_LOCKED_REGION) @seealso(ALLEGRO_PIXEL_FORMAT)
-   @seealso(al_unlock_bitmap) *)
   FUNCTION al_lock_bitmap_region (bitmap: ALLEGRO_BITMAPptr; x, y, width, height: AL_INT; format: ALLEGRO_PIXEL_FORMAT; flags: AL_INT): ALLEGRO_LOCKED_REGIONptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Like @link(al_lock_bitmap), but allows locking bitmaps with a blocked pixel
-   format (i.e. a format for which @link(al_get_pixel_block_width) or
-   @link(al_get_pixel_block_height) do not return 1) in that format. To that
-   end, this function also does not allow format conversion. For bitmap formats
-   with a block size of 1, this function is identical to calling
-   @code(al_lock_bitmap @(bmp, al_get_bitmap_format @(bmp@), flags@)).
-
-   @bold(Note:) Currently there are no drawing functions that work when the
-   bitmap is locked with a compressed format. @link(al_get_pixel) will also not
-   work.
-   @seealso(al_lock_bitmap) @seealso(al_lock_bitmap_region_blocked) *)
   FUNCTION al_lock_bitmap_blocked (bitmap: ALLEGRO_BITMAPptr; flags: AL_INT): ALLEGRO_LOCKED_REGIONptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Like @link(al_lock_bitmap_blocked), but allows locking a sub-region, for
-   performance. Unlike @link(al_lock_bitmap_region) the region specified in
-   terms of blocks and not pixels.
-   @seealso(al_lock_bitmap_region) @seealso(al_lock_bitmap_blocked) *)
   FUNCTION al_lock_bitmap_region_blocked (bitmap: ALLEGRO_BITMAPptr; x_block, y_block, width_block, height_block, flags: AL_INT): ALLEGRO_LOCKED_REGIONptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(*Unlock a previously locked bitmap or bitmap region. If the bitmap is a video
-  bitmap, the texture will be updated to match the system memory copy (unless
-  it was locked read only).
-  @seealso(al_lock_bitmap) @seealso(al_lock_bitmap_region)
-  @seealso(al_lock_bitmap_blocked) @seealso(al_lock_bitmap_region_blocked) *)
   PROCEDURE al_unlock_bitmap (bitmap: ALLEGRO_BITMAPptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Returns whether or not a bitmap is already locked.
-   @seealso(al_lock_bitmap) @seealso(al_lock_bitmap_region)
-   @seealso(al_unlock_bitmap) *)
   FUNCTION al_is_bitmap_locked (bitmap: ALLEGRO_BITMAPptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
@@ -802,7 +690,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  *****************************************************************************)
 
   TYPE
-  (* Blending modes. @seealso(al_set_blender) *)
+  (*** @exclude Blending modes. *)
     ALLEGRO_BLEND_MODE = (
       ALLEGRO_ZERO                = 0,
       ALLEGRO_ONE                 = 1,
@@ -819,7 +707,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
 
 
-  (* Blending modes. @seealso(al_set_blender) *)
+  (*** @exclude Blending modes. *)
     ALLEGRO_BLEND_OPERATIONS = (
       ALLEGRO_ADD                  = 0,
       ALLEGRO_SRC_MINUS_DEST       = 1,
@@ -827,130 +715,14 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
       ALLEGRO_NUM_BLEND_OPERATIONS
     );
 
-
-(* Sets the function to use for blending for the current thread.
-
-   Blending means, the source and destination colors are combined in drawing
-   operations.
-
-   Assume the source color (e.g. color of a rectangle to draw, or pixel of a
-   bitmap to draw) is given as its red/green/blue/alpha components (if the
-   bitmap has no alpha it always is assumed to be fully opaque, so 255 for
-   8-bit or 1.0 for floating point): @italic(s = s.r, s.g, s.b, s.a). And this
-   color is drawn to a destination, which already has a color:
-   @italic(d = d.r, d.g, d.b, d.a).
-
-   The conceptional formula used by Allegro to draw any pixel then depends on
-   the op parameter:
-   @unorderedlist(
-   @item(@code(ALLEGRO_ADD)
-@longcode(#
-     r = d.r * df.r + s.r * sf.r
-     g = d.g * df.g + s.g * sf.g
-     b = d.b * df.b + s.b * sf.b
-     a = d.a * df.a + s.a * sf.a
-#))
-    @item(@code(ALLEGRO_DEST_MINUS_SRC)
-@longcode(#
-     r = d.r * df.r - s.r * sf.r
-     g = d.g * df.g - s.g * sf.g
-     b = d.b * df.b - s.b * sf.b
-     a = d.a * df.a - s.a * sf.a
-#))
-    @item(@code(ALLEGRO_SRC_MINUS_DEST)
-@longcode(#
-     r = s.r * sf.r - d.r * df.r
-     g = s.g * sf.g - d.g * df.g
-     b = s.b * sf.b - d.b * df.b
-     a = s.a * sf.a - d.a * df.a
-#))
-    )
-    Valid values for the factors @italic(sf) and @italic(df) passed to this
-    function are as follows, where @italic(s) is the source color, @italic(d)
-    the destination color and @italic(cc) the color set with
-    @link(al_set_blend_color) (white by default)
-    @unorderedlist(
-    @item(@bold(ALLEGRO_ZERO) @code(f = 0, 0, 0, 0))
-    @item(@bold(ALLEGRO_ONE) @code(f = 1, 1, 1, 1))
-    @item(@bold(ALLEGRO_ALPHA) @code(f = s.a, s.a, s.a, s.a))
-    @item(@bold(ALLEGRO_INVERSE_ALPHA) @code(f = 1 - s.a, 1 - s.a, 1 - s.a, 1 - s.a))
-    @item(@bold(ALLEGRO_SRC_COLOR) @code(f = s.r, s.g, s.b, s.a))
-    @item(@bold(ALLEGRO_DEST_COLOR) @code(f = d.r, d.g, d.b, d.a))
-    @item(@bold(ALLEGRO_INVERSE_SRC_COLOR) @code(f = 1 - s.r, 1 - s.g, 1 - s.b, 1 - s.a))
-    @item(@bold(ALLEGRO_INVERSE_DEST_COLOR) @code(f = 1 - d.r, 1 - d.g, 1 - d.b, 1 - d.a))
-    @item(@bold(ALLEGRO_CONST_COLOR) @code(f = cc.r, cc.g, cc.b, cc.a))
-    @item(@bold(ALLEGRO_INVERSE_CONST_COLOR) @code(f = 1 - cc.r, 1 - cc.g, 1 - cc.b, 1 - cc.a))
-    )
-    So for example, to restore the default of using premultiplied alpha
-    blending, you would use:
-@longcode(#
-al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-#)
-    As formula:
-@longcode(#
-r = d.r * (1 - s.a) + s.r * 1
-g = d.g * (1 - s.a) + s.g * 1
-b = d.b * (1 - s.a) + s.b * 1
-a = d.a * (1 - s.a) + s.a * 1
-#)
-    If you are using non-pre-multiplied alpha, you could use
-@longcode(#
-al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
-#)
-    Additive blending would be achieved with
-@longcode(#
-al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE);
-#)
-    Copying the source to the destination (including alpha) unmodified
-@longcode(#
-al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
-#)
-    Multiplying source and destination components
-@longcode(#
-al_set_blender(ALLEGRO_ADD, ALLEGRO_DEST_COLOR, ALLEGRO_ZERO)
-#)
-    Tinting the source (like @link(al_draw_tinted_bitmap))
-@longcode(#
-al_set_blender(ALLEGRO_ADD, ALLEGRO_CONST_COLOR, ALLEGRO_ONE);
-al_set_blend_color(al_map_rgb(0, 96, 255)); /* nice Chrysler blue */
-#)
-    Averaging source and destination pixels
-@longcode(#
-al_set_blender(ALLEGRO_ADD, ALLEGRO_CONST_COLOR, ALLEGRO_CONST_COLOR);
-al_set_blend_color(al_map_rgba_f(0.5, 0.5, 0.5, 0.5));
-#)
-    As formula:
-@longcode(#
-r = d.r * 0 + s.r * d.r
-g = d.g * 0 + s.g * d.g
-b = d.b * 0 + s.b * d.b
-a = d.a * 0 + s.a * d.a
-#)
-   @seealso(al_set_separate_blender) @seealso(al_set_blend_color)
-   @seealso(al_get_blender) *)
   PROCEDURE al_set_blender (op: ALLEGRO_BLEND_OPERATIONS; source, dest: ALLEGRO_BLEND_MODE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Sets the color to use for blending when using the @code(ALLEGRO_CONST_COLOR)
-   or @code(ALLEGRO_INVERSE_CONST_COLOR) blend functions. See
-   @link(al_set_blender) for more information.
-   @seealso(al_set_blender) @seealso(al_get_blend_color) *)
   PROCEDURE al_set_blend_color (color: ALLEGRO_COLOR);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Returns the active blender for the current thread.
-   @seealso(al_set_blender) @seealso(al_get_separate_blender) *)
   PROCEDURE al_get_blender (OUT op: ALLEGRO_BLEND_OPERATIONS; OUT source, dest: ALLEGRO_BLEND_MODE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Returns the color currently used for constant color blending (white by
-   default).
-   @seealso(al_set_blend_color) @seealso(al_set_blender) *)
   FUNCTION al_get_blend_color: ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* Like @code(al_set_blender), but allows specifying a separate blending
-   operation for the alpha channel. This is useful if your target bitmap also
-   has an alpha channel and the two alpha channels need to be combined in a
-   different way than the color components.
-   @seealso(al_set_blender) @seealso(al_get_blender)
-   @seealso(al_get_separate_blender) *)
   PROCEDURE al_set_separate_blender (op: ALLEGRO_BLEND_OPERATIONS; source, dest: ALLEGRO_BLEND_MODE;
 				     alpha_op: ALLEGRO_BLEND_OPERATIONS; alpha_source, alpha_dest: ALLEGRO_BLEND_MODE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
@@ -962,80 +734,47 @@ a = d.a * 0 + s.a * d.a
 
 (*
  * events.h
- *)
+ *****************************************************************************)
 
   TYPE
-  (* An integer used to distinguish between different types of events.
-     @seealso(ALLEGRO_EVENT) @seealso(ALLEGRO_GET_EVENT_TYPE)
-     @seealso(ALLEGRO_EVENT_TYPE_IS_USER) *)
     ALLEGRO_EVENT_TYPE = AL_UINT;
 
   CONST
-    {@exclude}
     ALLEGRO_EVENT_JOYSTICK_AXIS          = 1;
-    {@exclude}
     ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN   = 2;
-    {@exclude}
     ALLEGRO_EVENT_JOYSTICK_BUTTON_UP     = 3;
-    {@exclude}
     ALLEGRO_EVENT_JOYSTICK_CONFIGURATION = 4;
 
-    {@exclude}
     ALLEGRO_EVENT_KEY_DOWN               = 10;
-    {@exclude}
     ALLEGRO_EVENT_KEY_CHAR               = 11;
-    {@exclude}
     ALLEGRO_EVENT_KEY_UP                 = 12;
 
-    {@exclude}
     ALLEGRO_EVENT_MOUSE_AXES             = 20;
-    {@exclude}
     ALLEGRO_EVENT_MOUSE_BUTTON_DOWN      = 21;
-    {@exclude}
     ALLEGRO_EVENT_MOUSE_BUTTON_UP        = 22;
-    {@exclude}
     ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY    = 23;
-    {@exclude}
     ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY    = 24;
-    {@exclude}
     ALLEGRO_EVENT_MOUSE_WARPED           = 25;
 
-    {@exclude}
     ALLEGRO_EVENT_TIMER                  = 30;
 
-    {@exclude}
     ALLEGRO_EVENT_DISPLAY_EXPOSE         = 40;
-    {@exclude}
     ALLEGRO_EVENT_DISPLAY_RESIZE         = 41;
-    {@exclude}
     ALLEGRO_EVENT_DISPLAY_CLOSE          = 42;
-    {@exclude}
     ALLEGRO_EVENT_DISPLAY_LOST           = 43;
-    {@exclude}
     ALLEGRO_EVENT_DISPLAY_FOUND          = 44;
-    {@exclude}
     ALLEGRO_EVENT_DISPLAY_SWITCH_IN      = 45;
-    {@exclude}
     ALLEGRO_EVENT_DISPLAY_SWITCH_OUT     = 46;
-    {@exclude}
     ALLEGRO_EVENT_DISPLAY_ORIENTATION    = 47;
-    {@exclude}
     ALLEGRO_EVENT_DISPLAY_HALT_DRAWING   = 48;
-    {@exclude}
     ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING = 49;
 
-    {@exclude}
     ALLEGRO_EVENT_TOUCH_BEGIN            = 50;
-    {@exclude}
     ALLEGRO_EVENT_TOUCH_END              = 51;
-    {@exclude}
     ALLEGRO_EVENT_TOUCH_MOVE             = 52;
-    {@exclude}
     ALLEGRO_EVENT_TOUCH_CANCEL           = 53;
 
-    {@exclude}
     ALLEGRO_EVENT_DISPLAY_CONNECTED      = 60;
-    {@exclude}
     ALLEGRO_EVENT_DISPLAY_DISCONNECTED   = 61;
 
 (* Returns @true if the event type is not a builtin event type, i.e. one of

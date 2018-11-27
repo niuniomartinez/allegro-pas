@@ -2,7 +2,8 @@
   This document explains how to use Allegro.pas with the Lazarus IDE. For
   Delphi read "delphi.txt".
 
-  Note that you must install Allegro first.  Read "windows.txt" or "linux.txt".
+  Before to use Allegro.pas you must install Allegro itself.  If you didn't
+  yet, please read the appropriate document for your operating system.
 
   Also note that you should read "fpc.txt" as Lazarus uses Free Pascal
   internally.
@@ -16,8 +17,8 @@ Compiling examples and demonstration game
   These projects are configured to build optimized versions.  To debug you
   should activate the apropiate "Debugging" options.
 
-  Note:  I don't know why my Lazarus copy (1.6) doesn't open the source files
-  at the beggining, but they're listed at "Project>Project Inspector...".
+  Note:  I don't know why my Lazarus copy doesn't open the source files at the
+  beggining, but they're listed at "Project>Project Inspector...".
 
 Creating a new game project
 ---------------------------

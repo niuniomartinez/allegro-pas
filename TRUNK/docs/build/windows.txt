@@ -1,12 +1,16 @@
 
   This document explains how to install Allegro in Windows operating systems.
-  For GNU/Linux operating systems read "linux.txt".
+  For GNU/Linux operating systems read "linux.txt".  MacOS users should read
+  "macos.txt" instead.
 
   First you must install Allegro itself.  Current Allegro.pas version is
   compatible with version 5.2.x only so DON'T install version 5.1.x or older.
+  Versions 5.3.x and newer would not work as well.
 
   Read "fpc.txt", "lazarus.txt" or "delphi.txt" to know how to use such
   compilers and IDEs.
+
+
 
 Installing precompiled version
 ------------------------------
@@ -18,12 +22,14 @@ Installing precompiled version
   "i686" is 64bits.
 
   Once downloaded, you need only the DLL files that are in the "bin"
-  subdirectory.  Also note that this version of Allegro.pas doesn't work with
-  the "monolyth" version of the library (yet).
+  subdirectory.  Also note that Allegro.pas links with the "monolith" version
+  of the library by default.
 
   In most cases you can put the DLL files in to your "C:\windows\system32"
   directory but may be better to add these DLL files to the directory where the
   executable is.
+
+
 
 Installing from sources
 -----------------------
@@ -40,3 +46,23 @@ Installing from sources
 
   For better results, compile and install both "release" and "debug" versions
   of the library.
+
+  Also note that Allegro.pas links with the "monolith" version of the library
+  by default.
+
+
+
+What does "monolith version" mean
+---------------------------------
+
+  As said above, Allegro.pas links with the "monolith" version of the library
+  by default.
+
+  The "monolith version" means that the whole Allegro library, including
+  add-ons, come in a single DLL file.  In the "no-monolith" one each add-on is
+  compiled in a different DLL file.
+
+  Allegro.pas can be linked whit any of these versions.  By default it links
+  with the monolith but if you define the "NO_MONOLITH" symbol (i.e. adding
+  "-dNO_MONOLITH" to the compilation command) it will be linked with the other
+  wersion.

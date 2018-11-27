@@ -4,7 +4,7 @@
   "fpc.txt", "lazarus.txt" or "delphi.txt" to know how to use such compilers
   and IDEs.
 
-  Before to build Allegro.pas you must install Allegro itself.  If you didn't
+  Before to use Allegro.pas you must install Allegro itself.  If you didn't
   yet, please read the appropriate document for your operating system.
 
 The make chain
@@ -26,7 +26,8 @@ The make chain
   "makefile" is the only file you'll need to modify if you want to modify the
   compilation configuration.  That file is quite simple, as it just defines
   some variables/macros (name = value).  The whole file includes a lot of
-  comments so it is quite explanatory.  Don't be afraid and take a look into it.
+  comments so it should be quite autoexplanatory.  Don't be afraid and take a
+  look into it.
 
   By default the make chain compiles the examples and the demonstration game
   with simple optimizations.
