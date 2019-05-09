@@ -1,2 +1,0 @@
-  Stream class that uses Allegro's AL_PACKFILE.  This way you can use Allegro's
-  loaders.

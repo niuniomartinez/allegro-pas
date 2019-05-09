@@ -1,0 +1,69 @@
+
+  This document explains how to install Allegro in Windows operating systems.
+  For GNU/Linux operating systems read "linux.txt".  MacOS users should read
+  "macos.txt" instead.
+
+  First you must install Allegro itself.  Current Allegro.pas version is
+  compatible with version 5.2.x only so DON'T install version 5.1.x or older.
+  Versions 5.3.x and newer would not work as well.
+
+  Read "fpc.txt", "lazarus.txt" or "delphi.txt" to know how to use such
+  compilers and IDEs.
+
+
+
+Installing precompiled version
+------------------------------
+
+  Go to http://liballeg.org/download.html#windows, to the "Windows Binaries"
+  section, and select one of the given links.  I recommend you the "Allegro 5.2
+  binary packages" but you may use any of them.  To find wich one is the best
+  for you, think you'll need a "dynamic" version and that "x86" is 32bits while
+  "i686" is 64bits.
+
+  Once downloaded, you need only the DLL files that are in the "bin"
+  subdirectory.  Also note that Allegro.pas links with the "monolith" version
+  of the library by default.
+
+  In most cases you can put the DLL files in to your "C:\windows\system32"
+  directory but may be better to add these DLL files to the directory where the
+  executable is.
+
+
+
+Installing from sources
+-----------------------
+
+  I recommend you to install from sources at least once in your life as it is
+  quite educative and you can learn a lot about how things actually works.
+
+  First you'll need a C/C++ compiler.  I recommend the MinGW, but you may use
+  Microsoft Visual Studio as well.
+
+  Visit Allegro's project website at http://liballeg.org/download.html and
+  download one of the source releases.  The package includes full installation
+  instructions.  Follow them.  Anyway, file "linux.txt" includes interesting
+  information if you're using MinGW or Cywin.
+
+  For better results, compile and install both "release" and "debug" versions
+  of the library.
+
+  Also note that Allegro.pas links with the "monolith" version of the library
+  by default.
+
+
+
+What does "monolith version" mean
+---------------------------------
+
+  As said above, Allegro.pas links with the "monolith" version of the library
+  by default.
+
+  The "monolith version" means that the whole Allegro library, including
+  add-ons, come in a single DLL file.  In the "no-monolith" each add-on is
+  compiled in its own DLL file.
+
+  Allegro.pas can be linked whit any of these versions.  By default it links
+  with the monolith but if you define the "NO_MONOLITH" symbol (i.e. adding
+  "-dNO_MONOLITH" to the compilation command) it will be linked with the other
+  wersion.

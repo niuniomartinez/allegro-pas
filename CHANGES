@@ -1,0 +1,197 @@
+Changes between versions 5.2.beta and 5.2.b.1
+=============================================
+
+  Bugfixing
+  ---------
+  #18: Now it doesn't use the "debug" version of the library by default, as it
+       is not necessary and makes things not to work on Ubuntu unless you know
+       what's happening (read build documentation).
+     : Fixed constant name: ALLEGRO_RENDER_GREATER_EQUAL.
+
+  News
+  ----
+  #16: Now Windows compiles for "monolith" by default.
+     : Added a "resources" directory with some interesting resources.
+     : Added some new constants with version information.
+     : Added constant with TAU number (2PI).  Look for "Tau Manifesto" for more
+       information.
+     : Added display procedures al_set_new_display_refresh_rate,
+       al_get_new_display_refresh_rate and al_apply_window_constraints.
+     : Added configuration procedures al_merge_config and al_merge_config_into.
+     : Added functions al_load_ttf_font_f and al_load_ttf_font_stretch_f to the
+       al5ttf add-on.
+     : Added UNICODE functions al_ustr_remove_chr, al_ustr_insert_chr and
+       al_utf8_width.
+     : Added al_transform_coordintates_4d and
+       al_transform_coordintates_3d_projective.
+     : Added function al_get_system_config.
+
+  API changes
+  -----------
+     : Parameter ident of al_load_bitmap_f is AL_STR now, wich is more
+       coherent with other procedures.
+     : Fixed parameter ident of al_load_bitmap_flags_f and
+       al_save_bitmap_flags_f behavior.
+     : Changed the name "_type" to "ftype" (i.e. "field type") and "_repeat" to
+       "frepeat" on several RECORDs.
+     : Removed procedure al_toggle_display_flag.  Actually don't know when and
+       why was it removed from Allegro.
+     : Removed procedures to iterate through INI files.  Use TIniFile class
+       instead if needed.
+     : Removed ALLEGRO_MONITOR_INFOptr type.
+     : Changed parameters of al_transform_coordintates and
+       al_transform_coordintates_3d from OUT to VAR.
+     : Changed return type of al_check_inverse from AL_INT to AL_BOOL.
+     : Removed ALELGRO_SYSTEM stuff as it is for internal use only.  If needed,
+       implement it as add-on.
+
+
+
+Changes between versions 5.2.a3 and 5.2.beta
+============================================
+
+  News
+  ----
+  + Many changes to archieve full compatibility with Delphi.  Only tested with
+    Delphi Tokio Starter Edition though.
+  + Added "Furious Paladin" demonstration game by Handoko.
+  + Added lazarus subdirectories containing Lazarus project files in examples
+    and demo.
+  + Added delphi subdirectories containing Delphi project files in examples and
+    demo.
+
+  Other
+  -----
+  + ex_depth_mask simplified.
+  * New, and hopefully better, documentation distribution.
+
+
+
+Changes between versions 5.2 alpha-2 and 5.2.a3
+===============================================
+
+  Bugfixing
+  ---------
+  * Don't know why some al5font procedures didn't work with empty strings.
+  * Fixed a bug in makefile.
+
+  News
+  ----
+  + Added constant ALLEGRO_PAS_VERSION_STRING.
+  + Added "shaders" (GLSL y HLSL).
+  + New functions:
+     al_set_display_flag
+     native menu support.
+     configuration file support.
+     low-level file access (file.h).
+     to load and save data files.
+     to register new data file formats.
+  + New data type AL_OFF_T.
+  + New examples:
+      ex_cpu
+      ex_file_slice
+      ex_filter
+      ex_palette
+      ex_shader_multitex
+      ex_shader_target
+
+  API changes
+  -----------
+  * Unit al5gl renamed as al5opengl.
+
+  Other
+  -----
+  * A lot of documentation updates.
+  * Removed changelog previous to version 5.0 alpha
+
+
+
+Changes between versions 5.2 alpha and 5.2 alpha-2
+==================================================
+
+  Bugfixing
+  ---------
+  * Fixed flag CDELC in al_get_display_mode.
+  * Add-on al5primitives and example ex_prim revised.  There are still few
+    issues.
+  * Fixed ALLEGRO_KEYBOARD_STATE record.
+  * al_get_bitmap_format returns data in the correct type instead of integer.
+  * Some fixes in build scripts.
+
+  News
+  ----
+  + Added Allegro memory management.
+  + Added new constants for "render state".
+  + Added "fix.cmd" for modern Windows systems.
+  * "keycodes.inc" updated, adding and fixing identifiers.
+  + New examples:
+      ex_bitmap_flip
+      ex_clipboard
+      ex_clip
+      ex_depth_mask
+      ex_display_events
+      ex_display_options
+      ex_draw
+      ex_drawpixels
+      ex_icon
+      ex_icon2
+      ex_joystick_events
+      ex_keyboard_events
+      ex_membmp
+      ex_monitorinfo
+      ex_mouse
+      ex_saw
+
+  API changes
+  -----------
+  * Some parameters changed from pointer/VAR to OUT:
+      al_get_keyboard_state
+      al_get_mouse_state
+      al_get_joystick_state
+      al_mouse_button_down
+      al_get_mouse_state_axis
+  * ALLEGRO_DISPLAY_ORIENTATION values are now CONSTants.
+
+  Other
+  -----
+  * ex_blend2 uses a different blender mode at beginning.
+  * ex_warp_mouse renamed as ex_mouse_warp.
+  * Testing fpdoc.
+
+
+
+Changes between versions 5.0 alpha and 5.2 alpha
+================================================
+
+  Bugfixing
+  ---------
+  + Water animation in example ex_haiku fixed, but earth still doesn't work.
+  - Removed OpenGL dependency from a5image and al5primitives, it looks like
+    bug was fixed.
+
+  News
+  ----
+  + A lot of new stuff added in all units (still unfinished).
+  + New examples added.
+
+  API changes
+  -----------
+  * Data types defined at al5base revisited, as done in version 4.4.5.  This
+    should fix a few issues and help with Delphi compatability.
+  * Timer conversion functions (i.e. ALLEGRO_MSECS_TO_SECS, etc) receibe
+    integer values instead of real values.
+  * Few data types changed from "enums" and "sets" to simple INTEGER constants.
+
+  Other
+  -----
+  * Allegro5.pas code re-ordered.
+  * A lot of documentation fixed and added (still unfinished).
+
+
+
+Changes in version 5.0 alpha
+============================
+
+  This version changes from Allegro 4 to Allegro 5, with a fully redesigned
+  API.  It was rewritten almost from scratch, so there's no changelog.
+

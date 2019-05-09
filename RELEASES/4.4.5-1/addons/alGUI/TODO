@@ -1,6 +1,0 @@
-Try to implement actual "radio-buttons", but using TalGUI_CustomItemListControl
-as base class.  I've always feel that is a better way to do it.
-
-"Slider factor calculation" should be in the custom slider.
-
-Add a "bitmap control".

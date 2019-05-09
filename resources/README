@@ -1,0 +1,9 @@
+ - al4font.png: Template for bitmap text fonts.  See al_grab_font_from_bitmap
+                to know how it works.
+ - alex.png: The default Allegro icon.  Note this is *not* exactly the same
+             used by Allegro.  This is a re-mastered version restoring the
+             original size.
+ - alexlogo.png: HD Alex the Allegator logo combined with the Allegro A.
+ - allegro5.cfg: Configruation file example.
+                 See documentation of al_get_system_config to know how to load
+                 it.

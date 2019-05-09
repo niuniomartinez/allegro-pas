@@ -1,6 +1,0 @@
-
-  Allegro includes a complete GUI system, but it is quite hard to use it in
-  Pascal programs.
-
-  This add-on aims to build a new GUI system ground up.  It's actually much
-  like the original one, but it uses Object Pascal classes.

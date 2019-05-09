@@ -1,0 +1,55 @@
+
+  Since Allegro works on MacOS systems, Allegro.pas should too.  Unfortunatelly
+  I have not a working MacOS system so I have no way to test it.  Anyway, it
+  should be quite strightforward.
+
+  If you're brave enough, here you have some advices that should help:
+
+  Download and install Allegro in your system.  Allegro includes all
+  explanations you'll need and you may ask at the forums or the mailing lists.
+  Visit http://liballeg.org for downloading and more information.
+
+  Now, if you try to compile any of the Allegro.pas examples you should see the
+  next error message:
+
+  ** Allegro.pas wasn't tested with this Operating System.  Do you want to help?
+
+  So, to make it work you should do some changes in Allegro.pas by yourself:
+
+  * If you're using the given makefiles, you should add MacOS as target.  To do
+    so, open "makefile" and copy one of the given targets, and change it to
+    DARWIN (for example) and change the definitions to fit the MacOS
+    environment.  You should take a look to "fix.sh" too, or you can create the
+    "target.os" file by yourself with next content:
+
+TARGET=DARWIN
+
+  * Open file "lib/allegro5.cfg" and add MacOS as supported operating system at
+    the end of the file (you'll see both Windows and Linux there).  For
+    FPC/Lazarus use "DARWIN".  Read Delphi's documentation to know wich symbol
+    does it use to identify MacOS.
+  * Using either "lib/al5_win.cfg" or "lib/al5_unix.cfg" as a guide, create an
+    "al5_macos.cfg" compiler configuration file.  This is, assign
+    _A5_LIB_PREFIX_ and _A5_LIB_EXT_ properly so they can be used to identify
+    the appropriate dylib files.  See how such constants are used in
+    al5base.pas.
+  * Open file "lib/al5base.pas" and edit next lines:
+
+{$IF DEFINED(UNIX)}
+  {$INCLUDE al5_unix.inc}
+{$ELSEIF DEFINED(LINUX)}
+  {$INCLUDE al5_unix.inc}
+{$ELSEIF DEFINED(WINDOWS)}
+  {$INCLUDE al5_win.inc}
+{$ELSEIF DEFINED(DARWIN)}
+  {$INCLUDE al5_macos.inc}
+{$ENDIF}
+
+  * Cross fingers and compile.
+
+  If it doesn't work may be you should change some of the data types declared
+  at al5base.pas.  Also you may need to change files "fpc.cfg" or "dcc.cfg"
+  (depending on the compiler you're using) to make it work.
+
+  As I've said, I haven't a working MacOS system to test, so I can't help more.
+  If you can, let me know.

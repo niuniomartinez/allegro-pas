@@ -1,0 +1,83 @@
+
+  This document explains how to use Allegro.pas with Delphi. For Lazarus read
+  "lazarus.txt".  For Free Pascal read "fpc.txt".
+
+  Before to use Allegro.pas you must install Allegro itself.  If you didn't
+  yet, please read the appropriate document for your operating system.
+
+  Also note that Allegro.pas was tested ONLY with Delphi 10.2 Tokio Sarter
+  Edition.  We tried to make it compatible with most Delphi versions available
+  but if you're using another version it may not work as expected.  You can
+  help us to fix any problem by sharing your experience.  See README file to
+  know how to contact with developers.
+
+Compiling examples and demonstration game
+-----------------------------------------
+
+  There are "delphi" subdirectories in both examples and demonstration
+  directories.  Inside there are Delphi projects for each of them.  Load with
+  your IDE and just compile.  Executables are dropped at the "~/bin" directory.
+
+  NOTE: All examples compile except ex_fileslice and ex_saw.  All the ones that
+	compile run except ex_camera, ex_prim and ex_projection.  I have not
+	much experience with Delphi (last one I used was Delphi 6) so I don't
+	know how to fix them, but I'm still working on them.  If you find what
+	are the problems, let me know.
+
+
+
+Creating a new game project
+---------------------------
+
+  To create a new project using Allegro.pas create a "console" project.  I
+  haven't use Allegro.pas along with VCL or Firemonkey so I have no idea if it
+  works or bad things may happen.  Experience with Lazarus (FCL and LCL) says
+  that it would not work due to incompatible thread management.
+
+  All units needed to use Allegro.pas are in the "~/lib" directory.  You'll
+  need all "pas", "inc" and "cfg" files.  You can copy such directory to your
+  project's one and then add the units to your project.
+
+
+
+Linking with Allegro debug version
+----------------------------------
+
+  If you are working in an add-on or modifying Allegro.pas, may be you want to
+  use the "debug" version of Allegro.  To do so, you must define "DEBUGMODE"
+  symbol, this way your programs will link with the "debug" version of Allegro.
+  In most cases this isn't necessary.
+
+  Note that may be you must compile Allegro by yourself to obtain the "debug"
+  library.
+
+
+
+Differences between Delphi, Free Pascal and Lazarus
+---------------------------------------------------
+
+  Note that there are language differences between Delphi and Free Pascal (even
+  using Free Pascal's Delphi mode) so don't expect that your code is portable
+  through both compilers.  See the examples sources to see how I've tried to
+  write code that work in both compilers.
+
+  Also note STRING management may be problematic.  Free Pascal uses UTF-8 by
+  default (CHAR) and Delphi uses UTF-16 by default (WIDECHAR).  Allegro expects
+  ASCII/UTF-8 by default, so Delphi compiler may warn about text conversions.
+  To reduce the warnings and make it less prone to errors use ANSISTRING.  I'll
+  work in this issue.
+
+
+
+Windows manifest
+----------------
+
+  May be you found that your programs may not work, or they do, but a warning
+  window appears talking about "Windows execution privileges" or similar.  This
+  is because the modern Windows weird permission system.
+
+  To solve this you should add a "manifest" to your programs.  As I've said I
+  have few experience with Delphi (and it was Delphi 6!) so I'm not sure how to
+  do that.  If you are more experieced, please let me know (see the README file
+  to konw how to contact).  Since the manifest is a XML file, may be you can
+  use the same one I've created for Free Pascal (read "fpc.txt").

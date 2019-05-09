@@ -1,7 +1,0 @@
-
-  IFF PICT is an unkown proposed file format for pictures using the IFF
-  standard.  It aims to substitute the more famous IBLM file format.
-
-  This add-on implements IFF PICT for Allegro.pas.
-
-  See "iff_pict.txt" for complete file format.

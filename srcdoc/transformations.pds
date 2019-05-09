@@ -1,0 +1,59 @@
+@section(1 transformations Transformations)
+Transformations allow you to transform the coordinates you use for drawing operations without additional overhead. Scaling, rotating, translating, and combinations of these are possible as well as using custom transformations. There are two types of transformations that you can set, 'regular' transformations and projection transformations. The projection transform is rarely used in 2D games, but is common in 3D games to set up the projection from the 3D world to the 2D screen. Typically, you would use the regular transform for non-projective types of transformations (that is, translations, rotations, scales, skews... i.e. transformations that are linear), while the projection transform will be used for setting up perspective and possibly more advanced effects. It is possible to do everything with just using the projection transformation (that is, you'd compose the projection transformation with the non-projection transformations that, e.g., move the camera in the world), but it is more convenient to use both for two reasons:
+
+@unorderedlist(
+  @item(Regular transformations can be changed while the bitmap drawing is held @(see @link(al_hold_bitmap_drawing)@).)
+  @item(Regular transformations work with memory bitmaps.)
+)
+
+As a result, if you're making a 2D game, it's best to leave the projection transformations at their default values.
+
+Both types of transformations are set per target-bitmap, i.e. a change of the target bitmap will also change the active transformation.
+
+Allegro provides convenience functions to construct transformations in 2D and 3D variants (the latter with a _3d suffix), so you don't have to deal with the underlying matrix algebra yourself.
+
+The transformations are combined in the order of the function invocations. Thus to create a transformation that first rotates a point and then translates it, you would (starting with an identity transformation) call @link(al_rotate_transform) and then @link(al_translate_transform). This approach is opposite of what OpenGL uses but similar to what Direct3D uses.
+
+For those who know the matrix algebra going behind the scenes, what the transformation functions in Allegro do is "pre-multiply" the successive transformations. So, for example, if you have code that does:
+
+@longcode(#
+al_identity_transform (T);
+
+al_compose_transform (T, T1);
+al_compose_transform (T, T2);
+al_compose_transform (T, T3);
+al_compose_transform (T, T4);
+#)
+
+The resultant matrix multiplication expression will look like this:
+
+@longcode(#
+T := T4 * T3 * T2 * T1
+#)
+
+Since the point coordinate vector term will go on the right of that sequence of factors, the transformation that is called first, will also be applied first.
+
+This means if you have code like this:
+
+@longcode(#
+al_identity_transform (T1);
+al_scale_transform (T1, 2, 2);
+
+al_identity_transform (T2);
+al_translate_transform (T2, 100, 0);
+
+al_identity_transform (T);
+al_compose_transform (T, T1);
+al_compose_transform (T, T2);
+
+al_use_transform (T);
+#)
+
+it does exactly the same as:
+
+@longcode(#
+al_identity_transform (T);
+al_scale_transform (T, 2, 2);
+al_translate_transform (T, 100, 0);
+al_use_transform (T);
+#)

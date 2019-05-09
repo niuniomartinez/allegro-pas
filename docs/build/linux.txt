@@ -1,0 +1,73 @@
+
+  This document explains how to install Allegro in GNU/Linux operating systems.
+  For Windows operating systems read "windows.txt".  MacOS users should read
+  "macos.txt" instead.
+
+  First you must install Allegro itself.  Current Allegro.pas version is
+  compatible with version 5.2.x only so DON'T install version 5.1.x or older.
+  Versions 5.3.x and newer would not work as well.
+
+  Read "fpc.txt", "lazarus.txt" or "delphi.txt" to know how to use such
+  compilers and IDEs.
+
+
+
+Installing from repositories
+----------------------------
+
+  Most modern GNU/Linux distributions include Allegro in their on-line
+  repositories.  So I recommend a lot to use them instead of download and
+  install by hand, anyway you can try that too, as it is quite educative
+  and you can learn a lot about how things actually works.
+
+  Note that most "Software Centers" (such as Ubutu's one) doesn't lists all
+  libraries so you may need another application to do that.  Try to install
+  "synaptic", a well known package manager that works with both DEB and RPM
+  package system.  You can also use command line programs (apt, rpm, dpkg...)
+  for such opperations.
+
+  For example, using aptitude in a console to see if Allegro is available:
+
+$ aptitude search allegro
+
+  Now, to install Allegro 5:
+
+$ sudo aptitude install allegro5-doc liballegro5-dev
+
+  See the use of "sudo" and that it will install the "development" packages.
+
+  Note that repositories don't include the "debug" version of Allegro.  The
+  only way to get them is to install from sources (see next section).  Anyway,
+  in most cases, the debug version isn't needed.
+
+
+
+Installing from sources
+-----------------------
+
+  Visit Allegro's project website at http://liballeg.org/ and download it.  The
+  package includes full installation instructions.  Since you're using an
+  actual operating system you can say you don't need to install any extra tool,
+  except may be some development libraries.
+
+  For better results, compile and install both "release" and "debug" versions
+  of the library.
+
+  For example, once unzipped the package, do:
+
+$ cd ~/allegro5.2
+$ mkdir build
+$ cd build
+$ cmake ..
+  ...
+$ make all
+  ...
+$ sudo make install
+  ...
+$ sudo ldconfig
+
+  To build the "debug" version, create a dir named "build-debug" and use this
+  other cmake command instead:
+
+$ cmake -dCMAKE_BUILD_TYPE=debug ..
+

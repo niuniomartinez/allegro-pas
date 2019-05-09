@@ -1,0 +1,5 @@
+@section(1 alt_file_streams Alternative file streams)
+
+By default, the Allegro file I/O routines use the C library I/O routines, hence work with files on the local filesystem, but can be overridden so that you can read and write to other streams. For example, you can work with blocks of memory or sub-files inside .zip files.
+
+There are two ways to get an @code(ALLEGRO_FILEptr) that doesn't use stdio. An addon library may provide a function that returns a new @code(ALLEGRO_FILEptr) directly, after which, all @code(al_f*) calls on that object will use overridden functions for that type of stream. Alternatively, @link(al_set_new_file_interface) changes which function will handle the following @link(al_fopen) calls for the current thread.

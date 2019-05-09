@@ -1,7 +1,0 @@
-  OGG Vorbis Loading implemented by RPG Hacker http://www.rpg-hacker.de/
-
-  This add-on allows to load an OGG/Vorbis sound file as an AL_SAMPLE object.
-
-  You'll need all unit in the "lib" directory, but the Allegro.pas interface
-  is in al_ogg.pas.  The "win32" directory contains DLL files needed.
-

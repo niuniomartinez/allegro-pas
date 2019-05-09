@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="10"/>
+    <BuildModes Active="Default"/>
+    <Units Count="5">
+      <Unit0>
+        <Filename Value="../furiouspaladin.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="FuriousPaladin"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="54" Y="5"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../data.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Data"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="35" Y="25"/>
+        <UsageCount Value="21"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../configuration.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Configuration"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="45" Y="72"/>
+        <UsageCount Value="21"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="configuration.pas"/>
+        <UnitName Value="Configuration"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="4"/>
+        <CursorPos X="5" Y="33"/>
+        <UsageCount Value="20"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../../../lib/al5nativedlg.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="226"/>
+        <CursorPos X="43" Y="234"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+    </Units>
+    <JumpHistory Count="7" HistoryIndex="6">
+      <Position1>
+        <Filename Value="../furiouspaladin.pas"/>
+        <Caret Line="130" Column="62" TopLine="115"/>
+      </Position1>
+      <Position2>
+        <Filename Value="../furiouspaladin.pas"/>
+        <Caret Line="130" Column="39" TopLine="119"/>
+      </Position2>
+      <Position3>
+        <Filename Value="../furiouspaladin.pas"/>
+        <Caret Line="870" Column="7" TopLine="864"/>
+      </Position3>
+      <Position4>
+        <Filename Value="../furiouspaladin.pas"/>
+        <Caret Line="870" Column="24" TopLine="855"/>
+      </Position4>
+      <Position5>
+        <Filename Value="../furiouspaladin.pas"/>
+        <Caret Line="126" Column="8" TopLine="112"/>
+      </Position5>
+      <Position6>
+        <Filename Value="../furiouspaladin.pas"/>
+        <Caret Line="123" Column="39" TopLine="110"/>
+      </Position6>
+      <Position7>
+        <Filename Value="../furiouspaladin.pas"/>
+        <Caret Line="121" Column="19" TopLine="112"/>
+      </Position7>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

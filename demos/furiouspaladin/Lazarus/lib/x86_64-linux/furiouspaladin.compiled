@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="/usr/bin/fpc" Date="1535575190"/>
+  <Params Value=" -MObjFPC -Sim -CX -Cg -O1 -g -gl -Xs -XX -l -vewnhibq -Fi/home/guillermo/programacion/bibliotecas/allegro/allegro.pas/allegro-pas.sf/TRUNK/demos/furiouspaladin/Lazarus/lib/x86_64-linux -Fu/home/guillermo/programacion/bibliotecas/allegro/allegro.pas/allegro-pas.sf/TRUNK/lib -Fu/home/guillermo/programacion/bibliotecas/allegro/allegro.pas/allegro-pas.sf/TRUNK/demos/furiouspaladin/Lazarus/ -FU/home/guillermo/programacion/bibliotecas/allegro/allegro.pas/allegro-pas.sf/TRUNK/demos/furiouspaladin/Lazarus/lib/x86_64-linux/ -FE/home/guillermo/programacion/bibliotecas/allegro/allegro.pas/allegro-pas.sf/TRUNK/bin/demos/furiouspaladin/ ../furiouspaladin.pas"/>
+</CONFIG>
