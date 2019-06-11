@@ -68,7 +68,7 @@ Differences between Delphi, Free Pascal and Lazarus
 
   Note that there are language differences between Delphi and Free Pascal (even
   using Free Pascal's Delphi mode) so don't expect that your code is portable
-  through both compilers.  See the examples sources to see how I've tried to
+  through both compilers.  See the example sources to see how I've tried to
   write code that work in both compilers.
 
   Also note STRING management may be problematic.  Free Pascal uses UTF-8 by
@@ -83,13 +83,13 @@ Windows manifest
 ----------------
 
   If you're using Windows, may be you found that your programs may not work, or
-  they do, but a warning window appears talking about "Windows execution
+  they do but a warning window appears talking about "Windows execution
   privileges" or similar.  This is because the modern Windows weird permission
   system.
 
   To solve this you should add a "manifest" to your programs.  With help from
   the Lazarus community, I've created default manifest files you can find in
-  the ~/examples directory.  Copy both "manifest.rc" and "manifest.xml" in your
+  the ~/examples directory.  Copy both "manifest.rc" and "manifest.xml" to your
   source directory and add the next compiler directive in your program source,
   between your "PROGRAM" and your "USES" directives as you can see in any of
   the examples:

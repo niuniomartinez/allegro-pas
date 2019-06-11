@@ -20,9 +20,13 @@ $(EXMBIN)%$(BINSUF): $(EXMDIR)%.pas $(EXMDIR)common.pas $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBDIR) -FU$(OBJDIR) $< -o$@
 	@echo Example $@ ready!
 
-$(FPBIN)furiouspaladin$(BINSUF): $(FPSRC)*.pas $(LIBFILES)
+$(FURIOUSPALADIN): $(FPSRC)*.pas $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBDIR) -FU$(OBJDIR) $< -o$@
 	@echo Demonstration Game Furious Paladin ready!
+
+$(PASCALEROIDS): $(PASRC)*.pas $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBDIR) -FU$(OBJDIR) $< -o$@
+	@echo Demonstration Game Pascaleroids ready!
 
 # Documentation.
 docs: $(LIBFILES) $(DOCFILES)

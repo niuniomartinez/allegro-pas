@@ -60,11 +60,11 @@ Data types
   conversions.  By default, C compilers don't activate these exceptions.  That
   results in some issues as discused in an Allegro.cc forum thread[2].
 
-  Pointers in C are marked by "*".  "*char" are a pointer to char, and most
+  Pointers in C are marked by "*".  "char*" is a pointer to char, and most
   cases it points to an ANSISTRING.  Used as parameter, should be ANSISTRING,
-  used as returned value, should be PCHAR.
+  used as returned value, should be PANSICHAR.
 
-  C doesn't distiguish between array and pointers.  Actually an array is a
+  C doesn't distiguish between arrays and pointers.  Actually an array is a
   pointer that points to a "non dynamic" memory space.
 
   "bool" is the bad guy here.  It's a recent addition to the C language
@@ -78,9 +78,9 @@ Data types
 
   bool			BOOLEAN[3]
 
-  char			CHAR or SHORTINT (depending the use).
+  char			ANSICHAR or SHORTINT (depending the use).
   unsigned char		BYTE
-  *char			PCHAR or ANSISTRING
+  *char			PANSICHAR or ANSISTRING
 
   int			LONGINT
   long int		LONGINT or INT64
@@ -114,10 +114,12 @@ Parameters and return values
 
   In most functions parameters are pased "by value" with no modifications.
 
-  In some cases they're passed as "const", so we must use the "CONST" modifier.
+  In some cases they're passed as "const", so we must use the "CONST"
+  modifier.  Note that "const" are not applied to some pointers, as the
+  "const" affects to the direction not the actual data.
 
   C hasn't "VAR" nor "OUT" modifiers:  it uses pointer for this.  Both FPC and
-  Delphi translate "VAR" and OUT to pointers, so use VAR and OUT.  If there's
+  Delphi translate "VAR" and "OUT" to pointers, so use VAR and OUT.  If there's
   any problem, use wrapper procedures instead:
 
 INTERFACE
@@ -133,12 +135,12 @@ IMPLEMENTATION
     _ActualFunction_ (@Variable);
   END;
 
-Note that C strings are a special case.  When passing a string as parameter,
-ANSISTRING works pretty well (or AL_STR as defined by al5base), but returning
-it doesn't.  This is because C returns a pointer to an internal string that is
-managed by Allegro, or a pointer that should be managed by the caller using the
-Allegro memory functions.  When FPC or Delphi trie to manage them bad things
-happen.  So when returning, use pointers (i.e. AL_STRptr).
+  Note that C strings are a special case.  When passing a string as parameter,
+  ANSISTRING works pretty well (or AL_STR as defined by al5base), but returning
+  it doesn't.  This is because C returns a pointer to an internal string that is
+  managed by Allegro, or a pointer that should be managed by the caller using the
+  Allegro memory functions.  When FPC or Delphi try to manage them bad things
+  happen.  So when returning, use pointers (i.e. AL_STRptr).
 
 NOTES
 -----

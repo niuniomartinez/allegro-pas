@@ -42,7 +42,7 @@ Changes between versions 5.2.beta and 5.2.b.1
      : Changed parameters of al_transform_coordintates and
        al_transform_coordintates_3d from OUT to VAR.
      : Changed return type of al_check_inverse from AL_INT to AL_BOOL.
-     : Removed ALELGRO_SYSTEM stuff as it is for internal use only.  If needed,
+     : Removed ALLEGRO_SYSTEM stuff as it is for internal use only.  If needed,
        implement it as add-on.
 
 

@@ -58,7 +58,7 @@ Differences between Delphi, Free Pascal and Lazarus
 
   Note that there are language differences between Delphi and Free Pascal (even
   using Free Pascal's Delphi mode) so don't expect that your code is portable
-  through both compilers.  See the examples sources to see how I've tried to
+  through both compilers.  See the example sources to see how I've tried to
   write code that work in both compilers.
 
   Also note STRING management may be problematic.  Free Pascal uses UTF-8 by
@@ -72,7 +72,7 @@ Differences between Delphi, Free Pascal and Lazarus
 Windows manifest
 ----------------
 
-  May be you found that your programs may not work, or they do, but a warning
+  May be you found that your programs may not work, or they do but a warning
   window appears talking about "Windows execution privileges" or similar.  This
   is because the modern Windows weird permission system.
 

@@ -98,20 +98,32 @@ MAINSUF = .pas
 LIBSUF  = .pas
 
 # Directories
+SRCDIR = src/
 LIBDIR = lib/
 EXMDIR = examples/
 DEMDIR = demos/
 OBJDIR = obj/
 BINDIR = bin/
 DOCDIR = docs/lib/
-DOCSRC = srcdoc/
+DOCSRC = $(SRCDIR)docs/
+
+FPDIR = furiouspaladin/
+PADIR = pascaleroids/
+
+LIBSRC = $(SRCDIR)$(LIBDIR)
+EXMSRC = $(SRCDIR)$(EXMDIR)
+DEMSRC = $(SRCDIR)$(DEMDIR)
+FPSRC = $(DEMSRC)$(FPDIR)
+PASRC = $(DEMSRC)$(FPDIR)
 
 EXMBIN = $(BINDIR)$(EXMDIR)
 DEMBIN = $(BINDIR)$(DEMDIR)
+FPBIN = $(DEMBIN)$(FPDIR)
+PABIN = $(DEMBIN)$(FPDIR)
 
-FPSRC = $(DEMDIR)furiouspaladin/
-FPBIN = $(DEMBIN)furiouspaladin/
 
+
+#Pascal flags
 PFLAGS = -Sh -Si
 
 # Optimized compilation

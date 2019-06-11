@@ -5,15 +5,15 @@
 #
 
 # Allegro sources
-LIBFILES = $(wildcard $(LIBDIR)*$(LIBSUF))
+LIBFILES = $(wildcard $(LIBSRC)*$(LIBSUF))
 ifeq ($(strip $(LIBFILES)),)
-$(error ERROR: No source code found at $(LIBDIR))
+$(error ERROR: No source code found at $(LIBSRC))
 endif
 
 # For the examples.
-TEXM = $(wildcard $(EXMDIR)ex*$(MAINSUF))
+TEXM = $(wildcard $(EXMSRC)ex_*$(MAINSUF))
 ifeq ($(strip $(TEXM)),)
-$(error ERROR: No source code found at $(EXMDIR))
+$(error ERROR: No source code found at $(EXMSRC))
 endif
 EXMFILES = $(addprefix $(EXMBIN),$(addsuffix $(BINSUF), $(basename $(notdir $(TEXM) ) ) ) )
 
@@ -22,8 +22,15 @@ TDEMfp = $(wildcard) $(FPSRC)*.pas
 ifeq ($(strip $(TDEMfp)),)
 $(error ERROR: No source code for demonstration game Furious Paladin
 endif
+FURIOUSPALADIN = $(FPBIN)furiouspaladin$(BINSUF)
 
-DEMFILES = $(FPBIN)furiouspaladin$(BINSUF)
+TDEMpa = $(wildcard) $(PASRC)*.pas
+ifeq ($(strip $(TDEMpa)),)
+$(error ERROR: No source code for demonstration game Pascaleroids
+endif
+PASCALEROIDS =  $(PABIN)pascaleroids$(BINSUF)
+
+DEMFILES = $(FURIOUSPALADIN) $(PASCALEROIDS)
 
 # Documentation files
 DOCMAIN = $(DOCSRC)allegro5.pds
