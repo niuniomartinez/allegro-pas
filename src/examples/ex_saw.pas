@@ -71,7 +71,7 @@ PROGRAM ex_saw;
 
     WHILE n > 0 DO
     BEGIN
-      al_wait_for_event (Queue, Event);
+      al_wait_for_event (Queue, @Event);
 
       IF Event.ftype = ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT THEN
       BEGIN

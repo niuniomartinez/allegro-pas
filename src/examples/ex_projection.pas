@@ -217,7 +217,7 @@ PROGRAM ex_projection;
       Fade := TRUNC ((50 - ScrollY) * 12)
     ELSE
       Fade := TRUNC ((ScrollY - 50) * 4);
-   
+
     al_identity_transform (Projection);
     al_translate_transform_3d (Projection, 0, -ScrollY / 3, -181);
     Setup3DProjection (Projection);
@@ -273,7 +273,7 @@ BEGIN
   ScrollY := 0;
   Black := al_map_rgba_f (0, 0, 0, 1);
   REPEAT
-    al_wait_for_event (Queue, Event);
+    al_wait_for_event (Queue, @Event);
     CASE Event.ftype OF
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       EndExample := TRUE;

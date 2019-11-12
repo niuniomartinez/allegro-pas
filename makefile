@@ -104,22 +104,22 @@ EXMDIR = examples/
 DEMDIR = demos/
 OBJDIR = obj/
 BINDIR = bin/
-DOCDIR = docs/lib/
-DOCSRC = $(SRCDIR)docs/
 
 FPDIR = furiouspaladin/
 PADIR = pascaleroids/
 
+DOCSRC = $(SRCDIR)docs/
 LIBSRC = $(SRCDIR)$(LIBDIR)
 EXMSRC = $(SRCDIR)$(EXMDIR)
 DEMSRC = $(SRCDIR)$(DEMDIR)
 FPSRC = $(DEMSRC)$(FPDIR)
-PASRC = $(DEMSRC)$(FPDIR)
+PASRC = $(DEMSRC)$(PADIR)
 
+DOCDIR = docs/lib/
 EXMBIN = $(BINDIR)$(EXMDIR)
 DEMBIN = $(BINDIR)$(DEMDIR)
 FPBIN = $(DEMBIN)$(FPDIR)
-PABIN = $(DEMBIN)$(FPDIR)
+PABIN = $(DEMBIN)$(PADIR)
 
 
 
@@ -127,9 +127,9 @@ PABIN = $(DEMBIN)$(FPDIR)
 PFLAGS = -Sh -Si
 
 # Optimized compilation
-FLAGS = $(OPTOPT) $(PFLAGS) $(EFLAGS)
+#FLAGS = $(OPTOPT) $(PFLAGS) $(EFLAGS)
 # Use next line instead to activate debug.
-# FLAGS = $(DBGOPT) $(PFLAGS) $(EFLAGS)
+FLAGS = $(DBGOPT) $(PFLAGS) $(EFLAGS)
 
 # If you're using Windows, the examples will link with the "monolith" version
 # of Allegro by default.  If you want to link with the "non-monolith" version

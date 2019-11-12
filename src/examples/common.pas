@@ -47,7 +47,7 @@ IMPLEMENTATION
         (Display, 'Error', 'Cannot run example', Message, '', 0)
     END
     ELSE
-      WriteLn (stderr, Message);
+      WriteLn (ErrOutput, Message);
     HALT (1)
   END;
 
@@ -83,7 +83,7 @@ IMPLEMENTATION
         Queue,
         al_get_native_text_log_event_source (TextLog)
       );
-      al_wait_for_event (Queue, Event);
+      al_wait_for_event (Queue, @Event);
       al_destroy_event_queue (Queue)
     END;
     al_close_native_text_log (TextLog);

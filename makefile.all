@@ -16,21 +16,21 @@ demos: $(DEMFILES)
 	@echo "Finished all demonstration games."
 
 # Executables
-$(EXMBIN)%$(BINSUF): $(EXMDIR)%.pas $(EXMDIR)common.pas $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FU$(OBJDIR) $< -o$@
+$(EXMBIN)%$(BINSUF): $(EXMSRC)%$(MAINSUF) $(EXMSRC)common.pas $(LIBFILES)
+	fpc $(FLAGS) -Fu$(LIBSRC) -FU$(OBJDIR) $< -o$@
 	@echo Example $@ ready!
 
 $(FURIOUSPALADIN): $(FPSRC)*.pas $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FU$(OBJDIR) $< -o$@
+	fpc $(FLAGS) -Fu$(LIBSRC) -FU$(OBJDIR) $< -o$@
 	@echo Demonstration Game Furious Paladin ready!
 
 $(PASCALEROIDS): $(PASRC)*.pas $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBDIR) -FU$(OBJDIR) $< -o$@
+	fpc $(FLAGS) -Fu$(LIBSRC) -FU$(OBJDIR) $< -o$@
 	@echo Demonstration Game Pascaleroids ready!
 
 # Documentation.
 docs: $(LIBFILES) $(DOCFILES)
-	pasdoc $(DOCOPTS) $(DOCFMT) --cache-dir $(OBJDIR) -E $(DOCDIR) -T "$(PROJECT)" -R $(DOCMAIN) --introduction $(DOCINTRO) $(LIBFILES)
+	pasdoc $(DOCOPTS) $(DOCFMT) -E $(DOCDIR) -T "$(PROJECT)" -R $(DOCMAIN) --introduction $(DOCINTRO) $(LIBFILES)
 
 # Returns some variables.
 status: adbanner

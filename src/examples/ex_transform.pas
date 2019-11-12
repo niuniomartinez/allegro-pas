@@ -103,7 +103,7 @@ BEGIN
 
   EndLoop := FALSE;
   REPEAT
-    al_wait_for_event (Queue, Event);
+    al_wait_for_event (Queue, @Event);
     CASE Event.ftype OF
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       EndLoop := TRUE;

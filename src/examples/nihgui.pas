@@ -600,7 +600,7 @@ IMPLEMENTATION
   VAR
     lEvent: ALLEGRO_EVENT;
   BEGIN
-    IF aBlock THEN  al_wait_for_event (fEventQueue, lEvent);
+    IF aBlock THEN  al_wait_for_event (fEventQueue, NIL);
 
     WHILE al_get_next_event (fEventQueue, lEvent) DO
     BEGIN

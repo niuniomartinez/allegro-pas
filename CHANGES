@@ -10,6 +10,11 @@ Changes between versions 5.2.beta and 5.2.b.1
 
   News
   ----
+     : Added unit al5memfile.
+     : Added unit al5video.
+     : Added constant AL_EOF.
+     : Added unstable API stuff, as it's quite useful.  This affects several
+       units and subsystems.
   #16: Now Windows compiles for "monolith" by default.
      : Added a "resources" directory with some interesting resources.
      : Added some new constants with version information.
@@ -17,7 +22,10 @@ Changes between versions 5.2.beta and 5.2.b.1
        information.
      : Added display procedures al_set_new_display_refresh_rate,
        al_get_new_display_refresh_rate and al_apply_window_constraints.
+     : Added color manipulation procedures for XYZ, L*a*b, xyY and LCH color
+       spaces.
      : Added configuration procedures al_merge_config and al_merge_config_into.
+     : Added formatting text procedures, glyph functions and more to al5font.
      : Added functions al_load_ttf_font_f and al_load_ttf_font_stretch_f to the
        al5ttf add-on.
      : Added UNICODE functions al_ustr_remove_chr, al_ustr_insert_chr and
@@ -25,9 +33,14 @@ Changes between versions 5.2.beta and 5.2.b.1
      : Added al_transform_coordintates_4d and
        al_transform_coordintates_3d_projective.
      : Added function al_get_system_config.
+     : Added audio functions al_get_audio_stream_played_samples, al_register_*.
+     : Added OpenGL function al_get_opengl_program_object.
 
   API changes
   -----------
+     : "Even wait" procedures now expects a pointer to the event variable
+       instead of an "OUT" parameter.  This is because "OUT" parameters doesn't
+       allows NIL parameters, and it is useful in such functions.
      : Parameter ident of al_load_bitmap_f is AL_STR now, wich is more
        coherent with other procedures.
      : Fixed parameter ident of al_load_bitmap_flags_f and
@@ -44,6 +57,8 @@ Changes between versions 5.2.beta and 5.2.b.1
      : Changed return type of al_check_inverse from AL_INT to AL_BOOL.
      : Removed ALLEGRO_SYSTEM stuff as it is for internal use only.  If needed,
        implement it as add-on.
+     : Changed some functions and procedures of the al5primitives unit, using
+       arrays instead of pointers, and using enumerations instead of integers.
 
 
 

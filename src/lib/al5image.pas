@@ -1,15 +1,12 @@
 UNIT al5image;
-(*<This unit registers bitmap format handlers for @link(al_load_bitmap),
+(***<This unit registers bitmap format handlers for @link(al_load_bitmap),
    @link(al_save_bitmap), etc.
 
-   The following types are built into the Allegro image addon and guaranteed to
-   be available: BMP, PCX, TGA.  Every platform also supports JPEG and PNG via
-   external dependencies.
-
-   Other formats may be available depending on the operating system and
-   installed libraries, but are not guaranteed and should not be assumed to be
-   universally available. *)
-(* Copyright (c) 2012-2018 Guillermo Martínez J.
+   Some of the format handlers define configuration options for specifying
+   things like compression level or gamma handling. Refer to
+   @link(al_get_system_config) for their documentation.
+ *)
+(* Copyright (c) 2012-2019 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages

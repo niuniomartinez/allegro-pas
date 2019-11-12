@@ -89,7 +89,10 @@ BEGIN
       al_clear_to_color (al_map_rgb (0, 0, 0));
       FOR Star := LOW (Stars[1]) TO HIGH (Stars[1]) DO
         al_draw_pixel (Stars[1][Star].X, Stars[1][Star].Y, Colors[1]);
-      al_lock_bitmap (al_get_backbuffer (Display), ALLEGRO_PIXEL_FORMAT_ANY, 0);
+      al_lock_bitmap (
+        al_get_backbuffer (Display),
+        ALLEGRO_PIXEL_FORMAT_ANY, ALLEGRO_LOCK_READWRITE
+      );
 
       FOR Layer := 2 TO HIGH (Stars) DO
       BEGIN

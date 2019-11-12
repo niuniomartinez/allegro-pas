@@ -1,3 +1,72 @@
+#al5base.AL_POINTER
+Generic pointer.
+#al5base.AL_INT8
+Signed 8bit integer values.
+#al5base.AL_UINT8
+Unsigned 8bit integer values.
+#al5base.AL_INT16
+Signed 16bit integer values.
+#al5base.AL_UINT16
+Unsigned 16bit integer values.
+#al5base.AL_INT32
+Signed 32bit integer values.
+#al5base.AL_UINT32
+Unsigned 32bit integer values.
+#al5base.AL_INT64
+Signed 64bit integer values.
+#al5base.AL_UINT64
+Unsigned 64bit integer values.
+#al5base.AL_BOOL
+Boolean result.
+
+#al5base.AL_CHAR
+Signed 8bit integer.
+
+Note that it isn't Pascal's CHAR type!
+#al5base.AL_UCHAR
+Unsigned 8bit integer values.
+#al5base.AL_SHORT
+Signed 16bit integer values.
+#al5base.AL_USHORT
+Unsigned 16bit integer values.
+#al5base.AL_INT 
+Signed 32bit integer values.
+#al5base.AL_UINT
+Unsigned 32bit integer values.
+#al5base.AL_LONG
+Signed 32/64bit integer values.
+#al5base.AL_ULONG
+Unsigned 32/64bit integer values.
+#al5base.AL_SIZE_T
+size_t equivalent.
+#al5base.AL_INTPTR_T
+Fake pointer type.  It's needed to pass pointers as integer values in some methods.
+
+@bold(Note:) This type may change to @code(AL_POINTER) in the future.
+#al5base.AL_UINTPTR_T
+Fake pointer type.  It's needed to pass pointers as integer values in some methods.
+
+@bold(Note:) This type may change to @code(AL_POINTER) in the future.
+#al5base.AL_OFF_T
+Another 64bit integer to store sizes.
+#al5base.AL_FLOAT
+Float value.
+#al5base.AL_DOUBLE
+Double value.
+#al5base.AL_STR
+Strings.  Used in parameters to convert Pascal's @code(STRING) to C's @code(char *).
+
+#al5base.AL_VOIDptr
+Pointer.
+#al5base.AL_STRptr
+Pointer to text strings.  Used to convert Pascal's @code(STRING) to C @code(char *).
+#al5base.AL_INTptr
+Pointer to integer.
+#al5base.AL_FLOATptr
+Pointer to float.
+
+
+
 #Allegro5.ALLEGRO_PAS_VERSION_STR
 Allegro.pas version string.
 @seealso(al_get_allegro_version)
@@ -58,7 +127,9 @@ to do in that case.
 The passed @code(argc) and @code(argv) will simply be passed on to
 @code(user_main) and the return value of @code(user_main) will be returned.
 
-@bold(Note:)  This is used because the way the C language works.  I didn't test
+@bold(Note)
+
+This is used because the way the C language works.  I didn't test
 if Pascal do need this kind of stuff.  Future versions of Allegro.pas would not
 include this function, so don't use it unless your really need to (and tell me
 if you really need it to remove this warning from documentation).
@@ -122,7 +193,8 @@ Pixel formats. Each pixel format specifies the exact size and bit layout of a
 pixel in memory. Components are specified from high bits to low bits, so for
 example a fully opaque red pixel in @code(ARGB_8888) format is @code($FFFF0000).
 
-  @bold(Note:)
+@bold(Note)
+
   The pixel format is independent of endianness. That is, in the above example
   you can always get the red component with @code(@(pixel AND $00ff0000@) SHR
   16). But you can not rely on this code:  @code(@(pixel + 2@)^) it will return
@@ -500,13 +572,17 @@ target bitmap.  @code(flags) can be a combination of:
   @item(@code(ALLEGRO_FLIP_HORIZONTAL) - flip the bitmap about the y-axis)
   @item(@code(ALLEGRO_FLIP_VERTICAL) - flip the bitmap about the x-axis)
 )
-@bold(Note:) The current target bitmap must be a different bitmap. Drawing a
+@bold(Note)
+
+The current target bitmap must be a different bitmap. Drawing a
 bitmap to itself (or to a sub-bitmap of itself) or drawing a sub-bitmap to
 its parent (or another sub-bitmap of its parent) are not currently
 supported. To copy part of a bitmap into the same bitmap simply use a
 temporary bitmap instead.
 
-@bold(Note:) The backbuffer (or a sub-bitmap thereof) can not be
+@bold(Note)
+
+The backbuffer (or a sub-bitmap thereof) can not be
 transformed, blended or tinted. If you need to draw the backbuffer draw it
 to a temporary bitmap first with no active transformation (except
 translation). Blending and tinting settings/parameters will be ignored. This
@@ -703,7 +779,9 @@ Returns a new copy of a string, containing its contents in the byte interval @co
 If necessary, use @link(al_ustr_offset) to find the byte offsets for a given code point that you are interested in.
 @seealso(al_ustr_dup) @seealso(al_ustr_free)
 
-@bold(Note:)  This is used because the way the C language works.  I didn't test
+@bold(Note)
+
+This is used because the way the C language works.  I didn't test
 if Pascal do need this kind of stuff.  Future versions of Allegro.pas would not
 include this function, so don't use it unless your really need to (and tell me
 if you really need it to remove this warning from documentation).
@@ -873,10 +951,10 @@ Closes the given file, writing any buffered output data (if any).
 @return(@true on success, @false on failure.) @seealso(al_fopen)
 #Allegro5.al_fread
 Reads @code(size) bytes into the buffer pointed to by @code(ptr), from the given file.
-@return(The number of bytes actually read. If an error occurs, or the end-of-file is reached, the return value is a short byte count @(or zero@).
+@return(The number of bytes actually read. If an error occurs, or the end-of-file is reached, the return value is a short byte count (or zero).
 
-@code(al_fread) does not distinguish between EOF and other errors. Use @link(al_feof) and @link(al_ferror) to determine which occurred.)
-@seealso(al_fgetc) @seealso(al_fwrite) @seealso(al_fread16be) @seealso(al_fread16le) @seealso(al_fread32be) @seealso(al_fread32le)
+@code(al_fread) does not distinguish between @link(AL_EOF) and other errors. Use @link(al_feof) and @link(al_ferror) to determine which occurred.)
+@seealso(AL_EOF) @seealso(al_fgetc) @seealso(al_fwrite) @seealso(al_fread16be) @seealso(al_fread16le) @seealso(al_fread32be) @seealso(al_fread32le)
 #Allegro5.al_fwrite
 Write @code(size) bytes from the buffer pointed to by @code(ptr) into the given file.
 @return(The number of bytes actually written. If an error occurs, the return value is a short byte count @(or zero@).)
@@ -918,7 +996,7 @@ exactly two bytes:
   { At least one byte was unsuccessfully read. }
     ReportError ();
 !)
-@seealso(al_ferror) @seealso(al_fclearerr)
+@seealso(AL_EOF) @seealso(al_ferror) @seealso(al_fclearerr)
 #Allegro5.al_ferror
 Returns non-zero if the error indicator is set on the given file, i.e.
 there was some sort of previous error. The error code may be system or
@@ -1032,7 +1110,9 @@ See @link(al_fopen) about translations of end-of-line characters.
 Writes a string to file. Apart from the return value, this is equivalent
 to @code(@link(al_fwrite) @(f, p, Length @(p@)@);)
 
-@bold(Note:) depending on the stream type and the mode passed to
+@bold(Note)
+
+depending on the stream type and the mode passed to
 @link(al_fopen), newline characters in the string may or may not be
 automatically translated to native end-of-line sequences, e.g. @code(CR/LF)
 instead of @code(LF).
@@ -1143,7 +1223,9 @@ case @code(al_identify_bitmap) is used instead.
 This is the same as calling @code(al_load_bitmap_flags) with a flags
 parameter of 0.
 
-@bold(Note:) the core Allegro library does not support any image file
+@bold(Note)
+
+the core Allegro library does not support any image file
 formats by default. You must use the @link(al5image) addon, or register your
 own format handler.
 @return(A pointer to the loaded bitmap or @nil on error.)
@@ -1254,7 +1336,9 @@ dot. If (and only if) @code(ident) is an empty string, the file type is determin
 This is the same as calling @link(al_load_bitmap_flags_f) with @code(0) for
 the @code(flags) parameter.
 
-@bold(Note:) the core Allegro library does not support any image file
+@bold(Note)
+
+the core Allegro library does not support any image file
 formats by default. You must use the @link(al5image) addon, or register
 your own format handler.
 @return(A pointer to the loaded bitmap or @nil on error. The file remains open afterwards.)
@@ -1269,7 +1353,9 @@ dot. If (and only if) @code(ident) is an empty string, the file type is determin
 
 The @code(flags) parameter is the same as for @link(al_load_bitmap_flags).
 
-@bold(Note:) the core Allegro library does not support any image file
+@bold(Note)
+
+the core Allegro library does not support any image file
 formats by default. You must use the @link(al5image) addon, or register
 your own format handler.
 @return(A pointer to the loaded bitmap or @nil on error. The file remains open afterwards.)
@@ -1278,7 +1364,9 @@ your own format handler.
 Saves an @code(ALLEGRO_BITMAP) to an image file. The file type is determined by
 the extension.
 
-@bold(Note:) the core Allegro library does not support any image file
+@bold(Note)
+
+the core Allegro library does not support any image file
 formats by default. You must use the @link(al5image) addon, or register your
 own format handler.
 @return(@true on success, @false on error.)
@@ -1289,7 +1377,9 @@ Saves an ALLEGRO_BITMAP to an ALLEGRO_FILE stream. The file type is
 determined by the passed @code(ident) parameter, which is a file name
 extension including the leading dot.
 
-@bold(Note:) the core Allegro library does not support any image file
+@bold(Note)
+
+the core Allegro library does not support any image file
 formats by default. You must use the @link(al5image) addon, or register your
 own format handler.
 @return(@true on success, @false on error.  The file remains open afterwards.)
@@ -1335,7 +1425,9 @@ bitmap it will be updated from system memory after the bitmap is unlocked
 
 On some platforms, Allegro automatically backs up the contents of video bitmaps because they may be occasionally lost (see discussion in @link(al_create_bitmap)'s documentation). If you're completely recreating the bitmap contents often (e.g. every frame) then you will get much better performance by creating the target bitmap with @code(ALLEGRO_NO_PRESERVE_TEXTURE) flag.
 
-@bold(Note:) While a bitmap is locked, you can not use any drawing
+@bold(Note)
+
+While a bitmap is locked, you can not use any drawing
 operations on it (with the sole exception of @link(al_put_pixel) and
 @link(al_put_blended_pixel)).
 @param(flags @unorderedlist(
@@ -1368,7 +1460,9 @@ the bitmap is a video bitmap, only that area of the texture will be updated
 when it is unlocked. Locking only the region you indend to modify will be
 faster than locking the whole bitmap.
 
-@bold(Note:) Using the @code(ALLEGRO_LOCK_WRITEONLY) with a blocked pixel
+@bold(Note)
+
+Using the @code(ALLEGRO_LOCK_WRITEONLY) with a blocked pixel
 format (i.e. formats for which @link(al_get_pixel_block_width) or
 @link(al_get_pixel_block_height) do not return 1) requires you to have the
 region be aligned to the block width for optimal performance. If it is not,
@@ -1385,7 +1479,9 @@ end, this function also does not allow format conversion. For bitmap formats
 with a block size of 1, this function is identical to calling
 @code(al_lock_bitmap @(bmp, al_get_bitmap_format @(bmp@), flags@)).
 
-@bold(Note:) Currently there are no drawing functions that work when the
+@bold(Note)
+
+Currently there are no drawing functions that work when the
 bitmap is locked with a compressed format. @link(al_get_pixel) will also not
 work.
 @seealso(al_lock_bitmap) @seealso(al_lock_bitmap_region_blocked)
@@ -1566,7 +1662,9 @@ A keyboard key was pressed.
 @item(@bold(@code(keyboard.keycode)) The code corresponding to the physical key which was pressed. See the Key codes section for the list of @code(ALLEGRO_KEY_*) constants.)
 @item(@bold(@code(keyboard.display)) The display which had keyboard focus when the event occurred.)
 )
-@bold(Note:) this event is about the physical keys being pressed on the keyboard. Look for @link(ALLEGRO_EVENT_KEY_CHAR) events for character input.
+@bold(Note)
+
+this event is about the physical keys being pressed on the keyboard. Look for @link(ALLEGRO_EVENT_KEY_CHAR) events for character input.
 #Allegro5.ALLEGRO_EVENT_KEY_CHAR
 A character was typed on the keyboard, or a character was auto-repeated.
 @unorderedlist(
@@ -1586,7 +1684,9 @@ A character was typed on the keyboard, or a character was auto-repeated.
     The display which had keyboard focus when the event occurred.)
 )
 
-@bold(Note:) in many input methods, characters are not entered one-for-one with physical key presses. Multiple key presses can combine to generate a single character, e.g. apostrophe + e may produce 'é'. Fewer key presses can also generate more characters, e.g. macro sequences expanding to common phrases.
+@bold(Note)
+
+in many input methods, characters are not entered one-for-one with physical key presses. Multiple key presses can combine to generate a single character, e.g. apostrophe + e may produce 'é'. Fewer key presses can also generate more characters, e.g. macro sequences expanding to common phrases.
 #Allegro5.ALLEGRO_EVENT_KEY_UP
 A keyboard key was released.
 @unorderedlist(
@@ -1619,9 +1719,13 @@ One or more mouse axis values changed.
 @item(@bold(@code(mouse.display))
     The display which had mouse focus.)
 )
-@bold(Note:) Calling @link(al_set_mouse_xy) also will result in a change of axis values, but such a change is reported with @link(ALLEGRO_EVENT_MOUSE_WARPED) events instead which are identical except for their type.
+@bold(Note)
 
-@bold(Note:) currently mouse.display may be @nil if an event is generated in response to @link(al_set_mouse_axis).
+Calling @link(al_set_mouse_xy) also will result in a change of axis values, but such a change is reported with @link(ALLEGRO_EVENT_MOUSE_WARPED) events instead which are identical except for their type.
+
+@bold(Note)
+
+currently mouse.display may be @nil if an event is generated in response to @link(al_set_mouse_axis).
 #Allegro5.ALLEGRO_EVENT_MOUSE_BUTTON_DOWN
 A mouse button was pressed.
 @unorderedlist(
@@ -1708,7 +1812,9 @@ The display (or a portion thereof) has become visible.
 @item(@bold(@code(display.width), @code(display.height))
     The width and height of the rectangle which was exposed.)
 )
-@bold(Note:) The display needs to be created with @code(ALLEGRO_GENERATE_EXPOSE_EVENTS) flag for these events to be generated.
+@bold(Note)
+
+The display needs to be created with @code(ALLEGRO_GENERATE_EXPOSE_EVENTS) flag for these events to be generated.
 #Allegro5.ALLEGRO_EVENT_DISPLAY_RESIZE
 The window has been resized.
 @unorderedlist(
@@ -1731,10 +1837,11 @@ The close button of the window has been pressed.
 #Allegro5.ALLEGRO_EVENT_DISPLAY_LOST
 When using Direct3D, displays can enter a "lost" state. In that state, drawing calls are ignored, and upon entering the state, bitmap's pixel data can become undefined. Allegro does its best to preserve the correct contents of bitmaps (see the @code(ALLEGRO_NO_PRESERVE_TEXTURE) flag at @link(al_set_new_bitmap_flags)) and restore them when the device is "found" (see @link(ALLEGRO_EVENT_DISPLAY_FOUND)). However, this is not 100% fool proof (see discussion in @link(al_create_bitmap)'s documentation).
 
-@bold(Note:) This event merely means that the display was lost, that is, DirectX suddenly lost the contents of all video bitmaps. In particular, you can keep calling drawing functions -- they just most likely won't do anything. If Allegro's restoration of the bitmaps works well for you then no further action is required when you receive this event.
-@unorderedlist(
-@item(@bold(@code(display.source))
-    The display which was lost.)
+@bold(Note)
+
+This event merely means that the display was lost, that is, DirectX suddenly lost the contents of all video bitmaps. In particular, you can keep calling drawing functions -- they just most likely won't do anything. If Allegro's restoration of the bitmaps works well for you then no further action is required when you receive this event.
+@definitionlist(
+  @itemlabel(@bold(@code(display.source))) @item(The display which was lost.)
 )
 #Allegro5.ALLEGRO_EVENT_DISPLAY_FOUND
 Generated when a lost device is restored to operating state.
@@ -1775,16 +1882,22 @@ When a display receives this event it should stop doing any drawing and then cal
 
 This is currently only relevant for Android and iOS. It will be sent when the application is switched to background mode, in addition to @link(ALLEGRO_EVENT_DISPLAY_SWITCH_OUT). The latter may also be sent in situations where the application is not active but still should continue drawing, for example when a popup is displayed in front of it.
 
-@bold(Note:) This event means that the next time you call a drawing function, your program will crash. So you must stop drawing and you must immediately reply with @code(al_acknowledge_drawing_halt). Allegro sends this event because it cannot handle this automatically. Your program might be doing the drawing in a different thread from the event handling, in which case the drawing thread needs to be signaled to stop drawing before acknowledging this event.
+@bold(Note)
 
-@bold(Note:) Mobile devices usually never quit an application, so to prevent the battery from draining while your application is halted it can be a good idea to call @link(al_stop_timer) on all your timers, otherwise they will keep generating events. If you are using audio, you can also stop all audio voices (or pass @nil to @link(al_set_default_voice) if you use the default mixer), otherwise Allegro will keep streaming silence to the voice even if the stream or mixer are stopped or detached.
+This event means that the next time you call a drawing function, your program will crash. So you must stop drawing and you must immediately reply with @code(al_acknowledge_drawing_halt). Allegro sends this event because it cannot handle this automatically. Your program might be doing the drawing in a different thread from the event handling, in which case the drawing thread needs to be signaled to stop drawing before acknowledging this event.
+
+@bold(Note)
+
+Mobile devices usually never quit an application, so to prevent the battery from draining while your application is halted it can be a good idea to call @link(al_stop_timer) on all your timers, otherwise they will keep generating events. If you are using audio, you can also stop all audio voices (or pass @nil to @link(al_set_default_voice) if you use the default mixer), otherwise Allegro will keep streaming silence to the voice even if the stream or mixer are stopped or detached.
 @seealso(ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING)
 #Allegro5.ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING
 When a display receives this event, it may resume drawing again, and it must call @link(al_acknowledge_drawing_resume) immediately.
 
 This is currently only relevant for Android and iOS. The event will be sent when an application returns from background mode and is allowed to draw to the display again, in addition to @link(ALLEGRO_EVENT_DISPLAY_SWITCH_IN). The latter event may also be sent in a situation where the application is already active, for example when a popup in front of it closes.
 
-@bold(Note:) Unlike @link(ALLEGRO_EVENT_DISPLAY_FOUND) it is not necessary to reload any bitmaps when you receive this event.
+@bold(Note)
+
+Unlike @link(ALLEGRO_EVENT_DISPLAY_FOUND) it is not necessary to reload any bitmaps when you receive this event.
 @seealso(ALLEGRO_EVENT_DISPLAY_HALT_DRAWING)
 
 #Allegro5.ALLEGRO_EVENT_TOUCH_BEGIN
@@ -2354,7 +2467,9 @@ Changes the icon associated with the display (window).
 #Allegro5.al_set_display_icons
 Changes the icons associated with the display (window). Multiple icons can be provided for use in different contexts, e.g. window frame, taskbar, alt-tab popup. The number of icons must be at least one.
 
-@bold(Note:) If the underlying OS requires an icon of a size not provided then one of the bitmaps will be scaled up or down to the required size. The choice of bitmap is implementation dependent.
+@bold(Note)
+
+If the underlying OS requires an icon of a size not provided then one of the bitmaps will be scaled up or down to the required size. The choice of bitmap is implementation dependent.
 @seealso(al_set_display_icon) @seealso(al_set_window_title)
 
 #Allegro5.al_get_new_display_adapter
@@ -2656,7 +2771,9 @@ For example, if @code(ALLEGRO_DEPTH_FUNCTION) is set to @code(ALLEGRO_RENDER_LES
 #Allegro5.al_draw_pixel
 Draws a single pixel at @code({x, y}). This function, unlike @link(al_put_pixel), does blending and, unlike @link(al_put_blended_pixel), respects the transformations (that is, the pixel's position is transformed, but its size is unaffected - it remains a pixel). This function can be slow if called often; if you need to draw a lot of pixels consider using @link(al_draw_prim) with @code(ALLEGRO_PRIM_POINT_LIST) from the primitives addon.
 
-@bold(Note:) This function may not draw exactly where you expect it to. See the @link(al5primitives.pixelprecise pixel-precise output) section on the @link(al5primitives primitives addon) documentation for details on how to control exactly where the pixel is drawn.
+@bold(Note)
+
+This function may not draw exactly where you expect it to. See the @bold(Pixel-precise output) section on the @link(al5primitives primitives addon) documentation for details on how to control exactly where the pixel is drawn.
 @param(x destination x)
 @param(y destination y)
 @param(color color of the pixel)
@@ -2792,6 +2909,11 @@ Overrides the state of the keyboard LED indicators. Set @code(leds) to a combina
 #Allegro5.al_get_keyboard_state
 Saves the state of the keyboard specified at the time the function is called into @code(ret_state).
 @seealso(al_key_down) @seealso(ALLEGRO_KEYBOARD_STATE)
+#Allegro5.al_clear_keyboard_state
+Clears the state of the keyboard, emitting @link(ALLEGRO_EVENT_KEY_UP) for each currently pressed key. The given display is regarded as the one which had the keyboard focus when the event occurred. In case display is @nil no event is emitted. For most keyboard drivers Allegro maintains its own state of the keyboard, which might get out of sync with the real one. This function is intended to remedy such situation by resetting Allegro's keyboard state to a known default (no key pressed). This is particularly useful in response to @link(ALLEGRO_EVENT_DISPLAY_SWITCH_OUT) events.
+
+@bold(Unstable API:) This is a new feature and the exact semantics are still being decided upon.
+@seealso(al_get_keyboard_state) @seealso(ALLEGRO_KEYBOARD_STATE)
 #Allegro5.al_key_down
 Returns @true if the key specified was held down in the state specified.
 @seealso(ALLEGRO_KEYBOARD_STATE)
@@ -2882,13 +3004,17 @@ Confines the mouse cursor to the given display. The mouse cursor can only be con
 
 Do not assume that the cursor will remain confined until you call @link(al_ungrab_mouse). It may lose the confined status at any time for other reasons.
 
-@bold(Note:) not yet implemented on Mac OS X.
+@bold(Note)
+
+not yet implemented on Mac OS X.
 @return(@true if successful, otherwise returns @false.)
 @seealso(al_ungrab_mouse)
 #Allegro5.al_ungrab_mouse
 Stop confining the mouse cursor to any display belonging to the program.
 
-@bold(Note:) not yet implemented on Mac OS X.
+@bold(Note)
+
+not yet implemented on Mac OS X.
 @seealso(al_grab_mouse)
 #Allegro5.al_set_mouse_wheel_precision
 Sets the precision of the mouse wheel (the z and w coordinates). This precision manifests itself as a multiplier on the @code(dz) and @code(dw) fields in mouse events. It also affects the @code(z) and @code(w) fields of events and @link(ALLEGRO_MOUSE_STATE), but not in a simple way if you alter the precision often, so it is suggested to reset those axes to @code(0) when you change precision. Setting this to a high value allows you to detect small changes in those two axes for some high precision mice. A flexible way of using this precision is to set it to a high value (120 is likely sufficient for most, if not all, mice) and use a floating point @code(dz) and @code(dw) like so:
@@ -3109,7 +3235,9 @@ END;
 #Allegro5.al_build_transform
 Builds a transformation given some parameters. This call is equivalent to calling the transformations in this order: make identity, rotate, scale, translate. This method is faster, however, than actually calling those functions.
 
-@bold(Note:) this function was previously documented to be equivalent to a different (and more useful) order of operations: identity, scale, rotate, translate.
+@bold(Note)
+
+this function was previously documented to be equivalent to a different (and more useful) order of operations: identity, scale, rotate, translate.
 @param(trans Transformation to alter.)
 @param(x Horizontal translation.)
 @param(y Vertical translation.)
@@ -3227,14 +3355,18 @@ Returns the inverse of the current transformation of the target bitmap. If there
 
 This is similar to calling @code(@link(al_invert_transform) @(@link(al_get_current_transform)^@)) but the result of this function is cached.
 
-@bold(Note:) Allegro's transformation inversion functions work correctly only with 2D transformations.
+@bold(Note)
+
+Allegro's transformation inversion functions work correctly only with 2D transformations.
 #Allegro5.al_get_current_projection_transform(void)
 Returns a pointer to the current projection transformation.  If there is no target bitmap, this function returns @nil.
 @seealso(al_use_projection_transform)
 #Allegro5.al_invert_transform
 Inverts the passed transformation. If the transformation is nearly singular (close to not having an inverse) then the returned transformation may be invalid. Use @link(al_check_inverse) to ascertain if the transformation has an inverse before inverting it if you are in doubt.
 
-@bold(Note:) Allegro's transformation inversion functions work correctly only with 2D transformations.
+@bold(Note)
+
+Allegro's transformation inversion functions work correctly only with 2D transformations.
 @param(trans Transformation to invert.)
 @seealso(al_check_inverse)
 #Allegro5.al_check_inverse
@@ -3244,7 +3376,9 @@ In this function tolerance specifies how close the determinant can be to 0 (if t
 
 Note that this check is superfluous most of the time if you never touched the transformation matrix values yourself. The only thing that would cause the transformation to not have an inverse is if you applied a 0 (or very small) scale to the transformation or you have a really large translation. As long as the scale is comfortably above 0, the transformation will be invertible.
 
-@bold(Note:) Allegro's transformation inversion functions work correctly only with 2D transformations.
+@bold(Note)
+
+Allegro's transformation inversion functions work correctly only with 2D transformations.
 @param(trans Transformation to check.)
 @param(tol Tolerance.)
 @return(@true if the transformation is invertible, @false otherwise.)
@@ -3252,7 +3386,7 @@ Note that this check is superfluous most of the time if you never touched the tr
 #Allegro5.al_orthographic_transform
 Combines the given transformation with an orthographic transformation which maps the screen rectangle to the given left/top and right/bottom coordinates.
 
-near/far is the z range, coordinates outside of that range will get clipped. Normally -1/1 is fine because all 2D graphics will have a z coordinate of 0. However if you for example do al_draw_rectangle(0, 0, 100, 100) and rotate around the x axis ("towards the screen") make sure your z range allows values from -100 to 100 or the rotated rectangle will get clipped.
+near/far is the z range, coordinates outside of that range will get clipped. Normally -1/1 is fine because all 2D graphics will have a z coordinate of 0. However if you for example do @code(al_draw_rectangle (0, 0, 100, 100)) and rotate around the x axis ("towards the screen") make sure your z range allows values from -100 to 100 or the rotated rectangle will get clipped.
 
 Also, if you are using a depth buffer the z range decides the depth resolution. For example if you have a 16 bit depth buffer there are only 65536 discrete depth values. So if your near/far is set to -1000000/1000000 most of the z positions would not result in separate depth values which could lead to artifacts.
 @seealso(al_use_projection_transform) @seealso(al_perspective_transform)
@@ -3380,7 +3514,9 @@ Like @link(al_attach_shader_source) but reads the source code for the shader fro
 #Allegro5.al_build_shader
 This is required before the shader can be used with @link(al_use_shader). It should be called after successfully attaching the pixel and/or vertex shaders with @link(al_attach_shader_source) or @link(al_attach_shader_source_file).
 
-@bold(Note:) If you are using the @code(ALLEGRO_PROGRAMMABLE_PIPELINE) flag, then you must specify both a pixel and a vertex shader sources for anything to be rendered.
+@bold(Note)
+
+If you are using the @code(ALLEGRO_PROGRAMMABLE_PIPELINE) flag, then you must specify both a pixel and a vertex shader sources for anything to be rendered.
 @return(@true on success and @false on error, in which case the error log is updated. The error log can be retrieved with @link(al_get_shader_log).)
 @seealso(al_use_shader) @seealso(al_get_shader_log)
 #Allegro5.al_get_shader_log
@@ -3464,7 +3600,9 @@ Returns a string containing the source code to Allegro's default vertex or pixel
 #Allegro5.al_init
 Like @link(al_install_system), but automatically passes in the version and @nil as @code(atexit_ptr):
 
-@bold(Note:) It is typically wrong to call al_init anywhere except the final game binary. In particular, do not call it inside a shared library unless you know what you're doing. In those cases, it is better to call @link(al_install_system) either with a @nil @code(atexit_ptr), or with a pointer to @code(atexit) provided by the user of this shared library.
+@bold(Note)
+
+It is typically wrong to call al_init anywhere except the final game binary. In particular, do not call it inside a shared library unless you know what you're doing. In those cases, it is better to call @link(al_install_system) either with a @nil @code(atexit_ptr), or with a pointer to @code(atexit) provided by the user of this shared library.
 
 #Allegro5.al_install_system
 Initializes the Allegro system.  No other Allegro functions can be called before this (with one or two exceptions).
@@ -3629,33 +3767,13 @@ An opaque datatype that represents a recording device.
 #al5audio.ALLEGRO_AUDIO_RECORDER_EVENT
 Structure that holds the audio recorder event data.
 
-@bold(Unstable API) The API may need a slight redesign.
+@bold(Unstable API:) The API may need a slight redesign.
 @seealso(al_get_audio_recorder_event) @seealso(ALLEGRO_EVENT)
 
 #al5audio.ALLEGRO_AUDIO_DEPTH
 Sample depth and type as well as signedness. Mixers only use 32-bit signed float (-1..+1), or 16-bit signed integers. Signedness is determined by an "unsigned" bit-flag applied to the depth value.
 
 @bold(@code(ALLEGRO_AUDIO_DEPTH_UINT8)): @code(INT8 + UNSIGNED)
-#al5audio.ALLEGRO_CHANNEL_CONF
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #al5audio.ALLEGRO_AUDIO_PAN_NONE
 A special value for the pan property of sample instances and audio streams. Use this value to disable panning on sample instances and audio streams, and play them without attentuation implied by panning support.
@@ -3663,10 +3781,20 @@ A special value for the pan property of sample instances and audio streams. Use 
 @code(ALLEGRO_AUDIO_PAN_NONE) is different from a pan value of 0.0 (centered) because, when panning is enabled, we try to maintain a constant sound power level as a sample is panned from left to right. A sound coming out of one speaker should sound as loud as it does when split over two speakers. As a consequence, a sample with pan value 0.0 will be 3 dB softer than the original level.
 
 (Please correct us if this is wrong.)
-#al5audio.ALLEGRO_SAMPLE_INSTANCEptr
-An @code(ALLEGRO_SAMPLE_INSTANCEptr) represents a playable instance of a predefined sound effect. It holds information about how the effect should be played: These playback parameters consist of the looping mode, loop start/end points, playing position, speed, gain, pan and the playmode. Whether a sample instance is currently playing or paused is also one of its properties.
 
-An instance uses the data from an @code(ALLEGRO_SAMPLE) object. Multiple instances may be created from the same @code(ALLEGRO_SAMPLE). An @code(ALLEGRO_SAMPLE) must not be destroyed while there are instances which reference it.
+#al5audio.ALLEGRO_SAMPLEptr
+Pointer to an Allegro sample object.
+
+An Allegro sample object stores the data necessary for playing pre-defined digital audio. It holds a user-specified PCM data buffer and information about its format (data length, depth, frequency, channel configuration). You can have the same ALLEGRO_SAMPLE playing multiple times simultaneously.
+@seealso(ALLEGRO_SAMPLE_INSTANCEptr)
+#al5audio.ALLEGRO_SAMPLE_ID
+An @code(ALLEGRO_SAMPLE_ID) represents a sample being played via @link(al_play_sample). It can be used to later stop the sample with @link(al_stop_sample). The underlying @link(ALLEGRO_SAMPLE_INSTANCEptr) can be extracted using @link(al_lock_sample_id).
+#al5audio.ALLEGRO_SAMPLE_INSTANCEptr
+Pointer to an Allegro sample instance.
+
+An Allegro sample instance represents a playable instance of a predefined sound effect. It holds information about how the effect should be played: These playback parameters consist of the looping mode, loop start/end points, playing position, speed, gain, pan and the playmode. Whether a sample instance is currently playing or paused is also one of its properties.
+
+An instance uses the data from an Allegro sample object. Multiple instances may be created from the same @code(ALLEGRO_SAMPLE). An @code(ALLEGRO_SAMPLE) must not be destroyed while there are instances which reference it.
 
 To actually produce audio output, an @code(ALLEGRO_SAMPLE_INSTANCEptr) must be attached to an @link(ALLEGRO_MIXERptr) which eventually reaches an @link(ALLEGRO_VOICEptr) object.
 @seealso(ALLEGRO_SAMPLEptr)
@@ -3681,12 +3809,402 @@ You can register an audio stream event source to an event queue; see @link(al_ge
 
 If you're late with supplying new data, the stream will be silent until new data is provided. You must call @link(al_drain_audio_stream) when you're finished with supplying data to the stream.
 
-If the stream is created by @link(al_load_audio_stream) then it will also generate an @code(ALLEGRO_EVENT_AUDIO_STREAM_FINISHED) event if it reaches the end of the file and is not set to loop.
+If the stream is created by @link(al_load_audio_stream) then it will also generate an @link(ALLEGRO_EVENT_AUDIO_STREAM_FINISHED) event if it reaches the end of the file and is not set to loop.
+#al5audio.ALLEGRO_MIXERptr
+A mixer mixes together attached streams into a single buffer. In the process, it converts channel configurations, sample frequencies and audio depths of the attached sample instances and audio streams accordingly. You can control the quality of this conversion using @link(ALLEGRO_MIXER_QUALITY).
+
+When going from mono to stereo (and above), the mixer reduces the volume of both channels by sqrt(2). When going from stereo (and above) to mono, the mixer reduces the volume of the left and right channels by sqrt(2) before adding them to the center channel (if present).
+#al5audio.ALLEGRO_VOICEptr
+A pointer to an Allegro voice.
+
+A voice represents an audio device on the system, which may be a real device, or an abstract device provided by the operating system. To play back audio, you would attach a mixer, sample instance or audio stream to a voice.
+@seealso(ALLEGRO_MIXERptr) @seealso(ALLEGRO_SAMPLEptr) @seealso(ALLEGRO_AUDIO_STREAMptr)
+
+#al5audio.ALLEGRO_MIXER_CALLBACK
+@seealso(al_set_mixer_postprocess_callback)
+#al5audio.ALLEGRO_SAMPLE_LOADER
+Callback function to load samples. @seealso(al_register_sample_loader)
+#al5audio.ALLEGRO_SAMPLE_SAVER
+Callback function to save samples. @seealso(al_register_sample_saver)
+#al5audio.ALLEGRO_AUDIO_STREAM_LOADER
+Callback function to load audio streams. @seealso(al_register_audio_stream_loader)
+#al5audio.ALLEGRO_SAMPLE_LOADER_F
+Callback function to load samples. @seealso(al_register_sample_loader_f)
+#al5audio.ALLEGRO_SAMPLE_SAVER_F
+Callback function to save samples. @seealso(al_register_sample_saver_f)
+#al5audio.ALLEGRO_AUDIO_STREAM_LOADER_F
+Callback function to load audio streams. @seealso(al_register_audio_stream_loader_f)
+
+#al5audio.al_create_sample
+Creates a sample data structure from the supplied buffer. If @code(free_buf) is @true then the buffer will be freed with @link(al_free) when the sample data structure is destroyed. For portability (especially Windows), the buffer should have been allocated with @link(al_malloc). Otherwise you should free the sample data yourself.
+
+A sample that is referred to by the @code(samples) parameter refers to a sequence channel intensities. E.g. if you're making a stereo sample with the @code(samples) set to 4, then the layout of the data in buf will be:
+@preformatted(
+  LRLRLRLR
+)
+Where L and R are the intensities for the left and right channels respectively. A single sample, then, refers to the LR pair in this example.
+
+To allocate a buffer of the correct size, you can use something like this:
+@longcode(!
+VAR
+  SampleSize, Bytes: INTEGER;
+  Buffer: POINTER;
+BEGIN
+  SampleSize := al_get_channel_count (ChanConf) * al_get_audio_depth_size (Depth);
+  Bytes := Samples * SampleSize;
+  Buffer := al_malloc (Bytes)
+END.
+!)
+@seealso(al_destroy_sample) @seealso(ALLEGRO_AUDIO_DEPTH) @seealso(ALLEGRO_CHANNEL_CONF)
+#al5audio.al_destroy_sample
+Frees the sample data structure. If it was created with the @code(free_buf) parameter set to @true, then the buffer will be freed with @link(al_free).
+
+This function will stop any sample instances which may be playing the buffer referenced by the @code(ALLEGRO_SAMPLEptr).
+@seealso(al_destroy_sample_instance) @seealso(al_stop_sample) @seealso(al_stop_samples)
+
+#al5audio.al_create_sample_instance
+Creates a sample instance, using the supplied sample data. The instance must be attached to a mixer (or voice) in order to actually produce output.
+
+The argument may be @nil. You can then set the sample data later with @link(al_set_sample).
+@seealso(al_destroy_sample_instance)
+#al5audio.al_destroy_sample_instance
+Detaches the sample instance from anything it may be attached to and frees it (the sample data, i.e. its @code(ALLEGRO_SAMPLE), is @italic(not) freed!).
+@seealso(al_create_sample_instance)
+
+#al5audio.al_get_sample_frequency
+Returns the frequency (in Hz) of the sample.
+@seealso(al_get_sample_channels) @seealso(al_get_sample_depth) @seealso(al_get_sample_length) @seealso(al_get_sample_data)
+#al5audio.al_get_sample_length
+Returns the length of the sample in sample values.
+@seealso(al_get_sample_channels) @seealso(al_get_sample_depth) @seealso(al_get_sample_frequency) @seealso(al_get_sample_data)
+#al5audio.al_get_sample_depth
+Returns the audio depth of the sample.
+@seealso(ALLEGRO_AUDIO_DEPTH) @seealso(al_get_sample_channels) @seealso(al_get_sample_frequency) @seealso(al_get_sample_length) @seealso(al_get_sample_data)
+#al5audio.al_get_sample_channels
+Returns the channel configuration of the sample.
+@seealso(ALLEGRO_CHANNEL_CONF) @seealso(al_get_sample_depth) @seealso(al_get_sample_frequency) @seealso(al_get_sample_length) @seealso(al_get_sample_data)
+#al5audio.al_get_sample_data
+Returns a pointer to the raw sample data.
+@seealso(al_get_sample_channels) @seealso(al_get_sample_depth) @seealso(al_get_sample_frequency) @seealso(al_get_sample_length)
+
+#al5audio.al_get_sample_instance_frequency
+Returns the frequency (in Hz) of the sample instance's sample data.
+#al5audio.al_get_sample_instance_length
+Returns the length of the sample instance in sample values. This property may differ from the length of the instance's sample data.
+@seealso(al_set_sample_instance_length) @seealso(al_get_sample_instance_time)
+#al5audio.al_get_sample_instance_position
+Get the playback position of a sample instance. @seealso(al_set_sample_instance_position)
+
+#al5audio.al_get_sample_instance_speed
+Returns the relative playback speed of the sample instance. @seealso(al_set_sample_instance_speed)
+#al5audio.al_get_sample_instance_gain
+Returns the playback gain of the sample instance. @seealso(al_set_sample_instance_gain)
+#al5audio.al_get_sample_instance_pan
+Gets the pan value of the sample instance. @seealso(al_set_sample_instance_pan)
+#al5audio.al_get_sample_instance_time
+Returns the length of the sample instance in seconds, assuming a playback speed of 1.0.
+@seealso(al_get_sample_instance_length)
+
+#al5audio.al_get_sample_instance_depth
+Returns the audio depth of the sample instance's sample data. @seealso(ALLEGRO_AUDIO_DEPTH)
+#al5audio.al_get_sample_instance_channels
+Returns the channel configuration of the sample instance's sample data. @seealso(ALLEGRO_CHANNEL_CONF)
+#al5audio.al_get_sample_instance_playmode
+Returns the playback mode of the sample instance.
+@seealso(ALLEGRO_PLAYMODE) @seealso(al_set_sample_instance_playmode)
+
+#al5audio.al_get_sample_instance_playing
+Returns @true if the sample instance is in the playing state. This may be true even if the instance is not attached to anything.
+@seealso(al_set_sample_instance_playing)
+#al5audio.al_get_sample_instance_attached
+Returns whether the sample instance is attached to something.
+@seealso(al_attach_sample_instance_to_mixer) @seealso(al_attach_sample_instance_to_voice) @seealso(al_detach_sample_instance)
+
+#al5audio.al_set_sample_instance_position
+Sets the playback position of a sample instance. @return(@true on success, @false on failure.)
+@seealso(al_get_sample_instance_position)
+#al5audio.al_set_sample_instance_length
+Sets the length of the sample instance in sample values. This can be used to play only parts of the underlying sample. Be careful not to exceed the actual length of the sample data, though.
+@return(@true on success, @false on failure. Will fail if the sample instance is currently playing.)
+@seealso(al_get_sample_instance_length)
+
+#al5audio.al_set_sample_instance_speed
+Sets the relative playback speed of the sample instance. 1.0 means normal speed.
+@Return(@true on success, @false on failure. Will fail if the sample instance is attached directly to a voice.)
+@seealso(al_get_sample_instance_speed)
+#al5audio.al_set_sample_instance_gain
+Sets the playback gain of the sample instance.
+@Return(@true on success, @false on failure. Will fail if the sample instance is attached directly to a voice.)
+@seealso(al_get_sample_instance_gain)
+#al5audio.al_set_sample_instance_pan
+Sets the pan value on a sample instance. A value of -1.0 means to play the sample only through the left speaker; +1.0 means only through the right speaker; 0.0 means the sample is centre balanced. A special value @link(ALLEGRO_AUDIO_PAN_NONE) disables panning and plays the sample at its original level. This will be louder than a pan value of 0.0.
+
+@bold(Note)
+
+panning samples with more than two channels doesn't work yet.
+@return(@true on success, @false on failure. Will fail if the sample instance is attached directly to a voice.)
+@seealso(al_get_sample_instance_pan) @seealso(ALLEGRO_AUDIO_PAN_NONE)
+
+#al5audio.al_set_sample_instance_playmode
+Sets the playback mode of the sample instance.
+@return(@true on success, @false on failure.)
+@seealso(ALLEGRO_PLAYMODE) @seealso(al_get_sample_instance_playmode)
+
+#al5audio.al_set_sample_instance_playing
+Changes whether the sample instance is playing.
+
+The instance does not need to be attached to anything.
+@return(@true on success, @false on failure.) @seealso(al_get_sample_instance_playing)
+#al5audio.al_detach_sample_instance
+Detachs the sample instance from whatever it's attached to, if anything.
+@return(@true on success.)
+@seealso(al_attach_sample_instance_to_mixer) @seealso(al_attach_sample_instance_to_voice) @seealso(al_get_sample_instance_attached)
+
+#al5audio.al_set_sample
+Changes the sample data that a sample instance plays. This can be quite an involved process.
+
+First, the sample is stopped if it is not already.
+
+Next, if data is @nil, the sample is detached from its parent (if any).
+
+If data is not @nil, the sample may be detached and reattached to its parent (if any). This is not necessary if the old sample data and new sample data have the same frequency, depth and channel configuration. Reattaching may not always succeed.
+
+On success, the sample remains stopped. The playback position and loop end points are reset to their default values. The loop mode remains unchanged.
+@return(@true on success, @false on failure. On failure, the sample will be stopped and detached from its parent.)
+@seealso(al_get_sample)
+#al5audio.al_get_sample
+Returns the sample data that the sample instance plays.
+
+Note this returns a pointer to an internal structure, not the @link(ALLEGRO_SAMPLEptr) that you may have passed to @link(al_set_sample). However, the sample buffer of the returned @code(ALLEGRO_SAMPLEptr) will be the same as the one that was used to create the sample (passed to @link(al_create_sample)). You can use @link(al_get_sample_data) on the return value to retrieve and compare it.
+@seealso(al_set_sample)
+#al5audio.al_play_sample_instance
+Plays the sample instance. @return(@true on success, @false on failure.)
+@seealso(al_stop_sample_instance)
+#al5audio.al_stop_sample_instance
+Stops an sample instance playing. @seealso(al_play_sample_instance)
+
+#al5audio.al_create_audio_stream
+Creates an @link(ALLEGRO_AUDIO_STREAMptr). The stream will be set to play by default. It will feed audio data from a buffer, which is split into a number of fragments.
+
+A sample that is referred to by the @code(samples) parameter refers to a sequence channel intensities. E.g. if you're making a stereo stream with the @code(samples) set to 4, then the layout of the data in the fragment will be:
+@preformatted(
+  LRLRLRLR
+)
+Where L and R are the intensities for the left and right channels respectively. A single sample, then, refers to the LR pair in this example.
+
+The choice of @code(buffer_count), @code(samples) and @code(freq) directly influences the audio delay. The delay in seconds can be expressed as:
+@longcode(!
+Delay := buffer_count * samples / freq
+!)
+This is only the delay due to Allegro's streaming, there may be additional delay caused by sound drivers and/or hardware.
+
+@bold(Note)
+
+If you know the fragment size in bytes, you can get the size in samples like this:
+@longcode(!
+  SampleSize := al_get_channel_count (ChannelConf) * al_get_audio_depth_size (Depth);
+  Samples := BytesPerFragment / SampleSize;
+!)
+The size of the complete buffer is:
+@longcode(!
+  BufferSize := BytesPerFragment * buffer_count
+!)
+@bold(Note)
+
+Unlike many Allegro objects, audio streams are not implicitly destroyed when Allegro is shut down. You must destroy them manually with al_destroy_audio_stream before the audio system is shut down.
+
+@param(buffer_count How many fragments to use for the audio stream. Usually only two fragments are required - splitting the audio buffer in two halves. But it means that the only time when new data can be supplied is whenever one half has finished playing. When using many fragments, you usually will use fewer samples for one, so there always will be (small) fragments available to be filled with new data.)
+@param(samples The size of a fragment in samples.)
+@param(freq The frequency, in Hertz.)
+@param(depth Must be one of the values listed for @link(ALLEGRO_AUDIO_DEPTH).)
+@param(chan_conf Must be one of the values listed for @link(ALLEGRO_CHANNEL_CONF).)
+#al5audio.al_destroy_audio_stream
+Destroys an audio stream which was created with @link(al_create_audio_stream) or @link(al_load_audio_stream).
+
+@bold(Note)
+
+If the stream is still attached to a mixer or voice, @link(al_detach_audio_stream) is automatically called on it first.
+@seealso(al_drain_audio_stream)
+#al5audio.al_drain_audio_stream
+You should call this to finalise an audio stream that you will no longer be feeding, to wait for all pending buffers to finish playing. The stream's playing state will change to @false.
+@seealso(al_destroy_audio_stream)
+
+#al5audio.al_get_audio_stream_frequency
+Returns the stream frequency (in Hz).
+#al5audio.al_get_audio_stream_length
+Returns the stream length in samples.
+#al5audio.al_get_audio_stream_fragments
+Returns the number of fragments this stream uses. This is the same value as passed to @link(al_create_audio_stream) when a new stream is created.
+@seealso(al_get_available_audio_stream_fragments)
+#al5audio.al_get_available_audio_stream_fragments
+Returns the number of available fragments in the stream, that is, fragments which are not currently filled with data for playback.
+@seealso(al_get_audio_stream_fragment) @seealso(al_get_audio_stream_fragments)
+
+#al5audio.al_get_audio_stream_speed
+Returns the relative playback speed of the stream.
+@seealso(al_set_audio_stream_speed)
+#al5audio.al_get_audio_stream_gain
+Returns the playback gain of the stream.
+@seealso(al_set_audio_stream_gain)
+#al5audio.al_get_audio_stream_pan
+Gets the pan value of the stream.
+@seealso(al_set_audio_stream_pan)
+
+#al5audio.al_get_audio_stream_channels
+Returns the stream channel configuration.
+@seealso(ALLEGRO_CHANNEL_CONF)
+#al5audio.al_get_audio_stream_depth
+Returns the stream audio depth.
+@seealso(ALLEGRO_AUDIO_DEPTH)
+#al5audio.al_get_audio_stream_playmode
+Returns the playback mode of the stream.
+@seealso(ALLEGRO_PLAYMODE) @seealso(al_set_audio_stream_playmode)
+
+#al5audio.al_get_audio_stream_playing
+Returns @true if the stream is playing.
+@seealso(al_set_audio_stream_playing)
+#al5audio.al_get_audio_stream_attached
+Returns whether the stream is attached to something.
+@seealso(al_attach_audio_stream_to_mixer) @seealso(al_attach_audio_stream_to_voice) @seealso(al_detach_audio_stream)
+#al5audio.al_get_audio_stream_played_samples
+Gets the number of samples consumed by the parent since the audio stream was started.
+
+#al5audio.al_get_audio_stream_fragment
+When using Allegro's audio streaming, you will use this function to continuously provide new sample data to a stream.
+
+If the stream is ready for new data, the function will return the address of an internal buffer to be filled with audio data. The length and format of the buffer are specified with @link(al_create_audio_stream) or can be queried with the various functions described here. Once the buffer is filled, you must signal this to Allegro by passing the buffer to @link(al_set_audio_stream_fragment).
+
+If the stream is not ready for new data, the function will return @nil.
+
+@bold(Note)
+
+If you listen to events from the stream, an @link(ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT) event will be generated whenever a new fragment is ready. However, getting an event is not a guarantee that @link(al_get_audio_stream_fragment) will not return @nil, so you still must check for it.
+@seealso(al_set_audio_stream_fragment) @seealso(al_get_audio_stream_event_source) @seealso(al_get_audio_stream_frequency) @seealso(al_get_audio_stream_channels) @seealso(al_get_audio_stream_depth) @seealso(al_get_audio_stream_length)
+
+#al5audio.al_set_audio_stream_speed
+Sets the relative playback speed of the stream. 1.0 means normal speed.
+@return(@true on success, @false on failure. Will fail if the audio stream is attached directly to a voice.)
+@seealso(al_get_audio_stream_speed)
+#al5audio.al_set_audio_stream_gain
+Sets the playback gain of the stream.
+@return(@true on success, @false on failure. Will fail if the audio stream is attached directly to a voice.)
+@seealso(al_get_audio_stream_gain)
+#al5audio.al_set_audio_stream_pan
+Sets the pan value on an audio stream. A value of -1.0 means to play the stream only through the left speaker; +1.0 means only through the right speaker; 0.0 means the sample is centre balanced. A special value @link(ALLEGRO_AUDIO_PAN_NONE) disables panning and plays the stream at its original level. This will be louder than a pan value of 0.0.
+@return(@true on success, @false on failure. Will fail if the audio stream is attached directly to a voice.)
+@seealso(al_get_audio_stream_pan) @seealso(ALLEGRO_AUDIO_PAN_NONE)
+
+#al5audio.al_set_audio_stream_playmode
+Sets the playback mode of the stream.
+@return(@true on success, @false on failure.)
+@seealso(ALLEGRO_PLAYMODE) @seealso(al_get_audio_stream_playmode)
+
+#al5audio.al_set_audio_stream_playing
+Changes whether the stream is playing.
+@return(@true on success, @false on failure.)
+@seealso(al_get_audio_stream_playing)
+#al5audio.al_detach_audio_stream
+Detaches the stream from whatever it's attached to, if anything.
+@seealso(al_attach_audio_stream_to_mixer) @seealso(al_attach_audio_stream_to_voice) @seealso(al_get_audio_stream_attached)
+#al5audio.al_set_audio_stream_fragment
+This function needs to be called for every successful call of @link(al_get_audio_stream_fragment) to indicate that the buffer (pointed to by @code(val)) is filled with new data.
+@seealso(al_get_audio_stream_fragment)
+
+#al5audio.al_rewind_audio_stream
+Sets the streaming file playing position to the beginning. Currently this can only be called on streams created with @link(al_load_audio_stream), @link(al_load_audio_stream_f) and the format-specific functions underlying those functions.
+@return(@true on success.)
+#al5audio.al_seek_audio_stream_secs
+Sets the streaming file playing position to time. Currently this can only be called on streams created with @link(al_load_audio_stream), @link(al_load_audio_stream_f) and the format-specific functions underlying those functions.
+@return(@true on success.)
+@seealso(al_get_audio_stream_position_secs) @seealso(al_get_audio_stream_length_secs)
+#al5audio.al_get_audio_stream_position_secs
+Returns the position of the stream in seconds. Currently this can only be called on streams created with @link(al_load_audio_stream).
+@seealso(al_get_audio_stream_length_secs)
+#al5audio.al_get_audio_stream_length_secs
+Returns the length of the stream in seconds, if known. Otherwise returns zero.
+
+Currently this can only be called on streams created with @link(al_load_audio_stream), @link(al_load_audio_stream_f) and the format-specific functions underlying those functions.
+@seealso(al_get_audio_stream_position_secs)
+#al5audio.al_set_audio_stream_loop_secs
+Sets the loop points for the stream in seconds. Currently this can only be called on streams created with @link(al_load_audio_stream), @link(al_load_audio_stream_f) and the format-specific functions underlying those functions.
+
+#al5audio.al_get_audio_stream_event_source
+Retrieves the associated event source.
+
+See @link(al_get_audio_stream_fragment) for a description of the @link(ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT) event that audio streams emit.
+
+#al5audio.al_create_mixer
+Creates a mixer to attach sample instances, audio streams, or other mixers to. It will mix into a buffer at the requested frequency (in Hz) and channel count.
+
+The only supported audio depths are @code(ALLEGRO_AUDIO_DEPTH_FLOAT32) and @code(ALLEGRO_AUDIO_DEPTH_INT16) (not yet complete).
+
+To actually produce any output, the mixer will have to be attached to a voice.
+@Return(@true on success, @false on error.)
+@seealso(al_destroy_mixer) @seealso(ALLEGRO_AUDIO_DEPTH) @seealso(ALLEGRO_CHANNEL_CONF) @seealso(al_destroy_mixer)
+#al5audio.al_destroy_mixer
+Destroys the mixer.
+@seealso(al_create_mixer)
+
+#al5audio.al_attach_sample_instance_to_mixer
+Attachs a sample instance to a mixer. The instance must not already be attached to anything.
+@Return(@true on success, @false on failure.)
+@seealso(al_detach_sample_instance)
+#al5audio.al_attach_audio_stream_to_mixer
+Attachs an audio stream to a mixer. The stream must not already be attached to anything.
+@returns(@true on success, @false on failure.)
+@seealso(al_detach_audio_stream)
+#al5audio.al_attach_mixer_to_mixer
+Attaches the mixer passed as the first argument onto the mixer passed as the second argument. The first mixer (that is going to be attached) must not already be attached to anything. Both mixers must use the same frequency, audio depth and channel configuration.
+
+It is invalid to attach a mixer to itself.
+@return(@true on success, @false on error.)
+@seealso(al_detach_mixer)
+#al5audio.al_set_mixer_postprocess_callback
+Sets a post-processing filter function that's called after the attached streams have been mixed. The buffer's format will be whatever the mixer was created with. The sample count and user-data pointer is also passed.
+
+@bold(Note)
+
+The callback is called from a dedicated audio thread.
+
+#al5audio.al_get_mixer_frequency
+Returns the mixer frequency (in Hz). @seealso(al_set_mixer_frequency)
+#al5audio.al_get_mixer_channels
+Returns the mixer channel configuration.@seealso(ALLEGRO_CHANNEL_CONF)
+#al5audio.al_get_mixer_depth
+Returns the mixer audio depth.@seealso(ALLEGRO_AUDIO_DEPTH)
+#al5audio.al_get_mixer_quality
+Returns the mixer quality.@seealso(ALLEGRO_MIXER_QUALITY) @seealso(al_set_mixer_quality)
+#al5audio.al_get_mixer_gain
+Returns the mixer gain (amplification factor). The default is 1.0.@seealso(al_set_mixer_gain)
+#al5audio.al_get_mixer_playing
+Returns @true if the mixer is playing.@seealso(al_set_mixer_playing)
+#al5audio.al_get_mixer_attached
+Returns @true if the mixer is attached to something.
+@seealso(al_attach_sample_instance_to_mixer) @seealso(al_attach_audio_stream_to_mixer) @seealso(al_attach_mixer_to_mixer) @seealso(al_detach_mixer)
+#al5audio.al_set_mixer_frequency
+Sets the mixer frequency (in Hz). This will only work if the mixer is not attached to anything.
+@Return(@true on success, @false on failure.) @seealso(al_get_mixer_frequency)
+#al5audio.al_set_mixer_quality
+Sets the mixer quality. This can only succeed if the mixer does not have anything attached to it.
+@returns(@true on success, @false on failure.)
+@seealso(ALLEGRO_MIXER_QUALITY) @(al_get_mixer_quality)
+#al5audio.al_set_mixer_gain
+Sets the mixer gain (amplification factor).
+@return(@true on success, @false on failure.) @seealso(al_get_mixer_gain)
+#al5audio.al_set_mixer_playing
+Changes whether the mixer is playing.
+@returns(@true on success, @false on failure.) @seealso(al_get_mixer_playing)
+#al5audio.al_detach_mixer
+Detach the mixer from whatever it is attached to, if anything. @seealso(al_attach_mixer_to_mixer)
+
 #al5audio.al_create_voice
-Creates a voice structure and allocates a voice from the digital sound driver. The passed frequency, sample format and channel configuration are used as a hint to what kind of data will be sent to the voice. However, the underlying sound driver is free to use non-matching values. For example, it may be the native format of the sound hardware.
+Creates a voice structure and allocates a voice from the digital sound driver. The passed frequency (in HZ), sample format and channel configuration are used as a hint to what kind of data will be sent to the voice. However, the underlying sound driver is free to use non-matching values. For example, it may be the native format of the sound hardware.
 
 If a mixer is attached to the voice, the mixer will handle the conversion of all its input streams to the voice format and care does not have to be taken for this. However if you access the voice directly, make sure to not rely on the parameters passed to this function, but instead query the returned voice for the actual settings.
 @seealso(al_destroy_voice)
+#al5audio.al_destroy_voice
+Destroys the voice and deallocates it from the digital driver. Does nothing if the voice is @nil.
+@seealso(al_create_voice)
 #al5audio.al_attach_sample_instance_to_voice
 Attaches a sample instance to a voice, and allows it to play. The instance's gain and loop mode will be ignored, and it must have the same frequency, channel configuration and depth (including signed-ness) as the voice. This function may fail if the selected driver doesn't support preloading sample data.
 
@@ -3697,34 +4215,1871 @@ Attaches an audio stream to a voice. The same rules as @link(al_attach_sample_in
 
 An audio stream attached directly to a voice has a number of limitations: The audio stream plays immediately and cannot be stopped. The stream position, speed, gain and panning cannot be changed. At this time, we don't recommend attaching audio streams directly to voices. Use a mixer inbetween.
 @returns(@true on success, @false on failure.) @seealso(al_detach_voice)
+#al5audio.al_attach_mixer_to_voice
+Attaches a mixer to a voice. It must have the same frequency and channel configuration, but the depth may be different.
+@Return(@true on success, @false on failure.) @seealso(al_detach_voice)
+#al5audio.al_detach_voice
+Detaches the mixer, sample instance or audio stream from the voice.
+@seealso(al_attach_mixer_to_voice) @seealso(al_attach_sample_instance_to_voice) @seealso(al_attach_audio_stream_to_voice)
+
+#al5audio.al_get_voice_frequency
+Returns the frequency of the voice (in Hz), e.g. 44100.
+#al5audio.al_get_voice_position
+When the voice has a non-streaming object attached to it, e.g. a sample, returns the voice's current sample position. Otherwise, returns zero.
+@seealso(al_set_voice_position)
+#al5audio.al_get_voice_channels
+Returns the channel configuration of the voice.
+@seealso(ALLEGRO_CHANNEL_CONF)
+#al5audio.al_get_voice_depth
+Returns the audio depth of the voice.
+@seealso(ALLEGRO_AUDIO_DEPTH)
+#al5audio.al_get_voice_playing
+Returns @true if the voice is currently playing.
+@seealso(al_set_voice_playing)
+#al5audio.al_set_voice_position
+Sets the voice position. This can only work if the voice has a non-streaming object attached to it, e.g. a sample instance.
+@return(@true on success, @false on failure.) @seealso(al_get_voice_position)
+#al5audio.al_set_voice_playing
+Changes whether a voice is playing or not. This can only work if the voice has a non-streaming object attached to it, e.g. a sample instance. On success the voice's current sample position is reset.
+@return(@true on success, @false on failure.) @seealso(al_get_voice_playing)
+
 #al5audio.al_install_audio
-@bold(Note:) most users will call @code(al_reserve_samples) and @code(al_init_acodec_addon) after this.
+Installs the audio subsystem.
+
+@bold(Note)
+
+most users will call @code(al_reserve_samples) and @code(al_init_acodec_addon) after this.
 @return(@true on success, @false on failure.)
 @seealso(al_reserve_samples) @seealso(al_uninstall_audio) @seealso(al_is_audio_installed) @seealso(al_init_acodec_addon) *)
+#al5audio.al_uninstall_audio
+Uninstalls the audio subsystem. @seealso(al_install_audio)
+#al5audio.al_is_audio_installed
+Returns @true if @link(al_install_audio) was called previously and returned successfully.
+#al5audio.al_get_allegro_audio_version
+Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version).
+
+#al5audio.al_get_channel_count
+Returns the number of channels for the given channel configuration, which is one of the values listed under @link(ALLEGRO_CHANNEL_CONF).
+#al5audio.al_get_audio_depth_size
+Returns the size of a sample, in bytes, for the given format. The format is one of the values listed under @link(ALLEGRO_AUDIO_DEPTH).
+
+#al5audio.al_fill_silence
+Fills a buffer with silence, for the given format and channel configuration. The buffer must have enough space for the given number of samples, and be properly aligned.
+
 #al5audio.al_reserve_samples
 Reserves a number of sample instances, attaching them to the default mixer. If no default mixer is set when this function is called, then it will create one and attach it to the default voice. If no default voice has been set, it, too, will be created.
 
 This diagram illustrates the structures that are set up:
-@longcode(#
+@preformatted(
                                       sample instance 1
                                     / sample instance 2
 default voice <-- default mixer <---         .
                                     \        .
                                       sample instance N
-#)
+)
 @return(@true on success, @false on error. @link(al_install_audio) must have been called first.)
 @seealso(al_set_default_mixer) @seealso(al_play_sample)
+#al5audio.al_get_default_mixer
+Returns the default mixer, or @nil if one has not been set. Although different configurations of mixers and voices can be used, in most cases a single mixer attached to a voice is what you want. The default mixer is used by @link(al_play_sample).
+@seealso(al_reserve_samples) @seealso(al_play_sample) @seealso(al_set_default_mixer) @seealso(al_restore_default_mixer)
+#al5audio.al_set_default_mixer
+Sets the default mixer. All samples started with @link(al_play_sample) will be stopped and all sample instances returned by @link(al_lock_sample_id) will be invalidated. If you are using your own mixer, this should be called before @link(al_reserve_samples).
+@return(@true on success, @false on error.)
+@seealso(al_reserve_samples) @seealso(al_play_sample) @seealso(al_get_default_mixer) @seealso(al_restore_default_mixer)
+#al5audio.al_restore_default_mixer
+Restores Allegro's default mixer and attaches it to the default voice. If the default mixer hasn't been created before, it will be created. If the default voice hasn't been set via @link(al_set_default_voice) or created before, it will also be created. All samples started with @link(al_play_sample) will be stopped and all sample instances returned by @link(al_lock_sample_id) will be invalidated.
+@return(@true on success, @false on error.)
+@seealso(al_get_default_mixer) @seealso(al_set_default_mixer) @seealso(al_reserve_samples)
+#al5audio.al_play_sample
+Plays a sample on one of the sample instances created by @link(al_reserve_samples).
+@param(gain relative volume at which the sample is played; 1.0 is normal.)
+@param(pan 0.0 is centred, -1.0 is left, 1.0 is right, or @code(ALLEGRO_AUDIO_PAN_NONE).)
+@param(speed relative speed at which the sample is played; 1.0 is normal.)
+@param(loop @code(ALLEGRO_PLAYMODE_ONCE), @code(ALLEGRO_PLAYMODE_LOOP), or
+  	  @code(ALLEGRO_PLAYMODE_BIDIR).)
+@param(ret_id if non-@nil the variable which this points to will be assigned
+	  an id representing the sample being played.)
+@return(@true on success, @false on failure. Playback may fail because all
+	   the reserved sample instances are currently used.)
+@seealso(ALLEGRO_PLAYMODE) @seealso(ALLEGRO_AUDIO_PAN_NONE)
+@seealso(ALLEGRO_SAMPLE_ID) @seealso(al_stop_sample)
+@seealso(al_stop_samples)
+#al5audio.al_stop_sample
+Stops the sample started by @link(al_play_sample). @seealso(al_stop_samples)
+#al5audio.al_stop_samples
+Stops all samples started by @link(al_play_sample). @seealso(al_stop_sample)
+#al5audio.al_get_default_voice
+Returns the default voice or @nil if there is none. @seealso(al_get_default_mixer)
+#al5audio.al_set_default_voice
+You can call this before calling @link(al_restore_default_mixer) to provide the voice which should be used. Any previous voice will be destroyed. You can also pass @nil to destroy the current default voice.
+@seealso(al_get_default_mixer)
+
+#al5audio.al_lock_sample_id
+Locks a @link(ALLEGRO_SAMPLE_ID), returning the underlying @link(ALLEGRO_SAMPLE_INSTANCEptr). This allows you to adjust the various properties of the instance (such as volume, pan, etc) while the sound is playing.
+
+This function will return @nil if the sound corresponding to the id is no longer playing.
+
+While locked, @code(ALLEGRO_SAMPLE_ID) will be unavailable to additional calls to @link(al_play_sample), even if the sound stops while locked. To put the @code(ALLEGRO_SAMPLE_ID) back into the pool for reuse, make sure to call @link(al_unlock_sample_id) when you're done with the instance.
+
+@bold(Unstable API:) New API.
+@seealso(al_play_sample) @seealso(al_unlock_sample_id)
+#al5audio.al_unlock_sample_id
+Unlocks a @link(ALLEGRO_SAMPLE_ID), allowing future calls to @link(al_play_sample) to reuse it if possible. Note that after the id is unlocked, the @link(ALLEGRO_SAMPLE_INSTANCEptr) that was previously returned by @link(al_lock_sample_id) will possibly be playing a different sound, so you should only use it after locking the id again.
+
+@bold(Unstable API:) New API.
+@seealso(al_play_sample) @seealso(al_lock_sample_id)
+
+#al5audio.al_register_sample_loader
+Registers a handler for @link(al_load_sample). The given function will be used to handle the loading of sample files with the given extension.
+
+The extension should include the leading dot (@code('.')) character. It will be matched case-insensitively.
+
+The @code(loader) argument may be @nil to unregister an entry.
+@return(@true on success, @false on error. Returns @false if unregistering an entry that doesn't exist.)
+@seealso(al_register_sample_loader_f) @seealso(al_register_sample_saver)
+#al5audio.al_register_sample_saver
+Registers a handler for @link(al_save_sample). The given function will be used to handle the saving of sample files with the given extension.
+
+The extension should include the leading dot (@code('.')) character. It will be matched case-insensitively.
+
+The @code(saver) argument may be @nil to unregister an entry.
+@return(@true on success, @false on error. Returns @false if unregistering an entry that doesn't exist.)
+@seealso(al_register_sample_saver_f) @seealso(al_register_sample_loader)
+#al5audio.al_register_audio_stream_loader
+Registers a handler for @link(al_load_audio_stream). The given function will be used to open streams from files with the given extension.
+
+The extension should include the leading dot (@code('.')) character. It will be matched case-insensitively.
+
+The @code(stream_loader) argument may be @nil to unregister an entry.
+@return(@true on success, @false on error. Returns @false if unregistering an entry that doesn't exist.)
+@seealso(al_register_audio_stream_loader_f)
+
+#al5audio.al_register_sample_loader_f
+Registers a handler for @link(al_load_sample_f). The given function will be used to handle the loading of sample files with the given extension.
+
+The extension should include the leading dot (@code('.')) character. It will be matched case-insensitively.
+
+The @code(loader) argument may be @nil to unregister an entry.
+@return(@true on success, @false on error. Returns @false if unregistering an entry that doesn't exist.)
+@seealso(al_register_sample_loader)
+#al5audio.al_register_sample_saver_f
+Registers a handler for @link(al_save_sample_f). The given function will be used to handle the saving of sample files with the given extension.
+
+The extension should include the leading dot (@code('.')) character. It will be matched case-insensitively.
+
+The @code(saver) argument may be @nil to unregister an entry.
+
+@return(@true on success, @false on error. Returns @false if unregistering an entry that doesn't exist.)
+@seealso(al_register_sample_saver)
+#al5audio.al_register_audio_stream_loader_f
+Registers a handler for @link(al_load_audio_stream_f). The given function will be used to open streams from files with the given extension.
+
+The extension should include the leading dot (@code('.')) character. It will be matched case-insensitively.
+
+The @code(stream_loader) argument may be @nil to unregister an entry.
+@return(@true on success, @false on error. Returns @false if unregistering an entry that doesn't exist.)
+@seealso(al_register_audio_stream_loader)
+
+#al5audio.al_load_sample
+Loads a few different audio file formats based on their extension.
+
+Note that this stores the entire file in memory at once, which may be time
+consuming. To read the file as it is needed, use @link(al_load_audio_stream).
+
+@bold(Note)
+
+the @code(al5audio) unit does not support any audio file
+formats by default. You must use the @link(al5acodec) addon, or register
+your own format handler.
+@return(The sample on success, @nil on failure.)
+@seealso(al_register_sample_loader) @seealso(al_init_acodec_addon)
+#al5audio.al_save_sample
+Writes a sample into a file. Currently, wav is the only supported format, and the extension must be @code('.wav').
+
+@bold(Note)
+
+the @code(al5acodec) unit does not support any audio file formats by default. You must use the @link(al5acodec) addon, or register your own format handler.
+@return(@true on success, @false on error.)
+@seealso(al_save_sample_f) @seealso(al_register_sample_saver) @seealso(al_init_acodec_addon)
+#al5audio.al_load_audio_stream
+Loads an audio file from disk as it is needed.
+
+Unlike regular streams, the one returned by this function need not be fed by
+the user; the library will automatically read more of the file as it is
+needed. The stream will contain @code(buffer_count) buffers with
+@code(samples) samples.
+
+The audio stream will start in the playing state. It should be attached to a
+voice or mixer to generate any output. See @link(ALLEGRO_AUDIO_STREAMptr)
+for more details.
+
+@bold(Note)
+
+the @code(al5audio) library does not support any audio file
+formats by default. You must use the @link(al5acodec) addon, or register
+your own format handler.
+@return(the stream on success, @nil on failure.)
+@seealso(al_load_audio_stream_f) @seealso(al_register_audio_stream_loader) @seealso(al_init_acodec_addon)
+
+#al5audio.al_load_sample_f
+Loads an audio file from an @link(ALLEGRO_FILEptr) tream into an @link(ALLEGRO_SAMPLEptr). The file type is determined by the passed @code(ident) parameter, which is a file name extension including the leading dot.
+
+Note that this stores the entire file in memory at once, which may be time consuming. To read the file as it is needed, use @link(al_load_audio_stream_f).
+
+@bold(Note)
+
+the @link(al5audio) add-on does not support any audio file formats by default. You must use the @link(al5acodec) addon, or register your own format handler.
+@return(the sample on success, @nil on failure. The file remains open afterwards.)
+@seealso(al_register_sample_loader_f) @seealso(al_init_acodec_addon)
+#al5audio.al_save_sample_f
+Writes a sample into a @link(ALLEGRO_FILEptr) filestream. Currently, wav is the only supported format, and the extension must be @code('.wav').
+
+@bold(Note)
+
+the @link(al5audio) add-on does not support any audio file formats by default. You must use the @link(al5acodec) addon, or register your own format handler.
+@return(@true on success, @false on error. The file remains open afterwards.)
+@seealso(al_save_sample) @seealso(al_register_sample_saver_f) @seealso(al_init_acodec_addon)
+#al5audio.al_load_audio_stream_f
+Loads an audio file from @link(ALLEGRO_FILEptr) stream as it is needed.
+
+Unlike regular streams, the one returned by this function need not be fed by the user; the library will automatically read more of the file as it is needed. The stream will contain @code(buffer_count) buffers with samples samples.
+
+The file type is determined by the passed @code(ident) parameter, which is a file name extension including the leading dot.
+
+The audio stream will start in the playing state. It should be attached to a voice or mixer to generate any output. See @link(ALLEGRO_AUDIO_STREAMptr) for more details.
+
+@bold(Note)
+
+the @link(al5audio) library does not support any audio file formats by default. You must use the @link(al5acodec) addon, or register your own format handler.
+@return(the stream on success, @nil on failure. On success the file should be considered owned by the audio stream, and will be closed when the audio stream is destroyed. On failure the file will be closed.)
+@seealso(al_load_audio_stream) @seealso(al_register_audio_stream_loader_f) @seealso(al_init_acodec_addon)
+
+#al5audio.al_create_audio_recorder
+Creates an audio recorder using the system's default recording device. (So if the returned device does not work, try updating the system's default recording device.)
+
+Allegro will internally buffer several seconds of captured audio with minimal latency. (XXX: These settings need to be exposed via config or API calls.) Audio will be copied out of that private buffer into a fragment buffer of the size specified by the samples parameter. Whenever a new fragment is ready an event will be generated.
+
+The total size of the fragment buffer is fragment_count * samples * bytes_per_sample. It is treated as a circular, never ending buffer. If you do not process the information fast enough, it will be overrun. Because of that, even if you only ever need to process one small fragment at a time, you should still use a large enough value for @code(fragment_count) to hold a few seconds of audio.
+
+@code(frequency) is the number of samples per second to record. Common values are:
+@unorderedlist(
+  @item(8000 - telephone quality speech)
+  @item(11025)
+  @item(22050)
+  @item(44100 - CD quality music @(if 16-bit, stereo@))
+)
+For maximum compatibility, use a depth of @code(ALLEGRO_AUDIO_DEPTH_UINT8) or @link(ALLEGRO_AUDIO_DEPTH_INT16), and a single (mono) channel.
+
+The recorder will not record until you start it with @link(al_start_audio_recorder).
+
+@bold(Unstable API:) The API may need a slight redesign.
+@return(Pointer to recorder control object or @nil on failure.)
+@seealso(al_start_audio_recorder) @seealso(al_get_audio_recorder_event_source) @seealso(al_destroy_audio_recorder)
+#al5audio.al_start_audio_recorder
+Begin recording into the fragment buffer. Once a complete fragment has been captured (as specified in @link(al_create_audio_recorder)), an @link(ALLEGRO_EVENT_AUDIO_RECORDER_FRAGMENT) event will be triggered.
+@return(@true if it was able to begin recording.)
+
+@bold(Unstable API:) The API may need a slight redesign.
+@seealso(al_stop_audio_recorder) @seealso(al_get_audio_recorder_event_source)
+#al5audio.al_stop_audio_recorder
+Stop capturing audio data. Note that the audio recorder is still active and consuming resources, so if you are finished recording you should destroy it with @link(al_destroy_audio_recorder).
+
+You may still receive a few events after you call this function as the device flushes the buffer.
+
+If you restart the recorder, it will begin recording at the beginning of the next fragment buffer.
+@seealso(al_start_audio_recorder)
+#al5audio.al_is_audio_recorder_recording
+Returns @true if the audio recorder is currently capturing data and generating events.
+
+@bold(Unstable API:) The API may need a slight redesign.
+#al5audio.al_get_audio_recorder_event_source
+Returns the event source for the recorder that generates the various recording events.
+
+@bold(Unstable API:) The API may need a slight redesign.
+@seealso(al_get_audio_recorder_event)
+#al5audio.al_get_audio_recorder_event
+Returns the event as an @link(ALLEGRO_AUDIO_RECORDER_EVENT).
+
+@bold(Unstable API:) The API may need a slight redesign.
+#al5audio.al_destroy_audio_recorder
+Destroys the audio recorder and frees all resources associated with it. It is safe to destroy a recorder that is recording.
+
+You may receive events after the recorder has been destroyed. They must be ignored, as the fragment buffer will no longer be valid.
+
+@bold(Unstable API:) The API may need a slight redesign.
 
 
 
+#al5color.al_get_allegro_color_version
+Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version).
+#al5color.al_color_hsv_to_rgb
+Converts values in HSV color model to RGB color model.
+@param(h Color hue angle in the range 0..360.)
+@param(s Color saturation in the range 0..1.)
+@param(v Color value in the range 0..1.)
+@param(r Returns the R @(red@) value in the range 0..1.)
+@param(g Returns the G @(green@) value in the range 0..1.)
+@param(b Returns the B @(blue@) value in the range 0..1.)
+@seealso(al_color_rgb_to_hsv) @seealso(al_color_hsv) @seealso(al_color_hsl_to_rgb)
+#al5color.al_color_rgb_to_hsl
+Given an RGB triplet with components in the range 0..1, returns the hue in degrees from 0..360 and saturation and lightness in the range 0..1.
+@seealso(al_color_hsl_to_rgb) @seealso(al_color_hsl)
+#al5color.al_color_rgb_to_hsv
+Given an RGB triplet with components in the range 0..1, returns the hue in degrees from 0..360 and saturation and value in the range 0..1.
+@seealso(al_color_hsv_to_rgb) @seealso(al_color_hsv)
+#al5color.al_color_hsl_to_rgb
+Converts values in HSL color model to RGB color model.
+@param(h Color hue angle in the range 0..360.)
+@param(s Color saturation in the range 0..1.)
+@param(l Color lightness in the range 0..1.)
+@param(r Returns the R @(red@) value in the range 0..1.)
+@param(g Returns the G @(green@) value in the range 0..1.)
+@param(b Returns the B @(blue@) value in the range 0..1.)
+@seealso(al_color_rgb_to_hsl) @seealso(al_color_hsl) @seealso(al_color_hsv_to_rgb)
+#al5color.al_color_name_to_rgb
+Given a name, returns the RGB triplet.
+
+The 148 recognized names are:
+
+aliceblue, antiquewhite, aqua, aquamarine, azure, beige, bisque, black, blanchedalmond, blue, blueviolet, brown, burlywood, cadetblue, chartreuse, chocolate, coral, cornflowerblue, cornsilk, crimson, cyan, darkblue, darkcyan, darkgoldenrod, darkgray, darkgreen, darkkhaki, darkmagenta, darkolivegreen, darkorange, darkorchid, darkred, darksalmon, darkseagreen, darkslateblue, darkslategray, darkturquoise, darkviolet, deeppink, deepskyblue, dimgray, dodgerblue, firebrick, floralwhite, forestgreen, fuchsia, gainsboro, ghostwhite, goldenrod, gold, gray, green, greenyellow, honeydew, hotpink, indianred, indigo, ivory, khaki, lavenderblush, lavender, lawngreen, lemonchiffon, lightblue, lightcoral, lightcyan, lightgoldenrodyellow, lightgreen, lightgrey, lightpink, lightsalmon, lightseagreen, lightskyblue, lightslategray, lightsteelblue, lightyellow, lime, limegreen, linen, magenta, maroon, mediumaquamarine, mediumblue, mediumorchid, mediumpurple, mediumseagreen, mediumslateblue, mediumspringgreen, mediumturquoise, mediumvioletred, midnightblue, mintcream, mistyrose, moccasin, avajowhite, navy, oldlace, olive, olivedrab, orange, orangered, orchid, palegoldenrod, palegreen, paleturquoise, palevioletred, papayawhip, peachpuff, peru, pink, plum, powderblue, purple, rebeccapurple, red, rosybrown, royalblue, saddlebrown, salmon, sandybrown, seagreen, seashell, sienna, silver, skyblue, slateblue, slategray, snow, springgreen, steelblue, tan, teal, thistle, tomato, turquoise, violet, wheat, white, whitesmoke, yellow, yellowgreen
+
+They are taken from CSS: @html(<a href="https://www.w3.org/TR/css-color-4/">https://www.w3.org/TR/css-color-4/</a>).
+
+Note that these 9 colors have two names and so there are only 139 distinct colors: aqua = cyan, darkgray = darkgrey, darkslategray = darkslategrey, dimgray = dimgrey, fuchsia = purple, gray = grey, lightgray = lightgrey, lightslategray = lightslategrey, slategray = slategrey
+@param(name The lowercase name of the color.)
+@param(r Returns the R @(red@) value in the range 0..1.)
+@param(g Returns the G @(green@) value in the range 0..1.)
+@param(b Returns the B @(blue@) value in the range 0..1.)
+@return(@true if a name from the list above was passed, else @false.)
+@seealso(al_color_name) @seealso(al_color_rgb_to_name)
+#al5color.al_color_rgb_to_name
+Given an RGB triplet with components in the range 0..1, find a color name describing it approximately.
+@seealso(al_color_name_to_rgb) @seealso(al_color_name)
+#al5color.al_color_cmyk_to_rgb
+Converts CMYK values to RGB values.
+@seealso(al_color_cmyk) @seealso(al_color_rgb_to_cmyk)
+#al5color.al_color_rgb_to_cmyk
+Each RGB color can be represented in CMYK with a K component of 0 with the following formula:
+@preformatted(
+C = 1 - R
+M = 1 - G
+Y = 1 - B
+K = 0
+)
+This function will instead find the representation with the maximal value for K and minimal color components.
+@seealso(al_color_cmyk) @seealso(al_color_cmyk_to_rgb)
+#al5color.al_color_yuv_to_rgb
+Converts YUV color values to RGB color space.
+@seealso(al_color_yuv) @seealso(al_color_rgb_to_yuv)
+#al5color.al_color_rgb_to_yuv
+Converts RGB values to YUV color space.
+@seealso(al_color_yuv) @seealso(al_color_yuv_to_rgb)
+#al5color.al_color_rgb_to_html
+Creates an HTML-style string representation of an RGB triplet, e.g. @code(#00FAFF).
+
+Example:
+
+@longcode(#
+VAR
+  HTMLstring: STRING;
+BEGIN
+  HTMLstring := al_color_rgb_to_html (1, 0, 0);
+#)
+Now @code(HTMLstring) will contain "#ff0000".
+@seealso(al_color_html) @seealso(al_color_html_to_rgb)
+#al5color.al_color_html_to_rgb
+Interprets an HTML-style hex number (e.g. @code(#00FAFF)) as a color. The only accepted formats are "#RRGGBB" and "RRGGBB" where R, G, B are hexadecimal digits @code([0-9A-Fa-f]).
+
+@bold(Note)
+
+the behaviour on invalid strings is different from Allegro 5.0.x.
+@return(@true on success, @false on failure. On failure all components are set to zero.)
+@seealso(al_color_html) @seealso(al_color_rgb_to_html)
+#al5color.al_color_yuv
+Returns an @link(ALLEGRO_COLOR) structure from YUV values.
+@seealso(al_color_yuv_to_rgb) @seealso(al_color_rgb_to_yuv)
+#al5color.al_color_cmyk
+Returns an @link(ALLEGRO_COLOR) structure from CMYK values (cyan, magenta, yellow, black).
+@seealso(al_color_cmyk_to_rgb) @seealso(al_color_rgb_to_cmyk)
+#al5color.al_color_hsl
+Returns an @link(ALLEGRO_COLOR) structure from HSL (hue, saturation, lightness) values.
+@param(h Color hue angle in the range @code(0..360).)
+@param(s Color saturation in the range @code(0..1).)
+@param(l Color lightness in the range @code(0..1).)
+@seealso(al_color_hsl_to_rgb) @seealso(al_color_hsv)
+#al5color.al_color_hsv
+Returns an @link(ALLEGRO_COLOR) structure from HSV (hue, saturation, value) values.
+@param(h Color hue angle in the range @code(0..360).)
+@param(s Color saturation in the range @code(0..1).)
+@param(v Color value in the range @code(0..1).)
+@seealso(al_color_hsv_to_rgb) @seealso(al_color_hsl)
+#al5color.al_color_name
+Returns an @link(ALLEGRO_COLOR) with the given name. If the color is not found then black is returned.
+
+See @link(al_color_name_to_rgb) for the list of names.
+#al5color.al_color_html
+Interprets an HTML-style hex number (e.g. @code(#00FAFF) as a color. The accepted format is the same as @link(al_color_html_to_rgb).
+
+@bold(Note)
+
+the behaviour on invalid strings is different from Allegro 5.0.x.
+@return(the interpreted color, or @code(@link(al_map_rgba) @(0, 0, 0, 0@)) if the string could not be parsed.)
+@seealso(al_color_html_to_rgb) @seealso(al_color_rgb_to_html)
+#al5color.al_color_xyz_to_rgb
+Converts XYZ color values to RGB color space.
+@seealso(al_color_xyz) @seealso(al_color_rgb_to_xyz)
+#al5color.al_color_rgb_to_xyz
+Converts RGB values to XYZ color space.
+@seealso(al_color_xyz) @seealso(al_color_xyz_to_rgb)
+#al5color.al_color_xyz
+Returns an @link(ALLEGRO_COLOR) structure from XYZ values. The CIE 1931 XYZ color space consists of three components in the range @code(0..1). The Y component corresponds to luminance and the X and Z components define the color.
+
+RGB components are always assumed to be in sRGB space.
+
+@bold(Note)
+
+The XYZ color space can represent more colors than are visible in sRGB and therefore conversion may result in RGB values outside of the @code(0..1) range. You can check for that case with @link(al_is_color_valid).
+@seealso(al_color_xyz_to_rgb) @seealso(al_color_rgb_to_xyz)
+#al5color.al_color_lab_to_rgb
+Converts CIE L*a*b* color values to RGB color space.
+@seealso(al_color_lab) @seealso(al_color_rgb_to_lab)
+#al5color.al_color_rgb_to_lab
+Converts RGB values to L*a*b color space.
+@seealso(al_color_lab) @seealso(al_color_lab_to_rgb)
+#al5color.al_color_lab
+Returns an @link(ALLEGRO_COLOR) structure from CIE L*a*b* values. The L* component corresponds to luminance from @code(0..1). The a* and b* components are in the range @code(-1..+1).
+
+@bold(Note)
+
+The L*a*b* color space can represent more colors than are visible in sRGB and therefore conversion may result in RGB values outside of the @code(0..1) range. You can check for that case with @link(al_is_color_valid).
+
+@bold(Note)
+
+In some literature the range of L* is 0 to 100 and a* and b* are from -100 to +100. In that case divide all components by 100 before passing them to this function.
+@seealso(al_color_lab_to_rgb) @seealso(al_color_rgb_to_lab)
+#al5color.al_color_xyy_to_rgb
+Converts xyY color values to RGB color space.
+@seealso(al_color_xyy) @seealso(al_color_rgb_to_xyy)
+#al5color.al_color_rgb_to_xyy
+Converts RGB values to xyY color space.
+@seealso(al_color_xyy) @seealso(al_color_xyy_to_rgb)
+#al5color.al_color_xyy
+Returns an @link(ALLEGRO_COLOR) structure from xyY values. The Y component in the xyY color space is the same as the Y in XYZ.
+
+However the x and y values are computed from XYZ like this:
+@preformatted(
+x = X / @(X + Y + Z@)
+y = Y / @(X + Y + Z@)
+)
+@seealso(al_color_xyy_to_rgb) @seealso(al_color_rgb_to_xyy)
+#al5color.al_color_distance_ciede2000
+This function computes the CIEDE2000 color difference between two RGB colors. This is a visually uniform color difference, unlike for example the RGB distance.
+
+When using the RGB distance (Euklidean distance between two RGB triplets) there can be color pairs with the same distance, where the colors of one pair appear to be almost the same color, while the colors of the other pair look quite different. This is improved by using the L*a*b* color space which was designed with perceptual uniformity in mind. However it still is not completely uniform. The CIEDE2000 formula contains some additional transformations to fix that.
+
+The returned color distance is roughly in the range 0 (identical color) to 1 (completely different color) - but values greater than one are possible.
+
+@bold(Note)
+
+This function uses @link(al_color_lab) internally which defines the L component to be in the range @code(0..1) (and not @code(0..100) as is sometimes seen).
+#al5color.al_color_lch_to_rgb
+Converts CIE LCH color values to RGB color space.
+@seealso(al_color_lch) @seealso(al_color_rgb_to_lch)
+#al5color.al_color_rgb_to_lch
+Convert RGB values to CIE LCH color space.
+@seealso(al_color_lch) @seealso(al_color_lch_to_rgb)
+#al5color.al_color_lch
+Returns an @link(ALLEGRO_COLOR) structure from CIE LCH values. LCH colors are very similar to HSL, with the same meaning of L and H and C corresponding to S. However LCH is more visually uniform. Furthermore, this function expects the angle for H in radians and not in degree.
+
+The CIE LCH color space is a cylindrical representation of the L*a*b* color space. The L component is the same and C and H are computed like this:
+@preformatted(
+C = sqrt @(a * a + b * b@)
+H = atan2 @(b, a@)
+)
+@seealso(al_color_lch_to_rgb) @seealso(al_color_rgb_to_lch)
+#al5color.al_is_color_valid
+Checks if all components of the color are between 0 and 1. Some of the color conversions in this addon support color spaces with more colors than can be represented in sRGB and when converted to RGB will result in invalid color components outside the @code(0..1) range.
 
 
 
+#al5font.ALLEGRO_FONTptr
+A handle identifying any kind of font. Usually you will create it with @link(al_load_font) which supports loading all kinds of TrueType fonts supported by the FreeType library. If you instead pass the filename of a bitmap file, it will be loaded with @link(al_load_bitmap) and a font in Allegro's bitmap font format will be created from it with @link(al_grab_font_from_bitmap).
+
+#al5font.al_load_bitmap_font
+Load a bitmap font from a file. This is done by first calling @link(al_load_bitmap_flags) and then @link(al_grab_font_from_bitmap).
+
+If you wanted to load an old A4 font, for example, it would be better to load the bitmap yourself in order to call @link(al_convert_mask_to_alpha) on it before passing it to @link(al_grab_font_from_bitmap).
+@seealso(al_load_bitmap_font_flags) @seealso(al_load_font) @seealso(al_load_bitmap_flags)
+#al5font.al_load_bitmap_font_flags
+Like @link(al_load_bitmap_font) but additionally takes a flags parameter.  The flags parameter is a bitfield containing a combination of the following:
+@definitionlist(
+@itemlabel(ALLEGRO_NO_PREMULTIPLIED_ALPHA) @item(The same meaning as for al_load_bitmap_flags.)
+)
+@seealso(al_load_bitmap_font) @seealso(al_load_bitmap_flags)
+#al5font.al_load_font
+Loads a font from disk. This will use @link(al_load_bitmap_font_flags) if you pass the name of a known bitmap format, or else @link(al_load_ttf_font).
+
+The flags parameter is passed through to either of those functions. Bitmap and TTF fonts are also affected by the current bitmap flags at the time the font is loaded.
+@seealso(al_destroy_font) @seealso(al_init_font_addon) @seealso(al_load_bitmap_font_flags) @seealso(al_load_ttf_font)
+
+#al5font.al_grab_font_from_bitmap
+Creates a new font from an Allegro bitmap. You can delete the bitmap after  the function returns as the font will contain a copy for itself.
+
+The bitmap format is as in the following example, which contains three glyphs for 1, 2 and 3.
+@preformatted(
+.............
+. 1 .222.333.
+. 1 .  2.  3.
+. 1 .222.333.
+. 1 .2  .  3.
+. 1 .222.333.
+.............
+)
+In the above illustration, the dot is for pixels having the background color. It is determined by the color of the top left pixel in the bitmap. There should be a border of at least 1 pixel with this color to the bitmap edge and between all glyphs.
+
+Each glyph is inside a rectangle of pixels not containing the background color. The height of all glyph rectangles should be the same, but the width can vary.
+
+The placement of the rectangles does not matter, except that glyphs are scanned from left to right and top to bottom to match them to the specified unicode codepoints.
+
+The glyphs will simply be drawn using @link(al_draw_bitmap), so usually you will want the rectangles filled with full transparency and the glyphs drawn in opaque white.
+
+@bold(Examples:)
+@longcode(#
+VAR
+  Ranges: ARRAY [0..1] OF AL_INT = (32, 126);
+  TextFont: ALLEGRO_FONTptr;
+BEGIN
+  TextFont := al_grab_font_from_bitmap (Bitmap, 1, Ranges)
+END;
+
+VAR
+  Ranges: ARRAY [0..7] OF AL_INT = (
+    $0020, $007F,  { ASCII }
+    $00A1, $00FF,  { Latin 1 }
+    $0100, $017F,  { Extended-A }
+    $20AC, $20AC   { Euro }
+  );
+  TextFont: ALLEGRO_FONTptr;
+BEGIN
+  TextFont := al_grab_font_from_bitmap (Bitmap, 4, Ranges)
+END;
+#)
+The first example will grab glyphs for the 95 standard printable ASCII characters, beginning with the space character (32) and ending with the tilde character (126).  The second example will map the first 96 glyphs found in the bitmap to ASCII range, the next 95 glyphs to Latin 1, the next 128 glyphs to Extended-A, and the last glyph to the Euro character. (This is just the characters found in the Allegro 4 font.)
+@param(bmp The bitmap with the glyphs drawn onto it.)
+@param(n Number of unicode ranges in the bitmap.)
+@param(ranges @italic(n) pairs of first and last unicode point to map glyphs to for each range.)
+@seealso(al_load_bitmap)
+#al5font.al_create_builtin_font
+Creates a monochrome bitmap font (8x8 pixels per character).
+
+This font is primarily intended to be used for displaying information in environments or during early runtime states where no external font data is available or loaded (e.g. for debugging).
+
+The builtin font contains the following unicode character ranges:
+@preformatted(
+0x0020 to 0x007F @(ASCII@)
+0x00A1 to 0x00FF @(Latin 1@)
+0x0100 to 0x017F @(Extended A@)
+0x20AC to 0x20AC @(euro currency symbol@)
+)
+The font memory must be freed the same way as for any other font, using @link(al_destroy_font).
+@return(@nil on an error.)
+@seealso(al_load_bitmap_font) @seealso(al_destroy_font)
+
+#al5font.al_draw_ustr
+Like @link(al_draw_text), except the text is passed as an @link(ALLEGRO_USTR) instead of a @code(STRING).
+@seealso(al_draw_text) @seealso(al_draw_justified_ustr) @seealso(al_draw_multiline_ustr)
+#al5font.al_draw_text
+Writes the string @code(str) onto the target bitmap at position @code(x), @code(y), using the specified @code(font).
+
+The flags parameter can be 0 or one of the following flags:@unorderedlist(
+  @item(@bold(@code(ALLEGRO_ALIGN_LEFT)) - Draw the text left-aligned @(same as 0@).)
+  @item(@bold(@code(ALLEGRO_ALIGN_CENTRE)) - Draw the text centered around the given position.)
+  @item(@bold(@code(ALLEGRO_ALIGN_RIGHT)) - Draw the text right-aligned to the given position.)
+)
+It can also be combined with this flag:@unorderedlist(
+   @item(@bold(@code(ALLEGRO_ALIGN_INTEGER)) - Always draw text aligned to an integer pixel position. This was formerly the default behaviour.)
+)
+This function does not support newline characters (#10), but you can use @link(al_draw_multiline_text) for multi line text output.
+@seealso(al_draw_ustr) @seealso(al_draw_justified_text) @seealso(al_draw_multiline_text)
+#al5font.al_draw_justified_text
+Like @link(al_draw_text), but justifies the string to the region @code(x1-x2).
+
+The @code(diff) parameter is the maximum amount of horizontal space to allow between words. If justisfying the text would exceed diff pixels, or the string contains less than two words, then the string will be drawn left aligned.
+
+The @code(flags) parameter can be 0 or one of the following flags:
+@unorderedlist(
+  @item(@bold(code(ALLEGRO_ALIGN_INTEGER)) - Draw text aligned to integer pixel positions.)
+)
+@seealso(al_draw_justified_textf) @seealso(al_draw_justified_ustr)
+#al5font.al_draw_justified_ustr
+Like @link(al_draw_justified_text), except the text is passed as an @link(ALLEGRO_USTR) instead of a @code(STRING).
+@seealso(al_draw_justified_text) @seealso(al_draw_justified_textf)
+#al5font.al_draw_textf
+Formatted text output, using a @code(Format) style format string. All parameters have the same meaning as with @link(al_draw_text) otherwise.
+@seealso(al_draw_text) @seealso(al_draw_ustr)
+#al5font.al_draw_justified_textf
+Formatted text output, using a @code(Format) style format string. All parameters have the same meaning as with @link(al_draw_justified_text) otherwise.
+@seealso(al_draw_justified_text) @seealso(al_draw_justified_ustr)
+#al5font.al_get_text_width
+Calculates the length of a string in a particular font, in pixels.
+@seealso(al_get_ustr_width) @seealso(al_get_font_line_height) @seealso(al_get_text_dimensions)
+#al5font.al_get_ustr_width
+Like @link(al_get_text_width) but expects an @link(ALLEGRO_USTR).
+@seealso(al_get_text_width) @seealso(al_get_ustr_dimensions)
+#al5font.al_get_font_line_height
+Returns the usual height of a line of text in the specified font. For bitmap fonts this is simply the height of all glyph bitmaps. For truetype fonts it is whatever the font file specifies. In particular, some special glyphs may be higher than the height returned here.
+
+If the X is the position you specify to draw text, the meaning of ascent and descent and the line height is like in the figure below.
+@preformatted(
+X------------------------
+    /\         |        |
+   /  \        |        |
+  /____\       ascent   |
+ /      \      |        |
+/        \     |        height
+----------------        |
+               |        |
+               descent  |
+               |        |
+-------------------------
+)
+@seealso(al_get_text_width) @seealso(al_get_text_dimensions) @seealso(al_get_font_ascent) @seealso(al_get_font_descent)
+#al5font.al_get_font_ascent
+Returns the ascent of the specified font.
+@seealso(al_get_font_descent) @seealso(al_get_font_line_height)
+#al5font.al_get_font_descent
+Returns the descent of the specified font.
+@seealso(al_get_font_ascent) @seealso(al_get_font_line_height)
+#al5font.al_destroy_font
+Frees the memory being used by a font structure. Does nothing if passed @nil.
+@seealso(al_load_font)
+#al5font.al_get_ustr_dimensions
+Like @link(al_get_text_dimensions), except the text is passed as an @link(ALLEGRO_USTR) instead of @code(STRING).
+@seealso(al_get_text_dimensions)
+#al5font.al_get_text_dimensions
+Sometimes, the @link(al_get_text_width) and @link(al_get_font_line_height) functions are not enough for exact text placement, so this function returns some additional information.
+
+Returned variables (all in pixels):
+@unorderedlist(
+  @item(@bold(x, y) - Offset to upper left corner of bounding box.)
+  @item(@bold(w, h) - Dimensions of bounding box.)
+)
+Note that glyphs may go to the left and upwards of the X, in which case @code(x) and @code(y) will have negative values.
+@seealso(al_get_text_width) @seealso(al_get_font_line_height) @seealso(al_get_ustr_dimensions)
+#al5font.al_init_font_addon
+Initialises the font addon.
+
+Note that if you intend to load bitmap fonts, you will need to initialise @link(al5image) separately (unless you are using another library to load images).
+
+Similarly, if you wish to load truetype-fonts, do not forget to also call @link(al_init_ttf_addon).
+@return(@true on success, @false on failure.)
+@seealso(al_init_image_addon) @seealso(al_init_ttf_addon) @seealso(al_shutdown_font_addon)
+#al5font.al_shutdown_font_addon
+Shuts down the font addon. This is done automatically at program exit, but can be called any time the user wishes as well.
+@seealso(al_init_font_addon)
+#al5font.al_get_allegro_font_version
+Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version).
+#al5font.al_get_font_ranges
+Gets information about all glyphs contained in a font, as a list of ranges. Ranges have the same format as with @code(al_grab_font_from_bitmap).
+@param(ranges_count Is the maximum number of ranges that will be returned.)
+@param(ranges Should be an array with room for @code(ranges_count * 2) elements.  The even integers are the first unicode point in a range, the odd integers the last unicode point in a range.)
+@return(The number of ranges contained in the font @(even if it is bigger than @code(ranges_count)@).)
+@seealso(al_grab_font_from_bitmap)
+
+#al5font.al_draw_glyph
+Draws the glyph that corresponds with codepoint in the given color using the given font. If font does not have such a glyph, nothing will be drawn.
+
+To draw a string as left to right horizontal text you will need to use @link(al_get_glyph_advance) to determine the position of each glyph. For drawing strings in other directions, such as top to down, use @link(al_get_glyph_dimensions) to determine the size and position of each glyph.
+
+If you have to draw many glyphs at the same time, use @link(al_hold_bitmap_drawing) with @true as the parameter, before drawing the glyphs, and then call @link(al_hold_bitmap_drawing) again with @false as a parameter when done drawing the glyphs to further enhance performance.
+@seealso(al_get_glyph_width) @seealso(al_get_glyph_dimensions) @seealso(al_get_glyph_advance)
+#al5font.al_get_glyph_width
+This function returns the width in pixels of the glyph that corresponds with codepoint in the font font. Returns zero if the font does not have such a glyph.
+@seealso(al_draw_glyph) @seealso(al_get_glyph_dimensions) @seealso(al_get_glyph_advance)
+#al5font.al_get_glyph_dimensions
+Sometimes, the @link(al_get_glyph_width) or @link(al_get_glyph_advance) functions are not enough for exact glyph placement, so this function returns some additional information, particularly if you want to draw the font vertically.
+
+The function itself returns @true if the character was present in font and @false if the character was not present in font.
+
+Returned variables (all in pixel):@unorderedlist(
+@item(@bold(bbx, bby) - Offset to upper left corner of bounding box.)
+@item(@bold(bbw, bbh) - Dimensions of bounding box.)
+)
+These values are the same as @link(al_get_text_dimensions) would return for a string of a single character equal to the glyph passed to this function. Note that glyphs may go to the left and upwards of the X, in which case x and y will have negative values.
+
+If you want to draw a string verticallly, for Japanese or as a game effect, then you should leave @code(bby + bbh) space between the glyphs in the y direction for a regular placement.
+
+If you want to draw a string horizontally in an extra compact way, then you should leave @code(bbx + bbw) space between the glyphs in the x direction for a compact placement.
+
+In the figure below is an example of what @code(bbx) and @code(bby) may be like for a @code(2) glyph, and a @code(g) glyph of the same font compared to the result of @code(al_get_glyph_width).
+@preformatted(
+   al_get_glyph_width ()    al_get_glyph_width ()
+          __|___                   __|__
+         /      \                 /     \  
+     bbx    bbw                 bbx   bbw    
+    <-->+<------>+           <-->+<----->+   X baseline
+    ^   |        |           ^   |       |   
+bby |   |        |       bby |   |       |   
+    v   |        |           |   |       |   
+    +---+--------+           |   |       |
+    ^   | *****  |           |   |       |
+    |   |*    ** |           v   |       |
+bbh |   |    **  |       bbh +---+-------+
+    |   |  **    |           ^   | ***** |
+    v   |********|           |   |*     *|
+    +---+--------+           |   | ***** |
+                             |   |      *|
+                             |   | *    *|
+                             v   |  **** |
+                             +---+-------+
+)
+@seealso(al_draw_glyph) @seealso(al_get_glyph_width) @seealso(al_get_glyph_advance) @seealso(al_get_glyph_advance)
+#al5font.al_get_glyph_advance
+This function returns by how much the x position should be advanced for left to right text drawing when the glyph that corresponds to @code(codepoint1) has been drawn, and the glyph that corresponds to @code(codepoint2) will be the next to be drawn. This takes into consideration the horizontal advance width of the glyph that corresponds with @code(codepoint1) as well as the kerning between the glyphs of @code(codepoint1) and @code(codepoint2).
+
+Kerning is the process of adjusting the spacing between glyphs in a font, to obtain a more visually pleasing result. Kerning adjusts the space between two individual glyphs with an offset determined by the author of the font.
+
+If you pass @code(ALLEGRO_NO_KERNING) as @code(codepoint1) then @code(al_get_glyph_advance) will return @code(0). this can be useful when drawing the first character of a string in a loop.
+
+Pass @code(ALLEGRO_NO_KERNING) as @code(codepoint2) to get the horizontal advance width of the glyph that corresponds to @code(codepoint1) without taking any kerning into consideration. This can be used, for example, when drawing the last character of a string in a loop.
+
+This function will return zero if the glyph of @code(codepoint1) is not present in the font. If the glyph of @code(codepoint2) is not present in the font, the horizontal advance width of the glyph that corresponds to @code(codepoint1) without taking any kerning into consideration is returned.
+
+When drawing a string one glyph at the time from the left to the right with kerning, the x position of the glyph should be incremented by the result of @code(al_get_glyph_advance) applied to the previous glyph drawn and the next glyph to draw.
+
+Note that the return value of this function is a recommended advance for optimal readability for left to right text determined by the author of the font. However, if you like, you may want to draw the glyphs of the font narrower or wider to each other than what @code(al_get_glyph_advance) returns for style or effect.
+
+In the figure below is an example of what the result of @code(al_get_glyph_advance) may be like for two glypphs @code(A) and @code(l) of the same font that has kerning for the @code("Al") pair, without and with the @code(ALLEGRO_NO_KERNING) flag.
+@preformatted(
+al_get_glyph_advance (font, ORD ('A'), ORD ('l'))
+     ___|___
+    /       \
+    -------------
+        /\   -|
+       /  \   |
+      /____\  |
+     /      \ |
+    /        \ \_
+    -------------
+
+
+al_get_glyph_advance (font, ORD ('A'), ALLEGRO_NO_KERNING)
+     ____|____
+    /         \
+    ---------------
+        /\     -|
+       /  \     |
+      /____\    |
+     /      \   |
+    /        \   \_
+    ---------------
+)
+@seealso(al_draw_glyph) @seealso(al_get_glyph_width) @seealso(al_get_glyph_dimensions)
+
+#al5font.al_draw_multiline_text
+Like @link(al_draw_text), but this function supports drawing multiple lines of text. It will break text in lines based on its contents and the max_width parameter. The lines are then layed out vertically depending on the @code(line_height) parameter and drawn each as if @link(al_draw_text) was called on them.
+
+A newline @code(#10) in the text will cause a @italic("hard") line break after its occurrence in the string. The text after a hard break is placed on a new line. Carriage return @code(#12) is not supported, will not cause a line break, and will likely be drawn as a square or a space depending on the font.
+
+The @code(max_width) parameter controls the maximum desired width of the lines. This function will try to introduce a @italic("soft") line break after the longest possible series of words that will fit in @code(max_length) when drawn with the given font. A @italic("soft") line break can occur either on a space or tab (@code(#7)) character.
+
+However, it is possible that @code(max_width) is too small, or the words in text are too long to fit @code(max_width) when drawn with font. In that case, the word that is too wide will simply be drawn completely on a line by itself. If you don't want the text that overflows @code(max_width) to be visible, then use @link(al_set_clipping_rectangle) to clip it off and hide it.
+
+The lines @code(str) was split into will each be drawn using the @code(font), @code(x), @code(color) and @code(flags) parameters, vertically starting at @code(y) and with a distance of @code(line_height) between them. If @code(line_height) is zero (@code(0)), the value returned by calling @link(al_get_font_line_height) on font will be used as a default instead.
+
+The flags @code(ALLEGRO_ALIGN_LEFT), @code(ALLEGRO_ALIGN_CENTRE), @code(ALLEGRO_ALIGN_RIGHT) and @code(ALLEGRO_ALIGN_INTEGER) will be honoured by this function.
+
+If you want to calculate the size of what this function will draw without actually drawing it, or if you need a complex and/or custom layout, you can use @link(al_do_multiline_text).
+@seealso(al_do_multiline_text) @seealso(al_draw_multiline_ustr) @seealso(al_draw_multiline_textf)
+#al5font.al_draw_multiline_textf
+Formatted text output, using a @code(Format) style format string. All parameters have the same meaning as with @link(al_draw_multiline_text) otherwise.
+@seealso(al_draw_multiline_text) @seealso(al_draw_multiline_ustr) @seealso(al_do_multiline_text)
+#al5font.al_draw_multiline_ustr
+Like @link(al_draw_multiline_text), except the text is passed as an @link(ALLEGRO_USTR) instead of a @code(STRING).
+@seealso(al_draw_multiline_text) @seealso(al_draw_multiline_textf) @seealso(al_do_multiline_text)
+
+#al5font.al_do_multiline_text
+This function processes the text and splits it into lines as @link(al_draw_multiline_text) would, and then calls the callback @code(cb) once for every line. This is useful for custom drawing of multiline text, or for calculating the size of multiline text ahead of time. See the documentation on @link(al_draw_multiline_text) for an explanation of the splitting algorithm.
+
+For every line that this function splits text into the callback @code(cb) will be called once with the following parameters:
+@unorderedlist(
+  @item(@bold(@code(line_num)) - the number of the line starting from zero and counting up.)
+  @item(@bold(@code(line)) - a pointer to the beginning character of the line @(see below@).)
+  @item(@bold(@code(size)) - the size of the line @(0 for empty lines@).)
+  @item(@bold(@code(extra)) - the same pointer that was passed to @code(al_do_multiline_text).)
+)
+Note that line is not guaranteed to be a @italic(NUL-terminated) string (i.e. @code(ANSISTRING)), but will merely point to a character within text or to an empty string in case of an empty line. If you need a @italic(NUL-terminated) string, you will have to copy line to a buffer and @italic(NUL-terminate) it yourself (TODO: Check if it is done by the compiler when using @code(ANSISTRING)). You will also have to make your own copy if you need the contents of line after @code(cb) has returned, as line is not guaranteed to be valid after that. Remember that in some cases @code(STRING) is @italic(reference-counted) by Pascal/Delphi.
+
+If the callback @code(cb) returns @false, @code(al_do_multiline_text) will stop immediately, otherwise it will continue on to the next line.
+@seealso(al_draw_multiline_text)
+#al5font.al_do_multiline_ustr
+Like @link(al_do_multiline_text), but using @link(ALLEGRO_USTR) instead of a @code(STRING) for text.
+@seealso(al_draw_multiline_ustr)
+
+#al5font.al_set_fallback_font
+Sets a font which is used instead if a character is not present. Can be chained, but make sure there is no loop as that would crash the application! Pass @nil to remove a fallback font again.
+@seealso(al_get_fallback_font) @seealso(al_draw_glyph) @seealso(al_draw_text) @seealso(al_get_fallback_font)
+#al5font.al_get_fallback_font
+Retrieves the fallback font for this font or @nil.
+@seealso(al_set_fallback_font)
 
 
 
+#al5memfile.al_open_memfile
+Returns a file handle to the block of memory. All read and write operations act upon the memory directly, so it must not be freed while the file remains open.
+
+The mode can be any combination of @code('r') (readable) and @code('w') (writable). Regardless of the mode, the file always opens at position 0. The file size is fixed and cannot be expanded. The file is always read from/written to in binary mode, which means that no newline translation is performed.
+
+It should be closed with @link(al_fclose). After the file is closed, you are responsible for freeing the memory (if needed).
+#al5memfile.al_get_allegro_memfile_version
+Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version).
 
 
+
+#al5nativedlg.ALLEGRO_FILECHOOSERptr
+Opaque handle to a native file dialog. @seealso(al_create_native_file_dialog)
+#al5nativedlg.ALLEGRO_TEXTLOGptr
+Opaque handle to a text log window. @seealso(al_open_native_text_log)
+#al5nativedlg.ALLEGRO_MENUptr
+An opaque data type that represents a menu that contains menu items. Each of the menu items may optionally include a sub-menu.
+#al5nativedlg.ALLEGRO_MENUptrptr
+Pointer to a @link(ALLEGRO_MENUptr) variable. @seealso(al_find_menu_item)
+#al5nativedlg.ALLEGRO_MENU_INFO
+A structure that defines how to create a complete menu system.
+
+For items, these functions are helpful:
+@preformatted(
+ALLEGRO_ITEM_OF_MENU (caption, id, flags, icon)
+ALLEGRO_MENU_SEPARATOR
+ALLEGRO_END_OF_MENU
+)
+A well-defined menu will contain one or more menu items, and end with @link(ALLEGRO_END_OF_MENU). A menu may contain sub-menus.  An example:
+@longcode(#
+VAR
+  MenuInfo: ARRAY [0..12] OF ALLEGRO_MENU_INFO;
+  Menu: ALLEGRO_MENUptr;
+BEGIN
+  MenuInfo[ 0] := ALLEGRO_ITEM_OF_MENU ('&File->', 1);
+  MenuInfo[ 1] :=   ALLEGRO_ITEM_OF_MENU ('&Open', 2, 0, NIL);
+  MenuInfo[ 2] :=   ALLEGRO_ITEM_OF_MENU ('Open &Recent...->', 3);
+  MenuInfo[ 3] :=     ALLEGRO_ITEM_OF_MENU ('Recent 1', 4, 0, NIL);
+  MenuInfo[ 4] :=     ALLEGRO_ITEM_OF_MENU ('Recent 2', 5, 0, NIL);
+  MenuInfo[ 5] :=     ALLEGRO_END_OF_MENU;
+  MenuInfo[ 6] :=   ALLEGRO_MENU_SEPARATOR;
+  MenuInfo[ 7] :=   ALLEGRO_ITEM_OF_MENU ('E&xit', 6, 0, NIL);
+  MenuInfo[ 8] :=   ALLEGRO_END_OF_MENU;
+  MenuInfo[ 9] := ALLEGRO_ITEM_OF_MENU ('&Help->', 7);
+  MenuInfo[10] :=   ALLEGRO_ITEM_OF_MENU ('&About', 8, 0, NIL);
+  MenuInfo[11] :=   ALLEGRO_END_OF_MENU;
+  MenuInfo[12] := ALLEGRO_END_OF_MENU;
+
+  Menu := al_build_menu (MenuInfo)
+END;
+#)
+If you prefer, you can build the menu without the structure by using @link(al_create_menu) and @link(al_insert_menu_item).
+@seealso(al_build_menu)
+
+#al5nativedlg.al_init_native_dialog_addon
+Initializes the native dialog addon.
+
+@bold(Note)
+
+Prior to Allegro 5.1.0 native dialog functions could be called without explicit initialisation, but that is now deprecated. Future functionality may require explicit initialisation. An exception is @link(al_show_native_message_box), which may be useful to show an error message if Allegro fails to initialise.
+@return(@true on success, @false on error.)
+@seealso(al_shutdown_native_dialog_addon)
+#al5nativedlg.al_shutdown_native_dialog_addon
+Shuts down the native dialog addon. @seealso(al_init_native_dialog_addon)
+
+#al5nativedlg.al_create_native_file_dialog
+Creates a new native file dialog. You should only have one such dialog opened at a time.
+@param(initial_path The initial search path and filename.  To start with a blank file name the string should end with a directory separator (this should be the common case).)
+@param(title Title of the dialog.)
+@param(patterns A list of semi-colon separated patterns to match. This should not contain any whitespace characters. If a pattern contains the '/' character, then it is treated as a MIME type (e.g. @code('image/png')). Not all platforms support file patterns. If the native dialog does not provide support, this parameter is ignored.)
+@param(mode 0, or a combination (@code(OR)) of the following flags: @definitionlist(
+  @itemlabel(@bold(@code(ALLEGRO_FILECHOOSER_FILE_MUST_EXIST))) @item(If supported by the native dialog, it will not allow entering new names, but just allow existing files to be selected. Else it is ignored.)
+  @itemlabel(@bold(@code(ALLEGRO_FILECHOOSER_SAVE))) @item(If the native dialog system has a different dialog for saving @(for example one which allows creating new directories@), it is used. Else it is ignored.)
+  @itemlabel(@bold(@code(ALLEGRO_FILECHOOSER_FOLDER))) @item(If there is support for a separate dialog to select a folder instead of a file, it will be used.)
+  @itemlabel(@bold(@code(ALLEGRO_FILECHOOSER_PICTURES))) @item(If a different dialog is available for selecting pictures, it is used. Else it is ignored.)
+  @itemlabel(@bold(@code(ALLEGRO_FILECHOOSER_SHOW_HIDDEN))) @item(If the platform supports it, also hidden files will be shown.)
+  @itemlabel(@bold(@code(ALLEGRO_FILECHOOSER_MULTIPLE))) @item(If supported, allow selectingmultiple files.)
+))
+@Returns(A handle to the dialog which you can pass to @link(al_show_native_file_dialog) to display it, and from which youthen can query the results using @link(al_get_native_file_dialog_count) and @link(al_get_native_file_dialog_path). When you are done, call @link(al_destroy_native_file_dialog) on it.
+
+If a dialog window could not be created then this function returns @nil.)
+#al5nativedlg.al_show_native_file_dialog
+Shows the dialog window. The display may be @nil, otherwise the given display is treated as the parent if possible.
+
+This function blocks the calling thread until it returns, so you may want to spawn a thread and call it from inside that thread.
+@return(@true on success, @false on failure.)
+@seealso(al_create_native_file_dialog)
+#al5nativedlg.al_get_native_file_dialog_count
+Returns the number of files selected, or @code(0) if the dialog was cancelled.
+@seealso(al_create_native_file_dialog) @seealso(al_show_native_file_dialog)
+#al5nativedlg.al_get_native_file_dialog_path
+Returns one of the selected paths with index @code(i). The index should range from @code(0) to the return value of @code(@link(al_get_native_file_dialog_count) (d) - 1).
+@seealso(al_create_native_file_dialog) @seealso(al_show_native_file_dialog)
+
+#al5nativedlg.al_show_native_message_box
+Shows a native GUI message box.  This can be used for example to display an error message if creation of an initial display fails. The display may be @nil, otherwise the given display is treated as the parent if possible.
+
+The message box will have a single "OK" button and use the style informative dialog boxes usually have on the native system. If the @code(buttons) parameter is not an empty string, you can instead specify the button text in a string, with buttons separated by a vertical bar (|).
+
+@bold(Note) @code(buttons) parameter is currently unimplemented on Windows.
+
+The flags available are: @definitionlist(
+  @itemlabel(@bold(@code(ALLEGRO_MESSAGEBOX_WARN))) @item(The message is a warning.  This may cause a different icon @(or other effects@).)
+  @itemlabel(@bold(@code(ALLEGRO_MESSAGEBOX_ERROR))) @item(The message is an error.)
+  @itemlabel(@bold(@code(ALLEGRO_MESSAGEBOX_QUESTION))) @item(The message is a question.)
+  @itemlabel(@bold(@code(ALLEGRO_MESSAGEBOX_OK_CANCEL))) @item(Display a cancel button alongside the "OK" button. Ignored if @code(buttons) is not an empty string.)
+  @itemlabel(@bold(@code(ALLEGRO_MESSAGEBOX_YES_NO))) @item(Display Yes/No buttons instead of the "OK" button. Ignored if @code(buttons) is not an empty string.)
+)
+@code(al_show_native_message_box) may be called without Allegro being installed. This is useful to report an error during initialisation of Allegro itself.
+
+@bold(Example)
+@longcode(#
+Button := al_show_native_message_box (
+  Display,
+  'Warning',
+  'Are you sure?',
+  'If you click yes then you are confirming that "Yes" '+
+  'is your response to the query which you have '+
+  'generated by the action you took to open this '+
+  'message box.',
+  '',
+  ALLEGRO_MESSAGEBOX_YES_NO
+);
+CASE Button OF
+1: { "Yes" pressed }
+ ...
+2: { "No" pressed }
+ ...
+ELSE { Error }
+ ...
+END;
+#)
+@return(
+  @unorderedlist(
+    @item(@code(@bold(0)) if the dialog window was closed without activating a button.)
+    @item(@code(@bold(1)) if the OK or Yes button was pressed.)
+    @item(@code(@bold(2)) if the Cancel or No button was pressed)
+  )
+  If @code(buttons) is not an empty string, the number of the pressed button is returned, starting with 1.
+
+  If a message box could not be created then this returns 0, as if the window was dismissed without activating a button.
+)
+
+#al5nativedlg.al_open_native_text_log
+Opens a window to which you can append log messages with @link(al_append_native_text_log).  This can be useful for debugging if you don't want to depend on a console being available.
+
+Use @link(al_close_native_text_log) to close the window again.
+@param(title Title of the dialog.)
+@param(flags One of: @definitionlist(
+  @itemlabel(@bold(@code(ALLEGRO_TEXTLOG_NO_CLOSE))) @item(Prevent the window from having a close button. Otherwise, if the close button is pressed, an event is generated; see @link(al_get_native_text_log_event_source).)
+  @itemlabel(@bold(@code(ALLEGRO_TEXTLOG_MONOSPACE))) @item(Use a monospace font to display the text.)
+))
+@returns(@nil if there was an error opening the window, or if text log  windows are not implemented on the platform.)
+@seealso(al_append_native_text_log) @seealso(al_close_native_text_log)
+#al5nativedlg.al_close_native_text_log
+Closes a message log window opened with @code(al_open_native_text_log) earlier.
+
+Does nothing if passed @nil.
+@seealso(al_open_native_text_log)
+#al5nativedlg.al_append_native_text_log
+Appends a line of text to the message log window and scrolls to the bottom (if the line would not be visible otherwise). A line is continued until you add a newline character.
+
+If the window is @nil then this function will fall back to calling @code(Write). This makes it convenient to support logging to a window or a terminal.
+#al5nativedlg.al_get_native_text_log_event_source
+Get an event source for a text log window. The possible events are:
+@definitionlist(
+  @itemlabel(@bold(@code(ALLEGRO_EVENT_NATIVE_DIALOG_CLOSE))) @item(The window was requested to be closed, either by pressing the close button or pressing Escape on the keyboard. The @code(user.data1) field will hold a pointer to the @code(ALLEGRO_TEXTLOG) which generated the event. The @code(user.data2) field will be @code(1) if the event was generated as a result of a key press; otherwise it will be zero.)
+)
+
+#al5nativedlg.al_create_menu
+Creates a menu container that can hold menu items.
+@return(Pointer to the menu struct or @nil on failure.)
+@seealso(al_create_popup_menu) @seealso(al_build_menu) @seealso(al_set_display_menu)
+#al5nativedlg.al_create_popup_menu
+Creates a menu container for popup menus. Only the root (outermost) menu should be created with this function. Sub menus of popups should be created with @link(al_create_menu).
+@return(Pointer to the menu struct or @nil on failure.)
+@seealso(al_create_menu) @seealso(al_build_menu) @seealso(al_popup_menu)
+#al5nativedlg.al_build_menu
+Builds a menu based on the specifications of a sequence of @code(ALLEGRO_MENU_INFO) elements.
+@returns(A pointer to the root @code(ALLEGRO_MENU), or @nil on failure. To gain access to the other menus and items, you will need to search for them using @link(al_find_menu_item).)
+@seealso(ALLEGRO_MENU_INFO) @seealso(al_create_menu) @seealso(al_create_popup_menu)
+#al5nativedlg.al_append_menu_item
+Appends a menu item to the end of the menu. See @link(al_insert_menu_item) for more information.
+@seealso(al_insert_menu_item) @seealso(al_remove_menu_item)
+#al5nativedlg.al_insert_menu_item
+Inserts a menu item at the spot specified.  See the introductory text for a detailed explanation of how the @code(pos) parameter is interpreted.
+@param(parent Can be a popup menu or a regular menu.  To underline one character in the title, prefix it with an ampersand.)
+@param(flags Can be any combination (@code(OR)) of: @definitionlist(
+  @itemlabel(@code(@bold(ALLEGRO_MENU_ITEM_DISABLED))) @item(The item is @italic("grayed out") and cannot be selected.)
+  @itemlabel(@code(@bold(ALLEGRO_MENU_ITEM_CHECKBOX))) @item(The item is a check box. This flag can only be set at the time the menu is created.  If a check box is clicked, it will automatically be toggled.)
+  @itemlabel(@code(@bold(ALLEGRO_MENU_ITEM_CHECKED))) @item(The item is checked.  If set, @code(ALLEGRO_MENU_ITEM_CHECKBOX) will automatically be set as well.)
+))
+@param(icon Not yet supported.)
+@param(submenu Indicates that this item contains a child menu. The child menu must have previously been created with @link(al_create_menu), and not be associated with any other menu.)
+@return(@true on success.)
+@seealso(al_append_menu_item) @seealso(al_remove_menu_item)
+#al5nativedlg.al_remove_menu_item
+Removes the specified item from the menu and destroys it.  If the item contains a sub-menu, it too is destroyed.  Any references to it are invalidated. If you want to preserve that sub-menu, you should first make a copy with @link(al_clone_menu).
+
+This is safe to call on a menu that is currently being displayed.
+@returns(@true if an item was removed.)
+@seealso(al_append_menu_item) @seealso(al_insert_menu_item) @seealso(al_destroy_menu)
+#al5nativedlg.al_clone_menu
+Makes a copy of a menu so that it can be reused on another display.  The menu being cloned can be anything: a regular menu, a popup menu, or a sub-menu. @return(The cloned menu.)
+@seealso(al_clone_menu_for_popup)
+#al5nativedlg.al_clone_menu_for_popup
+Exactly like @link(al_clone_menu), except that the copy is for a popup menu.
+#al5nativedlg.al_destroy_menu
+Destroys an entire menu, including its sub-menus. Any references to it or a sub-menu are no longer valid. It is safe to call this on a menu that is currently being displayed. @seealso(al_remove_menu_item)
+
+#al5nativedlg.al_get_menu_item_caption
+Returns the caption associated with the menu item.  It is valid as long as the caption is not modified.
+
+Returns @nil if the item was not found.
+@seealso(al_set_menu_item_caption)
+#al5nativedlg.al_set_menu_item_caption
+Updates the menu item caption with the new caption.  This will invalidate any previous calls to @link(al_get_menu_item_caption).
+@seealso(al_get_menu_item_caption)
+#al5nativedlg.al_get_menu_item_flags
+Returns the currently set flags.  See @link(al_insert_menu_item) for a description of the available flags.
+
+Returns @code(-1) if the item was not found.
+@seealso(al_set_menu_item_flags)
+#al5nativedlg.al_set_menu_item_flags
+Updates the menu item's flags.  See @link(al_insert_menu_item) for a description of the available flags.
+@seealso(al_get_menu_item_flags)
+#al5nativedlg.al_get_menu_item_icon
+Returns the icon associated with the menu.  It is safe to draw to the returned bitmap, but you must call @link(al_set_menu_item_icon) in order for the changes to be applied.
+
+Returns @nil if the item was not found or if it has no icon.
+@seealso(al_set_menu_item_icon)
+#al5nativedlg.al_set_menu_item_icon
+Sets the icon for the specified menu item.  The menu assumes ownership of the @code(ALLEGRO_BITMAP) and may invalidate the pointer, so you must clone it if you wish to continue using it.
+
+If a video bitmap is passed, it will automatically be converted to a memory bitmap, so it is preferrable to pass a memory bitmap.
+@seealso(al_get_menu_item_icon) @seealso(al_clone_bitmap)
+
+#al5nativedlg.al_toggle_menu_item_flags
+Toggles the specified menu item's flags. See @link(al_insert_menu_item) for a description of the available flags.
+@return(A bitfield of only the specified flags that are set after the toggle. A flag that was not toggled will not be returned, even if it is set. Returns @code(-1) if the @code(id) is invalid.)
+
+@bold(Unstable API:) Redundant with @code(al_get/set_menu_item_flags).
+@seealso(al_get_menu_item_flags) @seealso(al_set_menu_item_flags)
+
+#al5nativedlg.al_find_menu
+Searches in the @code(haystack) menu for any submenu with the given @code(id). (Note that this only represents a literal ID, and cannot be used as an index.)
+@returns(The menu, if found. Otherwise returns @nil.)
+@seealso(al_find_menu_item)
+#al5nativedlg.al_find_menu_item
+Searches in the @code(haystack) menu for an item with the given @code(id). (Note that this only represents a literal ID, and cannot be used as an index.)
+
+If @code(menu) and @code(index) are not @nil, they will be set as the parent menu containing the item and the zero-based (positive) index of the item. (If the menu item was not found, then their values are undefined.)
+@returns(@true if the menu item was found.)
+@seealso(al_find_menu)
+
+#al5nativedlg.al_get_default_menu_event_source
+Returns the default event source used for menu clicks.  If a menu was not given its own event source via @link(al_enable_menu_event_source), then it will use this default source.
+@seealso(al_register_event_source) @seealso(al_enable_menu_event_source)
+@seealso(al_disable_menu_event_source)
+#al5nativedlg.al_enable_menu_event_source
+Enables a unique event source for this @code(menu). It and all of its sub-menus will use this event source. (It is safe to call this multiple times on the same menu.)
+@returns(The event source.)
+@seealso(al_register_event_source) @seealso(al_get_default_menu_event_source) @seealso(al_disable_menu_event_source)
+#al5nativedlg.al_disable_menu_event_source
+Disables a unique event source for the @code(menu), causing it to use the default event source.
+@seealso(al_get_default_menu_event_source)
+@seealso(al_enable_menu_event_source)
+
+#al5nativedlg.al_get_display_menu
+Returns the menu associated with the @code(display), or @nil if it does not have a menu.
+@seealso(al_set_display_menu)
+#al5nativedlg.al_set_display_menu
+Associates the @code(menu) with the @code(display) and shows it.  If there was a previous menu associated with the display, it will be destroyed.  If you don't want that to happen, you should first remove the menu with @link(al_remove_display_menu).
+
+If the menu is already attached to a display, it will not be attached to the new display.  If @code(menu) is @nil, the current menu will still be destroyed.
+
+@bold(Note)
+
+Attaching a menu may cause the window as available to your application to be resized!  You should listen for a resize event, check how much space was lost, and resize the window accordingly if you want to maintain your window's prior size.
+@return(@true if successful.)
+@seealso(al_create_menu) @seealso(al_remove_display_menu)
+#al5nativedlg.al_popup_menu
+Displays a context menu next to the mouse cursor.  The menu must have been created with @link(al_create_popup_menu). It generates events just like a regular display menu does.  It is possible that the menu will be canceled without any selection being made.
+@param(display Indicates which window the menu is associated with (when you process the menu click event), but does not actually affect where the menu is located on the screen.)
+@return(@true if the context menu was displayed.)
+@seealso(al_create_popup_menu)
+#al5nativedlg.al_remove_display_menu
+Detaches the menu associated with the display and returns it.  The menu can then be used on a different display.
+
+If you simply want to destroy the active menu, you can call
+@link(al_set_display_menu) with a @nil menu.
+@seealso(al_set_display_menu)
+
+#al5nativedlg.al_get_allegro_native_dialog_version
+Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version).
+
+
+
+#al5opengl.al_get_opengl_version
+Returns the OpenGL or OpenGL ES version number of the client (the computer the program is running on), for the current display. "1.0" is returned as @code($01000000), "1.2.1" is returned as @code($01020100), and "1.2.2" as @code($01020200) ,etc.
+
+A valid OpenGL context must exist for this function to work, which means you may not call it before @link(al_create_display).
+@seealso(al_get_opengl_variant)
+#al5opengl.al_have_opengl_extension
+This function is a helper to determine whether an OpenGL extension is available on the given display or not.
+
+@bold(Example)
+@longcode(%
+packedpixels := al_have_opengl_extension ('GL_EXT_packed_pixels');
+%)
+If @italic(packedpixels) is @true then you can safely use the constants related to the packed pixels extension.
+@return(@true if the extension is available; @false otherwise.)
+@seealso(al_get_opengl_proc_address)
+#al5opengl.al_get_opengl_proc_address
+Helper to get the address of an OpenGL symbol.
+
+@bold(Example)
+
+How to get the function @code(glMultiTexCoord3fARB) that comes with ARB's Multitexture extension:
+@longcode(%
+TYPE
+{ Define the type of the function. }
+  MULTI_TEX_FUNC: PROCEDURE (a: GLenum; b, c, d: GLfloat); CDECL;
+VAR
+{ Declare the function pointer. }
+  glMultiTexCoord3fARB: MULTI_TEX_FUNC;
+BEGIN
+{ get the address of the function. }
+  glMultiTexCoord3fARB := MULTI_TEX_FUNC (al_get_opengl_proc_address ('glMultiTexCoord3fARB'))
+END;
+%)
+If @code(glMultiTexCoord3fARB) is not @nil then it can be used as if it has been defined in the OpenGL core library.
+@param(name The name of the symbol you want to link to.)
+@return(A pointer to the symbol if available or @nil otherwise.)
+@seealso(al_have_opengl_extension)
+#al5opengl.al_get_opengl_texture
+Returns the OpenGL texture id internally used by the given bitmap if it uses one, else @code(0).
+
+@bold(Example)
+@longcode(%
+  Bitmap := al_load_bitmap ('my_texture.png');
+  Texture := al_get_opengl_texture (Bitmap);
+  IF texture <> NIL THEN glBindTexture (GL_TEXTURE_2D, Texture);
+%)
+#al5opengl.al_remove_opengl_fbo
+Explicitly frees an OpenGL FBO created for a bitmap, if it has one. Usually you do not need to worry about freeing FBOs, unless you use al_get_opengl_fbo.
+
+@seealso(al_get_opengl_fbo) @seealso(al_set_target_bitmap)
+#al5opengl.al_get_opengl_fbo
+Returns the OpenGL FBO id internally used by the given bitmap if it uses one, otherwise returns zero. No attempt will be made to create an FBO if the bitmap is not owned by the current display.
+
+The FBO returned by this function will only be freed when the bitmap is destroyed, or if you call @link(al_remove_opengl_fbo) on the bitmap.
+
+@bold(Note:) In Allegro 5.0.0 this function only returned an FBO which had previously been created by calling @link(al_set_target_bitmap). It would not attempt to create an FBO itself. This has since been changed.
+@seealso(al_remove_opengl_fbo) @seealso(al_set_target_bitmap)
+#al5opengl.al_get_opengl_texture_size
+Retrieves the size of the texture used for the bitmap. This can be different from the bitmap size if OpenGL only supports power-of-two sizes or if it is a sub-bitmap.
+@return(@true on success, @false on failure. Zero width and height are returned if the bitmap is not an OpenGL bitmap.)
+@seealso(al_get_opengl_texture_position)
+#al5opengl.al_get_opengl_texture_position
+Returns the u/v coordinates for the top/left corner of the bitmap within the used texture, in pixels.
+@seealso(al_get_opengl_texture_size)
+#al5opengl.al_get_opengl_program_object
+Returns the OpenGL program object associated with this shader, if the platform is @link(ALLEGRO_SHADER_GLSL). Otherwise, returns @code(0).
+#al5opengl.al_set_current_opengl_context
+Make the OpenGL context associated with the given display current for the calling thread. If there is a current target bitmap which belongs to a different OpenGL context, the target bitmap will be changed to @nil.
+
+Normally you do not need to use this function, as the context will be made current when you call @link(al_set_target_bitmap) or @link(al_set_target_backbuffer). You might need it if you created an OpenGL "forward compatible" context. Then @link(al_get_backbuffer) only returns @nil, so it would not work to pass that to @link(al_set_target_bitmap).
+#al5opengl.al_get_opengl_variant
+Returns the variant or type of OpenGL used on the running platform. This function can be called before creating a display or setting properties for new displays. Possible values are:
+@definitionlist(
+@itemlabel(@code(@bold(ALLEGRO_DESKTOP_OPENGL))) @item(Regular OpenGL as seen on desktop/laptop computers.)
+@itemlabel(@code(@bold(ALLEGRO_OPENGL_ES))) @item(Trimmed down version of OpenGL used on many small consumer electronic devices such as handheld (and sometimes full size) consoles.)
+)
+@seealso(al_get_opengl_version)
+
+
+
+#al5primitives.ALLEGRO_PRIM_TYPE
+Enumerates the types of primitives this addon can draw.
+  @value(ALLEGRO_PRIM_POINT_LIST A list of points, each vertex defines a point.)
+  @value(ALLEGRO_PRIM_LINE_LIST A list of lines, sequential pairs of vertices define disjointed lines.)
+  @value(ALLEGRO_PRIM_LINE_STRIP A strip of lines, sequential vertices define a strip of lines.)
+  @value(ALLEGRO_PRIM_LINE_LOOP Like a line strip, except at the end the first and the last vertices are also connected by a line.)
+  @value(ALLEGRO_PRIM_TRIANGLE_LIST A list of triangles, sequential triplets of vertices define disjointed triangles.)
+  @value(ALLEGRO_PRIM_TRIANGLE_STRIP A strip of triangles, sequential vertices define a strip of triangles.)
+  @value(ALLEGRO_PRIM_TRIANGLE_FAN A fan of triangles, all triangles share the first vertex.)
+#al5primitives.ALLEGRO_PRIM_ATTR
+Enumerates the types of vertex attributes that a custom vertex may have.
+  @value(ALLEGRO_PRIM_POSITION Position information, can be stored only in @code(ALLEGRO_PRIM_SHORT_2), @code(ALLEGRO_PRIM_FLOAT_2) and @code(ALLEGRO_PRIM_FLOAT_3).)
+  @value(ALLEGRO_PRIM_COLOR_ATTR Color information, stored in an @link(ALLEGRO_COLOR). The storage field of @link(ALLEGRO_VERTEX_ELEMENT) is ignored.)
+  @value(ALLEGRO_PRIM_TEX_COORD Texture coordinate information, can be stored only in @code(ALLEGRO_PRIM_FLOAT_2) and @code(ALLEGRO_PRIM_SHORT_2). These coordinates are normalized by the width and height of the texture, meaning that the bottom-right corner has texture coordinates of @code(@(1, 1@)).)
+  @value(ALLEGRO_PRIM_TEX_COORD_PIXEL Texture coordinate information, can be stored only in @code(ALLEGRO_PRIM_FLOAT_2) and @code(ALLEGRO_PRIM_SHORT_2). These coordinates are measured in pixels.)
+  @value(ALLEGRO_PRIM_USER_ATTR A user specified attribute. You can use any storage for this attribute. You may have at most 10 of these that you can specify by adding an index to the identifier, e.g. the first user attribute is @code(ALLEGRO_PRIM_USER_ATTR), the second is @code(ALLEGRO_PRIM_USER_ATTR2) and so on.
+
+    To access these custom attributes from GLSL shaders you need to declare attributes that follow this nomenclature: @code(user_attr_#) where @code(#) is the index of the attribute.
+
+    To access these custom attributes from HLSL you need to declare a parameter with the following semantics: @code(TEXCOORD{# + 2}) where @code(#) is the index of the attribute. E.g. the first attribute can be accessed via TEXCOORD2, second via TEXCOORD3 and so on.)
+@seealso(ALLEGRO_VERTEX_DECLptr) @seealso(ALLEGRO_PRIM_STORAGE)
+#al5primitives.ALLEGRO_PRIM_STORAGE
+Enumerates the types of storage an attribute of a custom vertex may be stored in. Many of these can only be used for @link(ALLEGRO_PRIM_USER_ATTR) attributes and can only be accessed via shaders. Usually no matter what the storage is specified the attribute gets converted to single precision floating point when the shader is run. Despite that, it may be advantageous to use more dense storage formats (e.g. @code(ALLEGRO_PRIM_NORMALIZED_UBYTE_4) instead of @code(ALLEGRO_PRIM_FLOAT_4)) when bandwidth (amount of memory sent to the GPU) is an issue but precision is not.
+  @value(ALLEGRO_PRIM_FLOAT_1 A single float.)
+  @value(ALLEGRO_PRIM_FLOAT_2 A doublet of floats.)
+  @value(ALLEGRO_PRIM_FLOAT_3 A triplet of floats.)
+  @value(ALLEGRO_PRIM_FLOAT_4 A quad of floats.)
+  @value(ALLEGRO_PRIM_SHORT_2 A doublet of shorts.)
+  @value(ALLEGRO_PRIM_SHORT_4 A quad of shorts.)
+  @value(ALLEGRO_PRIM_UBYTE_4 A quad of unsigned bytes.)
+  @value(ALLEGRO_PRIM_NORMALIZED_SHORT_2 A doublet of shorts. Before being sent to the shader, each component is divided by 32767. Each component of the resultant float doublet ranges between -1.0 and 1.0.)
+  @value(ALLEGRO_PRIM_NORMALIZED_SHORT_4 A quad of shorts. Before being sent to the shader, each component is divided by 32767. Each component of the resultant float quad ranges between -1.0 and 1.0.)
+  @value(ALLEGRO_PRIM_NORMALIZED_UBYTE_4 A quad of unsigned bytes. Before being sent to the shader, each component is divided by 255. Each component of the resultant float quad ranges between 0.0 and 1.0.)
+  @value(ALLEGRO_PRIM_NORMALIZED_USHORT_2 A doublet of unsigned shorts. Before being sent to the shader, each component is divided by 65535. Each component of the resultant float doublet ranges between 0.0 and 1.0.)
+  @value(ALLEGRO_PRIM_NORMALIZED_USHORT_4 A quad of unsigned shorts. Before being sent to the shader, each component is divided by 65535. Each component of the resultant float quad ranges between 0.0 and 1.0.)
+  @value(ALLEGRO_PRIM_HALF_FLOAT_2 A doublet of half-precision floats. Note that this storage format is not supported on all platforms. @link(al_create_vertex_decl) will return @nil if you use it on those platforms.)
+  @value(ALLEGRO_PRIM_HALF_FLOAT_4 A quad of half-precision floats. Note that this storage format is not supported on all platforms. @link(al_create_vertex_decl) will return @nil if you use it on those platforms.)
+@seealso(ALLEGRO_PRIM_STORAGE_NONE) @seealso(ALLEGRO_PRIM_ATTR)
+#al5primitives.ALLEGRO_LINE_JOIN
+See the picture for the difference.
+@html(<figure>
+ <img src="images/line_join.png" width="100%" title="Line joins" alt="[-]" />
+ <figcaption>ALLEGRO_LINE_JOIN styles.</figcaption>
+</figure>)
+The maximum miter length (relative to the line width) can be specified as parameter to the polygon functions.
+@seealso(al_draw_polygon) @seealso(ALLEGRO_LINE_JOIN_MITRE)
+#al5primitives.ALLEGRO_LINE_CAP
+See the picture for the difference.
+@html(<figure>
+ <img src="images/line_cap.png" width="100%" title="Line cap" alt="[-]" />
+ <figcaption>ALLEGRO_LINE_CAP styles.</figcaption>
+</figure>)
+@code(ALLEGRO_LINE_CAP_CLOSED) is different from the others - it causes the polygon to have no caps. (And the @link(ALLEGRO_LINE_JOIN) style will determine how the vertex looks.)
+@seealso(al_draw_polygon)
+#al5primitives.ALLEGRO_PRIM_BUFFER_FLAGS
+Flags to specify how to create a vertex or an index buffer.
+  @value(ALLEGRO_PRIM_BUFFER_STREAM Hints to the driver that the buffer is written to often, but used only a few times per frame.)
+  @value(ALLEGRO_PRIM_BUFFER_STATIC Hints to the driver that the buffer is written to once and is used often.)
+  @value(ALLEGRO_PRIM_BUFFER_DYNAMIC Hints to the driver that the buffer is written to often and is used often.)
+  @value(ALLEGRO_PRIM_BUFFER_READWRITE Specifies that you want to be able read from this buffer. By default this is disabled for performance. Some platforms (like OpenGL ES) do not support reading from vertex buffers, so if you pass this flag to @link(al_create_vertex_buffer) or @link(al_create_index_buffer) the call will fail.)
+@seealso(al_create_vertex_buffer) @seealso(al_create_index_buffer)
+
+#al5primitives.ALLEGRO_VERTEX_CACHE_SIZE
+Defines the size of the transformation vertex cache for the software renderer. If you pass less than this many vertices to the primitive rendering functions you will get a speed boost. This also defines the size of the cache vertex buffer, used for the high-level primitives. This corresponds to the maximum number of line segments that will be used to form them.
+
+#al5primitives.ALLEGRO_VERTEX_ELEMENT
+A small structure describing a certain element of a vertex. E.g. the position of the vertex, or its color. These structures are used by the @link(al_create_vertex_decl) function to create the vertex declaration. For that they generally occur in an array. The last element of such an array should have the @code(attribute) field equal to @code(0), to signify that it is the end of the array. Here is an example code that would create a declaration describing the @link(ALLEGRO_VERTEX) structure (passing this as vertex declaration to @link(al_draw_prim) would be identical to passing @nil):
+@longcode(%
+CONST
+  Elements: ARRAY [0..1] OF ALLEGRO_VERTEX_ELEMENT = (
+    (attribute: ALLEGRO_PRIM_POSITION,        storage: ALLEGRO_PRIM_FLOAT_3,      offset: 0),
+    (attribute: ALLEGRO_PRIM_TEX_COORD_PIXEL, storage: ALLEGRO_PRIM_FLOAT_2,      offset: SIZEOF (AL_FLOAT) * 3),
+    (attribute: ALLEGRO_PRIM_COLOR_ATTR,      storage: ALLEGRO_PRIM_STORAGE_NONE, offset: SIZEOF (AL_FLOAT) * 5),
+    (attribute: ALLEGRO_PRIM_ATTR_NONE,       storage: ALLEGRO_PRIM_STORAGE_NONE, offset: 0)
+  );
+  Declaration: ALLEGRO_VERTEX_DECLptr;
+BEGIN
+  Declaration := al_create_vertex_decl (Elements, SIZEOF (ALLEGRO_VERTEX));
+%)
+@member(attribute A member of the @link(ALLEGRO_PRIM_ATTR) enumeration, specifying what this attribute signifies.)
+@member(storage A member of the @link(ALLEGRO_PRIM_STORAGE) enumeration, specifying how this attribute is stored.)
+@member(offset Offset in bytes from the beginning of the custom vertex structure. The C function offsetof is very useful here.)
+@seealso(al_create_vertex_decl) @seealso(ALLEGRO_VERTEX_DECLptr) @seealso(ALLEGRO_PRIM_ATTR) @seealso(ALLEGRO_PRIM_STORAGE)
+
+#al5primitives.ALLEGRO_VERTEX_DECLptr
+A vertex declaration. This opaque structure is responsible for describing the format and layout of a user defined custom vertex. It is created and destroyed by specialized functions.
+@seealso(al_create_vertex_decl) @seealso(al_destroy_vertex_decl) @seealso(ALLEGRO_VERTEX_ELEMENT)
+#al5primitives.ALLEGRO_VERTEX
+Defines the generic vertex type, with a 3D position, color and texture coordinates for a single texture. Note that at this time, the software driver for this addon cannot render 3D primitives. If you want a 2D only primitive, set @code(z) to @code(0). Note that you must initialize all members of this struct when you're using it. One exception to this rule are the @code(u) and @code(v) variables which can be left uninitialized when you are not using textures.
+@seealso(ALLEGRO_PRIM_ATTR)
+
+#al5primitives.ALLEGRO_VERTEX_BUFFERptr
+A GPU vertex buffer that you can use to store vertices on the GPU instead of uploading them afresh during every drawing operation.
+@seealso(al_create_vertex_buffer) @seealso(al_destroy_vertex_buffer)
+
+#al5primitives.ALLEGRO_INDEX_BUFFERptr
+A GPU index buffer that you can use to store indices of vertices in a vertex buffer on the GPU instead of uploading them afresh during every drawing operation.
+@seealso(al_create_index_buffer) @seealso(al_destroy_index_buffer)
+
+#al5primitives.ALLEGRO_EMIT_TRIANGLE_PROC
+Callback function used by @link(al_triangulate_polygon).
+@param(a Index of the first triangle vertex.)
+@param(b Index of the first triangle vertex.)
+@param(c Index of the first triangle vertex.)
+@param(p Pointer to user data.)
+#al5primitives.ALLEGRO_INIT_TRIANGLE_PROC
+Callback function used by @link(al_draw_soft_triangle).
+@param(state Pointer to a user suplied struct.)
+@param(v1 First vertex of the triangle.)
+@param(v2 Second vertex of the triangle.)
+@param(v3 third vertex of the triangle.)
+#al5primitives.ALLEGRO_FIRST_TRIANGLE_PROC
+Callback function used by @link(al_draw_soft_triangle).
+
+It is passed 4 parameters, the first two are the coordinates of the initial pixel drawn in the segment. The second two are the left minor and the left major steps, respectively. They represent the sizes of two steps taken by the rasterizer as it walks on the left side of the triangle. From then on, each step will either be classified as a minor or a major step, corresponding to the above values.
+#al5primitives.ALLEGRO_DRAW_TRIANGLE_PROC
+Callback function used by @link(al_draw_soft_triangle).
+
+The function is expected to draw the scanline starting with a point specified by the first two parameters (@code(x1), @code(y)) going to the right until it reaches the value of the third parameter (@code(x2)). All coordinates are inclusive.
+
+#al5primitives.ALLEGRO_FIRST_LINE_PROC
+Callback function used by @link(al_draw_soft_line).
+
+It is passed the coordinates of this pixel, as well as the two vertices above. The passed vertices may have been altered by clipping.
+#al5primitives.ALLEGRO_DRAW_LINE_PROC
+Callback function used by @link(al_draw_soft_line).
+
+The function is expected to draw the pixel at the coordinates passed to it.
+
+#al5primitives.ALLEGRO_STEP_PROC
+Callback function used to track the steps on some drawing functions.
+
+#al5primitives.ALLEGRO_SPLINE_CONTROL_POINTS
+An array that defines 4 pair of coordinates for spline lines.
+@seealso(al_calculate_spline) @seealso(al_draw_spline)
+
+#al5primitives.al_get_allegro_primitives_version
+Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version).
+
+#al5primitives.al_init_primitives_addon
+Initializes the primitives addon.
+@returns(@true on success, @false on failure.)
+@seealso(al_shutdown_primitives_addon)
+#al5primitives.al_shutdown_primitives_addon
+Shut down the primitives addon.  This is done automatically at program exit, but can be called any time the user wishes as well.
+@seealso(al_init_primitives_addon)
+#al5primitives.al_draw_prim
+Draws a subset of the passed vertex array.
+
+For example to draw a textured triangle you could use:
+@longcode(%
+VAR
+  v: ARRAY [0..2] OF ALLEGRO_VERTEX = (
+    (x: 128, y: 0,   z: 0, color: white, u: 128, v: 0),
+    (x: 0,   y: 256, z: 0, color: white, u: 0,   v: 256),
+    (x: 256, y: 256, z: 0, color: white, u: 256, v: 256)
+  );
+BEGIN
+  al_draw_prim (v, Texture, 0, 3, ALLEGRO_PRIM_TRIANGLE_LIST)
+END;
+%)
+@param(vtxs Pointer to an array of vertices.)
+@param(texture Texture to use, pass @nil to use only color shaded primitves.)
+@param(start Start index of the subset of the vertex array to draw.)
+@param(end One past the last index of the subset of the vertex array to draw.)
+@return(Number of primitives drawn.)
+@Seealso(al_draw_prim_ex) @seealso(ALLEGRO_VERTEX) @seealso(ALLEGRO_PRIM_TYPE) @seealso(ALLEGRO_VERTEX_DECLptr) @seealso(al_draw_indexed_prim)
+#al5primitives.al_draw_prim_ex
+Extended version of @link(al_draw_prim) that allows to define your own vertex type.
+@param(vtxs Pointer to an array of vertices.)
+@param(decl Pointer to a vertex declaration. If set to @nil, the @code(vtx) are assumed to be of the @link(ALLEGRO_VERTEX) type.)
+@param(texture Texture to use, pass @nil to use only color shaded primitves.)
+@param(start Start index of the subset of the vertex array to draw.)
+@param(end One past the last index of the subset of the vertex array to draw.)
+@param(atype A member of the @link(ALLEGRO_PRIM_TYPE) enumeration, specifying what kind of primitive to draw.)
+@return(Number of primitives drawn.)
+@Seealso(al_draw_prim_ex) @seealso(ALLEGRO_VERTEX) @seealso(ALLEGRO_PRIM_TYPE) @seealso(ALLEGRO_VERTEX_DECLptr) @seealso(al_draw_indexed_prim)
+#al5primitives.al_draw_indexed_prim
+Draws a subset of the passed vertex array. This function uses an index array to specify which vertices to use.
+@param(vtxs Pointer to an array of vertices.)
+@param(texture Texture to use, pass @nil to use only color shaded primitves.)
+@param(indices An array of indices into the vertex array.)
+@param(num_vtx Number of indices from the indices array you want to draw.)
+@param(atype A member of the @link(ALLEGRO_PRIM_TYPE) enumeration, specifying what kind of primitive to draw.)
+@returns(Number of primitives drawn.)
+@seealso(al_draw_indexed_prim_ex) @seealso(ALLEGRO_VERTEX) @seealso(ALLEGRO_PRIM_TYPE) @seealso(ALLEGRO_VERTEX_DECLptr) @seealso(al_draw_prim)
+#al5primitives.al_draw_indexed_prim_ex
+Extended version of @link(al_draw_indexed_prim) that allows to define your own vertex type.
+@param(vtxs Pointer to an array of vertices.)
+@param(decl Pointer to a vertex declaration. If set to @nil, the @code(vtxs) are assumed to be of the @link(ALLEGRO_VERTEX) type.)
+@param(texture Texture to use, pass @nil to use only color shaded primitves.)
+@param(indices An array of indices into the vertex array.)
+@param(num_vtx Number of indices from the indices array you want to draw.)
+@param(atype A member of the @link(ALLEGRO_PRIM_TYPE) enumeration, specifying what kind of primitive to draw.)
+@returns(Number of primitives drawn.)
+@seealso(al_draw_indexed_prim) @seealso(ALLEGRO_VERTEX) @seealso(ALLEGRO_PRIM_TYPE) @seealso(ALLEGRO_VERTEX_DECLptr) @seealso(al_draw_prim)
+#al5primitives.al_draw_vertex_buffer
+Draws a subset of the passed vertex buffer. The vertex buffer must not be locked. Additionally, to draw onto memory bitmaps or with memory bitmap textures the vertex buffer must support reading (i.e. it must be created with the @code(ALLEGRO_PRIM_BUFFER_READWRITE)).
+@param(vertex_buffer Vertex buffer to draw.)
+@param(texture Texture to use, pass @nil to use only color shaded primitves.)
+@param(start Start index of the subset of the vertex buffer to draw.)
+@param(end One past the last index of the subset of the vertex buffer to draw.)
+@param(atype A member of the @link(ALLEGRO_PRIM_TYPE) enumeration, specifying what kind of primitive to draw.)
+@return(Number of primitives drawn.)
+@seealso(ALLEGRO_VERTEX_BUFFERptr) @seealso(ALLEGRO_PRIM_TYPE)
+#al5primitives.al_draw_indexed_buffer
+Draws a subset of the passed vertex buffer. This function uses an index buffer to specify which vertices to use. Both buffers must not be locked. Additionally, to draw onto memory bitmaps or with memory bitmap textures both buffers must support reading (i.e. they must be created with the @code(ALLEGRO_PRIM_BUFFER_READWRITE)).
+@param(vertex_buffer Vertex buffer to draw.)
+@param(texture Texture to use, pass @nil to use only color shaded primitves.)
+@param(index_buffer Index buffer to use.)
+@param(start Start index of the subset of the vertex buffer to draw.)
+@param(end One past the last index of the subset of the vertex buffer to draw.)
+@param(type A member of the @link(ALLEGRO_PRIM_TYPE) enumeration, specifying what kind of primitive to draw. Note that @code(ALLEGRO_PRIM_LINE_LOOP) and @code(ALLEGRO_PRIM_POINT_LIST) are not supported.)
+@return(Number of primitives drawn.)
+@seealso(ALLEGRO_VERTEX_BUFFERptr) @seealso(ALLEGRO_INDEX_BUFFERptr) @seealso(ALLEGRO_PRIM_TYPE)
+#al5primitives.al_create_vertex_decl
+Creates a vertex declaration, which describes a custom vertex format.
+@param(elements An array of @link(ALLEGRO_VERTEX_ELEMENT) structures.)
+@param(stride Size of the custom vertex structure.)
+@return(Newly created vertex declaration.)
+@seealso(ALLEGRO_VERTEX_ELEMENT) @seealso(ALLEGRO_VERTEX_DECLptr) @seealso(al_destroy_vertex_decl)
+#al5primitives.al_destroy_vertex_decl
+Destroys a vertex declaration.
+@param(decl Vertex declaration to destroy.)
+@seealso(ALLEGRO_VERTEX_ELEMENT) @seealso(ALLEGRO_VERTEX_DECLptr) @seealso(al_create_vertex_decl)
+
+#al5primitives.al_create_vertex_buffer
+Creates a vertex buffer. Can return @nil if the buffer could not be created (e.g. the system only supports write-only buffers).
+
+@bold(Note)
+
+    This is an advanced feature, often unsupported on lower-end video cards. Be extra mindful of this function failing and make arrangements for fallback drawing functionality or a nice error message for users with such lower-end cards.
+@param(initial_data Memory buffer to copy from to initialize the vertex buffer.)
+@param(flags A combination of the @link(ALLEGRO_PRIM_BUFFER_FLAGS) flags specifying how this buffer will be created.)
+@seealso(al_create_vertex_buffer_ex) @seealso(ALLEGRO_VERTEX_BUFFERptr) @seealso(al_destroy_vertex_buffer)
+#al5primitives.al_create_vertex_buffer_ex
+Extended version of @link(al_create_vertex_buffer) that allows to define your own vertex type.
+@param(decl Vertex type that this buffer will hold. @nil implies that this buffer will hold ALLEGRO_VERTEX vertices.)
+@param(initial_data Memory buffer to copy from to initialize the vertex buffer. Can be @nil, in which case the buffer is uninitialized.)
+@param(num_vertices Number of vertices the buffer will hold.)
+@param(flags A combination of the @link(ALLEGRO_PRIM_BUFFER_FLAGS) flags specifying how this buffer will be created.)
+@seealso(al_create_vertex_buffer) @seealso(ALLEGRO_VERTEX_BUFFERptr) @seealso(al_destroy_vertex_buffer)
+#al5primitives.al_destroy_vertex_buffer
+Destroys a vertex buffer. Does nothing if passed @nil.
+@seealso(ALLEGRO_VERTEX_BUFFERptr) @seealso(al_create_vertex_buffer)
+#al5primitives.al_lock_vertex_buffer
+Locks a vertex buffer so you can access its data. Will return @nil if the parameters are invalid, if reading is requested from a write only buffer, or if the buffer is already locked.
+@param(buffer Vertex buffer to lock.)
+@param(offset Vertex index of the start of the locked range.)
+@param(length How many vertices to lock.)
+@param(flags @code(ALLEGRO_LOCK_READONLY), @code(ALLEGRO_LOCK_WRITEONLY) or @code(ALLEGRO_LOCK_READWRITE).)
+@seealso(ALLEGRO_VERTEX_BUFFERptr) @seealso(al_unlock_vertex_buffer)
+#al5primitives.al_unlock_vertex_buffer
+Unlocks a previously locked vertex buffer.
+@seealso(ALLEGRO_VERTEX_BUFFERptr) @seealso(al_lock_vertex_buffer)
+#al5primitives.al_get_vertex_buffer_size
+Returns the size of the vertex buffer.
+@seealso(ALLEGRO_VERTEX_BUFFERptr)
+
+#al5primitives.al_create_index_buffer
+Creates an index buffer. Can return @nil if the buffer could not be created (e.g. the system only supports write-only buffers).
+
+@bold(Note)
+
+This is an advanced feature, often unsupported on lower-end video cards. Be extra mindful of this function failing and make arrangements for fallback drawing functionality or a nice error message for users with such lower-end cards.
+@param(index_size Size of the index in bytes. Supported sizes are 2 for short integers and 4 for integers.)
+@param(initial_data Memory buffer to copy from to initialize the index buffer. Can be @nil, in which case the buffer is uninitialized.)
+@param(num_indices Number of indices the buffer will hold.)
+@param(flags A combination of the @link(ALLEGRO_PRIM_BUFFER_FLAGS) flags specifying how this buffer will be created.)
+@seealso(ALLEGRO_INDEX_BUFFERptr) @seealso(al_destroy_index_buffer)
+#al5primitives.al_destroy_index_buffer
+Destroys an index buffer. Does nothing if passed @nil.
+@seealso(ALLEGRO_INDEX_BUFFERptr) @seealso(al_create_index_buffer)
+#al5primitives.al_lock_index_buffer
+Locks an index buffer so you can access its data. Will return @nil if the parameters are invalid, if reading is requested from a write only buffer and if the buffer is already locked.
+@param(buffer Index buffer to lock.)
+@param(offset Element index of the start of the locked range.)
+@param(length How many indices to lock.)
+@param(flags @code(ALLEGRO_LOCK_READONLY), @code(ALLEGRO_LOCK_WRITEONLY) or @code(ALLEGRO_LOCK_READWRITE).)
+@seealso(ALLEGRO_INDEX_BUFFERptr) @seealso(al_unlock_index_buffer)
+#al5primitives.al_unlock_index_buffer
+Unlocks a previously locked index buffer.
+@seealso(ALLEGRO_INDEX_BUFFERptr) @seealso(al_lock_index_buffer)
+#al5primitives.al_get_index_buffer_size
+Returns the size of the index buffer
+@seealso(ALLEGRO_INDEX_BUFFERptr)
+
+#al5primitives.al_triangulate_polygon
+Divides a simple polygon into triangles, with zero or more other simple polygons subtracted from it - the holes. The holes cannot touch or intersect with the outline of the main polygon. Simple means the polygon does not have to be convex but must not be self-overlapping.
+@param(vertices Interleaved array of (x, y) vertex coordinates for each of the polygons, including holes.)
+@param(vertex_stride Distance (in bytes) between successive pairs of vertices in the array.)
+@param(vertex_counts Number of vertices for each polygon. The number of vertices in the main polygon is given by vertex_counts[0] and must be at least three. Subsequent elements indicate the number of vertices in each hole. The array must be terminated with an element with value zero.)
+@param(emit_triangle A function to be called for every set of three points that form a triangle. The function is passed the indices of the points in @code(vertices) and  @code(userdata).)
+@param(userdata Arbitrary data to be passed to emit_triangle.)
+@seealso(ALLEGRO_EMIT_TRIANGLE_PROC) @seealso(al_draw_filled_polygon_with_holes)
+
+#al5primitives.al_draw_soft_triangle
+Draws a triangle using the software rasterizer and user supplied pixel functions. For help in understanding what these functions do, see the implementation of the various shading routines in @code(addons/primitives/tri_soft.c). The triangle is drawn in two segments, from top to bottom. The segments are deliniated by the vertically middle vertex of the triangle. One of the two segments may be absent if two vertices are horizontally collinear.
+
+@bold(Parámetros sin terminar de describir.)  Alguna explicación habrá que ponerla en la descripción del tipo de parámetro.
+@param(v1 The first vertex of the triangle.)
+@param(v2 The second vertex of the triangle.)
+@param(v3 The third vertex of the triangle.)
+@param(state A pointer to a user supplied struct, this struct will be passed to all the pixel functions.)
+@param(init Called once per call before any drawing is done. The three points passed to it may be altered by clipping.)
+@param(first Called twice per call, once per triangle segment.)
+@param(step Called once per scanline. The last parameter is set to 1 if the step is a minor step, and 0 if it is a major step.)
+@param(draw Called once per scanline.)
+@seealso(al_draw_triangle)
+#al5primitives.al_draw_soft_line
+Draws a line using the software rasterizer and user supplied pixel functions. For help in understanding what these functions do, see the implementation of the various shading routines in @code(addons/primitives/line_soft.c). The line is drawn top to bottom.
+@param(v1 Initial vertex of the line.)
+@param(v2 Final vertex of the line.)
+@param(state A pointer to a user supplied struct, this struct will be passed to all the pixel functions.)
+@param(first Called before drawing the first pixel of the line.)
+@param(step Called once per pixel. The second parameter is set to 1 if the step is a minor step, and 0 if this step is a major step. Minor steps are taken only either in x or y directions. Major steps are taken in both directions diagonally. In all cases, the absolute value of the change in coordinate is at most 1 in either direction.)
+@param(draw Called once per pixel.)
+@seealso(al_draw_line)
+
+#al5primitives.al_draw_line
+Draws a line segment between two points.
+@param(x1 X start point of the line.)
+@param(y1 Y start point of the line.)
+@param(x2 X end point of the line.)
+@param(y2 Y end point of the line.)
+@param(color Color of the line.)
+@param(thickness Thickness of the line, pass <= 0 to draw hairline lines.)
+@seealso(al_draw_soft_line)
+#al5primitives.al_draw_triangle
+@param(x1 X coordinate of the first vertex.)
+@param(y1 Y coordinate of the first vertex.)
+@param(x2 X coordinate of the second vertex.)
+@param(y2 Y coordinate of the second vertex.)
+@param(x3 X coordinate of the third vertex.)
+@param(y3 Y coordinate of the third vertex.)
+@param(color Color of the triangle.)
+@param(thickness Thickness of the lines, pass <= 0 to draw hairline lines.)
+@seealso(al_draw_filled_triangle) @seealso(al_draw_soft_triangle)
+#al5primitives.al_draw_rectangle
+Draws an outlined rectangle.
+@param(x1 Left side of the rectangle.)
+@param(y1 Top side of the rectangle.)
+@param(x2 Right side of the rectangle.)
+@param(y2 Bottom side of the rectangle.)
+@param(color Color of the rectangle.)
+@param(thickness Thickness of the lines, pass <= 0 to draw hairline lines.)
+@seealso(al_draw_filled_rectangle) @seealso(al_draw_rounded_rectangle)
+#al5primitives.al_draw_rounded_rectangle
+Draws an outlined rounded rectangle.
+@param(x1 Left side of the rectangle.)
+@param(y1 Top side of the rectangle.)
+@param(x2 Right side of the rectangle.)
+@param(y2 Bottom side of the rectangle.)
+@param(rx Horizontal radius of the round.)
+@param(ry Vertical radius of the round.)
+@param(color Color of the rectangle.)
+@param(thickness Thickness of the lines, pass <= 0 to draw hairline lines.)
+@seealso(al_draw_filled_rounded_rectangle) @seealso(al_draw_rectangle)
+
+#al5primitives.al_calculate_arc
+When @code(thickness <= 0) this function computes positions of num_points regularly spaced points on an elliptical arc. When @code(thickness > 0) this function computes two sets of points, obtained as follows: the first set is obtained by taking the points computed in the @code(thickness <= 0) case and shifting them by @code(thickness / 2) outward, in a direction perpendicular to the arc curve. The second set is the same, but shifted @code(thickness / 2) inward relative to the arc. The two sets of points are interleaved in the destination buffer (i.e. the first pair of points will be collinear with the arc center, the first point of the pair will be farther from the center than the second point; the next pair will also be collinear, but at a different angle and so on).
+
+The destination buffer dest is interpreted as a set of regularly spaced pairs of floats, each pair holding the coordinates of the corresponding point on the arc. The two floats in the pair are adjacent, and the distance (in bytes) between the addresses of the first float in two successive pairs is @code(stride). For example, if you have a tightly packed array of floats with no spaces between pairs, then stride will be exactly @code(2 * sizeof (float)).
+
+Example with @code(thickness <= 0):
+@longcode(%
+CONST
+  NumPoints = 4;
+VAR
+  Points: ARRAY [0..NumPoints-1, 0..1] OF AL_FLOAT;
+BEGIN
+  al_calculate_arc (
+    Points,
+    0, 0,			{ Center }
+    10, 10,			{ Radii  }
+    0, ALLEGRO_PI / 2,		{ Angles }
+    0
+  );
+END;
+%)
+Example with @code(thickness > 0):
+@longcode(%
+CONST
+  NumPoints = 4;
+VAR
+  Points: ARRAY [0..(NumPoints * 2)-1, 0..1] OF AL_FLOAT;
+BEGIN
+  al_calculate_arc (
+    Points,
+    0, 0,			{ Center }
+    10, 10,			{ Radii  }
+    0, ALLEGRO_PI / 2,		{ Angles }
+    2
+  );
+END;
+%)
+@param(dest The destination buffer.)
+@param(cx X coordinate of the center of the arc.)
+@param(cy Y coordinate of the center of the arc.)
+@param(rx Horizontal radius of the arc.)
+@param(ry Vertical radius of the arc.)
+@param(start_theta The initial angle from which the arc is calculated in radians.)
+@param(delta_theta Angular span of the arc in radians (pass a negative number to switch direction).)
+@param(thickness Thickness of the arc.)
+@seealso(al_calculate_arc_ex) @seealso(al_draw_arc) @seealso(al_calculate_spline) @seealso(al_calculate_ribbon)
+#al5primitives.al_calculate_arc_ex
+Same than @link(al_calculate_arc) but using a pointer instead of an array.
+
+Example with @code(thickness <= 0):
+@longcode(%
+CONST
+  NumPoints = 4;
+VAR
+  Points: ARRAY [0..NumPoints-1, 0..1] OF AL_FLOAT;
+BEGIN
+  al_calculate_arc_ex (
+    @points[0, 0],
+    2 * sizeof (AL_FLOAT),
+    0, 0,			{ Center }
+    10, 10,			{ Radii  }
+    0, ALLEGRO_PI / 2,		{ Angles }
+    0,
+    NumPoints
+  );
+END;
+%)
+Example with @code(thickness > 0):
+@longcode(%
+CONST
+  NumPoints = 4;
+VAR
+  Points: ARRAY [0..(NumPoints * 2)-1, 0..1] OF AL_FLOAT;
+BEGIN
+  al_calculate_arc_ex (
+    @points[0, 0],
+    2 * sizeof (AL_FLOAT),
+    0, 0,			{ Center }
+    10, 10,			{ Radii  }
+    0, ALLEGRO_PI / 2,		{ Angles }
+    2,
+    NumPoints
+  );
+END;
+%)
+@param(dest The destination buffer.)
+@param(stride Distance (in bytes) between starts of successive pairs of points.)
+@param(cx X coordinate of the center of the arc.)
+@param(cy Y coordinate of the center of the arc.)
+@param(rx Horizontal radius of the arc.)
+@param(ry Vertical radius of the arc.)
+@param(start_theta The initial angle from which the arc is calculated in radians.)
+@param(delta_theta Angular span of the arc in radians (pass a negative number to switch direction).)
+@param(thickness Thickness of the arc.)
+@param(num_points The number of points to calculate.)
+@seealso(al_calculate_arc) @seealso(al_draw_arc) @seealso(al_calculate_spline) @seealso(al_calculate_ribbon)
+#al5primitives.al_draw_circle
+Draws an outlined circle.
+@param(cx X coordinate of the center of the circle.)
+@param(cy Y coordinate of the center of the circle.)
+@param(r Radius of the circle.)
+@param(color Color of the circle.)
+@param(thickness Thickness of the circle, pass <= 0 to draw a hairline circle.)
+@seealso(al_draw_filled_circle) @seealso(al_draw_ellipse)
+#al5primitives.al_draw_ellipse
+Draws an outlined ellipse.
+@param(cx X coordinate of the center of the ellipse.)
+@param(cy Y coordinate of the center of the ellipse.)
+@param(rx Horizontal radius of the ellipse.)
+@param(ry Vertical radius of the ellipse.)
+@param(color Color of the ellipse.)
+@param(thickness Thickness of the ellipse, pass <= 0 to draw a hairline circle.)
+@seealso(al_draw_filled_ellipse) @seealso(al_draw_circle)
+#al5primitives.al_draw_arc
+Draws an arc.
+@param(cx X coordinate of the center of the arc.)
+@param(cy Y coordinate of the center of the arc.)
+@param(r Radius of the arc.)
+@param(start_theta The initial angle from which the arc is calculated in radians.)
+@param(delta_theta Angular span of the arc in radians (pass a negative number to switch direction).)
+@param(color Color of the arc.)
+@param(thickness Thickness of the circle, pass <= 0 to draw a hairline circle.)
+@seealso(al_calculate_arc) @seealso(al_draw_elliptical_arc)
+#al5primitives.al_draw_elliptical_arc
+Draws an elliptical arc.
+@param(cx X coordinate of the center of the arc.)
+@param(cy Y coordinate of the center of the arc.)
+@param(rx Horizontal radius of the arc.)
+@param(ry Vertical radius of the arc.)
+@param(start_theta The initial angle from which the arc is calculated in radians.)
+@param(delta_theta Angular span of the arc in radians (pass a negative number to switch direction).)
+@param(color Color of the arc.)
+@param(thickness Thickness of the arc, pass <= 0 to draw a hairline circle.)
+@seealso(al_calculate_arc) @seealso(al_draw_arc)
+#al5primitives.al_draw_pieslice
+Draws a pieslice (outlined circular sector).
+@param(cx X coordinate of the center of the pieslice.)
+@param(cy Y coordinate of the center of the pieslice.)
+@param(r Radius of the pieslice.)
+@param(start_theta The initial angle from which the arc is calculated in radians.)
+@param(delta_theta Angular span of the arc in radians (pass a negative number to switch direction).)
+@param(color Color of the pieslice.)
+@param(thickness Thickness of the pieslice, pass <= 0 to draw a hairline circle.)
+@seealso(al_draw_filled_pieslice)
+
+#al5primitives.al_calculate_spline
+Calculates a Bézier spline given 4 control points. If @code(thickness <= 0), then num_segments of points are required in the destination, otherwise twice as many are needed. The destination buffer should consist of regularly spaced (by distance of @code(stride) bytes) doublets of floats, corresponding to x and y coordinates of the vertices.
+@param(dest The destination buffer.)
+@param(stride Distance (in bytes) between starts of successive pairs of coordinates.)
+@param(points An array of 4 pairs of coordinates of the 4 control points.)
+@param(thickness Thickness of the spline ribbon.)
+@param(num_segments The number of points to calculate.)
+@seealso(al_draw_spline) @seealso(al_calculate_arc) @seealso(al_calculate_ribbon) @seealso(al_draw_spline)
+#al5primitives.al_draw_spline
+Draws a Bézier spline given 4 control points.
+@param(points An array of 4 pairs of coordinates of the 4 control points.)
+@param(color Color of the spline.)
+@param(thickness Thickness of the spline, pass <= 0 to draw a hairline spline.)
+@seealso(al_calculate_spline)
+
+#al5primitives.al_calculate_ribbon
+Calculates a ribbon given an array of points. The ribbon will go through all of the passed points. If @code(thickness <= 0), then @code(num_segments) of points are required in the destination buffer, otherwise twice as many are needed. The destination and the points buffer should consist of regularly spaced doublets of floats, corresponding to x and y coordinates of the vertices.
+@param(dest Pointer to the destination buffer.)
+@param(dest_stride Distance (in bytes) between starts of successive pairs of coordinates in the destination buffer.)
+@param(points An array of pairs of coordinates for each point.)
+@param(points_stride Distance (in bytes) between starts of successive pairs of coordinates in the points buffer.)
+@param(thickness Thickness of the spline ribbon.)
+@param(num_segments The number of points to calculate.)
+@seealso(al_draw_ribbon) @seealso(al_calculate_arc) @seealso(al_calculate_spline) @seealso(al_draw_ribbon)
+#al5primitives.al_draw_ribbon
+Draws a ribbon given an array of points. The ribbon will go through all of the passed points. The points buffer should consist of regularly spaced doublets of floats, corresponding to x and y coordinates of the vertices.
+@param(points An array of coordinate pairs (x and y) for each point.)
+@param(points_stride Distance (in bytes) between starts of successive pairs of coordinates in the points buffer.)
+@param(color Color of the spline.)
+@param(thickness Thickness of the spline, pass <= 0 to draw hairline spline.)
+@param(num_segments The number of segments.)
+@seealso(al_calculate_ribbon)
+
+#al5primitives.al_draw_filled_triangle
+Draws a filled triangle.
+@param(x1 X coordinate of the first vertex.)
+@param(y1 Y coordinate of the first vertex.)
+@param(x2 X coordinate of the second vertex.)
+@param(y2 Y coordinate of the second vertex.)
+@param(x3 X coordinate of the third vertex.)
+@param(y3 Y coordinate of the third vertex.)
+@param(color Color of the triangle.)
+@seealso(al_draw_triangle)
+#al5primitives.al_draw_filled_rectangle
+Draws a filled rectangle.
+@param(x1 Left side of the rectangle.)
+@param(y1 Top side of the rectangle.)
+@param(x2 Right side of the rectangle.)
+@param(y2 Bottom side of the rectangle.)
+@param(color Color of the rectangle.)
+@seealso(al_draw_rectangle) @seealso(al_draw_filled_rounded_rectangle)
+#al5primitives.al_draw_filled_ellipse
+Draws a filled ellipse.
+@param(cx X coordinate of the center of the ellipse.)
+@param(cy Y coordinate of the center of the ellipse.)
+@param(rx Horizontal radius of the ellipse.)
+@param(ry Vertical radius of the ellipse.)
+@param(color Color of the ellipse.)
+@seealso(al_draw_ellipse) @seealso(al_draw_filled_circle)
+#al5primitives.al_draw_filled_circle
+Draws a filled circle.
+@param(cx X coordinate of the center of the circle.)
+@param(cy Y coordinate of the center of the circle.)
+@param(r Radius of the circle.)
+@param(color Color of the circle.)
+@seealso(al_draw_circle) @seealso(al_draw_filled_ellipse)
+#al5primitives.al_draw_filled_pieslice
+Draws a filled pieslice (filled circular sector).
+@param(cx X coordinate of the center of the pieslice.)
+@param(cy Y coordinate of the center of the pieslice.)
+@param(r Radius of the pieslice.)
+@param(start_theta The initial angle from which the arc is calculated in radians.)
+@param(delta_theta Angular span of the arc in radians (pass a negative number to switch direction).)
+@param(color Color of the pieslice.)
+@seealso(al_draw_pieslice)
+#al5primitives.al_draw_filled_rounded_rectangle
+Draws a filled rounded rectangle.
+@param(x1 Left side of the rectangle.)
+@param(y1 Top side of the rectangle.)
+@param(x2 Right side of the rectangle.)
+@param(y2 Bottom side of the rectangle.)
+@param(rx Horizontal radius of the round.)
+@param(ry Vertical radius of the round.)
+@param(color Color of the rectangle.)
+@seealso(al_draw_rounded_rectangle) @seealso(al_draw_filled_rectangle)
+
+#al5primitives.al_draw_polyline
+Draws a series of line segments.
+@param(vertices Interleaved array of (x, y) vertex coordinates.)
+@param(join_style Member of @link(ALLEGRO_LINE_JOIN) specifying how to render the joins between line segments.)
+@param(cap_style Member of @link(ALLEGRO_LINE_CAP) specifying how to render the end caps.)
+@param(color Color of the line.)
+@param(thickness Thickness of the line, pass <= 0 to draw hairline lines.)
+@param(miter_limit Parameter for miter join style.)
+@seealso(al_draw_polygon) @seealso(ALLEGRO_LINE_JOIN) @seealso(ALLEGRO_LINE_CAP)
+#al5primitives.al_draw_polyline_ex
+An extended version of @link(al_draw_polyline).
+
+The stride is normally @code(2 * sizeof (float)) but may be more if the vertex coordinates are in an array of some structure type, e.g.
+@longcode(%
+TYPE
+  VertexInfo = RECORD
+    x, y: AL_FLOAT;
+    id: INTEGER;
+  END;
+
+PROCEDURE MyDraw (Verts: ARRAY OF VertexInfo; Clr: ALLEGRO_COLOR);
+BEGIN
+  al_draw_polyline_ex (
+    POINTER (@Verts[0]),
+    SIZEOF (VertexInfo),
+    Length (Verts),
+    ALLEGRO_LINE_JOIN_NONE,
+    ALLEGRO_LINE_CAP_NONE,
+    Clr,
+    1, 1
+  )
+END;
+%)
+The stride may also be negative if the vertices are stored in reverse order.
+@param(vertices Interleaved array of (x, y) vertex coordinates.)
+@param(vertex_stride the number of bytes between pairs of vertices (the stride).)
+@param(vertex_count Number of vertices in the array.)
+@param(join_style Member of @link(ALLEGRO_LINE_JOIN) specifying how to render the joins between line segments.)
+@param(cap_style Member of @link(ALLEGRO_LINE_CAP) specifying how to render the end caps.)
+@param(color Color of the line.)
+@param(thickness Thickness of the line, pass <= 0 to draw hairline lines.)
+@param(miter_limit Parameter for miter join style.)
+@seealso(al_draw_polygon) @seealso(ALLEGRO_LINE_JOIN) @seealso(ALLEGRO_LINE_CAP)
+
+#al5primitives.al_draw_polygon
+Draws an unfilled polygon. This is the same as passing @code(ALLEGRO_LINE_CAP) to @link(al_draw_polyline).
+@param(vertex Interleaved array of (x, y) vertex coordinates.)
+@param(join_style Member of @link(ALLEGRO_LINE_JOIN) specifying how to render the joins between line segments.)
+@param(color Color of the line.)
+@param(thickness Thickness of the line, pass <= 0 to draw hairline lines.)
+@param(miter_limit Parameter for miter join style.)
+@seealso(al_draw_filled_polygon) @seealso(al_draw_polyline) @seealso(ALLEGRO_LINE_JOIN)
+#al5primitives.al_draw_filled_polygon
+Draw a filled, simple polygon. Simple means it does not have to be convex but must not be self-overlapping.
+
+When the y-axis is facing downwards (the usual), the coordinates must be ordered anti-clockwise.
+@param(vertices Interleaved array of (x, y) vertex coordinates.)
+@param(color Color of the filled polygon.)
+@seealso(al_draw_polygon) @seealso(al_draw_filled_polygon_with_holes)
+#al5primitives.al_draw_filled_polygon_with_holes
+Draws a filled simple polygon with zero or more other simple polygons subtracted from it - the holes. The holes cannot touch or intersect with the outline of the filled polygon.
+
+All hole vertices must use the opposite order (clockwise with y down) of the polygon vertices. All hole vertices must be inside the main polygon and no hole may overlap the main polygon.
+
+For example:
+@longcode(%
+VAR
+  Vertices: ARRAY [0..13] OF AL_FLOAT = (
+      0,   0, { Filled polygon, upper left corner. }
+      0, 100, { Filled polygon, lower left corner. }
+    100, 100, { Filled polygon, lower right corner. }
+    100,   0, { Filled polygon, upper right corner. }
+     10,  10, { Hole, upper left. }
+     90,  10, { Hole, upper right. }
+     90,  90  { Hole, lower right. }
+  );
+  VertexCounts: ARRAY [0..2] OF AL_INT = (
+    4, { number of vertices for filled polygon. }
+    3, { number of vertices for hole. }
+    0  { terminator. }
+  );
+%)
+There are 7 vertices: four for an outer square from (0, 0) to (100, 100) in anti-clockwise order, and three more for an inner triangle in clockwise order. The outer main polygon uses vertices 0 to 3 (inclusive) and the hole uses vertices 4 to 6 (inclusive).
+@param(vertices Interleaved array of (x, y) vertex coordinates for each of the polygons, including holes.)
+@param(vertex_counts Number of vertices for each polygon. The number of vertices in the filled polygon is given by @code(vertex_counts[0]) and must be at least three. Subsequent elements indicate the number of vertices in each hole. The array must be terminated with an element with value zero.)
+@param(color Color of the filled polygon.)
+@seealso(al_draw_filled_polygon) @seealso(al_draw_filled_polygon_with_holes) @seealso(al_triangulate_polygon)
 
 
 
@@ -3735,6 +6090,7 @@ Initializes the TTF addon.  Call this after @link(al_init_font_addon) to make @l
 Unloads the TTF addon. You normally don't need to call this.
 #al5ttf.al_get_allegro_ttf_version
 Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version).
+
 #al5ttf.al_load_ttf_font
 Loads a TrueType font from a file using the FreeType library.  Quoting from the FreeType FAQ this means support for many different font formats:
 
@@ -3742,19 +6098,23 @@ Loads a TrueType font from a file using the FreeType library.  Quoting from the 
 
 The @code(size) parameter determines the size the font will be rendered at, specified in pixels. The standard font size is measured in @italic(units per EM), if you instead want to specify the size as the total height of glyphs in pixels, pass it as a negative value.
 
-@bold(Note:) If you want to display text at multiple sizes, load the font multiple times with different size parameters.
+@bold(Note)
+
+If you want to display text at multiple sizes, load the font multiple times with different size parameters.
 
 The following flags are supported:
 @unorderedlist(
-  @item(@code(ALLEGRO_TTF_NO_KERNING) Do not use any kerning even if the font file supports it.)
-  @item(@code(ALLEGRO_TTF_MONOCHROME) Load as a monochrome font @(which means no anti-aliasing of the font is done@).)
-  @item(@code(ALLEGRO_TTF_NO_AUTOHINT) Disable the Auto Hinter which is enabled by default in newer versions of FreeType.)
+  @item(@code(ALLEGRO_TTF_NO_KERNING) - Do not use any kerning even if the font file supports it.)
+  @item(@code(ALLEGRO_TTF_MONOCHROME) - Load as a monochrome font @(which means no anti-aliasing of the font is done@).)
+  @item(@code(ALLEGRO_TTF_NO_AUTOHINT) - Disable the Auto Hinter which is enabled by default in newer versions of FreeType.)
 )
 @seealso(al_init_ttf_addon) @seealso(al_load_ttf_font_f)
 #al5ttf.al_load_ttf_font_f
 Like @link(al_load_ttf_font), but the font is read from the file handle. The @code(filename) is only used to find possible additional files next to a font file.
 
-@bold(Note:) The file handle is owned by the returned @code(ALLEGRO_FONTptr) object and must not be freed by the caller, as FreeType expects to be able to read from it at a later time.
+@bold(Note)
+
+The file handle is owned by the returned @code(ALLEGRO_FONTptr) object and must not be freed by the caller, as FreeType expects to be able to read from it at a later time.
 #al5ttf.al_load_ttf_font_stretch
 Like @link(al_load_ttf_font), except it takes separate width (@code(w)) and height (@code(h)) parameters instead of a single size parameter.
 
@@ -3766,5 +6126,83 @@ As with @link(al_load_ttf_font), the height may be a negative value to specify t
 #al5ttf.al_load_ttf_font_stretch_f
 Like @link(al_load_ttf_font_stretch), but the font is read from the file handle. The @code(filename) is only used to find possible additional files next to a font file.
 
-@bold(Note:) The file handle is owned by the returned @code(ALLEGRO_FONTptr) object and must not be freed by the caller, as FreeType expects to be able to read from it at a later time.
+@bold(Note)
+
+The file handle is owned by the returned @code(ALLEGRO_FONTptr) object and must not be freed by the caller, as FreeType expects to be able to read from it at a later time.
 @seealso(al_load_ttf_font_stretch)
+
+
+
+#al5video.ALLEGRO_EVENT_VIDEO_FRAME_SHOW
+This event is sent when it is time to show a new frame. Once you receive this event, you can draw the current frame (as returned by @link(al_get_video_frame)). @code(al_get_video_frame) will continue returning the same frame until the next @code(ALLEGRO_EVENT_VIDEO_FRAME_SHOW) is sent.
+
+@code(user.data1) will contain a pointer to the video which generated the event.
+#al5video.ALLEGRO_EVENT_VIDEO_FINISHED
+This event is sent when the video is finished. Depending on the backend, it may be possible to seek to an earlier part of the video and set the video to play to resume playback.
+
+@code(user.data1) will contain a pointer to the video which generated the event.
+#al5video.ALLEGRO_VIDEO_POSITION_TYPE
+Used with @link(al_get_video_position) to specify which position to retrieve. If these get out of sync, audio and video may be out of sync in the display of the video.
+@value(ALLEGRO_VIDEO_POSITION_ACTUAL The amount of time the video has been playing. If the video has audio then this value can be ahead of ALLEGRO_VIDEO_POSITION_VIDEO_DECODE when video decoding lags.)
+@value(ALLEGRO_VIDEO_POSITION_VIDEO_DECODE The amount of video that has been decoded. This may lag behind the "actual" and audio positions if decoding is slower than realtime.)
+@value(ALLEGRO_VIDEO_POSITION_AUDIO_DECODE The amount of audio that has been decoded. This may be the same as ALLEGRO_VIDEO_POSITION_ACTUAL if audio decode is driving the position, which is common to keep audio and video in sync.)
+
+#al5video.al_init_video_addon
+Initializes the video addon.
+#al5video.al_shutdown_video_addon
+Shuts down the video addon. This is done automatically at program exit, but can be called any time the user wishes as well.
+#al5video.al_get_allegro_video_version
+Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version).
+
+#al5video.al_open_video
+Reads a video file. This does not start streaming yet but reads the meta info so you can query e.g. the size or audio rate.
+@seealso(al_close_video) @seealso(al_start_video)
+#al5video.al_close_video
+Closes the video and frees all allocated resources. The video pointer is invalid after the function returns.
+@seealso(al_open_video)
+#al5video.al_start_video
+Starts streaming the video from the beginning.
+@seealso(al_open_video) @seealso(al_start_video_with_voice) @seealso(al_get_video_event_source) @seealso(al_set_voice_playing)
+#al5video.al_start_video_with_voice
+Like @link(al_start_video) but audio is routed to the provided voice.
+#al5video.al_get_video_event_source
+Gets an event source for the video. The possible events are @link(ALLEGRO_EVENT_VIDEO_FRAME_SHOW) and @link(ALLEGRO_EVENT_VIDEO_FINISHED).
+#al5video.al_set_video_playing
+Paused or resumes playback.
+@seealso(al_is_video_playing)
+#al5video.al_is_video_playing
+Returns @true if the video is currently playing.
+#al5video.al_get_video_audio_rate
+Returns the audio rate of the video, in Hz.
+#al5video.al_get_video_fps
+Returns the speed of the video in frames per second. Often this will not be an integer value.
+#al5video.al_get_video_scaled_width
+Returns the width with which the video frame should be drawn. Videos often do not use square pixels, so this will may return a value larger than the width of the frame bitmap.
+@seealso(al_get_video_frame)
+#al5video.al_get_video_scaled_height
+Returns the height with which the video frame should be drawn. Videos often do not use square pixels, so this will may return a value larger than the height of the frame bitmap.
+@seealso(al_get_video_frame)
+#al5video.al_get_video_frame
+Returns the current video frame. The bitmap is owned by the video so do not attempt to free it. The bitmap will stay valid until the next call to @code(al_get_video_frame).
+
+Videos often do not use square pixels so the recommended way to draw a video frame would be using code like this:
+@longcode(%
+CONST
+  Scale: 1.0; { Adjust this to fit your target bitmap dimensions. }
+VAR
+  Frame: ALLEGRO_BITMAPptr;
+  sw, sh, dw, dh: REAL;
+BEGIN
+  frame = al_get_video_frame (Video);
+  sw = al_get_bitmap_width (Frame);
+  sh = al_get_bitmap_height (Frame);
+  dw = Scale * al_get_video_scaled_width (Video);
+  dh = Scale * al_get_video_scaled_height (Video);
+  al_draw_scaled_bitmap (Frame, 0, 0, sw, sh, 0, 0, dw, dh, 0);
+END;
+%)
+@seealso(al_get_video_scaled_width) @seealso(al_get_video_scaled_height)
+#al5video.al_get_video_position
+Returns the current position of the video stream in seconds since the beginning. The parameter is one of the @link(ALLEGRO_VIDEO_POSITION_TYPE) constants.
+#al5video.al_seek_video
+Seeks to a different position in the video. Currently only seeking to the beginning of the video is supported.

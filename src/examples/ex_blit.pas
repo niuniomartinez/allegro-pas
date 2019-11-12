@@ -259,7 +259,7 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
 	Tick;
 	NeedDraw := FALSE;
       END;
-      al_wait_for_event (EventQueue, Event);
+      al_wait_for_event (EventQueue, @Event);
       CASE Event.ftype OF
 	ALLEGRO_EVENT_DISPLAY_CLOSE:
 	  EXIT;

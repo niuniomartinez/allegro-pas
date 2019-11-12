@@ -1021,7 +1021,7 @@ CONST
             Redraw := FALSE;
          END;
 
-         al_wait_for_event (Queue, Event);
+         al_wait_for_event (Queue, @Event);
 
          IF Event.timer.source = RefreshTimer THEN
             Redraw := true

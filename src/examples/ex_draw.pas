@@ -280,7 +280,7 @@ PROGRAM ex_draw;
         NeedDraw := FALSE
       END;
 
-      al_wait_for_event (Ex.Queue, Event);
+      al_wait_for_event (Ex.Queue, @Event);
 
       CASE Event.ftype OF
       ALLEGRO_EVENT_DISPLAY_CLOSE:

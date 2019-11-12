@@ -89,7 +89,7 @@ BEGIN
   LogWriteLn ('Press digits to play sounds, space to stop sounds, Escape to quit.');
   EndLoop := FALSE;
   REPEAT
-    al_wait_for_event (EventQueue, Event);
+    al_wait_for_event (EventQueue, @Event);
     CASE Event.ftype OF
     ALLEGRO_EVENT_KEY_CHAR:
       BEGIN

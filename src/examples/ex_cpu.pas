@@ -88,7 +88,7 @@ BEGIN
       Redraw := FALSE;
     END;
 
-    al_wait_for_event (Queue, Event);
+    al_wait_for_event (Queue, @Event);
     CASE event.ftype OF
     ALLEGRO_EVENT_KEY_DOWN:
       IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN Done := TRUE;

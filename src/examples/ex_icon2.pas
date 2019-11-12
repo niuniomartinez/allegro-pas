@@ -79,7 +79,7 @@ BEGIN
 
   WHILE TRUE DO
   BEGIN
-    al_wait_for_event (Queue, Event);
+    al_wait_for_event (Queue, @Event);
 
     IF (Event.ftype = ALLEGRO_EVENT_KEY_DOWN)
     AND (Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE) THEN

@@ -101,8 +101,7 @@ INTERFACE
 
   TYPE
     ALLEGRO_TIMEOUT = RECORD
-    (*** @exclude *)
-      __pad1__, __pad2__: AL_UINT64;
+      __pad1__, __pad2__: AL_UINT64; {**<@exclude }
     END;
 
 
@@ -233,18 +232,18 @@ INTERFACE
     ALLEGRO_BITMAPptr = AL_POINTER;
 
   CONST
-    ALLEGRO_MEMORY_BITMAP            = $0001; (***<@exclude *)
-    _ALLEGRO_KEEP_BITMAP_FORMAT      = $0002; (***<@exclude now a bitmap loader flag *)
-    ALLEGRO_FORCE_LOCKING            = $0004; (***<@exclude no longer honoured *)
-    ALLEGRO_NO_PRESERVE_TEXTURE      = $0008; (***<@exclude *)
-    _ALLEGRO_ALPHA_TEST              = $0010; (***<@exclude now a render state flag *)
-    _ALLEGRO_INTERNAL_OPENGL         = $0020; (***<@exclude *)
-    ALLEGRO_MIN_LINEAR               = $0040; (***<@exclude *)
-    ALLEGRO_MAG_LINEAR               = $0080; (***<@exclude *)
-    ALLEGRO_MIPMAP                   = $0100; (***<@exclude *)
-    _ALLEGRO_NO_PREMULTIPLIED_ALPHA  = $0200; (***<@exclude now a bitmap loader flag *)
-    ALLEGRO_VIDEO_BITMAP             = $0400; (***<@exclude *)
-    ALLEGRO_CONVERT_BITMAP           = $1000; (***<@exclude *)
+    ALLEGRO_MEMORY_BITMAP            = $0001; {**<@exclude }
+    _ALLEGRO_KEEP_BITMAP_FORMAT      = $0002; {**<@exclude now a bitmap loader flag }
+    ALLEGRO_FORCE_LOCKING            = $0004; {**<@exclude no longer honoured }
+    ALLEGRO_NO_PRESERVE_TEXTURE      = $0008; {**<@exclude }
+    _ALLEGRO_ALPHA_TEST              = $0010; {**<@exclude now a render state flag }
+    _ALLEGRO_INTERNAL_OPENGL         = $0020; {**<@exclude }
+    ALLEGRO_MIN_LINEAR               = $0040; {**<@exclude }
+    ALLEGRO_MAG_LINEAR               = $0080; {**<@exclude }
+    ALLEGRO_MIPMAP                   = $0100; {**<@exclude }
+    _ALLEGRO_NO_PREMULTIPLIED_ALPHA  = $0200; {**<@exclude now a bitmap loader flag }
+    ALLEGRO_VIDEO_BITMAP             = $0400; {**<@exclude }
+    ALLEGRO_CONVERT_BITMAP           = $1000; {**<@exclude }
 
   PROCEDURE al_set_new_bitmap_format (format: ALLEGRO_PIXEL_FORMAT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
@@ -322,8 +321,8 @@ INTERFACE
 
   CONST
   (* Flags for the blitting functions.  Documented at al_draw_bitmap. *)
-    ALLEGRO_FLIP_HORIZONTAL = $00001; (***<@exclude *)
-    ALLEGRO_FLIP_VERTICAL   = $00002; (***<@exclude *)
+    ALLEGRO_FLIP_HORIZONTAL = $00001; {**<@exclude }
+    ALLEGRO_FLIP_VERTICAL   = $00002; {**<@exclude }
 
 (* Blitting *)
   PROCEDURE al_draw_bitmap (bitmap: ALLEGRO_BITMAPptr; dx, dy: AL_FLOAT; flags: AL_INT);
@@ -376,7 +375,7 @@ INTERFACE
 	 UNICODESTRING support. }
 
   TYPE
-  (*** @exclude *)
+  {** @exclude }
     _al_tagbstring = RECORD
       mlen, slen: AL_INT;
       data: AL_VOIDptr;
@@ -488,6 +487,8 @@ INTERFACE
     END;
 
   CONST
+  { Not defined by Allegro, but used. }
+    AL_EOF = -1; (***<End of file.  Returned by some file functions. *)
   { May be these should be an enum as the original implementation. }
     ALLEGRO_SEEK_SET = 0; (***<Seek relative to beginning of file. *)
     ALLEGRO_SEEK_CUR = 1; (***<Seek relative to current file position. *)
@@ -596,9 +597,9 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 (* Bitmap loader flag. *)
   CONST
   { May be these should be an enum as the original implementation. }
-    ALLEGRO_KEEP_BITMAP_FORMAT     = $0002; (***<@exclude *)
-    ALLEGRO_NO_PREMULTIPLIED_ALPHA = $0200; (***<@exclude *)
-    ALLEGRO_KEEP_INDEX             = $0800; (***<@exclude *)
+    ALLEGRO_KEEP_BITMAP_FORMAT     = $0002; {**<@exclude }
+    ALLEGRO_NO_PREMULTIPLIED_ALPHA = $0200; {**<@exclude }
+    ALLEGRO_KEEP_INDEX             = $0800; {**<@exclude }
 
 
   TYPE
@@ -654,14 +655,14 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  * bitmap_lock.h
  *****************************************************************************)
 
-  CONST
-  (* Locking flags. *)
-  { May be these should be an enum as the original implementation. }
-    ALLEGRO_LOCK_READWRITE  = 0; (***<@exclude *)
-    ALLEGRO_LOCK_READONLY   = 1; (***<@exclude *)
-    ALLEGRO_LOCK_WRITEONLY  = 2; (***<@exclude *)
-
   TYPE
+  (*** Locking flags. *)
+    ALLEGRO_LOCK = (
+      ALLEGRO_LOCK_READWRITE  = 0,
+      ALLEGRO_LOCK_READONLY   = 1,
+      ALLEGRO_LOCK_WRITEONLY  = 2
+    );
+
   (*** Pointer to @link(ALLEGRO_LOCKED_REGION). *)
     ALLEGRO_LOCKED_REGIONptr = ^ALLEGRO_LOCKED_REGION;
     ALLEGRO_LOCKED_REGION = RECORD
@@ -673,13 +674,13 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
 
 
-  FUNCTION al_lock_bitmap (bitmap: ALLEGRO_BITMAPptr; format: ALLEGRO_PIXEL_FORMAT; flags: AL_INT): ALLEGRO_LOCKED_REGIONptr;
+  FUNCTION al_lock_bitmap (bitmap: ALLEGRO_BITMAPptr; format: ALLEGRO_PIXEL_FORMAT; flags: ALLEGRO_LOCK): ALLEGRO_LOCKED_REGIONptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_lock_bitmap_region (bitmap: ALLEGRO_BITMAPptr; x, y, width, height: AL_INT; format: ALLEGRO_PIXEL_FORMAT; flags: AL_INT): ALLEGRO_LOCKED_REGIONptr;
+  FUNCTION al_lock_bitmap_region (bitmap: ALLEGRO_BITMAPptr; x, y, width, height: AL_INT; format: ALLEGRO_PIXEL_FORMAT; flags: ALLEGRO_LOCK): ALLEGRO_LOCKED_REGIONptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_lock_bitmap_blocked (bitmap: ALLEGRO_BITMAPptr; flags: AL_INT): ALLEGRO_LOCKED_REGIONptr;
+  FUNCTION al_lock_bitmap_blocked (bitmap: ALLEGRO_BITMAPptr; flags: ALLEGRO_LOCK): ALLEGRO_LOCKED_REGIONptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_lock_bitmap_region_blocked (bitmap: ALLEGRO_BITMAPptr; x_block, y_block, width_block, height_block, flags: AL_INT): ALLEGRO_LOCKED_REGIONptr;
+  FUNCTION al_lock_bitmap_region_blocked (bitmap: ALLEGRO_BITMAPptr; x_block, y_block, width_block, height_block, flags: ALLEGRO_LOCK): ALLEGRO_LOCKED_REGIONptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   PROCEDURE al_unlock_bitmap (bitmap: ALLEGRO_BITMAPptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
@@ -805,8 +806,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
   (*** Pointer to @link(ALLEGRO_EVENT_SOURCE). *)
     ALLEGRO_EVENT_SOURCEptr = ^ALLEGRO_EVENT_SOURCE;
     ALLEGRO_EVENT_SOURCE = RECORD
-    (*** @exclude *)
-      __pad : ARRAY [0..31] OF AL_INT;
+      __pad : ARRAY [0..31] OF AL_INT; {**<@exclude }
     END;
 
 
@@ -1030,11 +1030,11 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 (*** Drops all events, if any, from the queue. @seealso(al_drop_next_event) @seealso(al_is_event_queue_empty) *)
   PROCEDURE al_flush_event_queue (queue: ALLEGRO_EVENT_QUEUEptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; OUT ret_event: ALLEGRO_EVENT);
+  PROCEDURE al_wait_for_event (queue: ALLEGRO_EVENT_QUEUEptr; ret_event: ALLEGRO_EVENTptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT; secs: AL_FLOAT): AL_BOOL;
+  FUNCTION al_wait_for_event_timed (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr; secs: AL_FLOAT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; OUT event: ALLEGRO_EVENT; VAR timeout: ALLEGRO_TIMEOUT): AL_BOOL;
+  FUNCTION al_wait_for_event_until (queue: ALLEGRO_EVENT_QUEUEptr; event: ALLEGRO_EVENTptr; VAR timeout: ALLEGRO_TIMEOUT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
@@ -1046,89 +1046,89 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
   CONST
   (* Possible bit combinations for the flags parameter of al_set_new_display_flags. *)
-    ALLEGRO_DEFAULT                     = 0 SHL 0; (***<@exclude *)
-    ALLEGRO_WINDOWED                    = 1 SHL 0; (***<@exclude *)
-    ALLEGRO_FULLSCREEN                  = 1 SHL 1; (***<@exclude *)
-    ALLEGRO_OPENGL                      = 1 SHL 2; (***<@exclude *)
-    ALLEGRO_DIRECT3D_INTERNAL           = 1 SHL 3; (***<@exclude *)
-    ALLEGRO_RESIZABLE                   = 1 SHL 4; (***<@exclude *)
-    ALLEGRO_FRAMELESS                   = 1 SHL 5; (***<@exclude *)
-    ALLEGRO_NOFRAME                     = ALLEGRO_FRAMELESS; (***<@exclude *)
-    ALLEGRO_GENERATE_EXPOSE_EVENTS      = 1 SHL 6; (***<@exclude *)
-    ALLEGRO_OPENGL_3_0                  = 1 SHL 7; (***<@exclude *)
-    ALLEGRO_OPENGL_FORWARD_COMPATIBLE   = 1 SHL 8; (***<@exclude *)
-    ALLEGRO_FULLSCREEN_WINDOW           = 1 SHL 9; (***<@exclude *)
-    ALLEGRO_MINIMIZED                   = 1 SHL 10; (***<@exclude *)
-    ALLEGRO_PROGRAMMABLE_PIPELINE       = 1 SHL 11; (***<@exclude *)
-    ALLEGRO_GTK_TOPLEVEL_INTERNAL       = 1 SHL 12; (***<@exclude *)
-    ALLEGRO_MAXIMIZED                   = 1 SHL 13; (***<@exclude *)
-    ALLEGRO_OPENGL_ES_PROFILE           = 1 SHL 14; (***<@exclude *)
+    ALLEGRO_DEFAULT                     = 0 SHL 0; {**<@exclude }
+    ALLEGRO_WINDOWED                    = 1 SHL 0; {**<@exclude }
+    ALLEGRO_FULLSCREEN                  = 1 SHL 1; {**<@exclude }
+    ALLEGRO_OPENGL                      = 1 SHL 2; {**<@exclude }
+    ALLEGRO_DIRECT3D_INTERNAL           = 1 SHL 3; {**<@exclude }
+    ALLEGRO_RESIZABLE                   = 1 SHL 4; {**<@exclude }
+    ALLEGRO_FRAMELESS                   = 1 SHL 5; {**<@exclude }
+    ALLEGRO_NOFRAME                     = ALLEGRO_FRAMELESS; {**<@exclude }
+    ALLEGRO_GENERATE_EXPOSE_EVENTS      = 1 SHL 6; {**<@exclude }
+    ALLEGRO_OPENGL_3_0                  = 1 SHL 7; {**<@exclude }
+    ALLEGRO_OPENGL_FORWARD_COMPATIBLE   = 1 SHL 8; {**<@exclude }
+    ALLEGRO_FULLSCREEN_WINDOW           = 1 SHL 9; {**<@exclude }
+    ALLEGRO_MINIMIZED                   = 1 SHL 10; {**<@exclude }
+    ALLEGRO_PROGRAMMABLE_PIPELINE       = 1 SHL 11; {**<@exclude }
+    ALLEGRO_GTK_TOPLEVEL_INTERNAL       = 1 SHL 12; {**<@exclude }
+    ALLEGRO_MAXIMIZED                   = 1 SHL 13; {**<@exclude }
+    ALLEGRO_OPENGL_ES_PROFILE           = 1 SHL 14; {**<@exclude }
 
   TYPE
-  (* Possible parameters for al_set_display_option.
+  (*** @exclude Possible parameters for al_set_display_option.
 
      Make sure to update ALLEGRO_EXTRA_DISPLAY_SETTINGS if you modify
      anything here.  *)
-    ALLEGRO_DISPLAY_OPTIONS = ( (***<@exclude *)
-      ALLEGRO_RED_SIZE = 0, (***<@exclude *)
-      ALLEGRO_GREEN_SIZE = 1, (***<@exclude *)
-      ALLEGRO_BLUE_SIZE = 2, (***<@exclude *)
-      ALLEGRO_ALPHA_SIZE = 3, (***<@exclude *)
-      ALLEGRO_RED_SHIFT = 4, (***<@exclude *)
-      ALLEGRO_GREEN_SHIFT = 5, (***<@exclude *)
-      ALLEGRO_BLUE_SHIFT = 6, (***<@exclude *)
-      ALLEGRO_ALPHA_SHIFT = 7, (***<@exclude *)
-      ALLEGRO_ACC_RED_SIZE = 8, (***<@exclude *)
-      ALLEGRO_ACC_GREEN_SIZE = 9, (***<@exclude *)
-      ALLEGRO_ACC_BLUE_SIZE = 10, (***<@exclude *)
-      ALLEGRO_ACC_ALPHA_SIZE = 11, (***<@exclude *)
-      ALLEGRO_STEREO = 12, (***<@exclude *)
-      ALLEGRO_AUX_BUFFERS = 13, (***<@exclude *)
-      ALLEGRO_COLOR_SIZE = 14, (***<@exclude *)
-      ALLEGRO_DEPTH_SIZE = 15, (***<@exclude *)
-      ALLEGRO_STENCIL_SIZE = 16, (***<@exclude *)
-      ALLEGRO_SAMPLE_BUFFERS = 17, (***<@exclude *)
-      ALLEGRO_SAMPLES = 18, (***<@exclude *)
-      ALLEGRO_RENDER_METHOD = 19, (***<@exclude *)
-      ALLEGRO_FLOAT_COLOR = 20, (***<@exclude *)
-      ALLEGRO_FLOAT_DEPTH = 21, (***<@exclude *)
-      ALLEGRO_SINGLE_BUFFER = 22, (***<@exclude *)
-      ALLEGRO_SWAP_METHOD = 23, (***<@exclude *)
-      ALLEGRO_COMPATIBLE_DISPLAY = 24, (***<@exclude *)
-      ALLEGRO_UPDATE_DISPLAY_REGION = 25, (***<@exclude *)
-      ALLEGRO_VSYNC = 26, (***<@exclude *)
-      ALLEGRO_MAX_BITMAP_SIZE = 27, (***<@exclude *)
-      ALLEGRO_SUPPORT_NPOT_BITMAP = 28, (***<@exclude *)
-      ALLEGRO_CAN_DRAW_INTO_BITMAP = 29, (***<@exclude *)
-      ALLEGRO_SUPPORT_SEPARATE_ALPHA = 30, (***<@exclude *)
-      ALLEGRO_AUTO_CONVERT_BITMAPS = 31, (***<@exclude *)
-      ALLEGRO_SUPPORTED_ORIENTATIONS = 32, (***<@exclude *)
-      ALLEGRO_OPENGL_MAJOR_VERSION = 33, (***<@exclude *)
-      ALLEGRO_OPENGL_MINOR_VERSION = 34, (***<@exclude *)
-      ALLEGRO_DISPLAY_OPTIONS_COUNT (***<@exclude *)
+    ALLEGRO_DISPLAY_OPTIONS = (
+      ALLEGRO_RED_SIZE = 0, {**<@exclude }
+      ALLEGRO_GREEN_SIZE = 1, {**<@exclude }
+      ALLEGRO_BLUE_SIZE = 2, {**<@exclude }
+      ALLEGRO_ALPHA_SIZE = 3, {**<@exclude }
+      ALLEGRO_RED_SHIFT = 4, {**<@exclude }
+      ALLEGRO_GREEN_SHIFT = 5, {**<@exclude }
+      ALLEGRO_BLUE_SHIFT = 6, {**<@exclude }
+      ALLEGRO_ALPHA_SHIFT = 7, {**<@exclude }
+      ALLEGRO_ACC_RED_SIZE = 8, {**<@exclude }
+      ALLEGRO_ACC_GREEN_SIZE = 9, {**<@exclude }
+      ALLEGRO_ACC_BLUE_SIZE = 10, {**<@exclude }
+      ALLEGRO_ACC_ALPHA_SIZE = 11, {**<@exclude }
+      ALLEGRO_STEREO = 12, {**<@exclude }
+      ALLEGRO_AUX_BUFFERS = 13, {**<@exclude }
+      ALLEGRO_COLOR_SIZE = 14, {**<@exclude }
+      ALLEGRO_DEPTH_SIZE = 15, {**<@exclude }
+      ALLEGRO_STENCIL_SIZE = 16, {**<@exclude }
+      ALLEGRO_SAMPLE_BUFFERS = 17, {**<@exclude }
+      ALLEGRO_SAMPLES = 18, {**<@exclude }
+      ALLEGRO_RENDER_METHOD = 19, {**<@exclude }
+      ALLEGRO_FLOAT_COLOR = 20, {**<@exclude }
+      ALLEGRO_FLOAT_DEPTH = 21, {**<@exclude }
+      ALLEGRO_SINGLE_BUFFER = 22, {**<@exclude }
+      ALLEGRO_SWAP_METHOD = 23, {**<@exclude }
+      ALLEGRO_COMPATIBLE_DISPLAY = 24, {**<@exclude }
+      ALLEGRO_UPDATE_DISPLAY_REGION = 25, {**<@exclude }
+      ALLEGRO_VSYNC = 26, {**<@exclude }
+      ALLEGRO_MAX_BITMAP_SIZE = 27, {**<@exclude }
+      ALLEGRO_SUPPORT_NPOT_BITMAP = 28, {**<@exclude }
+      ALLEGRO_CAN_DRAW_INTO_BITMAP = 29, {**<@exclude }
+      ALLEGRO_SUPPORT_SEPARATE_ALPHA = 30, {**<@exclude }
+      ALLEGRO_AUTO_CONVERT_BITMAPS = 31, {**<@exclude }
+      ALLEGRO_SUPPORTED_ORIENTATIONS = 32, {**<@exclude }
+      ALLEGRO_OPENGL_MAJOR_VERSION = 33, {**<@exclude }
+      ALLEGRO_OPENGL_MINOR_VERSION = 34, {**<@exclude }
+      ALLEGRO_DISPLAY_OPTIONS_COUNT {**<@exclude }
     );
 
   CONST
-    ALLEGRO_DONTCARE = 0; (***<@exclude *)
-    ALLEGRO_REQUIRE = 1; (***<@exclude *)
-    ALLEGRO_SUGGEST = 2; (***<@exclude *)
+    ALLEGRO_DONTCARE = 0; {**<@exclude }
+    ALLEGRO_REQUIRE = 1; {**<@exclude }
+    ALLEGRO_SUGGEST = 2; {**<@exclude }
 
 
 
 (* Bitflags so they can be used for the ALLEGRO_SUPPORTED_ORIENTATIONS option. *)
-    ALLEGRO_DISPLAY_ORIENTATION_UNKNOWN = 0; (***<@exclude *)
-    ALLEGRO_DISPLAY_ORIENTATION_0_DEGREES = 1; (***<@exclude *)
-    ALLEGRO_DISPLAY_ORIENTATION_90_DEGREES = 2; (***<@exclude *)
-    ALLEGRO_DISPLAY_ORIENTATION_180_DEGREES = 4; (***<@exclude *)
-    ALLEGRO_DISPLAY_ORIENTATION_270_DEGREES = 8; (***<@exclude *)
-    ALLEGRO_DISPLAY_ORIENTATION_PORTRAIT = 5; (***<@exclude *)
-    ALLEGRO_DISPLAY_ORIENTATION_LANDSCAPE = 10; (***<@exclude *)
-    ALLEGRO_DISPLAY_ORIENTATION_ALL = 15; (***<@exclude *)
-    ALLEGRO_DISPLAY_ORIENTATION_FACE_UP = 16; (***<@exclude *)
-    ALLEGRO_DISPLAY_ORIENTATION_FACE_DOWN = 32; (***<@exclude *)
+    ALLEGRO_DISPLAY_ORIENTATION_UNKNOWN = 0; {**<@exclude }
+    ALLEGRO_DISPLAY_ORIENTATION_0_DEGREES = 1; {**<@exclude }
+    ALLEGRO_DISPLAY_ORIENTATION_90_DEGREES = 2; {**<@exclude }
+    ALLEGRO_DISPLAY_ORIENTATION_180_DEGREES = 4; {**<@exclude }
+    ALLEGRO_DISPLAY_ORIENTATION_270_DEGREES = 8; {**<@exclude }
+    ALLEGRO_DISPLAY_ORIENTATION_PORTRAIT = 5; {**<@exclude }
+    ALLEGRO_DISPLAY_ORIENTATION_LANDSCAPE = 10; {**<@exclude }
+    ALLEGRO_DISPLAY_ORIENTATION_ALL = 15; {**<@exclude }
+    ALLEGRO_DISPLAY_ORIENTATION_FACE_UP = 16; {**<@exclude }
+    ALLEGRO_DISPLAY_ORIENTATION_FACE_DOWN = 32; {**<@exclude }
 
   { Formelly part of the primitives addon. }
-    _ALLEGRO_PRIM_MAX_USER_ATTR = 10; (***<@exclude *)
+    _ALLEGRO_PRIM_MAX_USER_ATTR = 10; {**<@exclude }
 
 { pointer ALLEGRO_DISPLAYptr declared at section "events.h". }
 
@@ -1454,9 +1454,9 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
   CONST
   (* internal values *)
-    _AL_MAX_JOYSTICK_AXES    =  3; (***<@exclude *)
-    _AL_MAX_JOYSTICK_STICKS  = 16; (***<@exclude *)
-    _AL_MAX_JOYSTICK_BUTTONS = 32; (***<@exclude *)
+    _AL_MAX_JOYSTICK_AXES    =  3; {**<@exclude }
+    _AL_MAX_JOYSTICK_STICKS  = 16; {**<@exclude }
+    _AL_MAX_JOYSTICK_BUTTONS = 32; {**<@exclude }
 
   TYPE
     ALLEGRO_JOYSTICK_STATE = RECORD
@@ -1558,6 +1558,11 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
   PROCEDURE al_get_keyboard_state (OUT ret_state: ALLEGRO_KEYBOARD_STATE);
+    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+    {
+#if defined(ALLEGRO_UNSTABLE) || defined(ALLEGRO_INTERNAL_UNSTABLE) || defined(ALLEGRO_SRC)
+    }
+  PROCEDURE al_clear_keyboard_state (display: ALLEGRO_DISPLAYptr);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
   FUNCTION al_key_down (VAR state: ALLEGRO_KEYBOARD_STATE; keycode: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
@@ -1711,7 +1716,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
     END;
 
   CONST
-    ALLEGRO_DEFAULT_DISPLAY_ADAPTER = -1; (***<@exclude *)
+    ALLEGRO_DEFAULT_DISPLAY_ADAPTER = -1; {**<@exclude }
 
   FUNCTION al_get_num_video_adapters: AL_INT; CDECL;
     EXTERNAL ALLEGRO_LIB_NAME;
@@ -1786,22 +1791,22 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
     );
 
   CONST
-    ALLEGRO_RENDER_NEVER = 0; (***< @exclude *)
-    ALLEGRO_RENDER_ALWAYS = 1; (***< @exclude *)
-    ALLEGRO_RENDER_LESS = 2; (***< @exclude *)
-    ALLEGRO_RENDER_EQUAL = 3; (***< @exclude *)
-    ALLEGRO_RENDER_LESS_EQUAL = 4; (***< @exclude *)
-    ALLEGRO_RENDER_GREATER = 5; (***< @exclude *)
-    ALLEGRO_RENDER_NOT_EQUAL = 6; (***< @exclude *)
-    ALLEGRO_RENDER_GREATER_EQUAL = 7; (***< @exclude *)
+    ALLEGRO_RENDER_NEVER = 0; {**<@exclude }
+    ALLEGRO_RENDER_ALWAYS = 1; {**<@exclude }
+    ALLEGRO_RENDER_LESS = 2; {**<@exclude }
+    ALLEGRO_RENDER_EQUAL = 3; {**<@exclude }
+    ALLEGRO_RENDER_LESS_EQUAL = 4; {**<@exclude }
+    ALLEGRO_RENDER_GREATER = 5; {**<@exclude }
+    ALLEGRO_RENDER_NOT_EQUAL = 6; {**<@exclude }
+    ALLEGRO_RENDER_GREATER_EQUAL = 7; {**<@exclude }
 
-    ALLEGRO_MASK_RED = 1 SHL 0; (***< @exclude *)
-    ALLEGRO_MASK_GREEN = 1 SHL 1; (***< @exclude *)
-    ALLEGRO_MASK_BLUE = 1 SHL 2; (***< @exclude *)
-    ALLEGRO_MASK_ALPHA = 1 SHL 3; (***< @exclude *)
-    ALLEGRO_MASK_DEPTH = 1 SHL 4; (***< @exclude *)
-    ALLEGRO_MASK_RGB = (ALLEGRO_MASK_RED OR ALLEGRO_MASK_GREEN OR ALLEGRO_MASK_BLUE); (***< @exclude *)
-    ALLEGRO_MASK_RGBA = (ALLEGRO_MASK_RGB OR ALLEGRO_MASK_ALPHA); (***< @exclude *)
+    ALLEGRO_MASK_RED = 1 SHL 0; {**<@exclude }
+    ALLEGRO_MASK_GREEN = 1 SHL 1; {**<@exclude }
+    ALLEGRO_MASK_BLUE = 1 SHL 2; {**<@exclude }
+    ALLEGRO_MASK_ALPHA = 1 SHL 3; {**<@exclude }
+    ALLEGRO_MASK_DEPTH = 1 SHL 4; {**<@exclude }
+    ALLEGRO_MASK_RGB = (ALLEGRO_MASK_RED OR ALLEGRO_MASK_GREEN OR ALLEGRO_MASK_BLUE); {**<@exclude }
+    ALLEGRO_MASK_RGBA = (ALLEGRO_MASK_RGB OR ALLEGRO_MASK_ALPHA); {**<@exclude }
 
   PROCEDURE al_set_render_state (state: ALLEGRO_RENDER_STATE; value: AL_INT);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
@@ -2042,18 +2047,18 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  *****************************************************************************)
 
   CONST
-    ALLEGRO_STATE_NEW_DISPLAY_PARAMETERS = $0001; {**< @exclude }
-    ALLEGRO_STATE_NEW_BITMAP_PARAMETERS  = $0002; {**< @exclude }
-    ALLEGRO_STATE_DISPLAY                = $0004; {**< @exclude }
-    ALLEGRO_STATE_TARGET_BITMAP          = $0008; {**< @exclude }
-    ALLEGRO_STATE_BITMAP                 = $000A; {**< @exclude
+    ALLEGRO_STATE_NEW_DISPLAY_PARAMETERS = $0001; {**<@exclude }
+    ALLEGRO_STATE_NEW_BITMAP_PARAMETERS  = $0002; {**<@exclude }
+    ALLEGRO_STATE_DISPLAY                = $0004; {**<@exclude }
+    ALLEGRO_STATE_TARGET_BITMAP          = $0008; {**<@exclude }
+    ALLEGRO_STATE_BITMAP                 = $000A; {**<@exclude
                                                    ALLEGRO_STATE_TARGET_BITMAP
                                        + ALLEGRO_STATE_NEW_BITMAP_PARAMETERS, }
-    ALLEGRO_STATE_BLENDER                = $0010; {**< @exclude }
-    ALLEGRO_STATE_NEW_FILE_INTERFACE     = $0020; {**< @exclude }
-    ALLEGRO_STATE_TRANSFORM              = $0040; {**< @exclude }
-    ALLEGRO_STATE_PROJECTION_TRANSFORM   = $0100; {**< @exclude }
-    ALLEGRO_STATE_ALL                    = $FFFF; {**< @exclude }
+    ALLEGRO_STATE_BLENDER                = $0010; {**<@exclude }
+    ALLEGRO_STATE_NEW_FILE_INTERFACE     = $0020; {**<@exclude }
+    ALLEGRO_STATE_TRANSFORM              = $0040; {**<@exclude }
+    ALLEGRO_STATE_PROJECTION_TRANSFORM   = $0100; {**<@exclude }
+    ALLEGRO_STATE_ALL                    = $FFFF; {**<@exclude }
 
 
 

@@ -114,7 +114,7 @@ BEGIN
   al_start_timer (Timer);
 
   REPEAT
-    al_wait_for_event (Queue, Event);
+    al_wait_for_event (Queue, @Event);
     IF Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE THEN
        BREAK;
     IF Event.ftype = ALLEGRO_EVENT_KEY_CHAR THEN
@@ -132,7 +132,7 @@ BEGIN
       Angle := ALLEGRO_PI * 2 * t / 60 / 15;
       x := 120 - 20 * cos (ALLEGRO_PI * 2 * t / 60 / 25);
       y := 120 - 20 * sin (ALLEGRO_PI * 2 * t / 60 / 25);
-         
+
       dw := al_get_display_width (Display);
       dh := al_get_display_height (Display);
 

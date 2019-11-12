@@ -95,7 +95,11 @@ BEGIN
       DYNAMIC_DELETE_ID,
       0, NIL
     );
-    MainMenuInfo[9] := ALLEGRO_ITEM_OF_MENU ('Click Me', DYNAMIC_CREATE_ID, 0, NIL);
+    MainMenuInfo[9] := ALLEGRO_ITEM_OF_MENU (
+      'Click Me',
+      DYNAMIC_CREATE_ID,
+      0, NIL
+    );
     MainMenuInfo[10] := ALLEGRO_END_OF_MENU;
 
   MainMenuInfo[11] := ALLEGRO_ITEM_OF_MENU ('&Help->', HELP_ID, 0, NIL);
@@ -124,7 +128,7 @@ BEGIN
 
   Queue := al_create_event_queue;
 {$IFDEF LINUX}
-{$HINT Assume GTK+.  Qt users may need to override this(?)}
+{$HINT Assumming GTK+.  Qt users may need to override this(?)}
   al_set_new_display_flags (ALLEGRO_RESIZABLE OR ALLEGRO_GTK_TOPLEVEL);
 {$ELSE}
   al_set_new_display_flags (ALLEGRO_RESIZABLE);
@@ -202,7 +206,7 @@ BEGIN
       al_flip_display
     END;
 
-    al_wait_for_event (Queue, Event);
+    al_wait_for_event (Queue, @Event);
     CASE (Event.ftype) OF
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       IF Event.display.source = Display THEN

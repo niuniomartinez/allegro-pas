@@ -381,7 +381,7 @@ PROGRAM ex_camera;
       Example.Camera.Position.z - Example.Camera.zAxis.z,
       Example.Camera.yAxis.x, Example.Camera.yAxis.y, Example.Camera.yAxis.z);
     al_use_transform (t);
-    al_draw_prim (Example.v, NIL, NIL, 0, Example.n, ALLEGRO_PRIM_TRIANGLE_LIST);
+    al_draw_prim (Example.v, NIL, 0, Example.n, ALLEGRO_PRIM_TRIANGLE_LIST);
 
   { Restore projection. }
     al_identity_transform (t);
@@ -578,7 +578,7 @@ BEGIN
   al_start_timer (Timer);
   EndExample := FALSE;
   REPEAT
-    al_wait_for_event (Queue, Event);
+    al_wait_for_event (Queue, @Event);
     CASE Event.ftype OF
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       EndExample := TRUE;

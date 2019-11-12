@@ -1,6 +1,8 @@
 UNIT al5color;
-(*<Color management. *)
-(* Copyright (c) 2012-2018 Guillermo Martínez J.
+(***<Color management.
+
+  @include(../docs/al5color.pds) *)
+(* Copyright (c) 2012-2019 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -67,13 +69,40 @@ INTERFACE
     CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
   FUNCTION al_color_html (CONST str: al_STR): ALLEGRO_COLOR;
     CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
-
+  PROCEDURE al_color_xyz_to_rgb (x, y, z: AL_FLOAT; OUT red, green, blue: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  PROCEDURE al_color_rgb_to_xyz (red, green, blue: AL_FLOAT; OUT x, y, z: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_color_xyz (x, y, z:AL_FLOAT): ALLEGRO_COLOR;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  PROCEDURE al_color_lab_to_rgb (l, a, b: AL_FLOAT; OUT red, green, blue: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  PROCEDURE al_color_rgb_to_lab (red, green, blue: AL_FLOAT; OUT l, a, b: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_color_lab (l, a, b: AL_FLOAT): ALLEGRO_COLOR;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  PROCEDURE al_color_xyy_to_rgb (x, y, y2: AL_FLOAT; OUT red, green, blue: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  PROCEDURE al_color_rgb_to_xyy (red, green, blue: AL_FLOAT; OUT x, y, y2: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_color_xyy (x, y, y2: AL_FLOAT): ALLEGRO_COLOR;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_color_distance_ciede2000 (c1, c2: ALLEGRO_COLOR): AL_DOUBLE;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  PROCEDURE al_color_lch_to_rgb (l, c, h: AL_FLOAT; OUT red, green, blue);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  PROCEDURE al_color_rgb_to_lch (red, green, blue: AL_FLOAT; OUT l, c, h: AL_FLOAT);
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_color_lch (l, c, h: AL_FLOAT): ALLEGRO_COLOR;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
+  FUNCTION al_is_color_valid (color: ALLEGRO_COLOR): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_COLOR_LIB_NAME;
 
 
 { DO NOT USE ANY SYMBOL BELOW THIS COMMENT.  They're for internal use only.  In
   delphi, inline function declared in interface section must not use local
   symbols, that's why I've defined it here. }
-{@exclude}
+{**@exclude}
   PROCEDURE _al_color_rgb_to_html_ (r, g, b: AL_FLOAT; str: AL_STRptr); CDECL;
     EXTERNAL ALLEGRO_COLOR_LIB_NAME NAME 'al_color_rgb_to_html';
 

@@ -5,12 +5,11 @@
 
 @tableOfContents
 
-@include(srcdoc/gettingstarted.pds)
-@include(srcdoc/configfiles.pds)
-@include(srcdoc/displays.pds)
-@include(srcdoc/events.pds)
-@include(srcdoc/fileio.pds)
-@include(srcdoc/keyboard.pds)
-@include(srcdoc/nativemenus.pds)
-@include(srcdoc/utf8.pds)
-@include(srcdoc/transformations.pds)
+@include(src/docs/gettingstarted.pds)
+@include(src/docs/configfiles.pds)
+@include(src/docs/displays.pds)
+@include(src/docs/events.pds)
+@include(src/docs/fileio.pds)
+@include(src/docs/keyboard.pds)
+@include(src/docs/utf8.pds)
+@include(src/docs/transformations.pds)

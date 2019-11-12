@@ -9,9 +9,9 @@
     <assemblyIdentity
        version="1.0.0.0"
        processorArchitecture="X86"
-       name="RoofGenius.RoofCalcWriter 10"
+       name="example"
        type="win32" />
-    <description>Executable</description>
+    <description>An Allegro.pas use example</description>
     <dependency>
         <dependentAssembly>
             <assemblyIdentity

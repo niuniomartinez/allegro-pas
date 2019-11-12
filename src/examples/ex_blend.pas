@@ -275,7 +275,7 @@ VAR
         NeedDraw := FALSE
       END;
 
-      al_wait_for_event (ex.Queue, Event);
+      al_wait_for_event (ex.Queue, @Event);
 
       CASE Event.ftype OF
       { Was the X button on the window pressed? }

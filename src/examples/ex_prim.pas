@@ -44,7 +44,7 @@ PROGRAM ex_prim;
 {$IFDEF FPC}
 { Needed to support classes and C-style pointers. }
   {$IF NOT DEFINED(FPC_OBJFPC)} {$MODE OBJFPC} {$ENDIF}
-{ Needed to make the executable suitable for  modern Windows OS. }
+{ Needed to make the executable suitable for modern Windows OS. }
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
@@ -310,10 +310,7 @@ PROGRAM ex_prim;
 
 
 
-  (* Indexed vertex buffers.
-
-    Note this example is buggy (or the primitives addon is) so it's not used by
-    the application. *)
+  (* Indexed vertex buffers. *)
     TIndexedBuffers = CLASS (TCustomScreen)
     PRIVATE
       vbuff: ALLEGRO_VERTEX_BUFFERptr;
@@ -447,7 +444,13 @@ PROGRAM ex_prim;
     END;
   { Updates screens. }
     fTheta := fTheta + fSpeed;
-    IF fScreens[fCurScreen] <> NIL THEN fScreens[fCurScreen].Update
+    IF fScreens[fCurScreen] <> NIL THEN
+      fScreens[fCurScreen].Update
+    ELSE
+      al_draw_text (
+        fFont, White, 0, 0, 0,
+        Format ('Example %d not supported', [fCurScreen])
+      )
   END;
 
 
@@ -668,9 +671,17 @@ PROGRAM ex_prim;
     fScreens[9] := TFilledTexturePrimitives.Create;
     fScreens[10] := TCustomVertexFormatPrimitives.Create;
     fScreens[11] := TVertexBuffers.Create;
-    fScreens[12] := NIL; { TODO: TIndexedBuffers.Create;
-				 For some reason, this example doesn't work.
-                         }
+{$IF DEFINED(WINDOWS)}
+    fScreens[12] := TIndexedBuffers.Create;
+{$ELSE}
+  { For some reason this seems not to work on Linux (or doesn't in my system).
+
+    My system is Xubuntu 18.04.3 + nVidia GeForce GT610 + nouveau 2.4.97.
+
+    If your system is different you may try.  If it works (or find why mine
+    doesn't), let me know. }
+    fScreens[12] := NIL;
+{$ENDIF}
   { Backbuffer. }
     Old := al_get_new_bitmap_flags;
     al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
@@ -795,10 +806,10 @@ PROGRAM ex_prim;
 (* Draws screen. *)
   PROCEDURE TLowPrimitives.Draw;
   BEGIN
-    al_draw_prim (Vtx, NIL, NIL, 0, 4, ALLEGRO_PRIM_LINE_LIST);
-    al_draw_prim (Vtx, NIL, NIL, 4, 9, ALLEGRO_PRIM_LINE_STRIP);
-    al_draw_prim (Vtx, NIL, NIL, 9, 13, ALLEGRO_PRIM_LINE_LOOP);
-    al_draw_prim (Vtx2, NIL, NIL, 0, 13, ALLEGRO_PRIM_POINT_LIST);
+    al_draw_prim (Vtx, NIL, 0, 4, ALLEGRO_PRIM_LINE_LIST);
+    al_draw_prim (Vtx, NIL, 4, 9, ALLEGRO_PRIM_LINE_STRIP);
+    al_draw_prim (Vtx, NIL, 9, 13, ALLEGRO_PRIM_LINE_LOOP);
+    al_draw_prim (Vtx2, NIL, 0, 13, ALLEGRO_PRIM_POINT_LIST);
   END;
 
 
@@ -862,10 +873,10 @@ PROGRAM ex_prim;
 (* Draws screen. *)
   PROCEDURE TIndexedPrimitives.Draw;
   BEGIN
-    al_draw_indexed_prim (vtx, NIL, NIL, indices1, 4, ALLEGRO_PRIM_LINE_LIST);
-    al_draw_indexed_prim (vtx, NIL, NIL, indices2, 4, ALLEGRO_PRIM_LINE_STRIP);
-    al_draw_indexed_prim (vtx, NIL, NIL, indices3, 4, ALLEGRO_PRIM_LINE_LOOP);
-    al_draw_indexed_prim (vtx2, NIL, NIL, indices3, 4, ALLEGRO_PRIM_POINT_LIST);
+    al_draw_indexed_prim (vtx, NIL, indices1, 4, ALLEGRO_PRIM_LINE_LIST);
+    al_draw_indexed_prim (vtx, NIL, indices2, 4, ALLEGRO_PRIM_LINE_STRIP);
+    al_draw_indexed_prim (vtx, NIL, indices3, 4, ALLEGRO_PRIM_LINE_LOOP);
+    al_draw_indexed_prim (vtx2, NIL, indices3, 4, ALLEGRO_PRIM_POINT_LIST);
   END;
 
 
@@ -985,9 +996,9 @@ PROGRAM ex_prim;
 (* Draws screen. *)
   PROCEDURE TFilledPrimitives.Draw;
   BEGIN
-    al_draw_prim (vtx, NIL, NIL, 0, 6, ALLEGRO_PRIM_TRIANGLE_FAN);
-    al_draw_prim (vtx, NIL, NIL, 7, 13, ALLEGRO_PRIM_TRIANGLE_LIST);
-    al_draw_prim (vtx, NIL, NIL, 14, 20, ALLEGRO_PRIM_TRIANGLE_STRIP)
+    al_draw_prim (vtx, NIL, 0, 6, ALLEGRO_PRIM_TRIANGLE_FAN);
+    al_draw_prim (vtx, NIL, 7, 13, ALLEGRO_PRIM_TRIANGLE_LIST);
+    al_draw_prim (vtx, NIL, 14, 20, ALLEGRO_PRIM_TRIANGLE_STRIP)
   END;
 
 
@@ -1060,9 +1071,9 @@ PROGRAM ex_prim;
 (* Draws screen. *)
   PROCEDURE TIndexedFilledPrimitives.Draw;
   BEGIN
-    al_draw_indexed_prim (vtx, NIL, NIL, Indices1, 6, ALLEGRO_PRIM_TRIANGLE_LIST);
-    al_draw_indexed_prim (vtx, NIL, NIL, Indices2, 6, ALLEGRO_PRIM_TRIANGLE_STRIP);
-    al_draw_indexed_prim (vtx, NIL, NIL, Indices3, 6, ALLEGRO_PRIM_TRIANGLE_FAN)
+    al_draw_indexed_prim (vtx, NIL, Indices1, 6, ALLEGRO_PRIM_TRIANGLE_LIST);
+    al_draw_indexed_prim (vtx, NIL, Indices2, 6, ALLEGRO_PRIM_TRIANGLE_STRIP);
+    al_draw_indexed_prim (vtx, NIL, Indices3, 6, ALLEGRO_PRIM_TRIANGLE_FAN)
   END;
 
 
@@ -1130,10 +1141,10 @@ PROGRAM ex_prim;
 (* Draws screen. *)
   PROCEDURE TTexturePrimitives.Draw;
   BEGIN
-    al_draw_prim (Vtx, NIL, Example.Texture, 0, 4, ALLEGRO_PRIM_LINE_LIST);
-    al_draw_prim (Vtx, NIL, Example.Texture, 4, 9, ALLEGRO_PRIM_LINE_STRIP);
-    al_draw_prim (Vtx, NIL, Example.Texture, 9, 13, ALLEGRO_PRIM_LINE_LOOP);
-    al_draw_prim (Vtx2, NIL, Example.Texture, 0, 13, ALLEGRO_PRIM_POINT_LIST)
+    al_draw_prim (Vtx, Example.Texture, 0, 4, ALLEGRO_PRIM_LINE_LIST);
+    al_draw_prim (Vtx, Example.Texture, 4, 9, ALLEGRO_PRIM_LINE_STRIP);
+    al_draw_prim (Vtx, Example.Texture, 9, 13, ALLEGRO_PRIM_LINE_LOOP);
+    al_draw_prim (Vtx2, Example.Texture, 0, 13, ALLEGRO_PRIM_POINT_LIST)
   END;
 
 
@@ -1186,9 +1197,9 @@ PROGRAM ex_prim;
 (* Draws screen. *)
   PROCEDURE TFilledTexturePrimitives.Draw;
   BEGIN
-    al_draw_prim (vtx, NIL, Example.Texture, 0, 6, ALLEGRO_PRIM_TRIANGLE_FAN);
-    al_draw_prim (vtx, NIL, Example.Texture, 7, 13, ALLEGRO_PRIM_TRIANGLE_LIST);
-    al_draw_prim (vtx, NIL, Example.Texture, 14, 20, ALLEGRO_PRIM_TRIANGLE_STRIP)
+    al_draw_prim (vtx, Example.Texture, 0, 6, ALLEGRO_PRIM_TRIANGLE_FAN);
+    al_draw_prim (vtx, Example.Texture, 7, 13, ALLEGRO_PRIM_TRIANGLE_LIST);
+    al_draw_prim (vtx, Example.Texture, 14, 20, ALLEGRO_PRIM_TRIANGLE_STRIP)
   END;
 
 
@@ -1266,19 +1277,19 @@ VAR
       Vtx2[Ndx].color := color
     END;
 
-    vbuff := al_create_vertex_buffer (NIL, vtx, 13, ALLEGRO_PRIM_BUFFER_READWRITE);
+    vbuff := al_create_vertex_buffer (vtx, ALLEGRO_PRIM_BUFFER_READWRITE);
     IF vbuff = NIL THEN
     BEGIN
-      vbuff := al_create_vertex_buffer (NIL, vtx, 13, ALLEGRO_PRIM_BUFFER_NONE);
+      vbuff := al_create_vertex_buffer (vtx, ALLEGRO_PRIM_BUFFER_NONE);
       NoSoft := TRUE
     END
     ELSE
       NoSoft := FALSE;
 
-    vbuff2 := al_create_vertex_buffer (NIL, vtx2, 13, ALLEGRO_PRIM_BUFFER_READWRITE);
+    vbuff2 := al_create_vertex_buffer (vtx2, ALLEGRO_PRIM_BUFFER_READWRITE);
     IF vbuff2 = NIL THEN
     BEGIN
-      vbuff2 := al_create_vertex_buffer (NIL, vtx2, 13, ALLEGRO_PRIM_BUFFER_NONE);
+      vbuff2 := al_create_vertex_buffer (vtx2, ALLEGRO_PRIM_BUFFER_NONE);
       NoSoft2 := TRUE
     END
     ELSE

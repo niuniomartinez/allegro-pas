@@ -1,8 +1,8 @@
 UNIT al5audio;
 (***<Audio addon.
 
-     @include(../srcdoc/al5audio.pds) *)
-(* Copyright (c) 2012-2018 Guillermo Martínez J.
+     @include(../docs/al5audio.pds) *)
+(* Copyright (c) 2012-2019 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -24,7 +24,6 @@ UNIT al5audio;
     distribution.
  *)
 
-
 {$include allegro5.cfg}
 
 INTERFACE
@@ -40,10 +39,16 @@ INTERFACE
     ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT = 513;
   (*** Sent when a stream is finished. *)
     ALLEGRO_EVENT_AUDIO_STREAM_FINISHED = 514;
+    {
+#if defined(ALLEGRO_UNSTABLE) || defined(ALLEGRO_INTERNAL_UNSTABLE) || defined(ALLEGRO_KCM_AUDIO_SRC)
+    }
     ALLEGRO_EVENT_AUDIO_RECORDER_FRAGMENT = 515;
 
   TYPE
     ALLEGRO_AUDIO_RECORDERptr = AL_POINTER;
+    {
+#if defined(ALLEGRO_UNSTABLE) || defined(ALLEGRO_INTERNAL_UNSTABLE) || defined(ALLEGRO_KCM_AUDIO_SRC)
+    }
     ALLEGRO_AUDIO_RECORDER_EVENT = RECORD
     (*** Indicates the type of event. *)
       ftype: ALLEGRO_EVENT_TYPE;
@@ -74,6 +79,7 @@ INTERFACE
       ALLEGRO_AUDIO_DEPTH_UNSIGNED = $08,
 
     { For convenience. }
+    {  ALLEGRO_AUDIO_DEPTH_UINT8  = $08, // INT8  + UNSIGNED }
       ALLEGRO_AUDIO_DEPTH_UINT16 = $09, {**<@code(INT16 + UNSIGNED) }
       ALLEGRO_AUDIO_DEPTH_UINT24 = $0A  {**<@code(INT24 + UNSIGNED) }
     );
@@ -132,34 +138,16 @@ INTERFACE
     ALLEGRO_AUDIO_PAN_NONE: AL_FLOAT = -1000.0;
 
   TYPE
-  (* Pointer to the data necessary for playing pre-defined digital audio. It
-     holds a user-specified PCM data buffer and information about its format
-     (data length, depth, frequency, channel configuration). You can have the
-     same @code(ALLEGRO_SAMPLE) playing multiple times simultaneously.
-     @seealso(ALLEGRO_SAMPLE_INSTANCEptr) *)
     ALLEGRO_SAMPLEptr = AL_POINTER;
-  (* Pointer to @link(ALLEGRO_SAMPLE_ID). *)
+  (*** Pointer to @link(ALLEGRO_SAMPLE_ID). *)
     ALLEGRO_SAMPLE_IDptr = ^ALLEGRO_SAMPLE_ID;
-  (* Represents a sample being played via @link(al_play_sample). It can be used
-     to later stop the sample with @link(al_stop_sample). *)
     ALLEGRO_SAMPLE_ID = RECORD
-      _index, _id: AL_INT;
+      _index: AL_INT; (***<@exclude *)
+      _id: AL_INT; (***<@exclude *)
     END;
-
     ALLEGRO_SAMPLE_INSTANCEptr = AL_POINTER;
-
     ALLEGRO_AUDIO_STREAMptr = AL_POINTER;
-  (* A mixer mixes together attached streams into a single buffer. In the
-     process, it converts channel configurations, sample frequencies and audio
-     depths of the attached sample instances and audio streams accordingly. You
-     can control the quality of this conversion using
-     @code(ALLEGRO_MIXER_QUALITY). *)
     ALLEGRO_MIXERptr = AL_POINTER;
-  (* A voice represents an audio device on the system, which may be a real
-     device, or an abstract device provided by the operating system. To play
-     back audio, you would attach a mixer, sample instance or audio stream to a
-     voice. @seealso(ALLEGRO_MIXERptr) @seealso(ALLEGRO_SAMPLEptr)
-     @seealso(ALLEGRO_AUDIO_STREAMptr) *)
     ALLEGRO_VOICEptr = AL_POINTER;
 
 {
@@ -171,13 +159,21 @@ typedef enum ALLEGRO_MIXER_QUALITY ALLEGRO_MIXER_QUALITY;
 #endif
 }
 
-
+  (* Callback declarations. *)
     ALLEGRO_MIXER_CALLBACK = PROCEDURE (buf: AL_VOIDptr; samples: AL_UINT; data: AL_VOIDptr); CDECL;
     ALLEGRO_SAMPLE_LOADER = FUNCTION (CONST filename: AL_STRptr): ALLEGRO_SAMPLEptr; CDECL;
     ALLEGRO_SAMPLE_SAVER = FUNCTION (CONST filename: AL_STRptr; spl: ALLEGRO_SAMPLEptr): AL_BOOL; CDECL;
-    ALLEGRO_AUDIO_STREAM_LOADER = FUNCTION (CONST filename: AL_STRptr; buffer_count: AL_SIZE_T; samples: AL_UINT): ALLEGRO_AUDIO_STREAMptr;
+    ALLEGRO_AUDIO_STREAM_LOADER = FUNCTION (CONST filename: AL_STRptr; buffer_count: AL_SIZE_T; samples: AL_UINT): ALLEGRO_AUDIO_STREAMptr; CDECL;
 
+    ALLEGRO_SAMPLE_LOADER_F = FUNCTION (fp: ALLEGRO_FILEptr): ALLEGRO_SAMPLEptr; CDECL;
+    ALLEGRO_SAMPLE_SAVER_F = FUNCTION (fp: ALLEGRO_FILEptr; spl: ALLEGRO_SAMPLEptr): AL_BOOL; CDECL;
+    ALLEGRO_AUDIO_STREAM_LOADER_F = FUNCTION (fp: ALLEGRO_FILEptr; buffer_count: AL_SIZE_T; samples: AL_UINT): ALLEGRO_AUDIO_STREAMptr; CDECL;
 
+(* Initialization. *)
+  FUNCTION al_install_audio: AL_BOOL; CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  PROCEDURE al_uninstall_audio; CDECL;  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_is_audio_installed: AL_BOOL; CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_get_allegro_audio_version: AL_UINT32; CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
 (* Sample functions *)
   FUNCTION al_create_sample (buf: AL_VOIDptr; samples, freq: AL_UINT; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF; free_buf: AL_BOOL): ALLEGRO_SAMPLEptr;
@@ -258,6 +254,12 @@ typedef enum ALLEGRO_MIXER_QUALITY ALLEGRO_MIXER_QUALITY;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_stop_sample_instance (spl: ALLEGRO_SAMPLE_INSTANCEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+    {
+#if defined(ALLEGRO_UNSTABLE) || defined(ALLEGRO_INTERNAL_UNSTABLE) || defined(ALLEGRO_KCM_AUDIO_SRC)
+ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_sample_instance_channel_matrix, (ALLEGRO_SAMPLE_INSTANCE *spl, const float *matrix));
+#endif
+    }
+
 
 (* Stream functions *)
   FUNCTION al_create_audio_stream (buffer_count: AL_SIZE_T; samples, freq: AL_UINT; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF): ALLEGRO_AUDIO_STREAMptr;
@@ -294,6 +296,8 @@ typedef enum ALLEGRO_MIXER_QUALITY ALLEGRO_MIXER_QUALITY;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_get_audio_stream_attached (CONST spl: ALLEGRO_AUDIO_STREAMptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_get_audio_stream_played_samples (CONST stream: ALLEGRO_AUDIO_STREAMptr): AL_UINT64;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
   FUNCTION al_get_audio_stream_fragment (CONST stream: ALLEGRO_AUDIO_STREAMptr): AL_VOIDptr;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
@@ -329,6 +333,12 @@ typedef enum ALLEGRO_MIXER_QUALITY ALLEGRO_MIXER_QUALITY;
   FUNCTION al_get_audio_stream_event_source (stream: ALLEGRO_AUDIO_STREAMptr): ALLEGRO_EVENT_SOURCEptr;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
+    {
+#if defined(ALLEGRO_UNSTABLE) || defined(ALLEGRO_INTERNAL_UNSTABLE) || defined(ALLEGRO_KCM_AUDIO_SRC)
+ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_audio_stream_channel_matrix, (ALLEGRO_AUDIO_STREAM *stream, const float *matrix));
+#endif
+    }
+
 (* Mixer functions *)
   FUNCTION al_create_mixer (freq: AL_UINT; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF): ALLEGRO_MIXERptr;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
@@ -336,9 +346,6 @@ typedef enum ALLEGRO_MIXER_QUALITY ALLEGRO_MIXER_QUALITY;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_attach_sample_instance_to_mixer (sample: ALLEGRO_SAMPLE_INSTANCEptr; mixer: ALLEGRO_MIXERptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-(* Attach an audio stream to a mixer. The stream must not already be attached to anything.
-   @returns(@true on success, @false on failure.)
-   @seealso(al_detach_audio_stream) *)
   FUNCTION al_attach_audio_stream_to_mixer (stream: ALLEGRO_AUDIO_STREAMptr; mixer: ALLEGRO_MIXERptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_attach_mixer_to_mixer (mixerA, mixerB: ALLEGRO_MIXERptr): AL_BOOL;
@@ -371,25 +378,17 @@ typedef enum ALLEGRO_MIXER_QUALITY ALLEGRO_MIXER_QUALITY;
   FUNCTION al_detach_mixer (mixer: ALLEGRO_MIXERptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
+(* Voice functions. *)
   FUNCTION al_create_voice (freq: AL_UINT; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF): ALLEGRO_VOICEptr;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-(* Destroys the voice and deallocates it from the digital driver. Does nothing
-   if the voice is @nil.
-   @seealso(al_create_voice) *)
   PROCEDURE al_destroy_voice (voice: ALLEGRO_VOICEptr);
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_attach_sample_instance_to_voice (sample: ALLEGRO_SAMPLE_INSTANCEptr; voice: ALLEGRO_VOICEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_attach_audio_stream_to_voice (stream: ALLEGRO_AUDIO_STREAMptr; voice: ALLEGRO_VOICEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-(* Attaches a mixer to a voice. It must have the same frequency and channel
-   configuration, but the depth may be different.
-   @Return(@true on success, @false on failure.) @seealso(al_detach_voice) *)
   FUNCTION al_attach_mixer_to_voice (mixer: ALLEGRO_MIXERptr; voice: ALLEGRO_VOICEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-(* Detaches the mixer, sample instance or audio stream from the voice.
-   @seealso(al_attach_mixer_to_voice)
-   @seealso(al_attach_sample_instance_to_voice) @seealso(al_attach_audio_stream_to_voice) *)
   PROCEDURE al_detach_voice (voice: ALLEGRO_VOICEptr);
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
@@ -408,35 +407,23 @@ typedef enum ALLEGRO_MIXER_QUALITY ALLEGRO_MIXER_QUALITY;
   FUNCTION al_set_voice_playing (voice: ALLEGRO_VOICEptr; val: AL_BOOL): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
-(* Install the audio subsystem. *)
-  FUNCTION al_install_audio: AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-(* Uninstall the audio subsystem. *)
-  PROCEDURE al_uninstall_audio;
-    CDECL;  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-(* Returns @true if @link(al_install_audio) was called previously and returned
-   successfully. *)
-  FUNCTION al_is_audio_installed: AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-(* Returns the (compiled) version of the addon, in the same format as
-   @link(al_get_allegro_version). *)
-  FUNCTION al_get_allegro_audio_version: AL_UINT32;
-    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+(* Misc. audio functions *)
+{ Those where moved to the beginning of the file.
+  FUNCTION al_install_audio: AL_BOOL; CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  PROCEDURE al_uninstall_audio; CDECL;  EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_is_audio_installed: AL_BOOL; CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_get_allegro_audio_version: AL_UINT32; CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+}
 
-(* Return the number of channels for the given channel configuration, which is
-   one of the values listed under @link(ALLEGRO_CHANNEL_CONF). *)
   FUNCTION al_get_channel_count (conf: ALLEGRO_CHANNEL_CONF): AL_SIZE_T;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-(* Return the size of a sample, in bytes, for the given format. The format is
-   one of the values listed under @link(ALLEGRO_AUDIO_DEPTH). *)
   FUNCTION al_get_audio_depth_size (conf: ALLEGRO_AUDIO_DEPTH): AL_SIZE_T;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-(* Fill a buffer with silence, for the given format and channel configuration.
-   The buffer must have enough space for the given number of samples, and be
-   properly aligned. *)
+
   PROCEDURE al_fill_silence (bur: AL_VOIDptr; samples: AL_UINT; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF);
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
+(* Simple audio layer. *)
   FUNCTION al_reserve_samples (reserve_samples: AL_INT): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_get_default_mixer: ALLEGRO_MIXERptr;
@@ -445,24 +432,9 @@ typedef enum ALLEGRO_MIXER_QUALITY ALLEGRO_MIXER_QUALITY;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_restore_default_mixer: AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-(* Plays a sample on one of the sample instances created by
-   @link(al_reserve_samples).
-   @param(gain relative volume at which the sample is played; 1.0 is normal.)
-   @param(pan 0.0 is centred, -1.0 is left, 1.0 is right, or
-	  @code(ALLEGRO_AUDIO_PAN_NONE).)
-   @param(speed relative speed at which the sample is played; 1.0 is normal.)
-   @param(loop @code(ALLEGRO_PLAYMODE_ONCE), @code(ALLEGRO_PLAYMODE_LOOP), or
-  	  @code(ALLEGRO_PLAYMODE_BIDIR).)
-   @param(ret_id if non-@nil the variable which this points to will be assigned
-	  an id representing the sample being played.)
-   @return(@true on success, @false on failure. Playback may fail because all
-	   the reserved sample instances are currently used.)
-   @seealso(ALLEGRO_PLAYMODE) @seealso(ALLEGRO_AUDIO_PAN_NONE)
-   @seealso(ALLEGRO_SAMPLE_ID) @seealso(al_stop_sample)
-   @seealso(al_stop_samples) *)
   FUNCTION al_play_sample (data: ALLEGRO_SAMPLEptr; gain, pan, speed: AL_FLOAT; loop: ALLEGRO_PLAYMODE; ret_id: ALLEGRO_SAMPLE_IDptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-  PROCEDURE al_stop_sample (spl_id: ALLEGRO_SAMPLE_IDptr);
+  PROCEDURE al_stop_sample (VAR spl_id: ALLEGRO_SAMPLE_ID);
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   PROCEDURE al_stop_samples;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
@@ -471,66 +443,62 @@ typedef enum ALLEGRO_MIXER_QUALITY ALLEGRO_MIXER_QUALITY;
   PROCEDURE al_set_default_voice (voice: ALLEGRO_VOICEptr);
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
-
+    {
+#if defined(ALLEGRO_UNSTABLE) || defined(ALLEGRO_INTERNAL_UNSTABLE) || defined(ALLEGRO_KCM_AUDIO_SRC)
+    }
+  FUNCTION al_lock_sample_id (VAR spl_id: ALLEGRO_SAMPLE_ID): ALLEGRO_SAMPLE_INSTANCEptr;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  PROCEDURE al_unlock_sample_id (VAR spl_id: ALLEGRO_SAMPLE_ID);
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
 (* File type handlers *)
-  {TODO: These needs Allegro's file access.
+  FUNCTION al_register_sample_loader (CONST ext: AL_STR; loader: ALLEGRO_SAMPLE_LOADER): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_register_sample_saver (CONST ext: AL_STR; saver: ALLEGRO_SAMPLE_SAVER): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_register_audio_stream_loader (CONST ext: AL_STR; stream_loader: ALLEGRO_AUDIO_STREAM_LOADER): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
-  FUNCTION al_register_sample_loader (CONST ext: STRING; loader: ALLEGRO_SAMPLE_LOADER): AL_BOOL; INLINE;
-  FUNCTION al_register_sample_saver (CONST ext: STRING; saver: ALLEGRO_SAMPLE_SAVER): AL_BOOL; INLINE;
-  FUNCTION al_register_audio_stream_loader (CONST ext: STRING; stream_loader: ALLEGRO_AUDIO_STREAM_LOADER): AL_BOOL; INLINE;
+  FUNCTION al_register_sample_loader_f (CONST ext: AL_STR; loader: ALLEGRO_SAMPLE_LOADER_F): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_register_sample_saver_f (CONST ext: AL_STR; saver: ALLEGRO_SAMPLE_SAVER_F): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_register_audio_stream_loader_f (CONST ext: AL_STR; stream_loader: ALLEGRO_AUDIO_STREAM_LOADER_F): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
-
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_register_sample_loader_f, (const char *ext,
-	ALLEGRO_SAMPLE *( *loader)(ALLEGRO_FILE *fp)));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_register_sample_saver_f, (const char *ext,
-	bool ( *saver)(ALLEGRO_FILE *fp, ALLEGRO_SAMPLE *spl)));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_register_audio_stream_loader_f, (const char *ext,
-	ALLEGRO_AUDIO_STREAM *( *stream_loader)(ALLEGRO_FILE *fp,
-	    size_t buffer_count, unsigned int samples)));
-	  }
-
-(* Loads a few different audio file formats based on their extension.
-
-   Note that this stores the entire file in memory at once, which may be time
-   consuming. To read the file as it is needed, use @link(al_load_audio_stream).
-
-   @bold(Note:) the @code(al5audio) library does not support any audio file
-   formats by default. You must use the @link(al5acodec) addon, or register
-   your own format handler.
-   @return(The sample on success, @nil on failure.)
-   @seealso(al_register_sample_loader) @seealso(al_init_acodec_addon) *)
   FUNCTION al_load_sample (CONST filename: AL_STR): ALLEGRO_SAMPLEptr;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_save_sample (CONST filename: AL_STR; spl: ALLEGRO_SAMPLEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-(* Loads an audio file from disk as it is needed.
-
-   Unlike regular streams, the one returned by this function need not be fed by
-   the user; the library will automatically read more of the file as it is
-   needed. The stream will contain @code(buffer_count) buffers with
-   @code(samples) samples.
-
-   The audio stream will start in the playing state. It should be attached to a
-   voice or mixer to generate any output. See @link(ALLEGRO_AUDIO_STREAMptr)
-   for more details.
-
-   @bold(Note:) the @code(al5audio) library does not support any audio file
-   formats by default. You must use the @link(al5acodec) addon, or register
-   your own format handler.
-   @return(the stream on success, @nil on failure.)
-   @seealso(al_init_acodec_addon) *)
   FUNCTION al_load_audio_stream (CONST filename: AL_STR; buffer_count: AL_SIZE_T; samples: AL_UINT): ALLEGRO_AUDIO_STREAMptr;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
-  {TODO: These needs Allegro's file access.
+  FUNCTION al_load_sample_f (fp: ALLEGRO_FILEptr; CONST ident: AL_STR): ALLEGRO_SAMPLEptr;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_save_sample_f (fp: ALLEGRO_FILEptr; CONST ident: AL_STR; spl: ALLEGRO_FILEptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_load_audio_stream_f (fp: ALLEGRO_FILEptr; CONST ident: AL_STR; buffer_count: AL_STR; samples: AL_UINT): ALLEGRO_AUDIO_STREAMptr
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_SAMPLE *, al_load_sample_f, (ALLEGRO_FILE* fp, const char *ident));
-ALLEGRO_KCM_AUDIO_FUNC(bool, al_save_sample_f, (ALLEGRO_FILE* fp, const char *ident,
-	ALLEGRO_SAMPLE *spl));
-ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_AUDIO_STREAM *, al_load_audio_stream_f, (ALLEGRO_FILE* fp, const char *ident,
-	size_t buffer_count, unsigned int samples));
-      }
+  {
+#if defined(ALLEGRO_UNSTABLE) || defined(ALLEGRO_INTERNAL_UNSTABLE) || defined(ALLEGRO_KCM_AUDIO_SRC)
+  }
+
+(* Recording functions *)
+  FUNCTION al_create_audio_recorder (fragment_count: AL_SIZE_T; samples, freq: AL_UINT; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF): ALLEGRO_AUDIO_RECORDERptr;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_start_audio_recorder (r: ALLEGRO_AUDIO_RECORDERptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  PROCEDURE al_stop_audio_recorder (r: ALLEGRO_AUDIO_RECORDERptr);
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_is_audio_recorder_recording (r: ALLEGRO_AUDIO_RECORDERptr): AL_BOOL;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_get_audio_recorder_event_source (r: ALLEGRO_AUDIO_RECORDERptr): ALLEGRO_EVENT_SOURCEptr;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  FUNCTION al_get_audio_recorder_event (event: ALLEGRO_EVENT): ALLEGRO_AUDIO_RECORDER_EVENT;
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
+  PROCEDURE al_destroy_audio_recorder (r: ALLEGRO_AUDIO_RECORDERptr);
+    CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
 IMPLEMENTATION
 

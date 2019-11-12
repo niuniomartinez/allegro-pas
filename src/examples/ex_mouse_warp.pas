@@ -104,7 +104,7 @@ BEGIN
       Redraw := FALSE;
     END;
 
-    al_wait_for_event (EventQueue, Event);
+    al_wait_for_event (EventQueue, @Event);
     CASE Event.ftype OF
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       EndLoop := TRUE;

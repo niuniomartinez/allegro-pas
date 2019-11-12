@@ -97,7 +97,7 @@ BEGIN
       al_flip_display
     END;
 
-    IF al_wait_for_event_timed (events, event, 1) THEN
+    IF al_wait_for_event_timed (events, @event, 1) THEN
     BEGIN
       IF Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE THEN
 	EndExample := TRUE

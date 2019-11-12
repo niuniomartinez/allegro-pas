@@ -106,7 +106,7 @@ BEGIN
       al_flip_display
     END;
 
-    al_wait_for_event (Queue, Event);
+    al_wait_for_event (Queue, @Event);
     CASE Event.ftype OF
     ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY:
       AddEvent ('ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY');

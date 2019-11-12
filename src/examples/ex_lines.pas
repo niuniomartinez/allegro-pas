@@ -185,7 +185,7 @@ BEGIN
 
    EndLoop := FALSE;
    REPEAT
-      al_wait_for_event (Queue, Event);
+      al_wait_for_event (Queue, @Event);
       IF Event.ftype = ALLEGRO_EVENT_MOUSE_BUTTON_DOWN THEN
       BEGIN
          al_get_keyboard_state (KeyboardState);

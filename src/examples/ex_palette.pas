@@ -254,7 +254,7 @@ BEGIN
   al_start_timer (Timer);
 
   REPEAT
-    al_wait_for_event (Queue, Event);
+    al_wait_for_event (Queue, @Event);
     CASE Event.ftype OF
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       EndExample := TRUE;

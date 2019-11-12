@@ -90,7 +90,7 @@ PROGRAM ex_keyboard_events;
     WHILE TRUE DO
     BEGIN
     { Take the next event out of the event queue, and store it in `event'. }
-      al_wait_for_event (EventQueue, Event);
+      al_wait_for_event (EventQueue, @Event);
 
     {* Check what type of event we got and act accordingly.  ALLEGRO_EVENT
      * is a union type and interpretation of its contents is dependent on

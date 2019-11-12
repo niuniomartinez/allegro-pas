@@ -232,7 +232,7 @@ PROGRAM ex_joysick_events;
       IF al_is_event_queue_empty (EventQueue) THEN
 	DrawAll (al_get_joystick (0));
 
-      al_wait_for_event (EventQueue, Event);
+      al_wait_for_event (EventQueue, @Event);
 
       CASE Event.ftype OF
       { ALLEGRO_EVENT_JOYSTICK_AXIS - a joystick axis value changed. }

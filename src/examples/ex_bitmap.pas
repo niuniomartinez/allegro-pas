@@ -105,7 +105,7 @@ BEGIN
   Redraw := TRUE;
   EndLoop := FALSE;
   REPEAT
-    al_wait_for_event (EventQueue, Event); { Wait for and get an event. }
+    al_wait_for_event (EventQueue, @Event); { Wait for and get an event. }
     CASE Event.ftype OF
     ALLEGRO_EVENT_DISPLAY_ORIENTATION:
       CASE Event.display.orientation OF

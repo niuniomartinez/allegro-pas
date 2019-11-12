@@ -1,2 +1,2 @@
 #!/bin/bash
-rm obj/*.o obj/*.a obj/*.ppu
+rm obj/*.o obj/*.a obj/*.ppu obj/*.pduc obj/*.or obj/*.res

@@ -272,7 +272,7 @@ BEGIN
   DoLoop := TRUE;
   WHILE DoLoop DO
   BEGIN
-    al_wait_for_event (Queue, Event);
+    al_wait_for_event (Queue, @Event);
     CASE Event.ftype OF
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       DoLoop := FALSE;
