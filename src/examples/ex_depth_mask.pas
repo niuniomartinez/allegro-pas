@@ -1,6 +1,6 @@
 PROGRAM ex_depth_mask;
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -77,19 +77,20 @@ PROGRAM ex_depth_mask;
       al_hold_bitmap_drawing (TRUE);
       Y := -H;
       REPEAT
-	x := -W;
-	REPEAT
-	  al_identity_transform (t);
-	  al_rotate_transform (t, Sprites[i].Angle);
-	  al_translate_transform (t, Sprites[i].x + x, Sprites[i].y + y);
-	  al_use_transform (t);
-	  al_draw_text (
-	    Font, al_map_rgb (0, 0, 0), 0, 0,
-	    ALLEGRO_ALIGN_CENTER, 'Allegro 5'
-	  );
-	  INC (x, W)
-	UNTIL x > 0;
-	INC (y, H)
+        x := -W;
+        REPEAT
+          al_identity_transform (t);
+          al_rotate_transform (t, Sprites[i].Angle);
+          al_translate_transform (t, Sprites[i].x + x, Sprites[i].y + y);
+          al_use_transform (t);
+          al_draw_text (
+            Font, al_map_rgb (0, 0, 0),
+            0, 0, ALLEGRO_ALIGN_CENTER,
+            'Allegro 5'
+          );
+          INC (x, W)
+        UNTIL x > 0;
+        INC (y, H)
       UNTIL y > 0;
       al_hold_bitmap_drawing (FALSE);
     END;
@@ -105,9 +106,9 @@ PROGRAM ex_depth_mask;
   { Finally we draw an FPS counter. }
     al_set_render_state (ALLEGRO_DEPTH_TEST, 0);
 
-    al_draw_text (
+    al_draw_textf (
       Font2, al_map_rgb_f (1, 1, 1), W, 0, ALLEGRO_ALIGN_RIGHT,
-      Format ('%.1f FPS', [1.0 / DirectSpeedMeasure])
+      '%.1f FPS', [1.0 / DirectSpeedMeasure]
     )
   END;
 

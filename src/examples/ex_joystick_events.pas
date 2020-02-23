@@ -6,7 +6,7 @@ PROGRAM ex_joysick_events;
  *    This program tests joystick events.
  *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -34,8 +34,7 @@ PROGRAM ex_joysick_events;
 
   USES
     Common,
-    Allegro5, al5font, al5primitives,
-    sysutils;
+    Allegro5, al5base, al5font, al5primitives;
 
   CONST
     MAX_AXES    = 3;
@@ -62,7 +61,7 @@ PROGRAM ex_joysick_events;
     FOR Ndx := LOW (NumAxes) TO HIGH (NumAxes) DO NumAxes[Ndx] := 0;
     FOR Ndx := LOW (Joys) TO HIGH (Joys) DO
       FOR Ndx2 := LOW (Joys[Ndx]) TO HIGH (Joys[Ndx]) DO
-	Joys[Ndx][Ndx2] := 0;
+        Joys[Ndx][Ndx2] := 0;
     FOR Ndx := LOW (JoyButtons) TO HIGH (JoyButtons) DO
       JoyButtons[Ndx] := FALSE
   END;
@@ -90,7 +89,7 @@ PROGRAM ex_joysick_events;
     BEGIN
       NumAxes[i] := al_get_joystick_num_axes (Joy, i);
       FOR j := 0 TO NumAxes[i] - 1 DO
-	Joys[i][j] := jst.stick[i].axis[j]
+        Joys[i][j] := jst.stick[i].axis[j]
     END;
 
     NumButtons := al_get_joystick_num_buttons (Joy);
@@ -127,8 +126,8 @@ PROGRAM ex_joysick_events;
       al_draw_filled_rectangle
         (zx - cSize, cy - oSize, zx + cSize, cy + oSize, Grey);
       al_draw_rectangle (
-	zx - cSize + 0.5, cy - oSize + 0.5, zx + cSize - 0.5, cy + oSize - 0.5,
-	Black, 0
+        zx - cSize + 0.5, cy - oSize + 0.5, zx + cSize - 0.5, cy + oSize - 0.5,
+        Black, 0
       );
       al_draw_filled_rectangle (zx - 5, z - 5, zx + 5, z + 5, Black)
     END;
@@ -136,16 +135,16 @@ PROGRAM ex_joysick_events;
     IF Joy <> NIL THEN
     BEGIN
       al_draw_text (
-	Font, Black, cx, cy + oSize + 1, ALLEGRO_ALIGN_CENTRE,
-	al_get_joystick_stick_name (Joy, Stick)
+        Font, Black, cx, cy + oSize + 1, ALLEGRO_ALIGN_CENTRE,
+        al_get_joystick_stick_name (Joy, Stick)
       );
       FOR i := 0 TO NumAxes[Stick] - 1 DO
       BEGIN
-	al_draw_text (
-	  Font, Black, cx, cy + oSize + (1 + i) * 10,
-	  ALLEGRO_ALIGN_CENTRE,
-	  al_get_joystick_axis_name (Joy, Stick, i)
-	)
+        al_draw_text (
+          Font, Black, cx, cy + oSize + (1 + i) * 10,
+          ALLEGRO_ALIGN_CENTRE,
+          al_get_joystick_axis_name (Joy, Stick, i)
+        )
       END
     END
   END;
@@ -157,7 +156,7 @@ PROGRAM ex_joysick_events;
     Bmp: ALLEGRO_BITMAPptr;
     x, y: INTEGER;
     fg: ALLEGRO_COLOR;
-    Name: STRING;
+    Name: AL_STR;
   BEGIN
     bmp := al_get_target_bitmap;
     x := TRUNC (
@@ -201,9 +200,9 @@ PROGRAM ex_joysick_events;
     al_clear_to_color (al_map_rgb ($FF, $FF, $C0));
 
     IF Joy <> NIL THEN
-      al_draw_text (
-	Font, Black, Width / 2, 10, ALLEGRO_ALIGN_CENTRE,
-	Format ('Joystick: %s', [al_get_joystick_name (Joy)])
+      al_draw_textf (
+        Font, Black, Width / 2, 10, ALLEGRO_ALIGN_CENTRE,
+        'Joystick: %s', [al_get_joystick_name (Joy)]
       );
 
     FOR i := 0 TO NumSticks - 1 DO

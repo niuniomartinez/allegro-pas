@@ -3,7 +3,7 @@ PROGRAM ex_camera;
  * camera.
  *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -29,54 +29,54 @@ PROGRAM ex_camera;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
-    Common,
-    Allegro5, al5primitives, al5color, al5font,
-    math, sysutils;
+USES
+  Common,
+  Allegro5, al5primitives, al5color, al5font,
+  math;
 
-  CONST
-    pi = ALLEGRO_PI;
+CONST
+  pi = ALLEGRO_PI;
 
-  TYPE
-    RVector = RECORD
-      x, y, z: SINGLE;
-    END;
+TYPE
+  RVector = RECORD
+    x, y, z: SINGLE;
+  END;
 
-    RCamera = RECORD
-      Position: RVector;
-      xAxis: RVector; { This represent the direction looking to the right. }
-      yAxis: RVector; { This is the up direction. }
-      zAxis: RVector; { This is the direction towards the viewer ('backwards'). }
-      VerticalFieldOfView: DOUBLE; { In radians. }
-    END;
+  RCamera = RECORD
+    Position: RVector;
+    xAxis: RVector; { This represent the direction looking to the right. }
+    yAxis: RVector; { This is the up direction. }
+    zAxis: RVector; { This is the direction towards the viewer ('backwards'). }
+    VerticalFieldOfView: DOUBLE; { In radians. }
+  END;
 
-    TExample = RECORD
-      Camera: RCamera;
+  TExample = RECORD
+    Camera: RCamera;
 
-    { Controls sensitivity }
-      MouseLookSpeed,
-      MovementSpeed: DOUBLE;
+  { Controls sensitivity }
+    MouseLookSpeed,
+    MovementSpeed: DOUBLE;
 
-    { Keyboard and mouse state }
-      Button: ARRAY [0..9] OF BOOLEAN;
-      Key: ARRAY [0..ALLEGRO_KEY_MAX-1] OF BOOLEAN;
-      KeyState: ARRAY [0..ALLEGRO_KEY_MAX-1] OF BOOLEAN;
-      MouseDx, MouseDy: INTEGER;
+  { Keyboard and mouse state }
+    Button: ARRAY [0..9] OF BOOLEAN;
+    Key: ARRAY [0..ALLEGRO_KEY_MAX-1] OF BOOLEAN;
+    KeyState: ARRAY [0..ALLEGRO_KEY_MAX-1] OF BOOLEAN;
+    MouseDx, MouseDy: INTEGER;
 
-    { Control scheme selection }
-      controls: INTEGER;
-      ControlsNames: ARRAY [0..2] OF STRING;
+  { Control scheme selection }
+    controls: INTEGER;
+    ControlsNames: ARRAY [0..2] OF STRING;
 
-    { the vertex data }
-      n: INTEGER;
-      v: ARRAY OF ALLEGRO_VERTEX;
+  { the vertex data }
+    n: INTEGER;
+    v: ARRAY OF ALLEGRO_VERTEX;
 
-    { used to draw some info text }
-      Font: ALLEGRO_FONTptr;
-    END;
+  { used to draw some info text }
+    Font: ALLEGRO_FONTptr;
+  END;
 
-  VAR
-    Example: TExample;
+VAR
+  Example: TExample;
 
 
 
@@ -390,42 +390,34 @@ PROGRAM ex_camera;
 
   { Draw some text. }
     th := al_get_font_line_height (Example.font);
-    al_draw_text (
+    al_draw_textf (
       Example.Font, Front, 0, th * 0, 0,
-      Format (
-        'look: %3.1f/%3.1f/%3.1f (change with left mouse button and drag)',
-        [
-          -Example.Camera.zAxis.x,
-          -Example.Camera.zAxis.y,
-          -Example.Camera.zAxis.z
-        ]
-      )
+      'look: %3.1f/%3.1f/%3.1f (change with left mouse button and drag)',
+      [
+        -Example.Camera.zAxis.x,
+        -Example.Camera.zAxis.y,
+        -Example.Camera.zAxis.z
+      ]
     );
     Pitch := GetPitch (Example.Camera) * 180 / pi;
     Yaw   := GetYaw (Example.Camera) * 180 / pi;
     Roll  := GetRoll (Example.Camera) * 180 / pi;
-    al_draw_text (
+    al_draw_textf (
       Example.Font, Front, 0, th * 1, 0,
-      Format (
-        'pitch: %4.0f yaw: %4.0f roll: %4.0f',
-        [ Pitch, Yaw, Roll]
-      )
+      'pitch: %4.0f yaw: %4.0f roll: %4.0f',
+      [ Pitch, Yaw, Roll]
     );
-    al_draw_text (
+    al_draw_textf (
       Example.Font, Front, 0, th * 2, 0,
-      Format (
-        'vertical field of view: %3.1f (change with Z/X)',
-        [Example.Camera.VerticalFieldOfView * 180 / pi]
-      )
+      'vertical field of view: %3.1f (change with Z/X)',
+      [Example.Camera.VerticalFieldOfView * 180 / pi]
     );
     al_draw_text
       (Example.Font, Front, 0, th * 3, 0, 'move with WASD or cursor');
-    al_draw_text (
+    al_draw_textf (
       Example.Font, Front, 0, th * 4, 0,
-      Format (
-        'control style: %s (space to change)',
-        [Example.ControlsNames[Example.Controls]]
-      )
+      'control style: %s (space to change)',
+      [Example.ControlsNames[Example.Controls]]
     )
   END;
 

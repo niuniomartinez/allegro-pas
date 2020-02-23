@@ -3,19 +3,25 @@ Changes between versions 5.2.beta and 5.2.b.1
 
   Bugfixing
   ---------
+  #15: ex_projection fixed modifying the way it gets stars position.
   #18: Now it doesn't use the "debug" version of the library by default, as it
        is not necessary and makes things not to work on Ubuntu unless you know
        what's happening (read build documentation).
      : Fixed constant name: ALLEGRO_RENDER_GREATER_EQUAL.
+  #19: Fixed "Warning: Converting pointers to signed integers" in ex_menu by
+       adding and using a new data structure (AL_DATA_PTR_T).
+       See ALLEGRO_USER_EVENT in "API changes".
 
   News
   ----
      : Added unit al5memfile.
      : Added unit al5video.
+     : Added unit al5strings, and moved UTF8 stuff to it.
      : Added constant AL_EOF.
      : Added unstable API stuff, as it's quite useful.  This affects several
        units and subsystems.
-  #16: Now Windows compiles for "monolith" by default.
+  #16: Now Windows compiles for "monolith" by default.  You can define
+       NO_MONOLITH to compile with the normal dynamic library.
      : Added a "resources" directory with some interesting resources.
      : Added some new constants with version information.
      : Added constant with TAU number (2PI).  Look for "Tau Manifesto" for more
@@ -59,6 +65,8 @@ Changes between versions 5.2.beta and 5.2.b.1
        implement it as add-on.
      : Changed some functions and procedures of the al5primitives unit, using
        arrays instead of pointers, and using enumerations instead of integers.
+  #18: Changed ALLEGRO_USER_EVENT declaration.  Now "data*" fields are
+       AL_DATA_PTR_T, an union that allows to use them as POINTER or INTEGER.
 
 
 

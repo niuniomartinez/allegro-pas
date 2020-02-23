@@ -4,7 +4,7 @@ PROGRAM ex_video;
  *    Demonstrate how to use the al5video add-on.
  *)
 (*
-  Copyright (c) 2019 Guillermo Martínez J.
+  Copyright (c) 2019-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -32,13 +32,13 @@ PROGRAM ex_video;
 
 USES
    Common,
-   allegro5, al5audio, al5font, al5primitives, al5video,
+   allegro5, al5base, al5audio, al5font, al5primitives, al5video, al5strings,
    sysutils;
 
 VAR
   Screen: ALLEGRO_DISPLAYptr;
   Font: ALLEGRO_FONTptr;
-  FileName: STRING;
+  FileName: AL_STR;
   Zoom: REAL;
 
   PROCEDURE VideoDisplay (Video: ALLEGRO_VIDEOptr);
@@ -151,9 +151,9 @@ BEGIN
   IF Paramcount < 2 THEN
   BEGIN
     LogWriteLn ('This example needs to be run from the command line.');
-    LogWriteLn (Format ('Usage: %s [--use-frame-events] <file>', [ExtractFileName (ParamStr (0))]));
+    LogPrintLn ('Usage: %s [--use-frame-events] <file>', [ExtractFileName (ParamStr (0))]);
     Done;
-    Halt (-1)
+    Halt (1)
   END;
 
 { If UseFrameEvents is FALSE, we use a fixed FPS timer. If the video is
@@ -189,12 +189,12 @@ BEGIN
 
   al_set_new_bitmap_flags (ALLEGRO_MIN_LINEAR OR ALLEGRO_MAG_LINEAR);
 
-  FileName := ParamStr (FilenameArgIdx);
+  FileName := al_string_to_str (ParamStr (FilenameArgIdx));
   Video := al_open_video (FileName);
   IF Video = NIL THEN
-    AbortExample (Format ('Cannot read %s.', [FileName]));
-  LogWriteLn (Format ('video FPS: %f', [al_get_video_fps (Video)]));
-  LogWriteLn (Format ('video audio rate: %f', [al_get_video_audio_rate (Video)]));
+    AbortExample (al_str_format ('Cannot read %s.', [FileName]));
+  LogPrintLn ('video FPS: %f', [al_get_video_fps (Video)]);
+  LogPrintLn ('video audio rate: %f', [al_get_video_audio_rate (Video)]);
   LogWriteLn ('keys:');
   LogWriteLn ('Space: Play/Pause');
   LogWriteLn ('cursor right/left: seek 10 seconds');

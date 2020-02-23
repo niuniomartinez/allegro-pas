@@ -62,7 +62,7 @@ endif
 # ----------------------------
 
 # Optimization options, including "smart linking".
-OPTOPT = -O3 -Xs -XX
+OPTOPT = -O3 -CX -Xs -XX
 
 # Next can be used to optimize for almost any current 32bit PC with Linux or
 # Windows, doing it pretty well.  Of course, it will prevent your executable to
@@ -78,12 +78,15 @@ OPTOPT = -O3 -Xs -XX
 # -- Debug specifics --
 # ---------------------
 
-# Debugging opetions.
-# Not only adds GDB information to the executable, but also tells the compiler
-# to show ALL warnings and hints.
-DBGOPT = -O- -gl -vh -vw
+# Debugging options.
+# Adds GDB information to the executable, and shows warnings and hints.
+DBGOPT = -O1 -g -gl -vh -vw
+# Adds some code to check ranges and overflows.
+DBGOPT += -Ct -Cr -CR -Co
+# Adds code for valgrind
+# DBGOPT += -gv
 
-# Liks with "debug" Allegro.  Usefull when creating an add-on or Allegro.pas
+# Liks with "debug" Allegro.  Useful when creating an add-on or testing Allegro
 # itself.
 # DBGOPT += -dDEBUGMODE
 
@@ -97,7 +100,7 @@ DBGOPT = -O- -gl -vh -vw
 MAINSUF = .pas
 LIBSUF  = .pas
 
-# Directories
+# Directories.
 SRCDIR = src/
 LIBDIR = lib/
 EXMDIR = examples/
@@ -108,38 +111,44 @@ BINDIR = bin/
 FPDIR = furiouspaladin/
 PADIR = pascaleroids/
 
-DOCSRC = $(SRCDIR)docs/
 LIBSRC = $(SRCDIR)$(LIBDIR)
 EXMSRC = $(SRCDIR)$(EXMDIR)
 DEMSRC = $(SRCDIR)$(DEMDIR)
 FPSRC = $(DEMSRC)$(FPDIR)
 PASRC = $(DEMSRC)$(PADIR)
 
-DOCDIR = docs/lib/
 EXMBIN = $(BINDIR)$(EXMDIR)
 DEMBIN = $(BINDIR)$(DEMDIR)
 FPBIN = $(DEMBIN)$(FPDIR)
 PABIN = $(DEMBIN)$(PADIR)
 
 
+# Pascal dialect: Delphi.
+# This is to make it more easy to write code that works on both Delphi and FPC
+# compilers.  Actually you can use Allegro.pas in any of the dialects
+# supported by FPC.
+CPFLAGS = -Mdelphi
 
-#Pascal flags
-PFLAGS = -Sh -Si
+# Pascal flags.
+PFLAGS = $(CPFLAGS)
 
-# Optimized compilation
+# Optimized compilation.
 #FLAGS = $(OPTOPT) $(PFLAGS) $(EFLAGS)
 # Use next line instead to activate debug.
 FLAGS = $(DBGOPT) $(PFLAGS) $(EFLAGS)
 
 # If you're using Windows, the examples will link with the "monolith" version
-# of Allegro by default.  If you want to link with the "non-monolith" version
-# then use next line (read "docs/build/windows.txt" for more information).
+# of Allegro by default.  If you want to link with the no-monolith version then
+# use next line (read "docs/build/windows.txt" for more information).
 # FLAGS += -dNO_MONOLITH
 
 
-# ---------------------------
-# -- Documentation options --
-# ---------------------------
+# -------------------
+# -- Documentation --
+# -------------------
+
+DOCSRC = $(SRCDIR)docs/
+DOCDIR = docs/lib/
 
 DOCFMT = -O html -L en
 DOCOPTS = --staronly --auto-abstract --include-creation-time --use-tipue-search

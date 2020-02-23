@@ -40,13 +40,11 @@ Unsigned 32/64bit integer values.
 #al5base.AL_SIZE_T
 size_t equivalent.
 #al5base.AL_INTPTR_T
-Fake pointer type.  It's needed to pass pointers as integer values in some methods.
-
-@bold(Note:) This type may change to @code(AL_POINTER) in the future.
+Fake pointer type.  It's needed to use pointers as integer values in some low-level operations.
+@seealso(AL_DATA_PTR_T)
 #al5base.AL_UINTPTR_T
-Fake pointer type.  It's needed to pass pointers as integer values in some methods.
-
-@bold(Note:) This type may change to @code(AL_POINTER) in the future.
+Fake pointer type.  It's needed to use pointers as integer values in some low-level operations.
+@seealso(AL_DATA_PTR_T)
 #al5base.AL_OFF_T
 Another 64bit integer to store sizes.
 #al5base.AL_FLOAT
@@ -55,15 +53,26 @@ Float value.
 Double value.
 #al5base.AL_STR
 Strings.  Used in parameters to convert Pascal's @code(STRING) to C's @code(char *).
+@seealso(al5strings)
 
 #al5base.AL_VOIDptr
 Pointer.
 #al5base.AL_STRptr
 Pointer to text strings.  Used to convert Pascal's @code(STRING) to C @code(char *).
+@seealso(al5strings)
 #al5base.AL_INTptr
 Pointer to integer.
 #al5base.AL_FLOATptr
 Pointer to float.
+
+#al5base.AL_DATA_PTR_T
+Special @italic(union) record used to store a integer and a pointer in the same variable.
+
+This is a workaround because some Pascal compilers doesn't allow to cast a @code(POINTER) as @code(INTEGER) and vice-versa.  This is needed in some low-level operations.
+@seealso(ALLEGRO_USER_EVENT)
+@member int_value The data as an integer value with same size than @link(AL_POINTER);
+@member uint_value The data as an unsigned integer value with same size than @link(AL_POINTER);
+@member ptr_value The data as a generic pointer.
 
 
 
@@ -727,172 +736,6 @@ You can get the same effect with a sub bitmap:
 
 See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be drawn where.
 @seealso(al_draw_tinted_bitmap)
-
-
-
-#Allegro5.ALLEGRO_USTR
-An opaque type representing a string. @code(ALLEGRO_USTR)s normally
-contain UTF-8 encoded strings, but they may be used to hold any byte
-sequences, including @nil.
-#Allegro5.ALLEGRO_USTR_INFO
-A type that holds additional information for an @link(ALLEGRO_USTR) that
-references an external memory buffer.
-@seealso(al_ref_cstr) @seealso(al_ref_buffer) @seealso(al_ref_ustr)
-
-#Allegro5.al_ustr_new
-Creates a new string containing a copy of the C-style string @code(s). The
-string must eventually be freed with @link(al_ustr_free).
-@seealso(al_ustr_new_from_buffer) @seealso(al_ustr_assign)
-@seealso(al_ustr_dup)
-#Allegro5.al_ustr_new_from_buffer
-Creates a new string containing a copy of the buffer pointed to by @code(s)
-of the given @code(size) in bytes. The string must eventually be freed with
-@link(al_ustr_free).
-@seealso(al_ustr_new)
-#Allegro5.al_ustr_free
-Frees a previously allocated string. Does nothing if the argument is @nil.
-@seealso(al_ustr_new) @seealso(al_ustr_new_from_buffer)
-#Allegro5.al_cstr
-Get a @code(AL_STRptr) pointer to the data in a string. This pointer will only be valid while the @code(ALLEGRO_USTR) object is not modified and not destroyed. The pointer may be passed to functions expecting C-style strings, with the following caveats:@unorderedlist(
-  @item(@code(ALLEGRO_USTR)s are allowed to contain embedded @code(NUL) @(@code($00)@) bytes. That means @code(al_ustr_size @(u@)) and @code(Length @(al_cstr @(u@)@)) may not agree.)
-  @item(An @code(ALLEGRO_USTR) may be created in such a way that it is not @code(NUL) terminated. A string which is dynamically allocated will always be @code(NUL) terminated, but a string which references the middle of another string or region of memory will not be @code(NUL) terminated.)
-  @item(If the @code(ALLEGRO_USTR) references another string, the returned C string will point into the referenced string. Again, no @code(NUL) terminator will be added to the referenced string.)
-)
-@seealso(al_ustr_to_buffer) @seealso(al_cstr_dup) @seealso(al_ustr_assign_cstr)
-#Allegro5.al_ustr_to_buffer
-Writes the contents of the string into a pre-allocated buffer of the given
-size in bytes. The result will always be @code(NUL) terminated, so a maximum
-of @code(size - 1) bytes will be copied.
-@seealso(al_cstr) @seealso(al_cstr_dup)
-#Allegro5.al_cstr_dup
-Creates a @code(NUL) (@code($00)) terminated copy of the string. Any embedded @code(NUL) bytes will still be presented in the returned string. The new string must eventually be freed with @code(al_free).
-
-If an error occurs @nil is returned.
-@seealso(al_cstr) @seealso(al_ustr_to_buffer) @seealso(al_free)
-#Allegro5.al_ustr_dup
-Returns a duplicate copy of a string. The new string will need to be freed
-with @code(al_ustr_free).
-@seealso(al_ustr_dup_substr) @seealso(al_ustr_free)
-#Allegro5.al_ustr_dup_substr
-Returns a new copy of a string, containing its contents in the byte interval @code([start_pos, end_pos@)). The new string will be @code(NUL) terminated and will need to be freed with @code(al_ustr_free).
-
-If necessary, use @link(al_ustr_offset) to find the byte offsets for a given code point that you are interested in.
-@seealso(al_ustr_dup) @seealso(al_ustr_free)
-
-@bold(Note)
-
-This is used because the way the C language works.  I didn't test
-if Pascal do need this kind of stuff.  Future versions of Allegro.pas would not
-include this function, so don't use it unless your really need to (and tell me
-if you really need it to remove this warning from documentation).
-
-#Allegro5.al_ustr_empty_string
-Returns a pointer to a static empty string. The string is read only and must not be freed.
-
-#Allegro5.al_ref_cstr
-Creates a string that references the storage of a C-style string. The
-information about the string (e.g. its size) is stored in the @code(info)
-parameter. The string will not have any other storage allocated of its own,
-so if you allocate the info structure on the stack then no explicit "free"
-operation is required.
-
-The string is valid until the underlying C string disappears.
-
-Example:
-@longcode(!
-VAR
-  Info: ALLEGRO_USTR_INFO;
-  us: ALLEGRO_USTRptr;
-BEGIN
-  us := al_ref_cstr (Info, 'my string')
-END;
-!)
-@seealso(al_ref_buffer) @seealso(al_ref_ustr)
-#Allegro5.al_ref_buffer
-Creates a string that references the storage of an underlying buffer. The size of the buffer is given in bytes. You can use it to reference only part of a string or an arbitrary region of memory.
-
-The string is valid while the underlying memory buffer is valid.
-@seealso(al_ref_cstr) @seealso(al_ref_ustr)
-#Allegro5.al_ref_ustr
-Creates a read-only string that references the storage of another @link(ALLEGRO_USTR) string. The information about the string (e.g. its size) is stored in the structure pointed to by the @code(info) parameter. The new string will not have any other storage allocated of its own, so if you allocate the info structure on the stack then no explicit "free" operation is required.
-
-The referenced interval is @code([start_pos, end_pos@)). Both are byte offsets.
-
-The string is valid until the underlying string is modified or destroyed.
-
-If you need a range of code-points instead of bytes, use @link(al_ustr_offset) to find the byte offsets.
-@seealso(al_ref_cstr) @seealso(al_ref_buffer)
-
-#Allegro5.al_ustr_size
-Returns the size of the string in bytes. This is equal to the number of code points in the string if the string is empty or contains only 7-bit ASCII characters.
-@seealso(al_ustr_length)
-#Allegro5.al_ustr_length
-Returns the number of code points in the string. @seealso(al_ustr_size) @seealso(al_ustr_offset)
-#Allegro5.al_ustr_offset
-Returns the byte offset (from the start of the string) of the code point at the specified @code(index) in the string. A zero index parameter will return the first character of the string. If @code(index) is negative, it counts backward from the end of the string, so an index of -1 will return an offset to the last code point.
-
-If the @code(index) is past the end of the string, returns the offset of the end of the string.
-@seealso(al_ustr_length)
-#Allegro5.al_ustr_next
-Finds the byte offset of the next code point in string, beginning at
-@code(aPos). @code(aPos) does not have to be at the beginning of a code point.
-
-This function just looks for an appropriate byte; it doesn't check if found
-offset is the beginning of a valid code point. If you are working with
-possibly invalid UTF-8 strings then it could skip over some invalid bytes.
-@return(@true on success, and @code(aPos) will be updated to the found
-offset. Otherwise returns @false if @code(aPos) was already at the end of
-the string, and @code(aPos) is unmodified.)
-@seealso(al_ustr_prev)
-#Allegro5.al_ustr_prev
-Finds the byte offset of the previous code point in string, before
-@code(aPos). @code(aPos) does not have to be at the beginning of a code point.
-
-This function just looks for an appropriate byte; it doesn't check if found
-offset is the beginning of a valid code point. If you are working with
-possibly invalid UTF-8 strings then it could skip over some invalid bytes.
-@return(@true on success, and @code(aPos) will be updated to the found
-offset. Otherwise returns @false if @code(aPos) was already at the end of
-the string, and @code(aPos) is unmodified.)
-@seealso(al_ustr_next)
-
-#Allegro5.al_ustr_insert_chr
-Inserts a code point into us beginning at byte offset @code(aPos). @code(aPos) cannot be less than 0. If @code(aPos) is past the end of us then the space between the end of the string and @code(aPos) will be padded with @code(NUL) (@code('\0')) bytes.
-@Return(The number of bytes inserted, or 0 on error.)
-@seealso(al_ustr_offset) @seealso(al_ustr_remove_chr)
-
-#Allegro5.al_ustr_remove_chr
-Removes the code point beginning at byte offset pos.
-
-Use @link(al_ustr_offset) to find the byte offset for a code-points offset.
-@Return(@true on success. If @code(apos) is out of range or @code(apos) is not the beginning of a valid code point, returns @false leaving the string unmodified.)
-@seealso(al_ustr_offset) @seealso(al_ustr_insert_chr)
-
-#Allegro5.al_ustr_assign
-Overwrites the string @code(us1) with another string @code(us2).
-@returns(@true on success, @false on error.)
-@seealso(al_ustr_assign_cstr)
-#Allegro5.al_ustr_assign_cstr
-Overwrites the string @code(us1) with the contents of the string @code(s).
-@return(@true on success, @false on error.)
-@seealso(al_ustr_assign)
-
-#Allegro5.al_ustr_equal
-Returns @true if the two strings are equal. This function is more efficient than @link(al_ustr_compare) so is preferable if ordering is not important.
-@seealso(al_ustr_compare)
-#Allegro5.al_ustr_compare
-This function compares @code(us1) and @code(us2) by code point values.  It returns zero if the strings are equal, a positive number if @code(us1) comes after @code(us2), else a negative number.
-
-This does not take into account locale-specific sorting rules. For that you will need to use another library.
-@seealso(al_ustr_ncompare) @seealso(al_ustr_equal)
-#Allegro5.al_ustr_ncompare
-This function compares @code(us1) and @code(us2) by code point values. It returns zero if the strings are equal, a positive number if @code(us1) comes after @code(us2), else a negative number.
-
-This does not take into account locale-specific sorting rules. For that you will need to use another library.
-@seealso(al_ustr_ncompare) @seealso(al_ustr_equal)
-
-#Allegro5.al_utf8_width
-Returns the number of bytes that would be occupied by the specified code point when encoded in UTF-8. This is between 1 and 4 bytes for legal code point values. Otherwise returns 0.
 
 
 
@@ -2051,10 +1894,10 @@ Contains the touch input events information. @seealso(ALLEGRO_EVENT)
 An event structure that can be emitted by user event sources. These are the public fields:
 @longcode(!
   source: ALLEGRO_EVENT_SOURCE;
-  data1: AL_INTPTR_T;
-  data2: AL_INTPTR_T;
-  data3: AL_INTPTR_T;
-  data4: AL_INTPTR_T;
+  data1: AL_DATA_INTPTR_T;
+  data2: AL_DATA_INTPTR_T;
+  data3: AL_DATA_INTPTR_T;
+  data4: AL_DATA_INTPTR_T;
 !)
 Like all other event types this structure is a part of the @link(ALLEGRO_EVENT) union. To access the fields in an @code(ALLEGRO_EVENT) variable @code(ev), you would use:
 @preformatted(
@@ -2073,8 +1916,8 @@ VAR
 BEGIN
   al_init_user_event_source (MyEventSource);
   MyEvent.user.ftype := ALLEGRO_GET_EVENT_TYPE ('MINE');
-  MyEvent.user.data1 := 1;
-  MyEvent.user.data2 := AL_INTPTR_T (@SomeVar); { <- Ignore compilation hint. }
+  MyEvent.user.data1.int_value := 1;
+  MyEvent.user.data2.ptr_value := @SomeVar;
   al_emit_user_event (MyEventSource, MyEvent, NIL)
 END;
 !)
@@ -6080,6 +5923,188 @@ There are 7 vertices: four for an outer square from (0, 0) to (100, 100) in anti
 @param(vertex_counts Number of vertices for each polygon. The number of vertices in the filled polygon is given by @code(vertex_counts[0]) and must be at least three. Subsequent elements indicate the number of vertices in each hole. The array must be terminated with an element with value zero.)
 @param(color Color of the filled polygon.)
 @seealso(al_draw_filled_polygon) @seealso(al_draw_filled_polygon_with_holes) @seealso(al_triangulate_polygon)
+
+
+
+#al5strings.al_string_to_str
+Converts Pascal strings to @link(AL_STR).
+#al5strings.al_str_to_string
+Converts @link(AL_STR) or @link(AL_STRptr) to a @code(STRING).
+#al5strings.al_str_to_shortstring
+Converts @link(AL_STR) or @link(AL_STRptr) to a Pascal string.
+#al5strings.al_str_to_ansistring
+Converts @link(AL_STR) or @link(AL_STRptr) to an @code(ANSISTRING).
+#al5strings.al_str_to_unicodestring
+Converts @link(AL_STR) or @link(AL_STRptr) to an @code(UNICODESTRING).
+
+#al5strings.al_str_format
+Formats a string with given arguments.
+
+It works exactly like RTL @code(SysUtils.Format) but using @link(AL_STR) instead of @code(STRING).
+
+#al5strings.ALLEGRO_USTR
+An opaque type representing a string. @code(ALLEGRO_USTR)s normally
+contain UTF-8 encoded strings, but they may be used to hold any byte
+sequences, including @nil.
+#al5strings.ALLEGRO_USTR_INFO
+A type that holds additional information for an @link(ALLEGRO_USTR) that
+references an external memory buffer.
+@seealso(al_ref_cstr) @seealso(al_ref_buffer) @seealso(al_ref_ustr)
+
+#al5strings.al_ustr_new
+Creates a new string containing a copy of the C-style string @code(s). The
+string must eventually be freed with @link(al_ustr_free).
+@seealso(al_ustr_new_from_buffer) @seealso(al_ustr_assign)
+@seealso(al_ustr_dup)
+#al5strings.al_ustr_new_from_buffer
+Creates a new string containing a copy of the buffer pointed to by @code(s)
+of the given @code(size) in bytes. The string must eventually be freed with
+@link(al_ustr_free).
+@seealso(al_ustr_new)
+#al5strings.al_ustr_free
+Frees a previously allocated string. Does nothing if the argument is @nil.
+@seealso(al_ustr_new) @seealso(al_ustr_new_from_buffer)
+#al5strings.al_cstr
+Get a @code(AL_STRptr) pointer to the data in a string. This pointer will only be valid while the @code(ALLEGRO_USTR) object is not modified and not destroyed. The pointer may be passed to functions expecting C-style strings, with the following caveats:@unorderedlist(
+  @item(@code(ALLEGRO_USTR)s are allowed to contain embedded @code(NUL) @(@code($00)@) bytes. That means @code(al_ustr_size @(u@)) and @code(Length @(al_cstr @(u@)@)) may not agree.)
+  @item(An @code(ALLEGRO_USTR) may be created in such a way that it is not @code(NUL) terminated. A string which is dynamically allocated will always be @code(NUL) terminated, but a string which references the middle of another string or region of memory will not be @code(NUL) terminated.)
+  @item(If the @code(ALLEGRO_USTR) references another string, the returned C string will point into the referenced string. Again, no @code(NUL) terminator will be added to the referenced string.)
+)
+@seealso(al_ustr_to_buffer) @seealso(al_cstr_dup) @seealso(al_ustr_assign_cstr)
+#al5strings.al_ustr_to_buffer
+Writes the contents of the string into a pre-allocated buffer of the given
+size in bytes. The result will always be @code(NUL) terminated, so a maximum
+of @code(size - 1) bytes will be copied.
+@seealso(al_cstr) @seealso(al_cstr_dup)
+#al5strings.al_cstr_dup
+Creates a @code(NUL) (@code($00)) terminated copy of the string. Any embedded @code(NUL) bytes will still be presented in the returned string. The new string must eventually be freed with @code(al_free).
+
+If an error occurs @nil is returned.
+@seealso(al_cstr) @seealso(al_ustr_to_buffer) @seealso(al_free)
+#al5strings.al_ustr_dup
+Returns a duplicate copy of a string. The new string will need to be freed
+with @code(al_ustr_free).
+@seealso(al_ustr_dup_substr) @seealso(al_ustr_free)
+#al5strings.al_ustr_dup_substr
+Returns a new copy of a string, containing its contents in the byte interval @code([start_pos, end_pos@)). The new string will be @code(NUL) terminated and will need to be freed with @code(al_ustr_free).
+
+If necessary, use @link(al_ustr_offset) to find the byte offsets for a given code point that you are interested in.
+@seealso(al_ustr_dup) @seealso(al_ustr_free)
+
+@bold(Note)
+
+This is used because the way the C language works.  I didn't test
+if Pascal do need this kind of stuff.  Future versions of Allegro.pas would not
+include this function, so don't use it unless your really need to (and tell me
+if you really need it to remove this warning from documentation).
+
+#al5strings.al_ustr_empty_string
+Returns a pointer to a static empty string. The string is read only and must not be freed.
+
+#al5strings.al_ref_cstr
+Creates a string that references the storage of a C-style string. The
+information about the string (e.g. its size) is stored in the @code(info)
+parameter. The string will not have any other storage allocated of its own,
+so if you allocate the info structure on the stack then no explicit "free"
+operation is required.
+
+The string is valid until the underlying C string disappears.
+
+Example:
+@longcode(!
+VAR
+  Info: ALLEGRO_USTR_INFO;
+  us: ALLEGRO_USTRptr;
+BEGIN
+  us := al_ref_cstr (Info, 'my string')
+END;
+!)
+@seealso(al_ref_buffer) @seealso(al_ref_ustr)
+#al5strings.al_ref_buffer
+Creates a string that references the storage of an underlying buffer. The size of the buffer is given in bytes. You can use it to reference only part of a string or an arbitrary region of memory.
+
+The string is valid while the underlying memory buffer is valid.
+@seealso(al_ref_cstr) @seealso(al_ref_ustr)
+#al5strings.al_ref_ustr
+Creates a read-only string that references the storage of another @link(ALLEGRO_USTR) string. The information about the string (e.g. its size) is stored in the structure pointed to by the @code(info) parameter. The new string will not have any other storage allocated of its own, so if you allocate the info structure on the stack then no explicit "free" operation is required.
+
+The referenced interval is @code([start_pos, end_pos@)). Both are byte offsets.
+
+The string is valid until the underlying string is modified or destroyed.
+
+If you need a range of code-points instead of bytes, use @link(al_ustr_offset) to find the byte offsets.
+@seealso(al_ref_cstr) @seealso(al_ref_buffer)
+
+#al5strings.al_ustr_size
+Returns the size of the string in bytes. This is equal to the number of code points in the string if the string is empty or contains only 7-bit ASCII characters.
+@seealso(al_ustr_length)
+#al5strings.al_ustr_length
+Returns the number of code points in the string. @seealso(al_ustr_size) @seealso(al_ustr_offset)
+#al5strings.al_ustr_offset
+Returns the byte offset (from the start of the string) of the code point at the specified @code(index) in the string. A zero index parameter will return the first character of the string. If @code(index) is negative, it counts backward from the end of the string, so an index of -1 will return an offset to the last code point.
+
+If the @code(index) is past the end of the string, returns the offset of the end of the string.
+@seealso(al_ustr_length)
+#al5strings.al_ustr_next
+Finds the byte offset of the next code point in string, beginning at
+@code(aPos). @code(aPos) does not have to be at the beginning of a code point.
+
+This function just looks for an appropriate byte; it doesn't check if found
+offset is the beginning of a valid code point. If you are working with
+possibly invalid UTF-8 strings then it could skip over some invalid bytes.
+@return(@true on success, and @code(aPos) will be updated to the found
+offset. Otherwise returns @false if @code(aPos) was already at the end of
+the string, and @code(aPos) is unmodified.)
+@seealso(al_ustr_prev)
+#al5strings.al_ustr_prev
+Finds the byte offset of the previous code point in string, before
+@code(aPos). @code(aPos) does not have to be at the beginning of a code point.
+
+This function just looks for an appropriate byte; it doesn't check if found
+offset is the beginning of a valid code point. If you are working with
+possibly invalid UTF-8 strings then it could skip over some invalid bytes.
+@return(@true on success, and @code(aPos) will be updated to the found
+offset. Otherwise returns @false if @code(aPos) was already at the end of
+the string, and @code(aPos) is unmodified.)
+@seealso(al_ustr_next)
+
+#al5strings.al_ustr_insert_chr
+Inserts a code point into us beginning at byte offset @code(aPos). @code(aPos) cannot be less than 0. If @code(aPos) is past the end of us then the space between the end of the string and @code(aPos) will be padded with @code(NUL) (@code('\0')) bytes.
+@Return(The number of bytes inserted, or 0 on error.)
+@seealso(al_ustr_offset) @seealso(al_ustr_remove_chr)
+
+#al5strings.al_ustr_remove_chr
+Removes the code point beginning at byte offset pos.
+
+Use @link(al_ustr_offset) to find the byte offset for a code-points offset.
+@Return(@true on success. If @code(apos) is out of range or @code(apos) is not the beginning of a valid code point, returns @false leaving the string unmodified.)
+@seealso(al_ustr_offset) @seealso(al_ustr_insert_chr)
+
+#al5strings.al_ustr_assign
+Overwrites the string @code(us1) with another string @code(us2).
+@returns(@true on success, @false on error.)
+@seealso(al_ustr_assign_cstr)
+#al5strings.al_ustr_assign_cstr
+Overwrites the string @code(us1) with the contents of the string @code(s).
+@return(@true on success, @false on error.)
+@seealso(al_ustr_assign)
+
+#al5strings.al_ustr_equal
+Returns @true if the two strings are equal. This function is more efficient than @link(al_ustr_compare) so is preferable if ordering is not important.
+@seealso(al_ustr_compare)
+#al5strings.al_ustr_compare
+This function compares @code(us1) and @code(us2) by code point values.  It returns zero if the strings are equal, a positive number if @code(us1) comes after @code(us2), else a negative number.
+
+This does not take into account locale-specific sorting rules. For that you will need to use another library.
+@seealso(al_ustr_ncompare) @seealso(al_ustr_equal)
+#al5strings.al_ustr_ncompare
+This function compares @code(us1) and @code(us2) by code point values. It returns zero if the strings are equal, a positive number if @code(us1) comes after @code(us2), else a negative number.
+
+This does not take into account locale-specific sorting rules. For that you will need to use another library.
+@seealso(al_ustr_ncompare) @seealso(al_ustr_equal)
+
+#al5strings.al_utf8_width
+Returns the number of bytes that would be occupied by the specified code point when encoded in UTF-8. This is between 1 and 4 bytes for legal code point values. Otherwise returns 0.
 
 
 

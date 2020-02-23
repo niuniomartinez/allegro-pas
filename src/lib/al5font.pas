@@ -4,7 +4,7 @@ UNIT al5font;
   @bold(See also)
 
   @link(al5ttf) *)
-(* Copyright (c) 2012-2019 Guillermo Martínez J.
+(* Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -32,7 +32,7 @@ UNIT al5font;
 INTERFACE
 
   USES
-    Allegro5, al5base;
+    Allegro5, al5base, al5strings;
 
   CONST
     ALLEGRO_NO_KERNING    = -1; {**<@exclude }
@@ -77,10 +77,8 @@ INTERFACE
     INLINE;
   PROCEDURE al_draw_justified_ustr (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: AL_FLOAT; flags: AL_INT; CONST str: ALLEGRO_USTRptr);
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
-  PROCEDURE al_draw_textf (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: AL_FLOAT; flags: AL_INT; fmt: AL_STR; values: ARRAY OF CONST);
-    INLINE;
-  PROCEDURE al_draw_justified_textf (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: AL_FLOAT; flags: AL_INT; CONST fmt: AL_STR; values: ARRAY OF CONST);
-    INLINE;
+  PROCEDURE al_draw_textf (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: AL_FLOAT; flags: AL_INT; CONST fmt: AL_STR; CONST values: ARRAY OF CONST);
+  PROCEDURE al_draw_justified_textf (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: AL_FLOAT; flags: AL_INT; CONST fmt: AL_STR; CONST values: ARRAY OF CONST);
   FUNCTION al_get_text_width (CONST font: ALLEGRO_FONTptr; CONST str: AL_STR): AL_INT;
     INLINE;
   FUNCTION al_get_ustr_width (CONST font: ALLEGRO_FONTptr; CONST ustr: ALLEGRO_USTRptr): AL_INT;
@@ -123,8 +121,7 @@ ALLEGRO_FONT_FUNC(bool, al_get_glyph, (const ALLEGRO_FONT *f, int prev_codepoint
 
   PROCEDURE al_draw_multiline_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y, max_width, line_height: AL_FLOAT; flags: AL_INT; CONST str: AL_STR);
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
-  PROCEDURE al_draw_multiline_textf (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y, max_width, line_height: AL_FLOAT; flags: AL_INT; CONST fmt: AL_STR; values: ARRAY OF CONST);
-    CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
+  PROCEDURE al_draw_multiline_textf (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y, max_width, line_height: AL_FLOAT; flags: AL_INT; CONST fmt: AL_STR; CONST values: ARRAY OF CONST);
   PROCEDURE al_draw_multiline_ustr (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y, max_width, line_height: AL_FLOAT; flags: AL_INT; CONST str: ALLEGRO_USTRptr);
     CDECL; EXTERNAL ALLEGRO_FONT_LIB_NAME;
 
@@ -159,37 +156,65 @@ ALLEGRO_FONT_FUNC(bool, al_get_glyph, (const ALLEGRO_FONT *f, int prev_codepoint
 IMPLEMENTATION
 
   USES
+  {$IFDEF ISDELPHI2009ANDUP}
+  { This unit implements SysUtils and Strings using ANSISTRING instead of
+    UNICODESTRING, which is the default in modern Delphi compilers. }
+    AnsiStrings;
+  {$ELSE}
     sysutils;
+  {$ENDIF}
 
-  PROCEDURE al_draw_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: AL_FLOAT; flags: AL_INT; CONST str: AL_STR);
+  PROCEDURE al_draw_text (
+    CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR;
+    x, y: AL_FLOAT; flags: AL_INT;
+    CONST str: AL_STR
+  );
   BEGIN
     IF str <> '' THEN _al_draw_text (font, color, x, y, flags, str)
   END;
 
 
 
-  PROCEDURE al_draw_justified_text (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: AL_FLOAT; flags: AL_INT; CONST str: AL_STR);
+  PROCEDURE al_draw_justified_text (
+    CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR;
+    x1, x2, y, diff: AL_FLOAT; flags: AL_INT;
+    CONST str: AL_STR
+  );
   BEGIN
-    IF str <> '' THEN _al_draw_justified_text (font, color, x1, x2, y, diff, flags, str)
+    IF str <> '' THEN
+      _al_draw_justified_text (font, color, x1, x2, y, diff, flags, str)
   END;
 
 
 
-  PROCEDURE al_draw_textf (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: AL_FLOAT; flags: AL_INT; fmt: AL_STR; values: ARRAY OF CONST);
+  PROCEDURE al_draw_textf (
+    CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR;
+    x, y: AL_FLOAT; flags: AL_INT;
+    CONST fmt: AL_STR; CONST values: ARRAY OF CONST
+  );
   BEGIN
     al_draw_text (font, color, x, y, flags, Format (fmt, values))
   END;
 
 
 
-  PROCEDURE al_draw_justified_textf (CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: AL_FLOAT; flags: AL_INT; CONST fmt: AL_STR; values: ARRAY OF CONST);
+  PROCEDURE al_draw_justified_textf (
+    CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR;
+    x1, x2, y, diff: AL_FLOAT; flags: AL_INT;
+    CONST fmt: AL_STR; CONST values: ARRAY OF CONST
+  );
   BEGIN
-    al_draw_justified_text (font, color, x1, x2, y, diff, flags, Format (fmt, values))
+    al_draw_justified_text (
+      font, color,
+      x1, x2, y, diff, flags,
+      Format (fmt, values)
+    )
   END;
 
 
 
-  FUNCTION al_get_text_width (CONST font: ALLEGRO_FONTptr; CONST str: AL_STR): AL_INT;
+  FUNCTION al_get_text_width (CONST font: ALLEGRO_FONTptr; CONST str: AL_STR)
+    : AL_INT;
   BEGIN
     IF str <> '' THEN
       RESULT := _al_get_text_width (font, str)
@@ -199,13 +224,31 @@ IMPLEMENTATION
 
 
 
-  PROCEDURE al_get_text_dimensions (CONST f: ALLEGRO_FONTptr; CONST str: AL_STR; OUT bbx, bby, bbw, bbh: AL_INT);
+  PROCEDURE al_get_text_dimensions (
+    CONST f: ALLEGRO_FONTptr; CONST str: AL_STR;
+    OUT bbx, bby, bbw, bbh: AL_INT
+  );
   BEGIN
     IF str <> '' THEN
       _al_get_text_dimensions (f, str, bbx, bby, bbw, bbh)
     ELSE BEGIN
       bbx := 0; bby := 0; bbw := 0; bbh := 0
     END
+  END;
+
+
+
+  PROCEDURE al_draw_multiline_textf (
+    CONST font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR;
+    x, y, max_width, line_height: AL_FLOAT; flags: AL_INT;
+    CONST fmt: AL_STR; CONST values: ARRAY OF CONST
+  );
+  BEGIN
+    al_draw_multiline_text (
+      font, color,
+      x, y, max_width, line_height, flags,
+      Format (fmt, values)
+    );
   END;
 
 END.

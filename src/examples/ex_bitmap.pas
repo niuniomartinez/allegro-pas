@@ -5,7 +5,7 @@ PROGRAM ex_bitmap;
  * zooming.
  *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -33,10 +33,10 @@ PROGRAM ex_bitmap;
 
 USES
   Common,
-  Allegro5, al5image,
+  Allegro5, al5base, al5image, al5strings,
   sysutils;
 VAR
-  FileName: STRING;
+  FileName: AL_STR;
   Bitmap: ALLEGRO_BITMAPptr;
   Timer: ALLEGRO_TIMERptr;
   Display: ALLEGRO_DISPLAYptr;
@@ -52,7 +52,7 @@ BEGIN
   are supported by platform specific libraries and support for
   image formats can also be added at runtime. }
   IF ParamCount > 0 THEN
-    FileName := ParamStr (1)
+    FileName := al_string_to_str (ParamStr (1))
   ELSE
     FileName := 'data/mysha.pcx';
 
@@ -88,9 +88,11 @@ BEGIN
   Bitmap := al_load_bitmap (FileName);
   t1 := al_get_time;
   IF Bitmap = NIL THEN
-    AbortExample (Format ('"%s" not found or failed to load.', [filename]));
+    AbortExample (
+      al_str_format ('"%s" not found or failed to load.', [filename])
+    );
 
-  LogWriteLn (Format ('Loading took %.4f seconds', [t1 - t0]));
+  LogPrintLn ('Loading took %.4f seconds', [t1 - t0]);
 
 { Create a timer that fires 30 times a second. }
   Timer := al_create_timer (1.0 / 30);

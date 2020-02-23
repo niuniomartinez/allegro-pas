@@ -1,7 +1,7 @@
 PROGRAM ex_blend;
 (* An example demonstrating different blending modes. *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -29,8 +29,7 @@ PROGRAM ex_blend;
 
 USES
   Common,
-  Allegro5, al5Font, al5Image, al5Primitives,
-  sysutils;
+  Allegro5, al5base, al5font, al5image, al5primitives, al5strings;
 
 
 VAR
@@ -55,7 +54,7 @@ VAR
 
 (* Print some text with a shadow. *)
   PROCEDURE Print
-    (CONST aX, aY: INTEGER; CONST aVertical: BOOLEAN; CONST Text: STRING);
+    (CONST aX, aY: INTEGER; CONST aVertical: BOOLEAN; CONST Text: AL_STR);
   VAR
     Color: ALLEGRO_COLOR;
     h, i, j: INTEGER;
@@ -132,14 +131,14 @@ VAR
 (* Draw our example scene. *)
   PROCEDURE Draw;
 
-    FUNCTION mIs (a, b: INTEGER): CHAR; INLINE;
+    FUNCTION mIs (a, b: INTEGER): AL_STR; INLINE;
     BEGIN
       IF a = b THEN mIs := '*' ELSE mIs := ' '
     END;
 
   CONST
-    BlendNames: ARRAY [0..3] OF STRING = ('ZERO', 'ONE', 'ALPHA', 'INVERSE');
-    BlendVNnames: ARRAY [0..3] OF STRING = ('ZERO', 'ONE', 'ALPHA', 'INVER');
+    BlendNames: ARRAY [0..3] OF AL_STR = ('ZERO', 'ONE', 'ALPHA', 'INVERSE');
+    BlendVNnames: ARRAY [0..3] OF AL_STR = ('ZERO', 'ONE', 'ALPHA', 'INVER');
     BlendModes: ARRAY [0..3] OF ALLEGRO_BLEND_MODE = (
       ALLEGRO_ZERO, ALLEGRO_ONE, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA
     );
@@ -160,14 +159,14 @@ VAR
     Test[3] := al_map_rgba_f (1, 0, 0, 0.75);
     Test[4] := al_map_rgba_f (0, 0, 0, 0);
 
-    print (TRUNC (x), 0, FALSE, Format (
+    Print (TRUNC (x), 0, FALSE, al_str_format (
       'D  E  S  T  I  N  A  T  I  O  N  (%0.2f fps)', [Ex.fFPS])
     );
-    print (0, TRUNC (y), TRUE, 'S O U R C E');
+    Print (0, TRUNC (y), TRUE, 'S O U R C E');
     FOR i := LOW (BlendNames) TO HIGH (BlendNames) DO
     BEGIN
-      print (TRUNC (x + i * 110), 20, FALSE, BlendNames[i]);
-      print (20, TRUNC (y + i * 110), TRUE, BlendVNnames[i])
+      Print (TRUNC (x + i * 110), 20, FALSE, BlendNames[i]);
+      Print (20, TRUNC (y + i * 110), TRUE, BlendVNnames[i])
     END;
 
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
@@ -211,28 +210,28 @@ VAR
       al_draw_bitmap_region (Ex.Memory, x, y, 430, 430, x, y, 0)
     END;
 
-    print (Ex.BUTTONS_X, 20 * 1, FALSE, 'What to draw');
-    print (Ex.BUTTONS_X, 20 * 2, FALSE, mIs (Ex.Image, 0)+' Picture');
-    print (Ex.BUTTONS_X, 20 * 3, FALSE, mIs (Ex.Image, 1)+' Rec1 (1/1/1/1)');
-    print (Ex.BUTTONS_X, 20 * 4, FALSE, mIs (Ex.Image, 2)+' Rec2 (1/1/1/.5)');
-    print (Ex.BUTTONS_X, 20 * 5, FALSE, mIs (Ex.Image, 3)+' Rec3 (1/1/1/.25)');
-    print (Ex.BUTTONS_X, 20 * 6, FALSE, mIs (Ex.Image, 4)+' Rec4 (1/0/0/.75)');
-    print (Ex.BUTTONS_X, 20 * 7, FALSE, mIs (Ex.Image, 5)+' Rec5 (0/0/0/0)');
+    Print (Ex.BUTTONS_X, 20 * 1, FALSE, 'What to draw');
+    Print (Ex.BUTTONS_X, 20 * 2, FALSE, mIs (Ex.Image, 0)+' Picture');
+    Print (Ex.BUTTONS_X, 20 * 3, FALSE, mIs (Ex.Image, 1)+' Rec1 (1/1/1/1)');
+    Print (Ex.BUTTONS_X, 20 * 4, FALSE, mIs (Ex.Image, 2)+' Rec2 (1/1/1/.5)');
+    Print (Ex.BUTTONS_X, 20 * 5, FALSE, mIs (Ex.Image, 3)+' Rec3 (1/1/1/.25)');
+    Print (Ex.BUTTONS_X, 20 * 6, FALSE, mIs (Ex.Image, 4)+' Rec4 (1/0/0/.75)');
+    Print (Ex.BUTTONS_X, 20 * 7, FALSE, mIs (Ex.Image, 5)+' Rec5 (0/0/0/0)');
 
-    print (Ex.BUTTONS_X, 20 * 9, FALSE, 'Where to draw');
-    print (Ex.BUTTONS_X, 20 * 10, FALSE, mIs (Ex.Mode, 0)+' screen');
+    Print (Ex.BUTTONS_X, 20 * 9, FALSE, 'Where to draw');
+    Print (Ex.BUTTONS_X, 20 * 10, FALSE, mIs (Ex.Mode, 0)+' screen');
 
-    print (Ex.BUTTONS_X, 20 * 11, FALSE, mIs (Ex.Mode, 1)+' offscreen1');
-    print (Ex.BUTTONS_X, 20 * 12, FALSE, mIs (Ex.Mode, 2)+' offscreen2');
-    print (Ex.BUTTONS_X, 20 * 13, FALSE, mIs (Ex.Mode, 3)+' offscreen3');
-    print (Ex.BUTTONS_X, 20 * 14, FALSE, mIs (Ex.Mode, 4)+' offscreen4');
-    print (Ex.BUTTONS_X, 20 * 15, FALSE, mIs (Ex.Mode, 5)+' offscreen5');
+    Print (Ex.BUTTONS_X, 20 * 11, FALSE, mIs (Ex.Mode, 1)+' offscreen1');
+    Print (Ex.BUTTONS_X, 20 * 12, FALSE, mIs (Ex.Mode, 2)+' offscreen2');
+    Print (Ex.BUTTONS_X, 20 * 13, FALSE, mIs (Ex.Mode, 3)+' offscreen3');
+    Print (Ex.BUTTONS_X, 20 * 14, FALSE, mIs (Ex.Mode, 4)+' offscreen4');
+    Print (Ex.BUTTONS_X, 20 * 15, FALSE, mIs (Ex.Mode, 5)+' offscreen5');
 
-    print (Ex.BUTTONS_X, 20 * 16, FALSE, mIs (Ex.Mode, 6)+' memory1');
-    print (Ex.BUTTONS_X, 20 * 17, FALSE, mIs (Ex.Mode, 7)+' memory2');
-    print (Ex.BUTTONS_X, 20 * 18, FALSE, mIs (Ex.Mode, 8)+' memory3');
-    print (Ex.BUTTONS_X, 20 * 19, FALSE, mIs (Ex.Mode, 9)+' memory4');
-    print (Ex.BUTTONS_X, 20 * 20, FALSE, mIs (Ex.Mode, 10)+' memory5')
+    Print (Ex.BUTTONS_X, 20 * 16, FALSE, mIs (Ex.Mode, 6)+' memory1');
+    Print (Ex.BUTTONS_X, 20 * 17, FALSE, mIs (Ex.Mode, 7)+' memory2');
+    Print (Ex.BUTTONS_X, 20 * 18, FALSE, mIs (Ex.Mode, 8)+' memory3');
+    Print (Ex.BUTTONS_X, 20 * 19, FALSE, mIs (Ex.Mode, 9)+' memory4');
+    Print (Ex.BUTTONS_X, 20 * 20, FALSE, mIs (Ex.Mode, 10)+' memory5')
   END;
 
 
@@ -381,5 +380,5 @@ ex_blend.pas(364,36) Warning: Variable "Ex" does not seem to be initialized
    al_start_timer (Timer);
    Run;
 
-   al_destroy_event_queue (Ex.Queue);
+   al_destroy_event_queue (Ex.Queue)
 END.

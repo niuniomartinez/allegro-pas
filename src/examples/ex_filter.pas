@@ -1,6 +1,6 @@
 PROGRAM ex_filter;
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -27,7 +27,7 @@ PROGRAM ex_filter;
 {$ENDIF}
 
   USES
-    Allegro5, al5font, al5image, Common;
+    Allegro5, al5base, al5font, al5image, Common;
 
   CONST
     FPS = 60;
@@ -40,7 +40,7 @@ PROGRAM ex_filter;
       ALLEGRO_MAG_LINEAR
     );
 
-    FilterText: ARRAY [0..3] OF STRING = (
+    FilterText: ARRAY [0..3] OF AL_STR = (
       'nearest', 'linear',
       'nearest mipmap', 'linear mipmap'
     );
@@ -93,14 +93,14 @@ PROGRAM ex_filter;
          scale := 1 + t * 9;
 
       al_draw_text (
-	Example.Font, Example.fg, x, y - 64 - 14,
-	ALLEGRO_ALIGN_CENTRE, FilterText[i MOD 4]
+        Example.Font, Example.fg, x, y - 64 - 14,
+        ALLEGRO_ALIGN_CENTRE, FilterText[i MOD 4]
       );
 
       al_set_clipping_rectangle (TRUNC (x - 64), TRUNC (y - 64), 128, 128);
       al_draw_scaled_rotated_bitmap (
-	Bmp, bw / 2, bh / 2,
-	x, y, scale, scale, angle, 0
+        Bmp, bw / 2, bh / 2,
+        x, y, scale, scale, angle, 0
       );
       al_set_clipping_rectangle (0, 0, w, h);
     END;
@@ -171,11 +171,11 @@ BEGIN
       FOR X := 0 TO 1023 DO
       BEGIN
         c := 0;
-	IF (((x SHR 2) AND 1) XOR ((y SHR 2) AND 1)) <> 0 THEN c := 255;
-	Ptr^ := c; INC (ptr);
-	Ptr^ := c; INC (ptr);
-	Ptr^ := c; INC (ptr);
-	Ptr^ := 255; INC (ptr)
+        IF (((x SHR 2) AND 1) XOR ((y SHR 2) AND 1)) <> 0 THEN c := 255;
+        Ptr^ := c; INC (ptr);
+        Ptr^ := c; INC (ptr);
+        Ptr^ := c; INC (ptr);
+        Ptr^ := 255; INC (ptr)
       END
     END;
     al_unlock_bitmap (Example.Bitmaps[0][i])
@@ -207,16 +207,16 @@ BEGIN
     CASE Event.ftype OF
     ALLEGRO_EVENT_KEY_DOWN:
       BEGIN
-	IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN Done := TRUE;
-	IF Event.keyboard.keycode = ALLEGRO_KEY_SPACE THEN
-	  Example.Bitmap := (Example.Bitmap + 1) MOD 2
+        IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN Done := TRUE;
+        IF Event.keyboard.keycode = ALLEGRO_KEY_SPACE THEN
+          Example.Bitmap := (Example.Bitmap + 1) MOD 2
       END;
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       Done := TRUE;
     ALLEGRO_EVENT_TIMER:
       BEGIN
-	Update;
-	NeedRedraw := TRUE
+        Update;
+        NeedRedraw := TRUE
       END;
     ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
       Example.Bitmap := (Example.Bitmap + 1) MOD 2

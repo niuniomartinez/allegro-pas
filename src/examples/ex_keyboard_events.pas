@@ -7,7 +7,7 @@ PROGRAM ex_keyboard_events;
  *    This program tests keyboard events.
  *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -35,8 +35,7 @@ PROGRAM ex_keyboard_events;
 
   USES
      Common,
-     Allegro5,
-     sysutils;
+     Allegro5, al5base;
 
   CONST
     WIDTH    = 640;
@@ -49,24 +48,24 @@ PROGRAM ex_keyboard_events;
 
 
 
-  PROCEDURE LogKey (CONST How: STRING; KeyCode, UniChar, Modifiers: INTEGER);
+  PROCEDURE LogKey (CONST How: AL_STR; KeyCode, UniChar, Modifiers: INTEGER);
   VAR
   { TODO:
-    Multibyte: ANSISTRING = '     ';
+    Multibyte: AL_STR = '     ';
   }
-    KeyName: STRING;
+    KeyName: AL_STR;
   BEGIN
     IF UniChar <= 32 THEN UniChar := 32;
   { TODO:  al_utf8_encode (Multibyte, UniChar); }
     KeyName := al_keycode_to_name (KeyCode);
-    LogWriteLn (Format (
+    LogPrintLn (
   { TODO :
       '%-8s  code=%03d, char=''%s'' (%4d), modifiers=%08x, [%s]',
       [How, KeyCode, Multibyte, UniChar, Modifiers, KeyName]
    }
       '%-8s  code=%03d, char=''%s'' (%4d), modifiers=%08x, [%s]',
       [How, KeyCode, '<na>', UniChar, Modifiers, KeyName]
-    ))
+    )
   END;
 
 
@@ -81,7 +80,7 @@ PROGRAM ex_keyboard_events;
   PROCEDURE MainLoop;
   VAR
     Event: ALLEGRO_EVENT;
-    aLabel: STRING;
+    aLabel: AL_STR;
   BEGIN
     LogWriteLn ('Focus on the main window (black) and press keys to see events.');
     LogWriteLn ('Escape quits.');

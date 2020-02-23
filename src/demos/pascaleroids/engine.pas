@@ -38,20 +38,17 @@ INTERFACE
   TYPE
   (* Base class for sprites.
 
-     In this game, sprites origin is at the center. *)
+     In this game, sprite origin is at the center. *)
     TSprite = CLASS (TObject)
     PRIVATE
       fVisible, fActive: BOOLEAN;
       fPx, fPy, fAngle, fRadius: SINGLE;
-      fColor: ALLEGRO_COLOR;
-
-      FUNCTION GetFill: BOOLEAN;
-      PROCEDURE SetFill (CONST v: BOOLEAN);
-    PROTECTED
       fPolygon: TPolygon;
+      fValue: INTEGER;
+    PROTECTED
+    (* Sprite polygon. *)
+      PROPERTY Polygon: TPolygon READ fPolygon;
     PUBLIC
-    (* Constructor. *)
-      CONSTRUCTOR Create; VIRTUAL;
     (* Initializes the sprite.
 
        This will reset the polygon and set @link(Visible) and @link(Active) to
@@ -60,14 +57,12 @@ INTERFACE
     (* Suspends sprite activity. *)
       PROCEDURE Suspend;
     (* Restores sprite. *)
-      PROCEDURE Restore;
-
+      PROCEDURE Restore; VIRTUAL;
     (* Draws sprite. *)
-      PROCEDURE Draw;
+      PROCEDURE Draw; VIRTUAL;
     (* Updates the sprite. *)
       PROCEDURE Update; VIRTUAL; ABSTRACT;
-
-    (* Test collision with other sprite. *)
+    (* Tests collision with other sprite. *)
       FUNCTION IntersectWith (aSpr: TSprite): BOOLEAN; VIRTUAL;
 
     (* Tells if sprite is visible.  Note that non visible sprites would be
@@ -84,10 +79,8 @@ INTERFACE
       PROPERTY Angle: SINGLE READ fAngle WRITE fAngle;
     (* Object radius.  Used in collision detection. *)
       PROPERTY Radius: SINGLE READ fRadius WRITE fRadius;
-    (* Sprite color. *)
-      PROPERTY Color: ALLEGRO_COLOR READ fColor WRITE fColor;
-    (* Tells if sprite is filled (@true) or wireframe (@false). *)
-      PROPERTY Fill: BOOLEAN READ GetFill WRITE SetFill;
+    (* Score gained by destroying this sprite. *)
+      PROPERTY Value: INTEGER READ fValue WRITE fValue;
     END;
 
 
@@ -118,8 +111,10 @@ INTERFACE
      and are created and used by the @link(TGameManager). *)
     TManager = CLASS (TObject)
     PUBLIC
-    (* Initializes the manager.  It is called when game starts. *)
+    (* Initializes the manager.  It is called when program starts. *)
       PROCEDURE Initialize; VIRTUAL; ABSTRACT;
+    (* Starts a new game. *)
+      PROCEDURE NewGame; VIRTUAL; ABSTRACT;
     (* Updates the content.  It is called once per frame. *)
       PROCEDURE Update; VIRTUAL; ABSTRACT;
     (* Paints the content.  It is called when screen needs to be updated. *)
@@ -132,32 +127,7 @@ IMPLEMENTATION
  * TSprite
  ***************************************************************************)
 
-  FUNCTION TSprite.GetFill: BOOLEAN;
-  BEGIN
-    RESULT := fPolygon.Fill
-  END;
-
-
-
-  PROCEDURE TSprite.SetFill (CONST v: BOOLEAN);
-  BEGIN
-    fPolygon.Fill := v
-  END;
-
-
-
-(* Constructor. *)
-  CONSTRUCTOR TSprite.Create;
-  BEGIN
-    INHERITED Create;
-    fPolygon.Reset;
-    fRadius := 10;
-    SELF.Restore
-  END;
-
-
-
-(* initializes sprite. *)
+(* Initializes sprite. *)
   PROCEDURE TSprite.Initialize;
   BEGIN
     SELF.Restore;
@@ -169,8 +139,8 @@ IMPLEMENTATION
 (* Suspends sprite. *)
   PROCEDURE TSprite.Suspend;
   BEGIN
-    SELF.Visible := FALSE;
-    SELF.Active := FALSE
+    fVisible := FALSE;
+    fActive := FALSE
   END;
 
 
@@ -178,8 +148,8 @@ IMPLEMENTATION
 (* Restores sprite. *)
   PROCEDURE TSprite.Restore;
   BEGIN
-    SELF.Visible := TRUE;
-    SELF.Active := TRUE
+    fVisible := TRUE;
+    fActive := TRUE
   END;
 
 
@@ -199,12 +169,12 @@ IMPLEMENTATION
 
 
 
-(* Test collision with other sprite. *)
+(* Tests collision. *)
   FUNCTION TSprite.IntersectWith (aSpr: TSprite): BOOLEAN;
   BEGIN
     RESULT := fActive AND aSpr.fActive
-          AND (ABS (aSpr.fPx - fPx) < fRadius)
-          AND (ABS (aSpr.fPy - fPy) < fRadius)
+          AND (ABS (aSpr.fPx - fPx + 2) < fRadius)
+          AND (ABS (aSpr.fPy - fPy + 2) < fRadius)
   END;
 
 
@@ -221,13 +191,10 @@ IMPLEMENTATION
     { Position. }
       fPx := fPx + fVx;
       fPy := fPy + fVy;
-    { If center is outside the right side, move to the left side. }
+    { If center is outside the screen, move to the opposite side. }
       IF fPx - fRadius > MAX_WIDTH THEN fPx := fPx - (MAX_WIDTH + 2 * fRadius);
-    { If center is outside the left side, move to the right side. }
       IF fPx < -fRadius THEN fPx := fPx + (MAX_WIDTH + 2 * fRadius);
-    { If center is ouside the bottom side, move to the top. }
       IF fPy - fRadius > MAX_HEIGHT THEN fPY := fPy - (MAX_HEIGHT + 2 * fRadius);
-    { If center is outside the top side, move to the bottom side. }
       IF fPy < -fRadius THEN fPy := fPy + (MAX_HEIGHT + 2 * fRadius);
     { Rotation. }
       fAngle := fAngle + fVr

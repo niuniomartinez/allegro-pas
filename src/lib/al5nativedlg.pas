@@ -235,7 +235,7 @@ INTERFACE
   symbols, that's why I've defined it here. }
 {**@exclude }
   FUNCTION _al_show_native_message_box (
-    display: ALLEGRO_DISPLAYptr; CONST title, heading, str, buttons: AL_STR;
+    display: ALLEGRO_DISPLAYptr; CONST title, heading, str, buttons: AL_STRptr;
     flags: AL_INT
   ): AL_INT; CDECL;
   EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME NAME 'al_show_native_message_box';

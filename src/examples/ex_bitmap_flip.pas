@@ -1,7 +1,7 @@
 PROGRAM ex_bitmap_flip;
 (* An example showing bitmap flipping flags, by Steven Wallace. *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -29,7 +29,7 @@ PROGRAM ex_bitmap_flip;
 
   USES
     Common,
-    Allegro5, al5image, al5font;
+    Allegro5, al5base, al5image, al5font;
 
   CONST
     INTERVAL = 0.01;
@@ -94,7 +94,7 @@ VAR
   Event: ALLEGRO_EVENT;
   Bmp, MemBmp, DispBmp: ALLEGRO_BITMAPptr;
   Font: ALLEGRO_FONTptr;
-  aText: STRING;
+  aText: AL_STR;
   Done, Redraw: BOOLEAN;
 BEGIN
   Done := FALSE;
@@ -154,18 +154,18 @@ BEGIN
     CASE Event.ftype OF
     ALLEGRO_EVENT_KEY_DOWN:
       IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-	Done := TRUE
+        Done := TRUE
       ELSE IF Event.keyboard.keycode = ALLEGRO_KEY_SPACE THEN
       BEGIN
-	IF Bmp = MemBmp THEN
-	BEGIN
-	  Bmp := DispBmp;
-	  aText := 'Display bitmap (space to change)'
-	END
-	ELSE BEGIN
-	  Bmp := MemBmp;
-	  aText := 'Memory bitmap (space to change)'
-	END
+        IF Bmp = MemBmp THEN
+        BEGIN
+          Bmp := DispBmp;
+          aText := 'Display bitmap (space to change)'
+        END
+        ELSE BEGIN
+          Bmp := MemBmp;
+          aText := 'Memory bitmap (space to change)'
+        END
       END;
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       Done := TRUE;

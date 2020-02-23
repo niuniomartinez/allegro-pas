@@ -1,7 +1,7 @@
 PROGRAM ex_convert;
 (* Image conversion example *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -29,8 +29,7 @@ PROGRAM ex_convert;
 
   USES
     Common,
-    Allegro5, al5image,
-    sysutils;
+    Allegro5, al5image, al5strings;
 
   VAR
     Bitmap: ALLEGRO_BITMAPptr;
@@ -41,7 +40,7 @@ BEGIN
 
   OpenLog;
 
-  IF ParamCount < 3 THEN
+  IF ParamCount < 2 THEN
   BEGIN
     LogWriteLn ('This example needs to be run from the command line.');
     LogWriteLn ('Usage: ex_convert <infile> <outfile>');
@@ -55,7 +54,10 @@ BEGIN
   al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_ARGB_8888);
   al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
 
-  Bitmap := al_load_bitmap_flags (ParamStr (1), ALLEGRO_NO_PREMULTIPLIED_ALPHA);
+  Bitmap := al_load_bitmap_flags (
+    al_string_to_str (ParamStr (1)),
+    ALLEGRO_NO_PREMULTIPLIED_ALPHA
+  );
   IF Bitmap = NIL THEN
   BEGIN
     LogWriteLn ('Error loading input file');
@@ -64,14 +66,14 @@ BEGIN
   END;
 
   t0 := al_get_time;
-  IF NOT al_save_bitmap (ParamStr (2), Bitmap) THEN
+  IF NOT al_save_bitmap (al_string_to_str (ParamStr (2)), Bitmap) THEN
   BEGIN
     LogWriteLn ('Error saving bitmap');
     CloseLog (TRUE);
     HALT
   END;
   t1 := al_get_time;
-  LogWriteLn (Format ('Saving took %.4f seconds', [t1 - t0]));
+  LogPrintLn ('Saving took %.4f seconds', [t1 - t0]);
 
   al_destroy_bitmap (Bitmap);
 

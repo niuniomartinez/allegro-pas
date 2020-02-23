@@ -175,10 +175,10 @@ INTERFACE
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
   PROCEDURE al_shutdown_primitives_addon;
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
-  FUNCTION al_draw_prim (VAR vtxs: ARRAY OF ALLEGRO_VERTEX; texture: ALLEGRO_BITMAPptr; start, finish: AL_INT; atype: ALLEGRO_PRIM_TYPE): AL_INT; INLINE;
+  FUNCTION al_draw_prim (VAR vtxs: ARRAY OF ALLEGRO_VERTEX; texture: ALLEGRO_BITMAPptr; start, finish: AL_INT; atype: ALLEGRO_PRIM_TYPE): AL_INT;
   FUNCTION al_draw_prim_ex (CONST vtxs: AL_VOIDptr; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; start, finish: AL_INT; atype: ALLEGRO_PRIM_TYPE): AL_INT;
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME NAME 'al_draw_prim';
-  FUNCTION al_draw_indexed_prim (VAR vtxs: ARRAY OF ALLEGRO_VERTEX; texture: ALLEGRO_BITMAPptr; VAR indices: ARRAY OF AL_INT; num_vtx: AL_INT; atype: ALLEGRO_PRIM_TYPE): AL_INT; INLINE;
+  FUNCTION al_draw_indexed_prim (VAR vtxs: ARRAY OF ALLEGRO_VERTEX; texture: ALLEGRO_BITMAPptr; VAR indices: ARRAY OF AL_INT; num_vtx: AL_INT; atype: ALLEGRO_PRIM_TYPE): AL_INT;
   FUNCTION al_draw_indexed_prim_ex (CONST vtxs: AL_VOIDptr; CONST decl: ALLEGRO_VERTEX_DECLptr; texture: ALLEGRO_BITMAPptr; VAR indices: ARRAY OF AL_INT; num_vtx: AL_INT; atype: ALLEGRO_PRIM_TYPE): AL_INT;
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME NAME 'al_draw_indexed_prim';
   FUNCTION al_draw_vertex_buffer (vertex_buffer: ALLEGRO_VERTEX_BUFFERptr; texture: ALLEGRO_BITMAPptr; start, finish: AL_INT; atype: ALLEGRO_PRIM_TYPE): AL_INT;
@@ -194,7 +194,7 @@ INTERFACE
 (*
  * Vertex buffers
  *)
-  FUNCTION al_create_vertex_buffer (VAR initial_data: ARRAY OF ALLEGRO_VERTEX; flags: ALLEGRO_PRIM_BUFFER_FLAGS): ALLEGRO_VERTEX_BUFFERptr; INLINE;
+  FUNCTION al_create_vertex_buffer (VAR initial_data: ARRAY OF ALLEGRO_VERTEX; flags: ALLEGRO_PRIM_BUFFER_FLAGS): ALLEGRO_VERTEX_BUFFERptr;
   FUNCTION al_create_vertex_buffer_ex (decl: ALLEGRO_VERTEX_DECLptr; CONST initial_data: AL_VOIDptr; num_vertices: AL_INT; flags: ALLEGRO_PRIM_BUFFER_FLAGS): ALLEGRO_VERTEX_BUFFERptr;
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME NAME 'al_create_vertex_buffer';
   PROCEDURE al_destroy_vertex_buffer (buffer: ALLEGRO_VERTEX_BUFFERptr);
@@ -249,7 +249,7 @@ INTERFACE
   PROCEDURE al_draw_rounded_rectangle (x1, y1, x2, y2, rx, ry: AL_FLOAT; color: ALLEGRO_COLOR; thickness: AL_FLOAT);
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME;
 
-  PROCEDURE al_calculate_arc (dest: ARRAY OF AL_FLOAT; cx, cy, rx, ry, start_theta, delta_theta, thickness: AL_FLOAT); INLINE;
+  PROCEDURE al_calculate_arc (dest: ARRAY OF AL_FLOAT; cx, cy, rx, ry, start_theta, delta_theta, thickness: AL_FLOAT);
   PROCEDURE al_calculate_arc_ex (dest: AL_VOIDptr; stride: AL_INT; cx, cy, rx, ry, start_theta, delta_theta, thickness: AL_FLOAT; num_segments: AL_INT);
     CDECL; EXTERNAL ALLEGRO_PRIMITIVES_LIB_NAME NAME 'al_calculate_arc';
   PROCEDURE al_draw_circle (cx, cy, r: AL_FLOAT; color: ALLEGRO_COLOR; thickness: AL_FLOAT);
@@ -328,7 +328,7 @@ IMPLEMENTATION
     VAR indices: ARRAY OF AL_INT;
     num_vtx: AL_INT;
     atype: ALLEGRO_PRIM_TYPE
-  ): AL_INT; INLINE;
+  ): AL_INT;
   BEGIN
     al_draw_indexed_prim := al_draw_indexed_prim_ex (
       @vtxs[0], NIL, texture, indices, num_vtx, atype

@@ -3,7 +3,7 @@ PROGRAM ex_clip;
  * al_set_clipping_rectangle when clipping a bitmap.
  *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -31,8 +31,8 @@ PROGRAM ex_clip;
 
   USES
     Common,
-    Allegro5, al5font, al5color,
-    math, sysutils;
+    Allegro5, al5base, al5font, al5color,
+    math;
 
   TYPE
     TExample = RECORD
@@ -67,18 +67,18 @@ PROGRAM ex_clip;
       FOR j := 0 TO h - 1 DO
       BEGIN
         a := arctan2 (i - mx, j - my);
-	d := Sqrt (Sqr (i - mx) + Sqr (j - my));
-	l := 1 - power (1.0 - 1 / (1 + d * 0.1), 5);
-	hue := a * 180 / ALLEGRO_PI;
-	sat := 1;
-	IF (i = 0) OR (j = 0) OR (i = w - 1) OR (j = h - 1) THEN
-	  hue := hue + 180
-	ELSE IF (i = 1) OR (j = 1) OR (i = w - 2) OR (j = h - 2) THEN
-	BEGIN
-	  hue := hue + 180;
-	  sat := 0.5;
-	END;
-	al_put_pixel (i, j, al_color_hsl (hue, sat, l))
+        d := Sqrt (Sqr (i - mx) + Sqr (j - my));
+        l := 1 - power (1.0 - 1 / (1 + d * 0.1), 5);
+        hue := a * 180 / ALLEGRO_PI;
+        sat := 1;
+        IF (i = 0) OR (j = 0) OR (i = w - 1) OR (j = h - 1) THEN
+          hue := hue + 180
+        ELSE IF (i = 1) OR (j = 1) OR (i = w - 2) OR (j = h - 2) THEN
+        BEGIN
+          hue := hue + 180;
+          sat := 0.5;
+        END;
+        al_put_pixel (i, j, al_color_hsl (hue, sat, l))
       END
     END;
     al_unlock_bitmap (Bmp);
@@ -104,14 +104,17 @@ PROGRAM ex_clip;
 
 
 
-  PROCEDURE Print (CONST Message: STRING);
+  PROCEDURE Print (CONST Fmt: AL_STR; CONST Args: ARRAY OF CONST);
   VAR
     th: INTEGER;
   BEGIN
     th := al_get_font_line_height (Ex.Font);
 
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-    al_draw_text (Ex.Font, Ex.Text, Ex.TextX, Ex.TextY, 0, Message);
+    al_draw_textf (
+      Ex.Font, Ex.Text, Ex.TextX, Ex.TextY, 0,
+      Fmt, Args
+    );
 
     Ex.TextY := Ex.TextY + th
   END;
@@ -159,7 +162,7 @@ PROGRAM ex_clip;
 
   { Test 1. }
     SetXY (8, 8);
-    Print (Format ('al_draw_bitmap_region (%1f fps)', [GetFps (1)]));
+    Print ('al_draw_bitmap_region (%1f fps)', [GetFps (1)]);
     GetXy (x, y);
     al_draw_bitmap (Ex.Pattern, x, y, 0);
 
@@ -174,7 +177,7 @@ PROGRAM ex_clip;
     SetXY (x, y + ih + gap);
 
   { Test 2. }
-    Print (Format ('al_create_sub_bitmap (%.1f fps)', [GetFps (2)]));
+    Print ('al_create_sub_bitmap (%.1f fps)', [GetFps (2)]);
     GetXy (x, y);
     al_draw_bitmap (Ex.Pattern, x, y, 0);
 
@@ -186,7 +189,7 @@ PROGRAM ex_clip;
     SetXY (x, y + ih + gap);
 
   { Test 3. }
-    Print (Format ('al_set_clipping_rectangle (%.1f fps)', [GetFps (3)]));
+    Print ('al_set_clipping_rectangle (%.1f fps)', [GetFps (3)]);
     GetXy (x, y);
     al_draw_bitmap (Ex.Pattern, x, y, 0);
 
@@ -220,19 +223,19 @@ PROGRAM ex_clip;
     BEGIN
       IF NeedDraw AND al_is_event_queue_empty (Ex.Queue) THEN
       BEGIN
-	tick;
-	NeedDraw := FALSE
+        tick;
+        NeedDraw := FALSE
       END;
 
       al_wait_for_event (Ex.Queue, @Event);
 
       CASE Event.ftype OF 
       ALLEGRO_EVENT_DISPLAY_CLOSE:
-	EXIT;
+        EXIT;
       ALLEGRO_EVENT_KEY_DOWN:
-	IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN EXIT;
+        IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN EXIT;
       ALLEGRO_EVENT_TIMER:
-	NeedDraw := TRUE;
+        NeedDraw := TRUE;
       END
     END
   END;

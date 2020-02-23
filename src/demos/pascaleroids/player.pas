@@ -64,17 +64,15 @@ IMPLEMENTATION
     tpx: ARRAY [0..3] OF INTEGER = (14, -7, -7, 13);
     tpy: ARRAY [0..3] OF INTEGER = ( 0, -7,  7,  0);
     SIZE = 13;
-  VAR
-    Ndx: INTEGER;
   BEGIN
-    fPolygon.Color := Graphics.Yelow;
+    SELF.Polygon.Color := Graphics.Yelow;
     INHERITED Initialize;
-    FOR Ndx := LOW (tpx) TO HIGH (tpx) DO
-      fPolygon.AddPoint (tpx[Ndx], tpy[Ndx]);
-    SELF.Fill := FALSE;
+    SELF.Polygon.SetVertices (tpx, tpy);
+    SELF.Polygon.Fill := FALSE;
     SELF.Radius := SIZE;
   { Start position. }
     SELF.PosX := MAX_WIDTH / 2; SELF.PosY := MAX_HEIGHT / 2;
+    SELF.Vr := 0
   END;
 
 

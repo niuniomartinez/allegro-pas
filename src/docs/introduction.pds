@@ -11,5 +11,4 @@
 @include(src/docs/events.pds)
 @include(src/docs/fileio.pds)
 @include(src/docs/keyboard.pds)
-@include(src/docs/utf8.pds)
 @include(src/docs/transformations.pds)

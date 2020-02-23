@@ -3,7 +3,7 @@
 # Sets makefile source code for the different platforms
 # Based on fix.sh of Allegro.
 # Modified By Kronoman - In loving memory of my father.
-# Modified By Ñuño Martínez.
+# Modified By Guillermo "Ñuño" Martínez.
 
 
 proc_help()

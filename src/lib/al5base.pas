@@ -142,6 +142,13 @@ INTERFACE
     AL_INTptr = ^AL_INT;
     AL_FLOATptr = ^AL_FLOAT;
 
+    AL_DATA_PTR_T = RECORD
+      CASE INTEGER OF
+        0: ( int_value : AL_INTPTR_T  );
+        1: ( uint_value: AL_UINTPTR_T );
+        2: ( ptr_value : AL_POINTER   );
+    END;
+
 IMPLEMENTATION
 
 END.

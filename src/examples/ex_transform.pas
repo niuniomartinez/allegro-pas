@@ -1,6 +1,6 @@
 PROGRAM ex_transform;
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -28,10 +28,10 @@ PROGRAM ex_transform;
 
 USES
   common,
-  Allegro5, al5image, al5font, al5primitives;
+  Allegro5, al5base, al5image, al5font, al5primitives, al5strings;
 
 VAR
-  Filename: STRING;
+  Filename: AL_STR;
   Display: ALLEGRO_DISPLAYptr;
   Buffer, Bitmap, Subbitmap, BufferSubbitmap, Overlay: ALLEGRO_BITMAPptr;
   Timer: ALLEGRO_TIMERptr;
@@ -50,7 +50,7 @@ BEGIN
   UseSubbitmap := FALSE;
 
   IF Paramcount > 1 THEN
-    Filename := ParamStr (1)
+    Filename := al_string_to_str (ParamStr (1))
   ELSE
     Filename := 'data/mysha.pcx';
 
@@ -110,21 +110,21 @@ BEGIN
     ALLEGRO_EVENT_KEY_DOWN:
       CASE Event.keyboard.keycode OF
       ALLEGRO_KEY_S:
-	BEGIN
-	  Software := NOT Software;
-	  IF Software THEN
-	  BEGIN
-	  { Restore identity transform on display bitmap. }
-	    al_identity_transform (Identity);
-	    al_use_transform (Identity);
-	  END;
-	END;
+        BEGIN
+          Software := NOT Software;
+          IF Software THEN
+          BEGIN
+          { Restore identity transform on display bitmap. }
+            al_identity_transform (Identity);
+            al_use_transform (Identity);
+          END;
+        END;
       ALLEGRO_KEY_L:
-	Blend := NOT Blend;
+        Blend := NOT Blend;
       ALLEGRO_KEY_B:
-	UseSubbitmap := NOT UseSubbitmap;
+        UseSubbitmap := NOT UseSubbitmap;
       ALLEGRO_KEY_ESCAPE:
-	EndLoop := TRUE;
+        EndLoop := TRUE;
       END;
     ALLEGRO_EVENT_TIMER:
       Redraw := TRUE;
@@ -143,20 +143,20 @@ BEGIN
 
       IF Software THEN
       BEGIN
-	al_set_target_bitmap (Buffer);
-	IF UseSubbitmap THEN
-	BEGIN
-	  al_clear_to_color (al_map_rgb_f (1, 0, 0));
-	  al_set_target_bitmap (BufferSubbitmap);
-	END;
+        al_set_target_bitmap (Buffer);
+        IF UseSubbitmap THEN
+        BEGIN
+          al_clear_to_color (al_map_rgb_f (1, 0, 0));
+          al_set_target_bitmap (BufferSubbitmap);
+        END;
       END
       ELSE BEGIN
-	al_set_target_backbuffer (Display);
-	IF UseSubbitmap THEN
-	BEGIN;
-	  al_clear_to_color (al_map_rgb_f (1, 0, 0));
-	  al_set_target_bitmap (Subbitmap);
-	END;
+        al_set_target_backbuffer (Display);
+        IF UseSubbitmap THEN
+        BEGIN;
+          al_clear_to_color (al_map_rgb_f (1, 0, 0));
+          al_set_target_bitmap (Subbitmap);
+        END;
       END;
 
     { Set the transformation on the target bitmap. }
@@ -180,23 +180,23 @@ BEGIN
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
       IF Software THEN
       BEGIN
-	al_draw_text (SoftFont, al_map_rgba_f (1, 1, 1, 1),
-	  640 / 2, 430, ALLEGRO_ALIGN_CENTRE, 'Software Rendering'
-	);
-	al_set_target_backbuffer (Display);
-	al_draw_bitmap (Buffer, 0, 0, 0);
+        al_draw_text (SoftFont, al_map_rgba_f (1, 1, 1, 1),
+          640 / 2, 430, ALLEGRO_ALIGN_CENTRE, 'Software Rendering'
+        );
+        al_set_target_backbuffer (Display);
+        al_draw_bitmap (Buffer, 0, 0, 0);
       END
       ELSE
-	al_draw_text (Font, al_map_rgba_f (1, 1, 1, 1),
-	  640 / 2, 430, ALLEGRO_ALIGN_CENTRE, 'Hardware Rendering'
-	);
+        al_draw_text (Font, al_map_rgba_f (1, 1, 1, 1),
+          640 / 2, 430, ALLEGRO_ALIGN_CENTRE, 'Hardware Rendering'
+        );
 
     { Each target bitmap has its own transformation matrix, so this
       overlay is unaffected by the transformations set earlier. }
       al_set_target_bitmap (Overlay);
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE);
       al_draw_text (Font, al_map_rgba_f (1, 1, 0, 1),
-	0, 10, ALLEGRO_ALIGN_LEFT, 'hello!'
+        0, 10, ALLEGRO_ALIGN_LEFT, 'hello!'
       );
 
       al_set_target_backbuffer (Display);

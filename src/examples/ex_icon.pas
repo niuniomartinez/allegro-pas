@@ -26,17 +26,17 @@ PROGRAM ex_icon;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
-    Common,
-    Allegro5, al5image;
+USES
+  Common,
+  Allegro5, al5image;
 
-  VAR
-    Display: ALLEGRO_DISPLAYptr;
-    Icon1, Icon2: ALLEGRO_BITMAPptr;
-    Queue: ALLEGRO_EVENT_QUEUEptr;
-    Event: ALLEGRO_EVENT;
-    Timer: ALLEGRO_TIMERptr;
-    i, u, v: INTEGER;
+VAR
+  Display: ALLEGRO_DISPLAYptr;
+  Icon1, Icon2: ALLEGRO_BITMAPptr;
+  Queue: ALLEGRO_EVENT_QUEUEptr;
+  Event: ALLEGRO_EVENT;
+  Timer: ALLEGRO_TIMERptr;
+  i, u, v: INTEGER;
 
 BEGIN
   IF NOT al_init THEN AbortExample ('Could not init Allegro.');

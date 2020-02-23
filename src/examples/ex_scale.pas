@@ -52,7 +52,7 @@ USES
 
 BEGIN
    Theta := 0;
-   K := 1;
+   K := 1; { Ignore hint "Value assigned to 'K' never used", as it is used. }
    Mode := 0;
    WideMode := FALSE;
    MemSrcMode := FALSE;

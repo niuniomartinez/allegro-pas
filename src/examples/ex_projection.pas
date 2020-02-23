@@ -1,6 +1,6 @@
 PROGRAM ex_projection;
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -23,12 +23,13 @@ PROGRAM ex_projection;
  *)
 
 {$IFDEF FPC}
+  {$RANGECHECKS OFF} { If set, example doesn't run. }
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
   USES
     Common,
-    Allegro5, al5font, al5image, al5ttf;
+    Allegro5, al5base, al5font, al5image, al5ttf;
 
   VAR
   (* How far has the text been scrolled. *)
@@ -39,22 +40,30 @@ PROGRAM ex_projection;
     Logo: ALLEGRO_BITMAPptr;
   (* The star particle. *)
     Particle: ALLEGRO_BITMAPptr;
+  (* The star list. *)
+    Stars: ARRAY [1..100] OF RECORD x, y, z: LONGINT END;
   (* The font we use for everything. *)
     Font: ALLEGRO_FONTptr;
 
 
 
-  (* Local pseudo-random number generator. *)
-    FUNCTION MyRnd (VAR Seed: LONGINT): INTEGER;
+  (* Set stars positions. *)
+    PROCEDURE InitStars;
+    VAR
+      Cnt: INTEGER;
     BEGIN
-      Seed := (Seed + 1) * 1103515245 + 12345;
-      EXIT ((Seed SHR 16) AND $ffff)
+      FOR Cnt := LOW (Stars) TO HIGH (Stars) DO
+      BEGIN
+        Stars[Cnt].x := Random ($FFFF);
+        Stars[Cnt].y := Random ($FFFF);
+        Stars[Cnt].z := Random ($FFFF)
+      END
     END;
 
 
 
   (* Load a bitmap and exit with a message if it's missing. *)
-    FUNCTION LoadBmp (CONST Path: STRING): ALLEGRO_BITMAPptr;
+    FUNCTION LoadBmp (CONST Path: AL_STR): ALLEGRO_BITMAPptr;
     VAR
       lBmp: ALLEGRO_BITMAPptr;
     BEGIN
@@ -66,7 +75,7 @@ PROGRAM ex_projection;
 
 
   (* Load a font and exit with a message if it's missing. *)
-    FUNCTION LoadFont (CONST Path: STRING; Size, Flags: INTEGER): ALLEGRO_FONTptr;
+    FUNCTION LoadFont (CONST Path: AL_STR; Size, Flags: INTEGER): ALLEGRO_FONTptr;
     VAR
       lFont: ALLEGRO_FONTptr;
     BEGIN
@@ -79,7 +88,7 @@ PROGRAM ex_projection;
 
   (* Print fading text. *)
     FUNCTION Print
-      (Font: ALLEGRO_FONTptr; x, y, r, g, b, Fade: SINGLE; CONST Text: STRING): INTEGER;
+      (Font: ALLEGRO_FONTptr; x, y, r, g, b, Fade: SINGLE; CONST Text: AL_STR): INTEGER;
     VAR
       c: SINGLE;
     BEGIN
@@ -117,24 +126,17 @@ PROGRAM ex_projection;
   PROCEDURE DrawStars;
   VAR
     Projection: ALLEGRO_TRANSFORM;
-    Seed, Cnt, X, Y, Z: LONGINT;
+    Cnt: INTEGER;
   BEGIN
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE);
-
-    Seed := 0;
-
     FOR Cnt := 1 TO 100 DO
     BEGIN
-      X := MyRnd (Seed);
-      Y := MyRnd (Seed);
-      Z := MyRnd (Seed);
-
       al_identity_transform (Projection);
       al_translate_transform_3d (
         Projection, 0, 0,
-        -2000 + TRUNC (ScrollY * 1000 / TextLength + z) MOD 2000 - 180);
+        -2000 + TRUNC (ScrollY * 1000 / TextLength + Stars[Cnt].z) MOD 2000 - 180);
       Setup3DProjection (Projection);
-      al_draw_bitmap (Particle, X MOD 4000 - 2000, y MOD 2000 - 1000, 0)
+      al_draw_bitmap (Particle, Stars[Cnt].x MOD 4000 - 2000, Stars[Cnt].y MOD 2000 - 1000, 0)
     END
   END;
 
@@ -147,7 +149,7 @@ PROGRAM ex_projection;
     bw, bh: INTEGER;
     x, y, c: SINGLE;
 
-    PROCEDURE T (str: STRING);
+    PROCEDURE T (str: AL_STR);
     BEGIN
       y := Print (Font, x, y, 1, 0.9, 0.3, ScrollY, str)
     END;
@@ -266,6 +268,8 @@ BEGIN
   al_register_event_source (Queue, al_get_keyboard_event_source);
   al_register_event_source (Queue, al_get_display_event_source (Display));
   al_register_event_source (Queue, al_get_timer_event_source (Timer));
+
+  InitStars;
 
   al_start_timer (Timer);
   EndExample := FALSE;

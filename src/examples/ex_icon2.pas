@@ -3,8 +3,8 @@ PROGRAM ex_icon2;
  *      Example program for the Allegro library.
  *
  *      Set multiple window icons, a big one and a small one.
- *      The small would would be used for the task bar,
- *      and the big one for the alt-tab popup, for example.
+ *      The small would be used for the task bar, and the big
+ *      one for the alt-tab popup, for example.
  *)
 (*
   Copyright (c) 2012-2018 Guillermo Martínez J.

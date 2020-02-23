@@ -1,0 +1,5 @@
+@bold(About string manipulation)
+
+By default, Delphi RTL libraries defines @code(STRING) as @code(UNICODESTRING).  Since Allegro expects @code(ANSISTRING) this means you should use convert funcions as @code(UTFToString) and @code(UTF8Encode) to work properly, wich makes such operations non compatible with Free Pascal.
+
+This unit defines a collection of functions and procedures that works like RTL string manipulation ones (i.e. @code(SysUtils) and @code(Strings) unit) but using the @code(AL_STR) type, ensuring your code will work both Delphi and Free Pascal without changes.  It includes a few conversion functions as well if you need them.

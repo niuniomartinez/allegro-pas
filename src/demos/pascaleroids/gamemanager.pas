@@ -26,7 +26,7 @@ UNIT GameManager;
 INTERFACE
 
   USES
-    Input,
+    Asteroids, Effects, Input,
     Allegro5;
 
   CONST
@@ -45,6 +45,9 @@ INTERFACE
 
       fUserInput: TUserInput;
 
+      fAsteroidManager: TAsteroidManager;
+      fEffectManager: TEffectManager;
+
       PROCEDURE CreateDisplay;
     PUBLIC
     (* Constructor. *)
@@ -55,6 +58,13 @@ INTERFACE
       PROCEDURE Initialize;
     (* The game loop. *)
       PROCEDURE Run;
+
+    (* Access to user input. *)
+      PROPERTY Input: TUserInput READ fUserInput;
+    (* Access to asteroid manager. *)
+      PROPERTY Asteroids: TAsteroidManager READ fAsteroidManager;
+    (* Access to effects manager. *)
+      PROPERTY Effects: TEffectManager READ fEffectManager;
     END;
 
   VAR
@@ -64,7 +74,7 @@ INTERFACE
 IMPLEMENTATION
 
   USES
-    Asteroids, Player,
+    Player,
     Engine, Graphics,
     al5font,
     sysutils;
@@ -94,6 +104,9 @@ IMPLEMENTATION
     IF Game <> NIL THEN
       RAISE Exception.Create ('Only one game manager per game!');
     INHERITED Create;
+    fUserInput := TKeyboardInput.Create;
+    fAsteroidManager := TAsteroidManager.Create;
+    fEffectManager := TEffectManager.Create;
     Game := SELF
   END;
 
@@ -102,6 +115,9 @@ IMPLEMENTATION
 (* Destructor. *)
   DESTRUCTOR TGameManager.Destroy;
   BEGIN
+    fEffectManager.Free;
+    fAsteroidManager.Free;
+    fUserInput.Free;
   { Actually, most of these destructions aren't necessary as Allegro cleans them
     when terminating the application, but it is good to be polite. }
     IF fDisplay <> NIL THEN al_destroy_display (fDisplay);
@@ -135,21 +151,22 @@ IMPLEMENTATION
   PROCEDURE TGameManager.Run;
   VAR
     Event: ALLEGRO_EVENT;
-    Input: TUserInput;
     lPlayerShip: TShip;
-    lAsteroid: TSprite;
     lFont: ALLEGRO_FONTptr;
   BEGIN
-    Input := TKeyboardInput.Create;
-    lPlayerShip := TShip.Create; lAsteroid := TAsteroid.Create;
+    lPlayerShip := TShip.Create;
 TRY
     lFont := al_create_builtin_font;
-    Input.Initialize;
-    lPlayerShip.Initialize; lAsteroid.Initialize;
+    fAsteroidManager.Initialize;
+    fEffectManager.Initialize;
+    fUserInput.Initialize;
+    lPlayerShip.Initialize;
+    fAsteroidManager.NewGame;
+    fEffectManager.NewGame;
     al_start_timer (fTimer);
     REPEAT
       al_wait_for_event (fEventQueue, Event);
-      IF NOT Input.ProcessEvent (Event) THEN
+      IF NOT fUserInput.ProcessEvent (Event) THEN
       CASE Event.ftype OF
       ALLEGRO_EVENT_DISPLAY_CLOSE:
         EXIT;
@@ -158,7 +175,10 @@ TRY
         ALLEGRO_KEY_ESCAPE:
           EXIT;
         ALLEGRO_KEY_SPACE:
-          lAsteroid.Initialize;
+          BEGIN
+            fAsteroidManager.NewBoard (Random (NUM_LARGE));
+            fEffectManager.AddAsteroidExplosion (MAX_WIDTH DIV 2, MAX_HEIGHT DIV 2)
+          END;
         END;
       ALLEGRO_EVENT_TIMER:
         BEGIN
@@ -168,7 +188,9 @@ TRY
             lPlayerShip.RotateRight;
           IF (Input.Direction AND DIR_UP) <> 0 THEN
             lPlayerShip.Thrust;
-          lAsteroid.Update; lPlayerShip.Update;
+          fAsteroidManager.Update;
+          fEffectManager.Update;
+          lPlayerShip.Update;
         END;
       END;
     { Draw and wait. }
@@ -180,13 +202,14 @@ TRY
           'dir: %d - btn: %d',
           [Input.Direction, Input.Button]
         ));
-        lAsteroid.Draw; lPlayerShip.Draw;
+        fAsteroidManager.Paint;
+        fEffectManager.Paint;
+        lPlayerShip.Draw;
         al_flip_display
       END
     UNTIL FALSE
 FINALLY
-  lPlayerShip.Free; lAsteroid.Free;
-  Input.Free
+  lPlayerShip.Free;
 END
   END;
 

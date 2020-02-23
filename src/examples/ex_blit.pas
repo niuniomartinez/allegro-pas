@@ -3,7 +3,7 @@ PROGRAM ex_blit;
  * An example demonstrating different blending modes.
  *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -32,8 +32,8 @@ PROGRAM ex_blit;
 
 USES
   Common,
-  Allegro5, al5font, al5image, al5color,
-  math, sysutils;
+  Allegro5, al5base, al5color, al5font, al5image, al5strings,
+  math;
 
 CONST
   FPS = 60;
@@ -93,7 +93,7 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
 
 
 
-  PROCEDURE GetXY (VAR x, y: SINGLE);
+  PROCEDURE GetXY (OUT x, y: SINGLE);
   BEGIN
     x := TextX;
     y := TextY;
@@ -101,13 +101,13 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
 
 
 
-  PROCEDURE Print (CONST Str: STRING);
+  PROCEDURE Print (CONST Fmt: AL_STR; CONST Args: ARRAY OF CONST);
   VAR
     th: INTEGER;
   BEGIN
     th := al_get_font_line_height (Font);
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-    al_draw_text (Font, TextClr, TextX, TextY, 0, Str);
+    al_draw_text (Font, TextClr, TextX, TextY, 0, al_str_format (Fmt, Args));
     TextY := TextY + th;
   END;
 
@@ -166,7 +166,7 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
    *)
 
   { Test 2. }
-    Print (Format ('Screen -> Bitmap -> Screen (%.1f fps)', [GetFPS (1)]));
+    Print ('Screen -> Bitmap -> Screen (%.1f fps)', [GetFPS (1)]);
     GetXY (x, y);
     al_draw_bitmap (Pattern, x, y, 0);
 
@@ -184,7 +184,7 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
     al_destroy_bitmap (Temp);
 
   { Test 3. }
-    Print (Format ('Screen -> Memory -> Screen (%.1f fps)', [getfps (2)]));
+    Print ('Screen -> Memory -> Screen (%.1f fps)', [getfps (2)]);
     GetXY (x, y);
     al_draw_bitmap (Pattern, x, y, 0);
 
@@ -256,18 +256,18 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
     REPEAT
       IF NeedDraw AND al_is_event_queue_empty (EventQueue) THEN
       BEGIN
-	Tick;
-	NeedDraw := FALSE;
+        Tick;
+        NeedDraw := FALSE;
       END;
       al_wait_for_event (EventQueue, @Event);
       CASE Event.ftype OF
-	ALLEGRO_EVENT_DISPLAY_CLOSE:
-	  EXIT;
-	ALLEGRO_EVENT_KEY_DOWN:
-	  IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-	    EXIT;
-	ALLEGRO_EVENT_TIMER:
-	  NeedDraw := TRUE;
+        ALLEGRO_EVENT_DISPLAY_CLOSE:
+          EXIT;
+        ALLEGRO_EVENT_KEY_DOWN:
+          IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
+            EXIT;
+        ALLEGRO_EVENT_TIMER:
+          NeedDraw := TRUE;
       END;
     UNTIL FALSE;
   END;

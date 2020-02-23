@@ -29,11 +29,11 @@ INTERFACE
   USES
     Allegro5, al5audio, al5font, al5ttf;
 
-(* Loads the requested font file.  On error raises an exception. *)
+(* Loads the requested font file.  On error returns nil. *)
   FUNCTION LoadFont (CONST FileName: STRING; Size: INTEGER): ALLEGRO_FONTptr;
-(* Loads the requested bitmap file.  On error raises an exception. *)
+(* Loads the requested bitmap file.  returns nilexception. *)
   FUNCTION LoadBitmap (CONST FileName: STRING): ALLEGRO_BITMAPptr;
-(* Loads the requested sound or music file.  On error raises an exception. *)
+(* Loads the requested sound or music file.  returns nilexception. *)
   FUNCTION LoadSample (CONST FileName: STRING): ALLEGRO_SAMPLEptr;
 
 IMPLEMENTATION
@@ -45,8 +45,8 @@ IMPLEMENTATION
   { Data directory path. }
     DataPath: STRING;
 
-  (* Looks for the given data file and returns the full path or raises an
-     exception if it can't find it. *)
+  (* Looks for the given data file and returns the full path or returns the
+     FileName parameter if it can't find it. *)
   FUNCTION FindDataFile (CONST FileName: STRING): STRING;
   BEGIN
     { TODO:  Actual implementation should look data files in different paths
@@ -59,12 +59,11 @@ IMPLEMENTATION
     BEGIN
       DataPath := ExtractFilePath(ParamStr(0))+'data'+DirectorySeparator;
       IF NOT DirectoryExists (DataPath) THEN
-        RAISE Exception.Create ('Can''t find data directory.  Reinstall.')
+        EXIT (FileName)
     END;
   { Right now just check if file exists. }
     RESULT := DataPath + FileName;
-    IF NOT FileExists (RESULT) THEN
-      RAISE Exception.CreateFmt ('Can''t find data file "%s".', [FileName])
+    IF NOT FileExists (RESULT) THEN RESULT := FileName
   END;
 
 
@@ -72,9 +71,7 @@ IMPLEMENTATION
 (* Loads font. *)
   FUNCTION LoadFont (CONST FileName: STRING; Size: INTEGER): ALLEGRO_FONTptr;
   BEGIN
-    RESULT := al_load_ttf_font (FindDataFile (FileName), Size, 0);
-    IF RESULT = NIL THEN
-      RAISE Exception.CreateFmt ('Can''t load "%s" font.', [FileName]);
+    RESULT := al_load_ttf_font (FindDataFile (FileName), Size, 0)
   END;
 
 
@@ -82,9 +79,7 @@ IMPLEMENTATION
 (* Loads bitmap. *)
   FUNCTION LoadBitmap (CONST FileName: STRING): ALLEGRO_BITMAPptr;
   BEGIN
-    RESULT := al_load_bitmap (FindDataFile (FileName));
-    IF RESULT = NIL THEN
-      RAISE Exception.CreateFmt ('Can''t load "%s" bitmap.', [FileName]);
+    RESULT := al_load_bitmap (FindDataFile (FileName))
   END;
 
 
@@ -92,9 +87,7 @@ IMPLEMENTATION
 (* Loads sample. *)
   FUNCTION LoadSample (CONST FileName: STRING): ALLEGRO_SAMPLEptr;
   BEGIN
-    RESULT := al_load_sample (FindDataFile (FileName));
-    IF RESULT = NIL THEN
-      RAISE Exception.CreateFmt ('Can''t load "%s".', [FileName]);
+    RESULT := al_load_sample (FindDataFile (FileName))
   END;
 
 END.

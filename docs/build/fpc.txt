@@ -88,17 +88,17 @@ Windows manifest
   system.
 
   To solve this you should add a "manifest" to your programs.  With help from
-  the Lazarus community, I've created default manifest files you can find in
-  the ~/examples directory.  Copy both "manifest.rc" and "manifest.xml" to your
+  the Lazarus community, I've created manifest template files you can find in
+  the ~/resources directory.  Copy both "manifest.rc" and "manifest.xml" to your
   source directory and add the next compiler directive in your program source,
   between your "PROGRAM" and your "USES" directives as you can see in any of
   the examples:
 
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 
-  You don't need to change any of the files, as only installation and few
-  administration programs (and not all them) may need some special stuff (which
-  makes Windows permission system even more weirdest and uselessest, IMHO).
-  Anyway you can open them and see how they are.
+  You need to change some of the fields of the XML file, as the name and
+  description.  Also administration programs (and not all them) may need some
+  special stuff (which makes Windows permission system even more weirdest and
+  uselessest, IMHO).
 
-  This works also for Lazarus.
+  This works also for Lazarus and may be Delphi.

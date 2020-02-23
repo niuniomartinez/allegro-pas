@@ -34,7 +34,16 @@ INTERFACE
   (* Multiply with radians to get degrees (0..360). *)
     RAD_TO_DEG = 1 / DEG_TO_RAD;
 
+(* Returns a random number in the given interval. *)
+  FUNCTION GetRandomNumber (CONST aMin, aMax: INTEGER): SINGLE;
+
 IMPLEMENTATION
+
+(* Returns a random number in the given interval. *)
+  FUNCTION GetRandomNumber (CONST aMin, aMax: INTEGER): SINGLE;
+  BEGIN
+    RESULT := aMin + (Random * (aMax - aMin + 1))
+  END;
 
 END.
 

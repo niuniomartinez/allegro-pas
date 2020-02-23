@@ -5,7 +5,7 @@ PROGRAM ex_display_options;
    some variables that aren't initialized.  You can ignore them as they're
    initialized properly but the compiler can't find it. *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -33,34 +33,29 @@ PROGRAM ex_display_options;
 
   USES
     Common,
-    Allegro5, al5font, al5primitives,
-    sysutils;
-
-  VAR
-    Font: ALLEGRO_FONTptr;
-    FontH, ModesCount, OptionsCount: INTEGER;
-    Status: STRING;
-    Flags, OldFlags: INTEGER;
-
-    VisibleRows, FirstVisibleRow: INTEGER;
-
-    SelectedColumn, SelectedMode, SelectedOption: INTEGER;
+    Allegro5, al5base, al5font, al5primitives;
 
   TYPE
     TOptions = RECORD
-      Name: STRING;
+      Name: AL_STR;
       Option: ALLEGRO_DISPLAY_OPTIONS;
       Value, MaxValue: LONGINT;
       Required: LONGINT;
     END;
 
   VAR
+    Font: ALLEGRO_FONTptr;
+    FontH, ModesCount, OptionsCount: INTEGER;
+    Status: AL_STR;
+    Flags, OldFlags: INTEGER;
+    VisibleRows, FirstVisibleRow: INTEGER;
+    SelectedColumn, SelectedMode, SelectedOption: INTEGER;
     Options: ARRAY [0..23] OF TOptions;
-    FlagNames: ARRAY [0..31] OF STRING;
+    FlagNames: ARRAY [0..31] OF AL_STR;
 
   PROCEDURE SetOptions;
 
-    PROCEDURE SetOption (Ndx: INTEGER; aName: STRING; aOption: ALLEGRO_DISPLAY_OPTIONS; aMax: LONGINT);
+    PROCEDURE SetOption (Ndx: INTEGER; aName: AL_STR; aOption: ALLEGRO_DISPLAY_OPTIONS; aMax: LONGINT);
     INLINE;
     BEGIN
       Options[Ndx].Name := aName;
@@ -112,9 +107,9 @@ PROGRAM ex_display_options;
       IF v = ORD (ALLEGRO_RESIZABLE) THEN FlagNames[i] := 'RESIZABLE';
       IF v = ORD (ALLEGRO_FRAMELESS) THEN FlagNames[i] := 'FRAMELESS';
       IF v = ORD (ALLEGRO_GENERATE_EXPOSE_EVENTS) THEN
-	FlagNames[i] := 'GENERATE_EXPOSE_EVENTS';
+        FlagNames[i] := 'GENERATE_EXPOSE_EVENTS';
       IF v = ORD (ALLEGRO_FULLSCREEN_WINDOW) THEN
-	FlagNames[i] := 'FULLSCREEN_WINDOW';
+        FlagNames[i] := 'FULLSCREEN_WINDOW';
       IF v = ORD (ALLEGRO_MINIMIZED) THEN FlagNames[i] := 'MINIMIZED'
     END
   END;
@@ -135,7 +130,7 @@ PROGRAM ex_display_options;
     i, y, x, n, dw, dh: INTEGER;
     c: ALLEGRO_COLOR;
     Mode: ALLEGRO_DISPLAY_MODE;
-    Tmp: STRING;
+    Tmp: AL_STR;
   BEGIN
     y := 10;
     x := 10;
@@ -153,7 +148,7 @@ PROGRAM ex_display_options;
     AND (i < FirstVisibleRow + VisibleRows)
     DO BEGIN
       IF i > 1 THEN
-	al_get_display_mode (i - 2, mode)
+        al_get_display_mode (i - 2, mode)
       ELSE IF i = 1  THEN
       BEGIN
         Mode.width := 800;
@@ -169,31 +164,28 @@ PROGRAM ex_display_options;
       END;
       IF (SelectedColumn = 0) AND (SelectedMode = i) THEN
       BEGIN
-	c := al_map_rgb_f (1, 1, 0);
-	al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
-	al_draw_filled_rectangle (x, y, x + 300, y + FontH, c)
+        c := al_map_rgb_f (1, 1, 0);
+        al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
+        al_draw_filled_rectangle (x, y, x + 300, y + FontH, c)
       END;
       c := al_map_rgb_f (0, 0, 0);
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
       IF (i = FirstVisibleRow) AND (i > 0)
       OR (i = FirstVisibleRow + VisibleRows - 1) AND (i < ModesCount + 1)
       THEN
-	al_draw_text (Font, c, x, y, 0, '...')
+        al_draw_text (Font, c, x, y, 0, '...')
       ELSE BEGIN
-	IF i > 1 THEN
-	  Tmp := 'Fullscreen'
-	ELSE IF i = 0 THEN
-	  Tmp := 'Windowed'
-	ELSE
-	  Tmp := 'FS Window';
-	al_draw_text (
-	  Font, c, x, y, 0,
-	  Format (
-	    '%s %d x %d (fmt: %x, %d Hz)', [
-	      Tmp, Mode.width, Mode.height, Mode.format, Mode.refresh_rate
-	    ]
-	  )
-	)
+        IF i > 1 THEN
+          Tmp := 'Fullscreen'
+        ELSE IF i = 0 THEN
+          Tmp := 'Windowed'
+        ELSE
+          Tmp := 'FS Window';
+        al_draw_textf (
+          Font, c, x, y, 0,
+          '%s %d x %d (fmt: %x, %d Hz)',
+          [Tmp, Mode.width, Mode.height, Mode.format, Mode.refresh_rate]
+        )
       END;
       y := y + FontH;
       INC (i)
@@ -209,28 +201,30 @@ PROGRAM ex_display_options;
     BEGIN
       IF (SelectedColumn = 1) AND (SelectedOption = i) THEN
       BEGIN
-	c := al_map_rgb_f (1, 1, 0);
-	al_draw_filled_rectangle (x, y, x + 300, y + FontH, c)
+        c := al_map_rgb_f (1, 1, 0);
+        al_draw_filled_rectangle (x, y, x + 300, y + FontH, c)
       END;
 
       CASE Options[i].Required OF
-	ALLEGRO_REQUIRE: c := al_map_rgb_f (0.5, 0, 0);
-	ALLEGRO_SUGGEST: c := al_map_rgb_f (0, 0, 0);
-	ALLEGRO_DONTCARE: c := al_map_rgb_f (0.5, 0.5, 0.5);
+        ALLEGRO_REQUIRE: c := al_map_rgb_f (0.5, 0, 0);
+        ALLEGRO_SUGGEST: c := al_map_rgb_f (0, 0, 0);
+        ALLEGRO_DONTCARE: c := al_map_rgb_f (0.5, 0.5, 0.5);
       END;
       CASE Options[i].Required OF
-	ALLEGRO_REQUIRE: Tmp := 'required';
-	ALLEGRO_SUGGEST: Tmp := 'suggested';
-	ELSE             Tmp := 'ignored';
+        ALLEGRO_REQUIRE: Tmp := 'required';
+        ALLEGRO_SUGGEST: Tmp := 'suggested';
+        ELSE             Tmp := 'ignored';
       END;
-      al_draw_text (
-	Font, c, x, y, 0,
-	Format ('%s: %d (%s)', [Options[i].Name, Options[i].Value, Tmp])
+      al_draw_textf (
+        Font, c, x, y, 0,
+        '%s: %d (%s)',
+        [Options[i].Name, Options[i].Value, Tmp]
       );
       c := al_map_rgb_f (0.9, 0.5, 0.3);
-      al_draw_text (
-	Font, c, dw - 10, y, ALLEGRO_ALIGN_RIGHT,
-	Format ('%d', [al_get_display_option (Display, Options[i].Option)])
+      al_draw_textf (
+        Font, c, dw - 10, y, ALLEGRO_ALIGN_RIGHT,
+        '%d',
+        [al_get_display_option (Display, Options[i].Option)]
       );
       y := y + FontH
     END;
@@ -250,18 +244,18 @@ PROGRAM ex_display_options;
     BEGIN
       IF FlagNames[i] <> '' THEN
       BEGIN
-	Tmp := 'r';
-	IF (Flags AND (1 SHL i)) <> 0 THEN
-	  c := al_map_rgb_f (0.5, 0, 0)
-	ELSE IF (OldFlags AND (1 SHL i)) <> 0 THEN
-	  c := al_map_rgb_f (0.5, 0.4, 0.4)
-	ELSE
-	  Tmp := '';
-	IF Tmp <> '' THEN
-	BEGIN
-	  al_draw_text (Font, c, x, y, 0, FlagNames[i]);
-	  x := x + al_get_text_width (Font, FlagNames[i]) + 10
-	END
+        Tmp := 'r';
+        IF (Flags AND (1 SHL i)) <> 0 THEN
+          c := al_map_rgb_f (0.5, 0, 0)
+        ELSE IF (OldFlags AND (1 SHL i)) <> 0 THEN
+          c := al_map_rgb_f (0.5, 0.4, 0.4)
+        ELSE
+          Tmp := '';
+        IF Tmp <> '' THEN
+        BEGIN
+          al_draw_text (Font, c, x, y, 0, FlagNames[i]);
+          x := x + al_get_text_width (Font, FlagNames[i]) + 10
+        END
       END
     END;
 
@@ -336,138 +330,138 @@ BEGIN;
     ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
       IF Event.mouse.button = 1 THEN
       BEGIN
-	dw := al_get_display_width (Display);
-	y := 10;
-	Row := (Event.mouse.y - y) DIV FontH - 1;
-	Column := Event.mouse.x DIV (dw DIV 2);
-	IF Column = 0 THEN
-	BEGIN
-	  IF (Row >= 0) AND (Row <= ModesCount) THEN
-	  BEGIN
-	    SelectedColumn := Column;
-	    SelectedMode := Row;
-	    Redraw := TRUE
-	  END
-	END;
-	IF Column = 1 THEN
-	BEGIN
-	  IF (Row >= 0) AND (Row < OptionsCount) THEN
-	  BEGIN
-	    SelectedColumn := Column;
-	    SelectedOption := Row;
-	    Redraw := TRUE
-	  END
-	END
+        dw := al_get_display_width (Display);
+        y := 10;
+        Row := (Event.mouse.y - y) DIV FontH - 1;
+        Column := Event.mouse.x DIV (dw DIV 2);
+        IF Column = 0 THEN
+        BEGIN
+          IF (Row >= 0) AND (Row <= ModesCount) THEN
+          BEGIN
+            SelectedColumn := Column;
+            SelectedMode := Row;
+            Redraw := TRUE
+          END
+        END;
+        IF Column = 1 THEN
+        BEGIN
+          IF (Row >= 0) AND (Row < OptionsCount) THEN
+          BEGIN
+            SelectedColumn := Column;
+            SelectedOption := Row;
+            Redraw := TRUE
+          END
+        END
       END;
     ALLEGRO_EVENT_TIMER:
       BEGIN
-	Tmp := al_get_display_flags (Display);
-	IF Tmp <> Flags THEN
-	BEGIN
-	  Redraw := TRUE;
-	  Flags := Tmp;
-	  OldFlags := OldFlags OR Tmp
-	END
+        Tmp := al_get_display_flags (Display);
+        IF Tmp <> Flags THEN
+        BEGIN
+          Redraw := TRUE;
+          Flags := Tmp;
+          OldFlags := OldFlags OR Tmp
+        END
       END;
     ALLEGRO_EVENT_KEY_CHAR:
       BEGIN
-	CASE event.keyboard.keycode OF
-	ALLEGRO_KEY_ESCAPE:
-	  EndExample := TRUE;
-	ALLEGRO_KEY_LEFT:
-	  BEGIN
-	    SelectedColumn := 0;
-	    Redraw := TRUE
-	  END;
-	ALLEGRO_KEY_RIGHT:
-	  BEGIN
-	    SelectedColumn := 1;
-	    Redraw := TRUE
-	  END;
-	ALLEGRO_KEY_UP:
-	  BEGIN
-	    IF SelectedColumn = 0 THEN DEC (SelectedMode);
-	    IF SelectedColumn = 1 THEN DEC (SelectedOption);
-	    Redraw := TRUE
-	  END;
-	 ALLEGRO_KEY_DOWN:
-	  BEGIN
-	    IF SelectedColumn = 0 THEN INC (SelectedMode);
-	    IF SelectedColumn = 1 THEN INC (SelectedOption);
-	    Redraw := TRUE
-	  END;
-	ALLEGRO_KEY_ENTER:
-	  BEGIN
-	    IF SelectedColumn = 0 THEN
-	    BEGIN
-	      IF SelectedMode > 1 THEN
-	      BEGIN
-		al_get_display_mode (SelectedMode - 2, Mode);
-		al_set_new_display_flags (ALLEGRO_FULLSCREEN)
-	      END
-	      ELSE IF SelectedMode = 1 THEN
-	      BEGIN
-		Mode.width := 800;
-		Mode.height := 600;
-		al_set_new_display_flags (ALLEGRO_FULLSCREEN_WINDOW)
-	      END
-	      ELSE BEGIN
-		Mode.width := 800;
-		Mode.height := 600;
-		al_set_new_display_flags (ALLEGRO_WINDOWED)
-	      END;
+        CASE event.keyboard.keycode OF
+        ALLEGRO_KEY_ESCAPE:
+          EndExample := TRUE;
+        ALLEGRO_KEY_LEFT:
+          BEGIN
+            SelectedColumn := 0;
+            Redraw := TRUE
+          END;
+        ALLEGRO_KEY_RIGHT:
+          BEGIN
+            SelectedColumn := 1;
+            Redraw := TRUE
+          END;
+        ALLEGRO_KEY_UP:
+          BEGIN
+            IF SelectedColumn = 0 THEN DEC (SelectedMode);
+            IF SelectedColumn = 1 THEN DEC (SelectedOption);
+            Redraw := TRUE
+          END;
+         ALLEGRO_KEY_DOWN:
+          BEGIN
+            IF SelectedColumn = 0 THEN INC (SelectedMode);
+            IF SelectedColumn = 1 THEN INC (SelectedOption);
+            Redraw := TRUE
+          END;
+        ALLEGRO_KEY_ENTER:
+          BEGIN
+            IF SelectedColumn = 0 THEN
+            BEGIN
+              IF SelectedMode > 1 THEN
+              BEGIN
+                al_get_display_mode (SelectedMode - 2, Mode);
+                al_set_new_display_flags (ALLEGRO_FULLSCREEN)
+              END
+              ELSE IF SelectedMode = 1 THEN
+              BEGIN
+                Mode.width := 800;
+                Mode.height := 600;
+                al_set_new_display_flags (ALLEGRO_FULLSCREEN_WINDOW)
+              END
+              ELSE BEGIN
+                Mode.width := 800;
+                Mode.height := 600;
+                al_set_new_display_flags (ALLEGRO_WINDOWED)
+              END;
 
-	      al_destroy_font (Font);
-	      Font := NIL;
+              al_destroy_font (Font);
+              Font := NIL;
 
-	      NewDisplay := al_create_display (Mode.width, Mode.height);
-	      IF NewDisplay <> NIL THEN
-	      BEGIN
-		al_destroy_display (Display);
-		Display := NewDisplay;
-		al_set_target_backbuffer (Display);
-		al_register_event_source (Queue, al_get_display_event_source (Display));
-		UpdateUI;
-		Status := 'Display creation succeeded.'
-	      END
-	      ELSE
-		Status := 'Display creation failed.';
-	      LoadFont
-	    END;
-	    IF SelectedColumn = 1 THEN
-	    BEGIN
-	      INC (Options[SelectedOption].Required);
-	      Options[SelectedOption].Required :=
-		Options[SelectedOption].Required MOD 3;
-	      al_set_new_display_option (
-		Options[SelectedOption].Option,
-		Options[SelectedOption].Value,
-		Options[SelectedOption].Required
-	      )
-	    END;
-	    Redraw := TRUE
-	  END;
-	END;
-	Tmp := 0;
-	IF Event.keyboard.keycode = ALLEGRO_KEY_PGUP THEN Tmp := 1;
-	IF Event.keyboard.keycode = ALLEGRO_KEY_PGDN THEN Tmp := -1;
+              NewDisplay := al_create_display (Mode.width, Mode.height);
+              IF NewDisplay <> NIL THEN
+              BEGIN
+                al_destroy_display (Display);
+                Display := NewDisplay;
+                al_set_target_backbuffer (Display);
+                al_register_event_source (Queue, al_get_display_event_source (Display));
+                UpdateUI;
+                Status := 'Display creation succeeded.'
+              END
+              ELSE
+                Status := 'Display creation failed.';
+              LoadFont
+            END;
+            IF SelectedColumn = 1 THEN
+            BEGIN
+              INC (Options[SelectedOption].Required);
+              Options[SelectedOption].Required :=
+                Options[SelectedOption].Required MOD 3;
+              al_set_new_display_option (
+                Options[SelectedOption].Option,
+                Options[SelectedOption].Value,
+                Options[SelectedOption].Required
+              )
+            END;
+            Redraw := TRUE
+          END;
+        END;
+        Tmp := 0;
+        IF Event.keyboard.keycode = ALLEGRO_KEY_PGUP THEN Tmp := 1;
+        IF Event.keyboard.keycode = ALLEGRO_KEY_PGDN THEN Tmp := -1;
         IF (Tmp <> 0) AND (SelectedColumn = 1) THEN
-	BEGIN
-	  INC (Options[SelectedOption].Value, Tmp);
-	  IF Options[SelectedOption].Value < 0 THEN
-	    Options[SelectedOption].Value := 0;
-	  IF Options[SelectedOption].Value >
-	     Options[SelectedOption].MaxValue
-	  THEN
-	    Options[SelectedOption].Value :=
-	      Options[SelectedOption].MaxValue;
-	  al_set_new_display_option (
-	    Options[SelectedOption].Option,
-	    Options[SelectedOption].Value,
-	    Options[SelectedOption].Required
-	  );
-	  Redraw := TRUE
-	END
+        BEGIN
+          INC (Options[SelectedOption].Value, Tmp);
+          IF Options[SelectedOption].Value < 0 THEN
+            Options[SelectedOption].Value := 0;
+          IF Options[SelectedOption].Value >
+             Options[SelectedOption].MaxValue
+          THEN
+            Options[SelectedOption].Value :=
+              Options[SelectedOption].MaxValue;
+          al_set_new_display_option (
+            Options[SelectedOption].Option,
+            Options[SelectedOption].Value,
+            Options[SelectedOption].Required
+          );
+          Redraw := TRUE
+        END
       END;
     END;
 

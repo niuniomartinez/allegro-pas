@@ -17,17 +17,19 @@ Installing precompiled version
 
   Go to http://liballeg.org/download.html#windows, to the "Windows Binaries"
   section, and select one of the given links.  I recommend you the "Allegro 5.2
-  binary packages" but you may use any of them.  To find wich one is the best
-  for you, think you'll need a "dynamic" version and that "x86" is 32bits while
-  "i686" is 64bits.
+  binary packages".  To find wich one is the best for you, think you'll need 
+  a "dynamic" version and that "686" is 32bits while "x86" is 64bits.
 
   Once downloaded, you need only the DLL files that are in the "bin"
   subdirectory.  Also note that Allegro.pas links with the "monolith" version
-  of the library by default.
+  of the library by default.  Read below to know what "monolith" means.
+
+  Also note that you may need more DLL files, such as the ones needed to load
+  PNG and OGG files, among others.
 
   In most cases you can put the DLL files in to your "C:\windows\system32"
-  directory but may be better to add these DLL files to the directory where the
-  executable is.
+  directory but may be better to add these DLL files to the directory where
+  your executable is.
 
 
 

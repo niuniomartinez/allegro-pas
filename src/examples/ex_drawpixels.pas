@@ -1,6 +1,6 @@
 PROGRAM ex_drawpixels;
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -27,8 +27,7 @@ PROGRAM ex_drawpixels;
 {$ENDIF}
 
   USES
-    Allegro5, Common,
-    sysutils;
+    Allegro5, Common;
 
   CONST
     WIDTH = 640;
@@ -140,7 +139,7 @@ BEGIN
   Length := al_get_time - ProgramStart;
 
   IF Length <> 0 THEN
-    LogWriteLn (Format ('%d FPS', [TRUNC (TotalFrames / Length)]));
+    LogPrintLn ('%d FPS', [TRUNC (TotalFrames / Length)]);
 
   al_destroy_display (Display);
 

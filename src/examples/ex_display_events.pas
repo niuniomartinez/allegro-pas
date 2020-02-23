@@ -1,6 +1,6 @@
 PROGRAM ex_display_events;
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -28,18 +28,17 @@ PROGRAM ex_display_events;
 
   USES
     Common,
-    Allegro5, al5font, al5primitives,
-    sysutils;
+    Allegro5, al5base, al5font, al5primitives, al5strings;
 
   CONST
     MAX_EVENTS = 23;
 
   VAR
-    Events: ARRAY [1..MAX_EVENTS] OF ANSISTRING;
+    Events: ARRAY [1..MAX_EVENTS] OF AL_STR;
 
 
 
-  PROCEDURE AddEvent (CONST Message: STRING);
+  PROCEDURE AddEvent (CONST Message: AL_STR);
   VAR
     Ndx: INTEGER;
   BEGIN
@@ -116,7 +115,7 @@ BEGIN
       IF Event.Keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN EndExample := TRUE;
     ALLEGRO_EVENT_DISPLAY_RESIZE:
       BEGIN
-        AddEvent (Format (
+        AddEvent (al_str_format (
           'ALLEGRO_EVENT_DISPLAY_RESIZE x=%d, y=%d, width=%d, height=%d',
           [
             Event.display.x, Event.display.y, Event.display.width,

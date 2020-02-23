@@ -19,7 +19,7 @@ PROGRAM ex_prim;
  *      See README for copyright information.
  *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -51,12 +51,9 @@ PROGRAM ex_prim;
 {$IFDEF DCC}
 { Pointer arithmetic needed by this example.
   Not all Delphi versions support it though. }
-  {$IFDEF CONDITIONALEXPRESSIONS}
-    {$IF CompilerVersion >= 20.0}
-      {$POINTERMATH ON}
-    {$ELSE}
-      {$MESSAGE error 'Need pointer arithmetics.'}
-    {$ENDIF}
+  {$INCLUDE allegro5.cfg }
+  {$IFDEF ISDELPHI2009ANDUP}
+    {$POINTERMATH ON}
   {$ELSE}
     {$MESSAGE error 'Need pointer arithmetics.'}
   {$ENDIF}
@@ -64,7 +61,8 @@ PROGRAM ex_prim;
 
   USES
     Common,
-    Allegro5, al5Base, al5font, al5image, al5nativedlg, al5primitives,
+    Allegro5,
+    al5base, al5font, al5image, al5nativedlg, al5primitives, al5strings,
     sysutils;
 
   CONST
@@ -78,10 +76,10 @@ PROGRAM ex_prim;
   (* Base class for example screens. *)
     TCustomScreen = CLASS (TObject)
     PRIVATE
-      fName: ANSISTRING;
+      fName: AL_STR;
     PUBLIC
     (* Constructor. *)
-      CONSTRUCTOR Create (CONST aName: ANSISTRING);
+      CONSTRUCTOR Create (CONST aName: AL_STR);
     (* Updates the example.
 
       By default builds MainTrans rotating by Theta angle. *)
@@ -90,7 +88,7 @@ PROGRAM ex_prim;
       PROCEDURE Draw; VIRTUAL; ABSTRACT;
 
     (* Screen name. *)
-      PROPERTY Name: ANSISTRING READ fName;
+      PROPERTY Name: AL_STR READ fName;
     END;
 
 
@@ -131,7 +129,7 @@ PROGRAM ex_prim;
     (* Terminates the example. *)
       PROCEDURE Terminate;
     (* Shows an error message box. *)
-      PROCEDURE ShowErrorMessage (CONST aMessage: ANSISTRING);
+      PROCEDURE ShowErrorMessage (CONST aMessage: AL_STR);
     (* Builds the transformation matrix. *)
       PROCEDURE BuildTransform (ax, ay, sx, sy, aTheta: AL_FLOAT);
     (* Draws text telling the example isn't supported. *)
@@ -270,7 +268,7 @@ PROGRAM ex_prim;
 
   (* Stores a custom vertex. *)
     CUSTOM_VERTEX = RECORD
-    { Use types defined at al5Base, so we know their size. }
+    { Use types defined at al5base, so we know their size. }
       u, v: AL_INT16;
       x, y: AL_INT16;
       Color: ALLEGRO_COLOR;
@@ -349,7 +347,7 @@ PROGRAM ex_prim;
  ***************************************************************************)
 
 (* Constructor. *)
-  CONSTRUCTOR TCustomScreen.Create (CONST aName: ANSISTRING);
+  CONSTRUCTOR TCustomScreen.Create (CONST aName: AL_STR);
   BEGIN
     INHERITED Create;
     fName := aName
@@ -379,67 +377,67 @@ PROGRAM ex_prim;
     BEGIN
       CASE Event.ftype OF
       ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-	BEGIN
-	  INC (fCurScreen);
-	  IF fCurScreen > HIGH (fScreens) THEN fCurScreen := LOW (fScreens)
-	END;
+        BEGIN
+          INC (fCurScreen);
+          IF fCurScreen > HIGH (fScreens) THEN fCurScreen := LOW (fScreens)
+        END;
       ALLEGRO_EVENT_DISPLAY_CLOSE:
-	  SELF.Terminate;
+          SELF.Terminate;
       ALLEGRO_EVENT_KEY_CHAR:
-	CASE Event.keyboard.keycode OF
-	ALLEGRO_KEY_ESCAPE:
-	  SELF.Terminate;
-	ALLEGRO_KEY_S:
-	  BEGIN
-	    fSoft := NOT fSoft;
-	    fTimeDiff := al_get_time;
-	    fFramesDone := 0
-	  END;
-	ALLEGRO_KEY_C:
-	  BEGIN
-	    fClip := NOT fClip;
-	    fTimeDiff := al_get_time;
-	    fFramesDone := 0
-	  END;
-	ALLEGRO_KEY_L:
-	  BEGIN
-	    fBlend := NOT fBlend;
-	    fTimeDiff := al_get_time;
-	    fFramesDone := 0
-	  END;
-	ALLEGRO_KEY_B:
-	  BEGIN
-	    fDrawBkg := NOT fDrawBkg;
-	    fTimeDiff := al_get_time;
-	    fFramesDone := 0
-	  END;
-	ALLEGRO_KEY_LEFT:
-	  fSpeed := fSpeed - ROTATE_SPEED;
-	ALLEGRO_KEY_RIGHT:
-	  fSpeed := fSpeed + ROTATE_SPEED;
-	ALLEGRO_KEY_SPACE:
-	  fSpeed := 0;
-	ALLEGRO_KEY_PGUP:
-	  BEGIN
-	    fThickness := fThickness + 0.5;
-	    IF fThickness < 1.0 THEN fThickness := 1.0
-	  END;
-	ALLEGRO_KEY_PGDN:
-	  BEGIN
-	    fThickness := fThickness - 0.5;
-	    IF fThickness < 1.0 THEN fThickness := 1.0
-	  END;
-	ALLEGRO_KEY_UP:
-	  BEGIN
-	    INC (fCurScreen);
-	    IF fCurScreen > HIGH (fScreens) THEN fCurScreen := LOW (fScreens)
-	  END;
-	ALLEGRO_KEY_DOWN:
-	  BEGIN
-	    DEC (fCurScreen);
-	    IF fCurScreen < LOW (fScreens) THEN fCurScreen := HIGH (fScreens)
-	  END;
-	END
+        CASE Event.keyboard.keycode OF
+        ALLEGRO_KEY_ESCAPE:
+          SELF.Terminate;
+        ALLEGRO_KEY_S:
+          BEGIN
+            fSoft := NOT fSoft;
+            fTimeDiff := al_get_time;
+            fFramesDone := 0
+          END;
+        ALLEGRO_KEY_C:
+          BEGIN
+            fClip := NOT fClip;
+            fTimeDiff := al_get_time;
+            fFramesDone := 0
+          END;
+        ALLEGRO_KEY_L:
+          BEGIN
+            fBlend := NOT fBlend;
+            fTimeDiff := al_get_time;
+            fFramesDone := 0
+          END;
+        ALLEGRO_KEY_B:
+          BEGIN
+            fDrawBkg := NOT fDrawBkg;
+            fTimeDiff := al_get_time;
+            fFramesDone := 0
+          END;
+        ALLEGRO_KEY_LEFT:
+          fSpeed := fSpeed - ROTATE_SPEED;
+        ALLEGRO_KEY_RIGHT:
+          fSpeed := fSpeed + ROTATE_SPEED;
+        ALLEGRO_KEY_SPACE:
+          fSpeed := 0;
+        ALLEGRO_KEY_PGUP:
+          BEGIN
+            fThickness := fThickness + 0.5;
+            IF fThickness < 1.0 THEN fThickness := 1.0
+          END;
+        ALLEGRO_KEY_PGDN:
+          BEGIN
+            fThickness := fThickness - 0.5;
+            IF fThickness < 1.0 THEN fThickness := 1.0
+          END;
+        ALLEGRO_KEY_UP:
+          BEGIN
+            INC (fCurScreen);
+            IF fCurScreen > HIGH (fScreens) THEN fCurScreen := LOW (fScreens)
+          END;
+        ALLEGRO_KEY_DOWN:
+          BEGIN
+            DEC (fCurScreen);
+            IF fCurScreen < LOW (fScreens) THEN fCurScreen := HIGH (fScreens)
+          END;
+        END
       END
     END;
   { Updates screens. }
@@ -447,9 +445,9 @@ PROGRAM ex_prim;
     IF fScreens[fCurScreen] <> NIL THEN
       fScreens[fCurScreen].Update
     ELSE
-      al_draw_text (
+      al_draw_textf (
         fFont, White, 0, 0, 0,
-        Format ('Example %d not supported', [fCurScreen])
+        'Example %d not supported', [fCurScreen]
       )
   END;
 
@@ -460,7 +458,7 @@ PROGRAM ex_prim;
 
   { Helper to print boolean statuses. }
     PROCEDURE ShowBoolean
-      (CONST aY: INTEGER; CONST aLabel: ANSISTRING; CONST aState: BOOLEAN);
+      (CONST aY: INTEGER; CONST aLabel: AL_STR; CONST aState: BOOLEAN);
     BEGIN
       IF aState THEN
         al_draw_text (fFont, SolidWhite, 0, aY, 0, aLabel + ': TRUE')
@@ -481,15 +479,15 @@ PROGRAM ex_prim;
     BEGIN
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
       al_draw_scaled_bitmap (
-	fBkg,
-	0, 0, al_get_bitmap_width (fbkg), al_get_bitmap_height (fbkg),
-	0, 0, ScreenW, ScreenH,
-	0
+        fBkg,
+        0, 0, al_get_bitmap_width (fbkg), al_get_bitmap_height (fbkg),
+        0, 0, ScreenW, ScreenH,
+        0
       )
     END;
     IF fClip THEN
       al_set_clipping_rectangle
-	(ScreenW DIV 2, ScreenH DIV 2, ScreenW DIV 2, ScreenH DIV 2);
+        (ScreenW DIV 2, ScreenH DIV 2, ScreenW DIV 2, ScreenH DIV 2);
   { Set blender. }
     IF fBlend THEN
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE)
@@ -510,28 +508,28 @@ PROGRAM ex_prim;
   { Show states. }
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
     IF fScreens[fCurScreen] <> NIL THEN
-      al_draw_text (
-	fFont, SolidWhite, ScreenW DIV 2, ScreenH - 20, ALLEGRO_ALIGN_CENTRE,
-	Format ('%d: %s', [fCurScreen, fScreens[fCurScreen].Name])
+      al_draw_textf (
+        fFont, SolidWhite, ScreenW DIV 2, ScreenH - 20, ALLEGRO_ALIGN_CENTRE,
+        '%d: %s', [fCurScreen, fScreens[fCurScreen].Name]
       )
     ELSE
-      al_draw_text (
-	fFont, SolidWhite, ScreenW DIV 2, ScreenH - 20, ALLEGRO_ALIGN_CENTRE,
-	Format ('Example %d doesn''t work.', [fCurScreen])
+      al_draw_textf (
+        fFont, SolidWhite, ScreenW DIV 2, ScreenH - 20, ALLEGRO_ALIGN_CENTRE,
+        'Example %d doesn''t work.', [fCurScreen]
       );
-    al_draw_text (
+    al_draw_textf (
       fFont, SolidWhite, 0, 0, 0,
-      Format ('FPS: %.2f', [fFramesDone / (al_get_time - fTimeDiff)])
+      'FPS: %.2f', [fFramesDone / (al_get_time - fTimeDiff)]
     );
     al_draw_text (
       fFont, SolidWhite, 0, 20, 0, 'Change Screen (Up/Down). Esc to Quit.');
-    al_draw_text (
+    al_draw_textf (
       fFont, SolidWhite, 0, 40, 0,
-      Format ('Rotation (Left/Right/Space): %.4f', [fSpeed])
+      'Rotation (Left/Right/Space): %.4f', [fSpeed]
     );
-    al_draw_text (
+    al_draw_textf (
       fFont, SolidWhite, 0, 60, 0,
-      Format ('Thickness (PgUp/PgDown): %.2f', [fThickness])
+      'Thickness (PgUp/PgDown): %.2f', [fThickness]
     );
     ShowBoolean (80, 'Software (S)', fSoft);
     ShowBoolean (100, 'Blending (L)', fBlend);
@@ -590,12 +588,12 @@ PROGRAM ex_prim;
     IF ParamCount > 0 THEN
     BEGIN
       IF ParamStr (1) = '--shader' THEN
-	fUseShader := TRUE
+        fUseShader := TRUE
       ELSE BEGIN
-	ShowErrorMessage (
-	  Format ('Invalid command line option: %s.', [ParamStr (1)])
-	);
-	EXIT
+        ShowErrorMessage (
+          al_str_format ('Invalid command line option: %s.', [ParamStr (1)])
+        );
+        EXIT
       END
     END;
   { Initializes Allegro 5 and addons. }
@@ -717,15 +715,15 @@ PROGRAM ex_prim;
       fGameTime := fRealTime;
       IF fRealTime - fGameTime > fFrameDuration THEN
       { eliminate excess overflow }
-	fGameTime := fGameTime + FixedTimestep * TRUNC ((fRealTime - fGameTime) / FixedTimestep);
+        fGameTime := fGameTime + FixedTimestep * TRUNC ((fRealTime - fGameTime) / FixedTimestep);
       WHILE NOT fTerminated AND (fRealTime - fGameTime >= 0) DO
       BEGIN
-	fStartTime := al_get_time;
-	fGameTime := fGameTime + FixedTimestep;
-	SELF.Update;
-	IF al_get_time - fStartTime >= FixedTimestep THEN
-	{ break if we start taking too long }
-	  BREAK
+        fStartTime := al_get_time;
+        fGameTime := fGameTime + FixedTimestep;
+        SELF.Update;
+        IF al_get_time - fStartTime >= FixedTimestep THEN
+        { break if we start taking too long }
+          BREAK
       END;
       SELF.Draw;
       INC (fFramesDone)
@@ -743,7 +741,7 @@ PROGRAM ex_prim;
 
 
 (* Shows an error message box. *)
-  PROCEDURE TPrimitivesExample.ShowErrorMessage (CONST aMessage: ANSISTRING);
+  PROCEDURE TPrimitivesExample.ShowErrorMessage (CONST aMessage: AL_STR);
   BEGIN
     al_show_native_message_box
       (fDisplay, 'Error', 'Cannot run example', aMessage, '', 0);
@@ -763,9 +761,9 @@ PROGRAM ex_prim;
 (* Draws text telling the example isn't supported. *)
   PROCEDURE TPrimitivesExample.DrawUnsupported;
   BEGIN
-    al_draw_text (
+    al_draw_textf (
       fFont, White, 0, 0, 0,
-      Format ('%s not supported', [fScreens[fCurScreen].Name])
+      '%s not supported', [fScreens[fCurScreen].Name]
     )
   END;
 
@@ -790,9 +788,9 @@ PROGRAM ex_prim;
       y := TRUNC (200 * Sin (Ndx / 13 * 2 * ALLEGRO_PI));
          
       Color := al_map_rgb (
-	(Ndx + 1) MOD 3 * 64,
-	(Ndx + 2) MOD 3 * 64,
-	(Ndx    ) MOD 3 * 64);
+        (Ndx + 1) MOD 3 * 64,
+        (Ndx + 2) MOD 3 * 64,
+        (Ndx    ) MOD 3 * 64);
          
       Vtx[Ndx].x := x; Vtx[Ndx].y := y; Vtx[Ndx].z := 0;
       Vtx2[Ndx].x := 0.1 * x; Vtx2[Ndx].y := 0.1 * y;
@@ -840,9 +838,9 @@ PROGRAM ex_prim;
       y := TRUNC (200 * sin (Ndx / 13 * 2 * ALLEGRO_PI));
 
       Color := al_map_rgb (
-	(Ndx + 1) MOD 3 * 64,
-	(Ndx + 2) MOD 3 * 64,
-	(Ndx    ) MOD 3 * 64
+        (Ndx + 1) MOD 3 * 64,
+        (Ndx + 2) MOD 3 * 64,
+        (Ndx    ) MOD 3 * 64
       );
 
       Vtx[Ndx].x := x; Vtx[Ndx].y := y; Vtx[Ndx].z := 0;
@@ -968,23 +966,23 @@ PROGRAM ex_prim;
     BEGIN
       IF (Ndx MOD 2) = 0 THEN
       BEGIN
-	x := 150 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
-	y := 150 * sin (Ndx / 20 * 2 * ALLEGRO_PI)
+        x := 150 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
+        y := 150 * sin (Ndx / 20 * 2 * ALLEGRO_PI)
       END
       ELSE BEGIN
-	x := 200 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
-	y := 200 * sin (Ndx / 20 * 2 * ALLEGRO_PI);
+        x := 200 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
+        y := 200 * sin (Ndx / 20 * 2 * ALLEGRO_PI);
       END;
 
       IF Ndx = 0 THEN
       BEGIN
-	x := 0; Y := 0
+        x := 0; Y := 0
       END;
 
       Color := al_map_rgb (
-	(7 * Ndx + 1) MOD 3 * 64,
-	(2 * Ndx + 2) MOD 3 * 64,
-	(    Ndx    ) MOD 3 * 64);
+        (7 * Ndx + 1) MOD 3 * 64,
+        (2 * Ndx + 2) MOD 3 * 64,
+        (    Ndx    ) MOD 3 * 64);
 
       vtx[Ndx].x := x; vtx[Ndx].y := y; vtx[Ndx].z := 0;
       vtx[Ndx].color := color
@@ -1026,23 +1024,23 @@ PROGRAM ex_prim;
     BEGIN
       IF (Ndx MOD 2) = 0 THEN
       BEGIN
-	x := 150 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
-	y := 150 * sin (Ndx / 20 * 2 * ALLEGRO_PI)
+        x := 150 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
+        y := 150 * sin (Ndx / 20 * 2 * ALLEGRO_PI)
       END
       ELSE BEGIN
-	x := 200 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
-	y := 200 * sin (Ndx / 20 * 2 * ALLEGRO_PI);
+        x := 200 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
+        y := 200 * sin (Ndx / 20 * 2 * ALLEGRO_PI);
       END;
 
       IF Ndx = 0 THEN
       BEGIN
-	x := 0; Y := 0
+        x := 0; Y := 0
       END;
 
       Color := al_map_rgb (
-	(7 * Ndx + 1) MOD 3 * 64,
-	(2 * Ndx + 2) MOD 3 * 64,
-	(    Ndx    ) MOD 3 * 64);
+        (7 * Ndx + 1) MOD 3 * 64,
+        (2 * Ndx + 2) MOD 3 * 64,
+        (    Ndx    ) MOD 3 * 64);
 
       vtx[Ndx].x := x; vtx[Ndx].y := y; vtx[Ndx].z := 0;
       vtx[Ndx].color := color
@@ -1120,9 +1118,9 @@ PROGRAM ex_prim;
       y := TRUNC (200 * Sin (Ndx / 13 * 2 * ALLEGRO_PI));
          
       Color := al_map_rgb (
-	(Ndx + 1) MOD 3 * 64,
-	(Ndx + 2) MOD 3 * 64,
-	(Ndx    ) MOD 3 * 64);
+        (Ndx + 1) MOD 3 * 64,
+        (Ndx + 2) MOD 3 * 64,
+        (Ndx    ) MOD 3 * 64);
 
       Vtx[Ndx].x := x; Vtx[Ndx].y := y; Vtx[Ndx].z := 0;
       Vtx2[Ndx].x := 0.1 * x; Vtx2[Ndx].y := 0.1 * y;
@@ -1166,11 +1164,11 @@ PROGRAM ex_prim;
       IF (Ndx MOD 2) = 0 THEN
       BEGIN
         x := 150 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
-	y := 150 * sin (Ndx / 20 * 2 * ALLEGRO_PI)
+        y := 150 * sin (Ndx / 20 * 2 * ALLEGRO_PI)
       END
       ELSE BEGIN
-	x := 200 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
-	y := 200 * sin (Ndx / 20 * 2 * ALLEGRO_PI);
+        x := 200 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
+        y := 200 * sin (Ndx / 20 * 2 * ALLEGRO_PI);
       END;
 
       IF Ndx = 0 THEN
@@ -1180,8 +1178,8 @@ PROGRAM ex_prim;
 
       Color := al_map_rgb (
         (7 * Ndx + 1) MOD 3 * 64,
-	(2 * Ndx + 2) MOD 3 * 64,
-	(    Ndx    ) MOD 3 * 64);
+        (2 * Ndx + 2) MOD 3 * 64,
+        (    Ndx    ) MOD 3 * 64);
 
       vtx[Ndx].x := x; vtx[Ndx].y := y; vtx[Ndx].z := 0;
       vtx[Ndx].u := 64 * x / 100; vtx[Ndx].v := 64 * y / 100;
@@ -1267,9 +1265,9 @@ VAR
       y := TRUNC (200 * Sin (Ndx / 13 * 2 * ALLEGRO_PI));
 
       Color := al_map_rgb (
-	(Ndx + 1) MOD 3 * 64,
-	(Ndx + 2) MOD 3 * 64,
-	(Ndx    ) MOD 3 * 64);
+        (Ndx + 1) MOD 3 * 64,
+        (Ndx + 2) MOD 3 * 64,
+        (Ndx    ) MOD 3 * 64);
 
       Vtx[Ndx].x := x; Vtx[Ndx].y := y; Vtx[Ndx].z := 0;
       Vtx2[Ndx].x := 0.1 * x; Vtx2[Ndx].y := 0.1 * y;
@@ -1347,7 +1345,7 @@ VAR
     IF vbuff = NIL THEN
     BEGIN
       vbuff := al_create_vertex_buffer_ex
-	(NIL, NIL, 13, ALLEGRO_PRIM_BUFFER_NONE);
+        (NIL, NIL, 13, ALLEGRO_PRIM_BUFFER_NONE);
       SELF.Soft := FALSE;
       Flags := ALLEGRO_PRIM_BUFFER_NONE
     END
@@ -1362,32 +1360,32 @@ VAR
     BEGIN
       vtx := al_lock_vertex_buffer (vbuff, 0, 13, ALLEGRO_LOCK_WRITEONLY);
       TRY
-	FOR Ndx := 0 TO 13 DO
-	BEGIN
-	  x := 200 * cos (Ndx / 13 * 2 * ALLEGRO_PI);
-	  y := 200 * sin (Ndx / 13 * 2 * ALLEGRO_PI);
+        FOR Ndx := 0 TO 13 DO
+        BEGIN
+          x := 200 * cos (Ndx / 13 * 2 * ALLEGRO_PI);
+          y := 200 * sin (Ndx / 13 * 2 * ALLEGRO_PI);
 
-	  Color := al_map_rgb (
-	    (Ndx + 1) MOD 3 * 64,
-	    (Ndx + 2) MOD 3 * 64,
-	    (Ndx    ) MOD 3 * 64
-	  );
+          Color := al_map_rgb (
+            (Ndx + 1) MOD 3 * 64,
+            (Ndx + 2) MOD 3 * 64,
+            (Ndx    ) MOD 3 * 64
+          );
 {$IFDEF DCC}
-	{ Pointer access. }
-	  (vtx + Ndx)^.x := x;
-	  (vtx + Ndx)^.y := y;
-	  (vtx + Ndx)^.z := 0;
-	  (vtx + Ndx)^.color := Color
+        { Pointer access. }
+          (vtx + Ndx)^.x := x;
+          (vtx + Ndx)^.y := y;
+          (vtx + Ndx)^.z := 0;
+          (vtx + Ndx)^.color := Color
 {$ELSE}
-	{ Free Pascal can manage it as an ARRAY. }
-	  vtx[Ndx].x := x;
-	  vtx[Ndx].y := y;
-	  vtx[Ndx].z := 0;
-	  vtx[Ndx].color := Color
+        { Free Pascal can manage it as an ARRAY. }
+          vtx[Ndx].x := x;
+          vtx[Ndx].y := y;
+          vtx[Ndx].z := 0;
+          vtx[Ndx].color := Color
 {$ENDIF}
-	END
+        END
       FINALLY
-	al_unlock_vertex_buffer (vbuff)
+        al_unlock_vertex_buffer (vbuff)
       END
     END
   END;
@@ -1417,13 +1415,13 @@ VAR
 
       FOR Ndx := 0 TO 7 DO
 {$IFDEF DCC}
-	{ Pointer access. }
-	(Indices + Ndx)^ := (t + Ndx) MOD 13;
+        { Pointer access. }
+        (Indices + Ndx)^ := (t + Ndx) MOD 13;
 {$ELSE}
-	{ Free Pascal can manage it as an ARRAY. }
-	Indices[Ndx] := (t + Ndx) MOD 13;
+        { Free Pascal can manage it as an ARRAY. }
+        Indices[Ndx] := (t + Ndx) MOD 13;
 {$ENDIF}
-      al_unlock_index_buffer (ibuff);
+      al_unlock_index_buffer (ibuff)
     END;
     INHERITED Update
   END;

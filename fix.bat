@@ -10,6 +10,7 @@ if [%1] == [win] goto win
 goto help
 
 
+
 :win
 echo Configuring for Windows/FPC...
 echo # Warning! This file will be overwritten by configuration routines! > target.os
@@ -17,11 +18,13 @@ echo TARGET=WIN>> target.os
 goto done
 
 
+
 :linux
 echo Configuring for GNU/Linux...
 echo # Warning! This file will be overwritten by configuration routines! > target.os
 echo TARGET=LINUX>> target.os
 goto done
+
 
 
 :help

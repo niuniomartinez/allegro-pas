@@ -1,6 +1,6 @@
 # Makefile generic - build rules
 
-.PHONY: all demos examples docs makeskel
+.PHONY: all demos examples docs
 
 # Main objective: the whole project
 all: adbanner examples demos
@@ -20,11 +20,11 @@ $(EXMBIN)%$(BINSUF): $(EXMSRC)%$(MAINSUF) $(EXMSRC)common.pas $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBSRC) -FU$(OBJDIR) $< -o$@
 	@echo Example $@ ready!
 
-$(FURIOUSPALADIN): $(FPSRC)*.pas $(LIBFILES)
+$(FURIOUSPALADIN): $(FPSRC)furiouspaladin.pas $(FPSRC)*.pas $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBSRC) -FU$(OBJDIR) $< -o$@
 	@echo Demonstration Game Furious Paladin ready!
 
-$(PASCALEROIDS): $(PASRC)*.pas $(LIBFILES)
+$(PASCALEROIDS): $(PASRC)pascaleroids.pas $(PASRC)*.pas $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBSRC) -FU$(OBJDIR) $< -o$@
 	@echo Demonstration Game Pascaleroids ready!
 

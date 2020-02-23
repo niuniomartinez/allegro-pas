@@ -5,7 +5,7 @@ PROGRAM ex_gldepth;
  * Use arrow keys to rotate, PgUp/PgDown to move closer/farther away.
  *)
 (*
-  Copyright (c) 2012-2019 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -47,7 +47,7 @@ PROGRAM ex_gldepth;
     (* Camera angle. *)
       xAngle, yAngle, zAngle: DOUBLE;
     (* Camera distance. *)
-      Dist: DOUBLE;
+      Dist: DOUBLE
     END;
 
 
@@ -83,7 +83,7 @@ PROGRAM ex_gldepth;
     glRotatef (Camera.xAngle, 1, 0, 0);
     glRotatef (Camera.yAngle, 0, 1, 0);
     glRotatef (Camera.zAngle, 0, 0, 1);
-    glMatrixMode (GL_MODELVIEW);
+    glMatrixMode (GL_MODELVIEW)
   END;
 
 
@@ -104,7 +104,7 @@ PROGRAM ex_gldepth;
     IF KeyStatus[ALLEGRO_KEY_PGUP] THEN
       Camera.Dist := Camera.Dist - DistSpeed;
     IF KeyStatus[ALLEGRO_KEY_PGDN] THEN
-      Camera.Dist := Camera.Dist + DistSpeed;
+      Camera.Dist := Camera.Dist + DistSpeed
   END;
 
 
@@ -187,7 +187,7 @@ PROGRAM ex_gldepth;
       glTexCoord2f (1, 0); glVertex3d (-3,  3,  3);
       glTexCoord2f (1, 1); glVertex3d ( 3,  3,  3);
       glTexCoord2f (0, 1); glVertex3d ( 3,  3, -3);
-    glEnd;
+    glEnd
   END;
 
 
@@ -221,7 +221,7 @@ PROGRAM ex_gldepth;
     IF Depth = 0 THEN
       al_draw_text (aFont, TextColor, 0, 5, 0, 'No Z-buffer!')
     ELSE
-      al_draw_text (aFont, TextColor, 0, 5, 0, 'Z-buffer: '+IntToStr (Depth)+'bits');
+      al_draw_textf (aFont, TextColor, 0, 5, 0, 'Z-buffer: %d bits', [Depth]);
     al_set_target_backbuffer (Display);
     al_destroy_bitmap (tmpBmp);
     al_destroy_font (aFont);
@@ -229,7 +229,7 @@ PROGRAM ex_gldepth;
     glEnable (GL_TEXTURE_2D);
     glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
-    Texture := al_get_opengl_texture (Bitmap);
+    Texture := al_get_opengl_texture (Bitmap)
   END;
 
 
@@ -278,23 +278,23 @@ BEGIN
       DoLoop := FALSE;
     ALLEGRO_EVENT_KEY_DOWN:
       BEGIN
-	IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-	  DoLoop := FALSE;
-	KeyStatus[Event.keyboard.keycode] := true;
+        IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
+          DoLoop := FALSE;
+        KeyStatus[Event.keyboard.keycode] := TRUE
       END;
     ALLEGRO_EVENT_KEY_UP:
-      KeyStatus[Event.keyboard.keycode] := false;
+      KeyStatus[Event.keyboard.keycode] := FALSE;
     ALLEGRO_EVENT_TIMER:
       BEGIN
-	Keyboard;
-	IF al_is_event_queue_empty (Queue) THEN
-	BEGIN
-	  SetCameraPosition;
-	  DrawScene;
-	  al_flip_display;
-	END;
+        Keyboard;
+        IF al_is_event_queue_empty (Queue) THEN
+        BEGIN
+          SetCameraPosition;
+          DrawScene;
+          al_flip_display
+        END;
       END;
-    END;
+    END
   END;
-  al_destroy_bitmap (Bitmap);
+  al_destroy_bitmap (Bitmap)
 END.

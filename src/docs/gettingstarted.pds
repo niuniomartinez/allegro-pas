@@ -85,6 +85,8 @@ allegro_native_dialog -> allegro
 
   For TrueType fonts, you'll need to initialise the TTF font addon with @link(al_init_ttf_addon) and load a TTF font with @link(al_load_ttf_font).
 
+  Note that Allegro uses @link(AL_STR) (defined as @code(ANSISTRING)), so it will not manage @code(UNICODESTRING) or @code(WIDESTRING) correctly.  That may conflict with some RTL functions and procedures (specially in modern Delphi), unit @link(al5strings) defines functions and procedures to reduce such conflicts.
+
 
 
 @section(2 getst_drawingprims Drawing primitives)

@@ -1,7 +1,7 @@
 PROGRAM ex_cpu;
 (* An example showing the use of al_get_cpu_count and al_get_ram_size. *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -76,13 +76,13 @@ BEGIN
     IF Redraw AND al_is_event_queue_empty (Queue) THEN
     BEGIN
       al_clear_to_color (al_map_rgba_f (0, 0, 0, 1));
-      al_draw_text (
+      al_draw_textf (
         Font, al_map_rgba_f (1, 1, 0, 1), 16, 16, 0,
-	Format ('Amount of CPU cores detected: %d.', [al_get_cpu_count])
+        'Amount of CPU cores detected: %d.', [al_get_cpu_count]
       );
-      al_draw_text (
+      al_draw_textf (
         Font, al_map_rgba_f (0, 1, 1, 1), 16, 32, 0,
-	Format ('Size of random access memory: %d MiB.', [al_get_ram_size])
+        'Size of random access memory: %d MiB.', [al_get_ram_size]
       );
       al_flip_display;
       Redraw := FALSE;

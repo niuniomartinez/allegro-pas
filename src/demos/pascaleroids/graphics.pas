@@ -54,8 +54,8 @@ INTERFACE
       PROCEDURE Reset;
     (* Adds a point to the polygon. *)
       PROCEDURE AddPoint (CONST aX, aY: SINGLE);
-    (* Defines a polygon. *)
-      PROCEDURE Define (aPointList: ARRAY OF ALLEGRO_VERTEX; aColor: ALLEGRO_COLOR);
+    (* Set a list of vertices. *)
+      PROCEDURE SetVertices (CONST aVx, aVy: ARRAY OF INTEGER);
     (* Draw polygon. *)
       PROCEDURE Draw;
 
@@ -72,7 +72,8 @@ INTERFACE
     IdentityMatrix: ALLEGRO_TRANSFORM;
   (* Colors. *)
     Black, White,
-    Yelow: ALLEGRO_COLOR;
+    Yelow, Green,
+    LightBlue, Cyan, Magenta: ALLEGRO_COLOR;
 
 (* Initializes graphics system.  This doesn't creates the display. *)
   PROCEDURE Initialize;
@@ -90,7 +91,11 @@ IMPLEMENTATION
     Black := al_map_rgb (  0,   0,   0);
     White := al_map_rgb (255, 255, 255);
 
-    Yelow := al_map_rgb (255, 255,   0);
+    Yelow     := al_map_rgb (255, 255,   0);
+    Green     := al_map_rgb (  0, 255,   0);
+    LightBlue := al_map_rgb (150, 150, 233);
+    Cyan      := al_map_rgb (  0, 255, 255);
+    Magenta   := al_map_rgb (255,   0, 255);
 
     al_identity_transform (IdentityMatrix);
   END;
@@ -147,19 +152,16 @@ IMPLEMENTATION
 
 
 
-(* Defines poly. *)
-  PROCEDURE TPolygon.Define
-    (aPointList: ARRAY OF ALLEGRO_VERTEX; aColor: ALLEGRO_COLOR);
+(* Sets vertices. *)
+  PROCEDURE TPolygon.SetVertices (CONST aVx, aVy: ARRAY OF INTEGER);
   VAR
-    lPoint: ALLEGRO_VERTEX;
+    Ndx: INTEGER;
   BEGIN
-    IF Length (aPointList) > MAX_POINTS THEN
-      RAISE Exception.CreateFmt (
-        'Can''t create polygon of %d points...',
-        [Length (aPointList)]
-      );
-    SELF.Reset; SELF.SetColor (aColor);
-    FOR lPoint IN aPointList DO SELF.AddPoint (lPoint.x, lPoint.y)
+    IF HIGH (aVx) > HIGH (fPoints) THEN
+      RAISE Exception.CreateFmt
+        ('Can''t create polygon of %d points...', [HIGH (aVx)]);
+    SELF.Reset;
+    FOR Ndx := LOW(aVx) TO HIGH(aVx) DO SELF.AddPoint (aVx[Ndx], aVy[Ndx])
   END;
 
 

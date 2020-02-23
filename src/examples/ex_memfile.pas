@@ -5,7 +5,7 @@ PROGRAM ex_memfile;
  *      Test memfile addon.
  *)
 (*
-  Copyright (c) 2012-2019 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -30,6 +30,7 @@ PROGRAM ex_memfile;
 {$IFDEF FPC}
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
+
 USES
   Common,
   allegro5, al5base, al5memfile,
@@ -73,7 +74,7 @@ BEGIN
   FOR i := 0 TO (DataSize DIV 4) - 1 DO
     IF al_fwrite32le (MemFile, i) < 4 THEN
     BEGIN
-      LogWriteLn (Format ('Failed to write %i to memfile.', [i]));
+      LogPrintLn ('Failed to write %i to memfile.', [i]);
       EndProgram
     END;
 
@@ -85,7 +86,7 @@ BEGIN
     Ret := al_fread32le (MemFile);
     IF (Ret <> i) OR al_feof (MemFile) THEN
     BEGIN
-      LogWriteLn (Format ('Item %d failed to verify, got %d.', [i, Ret]));
+      LogPrintLn ('Item %d failed to verify, got %d.', [i, Ret]);
       EndProgram
     END
   END;
@@ -101,14 +102,14 @@ BEGIN
 
   i := 0;
   WHILE al_fungetc (MemFile, i) <> AL_EOF DO INC (i);
-  LogWriteLn (Format ('Length of ungetc buffer: %d.', [i]));
+  LogPrintLn ('Length of ungetc buffer: %d.', [i]);
 
   IF al_ftell (MemFile) <> -i THEN
   BEGIN
-    LogWriteLn (Format (
+    LogPrintLn (
       'Current position is not correct. Expected -%d, but got %d.',
       [i, al_ftell (MemFile)]
-    ));
+    );
     EndProgram
   END;
 
@@ -126,7 +127,7 @@ BEGIN
   IF al_ftell (MemFile) <> 0 THEN
   BEGIN
     LogWriteLn ('Current position is not correct after reading back the ungetc buffer.');
-    LogWriteLn (Format ('Expected 0, but got %d.', [al_ftell (MemFile)]));
+    LogPrintLn ('Expected 0, but got %d.', [al_ftell (MemFile)]);
     EndProgram
   END;
 
@@ -145,7 +146,7 @@ BEGIN
   Buffer[0] := #14; { String length. }
   IF Buffer <> 'Allegro rocks!' THEN
   BEGIN
-    LogWriteLn (Format ('Expected to see "Allegro rocks!" but got "%s" instead.', [Buffer]));
+    LogPrintLn ('Expected to see "Allegro rocks!" but got "%s" instead.', [Buffer]);
     LogWriteLn ('(Maybe the ungetc buffer isn''t big enough.)');
     EndProgram
   END;

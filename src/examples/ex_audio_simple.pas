@@ -4,7 +4,7 @@ PROGRAM ex_audio_simple;
  *    Demonstrate 'simple' audio interface.
  *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -31,19 +31,21 @@ PROGRAM ex_audio_simple;
 {$ENDIF}
 
 USES
-  Allegro5, al5audio, al5acodec, Common,
-  sysutils;
+  Allegro5, al5acodec, al5audio, al5base, al5strings, Common;
+
 CONST
   RESERVED_SAMPLES = 16;
   MAX_SAMPLE_DATA  = 10;
+
 VAR
   SampleData: ARRAY [1..MAX_SAMPLE_DATA] OF ALLEGRO_SAMPLEptr;
   Display: ALLEGRO_DISPLAYptr;
   EventQueue: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
   Ndx: INTEGER;
-  FileName: ANSISTRING;
+  FileName: AL_STR;
   EndLoop: BOOLEAN;
+
 BEGIN
   IF NOT al_init THEN AbortExample ('Could not init Allegro.');
 
@@ -54,7 +56,7 @@ BEGIN
     LogWriteLn ('This example needs to be run from the command line.');
     LogWriteLn ('Usage: ex_audio_simple {audio_files}');
     CloseLog (TRUE);
-    HALT (1);
+    HALT (1)
   END;
 
   al_install_keyboard;
@@ -76,14 +78,14 @@ BEGIN
   BEGIN
     IF Ndx <= Paramcount THEN
     BEGIN
-      FileName := ParamStr (Ndx);
+      FileName := al_string_to_str (ParamStr (Ndx));
     { Load the entire sound file from disk. }
       SampleData[Ndx] := al_load_sample (FileName);
       IF SampleData[Ndx] = NIL THEN
-        LogWriteLn ('Could not load sample from "' + FileName + '"!');
+        LogPrintLn ('Could not load sample from "%s"!', [FileName])
     END
     ELSE
-      SampleData[Ndx] := NIL;
+      SampleData[Ndx] := NIL
   END;
 
   LogWriteLn ('Press digits to play sounds, space to stop sounds, Escape to quit.');
@@ -106,17 +108,17 @@ BEGIN
             Ndx := (Event.keyboard.unichar - ORD ('0') + 10) MOD 10;
           IF SampleData[Ndx] <> NIL THEN
           BEGIN
-            WriteLn ('Playing ', Ndx);
+            LogPrintLn ('Playing %d', [Ndx]);
             IF NOT al_play_sample (SampleData[Ndx], 1, 0.5, 1, ALLEGRO_PLAYMODE_LOOP, NIL) THEN
               LogWriteLn ('al_play_sample_data failed, perhaps too many sounds');
-          END;
-        END;
+          END
+        END
       END;
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       EndLoop := TRUE;
-    END;
+    END
   UNTIL EndLoop;
 { Sample data and other objects will be automatically freed. }
   al_uninstall_audio;
-  CloseLog (TRUE);
+  CloseLog (FALSE)
 END.

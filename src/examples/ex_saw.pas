@@ -1,7 +1,7 @@
 PROGRAM ex_saw;
 (* Recreate exstream.c from A4. *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -24,6 +24,8 @@ PROGRAM ex_saw;
  *)
 
 {$IFDEF FPC}
+  {$POINTERMATH ON} { When compiled in Delphi mode, this is disabled. }
+  {$RANGECHECKS OFF} { If set, example doesn't run. }
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 

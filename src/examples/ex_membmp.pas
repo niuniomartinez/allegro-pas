@@ -1,6 +1,6 @@
 PROGRAM ex_membmp;
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -28,10 +28,9 @@ PROGRAM ex_membmp;
 
   USES
     Common,
-    Allegro5, al5font, al5Image,
-    sysutils;
+    Allegro5, al5base, al5font, al5Image, al5strings;
 
-  PROCEDURE Print (aFont: ALLEGRO_FONTptr; Message: STRING; x, y: INTEGER);
+  PROCEDURE Print (aFont: ALLEGRO_FONTptr; Message: AL_STR; x, y: INTEGER);
   BEGIN
     al_draw_text (aFont, al_map_rgb (0, 0, 0), x+2, y+2, 0, Message);
     al_draw_text (aFont, al_map_rgb (255, 255, 255), x, y, 0, Message)
@@ -40,7 +39,7 @@ PROGRAM ex_membmp;
 
 
   FUNCTION Test
-    (Bitmap: ALLEGRO_BITMAPptr; Font: ALLEGRO_FONTptr; Message: STRING)
+    (Bitmap: ALLEGRO_BITMAPptr; Font: ALLEGRO_FONTptr; Message: AL_STR)
     : BOOLEAN;
   VAR
     Queue: ALLEGRO_EVENT_QUEUEptr;
@@ -61,18 +60,18 @@ PROGRAM ex_membmp;
       IF al_get_next_event (Queue, Event) THEN
       BEGIN
         IF Event.ftype = ALLEGRO_EVENT_KEY_DOWN THEN
-	BEGIN
-	  IF Event.keyboard.keycode = ALLEGRO_KEY_SPACE THEN
-	  BEGIN
-	    al_destroy_event_queue (Queue);
-	    EXIT (FALSE)
-	  END;
-	  IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-	  BEGIN
-	    al_destroy_event_queue (Queue);
-	    EXIT (TRUE)
-	  END
-	END
+        BEGIN
+          IF Event.keyboard.keycode = ALLEGRO_KEY_SPACE THEN
+          BEGIN
+            al_destroy_event_queue (Queue);
+            EXIT (FALSE)
+          END;
+          IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
+          BEGIN
+            al_destroy_event_queue (Queue);
+            EXIT (TRUE)
+          END
+        END
       END;
 
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
@@ -82,13 +81,13 @@ PROGRAM ex_membmp;
       al_clear_to_color (al_map_rgb (255, 0, 0));
 
       al_draw_scaled_bitmap (
-	Bitmap, 0, 0,
-	al_get_bitmap_width (Bitmap),
-	al_get_bitmap_height (Bitmap),
-	0, 0,
-	al_get_bitmap_width (al_get_target_bitmap),
-	al_get_bitmap_height (al_get_target_bitmap),
-	0
+        Bitmap, 0, 0,
+        al_get_bitmap_width (Bitmap),
+        al_get_bitmap_height (Bitmap),
+        0, 0,
+        al_get_bitmap_width (al_get_target_bitmap),
+        al_get_bitmap_height (al_get_target_bitmap),
+        0
       );
 
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
@@ -98,8 +97,8 @@ PROGRAM ex_membmp;
       to solve the problem either. }
       Print (Font, Message, 0, 0);
       Print (
-	Font, Format ('%.1f FPS', [FPS]), 0,
-	al_get_font_line_height (Font) + 5
+        Font, al_str_format ('%.1f FPS', [FPS]), 0,
+        al_get_font_line_height (Font) + 5
       );
 
       al_flip_display;

@@ -5,7 +5,7 @@ PROGRAM ex_shader_target;
  *    Test that shaders are applied per target bitmap.
  *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -32,8 +32,7 @@ PROGRAM ex_shader_target;
 {$ENDIF}
   USES
     Common,
-    Allegro5, al5base, al5image,
-    sysutils;
+    Allegro5, al5base, al5image;
 
    VAR
      Tints: ARRAY [0..11] OF AL_FLOAT = (
@@ -46,7 +45,7 @@ PROGRAM ex_shader_target;
 
 
   PROCEDURE ChooseShaderSource
-    (Platform: ALLEGRO_SHADER_PLATFORM; VAR vSource, pSource: STRING);
+    (Platform: ALLEGRO_SHADER_PLATFORM; VAR vSource, pSource: AL_STR);
   BEGIN
     IF Platform = ALLEGRO_SHADER_HLSL THEN
     BEGIN
@@ -91,7 +90,7 @@ PROGRAM ex_shader_target;
     BackBuffer: ALLEGRO_BITMAPptr;
     Region: ARRAY [0..3] OF ALLEGRO_BITMAPptr;
     Shader: ALLEGRO_SHADERptr;
-    vSource, pSource: STRING;
+    vSource, pSource: AL_STR;
     T: ALLEGRO_TRANSFORM;
     i: INTEGER;
     Queue: ALLEGRO_EVENT_QUEUEptr;
@@ -125,20 +124,18 @@ BEGIN
     AbortExample ('Could not load source files.');
   IF NOT al_attach_shader_source_file (Shader, ALLEGRO_VERTEX_SHADER, vSource)
   THEN
-    AbortExample (Format (
-      'al_attach_shader_source_file failed: %s',
-      [al_get_shader_log (Shader)]
-    ));
+    AbortExample (
+      'al_attach_shader_source_file failed: ' +
+      al_get_shader_log (Shader)
+    );
   IF NOT al_attach_shader_source_file (Shader, ALLEGRO_PIXEL_SHADER, pSource)
   THEN
-    AbortExample (Format (
-      'al_attach_shader_source_file failed: %s',
-      [al_get_shader_log (Shader)]
-    ));
+    AbortExample (
+      'al_attach_shader_source_file failed: ' +
+      al_get_shader_log (Shader)
+    );
   IF NOT al_build_shader (Shader) THEN
-    AbortExample (Format (
-      'al_build_shader failed: %s', [al_get_shader_log (Shader)]
-    ));
+    AbortExample ('al_build_shader failed: ' + al_get_shader_log (Shader));
 
 { Create four sub-bitmaps of the backbuffer sharing a shader. }
   BackBuffer := al_get_backbuffer (Display);

@@ -9,7 +9,7 @@ PROGRAM ex_file_slice;
  *
  *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -36,7 +36,7 @@ PROGRAM ex_file_slice;
 {$ENDIF}
 
   USES
-    Allegro5, al5base, Common,
+    Allegro5, al5base, al5strings, Common,
     sysutils;
 
   CONST
@@ -74,7 +74,7 @@ PROGRAM ex_file_slice;
   VAR
     Master, Slice: ALLEGRO_FILEptr;
     Buffer: PCHAR;
-    FileName: STRING;
+    FileName: AL_STR;
 
 BEGIN
   IF NOT al_init THEN
@@ -82,7 +82,7 @@ BEGIN
 
   OpenLog;
 
-  FileName := GetTempFilename;
+  FileName := al_string_to_str (GetTempFilename);
   Master := al_fopen (FileName, 'w');
   IF Master = NIL THEN
     AbortExample ('Unable to create temporary file.');
@@ -103,17 +103,17 @@ BEGIN
     IF Slice <> NIL THEN
     BEGIN
     { Note: While the slice is open, we must avoid using the master file!
-            If you were dealing with packed images, this is where you would
+	    If you were dealing with packed images, this is where you would
 	    pass 'slice' to al_load_bitmap_f(). }
       IF al_fsize (Slice) < BUFFER_SIZE THEN
       BEGIN
       { We could have used al_fgets(), but just to show that the file slice
-        is constrained to the string object, we'll read the entire slice. }
-         al_fread (Slice, Buffer, al_fsize (Slice));
-         Buffer[al_fsize (Slice)] := CHAR (0);
-         LogWriteLn (Format (
-	   'Chunk of size %d: ''%s''.', [al_fsize (Slice), Buffer]
-	 ))
+	is constrained to the string object, we'll read the entire slice. }
+	al_fread (Slice, Buffer, al_fsize (Slice));
+	Buffer[al_fsize (Slice)] := CHAR (0);
+	LogWriteLn (al_str_format (
+	  'Chunk of size %d: ''%s''.', [al_fsize (Slice), Buffer]
+	))
       END;
     { The slice must be closed before the next slice is opened. Closing
       the slice will advanced the master file to the end of the slice. }

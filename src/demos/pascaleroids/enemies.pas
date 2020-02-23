@@ -1,5 +1,5 @@
 UNIT Enemies;
-(*< Defines the enemies. *)
+(*< Defines an enemy ship. *)
 (*
   Copyright (c) 2019 Guillermo Martínez J.
 
@@ -25,7 +25,29 @@ UNIT Enemies;
 
 INTERFACE
 
+  USES
+    Engine;
+
+  TYPE
+  (* The enemy sprite. *)
+    TEnemy = CLASS (TMoveableSprite)
+    PUBLIC
+    (* Initializes the enemy. *)
+      PROCEDURE Initialize; OVERRIDE;
+    END;
+
 IMPLEMENTATION
+
+(*
+ * TEnemy
+ ***************************************************************************)
+
+(* Initializes. *)
+  PROCEDURE TEnemy.Initialize;
+  BEGIN
+    INHERITED Initialize;
+    SELF.Polygon.Fill := FALSE
+  END;
 
 END.
 

@@ -1,6 +1,6 @@
 PROGRAM ex_shader_multitex;
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -28,16 +28,15 @@ PROGRAM ex_shader_multitex;
 
   USES
     Common,
-    Allegro5, al5image,
-    sysutils;
+    Allegro5, al5base, al5image;
 
-  FUNCTION LoadBitmap (CONST FileName: STRING): ALLEGRO_BITMAPptr;
+  FUNCTION LoadBitmap (CONST FileName: AL_STR): ALLEGRO_BITMAPptr;
   VAR
     lBitmap: ALLEGRO_BITMAPptr;
   BEGIN
     lBitmap := al_load_bitmap (FileName);
     IF lBitmap = NIL THEN
-      AbortExample (Format ('%s not found or failed to load', [FileName]));
+      AbortExample (FileName + ' not found or failed to load');
     EXIT (lBitmap)
   END;
 
@@ -51,7 +50,7 @@ PROGRAM ex_shader_multitex;
     Redraw: BOOLEAN = TRUE;
     Shader: ALLEGRO_SHADERptr = NIL;
     T, dw, dh: INTEGER;
-    PixelFile: STRING;
+    PixelFile: AL_STR;
     Scale, Angle, x, y: DOUBLE;
 BEGIN
   T := 0;
@@ -89,20 +88,18 @@ BEGIN
     Shader, ALLEGRO_VERTEX_SHADER,
     al_get_default_shader_source (ALLEGRO_SHADER_AUTO, ALLEGRO_VERTEX_SHADER))
   THEN
-    AbortExample (Format (
-      'al_attach_shader_source for vertex shader failed: %s',
-      [al_get_shader_log (Shader)]
-    ));
+    AbortExample (
+      'al_attach_shader_source for vertex shader failed: ' +
+      al_get_shader_log (Shader)
+    );
   IF NOT al_attach_shader_source_file (Shader, ALLEGRO_PIXEL_SHADER, PixelFile)
   THEN
-    AbortExample (Format (
-      'al_attach_shader_source_file for pixel shader failed: %s',
-      [al_get_shader_log (Shader)]
-    ));
+    AbortExample (
+      'al_attach_shader_source_file for pixel shader failed: ' +
+      al_get_shader_log (Shader)
+    );
   IF NOT al_build_shader (Shader) THEN
-    AbortExample (Format (
-      'al_build_shader failed: %s', [al_get_shader_log (Shader)]
-    ));
+    AbortExample ('al_build_shader failed: ' + al_get_shader_log (Shader));
 
   al_use_shader (Shader);
 
@@ -149,7 +146,7 @@ BEGIN
         Bitmap[0], x, y, dw / 2, dh / 2,
 	Scale, Scale, Angle, 0
       );
-      al_flip_display;
+      al_flip_display
     END
   UNTIL FALSE;
 
@@ -157,5 +154,5 @@ BEGIN
 
   al_destroy_bitmap (Bitmap[0]);
   al_destroy_bitmap (Bitmap[1]);
-  al_destroy_shader (Shader);
+  al_destroy_shader (Shader)
 END.

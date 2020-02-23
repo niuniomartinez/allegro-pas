@@ -19,7 +19,7 @@ PROGRAM haiku;
  *)
 
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -43,19 +43,17 @@ PROGRAM haiku;
 
 {$IFDEF FPC}
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+  {$MODE DELPHI}
+  {$MODESWITCH ADVANCEDRECORDS+}
 {$ENDIF}
 
 
 USES
    Common,
    Allegro5,
-   al5audio, al5acodec, al5image,
-   sysutils;
-
+   al5base, al5audio, al5acodec, al5image, al5strings;
 
 CONST
-   TWOPI = PI * 2;
-
    TYPE_EARTH = 0;
    TYPE_WIND  = 1;
    TYPE_WATER = 2;
@@ -202,18 +200,18 @@ CONST
 
    PROCEDURE LoadSamples;
    CONST
-      Base: ARRAY [0..NUM_TYPES - 1] OF STRING = (
+      Base: ARRAY [0..NUM_TYPES - 1] OF AL_STR = (
          'earth', 'air', 'water', 'fire'
       );
    VAR
-      Name: STRING;
+      Name: AL_STR;
       t, p: LONGINT;
    BEGIN
       FOR t := 0 TO NUM_TYPES - 1 DO
       BEGIN
          FOR p := 0 TO NUM_PITCH - 1 DO
          BEGIN
-            Name := HAIKU_DATA + Format ('%s_%d.ogg', [Base[t], p]);
+            Name := HAIKU_DATA + al_str_format ('%s_%d.ogg', [Base[t], p]);
             ElementSamples[t][p] := al_load_sample (Name);
             IF ElementSamples[t][p] = NIL THEN
                AbortExample ('Error loading "' + Name + '".');
@@ -695,7 +693,7 @@ CONST
       BEGIN
          Spr := MakeFlair (IMG_FLAME, x, y, Now + 0.7);
          Spr^.AlignX := 1.3;
-         Spr^.Angle := TWOPI / 3 * i;
+         Spr^.Angle := ALLEGRO_TAU / 3 * i;
          AnimDelta (Spr^, @(Spr^.Angle), -PI, INTERP_DOUBLE_FAST, 0.7);
          Anim (Spr^, @(Spr^.Opacity), 1.0, 0.0, INTERP_SLOW, 0.7);
          Anim (Spr^, @(Spr^.ScaleX),  0.2, 1.0, INTERP_FAST, 0.7);
@@ -743,7 +741,7 @@ CONST
          Spr := MakeFlair (IMG_WATER_DROPS, x, y, Now + MaxDuration);
          Spr^.ScaleX := RandomFloat (0.3, 1.2) * RandomSign;
          Spr^.ScaleY := RandomFloat (0.3, 1.2) * RandomSign;
-         Spr^.Angle := RandomFloat (0, TWOPI);
+         Spr^.Angle := RandomFloat (0, ALLEGRO_TAU);
          Spr^.r := RandomFloat (0, 0.6);
          Spr^.g := RandomFloat (0.4, 0.6);
          Spr^.b := 1;

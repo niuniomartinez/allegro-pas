@@ -20,15 +20,14 @@ PASCALEROIDS =  $(PABIN)pascaleroids$(BINSUF)
 
 DEMFILES = $(FURIOUSPALADIN) $(PASCALEROIDS)
 
-# Documentation files
+ALLFILES = $(LIBFILES) $(TEXM) $(TDEMfp)
+
+# Documentation files.
 DOCMAIN = $(DOCSRC)allegro5.pds
 DOCINTRO = $(DOCSRC)introduction.pds
 DOCFILES = $(wildcard $(DOCSRC)*.pds)
 
-# Object files et all.
-
-ALLFILES = $(LIBFILES) $(TEXM) $(TDEMfp)
-
+# Object and other temporal files.
 DOCTMPFILES = $(addprefix $(OBJDIR), $(addsuffix .pduc, $(basename $(notdir $(LIBFILES) ) ) ) )
 
 OBJFILES = $(addprefix $(OBJDIR), $(addsuffix .o, $(basename $(notdir $(ALLFILES) ) ) ) )

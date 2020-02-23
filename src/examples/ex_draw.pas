@@ -1,7 +1,7 @@
 PROGRAM ex_draw;
 (* Tests some drawing primitives. *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -29,8 +29,7 @@ PROGRAM ex_draw;
 
   USES
     Common,
-    Allegro5, al5image, al5font, al5color, al5primitives,
-    sysutils;
+    Allegro5, al5base, al5image, al5font, al5color, al5primitives;
 
   TYPE
     RExample = RECORD
@@ -55,7 +54,7 @@ PROGRAM ex_draw;
    Ex: RExample;
 
   CONST
-    Names: ARRAY [0..4] OF STRING = (
+    Names: ARRAY [0..4] OF AL_STR = (
       'filled rectangles',
       'rectangles',
       'filled circles',
@@ -105,7 +104,7 @@ PROGRAM ex_draw;
 
 
 
-  PROCEDURE Print (CONST aText: STRING);
+  PROCEDURE Printf (CONST aFmt: AL_STR; CONST aVals: ARRAY OF CONST);
   VAR
     State: ALLEGRO_STATE;
     th: INTEGER;
@@ -113,9 +112,14 @@ PROGRAM ex_draw;
     th := al_get_font_line_height (Ex.Font);
     al_store_state(&state, ALLEGRO_STATE_BLENDER);
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-    al_draw_text (Ex.Font, Ex.Text, Ex.TextX, Ex.TextY, 0, aText);
+    al_draw_textf (Ex.Font, Ex.Text, Ex.TextX, Ex.TextY, 0, aFmt, aVals);
     al_restore_state (state);
     Ex.TextY := Ex.TextY + th
+  END;
+
+  PROCEDURE Print (CONST aText: AL_STR); INLINE;
+  BEGIN
+    Printf (aText, [])
   END;
 
 
@@ -153,7 +157,7 @@ PROGRAM ex_draw;
     Screen, mem: ALLEGRO_BITMAPptr;
     Rects: ARRAY [0..(16 * 4) - 1] OF REAL;
     rgba: ALLEGRO_COLOR;
-    sw: STRING;
+    sw: AL_STR;
   BEGIN
     w := al_get_bitmap_width (Ex.Zoom);
     h := al_get_bitmap_height (Ex.Zoom);
@@ -171,7 +175,7 @@ PROGRAM ex_draw;
     al_clear_to_color (Ex.Background);
 
     SetXY (8, 0);
-    Print (Format ('Drawing %s (press SPACE to change)', [Names[Ex.What]]));
+    Printf ('Drawing %s (press SPACE to change)', [Names[Ex.What]]);
 
     SetXY(8, 16);
     Print ('Original');
@@ -245,15 +249,14 @@ PROGRAM ex_draw;
          Ex.Outline, TRUE);
 
     SetXY (8, 640 - 48);
-    Print (Format ('Thickness: %d (press T to change)', [Ex.Thickness]));
-    Print (Format ('Drawing with: %s (press S to change)', [sw]));
-    Print (Format ('Supersampling: %dx (edit ex_draw.ini to change)', [Ex.Samples]));
+    Printf ('Thickness: %d (press T to change)', [Ex.Thickness]);
+    Printf ('Drawing with: %s (press S to change)', [sw]);
+    Printf ('Supersampling: %dx (edit ex_draw.ini to change)', [Ex.Samples]);
 
 { FIXME: doesn't work
       al_get_display_option (ALLEGRO_SAMPLE_BUFFERS));
-  }
+}
   END;
-
 
 
 

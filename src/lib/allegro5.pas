@@ -5,7 +5,7 @@ UNIT Allegro5;
   add-ons.
 
   @bold(See also:) @link(getst Getting started) *)
-(* Copyright (c) 2012-2019 Guillermo Martínez J. <niunio@users.sourceforge.net>
+(* Copyright (c) 2012-2020 Guillermo Martínez J. <niunio@users.sourceforge.net>
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -37,7 +37,7 @@ UNIT Allegro5;
 INTERFACE
 
   USES
-    al5base;
+    al5base, al5strings;
 
 { The code is distributed in sections, each one wraps a header file.
 
@@ -91,7 +91,7 @@ INTERFACE
     ALLEGRO_PI = 3.14159265358979323846;
     ALLEGRO_TAU = ALLEGRO_PI * 2;
 
-  FUNCTION AL_ID (CONST str: SHORTSTRING): AL_INT;
+  FUNCTION AL_ID (CONST str: AL_STR): AL_INT;
 
 
 
@@ -360,104 +360,6 @@ INTERFACE
   This header is used by Allegro to build file paths.  AFAIK Delphi and FPC
   runtime libraries had same functionality so I'll not add it unless it is
   really needed (i.e. I'm wrong and RTL doesn't include such funtionality). }
-
-
-
-(*
- * utf8.h
- *****************************************************************************)
-
-  {TODO: Documentation says it's not needed as it's used internally.
-	Only basic functionality is implemented for convenience.
-
-	Use Delphi/FPC native UNICODE support if needed. }
-  {TODO: There are a lot of stuff to add here, including WIDESTRING and/or
-	 UNICODESTRING support. }
-
-  TYPE
-  {** @exclude }
-    _al_tagbstring = RECORD
-      mlen, slen: AL_INT;
-      data: AL_VOIDptr;
-    END;
-  (*** Pointer to @link(ALLEGRO_USTR). *)
-    ALLEGRO_USTRptr = ^ALLEGRO_USTR;
-    ALLEGRO_USTR = _al_tagbstring;
-  (*** Pointer to @link(ALLEGRO_USTR_INFO). *)
-    ALLEGRO_USTR_INFOptr = ^ALLEGRO_USTR_INFO;
-    ALLEGRO_USTR_INFO = _al_tagbstring;
-
-(* Creating strings. *)
-  FUNCTION al_ustr_new (CONST s: AL_STR): ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_new_from_buffer (CONST s: AL_STRptr; size: AL_SIZE_T): ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-(* AL_PRINTFUNC(ALLEGRO_USTR *, al_ustr_newf, (const char *fmt, ...), 1, 2); *)
-  PROCEDURE al_ustr_free (us: ALLEGRO_USTRptr);
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_cstr (CONST us: ALLEGRO_USTRptr): AL_STRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_ustr_to_buffer (CONST us: ALLEGRO_USTRptr; buffer: AL_STRptr; size: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_cstr_dup (CONST us: ALLEGRO_USTRptr): AL_STRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_dup (CONST us: ALLEGRO_USTRptr): ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_dup_substr (CONST us: ALLEGRO_USTRptr; start_pos, end_pos: AL_INT): ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Predefined string. *)
-  FUNCTION al_ustr_empty_string: ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Reference strings. *)
-  FUNCTION al_ref_cstr (OUT info: ALLEGRO_USTR_INFO; CONST s: AL_STR): ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ref_buffer (OUT info: ALLEGRO_USTR_INFO; CONST s: AL_STRptr;
-      size: AL_SIZE_T): ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ref_ustr (OUT info: ALLEGRO_USTR_INFO;
-      CONST us: ALLEGRO_USTRptr; star_pos, end_pos: AL_INT): ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Sizes and offsets *)
-  FUNCTION al_ustr_size (CONST us: ALLEGRO_USTRptr): AL_SIZE_T;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_length (CONST us: ALLEGRO_USTRptr): AL_SIZE_T;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_offset (CONST us: ALLEGRO_USTRptr;index: AL_INT): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_next (CONST us: ALLEGRO_USTRptr; VAR aPos: AL_INT): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_prev (CONST us: ALLEGRO_USTRptr; VAR aPos: AL_INT): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Insert *)
-  FUNCTION al_ustr_insert_chr (us1: ALLEGRO_USTRptr; aPos: AL_INT; c: AL_INT32)
-  : AL_SIZE_T;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Remove *)
-  FUNCTION al_ustr_remove_chr (us: ALLEGRO_USTRptr; apos: AL_INT): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Assign *)
-  FUNCTION al_ustr_assign (us1: ALLEGRO_USTRptr; CONST us2: ALLEGRO_USTRptr): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: AL_STR): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Compare *)
-  FUNCTION al_ustr_equal (CONST us1, us2: ALLEGRO_USTRptr): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_compare (CONST u, v: ALLEGRO_USTRptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_ncompare (CONST u, v: ALLEGRO_USTRptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-
-(* Low level UTF-8 functions *)
-  FUNCTION al_utf8_width (c: AL_INT32): AL_SIZE_T;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 
 
@@ -789,7 +691,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  *)
   FUNCTION ALLEGRO_EVENT_TYPE_IS_USER (t: ALLEGRO_EVENT_TYPE): AL_BOOL; INLINE;
 
-  FUNCTION ALLEGRO_GET_EVENT_TYPE (CONST str: SHORTSTRING): AL_INT; INLINE;
+  FUNCTION ALLEGRO_GET_EVENT_TYPE (CONST str: AL_STR): AL_INT; INLINE;
 
 
   TYPE
@@ -942,13 +844,13 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
     (*** @exclude *)
       __internal__descr: ALLEGRO_USER_EVENT_DESCRIPTORptr;
     (*** Extra data. *)
-      data1: AL_INTPTR_T;
+      data1,
     (*** Extra data. *)
-      data2: AL_INTPTR_T;
+      data2,
     (*** Extra data. *)
-      data3: AL_INTPTR_T;
+      data3,
     (*** Extra data. *)
-      data4: AL_INTPTR_T;
+      data4: AL_DATA_PTR_T;
     END;
 
   (*** Pointer to @link(ALLEGRO_EVENT) *)
@@ -974,13 +876,13 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 	8: ( user: ALLEGRO_USER_EVENT );
     END;
 
-    (*** User event destructor. @seealso(al_emit_user_event) *)
-      ALLEGRO_EVENT_DTOR_PROC = PROCEDURE (evt: ALLEGRO_USER_EVENTptr); CDECL;
+  (*** User event destructor. @seealso(al_emit_user_event) *)
+    ALLEGRO_EVENT_DTOR_PROC = PROCEDURE (evt: ALLEGRO_USER_EVENTptr); CDECL;
 
 (* Event sources. *)
-  PROCEDURE al_init_user_event_source (source: ALLEGRO_EVENT_SOURCEptr);
+  PROCEDURE al_init_user_event_source (OUT source: ALLEGRO_EVENT_SOURCE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_destroy_user_event_source (source: ALLEGRO_EVENT_SOURCEptr);
+  PROCEDURE al_destroy_user_event_source (OUT source: ALLEGRO_EVENT_SOURCE);
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 (* The second argument is ALLEGRO_EVENT instead of ALLEGRO_USER_EVENT
  * to prevent users passing a pointer to a too-short structure.
@@ -1042,7 +944,6 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 (*
  * display.h
  *****************************************************************************)
-
 
   CONST
   (* Possible bit combinations for the flags parameter of al_set_new_display_flags. *)
@@ -2075,7 +1976,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
 
 { DO NOT USE ANY SYMBOL BELOW THIS COMMENT.  They're for internal use only.  In
-  delphi, inline function declared in interface section must not use local
+  Delphi, inline function declared in interface section must not use local
   symbols, that's why I've defined it here. }
 {@exclude}
   FUNCTION _al_load_bitmap_f
@@ -2099,7 +2000,7 @@ IMPLEMENTATION
  * base.h
  *****************************************************************************)
 
-  FUNCTION AL_ID (CONST str: SHORTSTRING): AL_INT;
+  FUNCTION AL_ID (CONST str: AL_STR): AL_INT;
   BEGIN
     AL_ID := (ORD (str[1]) SHL 24) OR (ORD (str[2]) SHL 16)
 	     OR (ORD (str[3]) SHL  8) OR  ORD (str[4])
@@ -2145,7 +2046,7 @@ IMPLEMENTATION
 
 
 
-  FUNCTION ALLEGRO_GET_EVENT_TYPE (CONST str: SHORTSTRING): AL_INT;
+  FUNCTION ALLEGRO_GET_EVENT_TYPE (CONST str: AL_STR): AL_INT;
   BEGIN
     ALLEGRO_GET_EVENT_TYPE := AL_ID (str)
   END;
@@ -2238,8 +2139,6 @@ IMPLEMENTATION
   END;
 
 INITIALIZATION
-{ Delphi forces an INITIALIZATION section if FINALIZATION is used. }
-  ;
 { Next code suggested by FPC mailing list user.  This should fix some issues
   with memory.  It was removed as it seems to be fixed by Allegro itself.
   Anyway I'll keep it here in case the bug appears again. }
@@ -2247,6 +2146,9 @@ INITIALIZATION
 { $if defined(cpui386) or defined(cpux86_64)}
 { SetExceptionMask(GetExceptionMask + [exZeroDivide, exInvalidOp]); }
 { $ENDIF}
+
+{ Delphi forces an INITIALIZATION section if FINALIZATION is used. }
+  ;
 
 FINALIZATION
 { Ensures that we call it, as Pascal hasn't an "atexit" function. }

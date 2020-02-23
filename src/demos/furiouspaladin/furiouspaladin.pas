@@ -30,34 +30,13 @@ program FuriousPaladin;
 {$ENDIF}
 
 uses
-  Configuration, Data,
+  Actor, Configuration, Data,
   Classes, SysUtils, al5Base, al5image, al5font, al5ttf,
   al5primitives, al5audio, al5acodec, Allegro5, al5nativedlg;
 
 type
 
   TAppState = (Intro1, Intro2, Playing, Paused, Lose, Win);
-
-  TActivity = (WalkL, WalkR, AttackL, AttackR, IdleL, IdleR, HitL, HitR, KilledL, KilledR);
-
-  TImageList = record
-    Images: array of ALLEGRO_BITMAPptr;
-    Count:  Byte;
-    Delay:  Byte;
-  end;
-
-  TActor = record
-    PosX, PosY:      Real;
-    MinX, MaxX:      Real;
-    Speed:           Real;
-    CurrentActivity: TActivity;
-    LastActivity:    TActivity;
-    AnimImage:       ^TImageList;
-    AnimProgress:    Byte;
-    AnimDelay:       Byte;
-  end;
-
-  PActor = ^TActor;
 
 const
   MaxPlayerHealth = 500;
@@ -89,20 +68,20 @@ var
   ImgWin:            ALLEGRO_BITMAPptr;
   ImgFailed:         ALLEGRO_BITMAPptr;
   // Animation data
-  ImgPlayerWalkL:    TImageList;
-  ImgPlayerWalkR:    TImageList;
-  ImgPlayerAttackL:  TImageList;
-  ImgPlayerAttackR:  TImageList;
-  ImgPlayerIdleL:    TImageList;
-  ImgPlayerIdleR:    TImageList;
-  ImgPlayerBeenHitL: TImageList;
-  ImgPlayerBeenHitR: TImageList;
-  ImgZombieWalkL:    TImageList;
-  ImgZombieWalkR:    TImageList;
-  ImgZombieAttackL:  TImageList;
-  ImgZombieAttackR:  TImageList;
-  ImgZombieKilledL:  TImageList;
-  ImgZombieKilledR:  TImageList;
+  ImgPlayerWalkL:    TAnimation;
+  ImgPlayerWalkR:    TAnimation;
+  ImgPlayerAttackL:  TAnimation;
+  ImgPlayerAttackR:  TAnimation;
+  ImgPlayerIdleL:    TAnimation;
+  ImgPlayerIdleR:    TAnimation;
+  ImgPlayerBeenHitL: TAnimation;
+  ImgPlayerBeenHitR: TAnimation;
+  ImgZombieWalkL:    TAnimation;
+  ImgZombieWalkR:    TAnimation;
+  ImgZombieAttackL:  TAnimation;
+  ImgZombieAttackR:  TAnimation;
+  ImgZombieKilledL:  TAnimation;
+  ImgZombieKilledR:  TAnimation;
   // Audio data
   AudioInstance:     ALLEGRO_SAMPLE_INSTANCEptr;
   AudioBackground:   ALLEGRO_SAMPLEptr;
@@ -111,6 +90,32 @@ var
   AudioFailed:       ALLEGRO_SAMPLEptr;
   // Font data
   SystemFont:        ALLEGRO_FONTptr;
+
+
+
+  PROCEDURE ProcessShutdown; FORWARD;
+
+
+
+(* Shows an error message and ends. *)
+  PROCEDURE AbortProgram (CONST Message: STRING);
+  VAR
+    Display: ALLEGRO_DISPLAYptr;
+  BEGIN
+    IF al_init_native_dialog_addon THEN
+    BEGIN
+      IF al_is_system_installed THEN
+        Display := al_get_current_display
+      ELSE
+        Display := NIL;
+      al_show_native_message_box
+        (Display, 'Error', 'Cannot run Furious Paladin', Message, '', 0)
+    END
+    ELSE
+      WriteLn (ErrOutput, Message);
+    ProcessShutDown;
+    HALT (-1)
+  END;
 
 
 
@@ -178,185 +183,47 @@ begin
   ImgFailed      := LoadBitmap ('imgfailed.png');
 
   // Load animation data: Player Walk Left
-  with imgPlayerWalkL do begin
-    Delay := 4;
-    Count := 8;
-    SetLength(Images, Count);
-    Images[0] := LoadBitmap ('hero-walk-w00.png');
-    Images[1] := LoadBitmap ('hero-walk-w01.png');
-    Images[2] := LoadBitmap ('hero-walk-w02.png');
-    Images[3] := LoadBitmap ('hero-walk-w03.png');
-    Images[4] := LoadBitmap ('hero-walk-w04.png');
-    Images[5] := LoadBitmap ('hero-walk-w05.png');
-    Images[6] := LoadBitmap ('hero-walk-w06.png');
-    Images[7] := LoadBitmap ('hero-walk-w07.png');
-  end;
+  IF NOT LoadAnimation ('hero-walk-w', 4, imgPlayerWalkL) THEN
+    AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Walk Right
-  with ImgPlayerWalkR do begin
-    Delay := 4;
-    Count := 8;
-    SetLength(Images, Count);
-    Images[0] := LoadBitmap ('hero-walk-e00.png');
-    Images[1] := LoadBitmap ('hero-walk-e01.png');
-    Images[2] := LoadBitmap ('hero-walk-e02.png');
-    Images[3] := LoadBitmap ('hero-walk-e03.png');
-    Images[4] := LoadBitmap ('hero-walk-e04.png');
-    Images[5] := LoadBitmap ('hero-walk-e05.png');
-    Images[6] := LoadBitmap ('hero-walk-e06.png');
-    Images[7] := LoadBitmap ('hero-walk-e07.png');
-  end;
+  IF NOT LoadAnimation ('hero-walk-e', 4, imgPlayerWalkR) THEN
+    AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Attack Left
-  with ImgPlayerAttackL do begin
-    Delay := 6;
-    Count := 7;
-    SetLength(Images, Count);
-    Images[0] := LoadBitmap ('hero-attack-w00.png');
-    Images[1] := LoadBitmap ('hero-attack-w03.png');
-    Images[2] := LoadBitmap ('hero-attack-w04.png');
-    Images[3] := LoadBitmap ('hero-attack-w07.png');
-    Images[4] := LoadBitmap ('hero-attack-w09.png');
-    Images[5] := LoadBitmap ('hero-attack-w11.png');
-    Images[6] := LoadBitmap ('hero-attack-w12.png');
-  end;
+  IF NOT LoadAnimation ('hero-attack-w', 6, ImgPlayerAttackL) THEN
+    AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Attack Right
-  with ImgPlayerAttackR do begin
-    Delay := 6;
-    Count := 7;
-    SetLength(Images, Count);
-    Images[0] := LoadBitmap ('hero-attack-e00.png');
-    Images[1] := LoadBitmap ('hero-attack-e03.png');
-    Images[2] := LoadBitmap ('hero-attack-e04.png');
-    Images[3] := LoadBitmap ('hero-attack-e07.png');
-    Images[4] := LoadBitmap ('hero-attack-e09.png');
-    Images[5] := LoadBitmap ('hero-attack-e11.png');
-    Images[6] := LoadBitmap ('hero-attack-e12.png');
-  end;
+  IF NOT LoadAnimation ('hero-attack-e', 6, ImgPlayerAttackR) THEN
+    AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Idle Left
-  with ImgPlayerIdleL do begin
-    Delay := 12;
-    Count := 9;
-    SetLength(Images, Count);
-    Images[0] := LoadBitmap ('hero-idle-w00.png');
-    Images[1] := LoadBitmap ('hero-idle-w01.png');
-    Images[2] := LoadBitmap ('hero-idle-w02.png');
-    Images[3] := LoadBitmap ('hero-idle-w03.png');
-    Images[4] := LoadBitmap ('hero-idle-w04.png');
-    Images[5] := LoadBitmap ('hero-idle-w05.png');
-    Images[6] := LoadBitmap ('hero-idle-w06.png');
-    Images[7] := LoadBitmap ('hero-idle-w07.png');
-    Images[8] := LoadBitmap ('hero-idle-w07.png');
-  end;
+  IF NOT LoadAnimation ('hero-idle-w', 12, imgPlayerIdleL) THEN
+    AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Idle Right
-  with ImgPlayerIdleR do begin
-    Delay := 12;
-    Count := 9;
-    SetLength(Images, Count);
-    Images[0] := LoadBitmap ('hero-idle-e00.png');
-    Images[1] := LoadBitmap ('hero-idle-e01.png');
-    Images[2] := LoadBitmap ('hero-idle-e02.png');
-    Images[3] := LoadBitmap ('hero-idle-e03.png');
-    Images[4] := LoadBitmap ('hero-idle-e04.png');
-    Images[5] := LoadBitmap ('hero-idle-e05.png');
-    Images[6] := LoadBitmap ('hero-idle-e06.png');
-    Images[7] := LoadBitmap ('hero-idle-e07.png');
-    Images[8] := LoadBitmap ('hero-idle-e07.png');
-  end;
+  IF NOT LoadAnimation ('hero-idle-e', 12, imgPlayerIdleR) THEN
+    AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Been Hit Left
-  with ImgPlayerBeenHitL do begin
-    Delay := 6;
-    Count := 4;
-    SetLength(Images, Count);
-    Images[0] := LoadBitmap ('hero-been-hit-w00.png');
-    Images[1] := LoadBitmap ('hero-been-hit-w04.png');
-    Images[2] := LoadBitmap ('hero-been-hit-w07.png');
-    Images[3] := LoadBitmap ('hero-been-hit-w08.png');
-  end;
+  IF NOT LoadAnimation ('hero-been-hit-w', 6, ImgPlayerBeenHitL) THEN
+    AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Been Hit Right
-  with ImgPlayerBeenHitR do begin
-    Delay := 6;
-    Count := 4;
-    SetLength(Images, Count);
-    Images[0] := LoadBitmap ('hero-been-hit-e00.png');
-    Images[1] := LoadBitmap ('hero-been-hit-e04.png');
-    Images[2] := LoadBitmap ('hero-been-hit-e07.png');
-    Images[3] := LoadBitmap ('hero-been-hit-e08.png');
-  end;
+  IF NOT LoadAnimation ('hero-been-hit-e', 6, ImgPlayerBeenHitR) THEN
+    AbortProgram ('Can''t load hero animation');
   // Load animation data: Zombie Walk Left
-  with ImgZombieWalkL do begin
-    Delay := 9;
-    Count := 8;
-    SetLength(Images, Count);
-    Images[0] := LoadBitmap ('zombie-walk-w00.png');
-    Images[1] := LoadBitmap ('zombie-walk-w01.png');
-    Images[2] := LoadBitmap ('zombie-walk-w02.png');
-    Images[3] := LoadBitmap ('zombie-walk-w03.png');
-    Images[4] := LoadBitmap ('zombie-walk-w04.png');
-    Images[5] := LoadBitmap ('zombie-walk-w05.png');
-    Images[6] := LoadBitmap ('zombie-walk-w06.png');
-    Images[7] := LoadBitmap ('zombie-walk-w07.png');
-  end;
+  IF NOT LoadAnimation ('zombie-walk-w', 9, ImgZombieWalkL) THEN
+    AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Walk Right
-  with ImgZombieWalkR do begin
-    Delay := 9;
-    Count := 8;
-    SetLength(Images, Count);
-    Images[0] := LoadBitmap ('zombie-walk-e00.png');
-    Images[1] := LoadBitmap ('zombie-walk-e01.png');
-    Images[2] := LoadBitmap ('zombie-walk-e02.png');
-    Images[3] := LoadBitmap ('zombie-walk-e03.png');
-    Images[4] := LoadBitmap ('zombie-walk-e04.png');
-    Images[5] := LoadBitmap ('zombie-walk-e05.png');
-    Images[6] := LoadBitmap ('zombie-walk-e06.png');
-    Images[7] := LoadBitmap ('zombie-walk-e07.png');
-  end;
+  IF NOT LoadAnimation ('zombie-walk-e', 9, ImgZombieWalkR) THEN
+    AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Attack Left
-  with ImgZombieAttackL do begin
-    Delay := 15;
-    Count := 7;
-    SetLength(Images, Count);
-    Images[0] := LoadBitmap ('zombie-attack-w00.png');
-    Images[1] := LoadBitmap ('zombie-attack-w02.png');
-    Images[2] := LoadBitmap ('zombie-attack-w04.png');
-    Images[3] := LoadBitmap ('zombie-attack-w06.png');
-    Images[4] := LoadBitmap ('zombie-attack-w08.png');
-    Images[5] := LoadBitmap ('zombie-attack-w09.png');
-    Images[6] := LoadBitmap ('zombie-attack-w10.png');
-  end;
+  IF NOT LoadAnimation ('zombie-attack-w', 15, ImgZombieAttackL) THEN
+    AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Attack Right
-  with ImgZombieAttackR do begin
-    Delay := 15;
-    Count := 7;
-    SetLength(Images, Count);
-    Images[0] := LoadBitmap ('zombie-attack-e00.png');
-    Images[1] := LoadBitmap ('zombie-attack-e02.png');
-    Images[2] := LoadBitmap ('zombie-attack-e04.png');
-    Images[3] := LoadBitmap ('zombie-attack-e06.png');
-    Images[4] := LoadBitmap ('zombie-attack-e08.png');
-    Images[5] := LoadBitmap ('zombie-attack-e09.png');
-    Images[6] := LoadBitmap ('zombie-attack-e10.png');
-  end;
+  IF NOT LoadAnimation ('zombie-attack-e', 15, ImgZombieAttackR) THEN
+    AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Killed Left
-  with ImgZombieKilledL do begin
-    Delay := 10;
-    Count := 5;
-    SetLength(Images, Count);
-    Images[0] := LoadBitmap ('zombie-killed-w00.png');
-    Images[1] := LoadBitmap ('zombie-killed-w03.png');
-    Images[2] := LoadBitmap ('zombie-killed-w04.png');
-    Images[3] := LoadBitmap ('zombie-killed-w07.png');
-    Images[4] := LoadBitmap ('zombie-killed-w08.png');
-  end;
+  IF NOT LoadAnimation ('zombie-killed-w', 10, ImgZombieKilledL) THEN
+    AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Killed Right
-  with ImgZombieKilledR do begin
-    Delay := 10;
-    Count := 5;
-    SetLength(Images, Count);
-    Images[0] := LoadBitmap ('zombie-killed-e00.png');
-    Images[1] := LoadBitmap ('zombie-killed-e03.png');
-    Images[2] := LoadBitmap ('zombie-killed-e04.png');
-    Images[3] := LoadBitmap ('zombie-killed-e07.png');
-    Images[4] := LoadBitmap ('zombie-killed-e08.png');
-  end;
+  IF NOT LoadAnimation ('zombie-killed-e', 10, ImgZombieKilledR) THEN
+    AbortProgram ('Can''t load zombie animation');
 
   // Load audio data
   AudioBackground := LoadSample ('auduntitledremix.ogg');
@@ -856,6 +723,21 @@ end;
 
 procedure ProcessShutDown;
 begin
+  UnloadAnimation (ImgPlayerWalkL);
+  UnloadAnimation (ImgPlayerWalkR);
+  UnloadAnimation (ImgPlayerAttackL);
+  UnloadAnimation (ImgPlayerAttackR);
+  UnloadAnimation (ImgPlayerIdleL);
+  UnloadAnimation (ImgPlayerIdleR);
+  UnloadAnimation (ImgPlayerBeenHitL);
+  UnloadAnimation (ImgPlayerBeenHitR);
+  UnloadAnimation (ImgZombieWalkL);
+  UnloadAnimation (ImgZombieWalkR);
+  UnloadAnimation (ImgZombieAttackL);
+  UnloadAnimation (ImgZombieAttackR);
+  UnloadAnimation (ImgZombieKilledL);
+  UnloadAnimation (ImgZombieKilledR);
+
   al_destroy_bitmap(ImgIntroPage1);
   al_destroy_bitmap(ImgIntroPage2);
   al_destroy_bitmap(ImgBackground1);
@@ -873,32 +755,18 @@ begin
   al_destroy_font(SystemFont);
 end;
 
+
+
 var
   Event: ALLEGRO_EVENT;
 begin
-  TRY
-
   ProcessInit;
   Start(Intro1);
   while (GameIsRunning) do begin
-    al_wait_for_event(EventQueue, Event);
+    al_wait_for_event (EventQueue, @Event);
     ProcessUserInput;
     ProcessUpdate;
     ProcessDrawing;
   end;
   ProcessShutdown;
-
-  EXCEPT
-    ON Error: Exception DO
-    BEGIN
-      ProcessShutDown;
-    { This should shutdown Allegro removing all stuff. }
-      al_uninstall_system;
-      al_show_native_message_box (
-        NIL,
-        'Furious Paladin', 'An exception raised', Error.Message,
-        '', ALLEGRO_MESSAGEBOX_ERROR
-      )
-    END;
-  END;
 end.

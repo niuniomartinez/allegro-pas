@@ -5,7 +5,7 @@ PROGRAM ex_config;
  *    Test config file reading and writing.
  *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2020 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -32,22 +32,21 @@ PROGRAM ex_config;
 {$ENDIF}
 
   USES
-    Allegro5, Common,
-    sysutils;
+    Allegro5, al5base, Common;
 
-  PROCEDURE Test (Name: STRING; Expr: BOOLEAN);
+  PROCEDURE Test (Name: AL_STR; Expr: BOOLEAN);
   BEGIN
     IF Expr THEN
-      LogWriteLn (Format (' PASS - %s', [Name]))
+      LogPrintLn (' PASS - %s', [Name])
     ELSE
-      LogWriteLn (Format ('!FAIL - %s', [Name]))
+      LogPrintLn ('!FAIL - %s', [Name])
   END;
 
 
 
   VAR
     Cfg: ALLEGRO_CONFIGptr;
-    Value: STRING;
+    Value: AL_STR;
   { Iteration deactivated.
     IteratorSection: ALLEGRO_CONFIG_SECTIONptr;
     IteratorEntry: ALLEGRO_CONFIG_ENTRYptr;
