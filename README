@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 5.2.beta              \/___/                 \/_/
+     Version 5.2.beta.1            \/___/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Guillermo "Ñuño" Martínez, April 21, 2018.
+  by Guillermo "Ñuño" Martínez, March 1, 2020.
 
 
 
@@ -38,11 +38,11 @@ Introduction
 
   This is a beta version of the Allegro.pas 5 version.  It is released to show
   what's done and to allow developers to test it and give feed-back.  Please go
-  to the Allegro.pas' project site at SourceForge or GitHub to look for more
-  versions.
+  to the Allegro.pas' project site at SourceForge or GitHub to know about
+  progress and know when new versions are released.
 
   Current version was tested with Free Pascal on WindowsXP, Windows7 and
-  GNU/Linux, both 32bit and 64 bit, and with Delphi Tokio Starter Edition on
+  GNU/Linux, both 32bit and 64 bit, and with Delphi 10.3 Community Edition on
   Windows 7 32bit.  Other operating systems and compilers weren't tested.
 
   The goal is to make Allegro.pas 5 compatible with any operating system
@@ -63,6 +63,8 @@ Implemented
   + Software bitmaps.
   + Text drawing.
   + ttf fonts.
+  + Audio samples and streams.
+  + kcm audio.
   + 2D and 3D transformations.
   + Clipboard.
   + Custom memory management.
@@ -74,17 +76,13 @@ Partially implemented or need more testing
 ------------------------------------------
 
   * Primitive drawing.
-  * Audio samples and streams.
 
 Unimplemented
 -------------
 
   - Touch-screen support.
-  - kcm audio.
   - Phys file system.
   - Android support.
-
-  You can read more about this at the "TODO" file.
 
 
 
@@ -104,7 +102,8 @@ Installation and use
   compiler you're using.  To make things more easy I've wrote different
   documents for each one you can find in the ~/docs/build directory.  For
   example, read "windows.txt to know how to get and install Allegro in your
-  Windows, then read "lazarus.txt" to know how to use it with Lazarus IDE.
+  Windows system, then read "lazarus.txt" to know how to use it with Lazarus
+  IDE.
 
   For Lazarus and Free Pascal users it is recommendable to read the
   "makefile.txt" file too.
@@ -114,10 +113,9 @@ Installation and use
 Documentation
 =============
 
-  At the moment the library documentation isn't complete, but includes most of
-  the library.  You can build it (read ~/docs/build/make.txt) or download them
-  from the webpage (see Contact info).  If you need more complete documentation
-  you can use the Allegro documentation for C language at http://liballeg.org/.
+  You can build it (read ~/docs/build/make.txt) or download it from the webpage
+  (see Contact info).  You can also read it on-line from SourceForge:
+  http://allegro-pas.sourceforge.net/docs/5.2/
 
   Also, there are a collection of examples and a demonstration game.  Open them
   and read the code.  Some have a lot of comments that explain them.
@@ -144,3 +142,9 @@ Contact info
   PGD Telegram Chat - https://t.me/joinchat/AAAAAA53Fi94SyjjD5xYnA
   Lazarus games - https://forum.lazarus.freepascal.org/index.php/board,74.0.html
   Club Delphi (Spanish only) - http://www.clubdelphi.com/
+
+  If you're a Discord user, here you have a couple of servers:
+  - Athena's pad (channel about game developing with Delphi):
+    https://discordapp.com/channels/568517662271864852/
+  - Unnoficial Free Pascal:
+    https://discordapp.com/channels/570025060312547359/

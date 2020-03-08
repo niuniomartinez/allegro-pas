@@ -5,7 +5,7 @@ UNIT Allegro5;
   add-ons.
 
   @bold(See also:) @link(getst Getting started) *)
-(* Copyright (c) 2012-2020 Guillermo Mart�nez J. <niunio@users.sourceforge.net>
+(* Copyright (c) 2012-2020 Guillermo Martínez J. <niunio@users.sourceforge.net>
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -67,15 +67,17 @@ INTERFACE
      Note x.y.z (= x.y.z.0) has release number 1, and x.y.z.1 has release
      number 2, just to confuse you. *)
     ALLEGRO_RELEASE_NUMBER = 1;
-    ALLEGRO_PAS_VERSION_STR = 'Allegro.pas 5.2.b.SVN';
-    ALLEGRO_DATE_STR = '2018';
-    ALLEGRO_DATE = 20180606; { yyyymmdd }
+    ALLEGRO_PAS_VERSION_STR = '5.2.β.1';
+    ALLEGRO_DATE_STR = '2020';
+    ALLEGRO_DATE = 20200301; { yyyymmdd }
     ALLEGRO_VERSION_INT  = (
 	   (ALLEGRO_VERSION SHL 24)
 	OR (ALLEGRO_SUB_VERSION SHL 16)
 	OR (ALLEGRO_WIP_VERSION SHL  8)
 	OR  ALLEGRO_RELEASE_NUMBER
     );
+    ALLEGRO_IS_ALPHA = FALSE;
+    ALLEGRO_IS_BETA = TRUE;
 
   TYPE
     ALLEGRO_USER_MAIN = FUNCTION (argc: AL_INT; argv: AL_POINTER): AL_INT; CDECL;

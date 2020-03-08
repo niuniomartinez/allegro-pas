@@ -3,6 +3,8 @@
   This works also for Lazarus IDE, but you should read "lazarus.txt" too for
   more information.  For Delphi read "delphi.txt".
 
+  To compile the examples and the demonstration game, read "makefile.txt".
+
   Before to use Allegro.pas you must install Allegro itself.  If you didn't
   yet, please read the appropriate document for your operating system.
 
@@ -58,7 +60,7 @@ Linking with Allegro debug version
   compilation line, this way your programs will link with the "debug" version
   of Allegro.  In most cases this isn't necessary.
 
-  Note that may be you must compile Allegro by yourself to obtain the "debug"
+  Note that may be you have to compile Allegro by yourself to obtain the "debug"
   library.
 
 
@@ -71,11 +73,11 @@ Differences between Delphi, Free Pascal and Lazarus
   through both compilers.  See the example sources to see how I've tried to
   write code that work in both compilers.
 
-  Also note STRING management may be problematic.  Free Pascal uses UTF-8 by
-  default (CHAR) and Delphi uses UTF-16 by default (WIDECHAR).  Allegro expects
-  ASCII/UTF-8 by default, so Delphi compiler may warn about text conversions.
-  To reduce the warnings and make it less prone to errors use ANSISTRING.  I'll
-  work in this issue.
+  Also note STRING management may be problematic.  Allegro expects ASCII-7 or
+  UTF-8 stored in ANSISTRING, wich is compatible with Free Pascal defaults, but
+  Delphi uses UTF-16 by default (WIDECHAR).  To help with this use always the
+  AL_STR type (instead of STRING) and the conversion functions of unit
+  al5strings when using RTL functions.
 
 
 
@@ -101,4 +103,4 @@ Windows manifest
   special stuff (which makes Windows permission system even more weirdest and
   uselessest, IMHO).
 
-  This works also for Lazarus and may be Delphi.
+  This works also for Lazarus.

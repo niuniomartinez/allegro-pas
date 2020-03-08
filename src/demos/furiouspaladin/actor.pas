@@ -1,7 +1,8 @@
 UNIT Actor;
 (*<Defines the @link(TActor) object. *)
 (*
-  Copyright (c) 2018-2019 Handoko, Guillermo Martínez.
+  Copyright (c) 2018 Handoko
+            (c) 2019-2020 Guillermo Martínez.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -27,7 +28,7 @@ UNIT Actor;
 INTERFACE
 
   USES
-    Allegro5;
+    Allegro5, al5base;
 
   CONST
   (* Max number of frames in an animation. *)
@@ -63,7 +64,7 @@ INTERFACE
 
 (* Loads an animation.  @return(@true on success, @false on failure.) *)
   FUNCTION LoadAnimation (
-    aFileName: STRING; CONST aDelay: INTEGER; OUT aAnimation: TAnimation
+    aFileName: AL_STR; CONST aDelay: INTEGER; OUT aAnimation: TAnimation
   ): BOOLEAN;
 
 (* Releases resources used by an animation. *)
@@ -73,11 +74,11 @@ IMPLEMENTATION
 
   USES
     Data,
-    sysutils;
+    al5strings;
 
 (* Loads an animation.  @return(@true on success, @false on failure.) *)
   FUNCTION LoadAnimation (
-    aFileName: STRING; CONST aDelay: INTEGER; OUT aAnimation: TAnimation
+    aFileName: AL_STR; CONST aDelay: INTEGER; OUT aAnimation: TAnimation
   ): BOOLEAN;
   VAR
     Ndx: INTEGER;
@@ -86,7 +87,7 @@ IMPLEMENTATION
     aFileName := aFileName + '%0.2d.png';
     FOR Ndx := 0 TO MAX_FRAMES - 1 DO
     BEGIN
-      aAnimation.Images[Ndx] := LoadBitmap (Format (aFileName, [Ndx]));
+      aAnimation.Images[Ndx] := LoadBitmap (al_str_format (aFileName, [Ndx]));
       IF aAnimation.Images[Ndx] = NIL THEN
       BEGIN
 	aAnimation.Count := Ndx;

@@ -12,8 +12,16 @@
 
 
 
-Installing precompiled version
-------------------------------
+Getting precompiled version
+---------------------------
+
+  You can download the "binary" version of Allegro.pas from SourceForge;  it
+  has "bin-win32" in the name (for example, allegro.pas-5.2.b.1-bin-win32.zip).
+  This pachabe included precompiled Allegro for Windows 32bit (will work with
+  Windows 64bit too).  Precompiled Allegro library and some 3th party DLL files
+  are in the "~/bin/lib" directory.
+
+  If you want a more modern version or a 64bit version follow next instructions:
 
   Go to http://liballeg.org/download.html#windows, to the "Windows Binaries"
   section, and select one of the given links.  I recommend you the "Allegro 5.2
@@ -26,6 +34,11 @@ Installing precompiled version
 
   Also note that you may need more DLL files, such as the ones needed to load
   PNG and OGG files, among others.
+
+
+
+Installing precompiled version
+------------------------------
 
   In most cases you can put the DLL files in to your "C:\windows\system32"
   directory but may be better to add these DLL files to the directory where
@@ -65,7 +78,7 @@ What does "monolith version" mean
   add-ons, come in a single DLL file.  In the "no-monolith" each add-on is
   compiled in its own DLL file.
 
-  Allegro.pas can be linked whit any of these versions.  By default it links
+  Allegro.pas can be linked whith any of these versions.  By default it links
   with the monolith but if you define the "NO_MONOLITH" symbol (i.e. adding
   "-dNO_MONOLITH" to the compilation command) it will be linked with the other
   wersion.

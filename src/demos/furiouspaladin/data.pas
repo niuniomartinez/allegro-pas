@@ -1,7 +1,8 @@
 UNIT Data;
 (*<Manages and stores game data. *)
 (*
-  Copyright (c) 2018 Handoko, Guillermo Martínez.
+  Copyright (c) 2018 Handoko
+            (c) 2019-2020 Guillermo Martínez.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -27,27 +28,32 @@ UNIT Data;
 INTERFACE
 
   USES
-    Allegro5, al5audio, al5font, al5ttf;
+    Allegro5, al5audio, al5base, al5font, al5ttf;
 
 (* Loads the requested font file.  On error returns nil. *)
-  FUNCTION LoadFont (CONST FileName: STRING; Size: INTEGER): ALLEGRO_FONTptr;
+  FUNCTION LoadFont (CONST FileName: AL_STR; Size: INTEGER): ALLEGRO_FONTptr;
 (* Loads the requested bitmap file.  returns nilexception. *)
-  FUNCTION LoadBitmap (CONST FileName: STRING): ALLEGRO_BITMAPptr;
+  FUNCTION LoadBitmap (CONST FileName: AL_STR): ALLEGRO_BITMAPptr;
 (* Loads the requested sound or music file.  returns nilexception. *)
-  FUNCTION LoadSample (CONST FileName: STRING): ALLEGRO_SAMPLEptr;
+  FUNCTION LoadSample (CONST FileName: AL_STR): ALLEGRO_SAMPLEptr;
 
 IMPLEMENTATION
 
   USES
-    sysutils;
+    sysutils, al5strings;
+
+{$IFDEF DCC}
+  CONST
+    DirectorySeparator = PathDelim;
+{$ENDIF}
 
   VAR
   { Data directory path. }
-    DataPath: STRING;
+    DataPath: AL_STR;
 
   (* Looks for the given data file and returns the full path or returns the
      FileName parameter if it can't find it. *)
-  FUNCTION FindDataFile (CONST FileName: STRING): STRING;
+  FUNCTION FindDataFile (CONST FileName: AL_STR): AL_STR;
   BEGIN
     { TODO:  Actual implementation should look data files in different paths
              depending on the operating system.  For example:  Windows should
@@ -57,19 +63,21 @@ IMPLEMENTATION
              similar) then in the same directory than the executable. }
     IF DataPath = '' THEN
     BEGIN
-      DataPath := ExtractFilePath(ParamStr(0))+'data'+DirectorySeparator;
-      IF NOT DirectoryExists (DataPath) THEN
+      DataPath := al_string_to_str (
+        ExtractFilePath(ParamStr(0))+'data'+DirectorySeparator
+      );
+      IF NOT DirectoryExists (al_str_to_string (DataPath)) THEN
         EXIT (FileName)
     END;
   { Right now just check if file exists. }
     RESULT := DataPath + FileName;
-    IF NOT FileExists (RESULT) THEN RESULT := FileName
+    IF NOT FileExists (al_str_to_string (RESULT)) THEN RESULT := FileName
   END;
 
 
 
 (* Loads font. *)
-  FUNCTION LoadFont (CONST FileName: STRING; Size: INTEGER): ALLEGRO_FONTptr;
+  FUNCTION LoadFont (CONST FileName: AL_STR; Size: INTEGER): ALLEGRO_FONTptr;
   BEGIN
     RESULT := al_load_ttf_font (FindDataFile (FileName), Size, 0)
   END;
@@ -77,7 +85,7 @@ IMPLEMENTATION
 
 
 (* Loads bitmap. *)
-  FUNCTION LoadBitmap (CONST FileName: STRING): ALLEGRO_BITMAPptr;
+  FUNCTION LoadBitmap (CONST FileName: AL_STR): ALLEGRO_BITMAPptr;
   BEGIN
     RESULT := al_load_bitmap (FindDataFile (FileName))
   END;
@@ -85,7 +93,7 @@ IMPLEMENTATION
 
 
 (* Loads sample. *)
-  FUNCTION LoadSample (CONST FileName: STRING): ALLEGRO_SAMPLEptr;
+  FUNCTION LoadSample (CONST FileName: AL_STR): ALLEGRO_SAMPLEptr;
   BEGIN
     RESULT := al_load_sample (FindDataFile (FileName))
   END;

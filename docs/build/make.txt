@@ -7,6 +7,10 @@
   Before to use Allegro.pas you must install Allegro itself.  If you didn't
   yet, please read the appropriate document for your operating system.
 
+  Note that makefiles included works only for Free Pascal.  Right now Delphi's
+  "make" utility isn't compatible with Free Pascal's one (wich is GNU compliant)
+  but in future releases a Delphi makefiles would be included.
+
 The make chain
 --------------
 
@@ -23,7 +27,7 @@ The make chain
   - makefile.all:  This is where the things actually happens, defining the
                    operations needed to build everything.
 
-  "makefile" is the only file you'll need to modify if you want to modify the
+  "makefile" is the only file you need to modify if you want to modify the
   compilation configuration.  That file is quite simple, as it just defines
   some variables/macros (name = value).  The whole file includes a lot of
   comments so it should be quite autoexplanatory.  Don't be afraid and take a
@@ -37,12 +41,11 @@ The make chain
 Compilation
 -----------
 
-  To compile examples (with Free Pascal), open a console, go to the directory
-  where Allegro.pas is and execute "fix.sh" (on Linux), "fix.bat" or "fix.cmd"
-  (on Windows) and follow on-screen instructions to configure.  Then run
-  "make".
+  To compile examples, open a console, go to the directory where Allegro.pas is
+  and execute "fix.sh" (on Linux), "fix.bat" or "fix.cmd" (on Windows) and
+  follow on-screen instructions to configure.  Then run "make".
 
   To build the documentation you need pasdoc (you can find it here:
   https://github.com/pasdoc/pasdoc/wiki) and run "make docs".
 
-  You can use "make help" for a list of supported operations.
+  You can use "make help" for a list of all supported operations.

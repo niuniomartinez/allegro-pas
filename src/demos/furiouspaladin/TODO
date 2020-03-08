@@ -1,5 +1,3 @@
  * A more modular design should be better.
- * It doesn't check data loading!!!  If it fails it just throws an Access
-   Violation exception.
  * It is better to group graphics. i.e. put all graphics of zombie/player in
-   a simple bitmap.  (Creating a bitmap manager class/object will help).
+   a simple bitmap.  (Creating a bitmap manager will help).

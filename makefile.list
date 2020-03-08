@@ -1,4 +1,4 @@
-# Makefile generic - Sources
+# Makefile - Sources
 
 #
 # Builds the list of source files and object files for each bynary type.

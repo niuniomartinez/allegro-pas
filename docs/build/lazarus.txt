@@ -29,7 +29,8 @@ Creating a new game project
   There's no package for Allegro.pas (may be you can provide one if you find
   it useful) but you can add the unit files as explained in the "fpc.txt" file.
 
-  To know about compilation options, read the "fpc.txt" file.
+  To know about compilation options, read the "fpc.txt" file.  It is also
+  recommendable to read "makefile.txt" file.
 
 
 

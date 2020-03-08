@@ -14,7 +14,7 @@ SHELL = /bin/sh
 
 # ===============================================
 # Project name
-PROJECT = Allegro.pas 5.2.b
+PROJECT = Allegro.pas 5.2.b.1
 
 # ===============================================
 
@@ -133,9 +133,9 @@ CPFLAGS = -Mdelphi
 PFLAGS = $(CPFLAGS)
 
 # Optimized compilation.
-#FLAGS = $(OPTOPT) $(PFLAGS) $(EFLAGS)
+FLAGS = $(OPTOPT) $(PFLAGS) $(EFLAGS)
 # Use next line instead to activate debug.
-FLAGS = $(DBGOPT) $(PFLAGS) $(EFLAGS)
+#FLAGS = $(DBGOPT) $(PFLAGS) $(EFLAGS)
 
 # If you're using Windows, the examples will link with the "monolith" version
 # of Allegro by default.  If you want to link with the no-monolith version then

@@ -1,7 +1,8 @@
 UNIT Configuration;
 (*<Stores and manages the configuration.  This includes command line parsing. *)
 (*
-  Copyright (c) 2018-2019 Handoko, Guillermo Martínez.
+  Copyright (c) 2018 Handoko
+            (c) 2019-2020 Guillermo Martínez.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -48,7 +49,7 @@ INTERFACE
 IMPLEMENTATION
 
   USES
-    al5nativedlg,
+    al5nativedlg, al5strings,
     sysutils;
 
   FUNCTION Load;
@@ -67,7 +68,7 @@ IMPLEMENTATION
       { Unknown command line found. }
         al_show_native_message_box (
           NIL,
-          'Error', 'Unknown command:', ParamStr (Ndx),
+          'Error', 'Unknown command:', al_string_to_str (ParamStr (Ndx)),
           '', ALLEGRO_MESSAGEBOX_ERROR
         );
         EXIT (FALSE)

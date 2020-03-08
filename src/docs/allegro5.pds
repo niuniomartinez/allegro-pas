@@ -80,6 +80,8 @@ This is a workaround because some Pascal compilers doesn't allow to cast a @code
 Allegro.pas version string.
 @seealso(al_get_allegro_version)
 @seealso(ALLEGRO_VERSION_INT)
+@seealso(ALLEGRO_IS_ALPHA)
+@seealso(ALLEGRO_IS_BETA)
 #Allegro5.ALLEGRO_VERSION
 Major version of Allegro.
 #Allegro5.ALLEGRO_SUB_VERSION
@@ -97,6 +99,19 @@ Packs version number in a simple @link(AL_INT) number.
 @seealso(ALLEGRO_VERSION)
 @seealso(ALLEGRO_SUB_VERSION)
 @seealso(ALLEGRO_WIP_VERSION)
+@seealso(ALLEGRO_IS_ALPHA)
+@seealso(ALLEGRO_IS_BETA)
+#Allegro5.ALLEGRO_IS_ALPHA
+@true if current version is an alpha version.
+
+Alpha versions are Work In Progress releases for evaluation.  API is not fixed and my change in later versions.
+@seealso(ALLEGRO_IS_BETA)
+#Allegro5.ALLEGRO_IS_BETA
+@true if current version is a beta version.
+
+Beta versions are mostly for evaluation.  API is assumed as stable but some small changes may be make in later versions.
+@seealso(ALLEGRO_IS_ALPHA)
+
 
 #Allegro5.ALLEGRO_USER_MAIN
 Description of user main function for @link(al_run_main).

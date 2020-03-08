@@ -2,7 +2,8 @@ program FuriousPaladin;
 (* A simple demo game for Allegro.pas 5 by Handoko.
    See README for more information. *)
 (*
-  Copyright (c) 2018-2019 Handoko, Guillermo Martínez.
+  Copyright (c) 2018 Handoko
+            (c) 2019-2020 Guillermo Martínez.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -32,11 +33,20 @@ program FuriousPaladin;
 uses
   Actor, Configuration, Data,
   Classes, SysUtils, al5Base, al5image, al5font, al5ttf,
-  al5primitives, al5audio, al5acodec, Allegro5, al5nativedlg;
+  al5primitives, al5audio, al5acodec, Allegro5, al5nativedlg,
+  al5strings;
 
 type
-
   TAppState = (Intro1, Intro2, Playing, Paused, Lose, Win);
+
+{$IFDEF DCC}
+{ Delphi doesn't have TFPList, so define it here.
+
+  We still use TFPList because his performance is higher than TList in
+  Free Pascal. }
+  TFPList = CLASS (TList)
+  END;
+{$ENDIF}
 
 const
   MaxPlayerHealth = 500;
@@ -108,13 +118,16 @@ var
         Display := al_get_current_display
       ELSE
         Display := NIL;
-      al_show_native_message_box
-        (Display, 'Error', 'Cannot run Furious Paladin', Message, '', 0)
+      al_show_native_message_box (
+        Display,
+        'Error', 'Cannot run Furious Paladin', al_string_to_str (Message),
+        '', 0
+      )
     END
     ELSE
       WriteLn (ErrOutput, Message);
     ProcessShutDown;
-    HALT (-1)
+    HALT (1)
   END;
 
 
@@ -127,18 +140,7 @@ begin
 { Loads configuration values. }
   IF NOT Configuration.Load THEN Halt;
 { Quit if Allegro fails to start. }
-  IF NOT al_init THEN
-  BEGIN
-  { This is a problem.  We need to say that Allegro didn't initialize, but use
-    Allegro's native dialogs API might not be possible (i.e. bad installation).
-    Using WriteLn and ReadLn should work but Windows will raise a hard to
-    understand error if console isn't open.  Anyway, al_init is quite unlikelly
-    to fail (if Allegro's DLL files aren't on system Windows will tell the user
-    before start the execution), so this code would never been executed. }
-    WriteLn (StdErr, 'Cannot init Allegro!');
-    ReadLn;
-    Halt
-  END;
+  IF NOT al_init THEN AbortProgram ('Cannot init Allegro!');
 
   // Prepare display
   al_get_monitor_info(0, MonitorInfo);
@@ -243,9 +245,10 @@ end;
 
 
 
-procedure Start(State: TAppState);
-const
+var
   SavedAudioPosition: AL_UINT = 0; // Used for pausing and resumming the game music
+
+procedure Start(State: TAppState);
 begin
   case State of
 
@@ -328,10 +331,10 @@ end;
 
 
 
-procedure ProcessUserInput;
-const
+var
   EscJustPressed:   Boolean = False;
   SpaceJustPressed: Boolean = False;
+procedure ProcessUserInput;
 var
   KeyState:    ALLEGRO_KEYBOARD_STATE;
   isFaceRight: Boolean;
@@ -664,8 +667,8 @@ begin
         C := (MaxPlayerHealth-PlayerHealth)/MaxPlayerHealth;
         al_draw_filled_rectangle(0, 0, PlayerHealth, 20, al_map_rgba_f(C, 0, 0, C));
         // Show killed information
-        al_draw_text(SystemFont, al_map_rgb(255, 255, 255), 20, 4,ALLEGRO_ALIGN_LEFT,
-          'Killed: '+IntToStr(EnemyKilled));
+        al_draw_textf(SystemFont, al_map_rgb(255, 255, 255), 20, 4,ALLEGRO_ALIGN_LEFT,
+          'Killed: %d', [EnemyKilled]);
         // Brighten the sky
         al_draw_bitmap(ImgBackground1, 0, 20, 0);
         C := EnemyKilled/100;

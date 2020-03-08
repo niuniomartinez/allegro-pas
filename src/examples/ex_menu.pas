@@ -131,6 +131,7 @@ PROGRAM ex_menu;
       RESULT := al_create_popup_menu;
       IF RESULT <> NIL THEN
       BEGIN
+      { Another way to define the menu items. }
         al_append_menu_item (RESULT, '&Open', FILE_OPEN_ID, 0, NIL, NIL);
         al_append_menu_item (RESULT, '&Resize', FILE_RESIZE_ID, 0, NIL, NIL);
         al_append_menu_item (
@@ -193,14 +194,25 @@ PROGRAM ex_menu;
 
 
 
+(* Closes a window. *)
+  PROCEDURE CloseWindow (aWindow: ALLEGRO_DISPLAYptr);
+  BEGIN
+    IF aWindow <> NIL THEN
+    BEGIN
+    { You must remove the menu before destroying the display to free resources. }
+      al_set_display_menu (aWindow, NIL);
+      al_destroy_display (aWindow)
+    END
+  END;
+
+
+
 (* Releases resources. *)
   PROCEDURE EndProgram;
   BEGIN
-  { You must remove the menu before destroying the display to free resources. }
-    al_set_display_menu (Display, NIL);
+    CloseWindow (Display);
     al_destroy_event_queue (Queue);
-    al_destroy_bitmap (bg);
-    al_destroy_display (Display)
+    al_destroy_bitmap (bg)
   END;
 
 
@@ -226,19 +238,6 @@ PROGRAM ex_menu;
       cx - dw / 2, cy - dh / 2, dw, dh, 0
     );
     al_flip_display
-  END;
-
-
-
-(* Closes a window. *)
-  PROCEDURE CloseWindow (aWindow: ALLEGRO_DISPLAYptr);
-  BEGIN
-    IF aWindow <> NIL THEN
-    BEGIN
-    { You must remove the menu before destroying the display to free resources. }
-      al_set_display_menu (aWindow, NIL);
-      al_destroy_display (aWindow)
-    END
   END;
 
 
@@ -312,7 +311,7 @@ PROGRAM ex_menu;
         ChildMenuInfo[3] := ALLEGRO_END_OF_MENU;
         ChildMenu := al_build_menu (ChildMenuInfo);
         al_set_display_menu (ChildWindow, ChildMenu);
-     { Clean child window. }
+      { Clean child window. }
         al_clear_to_color (al_map_rgb (0,0,0));
         al_flip_display;
         al_register_event_source (
@@ -428,8 +427,7 @@ BEGIN
         EndExample := TRUE
       ELSE BEGIN
       { Closing a secondary display }
-        al_set_display_menu (Event.display.source, NIL);
-        al_destroy_display (Event.display.source)
+        CloseWindow (Event.display.source)
       END;
     ALLEGRO_EVENT_KEY_CHAR:
     { If main window has the keyboard focus. }
@@ -444,7 +442,7 @@ BEGIN
             al_set_display_menu (Display, MainMenu);
           MenuVisible := NOT MenuVisible
         END
-      { Ends the example. }
+      { End the example if Esc is pressed. }
         ELSE IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
           EndExample := TRUE;
       END

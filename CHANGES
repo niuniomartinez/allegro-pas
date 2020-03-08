@@ -1,6 +1,16 @@
 Changes between versions 5.2.beta and 5.2.b.1
 =============================================
 
+  Goals where:
+  - Complete the Allegro core (almost completed).
+  - Complete the documentation (accomplished).
+  - Recover Delphi compatibility (accomplished).
+
+  Note that some backwards compatibility has been lost because the Delphi
+  compatibility.
+
+
+
   Bugfixing
   ---------
   #15: ex_projection fixed modifying the way it gets stars position.
@@ -67,6 +77,7 @@ Changes between versions 5.2.beta and 5.2.b.1
        arrays instead of pointers, and using enumerations instead of integers.
   #18: Changed ALLEGRO_USER_EVENT declaration.  Now "data*" fields are
        AL_DATA_PTR_T, an union that allows to use them as POINTER or INTEGER.
+       See Bug #18.
 
 
 
