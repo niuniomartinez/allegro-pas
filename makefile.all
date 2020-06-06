@@ -3,7 +3,7 @@
 .PHONY: all demos examples docs
 
 # Main objective: the whole project
-all: adbanner examples demos
+all: addbanner examples demos
 	@echo Finished $(PROJECT).
 	@echo To create the documentation, run 'make docs'.
 
@@ -33,7 +33,7 @@ docs: $(LIBFILES) $(DOCFILES)
 	pasdoc $(DOCOPTS) $(DOCFMT) -E $(DOCDIR) -T "$(PROJECT)" -R $(DOCMAIN) --introduction $(DOCINTRO) $(LIBFILES)
 
 # Returns some variables.
-status: adbanner
+status: addbanner
 	@echo -----------------
 	@echo - Status Report -
 	@echo -----------------
@@ -57,7 +57,7 @@ clean:
 	$(DELETE) $(DOCTMPFILES)
 
 # Show options.
-help: adbanner
+help: addbanner
 	@echo --------
 	@echo - Help -
 	@echo --------
@@ -70,7 +70,7 @@ help: adbanner
 	@echo "make help      } Shows this help."
 
 # Some info.
-adbanner:
+addbanner:
 	@echo $(PROJECT)
 	@echo "(c) Guillermo Martínez J. 2006-2020"
 	@echo http://allegro-pas.sourceforge.net

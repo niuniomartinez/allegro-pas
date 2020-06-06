@@ -477,7 +477,7 @@ ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_audio_stream_channel_matrix, (ALLEGRO_AUDIO_
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
   FUNCTION al_save_sample_f (fp: ALLEGRO_FILEptr; CONST ident: AL_STR; spl: ALLEGRO_FILEptr): AL_BOOL;
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
-  FUNCTION al_load_audio_stream_f (fp: ALLEGRO_FILEptr; CONST ident: AL_STR; buffer_count: AL_STR; samples: AL_UINT): ALLEGRO_AUDIO_STREAMptr
+  FUNCTION al_load_audio_stream_f (fp: ALLEGRO_FILEptr; CONST ident: AL_STR; buffer_count: AL_SIZE_T; samples: AL_UINT): ALLEGRO_AUDIO_STREAMptr
     CDECL; EXTERNAL ALLEGRO_AUDIO_LIB_NAME;
 
   {

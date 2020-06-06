@@ -6,10 +6,10 @@
    \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/\_\ \  __//\____/\/\____/
     \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/\/_/\ \ \/ \/___/  \/___/
                                    /\____/               \ \_\
-     Version 5.2.beta.1            \/___/                 \/_/
+     Version 5.2.beta.1-1          \/___/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Guillermo "Ñuño" Martínez, March 1, 2020.
+  by Guillermo "Ñuño" Martínez, April 16, 2020.
 
 
 

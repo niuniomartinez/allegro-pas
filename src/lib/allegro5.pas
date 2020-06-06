@@ -66,10 +66,10 @@ INTERFACE
 
      Note x.y.z (= x.y.z.0) has release number 1, and x.y.z.1 has release
      number 2, just to confuse you. *)
-    ALLEGRO_RELEASE_NUMBER = 1;
-    ALLEGRO_PAS_VERSION_STR = '5.2.β.1';
+    ALLEGRO_RELEASE_NUMBER = 2;
+    ALLEGRO_PAS_VERSION_STR = '5.2.β.1-1';
     ALLEGRO_DATE_STR = '2020';
-    ALLEGRO_DATE = 20200301; { yyyymmdd }
+    ALLEGRO_DATE = 20200515; { yyyymmdd }
     ALLEGRO_VERSION_INT  = (
 	   (ALLEGRO_VERSION SHL 24)
 	OR (ALLEGRO_SUB_VERSION SHL 16)
@@ -1819,6 +1819,9 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
     ALLEGRO_SHADER_VAR_USER_ATTR       = 'al_user_attr_';      {**<@exclude }
     ALLEGRO_SHADER_VAR_USE_TEX         = 'al_use_tex';         {**<@exclude }
     ALLEGRO_SHADER_VAR_USE_TEX_MATRIX  = 'al_use_tex_matrix';  {**<@exclude }
+    ALLEGRO_SHADER_VAR_ALPHA_TEST      = 'al_alpha_test';      {**<@exclude }
+    ALLEGRO_SHADER_VAR_ALPHA_FUNCTION  = 'al_alpha_func';      {**<@exclude }
+    ALLEGRO_SHADER_VAR_ALPHA_TEST_VALUE= 'al_alpha_test_val';  {**<@exclude }
 
   FUNCTION al_create_shader (platform: ALLEGRO_SHADER_PLATFORM): ALLEGRO_SHADERptr;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;

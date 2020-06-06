@@ -4004,11 +4004,11 @@ Destroys the mixer.
 @seealso(al_create_mixer)
 
 #al5audio.al_attach_sample_instance_to_mixer
-Attachs a sample instance to a mixer. The instance must not already be attached to anything.
+Attaches a sample instance to a mixer. The instance must not already be attached to anything.
 @Return(@true on success, @false on failure.)
 @seealso(al_detach_sample_instance)
 #al5audio.al_attach_audio_stream_to_mixer
-Attachs an audio stream to a mixer. The stream must not already be attached to anything.
+Attaches an audio stream to a mixer. The stream must not already be attached to anything.
 @returns(@true on success, @false on failure.)
 @seealso(al_detach_audio_stream)
 #al5audio.al_attach_mixer_to_mixer

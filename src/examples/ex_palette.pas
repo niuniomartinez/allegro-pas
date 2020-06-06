@@ -146,7 +146,7 @@ BEGIN
   al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_SINGLE_CHANNEL_8);
   Bitmap := al_load_bitmap_flags ('data/alexlogo.bmp', ALLEGRO_KEEP_INDEX);
   IF Bitmap = NIL THEN
-    AbortExample ('"alexlogo" not found or failed to load.');
+    AbortExample ('"data/alexlogo.bmp" not found or failed to load.');
 
 { Create 8 sprites. }
   FOR i := LOW (Sprites) TO HIGH (Sprites) DO
@@ -166,7 +166,7 @@ BEGIN
 
   Background := al_load_bitmap ('data/bkg.png');
   IF Background = NIL THEN
-    AbortExample ('"alexlogo" not found or failed to load.');
+    AbortExample ('"data/bkg.png" not found or failed to load.');
 { Continue even if fail to load. }
 
 { Create 7 palettes with changed hue. }

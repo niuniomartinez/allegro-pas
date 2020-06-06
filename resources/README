@@ -3,7 +3,11 @@
  - alex.png: The default Allegro icon.  Note this is *not* exactly the same
              used by Allegro.  This is a re-mastered version restoring the
              original size.
- - alexlogo.png: HD Alex the Allegator logo combined with the Allegro A.
- - allegro5.cfg: Configruation file example.
-                 See documentation of al_get_system_config to know how to load
+ - alexlogo.png: HD Alex the Allegator logo combined with the Pascal P.
+ - pixelated-alex.png: Pixelated version of Alex the Allegator logo combined
+                       with the Pascal P.
+ - alexlogo.xfc: GIMP source file of Allegator logo combined with the Pascal P.
+ - P.svg: SVG source for the P.
+ - allegro5.cfg: Configuration file example.
+                 See documentation of al_get_system_config to know how to use
                  it.

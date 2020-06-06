@@ -1,3 +1,12 @@
+Changes between versions 5.2.b.1 and 5.2.b.1-1
+==============================================
+
+  Bugfixing
+  ---------
+     : Fixed al_load_audio_stream_f buffer_count declaration:  it was AL_STR.
+
+
+
 Changes between versions 5.2.beta and 5.2.b.1
 =============================================
 

@@ -786,12 +786,12 @@ PROGRAM ex_prim;
     BEGIN
       x := TRUNC (200 * Cos (Ndx / 13 * 2 * ALLEGRO_PI));
       y := TRUNC (200 * Sin (Ndx / 13 * 2 * ALLEGRO_PI));
-         
+
       Color := al_map_rgb (
         (Ndx + 1) MOD 3 * 64,
         (Ndx + 2) MOD 3 * 64,
         (Ndx    ) MOD 3 * 64);
-         
+
       Vtx[Ndx].x := x; Vtx[Ndx].y := y; Vtx[Ndx].z := 0;
       Vtx2[Ndx].x := 0.1 * x; Vtx2[Ndx].y := 0.1 * y;
       Vtx[Ndx].color := color;
