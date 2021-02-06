@@ -199,7 +199,7 @@ all CPU.
 @seealso(al_get_time) @seealso(al_init_timeout)
 
 #Allegro5.al_init_timeout
-Set timeout value of some number of seconds after the function call.
+Sets timeout value of some number of seconds after the function call.
 
 For compatibility with all platforms, seconds must be 2,147,483.647 seconds or
 less.
@@ -826,7 +826,7 @@ Returns the current position in the given file, or @code(-1) on error.
 On some platforms this function may not support large files.
 @seealso(al_fseek) @seealso(al_get_errno)
 #Allegro5.al_fseek
-Set the current position of the given file to a position relative to that
+Sets the current position of the given file to a position relative to that
 specified by @code(whence), plus @code(offset) number of bytes.
 
 @code(whence) can be:@unorderedlist(
@@ -2156,12 +2156,11 @@ thread. flags is a bitfield containing any reasonable combination of the followi
 Gets the requested refresh rate to be used when creating new displays on the calling thread.
 @seealso(al_set_new_display_refresh_rate)
 #Allegro5.al_get_new_display_flags
-int al_get_new_display_flags(void)
-Get the display flags to be used when creating new displays on the calling thread.
+Gets the display flags to be used when creating new displays on the calling thread.
 @seealso(al_set_new_display_flags) @seealso(al_set_display_flag)
 
 #Allegro5.al_set_new_window_title
-Set the title that will be used when a new display is created. Allegro uses a static buffer of @code(ALLEGRO_NEW_WINDOW_TITLE_MAX_SIZE) to store this, so the length of the titme you set must be less than this.
+Sets the title that will be used when a new display is created. Allegro uses a static buffer of @code(ALLEGRO_NEW_WINDOW_TITLE_MAX_SIZE) to store this, so the length of the titme you set must be less than this.
 @seealso(al_set_window_title) @seealso(al_get_new_window_title) @seealso(al_create_display) @seealso(ALLEGRO_NEW_WINDOW_TITLE_MAX_SIZE)
 #Allegro5.al_get_new_window_title
 Returns the title that will be used when a new display is created. This returns the value that @link(al_set_window_title) was called with. The current implementation returns a pointer to a static buffer of which you should make a copy if you want to modify it.
@@ -2957,12 +2956,12 @@ Describes a monitor's size and position relative to other monitors. @code(x1, y1
 @seealso(al_get_monitor_info)
 
 #Allegro5.al_get_num_video_adapters
-Get the number of video "adapters" attached to the computer. Each video card attached to the computer counts as one or more adapters. An adapter is thus really a video port that can have a monitor connected to it.
+Gets the number of video "adapters" attached to the computer. Each video card attached to the computer counts as one or more adapters. An adapter is thus really a video port that can have a monitor connected to it.
 
 On Windows, use @link(al_set_new_display_flags) to switch between Direct3D and OpenGL backends, which will often have different adapters available.
 @seealso(al_get_monitor_info)
 #Allegro5.al_get_monitor_info
-Get information about a monitor's position on the desktop. adapter is a number from 0 to @code(al_get_num_video_adapters - 1).
+Gets information about a monitor's position on the desktop. adapter is a number from 0 to @code(al_get_num_video_adapters - 1).
 
 On Windows, use @link(al_set_new_display_flags) to switch between Direct3D and OpenGL backends, which will often have different adapters available.
 @return(@true on success, @false on failure.)
@@ -3751,7 +3750,7 @@ Returns the frequency (in Hz) of the sample instance's sample data.
 Returns the length of the sample instance in sample values. This property may differ from the length of the instance's sample data.
 @seealso(al_set_sample_instance_length) @seealso(al_get_sample_instance_time)
 #al5audio.al_get_sample_instance_position
-Get the playback position of a sample instance. @seealso(al_set_sample_instance_position)
+Gets the playback position of a sample instance. @seealso(al_set_sample_instance_position)
 
 #al5audio.al_get_sample_instance_speed
 Returns the relative playback speed of the sample instance. @seealso(al_set_sample_instance_speed)
@@ -5047,7 +5046,7 @@ Appends a line of text to the message log window and scrolls to the bottom (if t
 
 If the window is @nil then this function will fall back to calling @code(Write). This makes it convenient to support logging to a window or a terminal.
 #al5nativedlg.al_get_native_text_log_event_source
-Get an event source for a text log window. The possible events are:
+Gets an event source for a text log window. The possible events are:
 @definitionlist(
   @itemlabel(@bold(@code(ALLEGRO_EVENT_NATIVE_DIALOG_CLOSE))) @item(The window was requested to be closed, either by pressing the close button or pressing Escape on the keyboard. The @code(user.data1) field will hold a pointer to the @code(ALLEGRO_TEXTLOG) which generated the event. The @code(user.data2) field will be @code(1) if the event was generated as a result of a key press; otherwise it will be zero.)
 )
@@ -5980,7 +5979,7 @@ of the given @code(size) in bytes. The string must eventually be freed with
 Frees a previously allocated string. Does nothing if the argument is @nil.
 @seealso(al_ustr_new) @seealso(al_ustr_new_from_buffer)
 #al5strings.al_cstr
-Get a @code(AL_STRptr) pointer to the data in a string. This pointer will only be valid while the @code(ALLEGRO_USTR) object is not modified and not destroyed. The pointer may be passed to functions expecting C-style strings, with the following caveats:@unorderedlist(
+Gets a @code(AL_STRptr) pointer to the data in a string. This pointer will only be valid while the @code(ALLEGRO_USTR) object is not modified and not destroyed. The pointer may be passed to functions expecting C-style strings, with the following caveats:@unorderedlist(
   @item(@code(ALLEGRO_USTR)s are allowed to contain embedded @code(NUL) @(@code($00)@) bytes. That means @code(al_ustr_size @(u@)) and @code(Length @(al_cstr @(u@)@)) may not agree.)
   @item(An @code(ALLEGRO_USTR) may be created in such a way that it is not @code(NUL) terminated. A string which is dynamically allocated will always be @code(NUL) terminated, but a string which references the middle of another string or region of memory will not be @code(NUL) terminated.)
   @item(If the @code(ALLEGRO_USTR) references another string, the returned C string will point into the referenced string. Again, no @code(NUL) terminator will be added to the referenced string.)
@@ -6084,7 +6083,7 @@ the string, and @code(aPos) is unmodified.)
 @seealso(al_ustr_next)
 
 #al5strings.al_ustr_insert_chr
-Inserts a code point into us beginning at byte offset @code(aPos). @code(aPos) cannot be less than 0. If @code(aPos) is past the end of us then the space between the end of the string and @code(aPos) will be padded with @code(NUL) (@code('\0')) bytes.
+Inserts a code point into @code(us) beginning at byte offset @code(aPos). @code(aPos) cannot be less than 0. If @code(aPos) is past the end of @code(us) then the space between the end of the string and @code(aPos) will be padded with @code(NUL) (@code('\0')) bytes.
 @Return(The number of bytes inserted, or 0 on error.)
 @seealso(al_ustr_offset) @seealso(al_ustr_remove_chr)
 
@@ -6116,7 +6115,7 @@ This does not take into account locale-specific sorting rules. For that you will
 This function compares @code(us1) and @code(us2) by code point values. It returns zero if the strings are equal, a positive number if @code(us1) comes after @code(us2), else a negative number.
 
 This does not take into account locale-specific sorting rules. For that you will need to use another library.
-@seealso(al_ustr_ncompare) @seealso(al_ustr_equal)
+@seealso(al_ustr_compare) @seealso(al_ustr_equal)
 
 #al5strings.al_utf8_width
 Returns the number of bytes that would be occupied by the specified code point when encoded in UTF-8. This is between 1 and 4 bytes for legal code point values. Otherwise returns 0.

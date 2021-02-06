@@ -46,7 +46,7 @@ c:\fpc\<version_number>\units\<architecture>
 
   Where <version_number> is the version of FPC (for example 3.0.0) and
   <architecture> is the architecture of your operating system (for example
-  x86_64-linux, 1386-win32, ...).
+  x86_64-linux, i386-win32, ...).
 
   I recommend you to put the files inside a subdirectory named "allegro5".
 

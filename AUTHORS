@@ -1,6 +1,9 @@
 Guillermo "Ñuño" Martínez <http://www.burdjia.com/>
  - did everyghing that nobody else did.
 
+x2nie (forum.lazarus.freepascal.org)
+ - Implemented Test 4 in the al_blit example.
+
 Elias (www.allegro.cc)
  - helped testing the Delphi version (5.0 alpha).
 
@@ -9,7 +12,7 @@ Gregor A. Cieslak
    You can get the original Cieslak's work from GitHub:
    https://github.com/Soldat/allegro-pas5-test
 
-Handoko (www.lazarus-ide.org)
+Handoko (forum.lazarus.freepascal.org)
  - did the simple demonstration game "Furious Paladin".
 
 Thanks to Pascal Game Develompent (https://www.pascalgamedevelopment.com/)

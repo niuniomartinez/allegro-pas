@@ -5,6 +5,10 @@ Changes between versions 5.2.b.1 and 5.2.b.1-1
   ---------
      : Fixed al_load_audio_stream_f buffer_count declaration:  it was AL_STR.
 
+  News
+  ----
+    : Added Test 4 to the ex_blit example (thanks to x2nie).
+
 
 
 Changes between versions 5.2.beta and 5.2.b.1

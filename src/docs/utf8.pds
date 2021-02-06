@@ -1,6 +1,6 @@
 @bold(About UTF-8 string routines)
 
-Some parts of the Allegro API, such as the font rountines, expect Unicode strings encoded in UTF-8. The UTF8 basic routines are provided to help you work with UTF-8 strings, however it does @italic(not) mean you need to use them.
+Some parts of the Allegro API, such as the font routines, expect Unicode strings encoded in UTF-8. The UTF8 basic routines are provided to help you work with UTF-8 strings, however it does @italic(not) mean you need to use them.
 
 Briefly, Unicode is a standard consisting of a large character set of over 100,000 characters, and rules, such as how to sort strings. A code point is the integer value of a character, but not all code points are characters, as some code points have other uses. Unlike legacy character sets, the set of code points is open ended and more are assigned with time.
 

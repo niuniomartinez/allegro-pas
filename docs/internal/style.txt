@@ -10,7 +10,7 @@ Content
 -------
 
  * Comments
- * Comments
+ * Identifiers
  * Indentation
  * Spaces
  * Line length

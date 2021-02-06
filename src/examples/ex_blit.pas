@@ -1,6 +1,8 @@
 PROGRAM ex_blit;
 (*
  * An example demonstrating different blending modes.
+ *
+ * Lazarus forum user x2nie proposed the fix for Text 4.
  *)
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.
@@ -26,9 +28,9 @@ PROGRAM ex_blit;
  *)
 
 {$IFDEF FPC}
+  {$POINTERMATH ON}
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
-
 
 USES
   Common,
@@ -74,29 +76,27 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
 	sat := power (1 - 1 / (1 + d * 0.1), 5);
 	hue := 3 * a * 180 / ALLEGRO_PI;
 	hue := (hue / 360 - floor (hue / 360)) * 360;
-	al_put_pixel (i, j, al_color_hsv (hue, sat, 1));
-      END;
+	al_put_pixel (i, j, al_color_hsv (hue, sat, 1))
+      END
     END;
     al_put_pixel (0, 0, Black);
     al_unlock_bitmap (Pattern);
     al_restore_state (State);
-    ExampleBitmap := Pattern;
+    ExampleBitmap := Pattern
   END;
 
 
 
   PROCEDURE SetXY (CONST x, y: SINGLE);
   BEGIN
-    TextX := x;
-    TextY := y;
+    TextX := x; TextY := y
   END;
 
 
 
   PROCEDURE GetXY (OUT x, y: SINGLE);
   BEGIN
-    x := TextX;
-    y := TextY;
+    x := TextX; y := TextY
   END;
 
 
@@ -108,7 +108,7 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
     th := al_get_font_line_height (Font);
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
     al_draw_text (Font, TextClr, TextX, TextY, 0, al_str_format (Fmt, Args));
-    TextY := TextY + th;
+    TextY := TextY + th
   END;
 
 
@@ -116,14 +116,14 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
   PROCEDURE StartTimer (Ndx: INTEGER);
   BEGIN
     Timer[Ndx] := Timer[Ndx] - al_get_time;
-    Counter[Ndx] := Counter[Ndx] + 1;
+    Counter[Ndx] := Counter[Ndx] + 1
   END;
 
 
 
   PROCEDURE StopTimer (Ndx: INTEGER);
   BEGIN
-    Timer[Ndx] := Timer[Ndx] + al_get_time;
+    Timer[Ndx] := Timer[Ndx] + al_get_time
   END;
 
 
@@ -131,18 +131,22 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
   FUNCTION GetFPS  (Ndx: INTEGER): SINGLE;
   BEGIN
     IF Timer[Ndx] = 0 THEN EXIT (0.0);
-    GetFPS := Counter[Ndx] / Timer[Ndx];
+    GetFPS := Counter[Ndx] / Timer[Ndx]
   END;
 
 
 
   PROCEDURE Draw;
+  TYPE
+    PByteArray = ^TByteArray;
+    TByteArray = ARRAY [WORD] OF BYTE;
   VAR
     x, y: SINGLE;
-    iw, ih {, FormatLock }: INTEGER;
+    i, ix, iy, iw, ih, FormatSize: INTEGER;
     Screen, Temp: ALLEGRO_BITMAPptr;
-    {  Lock: ALLEGRO_LOCKED_REGIONptr;
-    Data: POINTER; }
+    FormatLock: ALLEGRO_PIXEL_FORMAT;
+    Lock: ALLEGRO_LOCKED_REGIONptr;
+    BitmapData, ScreenData: PByteArray;
   BEGIN
     iw := al_get_bitmap_width (Pattern);
     ih := al_get_bitmap_height (Pattern);
@@ -184,7 +188,7 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
     al_destroy_bitmap (Temp);
 
   { Test 3. }
-    Print ('Screen -> Memory -> Screen (%.1f fps)', [getfps (2)]);
+    Print ('Screen -> Memory -> Screen (%.1f fps)', [GetFPS (2)]);
     GetXY (x, y);
     al_draw_bitmap (Pattern, x, y, 0);
 
@@ -204,36 +208,56 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
     al_set_new_bitmap_flags (ALLEGRO_VIDEO_BITMAP);
 
 
-(*
-  Disabled because the "memcpy".  I tried it but I never used 'memcpy' on C nor
-  pointers on Pascal so I don't know how to translate it.
-
-   /* Test 4. */
-    Print ('Screen -> Locked -> Screen (%.1f fps)', get_fps(3));
-    get_xy(&x, &y);
-    al_draw_bitmap(ex.Pattern, x, y, 0);
+  { Test 4. }
+    Print ('Screen -> Locked -> Screen (%.1f fps)', [GetFPS(3)]);
+    GetXY (x, y);
+    al_draw_bitmap (Pattern, x, y, 0);
 
     StartTimer (3);
-    lock = al_lock_bitmap_region(Screen, x, y, iw, ih,
-      ALLEGRO_PIXEL_FORMAT_ANY, ALLEGRO_LOCK_READONLY);
-    format = lock->format;
-    size = lock->pixel_size;
-    data = malloc(size * iw * ih);
-    for (i = 0; i < ih; i++)
-       memcpy((char* )data + i * size * iw,
-         (char* )lock->data + i * lock->pitch, size * iw);
-    al_unlock_bitmap(Screen);
 
-   lock = al_lock_bitmap_region(Screen, x + 8 + iw, y, iw, ih, format,
-      ALLEGRO_LOCK_WRITEONLY);
-   for (i = 0; i < ih; i++)
-      memcpy((char* )lock->data + i * lock->pitch,
-         (char* )data + i * size * iw, size * iw);
-   al_unlock_bitmap(Screen);
-   free(data);
-   StopTimer (3);
-    SetXY (x, y + ih);
- *)
+    ix := Round (x); iy := Round (y);
+    Lock := al_lock_bitmap_region (
+      Screen,
+      ix, iy, iw, ih,
+      ALLEGRO_PIXEL_FORMAT_ANY, ALLEGRO_LOCK_READONLY
+    );
+    FormatLock := ALLEGRO_PIXEL_FORMAT (Lock.format);
+    FormatSize := Lock.pixel_size;
+    BitmapData := AllocMem (FormatSize * iw * ih);
+    FOR i := 0 TO ih - 1 DO
+    BEGIN
+    { Lock.pitch may be negative (i.e. graphics card stores textures upside down)
+      so indexes can't be used here as only positive values can be used.
+      So use pointers.
+    }
+      ScreenData := Lock.Data + (i * Lock.pitch);
+      move (
+	ScreenData[0],
+	BitmapData[i * FormatSize * iw],
+	FormatSize * iw
+      )
+    END;
+    al_unlock_bitmap (Screen);
+
+    Lock := al_lock_bitmap_region (
+      Screen,
+      ix + 8 + iw, iy, iw, ih,
+      FormatLock, ALLEGRO_LOCK_WRITEONLY
+    );
+    FOR i := 0 TO ih - 1 DO
+    BEGIN
+      ScreenData := Lock.Data + (i * Lock.pitch);
+      move (
+	BitmapData[i * FormatSize * iw],
+	ScreenData[0],
+	FormatSize * iw
+      )
+    END;
+    al_unlock_bitmap (Screen);
+    FreeMem (BitmapData);
+
+    StopTimer (3);
+    SetXY (x, y + ih)
   END;
 
 
@@ -241,7 +265,7 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
   PROCEDURE Tick;
   BEGIN
     Draw;
-    al_flip_display;
+    al_flip_display
   END;
 
 
@@ -257,19 +281,18 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
       IF NeedDraw AND al_is_event_queue_empty (EventQueue) THEN
       BEGIN
         Tick;
-        NeedDraw := FALSE;
+        NeedDraw := FALSE
       END;
       al_wait_for_event (EventQueue, @Event);
       CASE Event.ftype OF
-        ALLEGRO_EVENT_DISPLAY_CLOSE:
-          EXIT;
-        ALLEGRO_EVENT_KEY_DOWN:
-          IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-            EXIT;
-        ALLEGRO_EVENT_TIMER:
-          NeedDraw := TRUE;
-      END;
-    UNTIL FALSE;
+      ALLEGRO_EVENT_DISPLAY_CLOSE:
+        EXIT;
+      ALLEGRO_EVENT_KEY_DOWN:
+        IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN EXIT;
+      ALLEGRO_EVENT_TIMER:
+        NeedDraw := TRUE;
+      END
+    UNTIL FALSE
   END;
 
 
@@ -283,7 +306,7 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
     TextClr := al_color_name ('black');
     Black := al_color_name ('black');
     Red := al_map_rgba_f (1, 0, 0, 1);
-    Pattern := ExampleBitmap (100, 100);
+    Pattern := ExampleBitmap (100, 100)
   END;
 
 
@@ -313,5 +336,5 @@ BEGIN
   al_start_timer (TheTimer);
   Run;
 
-  al_destroy_event_queue (EventQueue);
+  al_destroy_event_queue (EventQueue)
 END.

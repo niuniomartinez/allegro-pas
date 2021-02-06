@@ -27,7 +27,6 @@ program FuriousPaladin;
 
 {$IFDEF FPC}
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
-  {$MODE DELPHI}
 {$ENDIF}
 
 uses

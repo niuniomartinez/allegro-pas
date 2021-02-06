@@ -147,7 +147,7 @@ INTERFACE
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 
 (* Insert *)
-  FUNCTION al_ustr_insert_chr (us1: ALLEGRO_USTRptr; aPos: AL_INT; c: AL_INT32)
+  FUNCTION al_ustr_insert_chr (us: ALLEGRO_USTRptr; aPos: AL_INT; c: AL_INT32)
   : AL_SIZE_T;
     CDECL; EXTERNAL ALLEGRO_LIB_NAME;
 

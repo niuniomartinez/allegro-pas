@@ -17,7 +17,7 @@ Getting precompiled version
 
   You can download the "binary" version of Allegro.pas from SourceForge;  it
   has "bin-win32" in the name (for example, allegro.pas-5.2.b.1-bin-win32.zip).
-  This pachabe included precompiled Allegro for Windows 32bit (will work with
+  This package included precompiled Allegro for Windows 32bit (will work with
   Windows 64bit too).  Precompiled Allegro library and some 3th party DLL files
   are in the "~/bin/lib" directory.
 
