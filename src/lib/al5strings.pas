@@ -1,5 +1,5 @@
-UNIT al5strings;
-(***< Functions to integrate Pascal @code(STRING) with Allegro @link(AL_STR).
+unit al5strings;
+(***< Functions to integrate Pascal @code(String) with Allegro @link(AL_STR).
   Also implements Allegro's UNICODE support.
 
   @include(../docs/strings.pds)
@@ -27,11 +27,11 @@ UNIT al5strings;
     distribution.
  *)
 
-{$include allegro5.cfg}
+{$INCLUDE allegro5.cfg}
 
-INTERFACE
+interface
 
-  USES
+  uses
     al5base;
 
 (*
@@ -44,37 +44,37 @@ INTERFACE
  * -- Free Pascal Wiki (https://wiki.freepascal.org/FPC_Unicode_support)
  *****************************************************************************)
 
-  FUNCTION al_string_to_str (CONST aString: SHORTSTRING): AL_STR;
-    OVERLOAD; INLINE;
-  FUNCTION al_string_to_str (CONST aString: ANSISTRING): AL_STR;
-    OVERLOAD; INLINE;
-  FUNCTION al_string_to_str (CONST aString: UNICODESTRING): AL_STR;
-    OVERLOAD; INLINE;
+  function al_string_to_str (const aString: ShortString): AL_STR;
+    overload; inline;
+  function al_string_to_str (const aString: AnsiString): AL_STR;
+    overload; inline;
+  function al_string_to_str (const aString: UnicodeString): AL_STR;
+    overload; inline;
 
-  FUNCTION al_str_to_string (CONST aString: AL_STR): STRING;
-    OVERLOAD; INLINE;
-  FUNCTION al_str_to_string (CONST aString: AL_STRptr): STRING;
-    OVERLOAD; INLINE;
+  function al_str_to_string (const aString: AL_STR): String;
+    overload; inline;
+  function al_str_to_string (const aString: AL_STRptr): String;
+    overload; inline;
 
-  FUNCTION al_str_to_shortstring (CONST aString: AL_STR): SHORTSTRING;
-    OVERLOAD; INLINE;
-  FUNCTION al_str_to_shortstring (CONST aString: AL_STRptr): SHORTSTRING;
-    OVERLOAD; INLINE;
+  function al_str_to_shortstring (const aString: AL_STR): ShortString;
+    overload; inline;
+  function al_str_to_shortstring (const aString: AL_STRptr): ShortString;
+    overload; inline;
 
-  FUNCTION al_str_to_ansistring (CONST aString: AL_STR): ANSISTRING;
-    OVERLOAD; INLINE;
-  FUNCTION al_str_to_ansistring (CONST aString: AL_STRptr): ANSISTRING;
-    OVERLOAD; INLINE;
+  function al_str_to_ansistring (const aString: AL_STR): AnsiString;
+    overload; inline;
+  function al_str_to_ansistring (const aString: AL_STRptr): AnsiString;
+    overload; inline;
 
-  FUNCTION al_str_to_unicodestring (CONST aString: AL_STR): UNICODESTRING;
-    OVERLOAD; INLINE;
-  FUNCTION al_str_to_unicodestring (CONST aString: AL_STRptr): UNICODESTRING;
-    OVERLOAD; INLINE;
+  function al_str_to_unicodestring (const aString: AL_STR): UnicodeString;
+    overload; inline;
+  function al_str_to_unicodestring (const aString: AL_STRptr): UnicodeString;
+    overload; inline;
 
 { TODO: al_str_to_int, al_str_to_float, al_int_to_str, al_float_to_str... }
 { TODO: al_str_lenth? }
 
-  FUNCTION al_str_format (CONST Fmt: AL_STR; CONST Args : ARRAY OF CONST)
+  function al_str_format (const Fmt: AL_STR; const Args : array OF const)
   : AL_STR;
 
 
@@ -85,15 +85,15 @@ INTERFACE
 
   {TODO: Documentation says it's not needed as it's used internally.
 	Only basic functionality is implemented for convenience. }
-  {TODO: There are a lot of stuff to add here, including WIDESTRING and/or
-	 UNICODESTRING support. }
+  {TODO: There are a lot of stuff to add here, including WIDEString and/or
+	 UnicodeString support. }
 
-  TYPE
+  type
   {** @exclude }
-    _al_tagbstring = RECORD
+    _al_tagbstring = record
       mlen, slen: AL_INT;
       data: AL_VOIDptr;
-    END;
+    end;
   (*** Pointer to @link(ALLEGRO_USTR). *)
     ALLEGRO_USTRptr = ^ALLEGRO_USTR;
     ALLEGRO_USTR = _al_tagbstring;
@@ -102,169 +102,169 @@ INTERFACE
     ALLEGRO_USTR_INFO = _al_tagbstring;
 
 (* Creating strings. *)
-  FUNCTION al_ustr_new (CONST s: AL_STR): ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_new_from_buffer (CONST s: AL_STRptr; size: AL_SIZE_T): ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  function al_ustr_new (const s: AL_STR): ALLEGRO_USTRptr;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_ustr_new_from_buffer (const s: AL_STRptr; size: AL_SIZE_T): ALLEGRO_USTRptr;
+    CDECL; external ALLEGRO_LIB_NAME;
 (* AL_PRINTFUNC(ALLEGRO_USTR *, al_ustr_newf, (const char *fmt, ...), 1, 2); *)
-  PROCEDURE al_ustr_free (us: ALLEGRO_USTRptr);
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_cstr (CONST us: ALLEGRO_USTRptr): AL_STRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_ustr_to_buffer (CONST us: ALLEGRO_USTRptr; buffer: AL_STRptr; size: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_cstr_dup (CONST us: ALLEGRO_USTRptr): AL_STRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_dup (CONST us: ALLEGRO_USTRptr): ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_dup_substr (CONST us: ALLEGRO_USTRptr; start_pos, end_pos: AL_INT): ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  procedure al_ustr_free (us: ALLEGRO_USTRptr);
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_cstr (const us: ALLEGRO_USTRptr): AL_STRptr;
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_ustr_to_buffer (const us: ALLEGRO_USTRptr; buffer: AL_STRptr; size: AL_INT);
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_cstr_dup (const us: ALLEGRO_USTRptr): AL_STRptr;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_ustr_dup (const us: ALLEGRO_USTRptr): ALLEGRO_USTRptr;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_ustr_dup_substr (const us: ALLEGRO_USTRptr; start_pos, end_pos: AL_INT): ALLEGRO_USTRptr;
+    CDECL; external ALLEGRO_LIB_NAME;
 
 (* Predefined string. *)
-  FUNCTION al_ustr_empty_string: ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  function al_ustr_empty_string: ALLEGRO_USTRptr;
+    CDECL; external ALLEGRO_LIB_NAME;
 
 (* Reference strings. *)
-  FUNCTION al_ref_cstr (OUT info: ALLEGRO_USTR_INFO; CONST s: AL_STR): ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ref_buffer (OUT info: ALLEGRO_USTR_INFO; CONST s: AL_STRptr;
+  function al_ref_cstr (out info: ALLEGRO_USTR_INFO; const s: AL_STR): ALLEGRO_USTRptr;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_ref_buffer (out info: ALLEGRO_USTR_INFO; const s: AL_STRptr;
       size: AL_SIZE_T): ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ref_ustr (OUT info: ALLEGRO_USTR_INFO;
-      CONST us: ALLEGRO_USTRptr; star_pos, end_pos: AL_INT): ALLEGRO_USTRptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_ref_ustr (out info: ALLEGRO_USTR_INFO;
+      const us: ALLEGRO_USTRptr; star_pos, end_pos: AL_INT): ALLEGRO_USTRptr;
+    CDECL; external ALLEGRO_LIB_NAME;
 
 (* Sizes and offsets *)
-  FUNCTION al_ustr_size (CONST us: ALLEGRO_USTRptr): AL_SIZE_T;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_length (CONST us: ALLEGRO_USTRptr): AL_SIZE_T;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_offset (CONST us: ALLEGRO_USTRptr;index: AL_INT): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_next (CONST us: ALLEGRO_USTRptr; VAR aPos: AL_INT): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_prev (CONST us: ALLEGRO_USTRptr; VAR aPos: AL_INT): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  function al_ustr_size (const us: ALLEGRO_USTRptr): AL_SIZE_T;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_ustr_length (const us: ALLEGRO_USTRptr): AL_SIZE_T;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_ustr_offset (const us: ALLEGRO_USTRptr;index: AL_INT): AL_INT;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_ustr_next (const us: ALLEGRO_USTRptr; var aPos: AL_INT): AL_BOOL;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_ustr_prev (const us: ALLEGRO_USTRptr; var aPos: AL_INT): AL_BOOL;
+    CDECL; external ALLEGRO_LIB_NAME;
 
 (* Insert *)
-  FUNCTION al_ustr_insert_chr (us: ALLEGRO_USTRptr; aPos: AL_INT; c: AL_INT32)
+  function al_ustr_insert_chr (us: ALLEGRO_USTRptr; aPos: AL_INT; c: AL_INT32)
   : AL_SIZE_T;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+    CDECL; external ALLEGRO_LIB_NAME;
 
 (* Remove *)
-  FUNCTION al_ustr_remove_chr (us: ALLEGRO_USTRptr; apos: AL_INT): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  function al_ustr_remove_chr (us: ALLEGRO_USTRptr; apos: AL_INT): AL_BOOL;
+    CDECL; external ALLEGRO_LIB_NAME;
 
 (* Assign *)
-  FUNCTION al_ustr_assign (us1: ALLEGRO_USTRptr; CONST us2: ALLEGRO_USTRptr): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; CONST s: AL_STR): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  function al_ustr_assign (us1: ALLEGRO_USTRptr; const us2: ALLEGRO_USTRptr): AL_BOOL;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_ustr_assign_cstr (us1: ALLEGRO_USTRptr; const s: AL_STR): AL_BOOL;
+    CDECL; external ALLEGRO_LIB_NAME;
 
 (* Compare *)
-  FUNCTION al_ustr_equal (CONST us1, us2: ALLEGRO_USTRptr): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_compare (CONST u, v: ALLEGRO_USTRptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_ustr_ncompare (CONST u, v: ALLEGRO_USTRptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  function al_ustr_equal (const us1, us2: ALLEGRO_USTRptr): AL_BOOL;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_ustr_compare (const u, v: ALLEGRO_USTRptr): AL_INT;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_ustr_ncompare (const u, v: ALLEGRO_USTRptr): AL_INT;
+    CDECL; external ALLEGRO_LIB_NAME;
 
 (* Low level UTF-8 functions *)
-  FUNCTION al_utf8_width (c: AL_INT32): AL_SIZE_T;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  function al_utf8_width (c: AL_INT32): AL_SIZE_T;
+    CDECL; external ALLEGRO_LIB_NAME;
 
-IMPLEMENTATION
+implementation
 
-  USES
+  uses
   {$IFDEF ISDELPHI2009ANDUP}
-  { This unit implements SysUtils and Strings using ANSISTRING instead of
-    UNICODESTRING, which is the default in modern Delphi compilers. }
+  { This unit implements SysUtils and Strings using AnsiString instead of
+    UnicodeString, which is the default in modern Delphi compilers. }
     AnsiStrings;
   {$ELSE}
     sysutils;
   {$ENDIF}
 
 (* Converts string. *)
-  FUNCTION al_string_to_str (CONST aString: SHORTSTRING): AL_STR;
-  BEGIN
-    RESULT := AL_STR (aString)
-  END;
+  function al_string_to_str (const aString: ShortString): AL_STR;
+  begin
+    Result := AL_STR (aString)
+  end;
 
-  FUNCTION al_string_to_str (CONST aString: ANSISTRING): AL_STR;
-  BEGIN
+  function al_string_to_str (const aString: AnsiString): AL_STR;
+  begin
   { No conversion needed. }
-    RESULT := aString
-  END;
+    Result := aString
+  end;
 
-  FUNCTION al_string_to_str (CONST aString: UNICODESTRING): AL_STR;
-  BEGIN
-    RESULT := UTF8Encode (aString)
-  END;
+  function al_string_to_str (const aString: UnicodeString): AL_STR;
+  begin
+    Result := UTF8Encode (aString)
+  end;
 
 
 
-  FUNCTION al_str_to_string (CONST aString: AL_STR): STRING;
-  BEGIN
+  function al_str_to_string (const aString: AL_STR): String;
+  begin
   {$IFDEF ISDELPHI2009ANDUP}
-    RESULT := al_str_to_unicodestring (aString)
+    Result := al_str_to_unicodestring (aString)
   {$ELSE}
-    RESULT := aString
+    Result := aString
   {$ENDIF}
-  END;
+  end;
 
-  FUNCTION al_str_to_string (CONST aString: AL_STRptr): STRING;
-  BEGIN
+  function al_str_to_string (const aString: AL_STRptr): String;
+  begin
   {$IFDEF ISDELPHI2009ANDUP}
-    RESULT := UTF8ToString (StrPas (aString))
+    Result := UTF8ToString (StrPas (aString))
   {$ELSE}
-    RESULT := StrPas (aString)
+    Result := StrPas (aString)
   {$ENDIF}
-  END;
+  end;
 
 
-  FUNCTION al_str_to_shortstring (CONST aString: AL_STR): SHORTSTRING;
-  BEGIN
-    RESULT := aString
-  END;
+  function al_str_to_shortstring (const aString: AL_STR): ShortString;
+  begin
+    Result := aString
+  end;
 
 
-  FUNCTION al_str_to_shortstring (CONST aString: AL_STRptr): SHORTSTRING;
-  BEGIN
-    RESULT := StrPas (aString)
-  END;
-
-
-
-  FUNCTION al_str_to_ansistring (CONST aString: AL_STR): ANSISTRING;
-  BEGIN
-    RESULT := aString
-  END;
-
-  FUNCTION al_str_to_ansistring (CONST aString: AL_STRptr): ANSISTRING;
-  BEGIN
-    RESULT := StrPas (aString)
-  END;
+  function al_str_to_shortstring (const aString: AL_STRptr): ShortString;
+  begin
+    Result := StrPas (aString)
+  end;
 
 
 
-  FUNCTION al_str_to_unicodestring (CONST aString: AL_STR): UNICODESTRING;
-  BEGIN
-    RESULT :=
+  function al_str_to_ansistring (const aString: AL_STR): AnsiString;
+  begin
+    Result := aString
+  end;
+
+  function al_str_to_ansistring (const aString: AL_STRptr): AnsiString;
+  begin
+    Result := StrPas (aString)
+  end;
+
+
+
+  function al_str_to_unicodestring (const aString: AL_STR): UnicodeString;
+  begin
+    Result :=
       {$IFDEF ISDELPHI2009ANDUP}UTF8ToString{$ELSE}UTF8Decode{$ENDIF} (aString)
-  END;
+  end;
 
-  FUNCTION al_str_to_unicodestring (CONST aString: AL_STRptr): UNICODESTRING;
-  BEGIN
-    RESULT := al_str_to_unicodestring (StrPas (aString))
-  END;
+  function al_str_to_unicodestring (const aString: AL_STRptr): UnicodeString;
+  begin
+    Result := al_str_to_unicodestring (StrPas (aString))
+  end;
 
 
 
 (* Formats a string with given arguments. *)
-  FUNCTION al_str_format (CONST Fmt: AL_STR; CONST Args : ARRAY OF CONST)
+  function al_str_format (const Fmt: AL_STR; const Args : array OF const)
     : AL_STR;
-  BEGIN
-    RESULT := Format (Fmt, Args)
-  END;
+  begin
+    Result := al_string_to_str (Format (Fmt, Args))
+  end;
 
-END.
+end.

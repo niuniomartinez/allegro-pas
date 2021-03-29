@@ -26,11 +26,11 @@ PROGRAM ex_transform;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   common,
   Allegro5, al5base, al5image, al5font, al5primitives, al5strings;
 
-VAR
+var
   Filename: AL_STR;
   Display: ALLEGRO_DISPLAYptr;
   Buffer, Bitmap, Subbitmap, BufferSubbitmap, Overlay: ALLEGRO_BITMAPptr;
@@ -38,23 +38,23 @@ VAR
   Queue: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
   Transform, Identity: ALLEGRO_TRANSFORM;
-  Software, Redraw, Blend, UseSubbitmap, EndLoop: BOOLEAN;
-  w, h: INTEGER;
+  Software, Redraw, Blend, UseSubbitmap, EndLoop: Boolean;
+  w, h: Integer;
   Font, SoftFont: ALLEGRO_FONTptr;
   t: SINGLE;
   Tint: ALLEGRO_COLOR;
-BEGIN
-  Software := FALSE;
-  Redraw := FALSE;
-  Blend := FALSE;
-  UseSubbitmap := FALSE;
+begin
+  Software := False;
+  Redraw := False;
+  Blend := False;
+  UseSubbitmap := False;
 
-  IF Paramcount > 1 THEN
+  if Paramcount > 1 then
     Filename := al_string_to_str (ParamStr (1))
-  ELSE
+  else
     Filename := 'data/mysha.pcx';
 
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.\n');
+  if not al_init then AbortExample ('Could not init Allegro.\n');
 
   al_init_primitives_addon;
   al_install_mouse;
@@ -64,7 +64,7 @@ BEGIN
   al_init_font_addon;
 
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN AbortExample ('Error creating display');
+  if Display = Nil then AbortExample ('Error creating display');
 
   Subbitmap := al_create_sub_bitmap (al_get_backbuffer (Display), 50, 50, 640 - 50, 480 - 50);
   Overlay := al_create_sub_bitmap (al_get_backbuffer (Display), 100, 100, 300, 50);
@@ -72,10 +72,10 @@ BEGIN
   al_set_window_title (Display, Filename);
 
   Bitmap := al_load_bitmap (Filename);
-  IF Bitmap = NIL THEN
+  if Bitmap = Nil then
     AbortExample (Filename + ' not found or failed to load');
   Font := al_load_font ('data/bmpfont.tga', 0, 0);
-  IF Font = NIL THEN
+  if Font = Nil then
     AbortExample ('data/bmpfont.tga not found or failed to load');
 
   al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
@@ -83,7 +83,7 @@ BEGIN
   BufferSubbitmap := al_create_sub_bitmap (Buffer, 50, 50, 640 - 50, 480 - 50);
 
   SoftFont := al_load_font ('data/bmpfont.tga', 0, 0);
-  IF SoftFont = NIL THEN
+  if SoftFont = Nil then
     AbortExample ('data/bmpfont.tga not found or failed to load');
 
   Timer := al_create_timer (1 / 60);
@@ -101,63 +101,63 @@ BEGIN
   al_rotate_transform (Transform, -0.06);
   al_use_transform (Transform);
 
-  EndLoop := FALSE;
-  REPEAT
+  EndLoop := False;
+  repeat
     al_wait_for_event (Queue, @Event);
-    CASE Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      EndLoop := TRUE;
+      EndLoop := True;
     ALLEGRO_EVENT_KEY_DOWN:
-      CASE Event.keyboard.keycode OF
+      case Event.keyboard.keycode of
       ALLEGRO_KEY_S:
-        BEGIN
-          Software := NOT Software;
-          IF Software THEN
-          BEGIN
+        begin
+          Software := not Software;
+          if Software then
+          begin
           { Restore identity transform on display bitmap. }
             al_identity_transform (Identity);
             al_use_transform (Identity);
-          END;
-        END;
+          end;
+        end;
       ALLEGRO_KEY_L:
-        Blend := NOT Blend;
+        Blend := not Blend;
       ALLEGRO_KEY_B:
-        UseSubbitmap := NOT UseSubbitmap;
+        UseSubbitmap := not UseSubbitmap;
       ALLEGRO_KEY_ESCAPE:
-        EndLoop := TRUE;
-      END;
+        EndLoop := True;
+      end;
     ALLEGRO_EVENT_TIMER:
-      Redraw := TRUE;
-    END;
+      Redraw := True;
+    end;
 
-    IF Redraw AND al_is_event_queue_empty (Queue) THEN
-    BEGIN
+    if Redraw and al_is_event_queue_empty (Queue) then
+    begin
       t := 3 + al_get_time;
-      Redraw := FALSE;
+      Redraw := False;
 
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE);
-      IF Blend THEN
+      if Blend then
         Tint := al_map_rgba_f (0.5, 0.5, 0.5, 0.5)
-      ELSE
+      else
         Tint := al_map_rgba_f (1, 1, 1, 1);
 
-      IF Software THEN
-      BEGIN
+      if Software then
+      begin
         al_set_target_bitmap (Buffer);
-        IF UseSubbitmap THEN
-        BEGIN
+        if UseSubbitmap then
+        begin
           al_clear_to_color (al_map_rgb_f (1, 0, 0));
           al_set_target_bitmap (BufferSubbitmap);
-        END;
-      END
-      ELSE BEGIN
+        end;
+      end
+      else begin
         al_set_target_backbuffer (Display);
-        IF UseSubbitmap THEN
-        BEGIN;
+        if UseSubbitmap then
+        begin;
           al_clear_to_color (al_map_rgb_f (1, 0, 0));
           al_set_target_bitmap (Subbitmap);
-        END;
-      END;
+        end;
+      end;
 
     { Set the transformation on the target bitmap. }
       al_identity_transform (Transform);
@@ -174,19 +174,19 @@ BEGIN
       al_draw_tinted_bitmap_region (Bitmap, Tint, w / 4, h / 4, w / 2, h / 2, 0, h, ALLEGRO_FLIP_VERTICAL);
       al_draw_tinted_scaled_rotated_bitmap (Bitmap, Tint, w / 2, h / 2, w + w / 2, h + h / 2, 0.7, 0.7, 0.3, 0);
       al_draw_pixel (w + w / 2, h + h / 2, al_map_rgb_f (0, 1, 0));
-      al_put_pixel (w + w DIV 2 + 2, h + h DIV 2 + 2, al_map_rgb_f (0, 1, 1));
+      al_put_pixel (w + w div 2 + 2, h + h div 2 + 2, al_map_rgb_f (0, 1, 1));
       al_draw_circle (w, h, 50, al_map_rgb_f (1, 0.5, 0), 3);
 
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
-      IF Software THEN
-      BEGIN
+      if Software then
+      begin
         al_draw_text (SoftFont, al_map_rgba_f (1, 1, 1, 1),
           640 / 2, 430, ALLEGRO_ALIGN_CENTRE, 'Software Rendering'
         );
         al_set_target_backbuffer (Display);
         al_draw_bitmap (Buffer, 0, 0, 0);
-      END
-      ELSE
+      end
+      else
         al_draw_text (Font, al_map_rgba_f (1, 1, 1, 1),
           640 / 2, 430, ALLEGRO_ALIGN_CENTRE, 'Hardware Rendering'
         );
@@ -201,8 +201,8 @@ BEGIN
 
       al_set_target_backbuffer (Display);
       al_flip_display;
-    END;
-  UNTIL EndLoop;
+    end;
+  until EndLoop;
 
   al_destroy_event_queue (Queue);
   al_destroy_timer (Timer);
@@ -214,4 +214,4 @@ BEGIN
   al_destroy_bitmap (Overlay);
   al_destroy_bitmap (Subbitmap);
   al_destroy_display (Display);
-END.
+end.

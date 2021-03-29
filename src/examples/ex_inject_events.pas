@@ -34,17 +34,17 @@ PROGRAM ex_inject_events;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5;
 
-VAR
+var
   FakeSrc: ALLEGRO_EVENT_SOURCE;
   Queue: ALLEGRO_EVENT_QUEUEptr;
   FakeKeydownEvent, FakeJoystickEvent, Event: ALLEGRO_EVENT;
 
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   OpenLog;
 
@@ -58,31 +58,31 @@ BEGIN
   FakeJoystickEvent.joystick.stick := 1;
   FakeJoystickEvent.joystick.axis := 0;
   FakeJoystickEvent.joystick.pos := 0.5;
-  al_emit_user_event (@FakeSrc, @FakeJoystickEvent, NIL);
+  al_emit_user_event (@FakeSrc, @FakeJoystickEvent, Nil);
 
 { fake a keyboard event }
   FakeKeydownEvent.any.ftype := ALLEGRO_EVENT_KEY_DOWN;
   FakeKeydownEvent.keyboard.keycode := ALLEGRO_KEY_ENTER;
-  al_emit_user_event (@FakeSrc, @FakeKeydownEvent, NIL);
+  al_emit_user_event (@FakeSrc, @FakeKeydownEvent, Nil);
 
 { poll for the events we injected }
-  WHILE NOT al_is_event_queue_empty (Queue) DO
-  BEGIN
+  while not al_is_event_queue_empty (Queue) do
+  begin
     al_wait_for_event (Queue, @Event);
 
-    CASE Event.ftype OF
+    case Event.ftype OF
     ALLEGRO_EVENT_KEY_DOWN:
       LogPrintLn ('Got keydown: %d.', [Event.keyboard.keycode]);
     ALLEGRO_EVENT_JOYSTICK_AXIS:
       LogPrintLn ('Got joystick axis: stick=%d axis=%d pos=%f.',
 	[Event.joystick.stick, Event.joystick.axis, Event.joystick.pos]
       );
-    END
-  END;
+    end
+  end;
 
   al_destroy_user_event_source (FakeSrc);
   al_destroy_event_queue (Queue);
 
   LogWriteLn ('Done.');
-  CloseLog (TRUE)
-END.
+  CloseLog (True)
+end.

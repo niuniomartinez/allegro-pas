@@ -27,27 +27,27 @@ PROGRAM ex_bitmap_flip;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     Allegro5, al5base, al5image, al5font;
 
-  CONST
+  const
     INTERVAL = 0.01;
 
-  VAR
+  var
     BmpX: SINGLE = 200;
     BmpY: SINGLE = 200;
     BmpDx: SINGLE = 96;
     BmpDy: SINGLE = 96;
-    BmpFlag: INTEGER = 0;
+    BmpFlag: Integer = 0;
 
 
 
-  PROCEDURE Update (Bmp: ALLEGRO_BITMAPptr);
-  VAR
+  procedure Update (Bmp: ALLEGRO_BITMAPptr);
+  var
     Target: ALLEGRO_BITMAPptr;
-    DisplayW, DisplayH, BitmapW, BitmapH: INTEGER;
-  BEGIN
+    DisplayW, DisplayH, BitmapW, BitmapH: Integer;
+  begin
     Target := al_get_target_bitmap;
     DisplayW := al_get_bitmap_width (Target);
     DisplayH := al_get_bitmap_height (Target);
@@ -58,36 +58,36 @@ PROGRAM ex_bitmap_flip;
     BmpY := BmpY + BmpDy * INTERVAL;
 
   { Make sure bitmap is still on the screen. }
-    IF BmpY < 0 THEN
-    BEGIN
+    if BmpY < 0 then
+    begin
       BmpY := 0;
       BmpDy := BmpDy * -1;
-      BmpFlag := BmpFlag AND (NOT ALLEGRO_FLIP_VERTICAL)
-    END;
+      BmpFlag := BmpFlag and (not ALLEGRO_FLIP_VERTICAL)
+    end;
 
-    IF BmpX < 0 THEN
-    BEGIN
+    if BmpX < 0 then
+    begin
       BmpX := 0;
       BmpDx := BmpDx * -1;
-      BmpFlag := BmpFlag AND (NOT ALLEGRO_FLIP_HORIZONTAL)
-    END;
+      BmpFlag := BmpFlag and (not ALLEGRO_FLIP_HORIZONTAL)
+    end;
 
-    IF BmpY > DisplayH - BitmapH THEN
-    BEGIN
+    if BmpY > DisplayH - BitmapH then
+    begin
       BmpY := DisplayH - BitmapH;
       BmpDy := BmpDy * -1;
-      BmpFlag := BmpFlag OR ALLEGRO_FLIP_VERTICAL
-    END;
+      BmpFlag := BmpFlag or ALLEGRO_FLIP_VERTICAL
+    end;
 
-    IF BmpX > DisplayW - BitmapW THEN
-    BEGIN
+    if BmpX > DisplayW - BitmapW then
+    begin
       BmpX := DisplayW - BitmapW;
       BmpDx := BmpDx * -1;
-      BmpFlag := BmpFlag OR ALLEGRO_FLIP_HORIZONTAL
-    END
-  END;
+      BmpFlag := BmpFlag or ALLEGRO_FLIP_HORIZONTAL
+    end
+  end;
 
-VAR
+var
   Display: ALLEGRO_DISPLAYptr;
   Timer: ALLEGRO_TIMERptr;
   Queue: ALLEGRO_EVENT_QUEUEptr;
@@ -95,34 +95,34 @@ VAR
   Bmp, MemBmp, DispBmp: ALLEGRO_BITMAPptr;
   Font: ALLEGRO_FONTptr;
   aText: AL_STR;
-  Done, Redraw: BOOLEAN;
-BEGIN
-  Done := FALSE;
-  redraw := TRUE;
+  Done, Redraw: Boolean;
+begin
+  Done := False;
+  redraw := True;
 
-  IF NOT al_init THEN AbortExample ('Failed to init Allegro.');
+  if not al_init then AbortExample ('Failed to init Allegro.');
 
-  IF NOT al_init_image_addon THEN AbortExample ('Failed to init IIO addon.');
+  if not al_init_image_addon then AbortExample ('Failed to init IIO addon.');
 
   al_init_font_addon;
   InitPlatformSpecific;
 
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN AbortExample ('Error creating display.');
+  if Display = Nil then AbortExample ('Error creating display.');
 
-  IF NOT al_install_keyboard THEN AbortExample ('Error installing keyboard.');
+  if not al_install_keyboard then AbortExample ('Error installing keyboard.');
 
   Font := al_load_font ('data/fixed_font.tga', 0, 0);
-  IF Font = NIL THEN AbortExample ('Error loading data/fixed_font.tga');
+  if Font = Nil then AbortExample ('Error loading data/fixed_font.tga');
 
   Bmp := al_load_bitmap ('data/mysha.pcx');
-  IF Bmp = NIL THEN AbortExample ('Error loading data/mysha.pcx');
+  if Bmp = Nil then AbortExample ('Error loading data/mysha.pcx');
   DispBmp := Bmp;
   aText := 'Display bitmap (space to change)';
 
   al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
   MemBmp := al_load_bitmap ('data/mysha.pcx');
-  IF MemBmp = NIL THEN AbortExample ('Error loading data/mysha.pcx');
+  if MemBmp = Nil then AbortExample ('Error loading data/mysha.pcx');
 
   Timer := al_create_timer (INTERVAL);
 
@@ -135,10 +135,10 @@ BEGIN
 
   al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
 
-  WHILE NOT Done DO
-  BEGIN
-    IF Redraw AND al_is_event_queue_empty (Queue) THEN
-    BEGIN
+  while not Done do
+  begin
+    if Redraw and al_is_event_queue_empty (Queue) then
+    begin
       Update (Bmp);
       al_clear_to_color (al_map_rgb_f (0, 0, 0));
       al_draw_tinted_bitmap (
@@ -148,31 +148,31 @@ BEGIN
       al_draw_text (Font, al_map_rgba_f (1, 1, 1, 0.5), 0, 0, 0, aText);
       al_flip_display;
       Redraw := false
-    END;
+    end;
 
     al_wait_for_event (Queue, @Event);
-    CASE Event.ftype OF
+    case Event.ftype OF
     ALLEGRO_EVENT_KEY_DOWN:
-      IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-        Done := TRUE
-      ELSE IF Event.keyboard.keycode = ALLEGRO_KEY_SPACE THEN
-      BEGIN
-        IF Bmp = MemBmp THEN
-        BEGIN
+      if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+        Done := True
+      else if Event.keyboard.keycode = ALLEGRO_KEY_SPACE then
+      begin
+        if Bmp = MemBmp then
+        begin
           Bmp := DispBmp;
           aText := 'Display bitmap (space to change)'
-        END
-        ELSE BEGIN
+        end
+        else begin
           Bmp := MemBmp;
           aText := 'Memory bitmap (space to change)'
-        END
-      END;
+        end
+      end;
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      Done := TRUE;
+      Done := True;
     ALLEGRO_EVENT_TIMER:
-      Redraw := TRUE;
-    END
-  END;
+      Redraw := True;
+    end
+  end;
 
   al_destroy_bitmap (Bmp)
-END.
+end.

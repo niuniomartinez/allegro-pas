@@ -27,32 +27,32 @@ PROGRAM ex_window_title;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5, al5base, al5image, al5font, al5strings;
 
-CONST
+const
   INTERVAL = 1.0;
   NEW_WINDOW_TITLE = 'A Custom Window Title. Press space to start changing it.';
 
-VAR
-  Step: INTEGER;
+var
+  Step: Integer;
   Display: ALLEGRO_DISPLAYptr;
   Timer: ALLEGRO_TIMERptr;
   Queue: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
   Font: ALLEGRO_FONTptr;
   Title, TextStr: AL_STR;
-  Done, Redraw: BOOLEAN;
+  Done, Redraw: Boolean;
 
-BEGIN
+begin
   Step := 0;
   Title := '';
-  Done := FALSE;
-  Redraw := TRUE;
+  Done := False;
+  Redraw := True;
 
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
-  IF NOT al_init_image_addon THEN AbortExample ('Could not init IIO addon.');
+  if not al_init then AbortExample ('Could not init Allegro.');
+  if not al_init_image_addon then AbortExample ('Could not init IIO addon.');
   al_init_font_addon;
   InitPlatformSpecific;
 
@@ -60,12 +60,12 @@ BEGIN
   al_set_new_window_title (NEW_WINDOW_TITLE);
 
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN AbortExample ('Error creating display.');
+  if Display = Nil then AbortExample ('Error creating display.');
 
-  IF NOT al_install_keyboard THEN AbortExample ('Error installing keyboard.');
+  if not al_install_keyboard then AbortExample ('Error installing keyboard.');
 
   Font := al_load_font ('data/fixed_font.tga', 0, 0);
-  IF Font = NIL THEN AbortExample ('Error loading data/fixed_font.tga.');
+  if Font = Nil then AbortExample ('Error loading data/fixed_font.tga.');
 
   TextStr := al_get_new_window_title;
 
@@ -76,32 +76,32 @@ BEGIN
   al_register_event_source (Queue, al_get_timer_event_source (Timer));
   al_register_event_source (Queue, al_get_display_event_source (Display));
 
-  REPEAT
-    IF Redraw AND al_is_event_queue_empty (Queue) THEN
-    BEGIN
+  repeat
+    if Redraw and al_is_event_queue_empty (Queue) then
+    begin
       al_clear_to_color (al_map_rgb_f (0, 0, 0));
       al_draw_text (Font, al_map_rgba_f (1, 1, 1, 0.5), 0, 0, 0, TextStr);
       al_flip_display;
-      Redraw := FALSE
-    END;
+      Redraw := False
+    end;
 
     al_wait_for_event (Queue, @Event);
-    CASE Event.ftype OF
+    case Event.ftype OF
     ALLEGRO_EVENT_KEY_DOWN:
-      IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-        Done := TRUE
-      ELSE IF Event.keyboard.keycode = ALLEGRO_KEY_SPACE THEN
+      if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+        Done := True
+      else if Event.keyboard.keycode = ALLEGRO_KEY_SPACE then
         al_start_timer (Timer);
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      Done := TRUE;
+      Done := True;
     ALLEGRO_EVENT_TIMER:
-      BEGIN
-        Redraw := TRUE;
-        INC (Step);
+      begin
+        Redraw := True;
+        Inc (Step);
         Title := al_str_format ('Title: %d', [Step]);
         TextStr := Title;
         al_set_window_title (Display, Title)
-      END;
-    END
-  UNTIL Done
-END.
+      end;
+    end
+  until Done
+end.

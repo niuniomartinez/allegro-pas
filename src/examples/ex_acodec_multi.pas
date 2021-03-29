@@ -31,35 +31,35 @@ PROGRAM ex_acodec_multi;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5, al5base, al5audio, al5acodec, al5strings;
 
-VAR
-  i: INTEGER;
-  SampleData: ARRAY OF ALLEGRO_SAMPLEptr;
-  Samples: ARRAY OF ALLEGRO_SAMPLE_INSTANCEptr;
+var
+  i: Integer;
+  SampleData: array of ALLEGRO_SAMPLEptr;
+  Samples: array of ALLEGRO_SAMPLE_INSTANCEptr;
   Mixer: ALLEGRO_MIXERptr;
   Voice: ALLEGRO_VOICEptr;
   LongestSample, SampleTime: REAL;
   FileName: AL_STR;
 
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   OpenLog;
 
-  IF ParamCount < 1 THEN
-  BEGIN
+  if ParamCount < 1 then
+  begin
     LogWriteLn ('This example needs to be run from the command line.');
     LogWrite ('Usage: ex_acodec_multi {audio_files}.');
-    CloseLog (TRUE);
+    CloseLog (True);
     HALT
-  END;
+  end;
 
   al_init_acodec_addon;
 
-  IF NOT al_install_audio THEN AbortExample ('Could not init sound!');
+  if not al_install_audio then AbortExample ('Could not init sound!');
 
   SetLength (Samples, ParamCount);
   SetLength (SampleData, ParamCount);
@@ -67,42 +67,42 @@ BEGIN
 { a voice is used for playback }
   Voice := al_create_voice
     (44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
-  IF Voice = NIL THEN
+  if Voice = Nil then
     AbortExample ('Could not create ALLEGRO_VOICE from sample.');
 
   Mixer := al_create_mixer
     (44100, ALLEGRO_AUDIO_DEPTH_FLOAT32, ALLEGRO_CHANNEL_CONF_2);
-  IF Mixer = NIL THEN AbortExample ('al_create_mixer failed.');
+  if Mixer = Nil then AbortExample ('al_create_mixer failed.');
 
-  IF NOT al_attach_mixer_to_voice (Mixer, Voice) THEN
+  if not al_attach_mixer_to_voice (Mixer, Voice) then
     AbortExample ('al_attach_mixer_to_voice failed.');
 
-  FOR I := 1 TO ParamCount DO
-  BEGIN
+  for I := 1 to ParamCount do
+  begin
     FileName := al_string_to_str (ParamStr (i));
-    Samples[i - 1] := NIL;
+    Samples[i - 1] := Nil;
 
   { loads the entire sound file from disk into sample data }
     SampleData[i - 1] := al_load_sample (FileName);
-    IF SampleData[i - 1] = NIL THEN
+    if SampleData[i - 1] = Nil then
       AbortExample ('Could not load sample from ''' + FileName + '''!');
 
     Samples[i - 1] := al_create_sample_instance (SampleData[i - 1]);
-    IF Samples[i - 1] = NIL THEN
-    BEGIN
+    if Samples[i - 1] = Nil then
+    begin
       LogWriteLn ('Could not create sample!');
       al_destroy_sample (SampleData[i - 1]);
-      SampleData[i - 1] := NIL
-    END
-    ELSE IF NOT al_attach_sample_instance_to_mixer (Samples[i - 1], Mixer) THEN
+      SampleData[i - 1] := Nil
+    end
+    else if not al_attach_sample_instance_to_mixer (Samples[i - 1], Mixer) then
       LogWriteLn ('al_attach_sample_instance_to_mixer failed.')
-  END;
+  end;
 
   LongestSample := 0;
 
-  FOR I := 1 TO ParamCount DO
-    IF Samples[i - 1] <> NIL THEN
-    BEGIN
+  for I := 1 to ParamCount do
+    if Samples[i - 1] <> Nil then
+    begin
       FileName := al_string_to_str (ParamStr (i));
     { play each sample once }
       al_play_sample_instance (Samples[i - 1]);
@@ -110,25 +110,25 @@ BEGIN
       SampleTime := al_get_sample_instance_time (Samples[i - 1]);
       LogPrintLn ('Playing ''%s'' (%.3f seconds)', [FileName, SampleTime]);
 
-      IF SampleTime > LongestSample THEN LongestSample := SampleTime
-    END;
+      if SampleTime > LongestSample then LongestSample := SampleTime
+    end;
 
   al_rest (LongestSample);
 
   LogWrite ('Done.');
 
-  FOR i := LOW (Samples) TO HIGH (Samples) DO
+  for i := Low (Samples) to High (Samples) do
   { free the memory allocated when creating the sample + voice }
-    IF Samples[i] <> NIL THEN
-    BEGIN
+    if Samples[i] <> Nil then
+    begin
       al_stop_sample_instance (Samples[i]);
       al_destroy_sample_instance (Samples[i]);
       al_destroy_sample (SampleData[i])
-    END;
+    end;
   al_destroy_mixer (Mixer);
   al_destroy_voice (Voice);
 
   al_uninstall_audio;
 
-  CloseLog (TRUE)
-END.
+  CloseLog (True)
+end.

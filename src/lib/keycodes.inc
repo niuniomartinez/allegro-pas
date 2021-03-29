@@ -20,7 +20,7 @@
 
 
 
-CONST
+const
 (* Note these values are deliberately the same as in Allegro 4.1.x *)
   ALLEGRO_KEY_A		= 1; (***<@exclude *)
   ALLEGRO_KEY_B		= 2; (***<@exclude *)

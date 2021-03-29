@@ -26,66 +26,66 @@ PROGRAM ex_disable_screensaver;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
     Common,
     allegro5, al5font;
 
-VAR
+var
   Display: ALLEGRO_DISPLAYptr;
   Font: ALLEGRO_FONTptr;
   Events: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
-  Done, Active, FullScreen: BOOLEAN;
+  Done, Active, FullScreen: Boolean;
 
-BEGIN
-  Done := FALSE;
-  Active := TRUE;
-  FullScreen := FALSE;
+begin
+  Done := False;
+  Active := True;
+  FullScreen := False;
 
-  IF ParamCount = 2 THEN
-    IF ParamStr (1) = '-fullscreen' THEN
-      FullScreen := TRUE;
+  if ParamCount = 2 then
+    if ParamStr (1) = '-fullscreen' then
+      FullScreen := True;
 
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_install_keyboard;
   al_init_font_addon;
 
-  IF FullScreen THEN
+  if FullScreen then
     al_set_new_display_flags
-      (ALLEGRO_GENERATE_EXPOSE_EVENTS OR ALLEGRO_FULLSCREEN)
-  ELSE
+      (ALLEGRO_GENERATE_EXPOSE_EVENTS or ALLEGRO_FULLSCREEN)
+  else
     al_set_new_display_flags
       (ALLEGRO_GENERATE_EXPOSE_EVENTS);
 
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN AbortExample ('Could not create display.');
+  if Display = Nil then AbortExample ('Could not create display.');
 
   Font := al_create_builtin_font;
-  IF Font = NIL THEN AbortExample ('Error creating builtin font.');
+  if Font = Nil then AbortExample ('Error creating builtin font.');
 
   Events := al_create_event_queue;
   al_register_event_source (Events, al_get_keyboard_event_source);
 { For expose events }
   al_register_event_source (Events, al_get_display_event_source (Display));
 
-  REPEAT
+  repeat
     al_clear_to_color (al_map_rgb (0, 0, 0));
-    IF Active THEN
+    if Active then
       al_draw_text (Font, al_map_rgb_f (1, 1, 1), 0, 0, 0, 'Screen saver: Normal')
-    ELSE
+    else
       al_draw_text (Font, al_map_rgb_f (1, 1, 1), 0, 0, 0, 'Screen saver: Inhibited');
     al_flip_display;
     al_wait_for_event (Events, @Event);
-    IF Event.ftype = ALLEGRO_EVENT_KEY_DOWN THEN
-      CASE Event.keyboard.keycode OF
+    if Event.ftype = ALLEGRO_EVENT_KEY_DOWN then
+      case Event.keyboard.keycode of
       ALLEGRO_KEY_ESCAPE:
-	Done := TRUE;
+	Done := True;
       ALLEGRO_KEY_SPACE:
-	IF al_inhibit_screensaver (Active) THEN Active := NOT Active;
-      END
-  UNTIL Done;
+	if al_inhibit_screensaver (Active) then Active := not Active;
+      end
+  until Done;
 
   al_destroy_font (Font);
   al_destroy_event_queue (Events)
-END.
+end.

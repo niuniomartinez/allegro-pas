@@ -31,33 +31,33 @@ PROGRAM ex_resize2;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5, al5base, al5Image, al5font;
 
-VAR
+var
   Display: ALLEGRO_DISPLAYptr;
   Bmp: ALLEGRO_BITMAPptr;
   Queue: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
   Font: ALLEGRO_FONTptr;
-  Redraw: BOOLEAN;
+  Redraw: Boolean;
   MaxStr: AL_STR;
 
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
   al_install_keyboard;
   al_init_image_addon;
   al_init_font_addon;
 
   al_set_new_display_flags
-    (ALLEGRO_RESIZABLE OR ALLEGRO_GENERATE_EXPOSE_EVENTS);
+    (ALLEGRO_RESIZABLE or ALLEGRO_GENERATE_EXPOSE_EVENTS);
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN AbortExample ('Unable to set any graphic mode.');
+  if Display = Nil then AbortExample ('Unable to set any graphic mode.');
 
   al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
   Bmp := al_load_bitmap ('data/mysha.pcx');
-  IF Bmp = NIL THEN AbortExample ('Unable to load image.');
+  if Bmp = Nil then AbortExample ('Unable to load image.');
 
   Font := al_create_builtin_font;
 
@@ -65,11 +65,11 @@ BEGIN
   al_register_event_source (Queue, al_get_display_event_source (Display));
   al_register_event_source (Queue, al_get_keyboard_event_source);
 
-  Redraw := TRUE;
-  WHILE TRUE DO
-  BEGIN
-    IF Redraw AND al_is_event_queue_empty (Queue) THEN
-    BEGIN
+  Redraw := True;
+  while True do
+  begin
+    if Redraw and al_is_event_queue_empty (Queue) then
+    begin
       al_clear_to_color (al_map_rgb (255, 0, 0));
       al_draw_scaled_bitmap (
         Bmp,
@@ -77,9 +77,9 @@ BEGIN
         0, 0, al_get_display_width (Display), al_get_display_height (Display),
         0
       );
-      IF (al_get_display_flags (Display) AND ALLEGRO_MAXIMIZED) <> 0 THEN
+      if (al_get_display_flags (Display) and ALLEGRO_MAXIMIZED) <> 0 then
         MaxStr := 'yes'
-      ELSE
+      else
         MaxStr := 'no';
       al_draw_multiline_textf (
         Font, al_map_rgb (255, 255, 0),
@@ -96,36 +96,36 @@ BEGIN
         ]
       );
       al_flip_display;
-      Redraw := FALSE
-    END;
+      Redraw := False
+    end;
 
     al_wait_for_event (Queue, @Event);
-    CASE Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_DISPLAY_RESIZE:
-      BEGIN
+      begin
         al_acknowledge_resize (Event.display.source);
-        Redraw := TRUE
-      END;
+        Redraw := True
+      end;
     ALLEGRO_EVENT_DISPLAY_EXPOSE:
-      Redraw := TRUE;
+      Redraw := True;
     ALLEGRO_EVENT_KEY_DOWN:
-      IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-      BEGIN
+      if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+      begin
         al_destroy_bitmap (Bmp);
         al_destroy_display (Display);
-        EXIT
-      END;
+        Exit
+      end;
     ALLEGRO_EVENT_KEY_CHAR:
-      IF Event.keyboard.unichar = ORD ('+') THEN
-        al_set_display_flag (Display, ALLEGRO_MAXIMIZED, TRUE)
-      ELSE IF Event.keyboard.unichar = ORD ('-') THEN
-        al_set_display_flag (Display, ALLEGRO_MAXIMIZED, FALSE);
+      if Event.keyboard.unichar = Ord ('+') then
+        al_set_display_flag (Display, ALLEGRO_MAXIMIZED, True)
+      else if Event.keyboard.unichar = Ord ('-') then
+        al_set_display_flag (Display, ALLEGRO_MAXIMIZED, False);
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      BEGIN
+      begin
         al_destroy_bitmap (Bmp);
         al_destroy_display (Display);
-        EXIT
-      END;
-    END
-  END
-END.
+        Exit
+      end;
+    end
+  end
+end.

@@ -1,4 +1,4 @@
-UNIT Input;
+unit Input;
 (*< Defines classes to manage user input. *)
 (*
   Copyright (c) 2019 Guillermo Martínez J.
@@ -23,12 +23,12 @@ UNIT Input;
     distribution.
  *)
 
-INTERFACE
+interface
 
-  USES
+  uses
     Allegro5;
 
-  CONST
+  const
   (* Stick in the center. *)
     DIR_NONE = 0;
   (* Stick up. *)
@@ -46,129 +46,129 @@ INTERFACE
   (* Shield button. *)
     BTN_SHIELD = 2;
 
-  TYPE
+  type
   (* Base class for user input. *)
-    TUserInput = CLASS (TObject)
-    PROTECTED
-      fDirection, fButton: INTEGER;
-    PUBLIC
+    TUserInput = class (TObject)
+    protected
+      fDirection, fButton: Integer;
+    public
     (* Initializes the input.  Also used to reset (if necessary). *)
-      PROCEDURE Initialize; VIRTUAL; ABSTRACT;
+      procedure Initialize; virtual; abstract;
     (* Process the given event.  Returns @true if it consumed the event, @false
        otherwise. *)
-      FUNCTION ProcessEvent (CONST aEvent: ALLEGRO_EVENT): BOOLEAN;
-        VIRTUAL; ABSTRACT;
+      function ProcessEvent (const aEvent: ALLEGRO_EVENT): Boolean;
+        virtual; abstract;
 
     (* A value that represents the direction selected by the user.
        This direction is an @code(OR) combination of the @code(DIR_* )
        constants. *)
-      PROPERTY Direction: INTEGER READ fDirection;
+      property Direction: Integer read fDirection;
     (* The button pressed. *)
-      PROPERTY Button: INTEGER READ fButton;
-    END;
+      property Button: Integer read fButton;
+    end;
 
 
 
 
   (* Keyboard input. *)
-    TKeyboardInput = CLASS (TUserInput)
-    PRIVATE
+    TKeyboardInput = class (TUserInput)
+    private
 
-    PUBLIC
+    public
     (* Initializes the input.  Also used to reset (if necessary). *)
-      PROCEDURE Initialize; OVERRIDE;
+      procedure Initialize; override;
     (* Process the given event.  Returns @true if it consumed the event, @false
        otherwise. *)
-      FUNCTION ProcessEvent (CONST aEvent: ALLEGRO_EVENT): BOOLEAN; OVERRIDE;
-    END;
+      function ProcessEvent (const aEvent: ALLEGRO_EVENT): Boolean; override;
+    end;
 
-IMPLEMENTATION
+implementation
 
 (*
  * TKeyboardInput
  ***************************************************************************)
 
 (* Initializes. *)
-  PROCEDURE TKeyboardInput.Initialize;
-  BEGIN
+  procedure TKeyboardInput.Initialize;
+  begin
     fDirection := DIR_NONE; fButton := BTN_NONE
-  END;
+  end;
 
 
 
 (* Process the given event. *)
-  FUNCTION TKeyboardInput.ProcessEvent (CONST aEvent: ALLEGRO_EVENT): BOOLEAN;
-  BEGIN
-    CASE aEvent.ftype OF
+  function TKeyboardInput.ProcessEvent (const aEvent: ALLEGRO_EVENT): Boolean;
+  begin
+    case aEvent.ftype of
     ALLEGRO_EVENT_KEY_DOWN:
-      CASE aEvent.keyboard.keycode OF
+      case aEvent.keyboard.keycode of
       ALLEGRO_KEY_LEFT:
-	BEGIN
-	  fDirection := fDirection OR DIR_LEFT;
-	  EXIT (TRUE)
-	END;
+	begin
+	  fDirection := fDirection or DIR_LEFT;
+	  Exit (True)
+	end;
       ALLEGRO_KEY_RIGHT:
-	BEGIN
-	  fDirection := fDirection OR DIR_RIGHT;
-	  EXIT (TRUE)
-	END;
+	begin
+	  fDirection := fDirection or DIR_RIGHT;
+	  Exit (True)
+	end;
       ALLEGRO_KEY_UP:
-	BEGIN
-	  fDirection := fDirection OR DIR_UP;
-	  EXIT (TRUE)
-	END;
+	begin
+	  fDirection := fDirection or DIR_UP;
+	  Exit (True)
+	end;
       ALLEGRO_KEY_DOWN:
-	BEGIN
-	  fDirection := fDirection OR DIR_DOWN;
-	  EXIT (TRUE)
-	END;
+	begin
+	  fDirection := fDirection or DIR_DOWN;
+	  Exit (True)
+	end;
       ALLEGRO_KEY_ALT:
-	BEGIN
-	  fButton := fButton OR BTN_SHOOT;
-	  EXIT (TRUE)
-	END;
+	begin
+	  fButton := fButton or BTN_SHOOT;
+	  Exit (True)
+	end;
       ALLEGRO_KEY_SPACE:
-	BEGIN
-	  fButton := fButton OR BTN_SHIELD;
-	  EXIT (TRUE)
-	END;
-      END;
+	begin
+	  fButton := fButton or BTN_SHIELD;
+	  Exit (True)
+	end;
+      end;
     ALLEGRO_EVENT_KEY_UP:
-      CASE aEvent.keyboard.keycode OF
+      case aEvent.keyboard.keycode of
       ALLEGRO_KEY_LEFT:
-	BEGIN
-	  fDirection := fDirection AND (NOT DIR_LEFT);
-	  EXIT (TRUE)
-	END;
+	begin
+	  fDirection := fDirection and (not DIR_LEFT);
+	  Exit (True)
+	end;
       ALLEGRO_KEY_RIGHT:
-	BEGIN
-	  fDirection := fDirection AND (NOT DIR_RIGHT);
-	  EXIT (TRUE)
-	END;
+	begin
+	  fDirection := fDirection and (not DIR_RIGHT);
+	  Exit (True)
+	end;
       ALLEGRO_KEY_UP:
-	BEGIN
-	  fDirection := fDirection AND (NOT DIR_UP);
-	  EXIT (TRUE)
-	END;
+	begin
+	  fDirection := fDirection and (not DIR_UP);
+	  Exit (True)
+	end;
       ALLEGRO_KEY_DOWN:
-	BEGIN
-	  fDirection := fDirection AND (NOT DIR_DOWN);
-	  EXIT (TRUE)
-	END;
+	begin
+	  fDirection := fDirection and (not DIR_DOWN);
+	  Exit (True)
+	end;
       ALLEGRO_KEY_ALT:
-	BEGIN
-	  fButton := fButton AND (NOT BTN_SHOOT);
-	  EXIT (TRUE)
-	END;
+	begin
+	  fButton := fButton and (not BTN_SHOOT);
+	  Exit (True)
+	end;
       ALLEGRO_KEY_SPACE:
-	BEGIN
-	  fButton := fButton AND (NOT BTN_SHIELD);
-	  EXIT (TRUE)
-	END;
-      END;
-    END;
-    RESULT := FALSE
-  END;
+	begin
+	  fButton := fButton and (not BTN_SHIELD);
+	  Exit (True)
+	end;
+      end;
+    end;
+    Result := False
+  end;
 
-END.
+end.
 

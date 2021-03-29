@@ -30,24 +30,24 @@ PROGRAM ex_video;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
    Common,
    allegro5, al5base, al5audio, al5font, al5primitives, al5video, al5strings,
    sysutils;
 
-VAR
+var
   Screen: ALLEGRO_DISPLAYptr;
   Font: ALLEGRO_FONTptr;
   FileName: AL_STR;
-  Zoom: REAL;
+  Zoom: Real;
 
-  PROCEDURE VideoDisplay (Video: ALLEGRO_VIDEOptr);
-  VAR
-    ScaledW, ScaledH, Position: REAL;
+  procedure VideoDisplay (Video: ALLEGRO_VIDEOptr);
+  var
+    ScaledW, ScaledH, Position: Real;
     Frame: ALLEGRO_BITMAPptr;
-    w, h, x, y: INTEGER;
+    w, h, x, y: Integer;
     tc, bc: ALLEGRO_COLOR;
-  BEGIN
+  begin
   { Videos often do not use square pixels - these return the scaled dimensions
     of the video frame. }
     ScaledW := al_get_video_scaled_width (Video);
@@ -57,25 +57,25 @@ VAR
     tc := al_map_rgba_f (0, 0, 0, 0.5);
     bc := al_map_rgba_f (0.5, 0.5, 0.5, 0.5);
 
-    IF Frame = NIL THEN EXIT;
+    if Frame = Nil then Exit;
 
-    IF Zoom = 0 THEN
-    BEGIN
+    if Zoom = 0 then
+    begin
     { Always make the video fit into the window. }
       h := al_get_display_height (Screen);
-      w := TRUNC (h * ScaledW / ScaledH);
-      IF w > al_get_display_width (Screen) THEN
-      BEGIN
+      w := Trunc (h * ScaledW / ScaledH);
+      if w > al_get_display_width (Screen) then
+      begin
         w := al_get_display_width (Screen);
-        h := TRUNC (w * ScaledH / ScaledW)
-      END
-    END
-    ELSE BEGIN
-      w := TRUNC (ScaledW);
-      h := TRUNC (ScaledH)
-    END;
-    x := (al_get_display_width (Screen) - w) DIV 2;
-    y := (al_get_display_height (Screen) - h) DIV 2;
+        h := Trunc (w * ScaledH / ScaledW)
+      end
+    end
+    else begin
+      w := Trunc (ScaledW);
+      h := Trunc (ScaledH)
+    end;
+    x := (al_get_display_width (Screen) - w) div 2;
+    y := (al_get_display_height (Screen) - h) div 2;
 
   { Display the frame. }
     al_draw_scaled_bitmap (
@@ -97,8 +97,8 @@ VAR
       Font, tc, 8, 8 + 13, 0,
       '%3d:%02d (V: %+5.2f A: %+5.2f)',
       [
-        TRUNC (Position / 60),
-        TRUNC (Position) MOD 60,
+        Trunc (Position / 60),
+        Trunc (Position) mod 60,
         al_get_video_position (Video, ALLEGRO_VIDEO_POSITION_VIDEO_DECODE) - Position,
         al_get_video_position (Video, ALLEGRO_VIDEO_POSITION_AUDIO_DECODE) - Position
       ]
@@ -114,60 +114,60 @@ VAR
         al_get_video_audio_rate (Video)
       ]
     );
-    IF al_is_video_playing (Video) THEN
+    if al_is_video_playing (Video) then
       al_draw_text (Font, tc, 8, 8 + 13 * 3, 0, 'playing: true')
-    ELSE
+    else
       al_draw_text (Font, tc, 8, 8 + 13 * 3, 0, 'playing: false');
     al_flip_display;
     al_clear_to_color (al_map_rgb (0, 0, 0))
-  END;
+  end;
 
 
 
-  PROCEDURE Done;
-  BEGIN
+  procedure Done;
+  begin
     al_destroy_display (Screen);
-    CloseLog (TRUE)
-  END;
+    CloseLog (True)
+  end;
 
-VAR
+var
   Queue: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
   Timer: ALLEGRO_TIMERptr;
   Video: ALLEGRO_VIDEOptr;
-  FullScreen, Redraw, UseFrameEvents: BOOLEAN;
-  FilenameArgIdx: INTEGER;
+  FullScreen, Redraw, UseFrameEvents: Boolean;
+  FilenameArgIdx: Integer;
 
-BEGIN
-  FullScreen := FALSE;
-  Redraw := TRUE;
-  UseFrameEvents := FALSE;
+begin
+  FullScreen := False;
+  Redraw := True;
+  UseFrameEvents := False;
   FilenameArgIdx := 1;
 
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   OpenLog;
 
-  IF Paramcount < 2 THEN
-  BEGIN
+  if Paramcount < 2 then
+  begin
     LogWriteLn ('This example needs to be run from the command line.');
     LogPrintLn ('Usage: %s [--use-frame-events] <file>', [ExtractFileName (ParamStr (0))]);
     Done;
     Halt (1)
-  END;
+  end;
 
-{ If UseFrameEvents is FALSE, we use a fixed FPS timer. If the video is
+{ If UseFrameEvents is False, we use a fixed FPS timer. If the video is
   displayed in a game this probably makes most sense. In a dedicated video
   player you probably want to listen to ALLEGRO_EVENT_VIDEO_FRAME_SHOW events
   and only redraw whenever one arrives - to reduce possible jitter and save CPU.
 }
-  IF (Paramcount = 3) AND (ParamStr (1) = '--use-frame-events') THEN
-  BEGIN
-    UseFrameEvents := TRUE;
-    INC (FilenameArgIdx)
-  END;
+  if (Paramcount = 3) and (ParamStr (1) = '--use-frame-events') then
+  begin
+    UseFrameEvents := True;
+    Inc (FilenameArgIdx)
+  end;
 
-  IF NOT al_init_video_addon THEN
+  if not al_init_video_addon then
     AbortExample ('Could not initialize the video addon.');
   al_init_font_addon;
   al_install_keyboard;
@@ -181,17 +181,17 @@ BEGIN
   al_set_new_display_flags (ALLEGRO_RESIZABLE);
   al_set_new_display_option (ALLEGRO_VSYNC, 1, ALLEGRO_SUGGEST);
   Screen := al_create_display (640, 480);
-  IF Screen = NIL THEN
+  if Screen = Nil then
     AbortExample ('Could not set video mode - exiting');
 
   Font := al_create_builtin_font;
-  IF Font = NIL THEN AbortExample ('No font.');
+  if Font = Nil then AbortExample ('No font.');
 
-  al_set_new_bitmap_flags (ALLEGRO_MIN_LINEAR OR ALLEGRO_MAG_LINEAR);
+  al_set_new_bitmap_flags (ALLEGRO_MIN_LINEAR or ALLEGRO_MAG_LINEAR);
 
   FileName := al_string_to_str (ParamStr (FilenameArgIdx));
   Video := al_open_video (FileName);
-  IF Video = NIL THEN
+  if Video = Nil then
     AbortExample (al_str_format ('Cannot read %s.', [FileName]));
   LogPrintLn ('video FPS: %f', [al_get_video_fps (Video)]);
   LogPrintLn ('video audio rate: %f', [al_get_video_audio_rate (Video)]);
@@ -211,25 +211,25 @@ BEGIN
 
   al_start_video (Video, al_get_default_mixer);
   al_start_timer (Timer);
-  WHILE TRUE DO
-  BEGIN
-    IF Redraw AND al_is_event_queue_empty (Queue) THEN
-    BEGIN
+  while True do
+  begin
+    if Redraw and al_is_event_queue_empty (Queue) then
+    begin
       VideoDisplay (Video);
-      Redraw := FALSE
-    END;
+      Redraw := False
+    end;
 
     al_wait_for_event (Queue, @Event);
-    CASE Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_KEY_DOWN:
-      CASE event.keyboard.keycode OF
+      case event.keyboard.keycode of
       ALLEGRO_KEY_SPACE:
-          al_set_video_playing (Video, NOT al_is_video_playing (Video));
+          al_set_video_playing (Video, not al_is_video_playing (Video));
       ALLEGRO_KEY_ESCAPE:
-        BEGIN
+        begin
           al_close_video (Video);
           Done
-        END;
+        end;
       ALLEGRO_KEY_LEFT:
         al_seek_video (Video, al_get_video_position (Video, ALLEGRO_VIDEO_POSITION_ACTUAL) - 10);
       ALLEGRO_KEY_RIGHT:
@@ -239,39 +239,39 @@ BEGIN
       ALLEGRO_KEY_DOWN:
         al_seek_video (Video, al_get_video_position (Video, ALLEGRO_VIDEO_POSITION_ACTUAL) - 60);
       ALLEGRO_KEY_F:
-        BEGIN
-          FullScreen := NOT FullScreen;
+        begin
+          FullScreen := not FullScreen;
           al_set_display_flag (Screen, ALLEGRO_FULLSCREEN_WINDOW, FullScreen);
-        END;
+        end;
       ALLEGRO_KEY_1:
         Zoom := 1;
       ALLEGRO_KEY_S:
         Zoom := 0;
-      END;
+      end;
     ALLEGRO_EVENT_DISPLAY_RESIZE:
-      BEGIN
+      begin
         al_acknowledge_resize (Screen);
         al_clear_to_color (al_map_rgb (0, 0, 0));
-      END;
+      end;
     ALLEGRO_EVENT_TIMER:
        {
             display_time += 1.0 / 60;
             if (display_time >= video_time)
                video_time = display_time + video_refresh_timer(is);
        }
-      IF NOT UseFrameEvents THEN Redraw := TRUE;
+      if not UseFrameEvents then Redraw := True;
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      BEGIN
+      begin
         al_close_video (Video);
         Done
-      END;
+      end;
     ALLEGRO_EVENT_VIDEO_FRAME_SHOW:
-      IF UseFrameEvents THEN Redraw := TRUE;
+      if UseFrameEvents then Redraw := True;
     ALLEGRO_EVENT_VIDEO_FINISHED:
       LogWriteLn ('video finished.');
-    END
-  END;
+    end
+  end;
 { Done }
   al_destroy_display (Screen);
-  CloseLog (TRUE)
-END.
+  CloseLog (True)
+end.

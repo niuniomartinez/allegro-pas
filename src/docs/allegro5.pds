@@ -4882,6 +4882,32 @@ Retrieves the fallback font for this font or @nil.
 
 
 
+#al5image.al_init_image_addon
+Initializes the image addon. This registers bitmap format handlers for
+@link(al_load_bitmap), @link(al_load_bitmap_f), @link(al_save_bitmap),
+@link(al_save_bitmap_f).
+
+The following types are built into the Allegro image addon and guaranteed to be
+available: BMP, DDS, PCX, TGA. Every platform also supports JPEG and PNG via
+external dependencies.
+
+Other formats may be available depending on the operating system and installed
+libraries, but are not guaranteed and should not be assumed to be universally
+available.
+
+The DDS format is only supported to load from, and only if the DDS file
+contains textures compressed in the DXT1, DXT3 and DXT5 formats. Note that when
+loading a DDS file, the created bitmap will always be a video bitmap and will
+have the pixel format matching the format in the file.
+#al5image.al_shutdown_image_addon
+Shuts down the image addon.  This is done automatically at program exit, but
+can be called any time the user wishes as well.
+#al5image.al_get_allegro_image_version
+Returns the (compiled) version of the addon, in the same format as
+@link(al_get_allegro_version).
+
+
+
 #al5memfile.al_open_memfile
 Returns a file handle to the block of memory. All read and write operations act upon the memory directly, so it must not be freed while the file remains open.
 

@@ -27,90 +27,90 @@ PROGRAM ex_projection;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     Allegro5, al5base, al5font, al5image, al5ttf;
 
-  VAR
+  var
   (* How far has the text been scrolled. *)
-    ScrollY: SINGLE;
+    ScrollY: Single;
   (* Total length of the scrolling text in pixels. *)
-    TextLength: INTEGER;
+    TextLength: Integer;
   (* The Alex logo. *)
     Logo: ALLEGRO_BITMAPptr;
   (* The star particle. *)
     Particle: ALLEGRO_BITMAPptr;
   (* The star list. *)
-    Stars: ARRAY [1..100] OF RECORD x, y, z: LONGINT END;
+    Stars: array [1..100] of record x, y, z: LongInt end;
   (* The font we use for everything. *)
     Font: ALLEGRO_FONTptr;
 
 
 
   (* Set stars positions. *)
-    PROCEDURE InitStars;
-    VAR
-      Cnt: INTEGER;
-    BEGIN
-      FOR Cnt := LOW (Stars) TO HIGH (Stars) DO
-      BEGIN
+    procedure InitStars;
+    var
+      Cnt: Integer;
+    begin
+      for Cnt := Low (Stars) to High (Stars) do
+      begin
         Stars[Cnt].x := Random ($FFFF);
         Stars[Cnt].y := Random ($FFFF);
         Stars[Cnt].z := Random ($FFFF)
-      END
-    END;
+      end
+    end;
 
 
 
   (* Load a bitmap and exit with a message if it's missing. *)
-    FUNCTION LoadBmp (CONST Path: AL_STR): ALLEGRO_BITMAPptr;
-    VAR
+    function LoadBmp (const Path: AL_STR): ALLEGRO_BITMAPptr;
+    var
       lBmp: ALLEGRO_BITMAPptr;
-    BEGIN
+    begin
       lBmp := al_load_bitmap (Path);
-      IF lBmp = NIL THEN AbortExample ('Could not load '+Path);
-      EXIT (lBmp)
-    END;
+      if lBmp = Nil then AbortExample ('Could not load '+Path);
+      Exit (lBmp)
+    end;
 
 
 
   (* Load a font and exit with a message if it's missing. *)
-    FUNCTION LoadFont (CONST Path: AL_STR; Size, Flags: INTEGER): ALLEGRO_FONTptr;
-    VAR
+    function LoadFont (const Path: AL_STR; Size, Flags: Integer): ALLEGRO_FONTptr;
+    var
       lFont: ALLEGRO_FONTptr;
-    BEGIN
+    begin
       lFont := al_load_font (Path, Size, Flags);
-      IF lFont = NIL THEN AbortExample ('Could not load '+Path);
-      EXIT (lFont)
-    END;
+      if lFont = Nil then AbortExample ('Could not load '+Path);
+      Exit (lFont)
+    end;
 
 
 
   (* Print fading text. *)
-    FUNCTION Print
-      (Font: ALLEGRO_FONTptr; x, y, r, g, b, Fade: SINGLE; CONST Text: AL_STR): INTEGER;
-    VAR
-      c: SINGLE;
-    BEGIN
+    function Print
+      (Font: ALLEGRO_FONTptr; x, y, r, g, b, Fade: Single; const Text: AL_STR): Integer;
+    var
+      c: Single;
+    begin
       c := 1 + (y - Fade) / 360 / 2.0;
-      IF c > 1 THEN c := 1 ELSE IF c < 0 THEN c := 0;
+      if c > 1 then c := 1 else if c < 0 then c := 0;
       al_draw_text (
         Font, al_map_rgba_f (c * r, c * g, c * b, c),
         x, y, ALLEGRO_ALIGN_CENTER, Text
       );
-      EXIT (TRUNC (y + al_get_font_line_height (Font)))
-    END;
+      Exit (Trunc (y + al_get_font_line_height (Font)))
+    end;
 
 
 
 (* Set up a perspective transform. We make the screen span
    180 vertical units with square pixel aspect and 90° vertical
    FoV. *)
-  PROCEDURE Setup3DProjection (VAR Projection: ALLEGRO_TRANSFORM);
-  VAR
+  procedure Setup3DProjection (var Projection: ALLEGRO_TRANSFORM);
+  var
     Display: ALLEGRO_DISPLAYptr;
-    dw, dh: INTEGER;
-  BEGIN
+    dw, dh: Integer;
+  begin
     Display := al_get_current_display;
     dw := al_get_display_width (Display);
     dh := al_get_display_height (Display);
@@ -119,42 +119,42 @@ PROGRAM ex_projection;
       180 * dw / dh, 180, 3000
     );
     al_use_projection_transform (Projection)
-  END;
+  end;
 
 
 (* 3D transformations make it very easy to draw a starfield. *)
-  PROCEDURE DrawStars;
-  VAR
+  procedure DrawStars;
+  var
     Projection: ALLEGRO_TRANSFORM;
-    Cnt: INTEGER;
-  BEGIN
+    Cnt: Integer;
+  begin
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE);
-    FOR Cnt := 1 TO 100 DO
-    BEGIN
+    for Cnt := 1 to 100 do
+    begin
       al_identity_transform (Projection);
       al_translate_transform_3d (
         Projection, 0, 0,
-        -2000 + TRUNC (ScrollY * 1000 / TextLength + Stars[Cnt].z) MOD 2000 - 180);
+        -2000 + Trunc (ScrollY * 1000 / TextLength + Stars[Cnt].z) mod 2000 - 180);
       Setup3DProjection (Projection);
-      al_draw_bitmap (Particle, Stars[Cnt].x MOD 4000 - 2000, Stars[Cnt].y MOD 2000 - 1000, 0)
-    END
-  END;
+      al_draw_bitmap (Particle, Stars[Cnt].x mod 4000 - 2000, Stars[Cnt].y mod 2000 - 1000, 0)
+    end
+  end;
 
 
 
 (* The main part of this example. *)
-  PROCEDURE DrawScrollingText;
-  VAR
+  procedure DrawScrollingText;
+  var
     Projection: ALLEGRO_TRANSFORM;
-    bw, bh: INTEGER;
-    x, y, c: SINGLE;
+    bw, bh: Integer;
+    x, y, c: Single;
 
-    PROCEDURE T (str: AL_STR);
-    BEGIN
+    procedure T (str: AL_STR);
+    begin
       y := Print (Font, x, y, 1, 0.9, 0.3, ScrollY, str)
-    END;
+    end;
 
-  BEGIN
+  begin
     bw := al_get_bitmap_width  (Logo);
     bh := al_get_bitmap_height (Logo);
 
@@ -180,7 +180,7 @@ PROGRAM ex_projection;
     x := 0;
     y := 0;
     c := 1 + (y - ScrollY) / 360 / 2.0;
-    IF c < 0 THEN c := 0;
+    if c < 0 then c := 0;
     al_draw_tinted_bitmap (Logo, al_map_rgba_f (c, c, c, c), x - bw / 2, y, 0);
     y := y + bh;
 
@@ -204,21 +204,21 @@ PROGRAM ex_projection;
     T ('aboard their library to save');
     T ('all game programmers and restore');
     T ('freedom to the open source world...')
-  END;
+  end;
 
 
 
-  PROCEDURE DrawIntroText;
-  VAR
+  procedure DrawIntroText;
+  var
     Projection: ALLEGRO_TRANSFORM;
-    Fade, fh: INTEGER;
-  BEGIN
+    Fade, fh: Integer;
+  begin
     fh := al_get_font_line_height (Font);
 
-    IF ScrollY < 50 THEN
-      Fade := TRUNC ((50 - ScrollY) * 12)
-    ELSE
-      Fade := TRUNC ((ScrollY - 50) * 4);
+    if ScrollY < 50 then
+      Fade := Trunc ((50 - ScrollY) * 12)
+    else
+      Fade := Trunc ((ScrollY - 50) * 4);
 
     al_identity_transform (Projection);
     al_translate_transform_3d (Projection, 0, -ScrollY / 3, -181);
@@ -226,20 +226,20 @@ PROGRAM ex_projection;
 
     Print (Font, 0, 0, 0, 0.9, 1, Fade, 'A long time ago, in a galaxy');
     Print (Font, 0, 0 + fh, 0, 0.9, 1, Fade, 'not too far away...')
-  END;
+  end;
 
 
 
-VAR
+var
   Display: ALLEGRO_DISPLAYptr;
   Black: ALLEGRO_COLOR;
   Timer: ALLEGRO_TIMERptr;
   Queue: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
-  Redraw, EndExample: BOOLEAN;
-BEGIN
+  Redraw, EndExample: Boolean;
+begin
 
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  if not al_init then AbortExample ('Could not init Allegro.');
   al_init_image_addon;
   al_init_font_addon;
   al_init_ttf_addon;
@@ -248,10 +248,10 @@ BEGIN
 
   al_set_new_display_flags (ALLEGRO_RESIZABLE);
   Display := al_create_display (640, 360);
-  IF Display = NIL THEN AbortExample ('Error creating display.');
+  if Display = Nil then AbortExample ('Error creating display.');
 
   al_set_new_bitmap_flags
-    (ALLEGRO_MIN_LINEAR OR ALLEGRO_MAG_LINEAR OR ALLEGRO_MIPMAP);
+    (ALLEGRO_MIN_LINEAR or ALLEGRO_MAG_LINEAR or ALLEGRO_MIPMAP);
 
   Font := LoadFont ('data/DejaVuSans.ttf', 40, 0);
   Logo := LoadBmp ('data/alexlogo.png');
@@ -272,35 +272,35 @@ BEGIN
   InitStars;
 
   al_start_timer (Timer);
-  EndExample := FALSE;
-  Redraw := FALSE;
+  EndExample := False;
+  Redraw := False;
   ScrollY := 0;
   Black := al_map_rgba_f (0, 0, 0, 1);
-  REPEAT
+  repeat
     al_wait_for_event (Queue, @Event);
-    CASE Event.ftype OF
+    case Event.ftype OF
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      EndExample := TRUE;
+      EndExample := True;
     ALLEGRO_EVENT_DISPLAY_RESIZE:
       al_acknowledge_resize (Display);
     ALLEGRO_EVENT_KEY_DOWN:
-      IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN EndExample := TRUE;
+      if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then EndExample := True;
     ALLEGRO_EVENT_TIMER:
-      BEGIN
+      begin
         ScrollY := ScrollY + 1;
-        IF ScrollY > TextLength * 2 THEN ScrollY := ScrollY - TextLength * 2;
-        Redraw := TRUE
-      END;
-    END;
+        if ScrollY > TextLength * 2 then ScrollY := ScrollY - TextLength * 2;
+        Redraw := True
+      end;
+    end;
 
-    IF Redraw AND al_is_event_queue_empty (Queue) THEN
-    BEGIN
+    if Redraw and al_is_event_queue_empty (Queue) then
+    begin
       al_clear_to_color (Black);
       DrawStars;
       DrawScrollingText;
       DrawIntroText;
       al_flip_display;
-      Redraw := FALSE
-    END
-  UNTIL EndExample
-END.
+      Redraw := False
+    end
+  until EndExample
+end.

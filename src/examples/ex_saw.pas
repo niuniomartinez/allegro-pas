@@ -43,21 +43,21 @@ PROGRAM ex_saw;
   {$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     Allegro5, al5base, al5audio, al5nativedlg;
 
-  CONST
+  const
     SAMPLES_PER_BUFFER = 1024;
 
 
-  PROCEDURE Saw (Stream: ALLEGRO_AUDIO_STREAMptr);
-  VAR
+  procedure Saw (Stream: ALLEGRO_AUDIO_STREAMptr);
+  var
     Queue: ALLEGRO_EVENT_QUEUEptr;
     Event: ALLEGRO_EVENT;
     Buf: ^AL_INT8; { int8_t * }
-    Pitch, Val, i, n: LONGINT;
-  BEGIN
+    Pitch, Val, i, n: LongInt;
+  begin
     Pitch := $10000;
     n := 200;
     Val := 0;
@@ -65,76 +65,76 @@ PROGRAM ex_saw;
     Queue := al_create_event_queue;
     al_register_event_source (Queue, al_get_audio_stream_event_source (Stream));
 
-    IF TextLog <> NIL THEN
+    if TextLog <> Nil then
       al_register_event_source
         (Queue, al_get_native_text_log_event_source (TextLog));
 
     LogWriteLn ('Generating saw wave...');
 
-    WHILE n > 0 DO
-    BEGIN
+    while n > 0 do
+    begin
       al_wait_for_event (Queue, @Event);
 
-      IF Event.ftype = ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT THEN
-      BEGIN
+      if Event.ftype = ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT then
+      begin
 	Buf := al_get_audio_stream_fragment (Stream);
-	IF Buf <> NIL THEN
-	BEGIN
-	  FOR i := 0 TO SAMPLES_PER_BUFFER - 1 DO
-	  BEGIN
+	if Buf <> Nil then
+	begin
+	  for i := 0 to SAMPLES_PER_BUFFER - 1 do
+	  begin
 	  { Crude saw wave at maximum amplitude. Please keep this compatible
 	    to the A4 example so we know when something has broken for now.
 
 	    It would be nice to have a better example with user interface
 	    and some simple synth effects. }
-	    (Buf + i)^ := (Val SHR 16) AND $FF;
-	    INC (Val, Pitch);
-	    INC (Pitch)
-	  END;
+	    (Buf + i)^ := (Val shr 16) and $FF;
+	    Inc (Val, Pitch);
+	    Inc (Pitch)
+	  end;
 
-	  IF NOT al_set_audio_stream_fragment (Stream, Buf) THEN
+	  if not al_set_audio_stream_fragment (Stream, Buf) then
 	    LogWriteLn ('Error setting stream fragment.');
 
-	  DEC (n);
-	  IF n MOD 10 = 0 THEN LogWrite ('.')
-	END
-      END;
-      IF Event.ftype = ALLEGRO_EVENT_NATIVE_DIALOG_CLOSE THEN
+	  Dec (n);
+	  if n mod 10 = 0 then LogWrite ('.')
+	end
+      end;
+      if Event.ftype = ALLEGRO_EVENT_NATIVE_DIALOG_CLOSE then
 	n := -1 { See the loop condition. }
-    END;
+    end;
 
     al_drain_audio_stream (Stream);
 
     LogWriteLn ('');
 
     al_destroy_event_queue (Queue)
-  END;
+  end;
 
 
 
-  VAR
+  var
     Stream: ALLEGRO_AUDIO_STREAMptr;
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
-  IF NOT al_install_audio THEN AbortExample ('Could not init sound.');
+  if not al_install_audio then AbortExample ('Could not init sound.');
   al_reserve_samples (0);
 
   Stream := al_create_audio_stream (
     8, SAMPLES_PER_BUFFER, 22050,
     ALLEGRO_AUDIO_DEPTH_UINT8, ALLEGRO_CHANNEL_CONF_1);
-  IF Stream = NIL THEN AbortExample ('Could not create stream.');
+  if Stream = Nil then AbortExample ('Could not create stream.');
 
-  IF NOT al_attach_audio_stream_to_mixer (Stream, al_get_default_mixer) THEN
+  if not al_attach_audio_stream_to_mixer (Stream, al_get_default_mixer) then
     AbortExample ('Could not attach stream to mixer.');
 
   OpenLog;
 
   Saw (Stream);
 
-  CloseLog (FALSE);
+  CloseLog (False);
 
   al_drain_audio_stream (Stream);
   al_destroy_audio_stream (Stream);
   al_uninstall_audio;
-END.
+end.

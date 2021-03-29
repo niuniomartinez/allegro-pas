@@ -29,73 +29,73 @@ PROGRAM ex_lines;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   common,
   Allegro5,
   al5primitives;
 
 (* XXX the software line drawer currently doesn't perform clipping properly *)
 
-  CONST
+  const
      W = 640;
      H = 480;
 
-   VAR
+   var
       Display: ALLEGRO_DISPLAYptr;
       Queue: ALLEGRO_EVENT_QUEUEptr;
       Black, White, Background: ALLEGRO_COLOR;
       dBuf: ALLEGRO_BITMAPptr;
 
-      LastX: INTEGER = -1;
-      LastY: INTEGER = -1;
+      LastX: Integer = -1;
+      LastY: Integer = -1;
 
-   PROCEDURE Fade;
-   BEGIN
+   procedure Fade;
+   begin
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
       al_draw_filled_rectangle (0, 0, W, H, al_map_rgba_f (0.5, 0.5, 0.6, 0.2));
-   END;
+   end;
 
 
 
-   PROCEDURE RedDot (x, y: INTEGER); INLINE;
-   BEGIN
+   procedure RedDot (x, y: Integer); inline;
+   begin
       al_draw_filled_rectangle (x - 2, y - 2, x + 2, y + 2, al_map_rgb_f (1, 0, 0));
-   END;
+   end;
 
 
 
-   PROCEDURE DrawClipRect; INLINE;
-   BEGIN
+   procedure DrawClipRect; inline;
+   begin
       al_draw_rectangle (100.5, 100.5, W - 100.5, H - 100.5, Black, 0);
-   END;
+   end;
 
 
 
-   PROCEDURE SetClipRect; INLINE;
-   BEGIN
+   procedure SetClipRect; inline;
+   begin
       al_set_clipping_rectangle (100, 100, W - 200, H - 200);
-   END;
+   end;
 
 
 
-   PROCEDURE ResetClipRect; INLINE;
-   BEGIN
+   procedure ResetClipRect; inline;
+   begin
       al_set_clipping_rectangle (0, 0, W, H);
-   END;
+   end;
 
 
 
-   PROCEDURE Flip;
-   BEGIN
+   procedure Flip;
+   begin
       al_set_target_backbuffer (Display);
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
       al_draw_bitmap (dBuf, 0.0, 0.0, 0);
       al_flip_display;
-   END;
+   end;
 
 
-   PROCEDURE Plonk (CONST x, y: INTEGER; Blend: BOOLEAN);
-   BEGIN
+   procedure Plonk (const x, y: Integer; Blend: Boolean);
+   begin
       al_set_target_bitmap (dBuf);
 
       Fade;
@@ -103,29 +103,29 @@ USES
       DrawClipRect;
       RedDot (x, y);
 
-      IF (LastX = -1) AND (LastY = -1) THEN
-      BEGIN
+      if (LastX = -1) and (LastY = -1) then
+      begin
          LastX := x;
          LastY := y;
-      END
-      ELSE BEGIN
+      end
+      else begin
          SetClipRect;
-         IF Blend THEN
+         if Blend then
             al_set_blender (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
          al_draw_line (LastX, LastY, x, y, white, 0);
          LastX := -1;
          LastY := -1;
          ResetClipRect;
-      END;
+      end;
       Flip;
-   END;
+   end;
 
 
 
-   PROCEDURE Splat (CONST x, y: INTEGER; Blend: BOOLEAN);
-   VAR
+   procedure Splat (const x, y: Integer; Blend: Boolean);
+   var
       Theta: SINGLE;
-   BEGIN
+   begin
       al_set_target_bitmap (dBuf);
 
       Fade;
@@ -134,26 +134,26 @@ USES
       RedDot (x, y);
 
       SetClipRect;
-      IF Blend THEN
+      if Blend then
          al_set_blender (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
       Theta := 0;
-      REPEAT
+      repeat
          al_draw_line (x, y, x + 40.0 * cos (Theta), y + 40.0 * sin (Theta), White, 0);
          Theta := Theta + ALLEGRO_PI / 16;
-      UNTIL Theta >= 2 * ALLEGRO_PI;
+      until Theta >= 2 * ALLEGRO_PI;
       ResetClipRect;
 
       Flip;
-   END;
+   end;
 
 
 
-VAR
+var
    Event: ALLEGRO_EVENT;
    KeyboardState: ALLEGRO_KEYBOARD_STATE;
-   Blend, EndLoop: BOOLEAN;
-BEGIN
-   IF NOT al_init THEN
+   Blend, EndLoop: Boolean;
+begin
+   if not al_init then
       AbortExample ('Could not init Allegro');
 
    al_init_primitives_addon;
@@ -161,17 +161,17 @@ BEGIN
    al_install_mouse;
 
    Display := al_create_display (W, H);
-   IF Display = NIL THEN
+   if Display = Nil then
       AbortExample ('Error creating display');
 
    Black := al_map_rgb_f (0.0, 0.0, 0.0);
    White := al_map_rgb_f (1.0, 1.0, 1.0);
    Background := al_map_rgb_f (0.5, 0.5, 0.6);
 
-   IF (Paramcount > 0) AND (Paramstr (1) = '--memory-bitmap') THEN
+   if (Paramcount > 0) and (Paramstr (1) = '--memory-bitmap') then
       al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
    dBuf := al_create_bitmap (W, H);
-   IF dBuf = NIL THEN
+   if dBuf = Nil then
       AbortExample ('Error creating double buffer');
 
    al_set_target_bitmap (dBuf);
@@ -183,29 +183,29 @@ BEGIN
    al_register_event_source (Queue, al_get_keyboard_event_source);
    al_register_event_source (Queue, al_get_mouse_event_source);
 
-   EndLoop := FALSE;
-   REPEAT
+   EndLoop := False;
+   repeat
       al_wait_for_event (Queue, @Event);
-      IF Event.ftype = ALLEGRO_EVENT_MOUSE_BUTTON_DOWN THEN
-      BEGIN
+      if Event.ftype = ALLEGRO_EVENT_MOUSE_BUTTON_DOWN then
+      begin
          al_get_keyboard_state (KeyboardState);
          Blend := al_key_down (KeyboardState, ALLEGRO_KEY_LSHIFT)
-               OR al_key_down (KeyboardState, ALLEGRO_KEY_RSHIFT);
-         IF Event.mouse.button = 1 THEN
+               or al_key_down (KeyboardState, ALLEGRO_KEY_RSHIFT);
+         if Event.mouse.button = 1 then
             Plonk (Event.mouse.x, Event.mouse.y, Blend)
-         ELSE
+         else
             Splat (Event.mouse.x, Event.mouse.y, Blend);
-      END
-      ELSE IF Event.ftype = ALLEGRO_EVENT_DISPLAY_SWITCH_OUT THEN
-      BEGIN
+      end
+      else if Event.ftype = ALLEGRO_EVENT_DISPLAY_SWITCH_OUT then
+      begin
          LastX := -1;
          LastY := -1;
-      END
-      ELSE IF (Event.ftype = ALLEGRO_EVENT_KEY_DOWN)
-      AND (Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE) THEN
-         EndLoop := TRUE;
-   UNTIL EndLoop;
+      end
+      else if (Event.ftype = ALLEGRO_EVENT_KEY_DOWN)
+      and (Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE) then
+         EndLoop := True;
+   until EndLoop;
 
    al_destroy_event_queue (Queue);
    al_destroy_bitmap (dBuf);
-END.
+end.

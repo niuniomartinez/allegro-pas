@@ -1,4 +1,4 @@
-UNIT al5acodec;
+unit al5acodec;
 (***<This unit registers audio codec handlers for @link(al_load_sample),
      @link(al_save_sample), @link(al_load_audio_stream), etc.
  *)
@@ -26,16 +26,16 @@ UNIT al5acodec;
 
 {$include allegro5.cfg}
 
-INTERFACE
+interface
 
-  USES
+  uses
     al5base;
 
-  FUNCTION al_init_acodec_addon: AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_ACODEC_LIB_NAME;
-  FUNCTION al_get_allegro_acodec_version: AL_UINT32;
-    CDECL; EXTERNAL ALLEGRO_ACODEC_LIB_NAME;
+  function al_init_acodec_addon: AL_BOOL;
+    CDECL; external ALLEGRO_ACODEC_LIB_NAME;
+  function al_get_allegro_acodec_version: AL_UINT32;
+    CDECL; external ALLEGRO_ACODEC_LIB_NAME;
 
-IMPLEMENTATION
+implementation
 
-END.
+end.

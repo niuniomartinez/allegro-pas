@@ -26,21 +26,21 @@ PROGRAM ex_palette;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Allegro5, al5base, al5color, al5image,
     Common,
     math;
 
-  TYPE
-    TPalette = ARRAY [0..255] OF RECORD r, g, b: AL_FLOAT; END;
+  type
+    TPalette = array [0..255] of record r, g, b: AL_FLOAT; end;
 
-    RSprite = RECORD
-      x, y, Angle, t: REAL;
-      Flags, i, j: INTEGER;
-    END;
+    RSprite = record
+      x, y, Angle, t: Real;
+      Flags, i, j: Integer;
+    end;
 
-  VAR
-    PalHex: ARRAY [0..255] OF AL_INT = (
+  var
+    PalHex: array [0..255] of AL_INT = (
       $FF00FF, $000100, $060000, $040006, $000200,
       $000306, $010400, $030602, $02090C, $070A06,
       $020C14, $030F1A, $0F0E03, $0D0F0C, $071221,
@@ -97,114 +97,114 @@ PROGRAM ex_palette;
 
 
 
-  FUNCTION InterpolatePalette (Pal1, Pal2: TPalette; t: AL_FLOAT): TPalette;
-  VAR
+  function InterpolatePalette (Pal1, Pal2: TPalette; t: AL_FLOAT): TPalette;
+  var
     Pal: TPalette;
-    i: INTEGER;
-  BEGIN
-    FOR i := 0 TO 255 DO
-    BEGIN
+    i: Integer;
+  begin
+    for i := 0 to 255 do
+    begin
       Pal[i].r := Pal1[i].r * (1 - t) + Pal2[i].r * t;
       Pal[i].g := Pal1[i].g * (1 - t) + Pal2[i].g * t;
       Pal[i].b := Pal1[i].b * (1 - t) + Pal2[i].b * t
-    END;
-    EXIT (Pal)
-  END;
+    end;
+    Exit (Pal)
+  end;
 
 
 
-  VAR
+  var
     Display: ALLEGRO_DISPLAYptr;
     Bitmap, Background: ALLEGRO_BITMAPptr;
     Timer: ALLEGRO_TIMERptr;
     Queue: ALLEGRO_EVENT_QUEUEptr;
     Event: ALLEGRO_EVENT;
-    Redraw, EndExample: BOOLEAN;
+    Redraw, EndExample: Boolean;
     Shader: ALLEGRO_SHADERptr;
     Pal: TPalette;
-    Pals: ARRAY [0..6] OF TPalette;
-    i, j, Dir, p1, p2: INTEGER;
+    Pals: array [0..6] of TPalette;
+    i, j, Dir, p1, p2: Integer;
     r, g, b, h, s, l, t, Position, sc: AL_FLOAT;
-    Sprites: ARRAY [0..7] OF RSprite;
+    Sprites: array [0..7] of RSprite;
 
-BEGIN
-  Redraw := TRUE;
-  EndExample := FALSE;
+begin
+  Redraw := True;
+  EndExample := False;
   t := 0;
 
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_install_mouse;
   al_install_keyboard;
   al_init_image_addon;
   InitPlatformSpecific;
 
-  al_set_new_display_flags (ALLEGRO_PROGRAMMABLE_PIPELINE OR ALLEGRO_OPENGL);
+  al_set_new_display_flags (ALLEGRO_PROGRAMMABLE_PIPELINE or ALLEGRO_OPENGL);
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN AbortExample ('Could not create display.');
+  if Display = Nil then AbortExample ('Could not create display.');
 
   al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_SINGLE_CHANNEL_8);
   Bitmap := al_load_bitmap_flags ('data/alexlogo.bmp', ALLEGRO_KEEP_INDEX);
-  IF Bitmap = NIL THEN
+  if Bitmap = Nil then
     AbortExample ('"data/alexlogo.bmp" not found or failed to load.');
 
 { Create 8 sprites. }
-  FOR i := LOW (Sprites) TO HIGH (Sprites) DO
-  BEGIN
+  for i := Low (Sprites) to High (Sprites) do
+  begin
     Sprites[i].Angle := ALLEGRO_PI * 2 * i / 8;
     sincos (Sprites[i].Angle, s, h);
     Sprites[i].x := 320 + s * (64 + i * 16);
     Sprites[i].y := 240 - h * (64 + i * 16);
-    IF i MOD 2 <> 0 THEN
+    if i mod 2 <> 0 then
       Sprites[i].Flags := ALLEGRO_FLIP_HORIZONTAL
-    ELSE
+    else
       Sprites[i].Flags := 0;
     Sprites[i].t := i / 8;
-    Sprites[i].i := i MOD 6;
-    Sprites[i].j := (Sprites[i].i + 1) MOD 6;
-  END;
+    Sprites[i].i := i mod 6;
+    Sprites[i].j := (Sprites[i].i + 1) mod 6;
+  end;
 
   Background := al_load_bitmap ('data/bkg.png');
-  IF Background = NIL THEN
+  if Background = Nil then
     AbortExample ('"data/bkg.png" not found or failed to load.');
 { Continue even if fail to load. }
 
 { Create 7 palettes with changed hue. }
-  FOR j := LOW (Pals) TO HIGH (Pals) DO
-  BEGIN
-    FOR i := LOW (PalHex) TO HIGH (PalHex) DO
-    BEGIN
-      r := ((PalHex[i] SHR 16) AND $0000FFFF) / 255;
-      g := ((PalHex[i] SHR  8) AND $000000FF) / 255;
-      b := ( PalHex[i]         AND $000000FF) / 255;
+  for j := Low (Pals) to High (Pals) do
+  begin
+    for i := Low (PalHex) to High (PalHex) do
+    begin
+      r := ((PalHex[i] shr 16) and $0000FFFF) / 255;
+      g := ((PalHex[i] shr  8) and $000000FF) / 255;
+      b := ( PalHex[i]         and $000000FF) / 255;
 
       al_color_rgb_to_hsl (r, g, b, h, s, l);
-      IF j = 6 THEN
-      BEGIN
-	IF (l < 0.3) OR (0.7 < l) THEN
-	BEGIN
+      if j = 6 then
+      begin
+	if (l < 0.3) or (0.7 < l) then
+	begin
 	  h := 0;
 	  s := 1;
 	  l := 0.5
-	END
-      END
-      ELSE BEGIN
+	end
+      end
+      else begin
 	h := h + (j * 60);
-	IF (l < 0.3) OR (0.7 < l) THEN
-	BEGIN
-	  IF (j AND 1) <> 0 THEN l := 1 - l
-	END
-      END;
+	if (l < 0.3) or (0.7 < l) then
+	begin
+	  if (j and 1) <> 0 then l := 1 - l
+	end
+      end;
       al_color_hsl_to_rgb (h, s, l, r, g, b);
 
       Pals[j][i].r := r;
       Pals[j][i].g := g;
       Pals[j][i].b := b
-    END
-  END;
+    end
+  end;
 
   Shader := al_create_shader(ALLEGRO_SHADER_GLSL);
-  IF Shader = NIL THEN
+  if Shader = Nil then
     AbortExample ('Cannot use GLSL (OpenGL) shader.');
 
   al_attach_shader_source (
@@ -253,44 +253,44 @@ BEGIN
   al_register_event_source (Queue, al_get_timer_event_source (Timer));
   al_start_timer (Timer);
 
-  REPEAT
+  repeat
     al_wait_for_event (Queue, @Event);
-    CASE Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      EndExample := TRUE;
+      EndExample := True;
     ALLEGRO_EVENT_KEY_CHAR:
-      IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN EndExample := TRUE;
+      if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then EndExample := True;
     ALLEGRO_EVENT_TIMER:
-      BEGIN
-	Redraw := TRUE;
+      begin
+	Redraw := True;
 	t := t + 1;
-	FOR i := LOW (Sprites) TO HIGH (Sprites) DO
-	BEGIN
-	  IF Sprites[i].Flags <> 0 THEN Dir := 1 ELSE Dir := -1;
+	for i := Low (Sprites) to High (Sprites) do
+	begin
+	  if Sprites[i].Flags <> 0 then Dir := 1 else Dir := -1;
 	  sincos (Sprites[i].Angle, s, h);
 	  Sprites[i].x := Sprites[i].x + h * 2 * Dir;
 	  Sprites[i].y := Sprites[i].y + s * 2 * Dir;
 	  Sprites[i].Angle := Sprites[i].Angle + ALLEGRO_PI / 180 * Dir
-	END
-      END;
-    END;
+	end
+      end;
+    end;
 
-    IF Redraw AND al_is_event_queue_empty (Queue) THEN
-    BEGIN
-      Position := TRUNC (t) MOD 60 / 60;
-      p1 := TRUNC (t / 60) MOD 3;
-      p2 := (p1 + 1) MOD 3;
+    if Redraw and al_is_event_queue_empty (Queue) then
+    begin
+      Position := Trunc (t) mod 60 / 60;
+      p1 := Trunc (t / 60) mod 3;
+      p2 := (p1 + 1) mod 3;
 
-      Redraw := FALSE;
+      Redraw := False;
       al_clear_to_color (al_map_rgb_f (0, 0, 0));
 
       Pal := InterpolatePalette (Pals[p1 * 2], Pals[p2 * 2], Position);
 
       al_set_shader_float_vector ('pal', 3, @Pal, 256);
-      IF Background <> NIL THEN al_draw_bitmap (Background, 0, 0, 0);
+      if Background <> Nil then al_draw_bitmap (Background, 0, 0, 0);
 
-      FOR i := LOW (Sprites) TO HIGH (Sprites) DO
-      BEGIN
+      for i := Low (Sprites) to High (Sprites) do
+      begin
 	j := 7 - i;
 	Position := (1 + sin ((t / 60 + Sprites[j].t) * 2 * ALLEGRO_PI)) / 2;
 	Pal := InterpolatePalette (
@@ -303,10 +303,10 @@ BEGIN
 	  Sprites[j].x, Sprites[j].y, Sprites[j].Angle,
 	  Sprites[j].Flags
 	);
-      END;
+      end;
 
       sc := 0.5;
-      IF TRUNC (t) MOD 20 > 15 THEN i := 6 ELSE i := 0;
+      if Trunc (t) mod 20 > 15 then i := 6 else i := 0;
       al_set_shader_float_vector ('pal', 3, @Pals[i], 256);
       al_draw_scaled_rotated_bitmap (Bitmap, 0, 0,   0,   0,  sc,  sc, 0, 0);
       al_draw_scaled_rotated_bitmap (Bitmap, 0, 0, 640,   0, -sc,  sc, 0, 0);
@@ -314,11 +314,11 @@ BEGIN
       al_draw_scaled_rotated_bitmap (Bitmap, 0, 0, 640, 480, -sc, -sc, 0, 0);
 
       al_flip_display
-    END
-  UNTIL EndExample;
+    end
+  until EndExample;
 
-  al_use_shader (NIL);
+  al_use_shader (Nil);
 
   al_destroy_bitmap (Bitmap);
   al_destroy_shader (Shader)
-END.
+end.

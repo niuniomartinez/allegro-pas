@@ -32,15 +32,15 @@ PROGRAM ex_keyboard_focus;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
    Common,
    allegro5;
 
-VAR
+var
   Display1, Display2: ALLEGRO_DISPLAYptr;
 
-  PROCEDURE Redraw (Color1, Color2: ALLEGRO_COLOR);
-  BEGIN
+  procedure Redraw (Color1, Color2: ALLEGRO_COLOR);
+  begin
     al_set_target_backbuffer (Display1);
     al_clear_to_color (Color1);
     al_flip_display();
@@ -48,36 +48,36 @@ VAR
     al_set_target_backbuffer (Display2);
     al_clear_to_color (Color2);
     al_flip_display()
-  END;
+  end;
 
-VAR
+var
   Black, Red: ALLEGRO_COLOR;
   KbdState: ALLEGRO_KEYBOARD_STATE;
-BEGIN
-  IF NOT al_init THEN AbortExample ('Error initialising Allegro.');
+begin
+  if not al_init then AbortExample ('Error initialising Allegro.');
 
-  IF NOT al_install_keyboard THEN AbortExample ('Error installing keyboard.');
+  if not al_install_keyboard then AbortExample ('Error installing keyboard.');
 
   Display1 := al_create_display (300, 300);
   Display2 := al_create_display (300, 300);
-  IF (Display1 = NIL) OR (Display2 = NIL) THEN
+  if (Display1 = Nil) or (Display2 = Nil) then
     AbortExample ('Error creating displays.');
 
   Black := al_map_rgb (0, 0, 0);
   Red := al_map_rgb (255, 0, 0);
 
-  WHILE TRUE DO
-  BEGIN
+  while True do
+  begin
     al_get_keyboard_state (KbdState);
-    IF al_key_down (KbdState, ALLEGRO_KEY_ESCAPE) THEN EXIT;
+    if al_key_down (KbdState, ALLEGRO_KEY_ESCAPE) then Exit;
 
-    IF KbdState.display = Display1 THEN
+    if KbdState.display = Display1 then
       Redraw (Red, Black)
-    ELSE IF KbdState.display = Display2 THEN
+    else if KbdState.display = Display2 then
       Redraw (Black, Red)
-    ELSE
+    else
       Redraw (Black, Black);
 
     al_rest(0.1)
-  END
-END.
+  end
+end.

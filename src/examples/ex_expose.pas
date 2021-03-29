@@ -26,20 +26,20 @@ PROGRAM ex_expose;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5, al5image, al5primitives;
 
-VAR
+var
   Display: ALLEGRO_DISPLAYptr;
   Bitmap: ALLEGRO_BITMAPptr;
   Timer: ALLEGRO_TIMERptr;
   Queue: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
-  x, y: INTEGER;
+  x, y: Integer;
 
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_init_primitives_addon;
   al_init_image_addon;
@@ -48,13 +48,13 @@ BEGIN
   InitPlatformSpecific;
 
   al_set_new_display_flags
-    (ALLEGRO_RESIZABLE OR ALLEGRO_GENERATE_EXPOSE_EVENTS);
+    (ALLEGRO_RESIZABLE or ALLEGRO_GENERATE_EXPOSE_EVENTS);
   al_set_new_display_option (ALLEGRO_SINGLE_BUFFER, -1, ALLEGRO_REQUIRE);
   Display := al_create_display (320, 200);
-  IF Display = NIL THEN AbortExample ('Error creating display.');
+  if Display = Nil then AbortExample ('Error creating display.');
 
   Bitmap := al_load_bitmap ('data/mysha.pcx');
-  IF Bitmap = NIL THEN AbortExample ('mysha.pcx not found or failed to load.');
+  if Bitmap = Nil then AbortExample ('mysha.pcx not found or failed to load.');
   al_draw_bitmap (Bitmap, 0, 0, 0);
   al_flip_display;
 
@@ -67,28 +67,28 @@ BEGIN
   al_register_event_source (Queue, al_get_timer_event_source (Timer));
   al_start_timer (Timer);
 
-  WHILE TRUE DO
-  BEGIN
+  while True do
+  begin
     al_wait_for_event (Queue, @Event);
-    CASE event.ftype OF
+    case event.ftype OF
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      BEGIN
+      begin
 	al_destroy_event_queue (Queue);
 	al_destroy_bitmap (Bitmap);
-	EXIT
-      END;
+	Exit
+      end;
     ALLEGRO_EVENT_KEY_DOWN:
-      IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-      BEGIN
+      if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+      begin
 	al_destroy_event_queue (Queue);
 	al_destroy_bitmap (Bitmap);
-	EXIT
-      END;
+	Exit
+      end;
     ALLEGRO_EVENT_DISPLAY_RESIZE:
       al_acknowledge_resize (Event.display.source);
     ALLEGRO_EVENT_DISPLAY_EXPOSE:
     { Draw a red rectangle over the damaged area. }
-      BEGIN
+      begin
 	al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
 	al_draw_filled_rectangle (
 	  Event.display.x,
@@ -98,28 +98,28 @@ BEGIN
 	  al_map_rgba_f (1, 0, 0, 1)
 	);
 	al_flip_display
-      END;
+      end;
     ALLEGRO_EVENT_TIMER:
     { Slowly restore the original bitmap. }
-      BEGIN
+      begin
 	al_set_blender (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
 	y := 0;
-	WHILE y < al_get_display_height (Display) DO
-	BEGIN
+	while y < al_get_display_height (Display) do
+	begin
 	  x := 0;
-	  WHILE x < al_get_display_width (Display) DO
-	  BEGIN
+	  while x < al_get_display_width (Display) do
+	  begin
 	    al_draw_tinted_bitmap (
 	      Bitmap,
 	      al_map_rgba_f (1, 1, 1, 0.1),
 	      x, y, 0
 	    );
 	    x := x + 320
-	  END;
+	  end;
 	  y := y + 200
-	END;
+	end;
 	al_flip_display
-      END;
-    END
-  END
-END.
+      end;
+    end
+  end
+end.

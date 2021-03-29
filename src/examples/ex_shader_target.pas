@@ -30,12 +30,12 @@ PROGRAM ex_shader_target;
 {$IFDEF FPC}
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
-  USES
+  uses
     Common,
     Allegro5, al5base, al5image;
 
-   VAR
-     Tints: ARRAY [0..11] OF AL_FLOAT = (
+   var
+     Tints: array [0..11] of AL_FLOAT = (
        4.0, 0.0, 1.0,
        0.0, 4.0, 1.0,
        1.0, 0.0, 4.0,
@@ -44,97 +44,97 @@ PROGRAM ex_shader_target;
 
 
 
-  PROCEDURE ChooseShaderSource
-    (Platform: ALLEGRO_SHADER_PLATFORM; VAR vSource, pSource: AL_STR);
-  BEGIN
-    IF Platform = ALLEGRO_SHADER_HLSL THEN
-    BEGIN
+  procedure ChooseShaderSource
+    (Platform: ALLEGRO_SHADER_PLATFORM; var vSource, pSource: AL_STR);
+  begin
+    if Platform = ALLEGRO_SHADER_HLSL then
+    begin
       vSource := 'data/ex_shader_vertex.hlsl';
       pSource := 'data/ex_shader_pixel.hlsl'
-    END
-    ELSE IF Platform = ALLEGRO_SHADER_GLSL THEN
-    BEGIN
+    end
+    else if Platform = ALLEGRO_SHADER_GLSL then
+    begin
       vSource := 'data/ex_shader_vertex.glsl';
       pSource := 'data/ex_shader_pixel.glsl'
-    END
-    ELSE BEGIN
+    end
+    else begin
     { Shouldn't happen. }
       vSource := '';
       pSource := ''
-    END
-  END;
+    end
+  end;
 
 
 
-  FUNCTION MakeRegion
-    (parent: ALLEGRO_BITMAPptr; x, y, w, h: INTEGER; Shader: ALLEGRO_SHADERptr)
+  function MakeRegion
+    (parent: ALLEGRO_BITMAPptr; x, y, w, h: Integer; Shader: ALLEGRO_SHADERptr)
   : ALLEGRO_BITMAPptr;
-  VAR
+  var
     MR: ALLEGRO_BITMAPptr;
-  BEGIN
+  begin
     MR := al_create_sub_bitmap (Parent, x, y, w, h);
-    IF MR <> NIL THEN
-    BEGIN
+    if MR <> Nil then
+    begin
       al_set_target_bitmap (MR);
       al_use_shader (Shader)
     { Not bothering to restore old target bitmap. }
-    END;
-    EXIT (MR)
-  END;
+    end;
+    Exit (MR)
+  end;
 
 
 
-  VAR
+  var
     Display: ALLEGRO_DISPLAYptr;
     Image: ALLEGRO_BITMAPptr;
     BackBuffer: ALLEGRO_BITMAPptr;
-    Region: ARRAY [0..3] OF ALLEGRO_BITMAPptr;
+    Region: array [0..3] of ALLEGRO_BITMAPptr;
     Shader: ALLEGRO_SHADERptr;
     vSource, pSource: AL_STR;
     T: ALLEGRO_TRANSFORM;
-    i: INTEGER;
+    i: Integer;
     Queue: ALLEGRO_EVENT_QUEUEptr;
     Event: ALLEGRO_EVENT;
   { TODO:
     S: ALLEGRO_KEYBOARD_STATE;
   }
-BEGIN
+begin
   vSource := ''; pSource := '';
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  if not al_init then AbortExample ('Could not init Allegro.');
   al_install_keyboard;
   al_init_image_addon;
   InitPlatformSpecific;
 
   al_set_new_display_flags (ALLEGRO_PROGRAMMABLE_PIPELINE);
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN AbortExample ('Could not create display.');
+  if Display = Nil then AbortExample ('Could not create display.');
 
   Queue := al_create_event_queue;
   al_register_event_source(Queue, al_get_keyboard_event_source);
   al_register_event_source(Queue, al_get_display_event_source (Display));
 
   Image := al_load_bitmap ('data/mysha.pcx');
-  IF Image = NIL THEN AbortExample ('Could not load image.');
+  if Image = Nil then AbortExample ('Could not load image.');
 
 { Create the shader. }
   Shader := al_create_shader (ALLEGRO_SHADER_AUTO);
-  IF Shader = NIL THEN AbortExample ('Could not create shader.');
+  if Shader = Nil then AbortExample ('Could not create shader.');
   ChooseShaderSource (al_get_shader_platform (Shader), vSource, pSource);
-  IF (vSource = '') OR (pSource ='') THEN
+  if (vSource = '') or (pSource ='') then
     AbortExample ('Could not load source files.');
-  IF NOT al_attach_shader_source_file (Shader, ALLEGRO_VERTEX_SHADER, vSource)
-  THEN
+  if not al_attach_shader_source_file (Shader, ALLEGRO_VERTEX_SHADER, vSource)
+  then
     AbortExample (
       'al_attach_shader_source_file failed: ' +
       al_get_shader_log (Shader)
     );
-  IF NOT al_attach_shader_source_file (Shader, ALLEGRO_PIXEL_SHADER, pSource)
-  THEN
+  if not al_attach_shader_source_file (Shader, ALLEGRO_PIXEL_SHADER, pSource)
+  then
     AbortExample (
       'al_attach_shader_source_file failed: ' +
       al_get_shader_log (Shader)
     );
-  IF NOT al_build_shader (Shader) THEN
+  if not al_build_shader (Shader) then
     AbortExample ('al_build_shader failed: ' + al_get_shader_log (Shader));
 
 { Create four sub-bitmaps of the backbuffer sharing a shader. }
@@ -143,8 +143,8 @@ BEGIN
   Region[1] := MakeRegion (BackBuffer, 320, 0, 320, 200, Shader);
   Region[2] := MakeRegion (BackBuffer, 0, 240, 320, 200, Shader);
   Region[3] := MakeRegion (BackBuffer, 320, 240, 320, 200, Shader);
-  IF (Region[0]=NIL) OR (region[1]=NIL) OR (region[2]=NIL) OR (region[3]=NIL)
-  THEN
+  if (Region[0]=Nil) or (region[1]=Nil) or (region[2]=Nil) or (region[3]=Nil)
+  then
     AbortExample ('make_region failed');
 
 { Apply a transformation to the last region (the current target). }
@@ -153,18 +153,18 @@ BEGIN
   al_translate_transform (t, -160, -100);
   al_use_transform (t);
 
-  REPEAT
-    IF al_get_next_event (Queue, Event) THEN
-    BEGIN
-      IF Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE THEN
+  repeat
+    if al_get_next_event (Queue, Event) then
+    begin
+      if Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE then
         BREAK;
-      IF Event.ftype = ALLEGRO_EVENT_KEY_CHAR THEN
-        IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
+      if Event.ftype = ALLEGRO_EVENT_KEY_CHAR then
+        if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
           BREAK
-    END;
+    end;
 
-    FOR I := LOW (Region) TO HIGH (Region) DO
-    BEGIN
+    for I := Low (Region) to High (Region) do
+    begin
     { When we change the target bitmap, the shader that was last used on
       that bitmap is automatically in effect.  All of our region
       sub-bitmaps use the same shader so we need to set the tint variable
@@ -172,18 +172,18 @@ BEGIN
       al_set_target_bitmap (Region[i]);
       al_set_shader_float_vector ('tint', 3, @Tints[i * 3], 1);
       al_draw_bitmap (Image, 0, 0, 0);
-    END;
+    end;
 
     al_set_target_backbuffer (Display);
     al_draw_tinted_bitmap (
       Image, al_map_rgba_f (0.5, 0.5, 0.5, 0.5),
-      320 DIV 2, 240 DIV 2, 0
+      320 div 2, 240 div 2, 0
     );
 
     al_flip_display
-  UNTIL FALSE;
+  until False;
 
   al_set_target_backbuffer (Display);
-  al_use_shader (NIL);
+  al_use_shader (Nil);
   al_destroy_shader (Shader)
-END.
+end.

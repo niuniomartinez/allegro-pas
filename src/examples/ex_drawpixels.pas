@@ -26,80 +26,80 @@ PROGRAM ex_drawpixels;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Allegro5, Common;
 
-  CONST
+  const
     WIDTH = 640;
     HEIGHT = 480;
     NUM_STARS = 300;
     TARGET_FPS = 9999;
 
-  TYPE
-    TPoint = RECORD
+  type
+    TPoint = record
       X, Y: SINGLE;
-    END;
+    end;
 
-  VAR
+  var
     Display: ALLEGRO_DISPLAYptr;
     KeyState: ALLEGRO_KEYBOARD_STATE;
-    Stars: ARRAY [1..3] OF ARRAY [1..(NUM_STARS DIV 3)] OF TPoint;
-    Speeds: ARRAY [1..3] OF SINGLE = (0.0001, 0.05, 0.15);
-    Colors: ARRAY [1..3] OF ALLEGRO_COLOR;
-    Start, Now, Elapsed, FrameCount: LONGINT;
-    TotalFrames: INTEGER;
-    ProgramStart, Length: DOUBLE;
-    Layer, Star, X, Y: INTEGER;
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+    Stars: array [1..3] of array [1..(NUM_STARS div 3)] of TPoint;
+    Speeds: array [1..3] of SINGLE = (0.0001, 0.05, 0.15);
+    Colors: array [1..3] of ALLEGRO_COLOR;
+    Start, Now, Elapsed, FrameCount: LongInt;
+    TotalFrames: Integer;
+    ProgramStart, Length: Double;
+    Layer, Star, X, Y: Integer;
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   OpenLog;
 
   al_install_keyboard;
 
   Display := al_create_display (WIDTH, HEIGHT);
-  IF Display = NIL THEN AbortExample ('Could not create display.');
+  if Display = Nil then AbortExample ('Could not create display.');
 
   Colors[1] := al_map_rgba (255, 100, 255, 128);
   Colors[2] := al_map_rgba (255, 100, 100, 255);
   Colors[3] := al_map_rgba (100, 100, 255, 255);
 
-  FOR Layer := LOW (Stars) TO HIGH (Stars) DO
-  BEGIN
-    FOR Star := LOW (Stars[Layer]) TO HIGH (Stars[Layer]) DO
-    BEGIN
+  for Layer := Low (Stars) to High (Stars) do
+  begin
+    for Star := Low (Stars[Layer]) to High (Stars[Layer]) do
+    begin
       Stars[Layer][Star].X := Random (WIDTH);
       Stars[Layer][Star].Y := Random (HEIGHT)
-    END
-  END;
+    end
+  end;
 
 
-  Start := TRUNC (al_get_time * 1000);
+  Start := Trunc (al_get_time * 1000);
   Elapsed := 0;
   FrameCount := 0;
   ProgramStart := al_get_time;
 
   TotalFrames := 0;
-  REPEAT
-    IF FrameCount < (1000 / TARGET_FPS) THEN
+  repeat
+    if FrameCount < (1000 / TARGET_FPS) then
       FrameCount := FrameCount + Elapsed
-    ELSE BEGIN
-      DEC (FrameCount, TRUNC (1000 / TARGET_FPS));
+    else begin
+      Dec (FrameCount, Trunc (1000 / TARGET_FPS));
       al_clear_to_color (al_map_rgb (0, 0, 0));
-      FOR Star := LOW (Stars[1]) TO HIGH (Stars[1]) DO
+      for Star := Low (Stars[1]) to High (Stars[1]) do
         al_draw_pixel (Stars[1][Star].X, Stars[1][Star].Y, Colors[1]);
       al_lock_bitmap (
         al_get_backbuffer (Display),
-        ALLEGRO_PIXEL_FORMAT_ANY, ALLEGRO_LOCK_READWRITE
+        ALLEGRO_PIXEL_FORMAT_ANY, ALLEGRO_LOCK_readwrite
       );
 
-      FOR Layer := 2 TO HIGH (Stars) DO
-      BEGIN
-        FOR Star := LOW (Stars[Layer]) TO HIGH (Stars[Layer]) DO
+      for Layer := 2 to High (Stars) do
+      begin
+        for Star := Low (Stars[Layer]) to High (Stars[Layer]) do
           al_draw_pixel (
             Stars[Layer][Star].X, Stars[Layer][Star].Y, Colors[Layer]
           )
-      END;
+      end;
 
     { Check that dots appear at the window extremes. }
       X := WIDTH - 1;
@@ -111,37 +111,37 @@ BEGIN
 
       al_unlock_bitmap (al_get_backbuffer (Display));
       al_flip_display;
-      INC (TotalFrames)
-    END;
+      Inc (TotalFrames)
+    end;
 
-    Now := TRUNC (al_get_time * 1000);
+    Now := Trunc (al_get_time * 1000);
     Elapsed := Now - Start;
     Start := Now;
 
-    FOR Layer := LOW (Stars) TO HIGH (Stars) DO
-    BEGIN
-      FOR Star := LOW (Stars[Layer]) TO HIGH (Stars[Layer]) DO
-      BEGIN
+    for Layer := Low (Stars) to High (Stars) do
+    begin
+      for Star := Low (Stars[Layer]) to High (Stars[Layer]) do
+      begin
         Stars[Layer][Star].Y := Stars[Layer][Star].Y - Speeds[Layer] * Elapsed;
-        IF Stars[Layer][Star].Y < 0 THEN
-        BEGIN
+        if Stars[Layer][Star].Y < 0 then
+        begin
           Stars[Layer][Star].X := Random (WIDTH);
           Stars[Layer][Star].Y := HEIGHT
-        END
-      END
-    END;
+        end
+      end
+    end;
 
     al_rest (0.001);
 
     al_get_keyboard_state (KeyState);
-  UNTIL al_key_down (KeyState, ALLEGRO_KEY_ESCAPE);
+  until al_key_down (KeyState, ALLEGRO_KEY_ESCAPE);
 
   Length := al_get_time - ProgramStart;
 
-  IF Length <> 0 THEN
-    LogPrintLn ('%d FPS', [TRUNC (TotalFrames / Length)]);
+  if Length <> 0 then
+    LogPrintLn ('%d FPS', [Trunc (TotalFrames / Length)]);
 
   al_destroy_display (Display);
 
-  CloseLog (TRUE)
-END.
+  CloseLog (True)
+end.

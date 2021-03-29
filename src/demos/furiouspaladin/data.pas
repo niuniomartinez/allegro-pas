@@ -1,4 +1,4 @@
-UNIT Data;
+unit Data;
 (*<Manages and stores game data. *)
 (*
   Copyright (c) 2018 Handoko
@@ -24,78 +24,78 @@ UNIT Data;
     distribution.
  *)
 
-INTERFACE
+interface
 
-  USES
+  uses
     Allegro5, al5audio, al5base, al5font, al5ttf;
 
 (* Loads the requested font file.  On error returns nil. *)
-  FUNCTION LoadFont (CONST FileName: AL_STR; Size: INTEGER): ALLEGRO_FONTptr;
+  function LoadFont (const FileName: AL_STR; Size: Integer): ALLEGRO_FONTptr;
 (* Loads the requested bitmap file.  returns nilexception. *)
-  FUNCTION LoadBitmap (CONST FileName: AL_STR): ALLEGRO_BITMAPptr;
+  function LoadBitmap (const FileName: AL_STR): ALLEGRO_BITMAPptr;
 (* Loads the requested sound or music file.  returns nilexception. *)
-  FUNCTION LoadSample (CONST FileName: AL_STR): ALLEGRO_SAMPLEptr;
+  function LoadSample (const FileName: AL_STR): ALLEGRO_SAMPLEptr;
 
-IMPLEMENTATION
+implementation
 
-  USES
+  uses
     sysutils, al5strings;
 
 {$IFDEF DCC}
-  CONST
+  const
     DirectorySeparator = PathDelim;
 {$ENDIF}
 
-  VAR
+  var
   { Data directory path. }
     DataPath: AL_STR;
 
   (* Looks for the given data file and returns the full path or returns the
      FileName parameter if it can't find it. *)
-  FUNCTION FindDataFile (CONST FileName: AL_STR): AL_STR;
-  BEGIN
+  function FindDataFile (const FileName: AL_STR): AL_STR;
+  begin
     { TODO:  Actual implementation should look data files in different paths
              depending on the operating system.  For example:  Windows should
              look in the working directory, then in the same directory than the
              executable,  Linux should look first in the working directory, then
              in the data directory (like "/usr/share/games/furiouspaladin" or
              similar) then in the same directory than the executable. }
-    IF DataPath = '' THEN
-    BEGIN
+    if DataPath = '' then
+    begin
       DataPath := al_string_to_str (
         ExtractFilePath(ParamStr(0))+'data'+DirectorySeparator
       );
-      IF NOT DirectoryExists (al_str_to_string (DataPath)) THEN
-        EXIT (FileName)
-    END;
+      if not DirectoryExists (al_str_to_string (DataPath)) then
+        Exit (FileName)
+    end;
   { Right now just check if file exists. }
-    RESULT := DataPath + FileName;
-    IF NOT FileExists (al_str_to_string (RESULT)) THEN RESULT := FileName
-  END;
+    Result := DataPath + FileName;
+    if not FileExists (al_str_to_string (Result)) then Result := FileName
+  end;
 
 
 
 (* Loads font. *)
-  FUNCTION LoadFont (CONST FileName: AL_STR; Size: INTEGER): ALLEGRO_FONTptr;
-  BEGIN
-    RESULT := al_load_ttf_font (FindDataFile (FileName), Size, 0)
-  END;
+  function LoadFont (const FileName: AL_STR; Size: Integer): ALLEGRO_FONTptr;
+  begin
+    Result := al_load_ttf_font (FindDataFile (FileName), Size, 0)
+  end;
 
 
 
 (* Loads bitmap. *)
-  FUNCTION LoadBitmap (CONST FileName: AL_STR): ALLEGRO_BITMAPptr;
-  BEGIN
-    RESULT := al_load_bitmap (FindDataFile (FileName))
-  END;
+  function LoadBitmap (const FileName: AL_STR): ALLEGRO_BITMAPptr;
+  begin
+    Result := al_load_bitmap (FindDataFile (FileName))
+  end;
 
 
 
 (* Loads sample. *)
-  FUNCTION LoadSample (CONST FileName: AL_STR): ALLEGRO_SAMPLEptr;
-  BEGIN
-    RESULT := al_load_sample (FindDataFile (FileName))
-  END;
+  function LoadSample (const FileName: AL_STR): ALLEGRO_SAMPLEptr;
+  begin
+    Result := al_load_sample (FindDataFile (FileName))
+  end;
 
-END.
+end.
 

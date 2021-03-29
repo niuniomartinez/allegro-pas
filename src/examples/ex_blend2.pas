@@ -37,12 +37,12 @@ PROGRAM ex_blend2;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   alGUI, Common,
   allegro5, al5base, al5font, al5image, al5primitives,
   Classes;
 
-CONST
+const
   SOURCE_IMAGE_TAG = 0;
   DESTINATION_IMAGE_TAG = 1;
 
@@ -50,106 +50,106 @@ CONST
   ORIENTATION_SCALED = 1;
   ORIENTATION_ROTATED = 2;
 
-  ImageNameList: ARRAY [0..4] OF AL_STR = (
+  ImageNameList: array [0..4] of AL_STR = (
     'Mysha', 'Allegro', 'Mysha (tinted)', 'Allegro (tinted)', 'Color'
   );
-  ModeNameList: ARRAY [0..9] OF AL_STR = (
+  ModeNameList: array [0..9] of AL_STR = (
     'ONE', 'ZERO', 'ALPHA', 'INVERSE',
     'SRC_COLOR', 'DEST_COLOR', 'INV_SRC_COLOR',
     'INV_DEST_COLOR', 'CONST_COLOR',
     'INV_CONST_COLOR'
   );
-  ModeValueList: ARRAY [0..9] OF ALLEGRO_BLEND_MODE = (
+  ModeValueList: array [0..9] of ALLEGRO_BLEND_MODE = (
     ALLEGRO_ONE, ALLEGRO_ZERO, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA,
     ALLEGRO_SRC_COLOR, ALLEGRO_DEST_COLOR, ALLEGRO_INVERSE_SRC_COLOR,
     ALLEGRO_INVERSE_DEST_COLOR, ALLEGRO_CONST_COLOR,
     ALLEGRO_INVERSE_CONST_COLOR
   );
-  OperationTypeNameList: ARRAY [0..1] OF AL_STR = ('Color', 'Alpha');
-  OperationNameList: ARRAY [0..2] OF AL_STR = (
+  OperationTypeNameList: array [0..1] of AL_STR = ('Color', 'Alpha');
+  OperationNameList: array [0..2] of AL_STR = (
     'ADD', 'SRC_MINUS_DEST', 'DEST_MINUS_SRC'
   );
-  OperationValueList: ARRAY [0..2] OF ALLEGRO_BLEND_OPERATIONS = (
+  OperationValueList: array [0..2] of ALLEGRO_BLEND_OPERATIONS = (
   ALLEGRO_ADD, ALLEGRO_SRC_MINUS_DEST, ALLEGRO_DEST_MINUS_SRC
   );
 
-TYPE
+type
 (* Sample widget. *)
-  TSample = CLASS (TWidget)
-  PRIVATE
-    fMemory: BOOLEAN;
+  TSample = class (TWidget)
+  private
+    fMemory: Boolean;
     fTarget: ALLEGRO_BITMAPptr;
     fOp, fAlphaOp: ALLEGRO_BLEND_OPERATIONS;
     fSrcMode, fDstMode, fSrcAlphaMode, fDstAlphaMode: ALLEGRO_BLEND_MODE;
     fSrcColor, fDstColor, fBlendColor: ALLEGRO_COLOR;
-    fSrcImage, fDstImage: ALLEGRO_BITMAPptr; { If NIL then "Color". }
-    fSrcTinted, fDstTinted: BOOLEAN;
-    fOrientation: INTEGER;
-  PUBLIC
+    fSrcImage, fDstImage: ALLEGRO_BITMAPptr; { If Nil then "Color". }
+    fSrcTinted, fDstTinted: Boolean;
+    fOrientation: Integer;
+  public
   (* Constructor. *)
-    CONSTRUCTOR CreateSample (CONST aMemory: BOOLEAN);
+    constructor CreateSample (const aMemory: Boolean);
   (* Destructor. *)
-    DESTRUCTOR Destroy; OVERRIDE;
+    destructor Destroy; override;
   (* Initializes widget. *)
-    PROCEDURE Initialize; OVERRIDE;
+    procedure Initialize; override;
   (* Render the widget. *)
-    PROCEDURE Draw; OVERRIDE;
+    procedure Draw; override;
 
   (* Blender definition. *)
-    PROPERTY Op: ALLEGRO_BLEND_OPERATIONS READ fOp WRITE fOp;
-    PROPERTY AOp: ALLEGRO_BLEND_OPERATIONS READ fAlphaOp WRITE fAlphaOp;
-    PROPERTY Src: ALLEGRO_BLEND_MODE READ fSrcMode WRITE fSrcMode;
-    PROPERTY ASrc: ALLEGRO_BLEND_MODE READ fSrcAlphaMode WRITE fSrcAlphaMode;
-    PROPERTY Dst: ALLEGRO_BLEND_MODE READ fDstMode WRITE fDstMode;
-    PROPERTY ADst: ALLEGRO_BLEND_MODE READ fDstAlphaMode WRITE fDstAlphaMode;
-    PROPERTY SrcColor: ALLEGRO_COLOR READ fSrcColor WRITE fSrcColor;
-    PROPERTY DstColor: ALLEGRO_COLOR READ fDstColor WRITE fDstColor;
-    PROPERTY Color: ALLEGRO_COLOR READ fBlendColor WRITE fBlendColor;
+    property Op: ALLEGRO_BLEND_OPERATIONS read fOp write fOp;
+    property AOp: ALLEGRO_BLEND_OPERATIONS read fAlphaOp write fAlphaOp;
+    property Src: ALLEGRO_BLEND_MODE read fSrcMode write fSrcMode;
+    property ASrc: ALLEGRO_BLEND_MODE read fSrcAlphaMode write fSrcAlphaMode;
+    property Dst: ALLEGRO_BLEND_MODE read fDstMode write fDstMode;
+    property ADst: ALLEGRO_BLEND_MODE read fDstAlphaMode write fDstAlphaMode;
+    property SrcColor: ALLEGRO_COLOR read fSrcColor write fSrcColor;
+    property DstColor: ALLEGRO_COLOR read fDstColor write fDstColor;
+    property Color: ALLEGRO_COLOR read fBlendColor write fBlendColor;
   { Images to use. }
-    PROPERTY How: INTEGER READ fOrientation WRITE fOrientation;
-    PROPERTY SrcImage: ALLEGRO_BITMAPptr READ fSrcImage WRITE fSrcImage;
-    PROPERTY SrcTinted: BOOLEAN READ fSrcTinted WRITE fSrcTinted;
-    PROPERTY DstImage: ALLEGRO_BITMAPptr READ fDstImage WRITE fDstImage;
-    PROPERTY DstTinted: BOOLEAN READ fDstTinted WRITE fDstTinted;
-  END;
+    property How: Integer read fOrientation write fOrientation;
+    property SrcImage: ALLEGRO_BITMAPptr read fSrcImage write fSrcImage;
+    property SrcTinted: Boolean read fSrcTinted write fSrcTinted;
+    property DstImage: ALLEGRO_BITMAPptr read fDstImage write fDstImage;
+    property DstTinted: Boolean read fDstTinted write fDstTinted;
+  end;
 
 
 
 (* Encapsulates the example. *)
-  TBlend2Example = CLASS (TDialog)
-  PRIVATE
+  TBlend2Example = class (TDialog)
+  private
     Display: ALLEGRO_DISPLAYptr;
     Allegro, Mysha,
     AllegroBmp, MyshaBmp: ALLEGRO_BITMAPptr;
     Sample, SampleBmp: TSample;
-    r, g, b, a: ARRAY [0..2] OF TSlider;
+    r, g, b, a: array [0..2] of TSlider;
 
   (* Triggers for opton changing. *)
-    PROCEDURE onBlendOperationChange (Sender: TObject);
-    PROCEDURE onBlendModeChange (Sender: TObject);
-    PROCEDURE onBlendColorChange (Sender: TObject);
+    procedure onBlendOperationChange (Sender: TObject);
+    procedure onBlendModeChange (Sender: TObject);
+    procedure onBlendColorChange (Sender: TObject);
 
-    PROCEDURE onImageChange (Sender: TObject);
-    PROCEDURE onOrientationChange (Sender: TObject);
-  PUBLIC
+    procedure onImageChange (Sender: TObject);
+    procedure onOrientationChange (Sender: TObject);
+  public
   (* Destructor. *)
-    DESTRUCTOR Destroy; OVERRIDE;
+    destructor Destroy; override;
   (* Initializes the example. *)
-    PROCEDURE Initialize; OVERRIDE;
-  END;
+    procedure Initialize; override;
+  end;
 
 
 
 (* Helper function to build colors. *)
-  FUNCTION Makecol (R, G, B, A: INTEGER): ALLEGRO_COLOR;
-  VAR
+  function Makecol (R, G, B, A: Integer): ALLEGRO_COLOR;
+  var
     af: REAL;
-  BEGIN
+  begin
   { Premultiply alpha. }
     af := a / 255;
-    RESULT :=
+    Result :=
       al_map_rgba_f ((r / 255) * af, (g / 255) * af, (b / 255) * af, af)
-  END;
+  end;
 
 
 
@@ -158,117 +158,117 @@ TYPE
  ***************************************************************************)
 
 (* Constructor. *)
-  CONSTRUCTOR TSample.CreateSample (CONST aMemory: BOOLEAN);
-  BEGIN
+  constructor TSample.CreateSample (const aMemory: Boolean);
+  begin
     INHERITED Create;
     fMemory := aMemory
-  END;
+  end;
 
 
 
 (* Destructor. *)
-  DESTRUCTOR TSample.Destroy;
-  BEGIN
-    IF fTarget <> NIL THEN al_destroy_bitmap (fTarget);
+  destructor TSample.Destroy;
+  begin
+    if fTarget <> Nil then al_destroy_bitmap (fTarget);
     INHERITED Destroy
-  END;
+  end;
 
 
 
 (* Initializes. *)
-  PROCEDURE TSample.Initialize;
-  BEGIN
+  procedure TSample.Initialize;
+  begin
     INHERITED Initialize;
   { Combining ALLEGRO_MEMORY_BITMAP with ALLEGRO_VIDEO_BITMAP is invalid,
     so be sure this will not happen. }
       al_set_new_bitmap_flags (
         al_get_new_bitmap_flags
-        AND (NOT (ALLEGRO_MEMORY_BITMAP OR ALLEGRO_VIDEO_BITMAP))
+        and (not (ALLEGRO_MEMORY_BITMAP or ALLEGRO_VIDEO_BITMAP))
       );
-    IF fMemory THEN
+    if fMemory then
       al_add_new_bitmap_flag (ALLEGRO_MEMORY_BITMAP)
-    ELSE
+    else
       al_add_new_bitmap_flag (ALLEGRO_VIDEO_BITMAP);
     fTarget := al_create_bitmap (320, 200);
-    IF fTarget = NIL THEN
+    if fTarget = Nil then
       AbortExample ('Failed creating target bitmap.')
-  END;
+  end;
 
 
 
 (* Renders the widget. *)
-  PROCEDURE TSample.Draw;
+  procedure TSample.Draw;
 
-    PROCEDURE DrawBackground;
-    VAR
-      Clr: ARRAY [0..1] OF ALLEGRO_COLOR;
-      i, j, c: INTEGER;
-    BEGIN
+    procedure DrawBackground;
+    var
+      Clr: array [0..1] of ALLEGRO_COLOR;
+      i, j, c: Integer;
+    begin
     { Draw a background, in case our target bitmap will end up with alpha in it. }
       Clr[0] := al_map_rgba ($66, $66, $66, $FF);
       Clr[1] := al_map_rgba ($99, $99, $99, $FF);
       c := 0;
-      FOR i := 0 TO (320 DIV 16) DO FOR j := 0 TO (200 DIV 16) DO
-      BEGIN
+      for i := 0 to (320 div 16) do for j := 0 to (200 div 16) do
+      begin
         al_draw_filled_rectangle (
           X + i * 16,      Y + j * 16,
           X + i * 16 + 16, Y + j * 16 + 16,
           Clr[c]
         );
         c := 1 - c
-      END;
-    END;
+      end;
+    end;
 
-    PROCEDURE DrawBitmap (
-      aMode: INTEGER;
+    procedure DrawBitmap (
+      aMode: Integer;
       aBitmap: ALLEGRO_BITMAPptr;
-      aTinted: BOOLEAN;
+      aTinted: Boolean;
       aColor: ALLEGRO_COLOR
     );
-    VAR
-      w, h: INTEGER;
+    var
+      w, h: Integer;
       s: REAL;
-    BEGIN
-      CASE aMode OF
+    begin
+      case aMode of
       ORIENTATION_ORIGINAL:
-        BEGIN
-          IF aBitmap = NIL THEN
+        begin
+          if aBitmap = Nil then
             al_draw_filled_rectangle (0, 0, 320, 200, aColor)
-          ELSE IF aTinted THEN
+          else if aTinted then
             al_draw_tinted_bitmap (aBitmap, aColor, 0, 0, 0)
-          ELSE
+          else
             al_draw_bitmap (aBitmap, 0, 0, 0)
-        END;
+        end;
       ORIENTATION_SCALED:
-        BEGIN
-          IF aBitmap <> NIL THEN
-          BEGIN
+        begin
+          if aBitmap <> Nil then
+          begin
             w := al_get_bitmap_width (aBitmap);
             h := al_get_bitmap_height (aBitmap);
             s := 200 / h * 0.9;
-            IF aTinted THEN
+            if aTinted then
               al_draw_tinted_scaled_bitmap (
                 aBitmap, aColor,
                 0, 0, w, h,
                 160 - w * s / 2, 100 - h * s / 2, w * s, h * s,
                 0
               )
-            ELSE
+            else
               al_draw_scaled_bitmap (
                 aBitmap,
                 0, 0, w, h,
                 160 - w * s / 2, 100 - h * s / 2, w * s, h * s,
                 0
               )
-          END
-          ELSE
+          end
+          else
             al_draw_filled_rectangle (10, 10, 300, 180, aColor)
-        END;
+        end;
       ORIENTATION_ROTATED:
-        BEGIN
-          IF aBitmap = NIL THEN
+        begin
+          if aBitmap = Nil then
             al_draw_filled_circle (160, 100, 100, aColor)
-          ELSE IF aTinted THEN
+          else if aTinted then
             al_draw_tinted_rotated_bitmap (
               aBitmap, aColor,
               160, 100,
@@ -276,7 +276,7 @@ TYPE
               ALLEGRO_TAU / 16,
               0
             )
-          ELSE
+          else
             al_draw_rotated_bitmap (
               aBitmap,
               160, 100,
@@ -284,15 +284,15 @@ TYPE
               ALLEGRO_TAU / 16,
               0
             )
-        END;
-      END
-    END;
+        end;
+      end
+    end;
 
-  VAR
+  var
     State: ALLEGRO_STATE;
-  BEGIN
-    al_store_state (State, ALLEGRO_STATE_TARGET_BITMAP OR ALLEGRO_STATE_BLENDER);
-    TRY
+  begin
+    al_store_state (State, ALLEGRO_STATE_TARGET_BITMAP or ALLEGRO_STATE_BLENDER);
+    try
       DrawBackground;
       al_set_target_bitmap (fTarget);
     { Initialize with destination. }
@@ -306,11 +306,11 @@ TYPE
     { Display results. }
       al_restore_state (State);
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-      al_draw_bitmap (fTarget, SELF.X, SELF.Y, 0)
-    FINALLY
+      al_draw_bitmap (fTarget, Self.X, Self.Y, 0)
+    finally
       al_restore_state (State)
-    END
-  END;
+    end
+  end;
 
 
 
@@ -319,288 +319,288 @@ TYPE
  ***************************************************************************)
 
 (* Triggers for opton changing. *)
-  PROCEDURE TBlend2Example.onBlendOperationChange (Sender: TObject);
-  BEGIN
-    CASE TOptionList (Sender).Tag OF
+  procedure TBlend2Example.onBlendOperationChange (Sender: TObject);
+  begin
+    case TOptionList (Sender).Tag of
     4:
-      BEGIN
+      begin
         Sample.Op := OperationValueList[TOptionList (Sender).Selected];
         SampleBmp.Op := OperationValueList[TOptionList (Sender).Selected]
-      END;
+      end;
     5:
-      BEGIN
+      begin
         Sample.aOp := OperationValueList[TOptionList (Sender).Selected];
         SampleBmp.aOp := OperationValueList[TOptionList (Sender).Selected]
-      END;
-    ELSE
+      end;
+    else
       AbortExample ('Bad trigger (onOperationChange)');
-    END
-  END;
+    end
+  end;
 
-  PROCEDURE TBlend2Example.onBlendModeChange (Sender: TObject);
-  BEGIN
-    CASE TOptionList (Sender).Tag OF
+  procedure TBlend2Example.onBlendModeChange (Sender: TObject);
+  begin
+    case TOptionList (Sender).Tag of
     0:
-      BEGIN
+      begin
         Sample.Src := ModeValueList[TOptionList (Sender).Selected];
         SampleBmp.Src := ModeValueList[TOptionList (Sender).Selected]
-      END;
+      end;
     1:
-      BEGIN
+      begin
         Sample.ASrc := ModeValueList[TOptionList (Sender).Selected];
         SampleBmp.ASrc := ModeValueList[TOptionList (Sender).Selected]
-      END;
+      end;
     2:
-      BEGIN
+      begin
         Sample.Dst := ModeValueList[TOptionList (Sender).Selected];
         SampleBmp.Dst := ModeValueList[TOptionList (Sender).Selected]
-      END;
+      end;
     3:
-      BEGIN
+      begin
         Sample.ADst := ModeValueList[TOptionList (Sender).Selected];
         SampleBmp.ADst := ModeValueList[TOptionList (Sender).Selected]
-      END;
-    ELSE
+      end;
+    else
       AbortExample ('Bad trigger (onOperationChange)');
-    END
-  END;
+    end
+  end;
 
 
 
-  PROCEDURE TBlend2Example.onBlendColorChange (Sender: TObject);
-  VAR
+  procedure TBlend2Example.onBlendColorChange (Sender: TObject);
+  var
     Clr: ALLEGRO_COLOR;
-    Tag: INTEGER;
-  BEGIN
+    Tag: Integer;
+  begin
     Tag := TWidget (Sender).Tag;
     Clr := Makecol (r[Tag].Value, g[Tag].Value, b[Tag].Value, a[Tag].Value);
-    CASE Tag OF
+    case Tag of
     0:
-      BEGIN
+      begin
         Sample.SrcColor := Clr;
         SampleBmp.SrcColor := Clr
-      END;
+      end;
     1:
-      BEGIN
+      begin
         Sample.DstColor := Clr;
         SampleBmp.DstColor := Clr
-      END;
+      end;
     2:
-      BEGIN
+      begin
         Sample.Color := Clr;
         SampleBmp.Color := Clr
-      END;
-    END
-  END;
+      end;
+    end
+  end;
 
 
 
-  PROCEDURE TBlend2Example.onImageChange (Sender: TObject);
-  VAR
+  procedure TBlend2Example.onImageChange (Sender: TObject);
+  var
     lBmp, lBmpMem: ALLEGRO_BITMAPptr;
-  BEGIN
+  begin
   { Get image reference. }
-    CASE TOptionList (Sender).Selected OF
+    case TOptionList (Sender).Selected of
     0, 2:
-      BEGIN
+      begin
         lBmp := Mysha; lBmpMem := MyshaBmp
-      END;
+      end;
     1, 3:
-      BEGIN
+      begin
         lBmp := Allegro; lBmpMem := AllegroBmp
-      END;
-    ELSE
-      BEGIN
-        lBmp := NIL; lBmpMem := NIL
-      END;
-    END;
+      end;
+    else
+      begin
+        lBmp := Nil; lBmpMem := Nil
+      end;
+    end;
   { Assign to samples. }
-    CASE TOptionList (Sender).Tag OF
+    case TOptionList (Sender).Tag of
     SOURCE_IMAGE_TAG:
-      BEGIN
+      begin
         Sample.SrcImage := lBmp;
         SampleBmp.SrcImage := lBmpMem;
         Sample.SrcTinted := TOptionList (Sender).Selected IN [2, 3];
         SampleBmp.SrcTinted := TOptionList (Sender).Selected IN [2, 3]
-      END;
+      end;
     DESTINATION_IMAGE_TAG:
-      BEGIN
+      begin
         Sample.DstImage := lBmp;
         SampleBmp.DstImage := lBmpMem;
         Sample.DstTinted := TOptionList (Sender).Selected IN [2, 3];
         SampleBmp.DstTinted := TOptionList (Sender).Selected IN [2, 3]
-      END;
-    END
-  END;
+      end;
+    end
+  end;
 
 
 
-  PROCEDURE TBlend2Example.onOrientationChange (Sender: TObject);
-  BEGIN
+  procedure TBlend2Example.onOrientationChange (Sender: TObject);
+  begin
     Sample.How := TOptionList (Sender).Selected;
     SampleBmp.How := TOptionList (Sender).Selected
-  END;
+  end;
 
 
 
 (* Destructor. *)
-  DESTRUCTOR TBlend2Example.Destroy;
-  BEGIN
-    IF AllegroBmp <> NIL THEN al_destroy_bitmap (AllegroBmp);
-    IF MyshaBmp <> NIL THEN al_destroy_bitmap (MyshaBmp);
-    IF Allegro <> NIL THEN al_destroy_bitmap (Allegro);
-    IF Mysha <> NIL THEN al_destroy_bitmap (Mysha);
+  destructor TBlend2Example.Destroy;
+  begin
+    if AllegroBmp <> Nil then al_destroy_bitmap (AllegroBmp);
+    if MyshaBmp <> Nil then al_destroy_bitmap (MyshaBmp);
+    if Allegro <> Nil then al_destroy_bitmap (Allegro);
+    if Mysha <> Nil then al_destroy_bitmap (Mysha);
 
     INHERITED Destroy
-  END;
+  end;
 
 
 
 (* Initializes the example. *)
-  PROCEDURE TBlend2Example.Initialize;
+  procedure TBlend2Example.Initialize;
 
-    FUNCTION AddRGBSlider (aNdx, aY: INTEGER): TSlider;
-    VAR
-      aX: INTEGER;
-    BEGIN
+    function AddRGBSlider (aNdx, aY: Integer): TSlider;
+    var
+      aX: Integer;
+    begin
       aX := 1 + aNdx * 6;
 
-      RESULT := TSlider.CreateSlider (255, oHorizontal);
-      RESULT.Tag := aNdx;
-      RESULT.Value := 255;
-      RESULT.OnChange := SELF.onBlendColorChange;
-      SELF.Add (RESULT, aX, aY, 5, 1)
-    END;
+      Result := TSlider.CreateSlider (255, oHorizontal);
+      Result.Tag := aNdx;
+      Result.Value := 255;
+      Result.OnChange := Self.onBlendColorChange;
+      Self.Add (Result, aX, aY, 5, 1)
+    end;
 
-    FUNCTION CreateOptionList (
-      aOptions: ARRAY OF AL_STR;
-      CONST aTag: INTEGER;
+    function CreateOptionList (
+      aOptions: array of AL_STR;
+      const aTag: Integer;
       aCallback: TNotifyEvent
     ): TOptionList;
-    BEGIN
-      RESULT := TOptionList.CreateOptionList (aOptions);
-      RESULT.Tag := aTag;
-      RESULT.OnSelectChange := aCallback;
+    begin
+      Result := TOptionList.CreateOptionList (aOptions);
+      Result.Tag := aTag;
+      Result.OnSelectChange := aCallback;
     { This is to set the initial values of the related objects. }
-      RESULT.Selected := 1; RESULT.Selected := 0
-    END;
+      Result.Selected := 1; Result.Selected := 0
+    end;
 
-  VAR
+  var
     lTextFont: ALLEGRO_FONTptr;
-    Ndx: INTEGER;
-  BEGIN
+    Ndx: Integer;
+  begin
     al_set_new_display_flags (ALLEGRO_GENERATE_EXPOSE_EVENTS);
     Display := al_create_display (800, 600);
-    IF Display = NIL THEN  AbortExample ('Error creating display.');
+    if Display = Nil then  AbortExample ('Error creating display.');
 
     lTextFont := al_load_font ('data/fixed_font.tga', 0, 0);
-    IF lTextFont = NIL THEN
+    if lTextFont = Nil then
       AbortExample ('Failed to load data/fixed_font.tga.');
-    SELF.TextFont := lTextFont;
+    Self.TextFont := lTextFont;
   { Load and prepare bitmaps. }
     Allegro := al_load_bitmap ('data/allegro.pcx');
-    IF Allegro = NIL THEN
+    if Allegro = Nil then
       AbortExample ('Failed to load data/allegro.pcx.');
     Mysha := al_load_bitmap ('data/mysha256x256.png');
-    IF Mysha = NIL THEN
+    if Mysha = Nil then
       AbortExample ('Failed to load data/mysha256x256.png.');
 
     al_add_new_bitmap_flag (ALLEGRO_MEMORY_BITMAP);
     AllegroBmp := al_clone_bitmap (Allegro);
     MyshaBmp := al_clone_bitmap (Mysha);
   { Create dialog. }
-    SELF.Add (
+    Self.Add (
       TLabel.CreateLabel ('Texture'),
       0, 0, 10, 2
     );
-    SELF.Sample := TSample.CreateSample (FALSE);
-    SELF.Add (SELF.Sample, 1, 1, 8, 14);
-    SELF.Add (
+    Self.Sample := TSample.CreateSample (False);
+    Self.Add (Self.Sample, 1, 1, 8, 14);
+    Self.Add (
       TLabel.CreateLabel ('Memory'),
       9, 0, 10, 2
     );
-    SELF.SampleBmp := TSample.CreateSample (TRUE);
-    SELF.Add (SELF.SampleBmp, 10, 1, 8, 14);
+    Self.SampleBmp := TSample.CreateSample (True);
+    Self.Add (Self.SampleBmp, 10, 1, 8, 14);
   { source_image }
-    SELF.Add (
-      TLabel.CreateLabel ('Source', FALSE),
+    Self.Add (
+      TLabel.CreateLabel ('Source', False),
       1, 15, 5, 2
     );
-    SELF.Add (
-      CreateOptionList (ImageNameList, SOURCE_IMAGE_TAG, SELF.onImageChange),
+    Self.Add (
+      CreateOptionList (ImageNameList, SOURCE_IMAGE_TAG, Self.onImageChange),
       1, 16, 4, 6
     );
   { destination_image }
-    SELF.Add (
-      TLabel.CreateLabel ('Destination', FALSE),
+    Self.Add (
+      TLabel.CreateLabel ('Destination', False),
       7, 15, 6, 2
     );
-    SELF.Add (
-      CreateOptionList (ImageNameList, DESTINATION_IMAGE_TAG, SELF.onImageChange),
+    Self.Add (
+      CreateOptionList (ImageNameList, DESTINATION_IMAGE_TAG, Self.onImageChange),
       7, 16, 4, 6
     );
   { draw_mode }
-    SELF.Add (
-      CreateOptionList (['original','scaled','rotated'], 0, SELF.onOrientationChange),
+    Self.Add (
+      CreateOptionList (['original','scaled','rotated'], 0, Self.onOrientationChange),
       13, 16, 4, 6
     );
   { operations[i] }
-    FOR Ndx := 0 TO 3 DO
-    BEGIN
-      SELF.Add ( { operation_label[i] }
-        TLabel.CreateLabel (OperationTypeNameList[Ndx MOD 2], FALSE),
+    for Ndx := 0 to 3 do
+    begin
+      Self.Add ( { operation_label[i] }
+        TLabel.CreateLabel (OperationTypeNameList[Ndx mod 2], False),
         1 + Ndx * 3, 23, 3, 2
       );
-      SELF.Add (
-        CreateOptionList (ModeNameList, Ndx, SELF.onBlendModeChange),
+      Self.Add (
+        CreateOptionList (ModeNameList, Ndx, Self.onBlendModeChange),
         1 + Ndx * 3, 24, 3, 10
       )
-    END;
-    SELF.Add ( { operation_label[4] }
-      TLabel.CreateLabel ('Blend op', FALSE),
+    end;
+    Self.Add ( { operation_label[4] }
+      TLabel.CreateLabel ('Blend op', False),
         13, 23, 3, 2
       );
-    SELF.Add ( { operation_label[5] }
-      TLabel.CreateLabel ('Alpha op', FALSE),
+    Self.Add ( { operation_label[5] }
+      TLabel.CreateLabel ('Alpha op', False),
         16, 23, 3, 2
       );
 
-    FOR Ndx := 4 TO 5 DO
-      SELF.Add ( { operations[i] }
-        CreateOptionList (OperationNameList, Ndx, SELF.onBlendOperationChange),
+    for Ndx := 4 to 5 do
+      Self.Add ( { operations[i] }
+        CreateOptionList (OperationNameList, Ndx, Self.onBlendOperationChange),
         1 + Ndx * 3, 24, 3, 6
       );
 
-    SELF.Add ( { rgba_label[0] }
+    Self.Add ( { rgba_label[0] }
       TLabel.CreateLabel ('Source tint/color RGBA'),
       1, 34, 5, 1
     );
-    SELF.Add ( { rgba_label[1] }
+    Self.Add ( { rgba_label[1] }
       TLabel.CreateLabel ('Dest tint/color RGBA'),
       7, 34, 5, 1
     );
-    SELF.Add ( { rgba_label[2] }
+    Self.Add ( { rgba_label[2] }
       TLabel.CreateLabel ('Const color RGBA'),
       13, 34, 5, 1
     );
-    FOR Ndx := 0 TO 2 DO
-    BEGIN
+    for Ndx := 0 to 2 do
+    begin
       r[Ndx] := AddRGBSlider (Ndx, 35);
       g[Ndx] := AddRGBSlider (Ndx, 36);
       b[Ndx] := AddRGBSlider (Ndx, 37);
       a[Ndx] := AddRGBSlider (Ndx, 38);
     { This is to set the initial values of the related objects. }
       a[Ndx].Value := 0; a[Ndx].Value := 255
-    END;
+    end;
 
     INHERITED Initialize
-  END;
+  end;
 
-VAR
+var
   Blend2Example: TBlend2Example;
 
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
   al_install_keyboard;
   al_install_mouse;
 
@@ -613,4 +613,4 @@ BEGIN
   Blend2Example.Initialize;
   Blend2Example.Run;
   Blend2Example.Free
-END.
+end.

@@ -26,40 +26,40 @@ PROGRAM ex_depth_mask;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     Allegro5, al5font, al5image, al5ttf,
     sysutils;
 
-  CONST
+  const
     FPS = 60;
     COUNT = 80;
 
-  VAR
+  var
     Display: ALLEGRO_DISPLAYptr;
-    W, H: INTEGER;
+    W, H: Integer;
     Timer: ALLEGRO_TIMERptr;
     Queue: ALLEGRO_EVENT_QUEUEptr;
     Mysha, Obp: ALLEGRO_BITMAPptr;
     Font, Font2: ALLEGRO_FONTptr;
     DirectSpeedMeasure: SINGLE;
-    Sprites: ARRAY [1..COUNT] OF RECORD
-      X, Y, Angle: DOUBLE;
-    END;
+    Sprites: array [1..COUNT] of record
+      X, Y, Angle: Double;
+    end;
 
-  PROCEDURE Redraw;
-  VAR
+  procedure Redraw;
+  var
     T: ALLEGRO_TRANSFORM;
-    i, x, y: INTEGER;
-  BEGIN
+    i, x, y: Integer;
+  begin
   { We first draw the Obp background and clear the depth buffer to 1. }
     al_set_render_state (ALLEGRO_ALPHA_TEST, 1);
-    al_set_render_state (ALLEGRO_ALPHA_FUNCTION, ALLEGRO_RENDER_GREATER);
+    al_set_render_state (ALLEGRO_ALPHA_function, ALLEGRO_RENDER_GREATER);
     al_set_render_state (ALLEGRO_ALPHA_TEST_VALUE, 0);
 
     al_set_render_state (ALLEGRO_DEPTH_TEST, 0);
 
-    al_set_render_state (ALLEGRO_WRITE_MASK, ALLEGRO_MASK_DEPTH OR ALLEGRO_MASK_RGBA);
+    al_set_render_state (ALLEGRO_WRITE_MASK, ALLEGRO_MASK_DEPTH or ALLEGRO_MASK_RGBA);
 
     al_clear_depth_buffer (1);
     al_clear_to_color (al_map_rgb_f (0, 0, 0));
@@ -72,13 +72,13 @@ PROGRAM ex_depth_mask;
     al_set_render_state (ALLEGRO_DEPTH_FUNCTION, ALLEGRO_RENDER_ALWAYS);
     al_set_render_state (ALLEGRO_WRITE_MASK, ALLEGRO_MASK_DEPTH);
 
-    FOR i := LOW (Sprites) TO HIGH (Sprites) DO
-    BEGIN
-      al_hold_bitmap_drawing (TRUE);
+    for i := Low (Sprites) to High (Sprites) do
+    begin
+      al_hold_bitmap_drawing (True);
       Y := -H;
-      REPEAT
+      repeat
         x := -W;
-        REPEAT
+        repeat
           al_identity_transform (t);
           al_rotate_transform (t, Sprites[i].Angle);
           al_translate_transform (t, Sprites[i].x + x, Sprites[i].y + y);
@@ -88,12 +88,12 @@ PROGRAM ex_depth_mask;
             0, 0, ALLEGRO_ALIGN_CENTER,
             'Allegro 5'
           );
-          INC (x, W)
-        UNTIL x > 0;
-        INC (y, H)
-      UNTIL y > 0;
-      al_hold_bitmap_drawing (FALSE);
-    END;
+          Inc (x, W)
+        until x > 0;
+        Inc (y, H)
+      until y > 0;
+      al_hold_bitmap_drawing (False);
+    end;
     al_identity_transform (t);
     al_use_transform (t);
 
@@ -110,40 +110,40 @@ PROGRAM ex_depth_mask;
       Font2, al_map_rgb_f (1, 1, 1), W, 0, ALLEGRO_ALIGN_RIGHT,
       '%.1f FPS', [1.0 / DirectSpeedMeasure]
     )
-  END;
+  end;
 
 
 
-  PROCEDURE Update;
-  VAR
-    i: INTEGER;
-  BEGIN
-    FOR i := LOW (Sprites) TO HIGH (Sprites) DO
-    BEGIN
+  procedure Update;
+  var
+    i: Integer;
+  begin
+    for i := Low (Sprites) to High (Sprites) do
+    begin
       Sprites[i].x := Sprites[i].x - 4;
-      IF Sprites[i].x < 80 THEN
+      if Sprites[i].x < 80 then
 	Sprites[i].x := Sprites[i].x + W;
       Sprites[i].angle := Sprites[i].angle + i * ALLEGRO_PI / 180 / COUNT
-    END
-  END;
+    end
+  end;
 
 
 
-  PROCEDURE Initialize;
-  VAR
-    i: INTEGER;
-  BEGIN
-    IF NOT al_init THEN AbortExample ('Could not init Allegro.');
-    IF NOT al_init_image_addon THEN AbortExample ('Failed to init IIO addon.');
+  procedure Initialize;
+  var
+    i: Integer;
+  begin
+    if not al_init then AbortExample ('Could not init Allegro.');
+    if not al_init_image_addon then AbortExample ('Failed to init IIO addon.');
     al_init_font_addon;
-    IF NOT al_init_ttf_addon THEN AbortExample ('Failed to init TTF addon.');
+    if not al_init_ttf_addon then AbortExample ('Failed to init TTF addon.');
     InitPlatformSpecific;
 
     al_get_num_video_adapters;
 
 { TODO: #ifdef ALLEGRO_IPHONE
    al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
-   #endif
+   #ENDIF
 }
     al_set_new_display_option (
       ALLEGRO_SUPPORTED_ORIENTATIONS, ALLEGRO_DISPLAY_ORIENTATION_ALL,
@@ -152,30 +152,30 @@ PROGRAM ex_depth_mask;
     al_set_new_display_option (ALLEGRO_DEPTH_SIZE, 8,
       ALLEGRO_SUGGEST);
 
-    al_set_new_bitmap_flags (ALLEGRO_MIN_LINEAR OR ALLEGRO_MAG_LINEAR);
+    al_set_new_bitmap_flags (ALLEGRO_MIN_LINEAR or ALLEGRO_MAG_LINEAR);
 
     W := 640; H := 480;
     Display := al_create_display (W, H);
-    IF Display = NIL THEN AbortExample ('Error creating display.');
+    if Display = Nil then AbortExample ('Error creating display.');
 
-    IF NOT al_install_keyboard THEN AbortExample ('Error installing keyboard.');
+    if not al_install_keyboard then AbortExample ('Error installing keyboard.');
 
     Font := al_load_font ('data/DejaVuSans.ttf', 40, 0);
-    IF Font = NIL THEN AbortExample ('Error loading data/DejaVuSans.ttf');
+    if Font = Nil then AbortExample ('Error loading data/DejaVuSans.ttf');
     Font2 := al_load_font ('data/DejaVuSans.ttf', 12, 0);
-    IF Font2 = NIL THEN AbortExample ('Error loading data/DejaVuSans.ttf');
+    if Font2 = Nil then AbortExample ('Error loading data/DejaVuSans.ttf');
 
     Mysha := al_load_bitmap ('data/mysha.pcx');
-    IF Mysha = NIL THEN AbortExample ('Error loading data/mysha.pcx');
+    if Mysha = Nil then AbortExample ('Error loading data/mysha.pcx');
 
     Obp := al_load_bitmap ('data/obp.jpg');
-    IF Obp = NIL THEN AbortExample ('Error loading data/obp.jpg');
+    if Obp = Nil then AbortExample ('Error loading data/obp.jpg');
 
-    FOR i := LOW (Sprites) TO HIGH (Sprites) DO
-    BEGIN
-      Sprites[i].x := (i MOD 4) * 160;
+    for i := Low (Sprites) to High (Sprites) do
+    begin
+      Sprites[i].x := (i mod 4) * 160;
       Sprites[i].y := (i / 4) * 24
-    END;
+    end;
     Timer := al_create_timer (1.0 / FPS);
 
     Queue := al_create_event_queue;
@@ -184,26 +184,26 @@ PROGRAM ex_depth_mask;
     al_register_event_source (Queue, al_get_display_event_source (Display));
 
     DirectSpeedMeasure := al_get_time
-  END;
+  end;
 
 
 
-  PROCEDURE Run;
-  VAR
-    Done, NeedRedraw, Background: BOOLEAN;
+  procedure Run;
+  var
+    Done, NeedRedraw, Background: Boolean;
     Event: ALLEGRO_EVENT;
-    t: DOUBLE;
-  BEGIN
-    Done := FALSE;
-    NeedRedraw := TRUE;
-    Background := FALSE;
+    t: Double;
+  begin
+    Done := False;
+    NeedRedraw := True;
+    Background := False;
     al_start_timer (Timer);
 
-    WHILE NOT Done DO
-    BEGIN
-      IF NOT Background AND NeedRedraw
-      AND al_is_event_queue_empty (Queue) THEN
-      BEGIN
+    while not Done do
+    begin
+      if not Background and NeedRedraw
+      and al_is_event_queue_empty (Queue) then
+      begin
 	t := -al_get_time;
 
 	Redraw;
@@ -211,34 +211,34 @@ PROGRAM ex_depth_mask;
 	t := t + al_get_time;
 	DirectSpeedMeasure := t;
 	al_flip_display;
-	NeedRedraw := FALSE;
-      END;
+	NeedRedraw := False;
+      end;
 
       al_wait_for_event (Queue, @Event);
-      CASE Event.ftype OF
+      case Event.ftype OF
       ALLEGRO_EVENT_KEY_CHAR:
-	IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN Done := TRUE;
+	if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then Done := True;
       ALLEGRO_EVENT_DISPLAY_CLOSE:
-	Done := TRUE;
+	Done := True;
       ALLEGRO_EVENT_DISPLAY_HALT_DRAWING:
-	BEGIN
-	  Background := TRUE;
+	begin
+	  Background := True;
 	  al_acknowledge_drawing_halt (Event.display.source)
-	END;
+	end;
       ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING:
-	Background := FALSE;
+	Background := False;
       ALLEGRO_EVENT_DISPLAY_RESIZE:
 	al_acknowledge_resize (Event.display.source);
       ALLEGRO_EVENT_TIMER:
-	BEGIN
+	begin
 	  Update;
-	  NeedRedraw := TRUE;
-	END;
-      END
-    END
-  END;
+	  NeedRedraw := True;
+	end;
+      end
+    end
+  end;
 
-BEGIN
+begin
   Initialize;
   Run
-END.
+end.

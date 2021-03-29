@@ -26,54 +26,54 @@ PROGRAM ex_winfull;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common, allegro5;
 
-VAR
+var
   Win, Full: ALLEGRO_DISPLAYptr;
   Events: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
 
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_install_keyboard;
 
-  IF al_get_num_video_adapters < 2 THEN
+  if al_get_num_video_adapters < 2 then
     AbortExample ('This example requires multiple video adapters.');
 
   al_set_new_display_adapter (1);
   al_set_new_display_flags (ALLEGRO_WINDOWED);
   Win := al_create_display (640, 480);
-  IF Win = NIL THEN
+  if Win = Nil then
     AbortExample ('Error creating windowed display on adapter 1 '
 	+'(do you have multiple adapters?).');
 
   al_set_new_display_adapter (0);
   al_set_new_display_flags (ALLEGRO_FULLSCREEN);
   full := al_create_display (640, 480);
-  IF Full = NIL THEN
+  if Full = Nil then
     AbortExample ('Error creating fullscreen display on adapter 0.');
 
   Events := al_create_event_queue;
   al_register_event_source (Events, al_get_keyboard_event_source);
 
-  WHILE TRUE DO
-  BEGIN
-    WHILE NOT al_is_event_queue_empty (Events) DO
-    BEGIN
+  while True do
+  begin
+    while not al_is_event_queue_empty (Events) do
+    begin
       al_get_next_event (Events, Event);
-      IF (Event.ftype = ALLEGRO_EVENT_KEY_DOWN)
-      AND (Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE)
-      THEN BEGIN
+      if (Event.ftype = ALLEGRO_EVENT_KEY_DOWN)
+      and (Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE)
+      then begin
 	al_destroy_event_queue (Events);
 
 	al_destroy_display (Win);
 	al_destroy_display (Full);
 
 	HALT (0)
-      END
-    END;
+      end
+    end;
 
     al_set_target_backbuffer (Full);
     al_clear_to_color (al_map_rgb (random (255), random (255), random (255)));
@@ -84,10 +84,10 @@ BEGIN
     al_flip_display;
 
     al_rest (0.5)
-  END;
+  end;
 
   al_destroy_event_queue (Events);
 
   al_destroy_display (Win);
   al_destroy_display (Full)
-END.
+end.

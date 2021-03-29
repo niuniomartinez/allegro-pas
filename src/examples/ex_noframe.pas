@@ -26,25 +26,25 @@ PROGRAM ex_noframe;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5, al5image;
 
-VAR
+var
   Display: ALLEGRO_DISPLAYptr;
   Bitmap: ALLEGRO_BITMAPptr;
   Events: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
-  Down: BOOLEAN;
-  DownX, DownY, cx, cy: LONGINT;
+  Down: Boolean;
+  DownX, DownY, cx, cy: LongInt;
   Timer: ALLEGRO_TIMERptr;
 
-BEGIN
-  Down := FALSE;
+begin
+  Down := False;
   DownX := 0; DownY := 0;
   cx := 0; cy := 0;
 
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_install_mouse;
   al_install_keyboard;
@@ -53,10 +53,10 @@ BEGIN
 
   al_set_new_display_flags (ALLEGRO_FRAMELESS);
   Display := al_create_display (300, 200);
-  IF Display = NIL THEN AbortExample ('Error creating display.');
+  if Display = Nil then AbortExample ('Error creating display.');
 
   Bitmap := al_load_bitmap ('data/fakeamp.bmp');
-  IF Bitmap = NIL THEN AbortExample ('Error loading fakeamp.bmp.');
+  if Bitmap = Nil then AbortExample ('Error loading fakeamp.bmp.');
 
   Timer := al_create_timer (1 / 30);
 
@@ -68,43 +68,43 @@ BEGIN
 
   al_start_timer (Timer);
 
-  WHILE TRUE DO
-  BEGIN
+  while True do
+  begin
     al_wait_for_event (Events, @Event);
-    CASE Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-      BEGIN
-	IF (Event.mouse.button = 1) AND (Event.mouse.x <> 0) THEN
-	BEGIN
-	  Down := TRUE;
+      begin
+	if (Event.mouse.button = 1) and (Event.mouse.x <> 0) then
+	begin
+	  Down := True;
 	  DownX := Event.mouse.x;
 	  DownY := Event.mouse.y
-	END;
-	IF Event.mouse.button = 2 THEN
+	end;
+	if Event.mouse.button = 2 then
 	  al_set_display_flag (
 	    Display, ALLEGRO_FRAMELESS,
-	    NOT ((al_get_display_flags (Display) AND ALLEGRO_FRAMELESS) <> 0)
+	    not ((al_get_display_flags (Display) and ALLEGRO_FRAMELESS) <> 0)
 	  )
-      END;
+      end;
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      BREAK;
+      Break;
     ALLEGRO_EVENT_MOUSE_BUTTON_UP:
-      IF Event.mouse.button = 1 THEN Down := FALSE;
+      if Event.mouse.button = 1 then Down := False;
     ALLEGRO_EVENT_MOUSE_AXES:
-      IF Down THEN
-	IF al_get_mouse_cursor_position (cx, cy) THEN
+      if Down then
+	if al_get_mouse_cursor_position (cx, cy) then
 	  al_set_window_position (Display, cx - DownX, cy - DownY);
     ALLEGRO_EVENT_KEY_DOWN:
-      IF event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN BREAK;
+      if event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then Break;
     ALLEGRO_EVENT_TIMER:
-      BEGIN
+      begin
 	al_draw_bitmap (Bitmap, 0, 0, 0);
 	al_flip_display
-      END;
-    END
-  END;
+      end;
+    end
+  end;
 
   al_destroy_timer (Timer);
   al_destroy_event_queue (Events);
   al_destroy_display (Display)
-END.
+end.

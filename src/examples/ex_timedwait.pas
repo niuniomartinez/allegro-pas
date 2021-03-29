@@ -31,96 +31,96 @@ PROGRAM ex_timedwait;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5;
 
 
-PROCEDURE TestRelativeTimeout (Queue: ALLEGRO_EVENT_QUEUEptr);
-VAR
+procedure TestRelativeTimeout (Queue: ALLEGRO_EVENT_QUEUEptr);
+var
   Event: ALLEGRO_EVENT;
   Shade: REAL;
-BEGIN
+begin
   Shade := 0.1;
 
-  WHILE TRUE DO
-  BEGIN
-    IF al_wait_for_event_timed (Queue, @Event, 0.1) THEN
-    BEGIN
-      IF Event.ftype = ALLEGRO_EVENT_KEY_DOWN THEN
-      BEGIN
-        IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-          EXIT
-        ELSE
+  while True do
+  begin
+    if al_wait_for_event_timed (Queue, @Event, 0.1) then
+    begin
+      if Event.ftype = ALLEGRO_EVENT_KEY_DOWN then
+      begin
+        if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+          Exit
+        else
           Shade := 0.1;
-      END
-    END
-    ELSE BEGIN
+      end
+    end
+    else begin
     { timed out }
       Shade := Shade + 0.1;
-      IF Shade > 1 THEN Shade := 1
-    END;
+      if Shade > 1 then Shade := 1
+    end;
 
     al_clear_to_color (al_map_rgba_f (0.5 * Shade, 0.25 * Shade, Shade, 0));
     al_flip_display
-  END
-END;
+  end
+end;
 
 
 
-  PROCEDURE TestAbsoluteTimeout (Queue: ALLEGRO_EVENT_QUEUEptr);
-  VAR
+  procedure TestAbsoluteTimeout (Queue: ALLEGRO_EVENT_QUEUEptr);
+  var
     Timeout: ALLEGRO_TIMEOUT;
     Event: ALLEGRO_EVENT;
     Shade: REAL;
-    Ret: BOOLEAN;
-  BEGIN
+    Ret: Boolean;
+  begin
     Shade := 0.1;
 
-    WHILE TRUE DO
-    BEGIN
+    while True do
+    begin
       al_init_timeout (Timeout, 0.1);
       Ret := al_wait_for_event_until (Queue, @Event, Timeout);
-      WHILE Ret DO
-      BEGIN
-        IF Event.ftype = ALLEGRO_EVENT_KEY_DOWN THEN
-        BEGIN
-          IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-            EXIT
-          ELSE
+      while Ret do
+      begin
+        if Event.ftype = ALLEGRO_EVENT_KEY_DOWN then
+        begin
+          if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+            Exit
+          else
             Shade := 0.1
-        END;
+        end;
         Ret := al_wait_for_event_until (Queue, @Event, Timeout)
-      END;
+      end;
 
-      IF NOT Ret THEN
-      BEGIN
+      if not Ret then
+      begin
       { timed out }
         Shade := Shade + 0.1;
-        IF Shade > 1 THEN Shade := 1
-      END;
+        if Shade > 1 then Shade := 1
+      end;
 
       al_clear_to_color (al_map_rgba_f (Shade, 0.5 * Shade, 0.25 * Shade, 0));
       al_flip_display
-    END
-  END;
+    end
+  end;
 
 
 
-VAR
+var
   dpy: ALLEGRO_DISPLAYptr;
   Queue: ALLEGRO_EVENT_QUEUEptr;
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_install_keyboard;
 
   dpy := al_create_display (640, 480);
-  IF dpy = NIL THEN AbortExample ('Unable to set any graphic mode.');
+  if dpy = Nil then AbortExample ('Unable to set any graphic mode.');
 
   Queue := al_create_event_queue;
   al_register_event_source (Queue, al_get_keyboard_event_source);
 
   TestRelativeTimeout (Queue);
   TestAbsoluteTimeout (Queue);
-END.
+end.

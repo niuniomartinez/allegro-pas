@@ -31,105 +31,105 @@ PROGRAM ex_memfile;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5, al5base, al5memfile,
   sysutils;
 
-CONST
+const
   DataSize = 1024;
-VAR
+var
   MemFile: ALLEGRO_FILEptr;
   Data: PBYTE;
-  i: INTEGER;
+  i: Integer;
   Ret: AL_INT32;
-  Buffer: STRING[50]; { <-- This is a Pascal STRING not an ANSISTRING! }
+  Buffer: String[50]; { <-- This is a Pascal String not an AnsiString! }
 
-  PROCEDURE EndProgram;
-  BEGIN
+  procedure EndProgram;
+  begin
     al_fclose (MemFile);
     Freemem (Data, DataSize);
 
-    CloseLog (TRUE);
+    CloseLog (True);
 
     HALT (1)
-  END;
+  end;
 
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
   OpenLog;
 { Reserve memory for the mem file. }
   Getmem (Data, DataSize);
-  IF NOT Assigned (Data) THEN AbortExample ('Out of memory.');
+  if not Assigned (Data) then AbortExample ('Out of memory.');
 
   LogWriteLn ('Creating memfile.');
   MemFile := al_open_memfile (Data, DataSize, 'rw');
-  IF NOT Assigned (MemFile) THEN
-  BEGIN
+  if not Assigned (MemFile) then
+  begin
     LogWriteLn ('Error opening memfile :(');
     EndProgram
-  END;
+  end;
 
   LogWriteLn ('Writing data to memfile.');
-  FOR i := 0 TO (DataSize DIV 4) - 1 DO
-    IF al_fwrite32le (MemFile, i) < 4 THEN
-    BEGIN
+  for i := 0 to (DataSize div 4) - 1 do
+    if al_fwrite32le (MemFile, i) < 4 then
+    begin
       LogPrintLn ('Failed to write %i to memfile.', [i]);
       EndProgram
-    END;
+    end;
 
   al_fseek (MemFile, 0, ALLEGRO_SEEK_SET);
 
   LogWriteLn ('Reading and testing data from memfile.');
-  FOR i := 0 TO (DataSize DIV 4) - 1 DO
-  BEGIN
+  for i := 0 to (DataSize div 4) - 1 do
+  begin
     Ret := al_fread32le (MemFile);
-    IF (Ret <> i) OR al_feof (MemFile) THEN
-    BEGIN
+    if (Ret <> i) or al_feof (MemFile) then
+    begin
       LogPrintLn ('Item %d failed to verify, got %d.', [i, Ret]);
       EndProgram
-    END
-  END;
+    end
+  end;
 
-  IF al_feof (MemFile) THEN
-  BEGIN
+  if al_feof (MemFile) then
+  begin
     LogWriteLn ('EOF indicator prematurely set!');
     EndProgram
-  END;
+  end;
 
   LogWriteLn ('Testing the ungetc buffer.');
   al_fseek (MemFile, 0, ALLEGRO_SEEK_SET);
 
   i := 0;
-  WHILE al_fungetc (MemFile, i) <> AL_EOF DO INC (i);
+  while al_fungetc (MemFile, i) <> AL_EOF do Inc (i);
   LogPrintLn ('Length of ungetc buffer: %d.', [i]);
 
-  IF al_ftell (MemFile) <> -i THEN
-  BEGIN
+  if al_ftell (MemFile) <> -i then
+  begin
     LogPrintLn (
       'Current position is not correct. Expected -%d, but got %d.',
       [i, al_ftell (MemFile)]
     );
     EndProgram
-  END;
+  end;
 
-  DEC (i);
-  WHILE i >= 0 DO
-  BEGIN
-    IF i <> al_fgetc (MemFile) THEN
-    BEGIN
+  Dec (i);
+  while i >= 0 do
+  begin
+    if i <> al_fgetc (MemFile) then
+    begin
       LogWriteLn ('Failed to verify ungetc data.');
       EndProgram
-    END;
-    DEC (i)
-  END;
+    end;
+    Dec (i)
+  end;
 
-  IF al_ftell (MemFile) <> 0 THEN
-  BEGIN
+  if al_ftell (MemFile) <> 0 then
+  begin
     LogWriteLn ('Current position is not correct after reading back the ungetc buffer.');
     LogPrintLn ('Expected 0, but got %d.', [al_ftell (MemFile)]);
     EndProgram
-  END;
+  end;
 
   LogWriteLn ('Working with strings.');
 { I (Guillermo) am not sure why al_fgets must read 15 chars, but string length
@@ -140,21 +140,21 @@ BEGIN
   be that way. }
   al_fputs (MemFile, 'legro rocks!');
   al_fseek (MemFile, 0, ALLEGRO_SEEK_SET);
-  al_fungetc (MemFile, ORD ('l'));
-  al_fungetc (MemFile, ORD ('A'));
+  al_fungetc (MemFile, Ord ('l'));
+  al_fungetc (MemFile, Ord ('A'));
   al_fgets (MemFile, @Buffer[1], 15);
   Buffer[0] := #14; { String length. }
-  IF Buffer <> 'Allegro rocks!' THEN
-  BEGIN
+  if Buffer <> 'Allegro rocks!' then
+  begin
     LogPrintLn ('Expected to see "Allegro rocks!" but got "%s" instead.', [Buffer]);
     LogWriteLn ('(Maybe the ungetc buffer isn''t big enough.)');
     EndProgram
-  END;
+  end;
 
   LogWriteLn ('Done.');
 
   al_fclose (MemFile);
   Freemem (Data, DataSize);
 
-  CloseLog (TRUE)
-END.
+  CloseLog (True)
+end.

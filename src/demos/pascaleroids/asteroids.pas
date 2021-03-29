@@ -1,4 +1,4 @@
-UNIT Asteroids;
+unit Asteroids;
 (*< Defines all asteroid stuff. *)
 (*
   Copyright (c) 2019 Guillermo Martínez J.
@@ -23,12 +23,12 @@ UNIT Asteroids;
     distribution.
  *)
 
-INTERFACE
+interface
 
-  USES
+  uses
     Engine;
 
-  CONST
+  const
   (* How much big asteroids. *)
     NUM_LARGE = 6;
   (* How much medium asteroids. *)
@@ -39,73 +39,73 @@ INTERFACE
     NUM_ASTS = NUM_LARGE + NUM_MEDIUM + NUM_SMALL;
 
 
-  TYPE
+  type
   (* Defines an asteroid. *)
-    TAsteroid = CLASS (TMoveableSprite)
-    PRIVATE
+    TAsteroid = class (TMoveableSprite)
+    private
     (* Generates asteroid vectors, moving the given templates randomly. *)
-      PROCEDURE MakeVectors (
-        OUT tpx, tpy: ARRAY OF INTEGER;
-        CONST aSize: INTEGER
+      procedure MakeVectors (
+        out tpx, tpy: array of Integer;
+        const aSize: Integer
       );
-    PUBLIC
+    public
     (* Initializes the asteroid.
 
        This generates a new asteroid shape, sets its initial position and
        velocity. *)
-      PROCEDURE InitializeAsteroid (CONST aSize: INTEGER);
-    END;
+      procedure InitializeAsteroid (const aSize: Integer);
+    end;
 
 
 
   (* A power up. *)
-    TPowerUp = CLASS (TAsteroid)
-    PUBLIC
+    TPowerUp = class (TAsteroid)
+    public
     (* Initializes the sprite. *)
-      PROCEDURE Initialize; OVERRIDE;
-    END;
+      procedure Initialize; override;
+    end;
 
 
 
   (* THe asteroid manager. *)
-    TAsteroidManager = CLASS (TManager)
-    PRIVATE
-      fLevel, fGracePeriod: INTEGER;
-      fAsteroids: ARRAY [0..NUM_ASTS - 1] OF TAsteroid;
+    TAsteroidManager = class (TManager)
+    private
+      fLevel, fGracePeriod: Integer;
+      fAsteroids: array [0..NUM_ASTS - 1] of TAsteroid;
       fPowerUp: TPowerUp;
 
-      FUNCTION GetAsteroid (CONST Ndx: INTEGER): TAsteroid; INLINE;
-    PUBLIC
+      function GetAsteroid (const Ndx: Integer): TAsteroid; inline;
+    public
     (* Constructor. *)
-      CONSTRUCTOR Create;
+      constructor Create;
     (* Destructor. *)
-      DESTRUCTOR Destroy; OVERRIDE;
+      destructor Destroy; override;
     (* Initializes the manager. *)
-      PROCEDURE Initialize; OVERRIDE;
+      procedure Initialize; override;
     (* Starts a new game. *)
-      PROCEDURE NewGame; OVERRIDE;
+      procedure NewGame; override;
     (* Creates a new group of asteroids. *)
-      PROCEDURE NewBoard (aNum: INTEGER);
+      procedure NewBoard (aNum: Integer);
     (* Updates sprites. *)
-      PROCEDURE Update; OVERRIDE;
+      procedure Update; override;
     (* Draw sprites. *)
-      PROCEDURE Paint; OVERRIDE;
+      procedure Paint; override;
 
     (* Current level. *)
-      PROPERTY Level: INTEGER READ fLevel WRITE fLevel;
+      property Level: Integer read fLevel write fLevel;
     (* Access to asteroids. *)
-      PROPERTY Asteroids[Ndx: INTEGER]: TAsteroid READ GetAsteroid;
+      property Asteroids[Ndx: Integer]: TAsteroid read GetAsteroid;
     (* Access to power-up. *)
-      PROPERTY PowerUp: TPowerUp READ fPowerUp;
-    END;
+      property PowerUp: TPowerUp read fPowerUp;
+    end;
 
-IMPLEMENTATION
+implementation
 
-  USES
+  uses
     GameMath, Graphics,
     Allegro5;
 
-  CONST
+  const
   (* Ship grace period. *)
     GRACE_PERIOD = 50;
   (* Rotation rate. *)
@@ -127,71 +127,71 @@ IMPLEMENTATION
   (* Variation in the asteroid shape. *)
     AVAR = 1.7;
   (* Used by intersection. *)
-    MAX_RAD_LARGE  = MAX_RADIUS + TRUNC (MAX_RADIUS / AVAR);
-    MAX_RAD_MEDIUM = MAX_RADIUS + TRUNC (MAX_RADIUS / AVAR / MRAT);
-    MAX_RAD_SMALL  = MAX_RADIUS + TRUNC (MAX_RADIUS / AVAR / SRAT);
+    MAX_RAD_LARGE  = MAX_RADIUS + Trunc (MAX_RADIUS / AVAR);
+    MAX_RAD_MEDIUM = MAX_RADIUS + Trunc (MAX_RADIUS / AVAR / MRAT);
+    MAX_RAD_SMALL  = MAX_RADIUS + Trunc (MAX_RADIUS / AVAR / SRAT);
 
-  VAR
+  var
   (* Templates for asteroids. *)
-    px, py: ARRAY [0..2, 0..8] OF INTEGER;
+    px, py: array [0..2, 0..8] of Integer;
 (*
  * TAsteroid
  ***************************************************************************)
 
  (* Generates asteroid vectors, moving the given template randomly. *)
-   PROCEDURE TAsteroid.MakeVectors (
-     OUT tpx, tpy: ARRAY OF INTEGER;
-     CONST aSize: INTEGER
+   procedure TAsteroid.MakeVectors (
+     out tpx, tpy: array of Integer;
+     const aSize: Integer
    );
-   VAR
-     lDeviation, Factor, Ndx: INTEGER;
-   BEGIN
+   var
+     lDeviation, Factor, Ndx: Integer;
+   begin
    { Calculate maximun deviation. }
-     IF aSize = LARGE THEN
-       lDeviation := TRUNC (MAX_RADIUS / AVAR)
-     ELSE BEGIN
+     if aSize = LARGE then
+       lDeviation := Trunc (MAX_RADIUS / AVAR)
+     else begin
      { Reduce deviation as it's a medium or small one. }
        Factor := aSize * SIZE_RATIO;
-       lDeviation := TRUNC (MAX_RADIUS / Factor / AVAR)
-     END;
+       lDeviation := Trunc (MAX_RADIUS / Factor / AVAR)
+     end;
    { Calculate initial and end point. }
-     tpx[0] := TRUNC (GetRandomNumber (-lDeviation, lDeviation) + px[aSize][0]);
-     tpy[0] := TRUNC (GetRandomNumber (-lDeviation, lDeviation) + py[aSize][0]);
+     tpx[0] := Trunc (GetRandomNumber (-lDeviation, lDeviation) + px[aSize][0]);
+     tpy[0] := Trunc (GetRandomNumber (-lDeviation, lDeviation) + py[aSize][0]);
    { Close polygon. }
-     tpx[HIGH (tpx)] := tpx[0];
-     tpx[HIGH (tpy)] := tpy[0];
+     tpx[High (tpx)] := tpx[0];
+     tpx[High (tpy)] := tpy[0];
    { Calculate the rest of the points. }
-     FOR Ndx := LOW (tpx) TO HIGH (tpx) DO
-     BEGIN
-       tpx[Ndx] := TRUNC (GetRandomNumber (-lDeviation, lDeviation) + px[aSize][Ndx]);
-       tpy[Ndx] := TRUNC (GetRandomNumber (-lDeviation, lDeviation) + py[aSize][Ndx])
-     END
-   END;
+     for Ndx := Low (tpx) to High (tpx) do
+     begin
+       tpx[Ndx] := Trunc (GetRandomNumber (-lDeviation, lDeviation) + px[aSize][Ndx]);
+       tpy[Ndx] := Trunc (GetRandomNumber (-lDeviation, lDeviation) + py[aSize][Ndx])
+     end
+   end;
 
 
 
 (* Initializes. *)
-  PROCEDURE TAsteroid.InitializeAsteroid (CONST aSize: INTEGER);
-  VAR
-    lvx, lvy: ARRAY OF INTEGER;
-  BEGIN
-    INHERITED Initialize;
-    IF aSize = LARGE THEN
-    BEGIN
+  procedure TAsteroid.InitializeAsteroid (const aSize: Integer);
+  var
+    lvx, lvy: array of Integer;
+  begin
+    inherited Initialize;
+    if aSize = LARGE then
+    begin
       SetLength (lvx, 9); SetLength (lvy, 9)
-    END
-    ELSE BEGIN
+    end
+    else begin
       SetLength (lvx, 5); SetLength (lvy, 5)
-    END;
-    SELF.MakeVectors (lvx, lvy, aSize);
-    SELF.Polygon.SetVertices (lvx, lvy);
-    CASE aSize OF
-      LARGE:  SELF.Polygon.Color := LightBlue;
-      MEDIUM: SELF.Polygon.Color := Cyan;
-      SMALL:  SELF.Polygon.Color := Magenta;
-    END;
-    SELF.Polygon.Fill := TRUE
-  END;
+    end;
+    Self.MakeVectors (lvx, lvy, aSize);
+    Self.Polygon.SetVertices (lvx, lvy);
+    case aSize of
+      LARGE:  Self.Polygon.Color := LightBlue;
+      MEDIUM: Self.Polygon.Color := Cyan;
+      SMALL:  Self.Polygon.Color := Magenta;
+    end;
+    Self.Polygon.Fill := True
+  end;
 
 
 
@@ -200,20 +200,20 @@ IMPLEMENTATION
  ***************************************************************************)
 
 (* Initializes. *)
-  PROCEDURE TPowerUp.Initialize;
-  CONST
-    PowerX: ARRAY [0..8] OF INTEGER = (
+  procedure TPowerUp.Initialize;
+  const
+    PowerX: array [0..8] of Integer = (
       10, 2, 0, -2, -10, -2, 0, 2, 10
     );
-    PowerY: ARRAY [0..8] OF INTEGER = (
+    PowerY: array [0..8] of Integer = (
       0, 2, 10, 2, 0, -2, -10, -2, 0
     );
-  BEGIN
-    SELF.Radius := 8;
+  begin
+    Self.Radius := 8;
     Polygon.Reset;
     Polygon.SetVertices (PowerX, PowerY);
     Polygon.Color := Green
-  END;
+  end;
 
 
 
@@ -221,167 +221,167 @@ IMPLEMENTATION
  * TAsteroidManager
  ***************************************************************************)
 
-  FUNCTION TAsteroidManager.GetAsteroid (CONST Ndx: INTEGER): TAsteroid;
-  BEGIN
-    RESULT := fAsteroids[Ndx]
-  END;
+  function TAsteroidManager.GetAsteroid (const Ndx: Integer): TAsteroid;
+  begin
+    Result := fAsteroids[Ndx]
+  end;
 
 
 
 (* Constructor. *)
-  CONSTRUCTOR TAsteroidManager.Create;
-  VAR
-    Ndx: INTEGER;
-  BEGIN
-    INHERITED Create;
-    FOR Ndx := LOW (fAsteroids) TO HIGH (fAsteroids) DO
+  constructor TAsteroidManager.Create;
+  var
+    Ndx: Integer;
+  begin
+    inherited Create;
+    for Ndx := Low (fAsteroids) to High (fAsteroids) do
       fAsteroids[Ndx] := TAsteroid.Create;
     fPowerUp := TPowerUp.Create
-  END;
+  end;
 
 
 
 (* Destructor. *)
-  DESTRUCTOR TAsteroidManager.Destroy;
-  VAR
-    Ndx: INTEGER;
-  BEGIN
+  destructor TAsteroidManager.Destroy;
+  var
+    Ndx: Integer;
+  begin
     fPowerUp.Free;
-    FOR Ndx := LOW (fAsteroids) TO HIGH (fAsteroids) DO
+    for Ndx := Low (fAsteroids) to High (fAsteroids) do
       fAsteroids[Ndx].Free;
-    INHERITED Destroy
-  END;
+    inherited Destroy
+  end;
 
 
 
 (* Initializes. *)
-  PROCEDURE TAsteroidManager.Initialize;
-  CONST
-    btpx: ARRAY [0..8] OF INTEGER =
-      (0, MAX_RADIUS DIV 2, MAX_RADIUS, MAX_RADIUS DIV 2, 0, -MAX_RADIUS DIV 2,
-       -MAX_RADIUS, -MAX_RADIUS DIV 2, 0);
-    btpy: ARRAY [0..8] OF INTEGER =
-      (MAX_RADIUS, MAX_RADIUS DIV 2, 0, -MAX_RADIUS DIV 2, -MAX_RADIUS,
-       -MAX_RADIUS DIV 2, 0, MAX_RADIUS DIV 2, MAX_RADIUS);
-  VAR
-    lpx, lpy: ARRAY [0..4] OF INTEGER;
-    Ndx: INTEGER;
-  BEGIN
+  procedure TAsteroidManager.Initialize;
+  const
+    btpx: array [0..8] of Integer =
+      (0, MAX_RADIUS div 2, MAX_RADIUS, MAX_RADIUS div 2, 0, -MAX_RADIUS div 2,
+       -MAX_RADIUS, -MAX_RADIUS div 2, 0);
+    btpy: array [0..8] of Integer =
+      (MAX_RADIUS, MAX_RADIUS div 2, 0, -MAX_RADIUS div 2, -MAX_RADIUS,
+       -MAX_RADIUS div 2, 0, MAX_RADIUS div 2, MAX_RADIUS);
+  var
+    lpx, lpy: array [0..4] of Integer;
+    Ndx: Integer;
+  begin
   { Templates. }
-    lpx[0] := TRUNC (cos (  0 * DEG_TO_RAD) * MAX_RADIUS);
-    lpx[1] := TRUNC (cos ( 72 * DEG_TO_RAD) * MAX_RADIUS);
-    lpx[2] := TRUNC (cos (144 * DEG_TO_RAD) * MAX_RADIUS);
-    lpx[3] := TRUNC (cos (216 * DEG_TO_RAD) * MAX_RADIUS);
-    lpx[4] := TRUNC (cos (288 * DEG_TO_RAD) * MAX_RADIUS);
-    lpy[0] := TRUNC (sin (  0 * DEG_TO_RAD) * MAX_RADIUS);
-    lpy[1] := TRUNC (sin ( 72 * DEG_TO_RAD) * MAX_RADIUS);
-    lpy[2] := TRUNC (sin (144 * DEG_TO_RAD) * MAX_RADIUS);
-    lpy[3] := TRUNC (sin (216 * DEG_TO_RAD) * MAX_RADIUS);
-    lpy[4] := TRUNC (sin (288 * DEG_TO_RAD) * MAX_RADIUS);
+    lpx[0] := Trunc (cos (  0 * DEG_TO_RAD) * MAX_RADIUS);
+    lpx[1] := Trunc (cos ( 72 * DEG_TO_RAD) * MAX_RADIUS);
+    lpx[2] := Trunc (cos (144 * DEG_TO_RAD) * MAX_RADIUS);
+    lpx[3] := Trunc (cos (216 * DEG_TO_RAD) * MAX_RADIUS);
+    lpx[4] := Trunc (cos (288 * DEG_TO_RAD) * MAX_RADIUS);
+    lpy[0] := Trunc (sin (  0 * DEG_TO_RAD) * MAX_RADIUS);
+    lpy[1] := Trunc (sin ( 72 * DEG_TO_RAD) * MAX_RADIUS);
+    lpy[2] := Trunc (sin (144 * DEG_TO_RAD) * MAX_RADIUS);
+    lpy[3] := Trunc (sin (216 * DEG_TO_RAD) * MAX_RADIUS);
+    lpy[4] := Trunc (sin (288 * DEG_TO_RAD) * MAX_RADIUS);
 
     fPowerUp.Initialize;
-    FOR Ndx := 0 TO 8 DO
-    BEGIN
+    for Ndx := 0 to 8 do
+    begin
       px[LARGE][Ndx] := btpx[Ndx];
       py[LARGE][Ndx] := btpy[Ndx]
-    END;
-    FOR Ndx := 0 TO 4 DO
-    BEGIN
-      px[MEDIUM][Ndx] := TRUNC (lpx[Ndx] / MRAT);
-      py[MEDIUM][Ndx] := TRUNC (lpy[Ndx] / MRAT);
+    end;
+    for Ndx := 0 to 4 do
+    begin
+      px[MEDIUM][Ndx] := Trunc (lpx[Ndx] / MRAT);
+      py[MEDIUM][Ndx] := Trunc (lpy[Ndx] / MRAT);
 
-      px[SMALL][Ndx] := TRUNC (lpx[Ndx] / SMALL);
-      py[SMALL][Ndx] := TRUNC (lpy[Ndx] / SMALL)
-    END;
+      px[SMALL][Ndx] := Trunc (lpx[Ndx] / SMALL);
+      py[SMALL][Ndx] := Trunc (lpy[Ndx] / SMALL)
+    end;
   { Create asteroids. }
-    FOR Ndx := 0 TO NUM_LARGE - 1 DO
-    BEGIN
+    for Ndx := 0 to NUM_LARGE - 1 do
+    begin
       fAsteroids[Ndx].InitializeAsteroid (LARGE);
       fAsteroids[Ndx].Value := VAL_LARGE
-    END;
-    FOR Ndx := NUM_LARGE TO NUM_LARGE + NUM_MEDIUM - 1 DO
-    BEGIN
+    end;
+    for Ndx := NUM_LARGE to NUM_LARGE + NUM_MEDIUM - 1 do
+    begin
       fAsteroids[Ndx].InitializeAsteroid (MEDIUM);
       fAsteroids[Ndx].Value := VAL_MEDIUM
-    END;
-    FOR Ndx := NUM_LARGE + NUM_MEDIUM TO NUM_LARGE + NUM_MEDIUM + NUM_SMALL - 1 DO
-    BEGIN
+    end;
+    for Ndx := NUM_LARGE + NUM_MEDIUM to NUM_LARGE + NUM_MEDIUM + NUM_SMALL - 1 do
+    begin
       fAsteroids[Ndx].InitializeAsteroid (SMALL);
       fAsteroids[Ndx].Value := VAL_SMALL
-    END
-  END;
+    end
+  end;
 
 
 
 (* Starts a game. *)
-  PROCEDURE TAsteroidManager.NewGame;
-  BEGIN
+  procedure TAsteroidManager.NewGame;
+  begin
     fLevel := 1;
-    SELF.NewBoard (fLevel)
-  END;
+    Self.NewBoard (fLevel)
+  end;
 
 
 
 (* Creates a new group of asteroids. *)
-  PROCEDURE TAsteroidManager.NewBoard (aNum: INTEGER);
-  VAR
-    lNumAsts, Ndx: INTEGER;
-    lx, ly: SINGLE;
-  BEGIN
+  procedure TAsteroidManager.NewBoard (aNum: Integer);
+  var
+    lNumAsts, Ndx: Integer;
+    lx, ly: Single;
+  begin
   { Define the number of large asteroids. }
-    lNumAsts := (aNum DIV 2) + 1;
-    IF lNumAsts > NUM_LARGE THEN lNumAsts := NUM_LARGE;
+    lNumAsts := (aNum div 2) + 1;
+    if lNumAsts > NUM_LARGE then lNumAsts := NUM_LARGE;
   { Position and speed of such asteroids. }
-    FOR Ndx := LOW (fAsteroids) TO HIGH (fAsteroids) DO
-    BEGIN
+    for Ndx := Low (fAsteroids) to High (fAsteroids) do
+    begin
     { Active asteroids. }
-      IF Ndx < lNumAsts THEN
-      BEGIN
+      if Ndx < lNumAsts then
+      begin
         fAsteroids[Ndx].PosX := Random (MAX_WIDTH - 2 * MAX_RADIUS) + MAX_RADIUS;
         fAsteroids[Ndx].PosY := Random(MAX_HEIGHT - 2 * MAX_RADIUS) + MAX_RADIUS;
-        REPEAT
+        repeat
           lx := GetRandomNumber (-MAX_VX, MAX_VX);
           ly := GetRandomNumber (-MAX_VY, MAX_VY)
-        UNTIL (lx <> 0) OR (ly <> 0);
+        until (lx <> 0) or (ly <> 0);
         fAsteroids[Ndx].Vx := lx; fAsteroids[Ndx].Vy := ly;
         fAsteroids[Ndx].Restore
-      END
-      ELSE
+      end
+      else
       { Suspend any other asteroid. }
         fAsteroids[Ndx].Suspend
-    END;
+    end;
   { Power up. }
-    IF NOT fPowerUp.Active THEN
-    BEGIN
+    if not fPowerUp.Active then
+    begin
       fPowerUp.PosX := Random (MAX_WIDTH - 2 * MAX_RADIUS) + MAX_RADIUS;
       fPowerUp.PosY := Random(MAX_HEIGHT - 2 * MAX_RADIUS) + MAX_RADIUS;
       fPowerUp.Restore
-    END;
+    end;
   { Ship grace period. }
     fGracePeriod := GRACE_PERIOD
-  END;
+  end;
 
 
 
 (* Updates. *)
-  PROCEDURE TAsteroidManager.Update;
-  VAR
+  procedure TAsteroidManager.Update;
+  var
     lAsteroid: TAsteroid;
-  BEGIN
+  begin
     fPowerUp.Update;
-    FOR lAsteroid IN fAsteroids DO lAsteroid.Update
-  END;
+    for lAsteroid IN fAsteroids do lAsteroid.Update
+  end;
 
 
 
 (* Updates. *)
-  PROCEDURE TAsteroidManager.Paint;
-  VAR
+  procedure TAsteroidManager.Paint;
+  var
     lAsteroid: TAsteroid;
-  BEGIN
-    FOR lAsteroid IN fAsteroids DO lAsteroid.Draw;
+  begin
+    for lAsteroid IN fAsteroids do lAsteroid.Draw;
     fPowerUp.Draw
-  END;
+  end;
 
-END.
+end.
 

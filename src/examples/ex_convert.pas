@@ -27,27 +27,27 @@ PROGRAM ex_convert;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     Allegro5, al5image, al5strings;
 
-  VAR
+  var
     Bitmap: ALLEGRO_BITMAPptr;
-    t0, t1: DOUBLE;
+    t0, t1: Double;
 
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   OpenLog;
 
-  IF ParamCount < 2 THEN
-  BEGIN
+  if ParamCount < 2 then
+  begin
     LogWriteLn ('This example needs to be run from the command line.');
     LogWriteLn ('Usage: ex_convert <infile> <outfile>');
     LogWriteLn ('    Possible file types: BMP PCX PNG TGA');
-    CloseLog (TRUE);
+    CloseLog (True);
     HALT
-  END;
+  end;
 
   al_init_image_addon;
 
@@ -58,24 +58,24 @@ BEGIN
     al_string_to_str (ParamStr (1)),
     ALLEGRO_NO_PREMULTIPLIED_ALPHA
   );
-  IF Bitmap = NIL THEN
-  BEGIN
+  if Bitmap = Nil then
+  begin
     LogWriteLn ('Error loading input file');
-    CloseLog (TRUE);
+    CloseLog (True);
     HALT
-  END;
+  end;
 
   t0 := al_get_time;
-  IF NOT al_save_bitmap (al_string_to_str (ParamStr (2)), Bitmap) THEN
-  BEGIN
+  if not al_save_bitmap (al_string_to_str (ParamStr (2)), Bitmap) then
+  begin
     LogWriteLn ('Error saving bitmap');
-    CloseLog (TRUE);
+    CloseLog (True);
     HALT
-  END;
+  end;
   t1 := al_get_time;
   LogPrintLn ('Saving took %.4f seconds', [t1 - t0]);
 
   al_destroy_bitmap (Bitmap);
 
-  CloseLog (TRUE)
-END.
+  CloseLog (True)
+end.

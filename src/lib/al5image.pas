@@ -1,4 +1,4 @@
-UNIT al5image;
+unit al5image;
 (***<This unit registers bitmap format handlers for @link(al_load_bitmap),
    @link(al_save_bitmap), etc.
 
@@ -30,39 +30,19 @@ UNIT al5image;
 
 {$include allegro5.cfg}
 
-INTERFACE
+interface
 
-  USES
+  uses
     al5base;
 
-(* Initializes the image addon. This registers bitmap format handlers for
-   @link(al_load_bitmap), @link(al_load_bitmap_f), @link(al_save_bitmap),
-   @link(al_save_bitmap_f).
+  function al_init_image_addon: AL_BOOL;
+    CDECL; external ALLEGRO_IMAGE_LIB_NAME;
+  procedure al_shutdown_image_addon;
+    CDECL; external ALLEGRO_IMAGE_LIB_NAME;
 
-   The following types are built into the Allegro image addon and guaranteed to
-   be available: BMP, DDS, PCX, TGA. Every platform also supports JPEG and PNG
-   via external dependencies.
+  function al_get_allegro_image_version: AL_UINT32;
+    CDECL; external ALLEGRO_IMAGE_LIB_NAME;
 
-   Other formats may be available depending on the operating system and
-   installed libraries, but are not guaranteed and should not be assumed to be
-   universally available.
+implementation
 
-   The DDS format is only supported to load from, and only if the DDS file
-   contains textures compressed in the DXT1, DXT3 and DXT5 formats. Note that
-   when loading a DDS file, the created bitmap will always be a video bitmap
-   and will have the pixel format matching the format in the file. *)
-  FUNCTION al_init_image_addon: AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_IMAGE_LIB_NAME;
-(* Shuts down the image addon.  This is done automatically at program exit, but
-   can be called any time the user wishes as well. *)
-  PROCEDURE al_shutdown_image_addon;
-    CDECL; EXTERNAL ALLEGRO_IMAGE_LIB_NAME;
-
-(* Returns the (compiled) version of the addon, in the same format as
-   @link(al_get_allegro_version). *)
-  FUNCTION al_get_allegro_image_version: AL_UINT32;
-    CDECL; EXTERNAL ALLEGRO_IMAGE_LIB_NAME;
-
-IMPLEMENTATION
-
-END.
+end.

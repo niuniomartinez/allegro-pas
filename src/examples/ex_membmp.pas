@@ -26,27 +26,27 @@ PROGRAM ex_membmp;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     Allegro5, al5base, al5font, al5Image, al5strings;
 
-  PROCEDURE Print (aFont: ALLEGRO_FONTptr; Message: AL_STR; x, y: INTEGER);
-  BEGIN
+  procedure Print (aFont: ALLEGRO_FONTptr; Message: AL_STR; x, y: Integer);
+  begin
     al_draw_text (aFont, al_map_rgb (0, 0, 0), x+2, y+2, 0, Message);
     al_draw_text (aFont, al_map_rgb (255, 255, 255), x, y, 0, Message)
-  END;
+  end;
 
 
 
-  FUNCTION Test
+  function Test
     (Bitmap: ALLEGRO_BITMAPptr; Font: ALLEGRO_FONTptr; Message: AL_STR)
-    : BOOLEAN;
-  VAR
+    : Boolean;
+  var
     Queue: ALLEGRO_EVENT_QUEUEptr;
     Event: ALLEGRO_EVENT;
-    StartTime, FPS: DOUBLE;
-    Frames: LONGINT;
-  BEGIN
+    StartTime, FPS: Double;
+    Frames: LongInt;
+  begin
     Frames := 0;
     FPS := 0;
 
@@ -55,24 +55,24 @@ PROGRAM ex_membmp;
 
     StartTime := al_get_time;
 
-    WHILE TRUE DO
-    BEGIN
-      IF al_get_next_event (Queue, Event) THEN
-      BEGIN
-        IF Event.ftype = ALLEGRO_EVENT_KEY_DOWN THEN
-        BEGIN
-          IF Event.keyboard.keycode = ALLEGRO_KEY_SPACE THEN
-          BEGIN
+    while True do
+    begin
+      if al_get_next_event (Queue, Event) then
+      begin
+        if Event.ftype = ALLEGRO_EVENT_KEY_DOWN then
+        begin
+          if Event.keyboard.keycode = ALLEGRO_KEY_SPACE then
+          begin
             al_destroy_event_queue (Queue);
-            EXIT (FALSE)
-          END;
-          IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-          BEGIN
+            Exit (False)
+          end;
+          if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+          begin
             al_destroy_event_queue (Queue);
-            EXIT (TRUE)
-          END
-        END
-      END;
+            Exit (True)
+          end
+        end
+      end;
 
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
 
@@ -103,19 +103,19 @@ PROGRAM ex_membmp;
 
       al_flip_display;
 
-      INC (Frames);
+      Inc (Frames);
       FPS := Frames / (al_get_time - StartTime)
-    END
-  END;
+    end
+  end;
 
 
 
-  VAR
+  var
     Display: ALLEGRO_DISPLAYptr;
     AccelFont, MemFont: ALLEGRO_FONTptr;
     AccelBmp, MemBmp: ALLEGRO_BITMAPptr;
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_install_keyboard;
   al_init_image_addon;
@@ -123,20 +123,20 @@ BEGIN
   InitPlatformSpecific;
 
   Display := al_create_display (640, 400);
-  IF Display = NIL THEN AbortExample ('Error creating display.');
+  if Display = Nil then AbortExample ('Error creating display.');
 
   AccelFont := al_load_font ('data/font.tga', 0, 0);
-  IF AccelFont = NIL THEN AbortExample ('font.tga not found');
+  if AccelFont = Nil then AbortExample ('font.tga not found');
   AccelBmp := al_load_bitmap ('data/mysha.pcx');
-  IF AccelBmp = NIL THEN AbortExample ('mysha.pcx not found');
+  if AccelBmp = Nil then AbortExample ('mysha.pcx not found');
 
   al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
 
   MemFont := al_load_font ('data/font.tga', 0, 0);
   MemBmp := al_load_bitmap ('data/mysha.pcx');
 
-  REPEAT
-    IF Test (MemBmp, MemFont, 'Memory bitmap (press SPACE key)') THEN EXIT;
-    IF Test (AccelBmp, AccelFont, 'Accelerated bitmap (press SPACE key)') THEN EXIT
-  UNTIL FALSE
-END.
+  repeat
+    if Test (MemBmp, MemFont, 'Memory bitmap (press SPACE key)') then Exit;
+    if Test (AccelBmp, AccelFont, 'Accelerated bitmap (press SPACE key)') then Exit
+  until False
+end.

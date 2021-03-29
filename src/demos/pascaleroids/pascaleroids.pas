@@ -1,4 +1,4 @@
-PROGRAM pascaleroids;
+program pascaleroids;
 (* Implementation of Asteroids.
  *
  * It is much like JAVAroids,
@@ -31,15 +31,15 @@ PROGRAM pascaleroids;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
- USES
+ uses
    GameManager;
 
-BEGIN
+begin
   Game := TGameManager.Create;
-  TRY
+  try
     Game.Initialize;
     Game.Run
-  FINALLY
+  finally
     Game.Free
-  END
-END.
+  end
+end.

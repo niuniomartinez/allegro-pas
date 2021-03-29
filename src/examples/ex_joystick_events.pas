@@ -32,86 +32,86 @@ PROGRAM ex_joysick_events;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     Allegro5, al5base, al5font, al5primitives;
 
-  CONST
+  const
     MAX_AXES    = 3;
     MAX_STICKS  = 16;
     MAX_BUTTONS = 32;
 
-  VAR
+  var
   (* globals *)
     EventQueue: ALLEGRO_EVENT_QUEUEptr;
     Font: ALLEGRO_FONTptr;
     Black, Grey, White: ALLEGRO_COLOR;
 
-    NumSticks, NumButtons: INTEGER;
-    NumAxes: ARRAY [0..MAX_STICKS-1] OF INTEGER;
-    Joys: ARRAY [0..MAX_STICKS-1] OF ARRAY [0..MAX_AXES-1] OF SINGLE;
-    JoyButtons: ARRAY [0..MAX_BUTTONS-1] OF BOOLEAN;
+    NumSticks, NumButtons: Integer;
+    NumAxes: array [0..MAX_STICKS-1] of Integer;
+    Joys: array [0..MAX_STICKS-1] of array [0..MAX_AXES-1] of Single;
+    JoyButtons: array [0..MAX_BUTTONS-1] of Boolean;
 
-  PROCEDURE InitStickValues;
-  VAR
-    Ndx, Ndx2: INTEGER;
-  BEGIN
+  procedure InitStickValues;
+  var
+    Ndx, Ndx2: Integer;
+  begin
     NumSticks := 0;
     NumButtons := 0;
-    FOR Ndx := LOW (NumAxes) TO HIGH (NumAxes) DO NumAxes[Ndx] := 0;
-    FOR Ndx := LOW (Joys) TO HIGH (Joys) DO
-      FOR Ndx2 := LOW (Joys[Ndx]) TO HIGH (Joys[Ndx]) DO
+    for Ndx := Low (NumAxes) to High (NumAxes) do NumAxes[Ndx] := 0;
+    for Ndx := Low (Joys) to High (Joys) do
+      for Ndx2 := Low (Joys[Ndx]) to High (Joys[Ndx]) do
         Joys[Ndx][Ndx2] := 0;
-    FOR Ndx := LOW (JoyButtons) TO HIGH (JoyButtons) DO
-      JoyButtons[Ndx] := FALSE
-  END;
+    for Ndx := Low (JoyButtons) to High (JoyButtons) do
+      JoyButtons[Ndx] := False
+  end;
 
 
 
-  PROCEDURE SetupJoystickValues (Joy: ALLEGRO_JOYSTICKptr);
-  VAR
+  procedure SetupJoystickValues (Joy: ALLEGRO_JOYSTICKptr);
+  var
     Jst: ALLEGRO_JOYSTICK_STATE;
-    i, j: INTEGER;
-  BEGIN
+    i, j: Integer;
+  begin
     InitStickValues;
-    IF Joy = NIL THEN
-    BEGIN
+    if Joy = Nil then
+    begin
       NumSticks := 0;
       NumButtons := 0;
-      EXIT
-    END;
+      Exit
+    end;
 
     al_get_joystick_state (Joy, Jst);
 
     NumSticks := al_get_joystick_num_sticks (Joy);
-    IF NumSticks > MAX_STICKS THEN NumSticks := MAX_STICKS;
-    FOR i := 0 TO NumSticks - 1 DO
-    BEGIN
+    if NumSticks > MAX_STICKS then NumSticks := MAX_STICKS;
+    for i := 0 to NumSticks - 1 do
+    begin
       NumAxes[i] := al_get_joystick_num_axes (Joy, i);
-      FOR j := 0 TO NumAxes[i] - 1 DO
+      for j := 0 to NumAxes[i] - 1 do
         Joys[i][j] := jst.stick[i].axis[j]
-    END;
+    end;
 
     NumButtons := al_get_joystick_num_buttons (Joy);
-    IF NumButtons > MAX_BUTTONS THEN NumButtons := MAX_BUTTONS;
-    FOR i := 0 TO NumButtons - 1 DO
+    if NumButtons > MAX_BUTTONS then NumButtons := MAX_BUTTONS;
+    for i := 0 to NumButtons - 1 do
       JoyButtons[i] := (Jst.button[i] >= 16384)
-  END;
+  end;
 
 
 
-  PROCEDURE DrawJoystickAxes (Joy: ALLEGRO_JOYSTICKptr; cx, cy, Stick: INTEGER);
-  CONST
+  procedure DrawJoystickAxes (Joy: ALLEGRO_JOYSTICKptr; cx, cy, Stick: Integer);
+  const
     Size = 30;
     cSize = 5;
     oSize = Size + cSize;
-  VAR
-    zx, x, y, z, i: INTEGER;
-  BEGIN
+  var
+    zx, x, y, z, i: Integer;
+  begin
     zx := cx + oSize + cSize * 2;
-    x := TRUNC (cx + Joys[Stick][0] * Size);
-    y := TRUNC (cy + Joys[Stick][1] * Size);
-    z := TRUNC (cy + Joys[Stick][2] * Size);
+    x := Trunc (cx + Joys[Stick][0] * Size);
+    y := Trunc (cy + Joys[Stick][1] * Size);
+    z := Trunc (cy + Joys[Stick][2] * Size);
 
     al_draw_filled_rectangle
       (cx - oSize, cy - oSize, cx + oSize, cy + oSize, Grey);
@@ -121,8 +121,8 @@ PROGRAM ex_joysick_events;
     );
     al_draw_filled_rectangle (x - 5, y - 5, x + 5, y + 5, Black);
 
-    IF NumAxes[stick] >= 3 THEN
-    BEGIN
+    if NumAxes[stick] >= 3 then
+    begin
       al_draw_filled_rectangle
         (zx - cSize, cy - oSize, zx + cSize, cy + oSize, Grey);
       al_draw_rectangle (
@@ -130,151 +130,151 @@ PROGRAM ex_joysick_events;
         Black, 0
       );
       al_draw_filled_rectangle (zx - 5, z - 5, zx + 5, z + 5, Black)
-    END;
+    end;
 
-    IF Joy <> NIL THEN
-    BEGIN
+    if Joy <> Nil then
+    begin
       al_draw_text (
         Font, Black, cx, cy + oSize + 1, ALLEGRO_ALIGN_CENTRE,
         al_get_joystick_stick_name (Joy, Stick)
       );
-      FOR i := 0 TO NumAxes[Stick] - 1 DO
-      BEGIN
+      for i := 0 to NumAxes[Stick] - 1 do
+      begin
         al_draw_text (
           Font, Black, cx, cy + oSize + (1 + i) * 10,
           ALLEGRO_ALIGN_CENTRE,
           al_get_joystick_axis_name (Joy, Stick, i)
         )
-      END
-    END
-  END;
+      end
+    end
+  end;
 
 
 
-  PROCEDURE DrawJoystickButton (Joy: ALLEGRO_JOYSTICKptr; Button: INTEGER; Down: BOOLEAN);
-  VAR
+  procedure DrawJoystickButton (Joy: ALLEGRO_JOYSTICKptr; Button: Integer; Down: Boolean);
+  var
     Bmp: ALLEGRO_BITMAPptr;
-    x, y: INTEGER;
+    x, y: Integer;
     fg: ALLEGRO_COLOR;
     Name: AL_STR;
-  BEGIN
+  begin
     bmp := al_get_target_bitmap;
-    x := TRUNC (
-      al_get_bitmap_width (Bmp) / 2 - 120 + (button MOD 8) * 30
+    x := Trunc (
+      al_get_bitmap_width (Bmp) / 2 - 120 + (button mod 8) * 30
     );
-    y := TRUNC (
+    y := Trunc (
       al_get_bitmap_height (bmp) - 120 + (button / 8) * 30
     );
 
     al_draw_filled_rectangle (x, y, x + 25, y + 25, Grey);
     al_draw_rectangle (x + 0.5, y + 0.5, x + 24.5, y + 24.5, Black, 0);
-    IF Down THEN
-    BEGIN
+    if Down then
+    begin
       al_draw_filled_rectangle (x + 2, y + 2, x + 23, y + 23, Black);
       fg := White
-    END
-    ELSE BEGIN
+    end
+    else begin
       fg := black
-    END;
+    end;
 
-    IF Joy <> NIL THEN
-    BEGIN
+    if Joy <> Nil then
+    begin
       Name := al_get_joystick_button_name (Joy, Button);
-      IF Length (Name) < 4 THEN
+      if Length (Name) < 4 then
         al_draw_text (Font, fg, x + 13, y + 8, ALLEGRO_ALIGN_CENTRE, Name)
-    END
-  END;
+    end
+  end;
 
 
 
-  PROCEDURE DrawAll (Joy: ALLEGRO_JOYSTICKptr);
-  VAR
+  procedure DrawAll (Joy: ALLEGRO_JOYSTICKptr);
+  var
     Bmp: ALLEGRO_BITMAPptr;
     Width, Height, i,
-    u, v, cx, cy: INTEGER;
-  BEGIN
+    u, v, cx, cy: Integer;
+  begin
     Bmp := al_get_target_bitmap;
     Width := al_get_bitmap_width (Bmp);
     Height := al_get_bitmap_height (Bmp);
 
     al_clear_to_color (al_map_rgb ($FF, $FF, $C0));
 
-    IF Joy <> NIL THEN
+    if Joy <> Nil then
       al_draw_textf (
         Font, Black, Width / 2, 10, ALLEGRO_ALIGN_CENTRE,
         'Joystick: %s', [al_get_joystick_name (Joy)]
       );
 
-    FOR i := 0 TO NumSticks - 1 DO
-    BEGIN
-      u := i MOD 4;
-      v := i DIV 4;
-      cx := TRUNC ((u + 0.5) * Width / 4);
-      cy := TRUNC ((v + 0.5) * Height / 6);
+    for i := 0 to NumSticks - 1 do
+    begin
+      u := i mod 4;
+      v := i div 4;
+      cx := Trunc ((u + 0.5) * Width / 4);
+      cy := Trunc ((v + 0.5) * Height / 6);
       DrawJoystickAxes (Joy, cx, cy, i)
-    END;
+    end;
 
-    FOR i := 0 TO NumButtons - 1 DO
+    for i := 0 to NumButtons - 1 do
       DrawJoystickButton (Joy, i, JoyButtons[i]);
 
     al_flip_display
-  END;
+  end;
 
 
 
-  PROCEDURE MainLoop;
-  VAR
+  procedure MainLoop;
+  var
     Event: ALLEGRO_EVENT;
-  BEGIN
-    WHILE TRUE DO
-    BEGIN
-      IF al_is_event_queue_empty (EventQueue) THEN
+  begin
+    while True do
+    begin
+      if al_is_event_queue_empty (EventQueue) then
 	DrawAll (al_get_joystick (0));
 
       al_wait_for_event (EventQueue, @Event);
 
-      CASE Event.ftype OF
+      case Event.ftype OF
       { ALLEGRO_EVENT_JOYSTICK_AXIS - a joystick axis value changed. }
       ALLEGRO_EVENT_JOYSTICK_AXIS:
-	IF (Event.joystick.stick < MAX_STICKS)
+	if (Event.joystick.stick < MAX_STICKS)
 	AND (Event.joystick.axis < MAX_AXES)
-	THEN
+	then
 	  Joys[Event.joystick.stick][Event.joystick.axis] := Event.joystick.pos;
       { ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN - a joystick button was pressed. }
       ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN:
-        JoyButtons[Event.joystick.button] := TRUE;
+        JoyButtons[Event.joystick.button] := True;
       { ALLEGRO_EVENT_JOYSTICK_BUTTON_UP - a joystick button was released. }
       ALLEGRO_EVENT_JOYSTICK_BUTTON_UP:
-	JoyButtons[Event.joystick.button] := FALSE;
+	JoyButtons[Event.joystick.button] := False;
       ALLEGRO_EVENT_KEY_DOWN:
-	IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN EXIT;
+	if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then Exit;
       { ALLEGRO_EVENT_DISPLAY_CLOSE - the window close button was pressed. }
       ALLEGRO_EVENT_DISPLAY_CLOSE:
-	EXIT;
+	Exit;
       ALLEGRO_EVENT_JOYSTICK_CONFIGURATION:
-	BEGIN
+	begin
 	  al_reconfigure_joysticks;
 	  SetupJoystickValues (al_get_joystick (0))
-	END;
+	end;
        { We received an event of some type we don't know about.
          Just ignore it. }
-      ELSE
+      else
         ;
-      END
-    END
-  END;
+      end
+    end
+  end;
 
 
 
-  VAR
+  var
     Display: ALLEGRO_DISPLAYptr;
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
   al_init_primitives_addon;
   al_init_font_addon;
 
   Display := al_create_display (1024, 768);
-  IF Display = NIL THEN AbortExample ('Could not create display');
+  if Display = Nil then AbortExample ('Could not create display');
 
   al_install_keyboard;
 
@@ -286,9 +286,9 @@ BEGIN
   al_install_joystick;
 
   EventQueue := al_create_event_queue;
-  IF EventQueue = NIL THEN AbortExample ('al_create_event_queue failed');
+  if EventQueue = Nil then AbortExample ('al_create_event_queue failed');
 
-  IF al_get_keyboard_event_source <> NIL THEN
+  if al_get_keyboard_event_source <> Nil then
     al_register_event_source (EventQueue, al_get_keyboard_event_source);
   al_register_event_source (EventQueue, al_get_display_event_source (Display));
   al_register_event_source (EventQueue, al_get_joystick_event_source);
@@ -298,4 +298,4 @@ BEGIN
   MainLoop;
 
   al_destroy_font (Font)
-END.
+end.

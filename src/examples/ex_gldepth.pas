@@ -31,7 +31,7 @@ PROGRAM ex_gldepth;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     Allegro5, al5image, al5font, al5opengl,
   {$IFDEF FPC}
@@ -41,18 +41,18 @@ PROGRAM ex_gldepth;
   {$ENDIF}
     sysutils;
 
-  TYPE
+  type
   (* Stores camera information. *)
-    TCamera = RECORD
+    TCamera = record
     (* Camera angle. *)
-      xAngle, yAngle, zAngle: DOUBLE;
+      xAngle, yAngle, zAngle: Double;
     (* Camera distance. *)
-      Dist: DOUBLE
-    END;
+      Dist: Double
+    end;
 
 
 
-  VAR
+  var
   (* Camera. *)
     Camera: TCamera = (
       xAngle:  0.0;
@@ -61,21 +61,21 @@ PROGRAM ex_gldepth;
       Dist  : 20.0;
     );
 
-  CONST
+  const
   (* Speed animation. *)
     AngleSpeed = 5.0;
     DistSpeed = 1.0;
 
-  VAR
+  var
   (* Texture. *)
     Texture: GLuint;
-    Bitmap: ALLEGRO_BITMAPptr = NIL;
+    Bitmap: ALLEGRO_BITMAPptr = Nil;
   (* Stores if key is pressed. *)
-    KeyStatus: ARRAY [0..ALLEGRO_KEY_MAX] OF BOOLEAN;
+    KeyStatus: array [0..ALLEGRO_KEY_MAX] of Boolean;
 
 (* Sets camera position. *)
-  PROCEDURE SetCameraPosition;
-  BEGIN
+  procedure SetCameraPosition;
+  begin
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity;
     glFrustum (-1.0, 1.0, -1.0, 1.0, 1.0, 40.0);
@@ -84,36 +84,36 @@ PROGRAM ex_gldepth;
     glRotatef (Camera.yAngle, 0, 1, 0);
     glRotatef (Camera.zAngle, 0, 0, 1);
     glMatrixMode (GL_MODELVIEW)
-  END;
+  end;
 
 
 
 (* Process keyboard input. *)
-  PROCEDURE Keyboard;
-  BEGIN
-    IF KeyStatus[ALLEGRO_KEY_LEFT] THEN
+  procedure Keyboard;
+  begin
+    if KeyStatus[ALLEGRO_KEY_LEFT] then
       Camera.yAngle := Camera.yAngle + AngleSpeed;
-    IF KeyStatus[ALLEGRO_KEY_RIGHT] THEN
+    if KeyStatus[ALLEGRO_KEY_RIGHT] then
       Camera.yAngle := Camera.yAngle - AngleSpeed;
 
-    IF KeyStatus[ALLEGRO_KEY_UP] THEN
+    if KeyStatus[ALLEGRO_KEY_UP] then
       Camera.xAngle := Camera.xAngle + AngleSpeed;
-    IF KeyStatus[ALLEGRO_KEY_DOWN] THEN
+    if KeyStatus[ALLEGRO_KEY_DOWN] then
       Camera.xAngle := Camera.xAngle - AngleSpeed;
 
-    IF KeyStatus[ALLEGRO_KEY_PGUP] THEN
+    if KeyStatus[ALLEGRO_KEY_PGUP] then
       Camera.Dist := Camera.Dist - DistSpeed;
-    IF KeyStatus[ALLEGRO_KEY_PGDN] THEN
+    if KeyStatus[ALLEGRO_KEY_PGDN] then
       Camera.Dist := Camera.Dist + DistSpeed
-  END;
+  end;
 
 
 
 (* Draws the scene. *)
-  PROCEDURE DrawScene;
-  BEGIN
+  procedure DrawScene;
+  begin
   { Clear the RGB buffer and the depth buffer. }
-    glClear (GL_COLOR_BUFFER_BIT OR GL_DEPTH_BUFFER_BIT);
+    glClear (GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
   { Set the modelview matrix to be the identity matrix. }
     glLoadIdentity;
@@ -188,26 +188,26 @@ PROGRAM ex_gldepth;
       glTexCoord2f (1, 1); glVertex3d ( 3,  3,  3);
       glTexCoord2f (0, 1); glVertex3d ( 3,  3, -3);
     glEnd
-  END;
+  end;
 
 
 
 (* Loads and adds the textures. *)
-  FUNCTION SetupTextures (Display: ALLEGRO_DISPLAYptr): BOOLEAN;
-  VAR
+  function SetupTextures (Display: ALLEGRO_DISPLAYptr): Boolean;
+  var
     tmpBmp: ALLEGRO_BITMAPptr;
     aFont: ALLEGRO_FONTptr;
-    w, h, Depth: INTEGER;
+    w, h, Depth: Integer;
     TextColor: ALLEGRO_COLOR;
-  BEGIN
+  begin
     aFont := al_load_font ('data/fixed_font.tga', 0, 0);
-    IF aFont = NIL THEN
+    if aFont = Nil then
       AbortExample ('Error loading `data/fixed_font.tga');
 
     tmpBmp := al_load_bitmap ('data/mysha.pcx');
-    IF tmpBmp = NIL THEN
+    if tmpBmp = Nil then
       AbortExample ('Error loading ''data/mysha.pcx''');
-    SetupTextures := TRUE;
+    SetupTextures := True;
     w := 128;
     h := 128;
     Bitmap := al_create_bitmap (w, h);
@@ -218,9 +218,9 @@ PROGRAM ex_gldepth;
 
     TextColor := al_map_rgb (255, 0, 0);
     Depth := al_get_display_option (Display, ALLEGRO_DEPTH_SIZE);
-    IF Depth = 0 THEN
+    if Depth = 0 then
       al_draw_text (aFont, TextColor, 0, 5, 0, 'No Z-buffer!')
-    ELSE
+    else
       al_draw_textf (aFont, TextColor, 0, 5, 0, 'Z-buffer: %d bits', [Depth]);
     al_set_target_backbuffer (Display);
     al_destroy_bitmap (tmpBmp);
@@ -230,19 +230,19 @@ PROGRAM ex_gldepth;
     glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
     Texture := al_get_opengl_texture (Bitmap)
-  END;
+  end;
 
 
 
-  VAR
+  var
     Display: ALLEGRO_DISPLAYptr;
     Queue: ALLEGRO_EVENT_QUEUEptr;
     Timer: ALLEGRO_TIMERptr;
     Event: ALLEGRO_EVENT;
-    DoLoop: BOOLEAN;
-BEGIN
+    DoLoop: Boolean;
+begin
 { Inits Allegro. }
-  IF NOT al_init THEN
+  if not al_init then
     AbortExample ('Error initialising Allegro.');
 
   al_init_image_addon;
@@ -252,7 +252,7 @@ BEGIN
   al_set_new_display_flags (ALLEGRO_OPENGL);
   al_set_new_display_option (ALLEGRO_DEPTH_SIZE, 16, ALLEGRO_SUGGEST);
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN
+  if Display = Nil then
     AbortExample ('Could not create display.');
 
   Timer := al_create_timer (1 / 60);
@@ -265,36 +265,36 @@ BEGIN
   glEnable (GL_DEPTH_TEST);
   glDisable (GL_CULL_FACE);
 
-  IF NOT SetupTextures (Display) THEN
-    EXIT;
+  if not SetupTextures (Display) then
+    Exit;
   al_start_timer (Timer);
 
-  DoLoop := TRUE;
-  WHILE DoLoop DO
-  BEGIN
+  DoLoop := True;
+  while DoLoop do
+  begin
     al_wait_for_event (Queue, @Event);
-    CASE Event.ftype OF
+    case Event.ftype OF
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      DoLoop := FALSE;
+      DoLoop := False;
     ALLEGRO_EVENT_KEY_DOWN:
-      BEGIN
-        IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-          DoLoop := FALSE;
-        KeyStatus[Event.keyboard.keycode] := TRUE
-      END;
+      begin
+        if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+          DoLoop := False;
+        KeyStatus[Event.keyboard.keycode] := True
+      end;
     ALLEGRO_EVENT_KEY_UP:
-      KeyStatus[Event.keyboard.keycode] := FALSE;
+      KeyStatus[Event.keyboard.keycode] := False;
     ALLEGRO_EVENT_TIMER:
-      BEGIN
+      begin
         Keyboard;
-        IF al_is_event_queue_empty (Queue) THEN
-        BEGIN
+        if al_is_event_queue_empty (Queue) then
+        begin
           SetCameraPosition;
           DrawScene;
           al_flip_display
-        END;
-      END;
-    END
-  END;
+        end;
+      end;
+    end
+  end;
   al_destroy_bitmap (Bitmap)
-END.
+end.

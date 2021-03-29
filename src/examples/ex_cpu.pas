@@ -27,36 +27,36 @@ PROGRAM ex_cpu;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Allegro5, al5font, Common,
     sysutils;
 
-  CONST
+  const
     INTERVAL = 0.1;
 
-  VAR
+  var
     Display: ALLEGRO_DISPLAYptr;
     Timer: ALLEGRO_TIMERptr;
     Queue: ALLEGRO_EVENT_QUEUEptr;
     Event: ALLEGRO_EVENT;
     Font: ALLEGRO_FONTptr;
-    Done, Redraw: BOOLEAN;
+    Done, Redraw: Boolean;
 
-BEGIN
-  Done := FALSE;
-  Redraw := TRUE;
+begin
+  Done := False;
+  Redraw := True;
 
-  IF NOT al_init THEN
+  if not al_init then
     AbortExample ('Failed to init Allegro.');
 
   al_init_font_addon;
   InitPlatformSpecific;
 
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN
+  if Display = Nil then
     AbortExample ('Error creating display.');
 
-  IF NOT al_install_keyboard THEN
+  if not al_install_keyboard then
     AbortExample ('Error installing keyboard.');
 
   Font := al_create_builtin_font;
@@ -72,9 +72,9 @@ BEGIN
 
   al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
 
-  REPEAT
-    IF Redraw AND al_is_event_queue_empty (Queue) THEN
-    BEGIN
+  repeat
+    if Redraw and al_is_event_queue_empty (Queue) then
+    begin
       al_clear_to_color (al_map_rgba_f (0, 0, 0, 1));
       al_draw_textf (
         Font, al_map_rgba_f (1, 1, 0, 1), 16, 16, 0,
@@ -85,19 +85,19 @@ BEGIN
         'Size of random access memory: %d MiB.', [al_get_ram_size]
       );
       al_flip_display;
-      Redraw := FALSE;
-    END;
+      Redraw := False;
+    end;
 
     al_wait_for_event (Queue, @Event);
-    CASE event.ftype OF
+    case event.ftype OF
     ALLEGRO_EVENT_KEY_DOWN:
-      IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN Done := TRUE;
+      if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then Done := True;
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      Done := TRUE;
+      Done := True;
     ALLEGRO_EVENT_TIMER:
-      Redraw := TRUE;
-    END
-  UNTIL Done;
+      Redraw := True;
+    end
+  until Done;
 
   al_destroy_font (Font)
-END.
+end.

@@ -17,3 +17,5 @@ In no special order
 
   * There are some "enum" types (sets). Be sure that they have the correct
     sice in bits & bytes.  Read FPC and Delphi documentation.
+
+  * ex_lines and ex_prim should use Thau instead of Pi.

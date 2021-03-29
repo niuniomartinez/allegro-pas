@@ -30,95 +30,95 @@ PROGRAM ex_audio_simple;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Allegro5, al5acodec, al5audio, al5base, al5strings, Common;
 
-CONST
+const
   RESERVED_SAMPLES = 16;
   MAX_SAMPLE_DATA  = 10;
 
-VAR
-  SampleData: ARRAY [1..MAX_SAMPLE_DATA] OF ALLEGRO_SAMPLEptr;
+var
+  SampleData: array [1..MAX_SAMPLE_DATA] of ALLEGRO_SAMPLEptr;
   Display: ALLEGRO_DISPLAYptr;
   EventQueue: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
-  Ndx: INTEGER;
+  Ndx: Integer;
   FileName: AL_STR;
-  EndLoop: BOOLEAN;
+  EndLoop: Boolean;
 
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   OpenLog;
 
-  IF Paramcount < 1 THEN
-  BEGIN
+  if ParamCount < 1 then
+  begin
     LogWriteLn ('This example needs to be run from the command line.');
     LogWriteLn ('Usage: ex_audio_simple {audio_files}');
-    CloseLog (TRUE);
+    CloseLog (True);
     HALT (1)
-  END;
+  end;
 
   al_install_keyboard;
 
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN AbortExample ('Could not create display');
+  if Display = Nil then AbortExample ('Could not create display');
 
   EventQueue := al_create_event_queue;
   al_register_event_source (EventQueue, al_get_keyboard_event_source);
   al_register_event_source (EventQueue, al_get_display_event_source (Display));
 
   al_init_acodec_addon;
-  IF NOT al_install_audio THEN
+  if not al_install_audio then
     AbortExample ('Could not init sound!');
-  IF NOT al_reserve_samples (RESERVED_SAMPLES) THEN
+  if not al_reserve_samples (RESERVED_SAMPLES) then
     AbortExample ('Could not set up voice and mixer.');
 
-  FOR Ndx := LOW (SampleData) TO HIGH (SampleData) DO
-  BEGIN
-    IF Ndx <= Paramcount THEN
-    BEGIN
+  for Ndx := Low (SampleData) to High (SampleData) do
+  begin
+    if Ndx <= ParamCount then
+    begin
       FileName := al_string_to_str (ParamStr (Ndx));
     { Load the entire sound file from disk. }
       SampleData[Ndx] := al_load_sample (FileName);
-      IF SampleData[Ndx] = NIL THEN
+      if SampleData[Ndx] = Nil then
         LogPrintLn ('Could not load sample from "%s"!', [FileName])
-    END
-    ELSE
-      SampleData[Ndx] := NIL
-  END;
+    end
+    else
+      SampleData[Ndx] := Nil
+  end;
 
   LogWriteLn ('Press digits to play sounds, space to stop sounds, Escape to quit.');
-  EndLoop := FALSE;
-  REPEAT
+  EndLoop := False;
+  repeat
     al_wait_for_event (EventQueue, @Event);
-    CASE Event.ftype OF
+    case Event.ftype OF
     ALLEGRO_EVENT_KEY_CHAR:
-      BEGIN
-        IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-          EndLoop := TRUE;
-        IF Event.keyboard.unichar = ORD (' ') THEN
+      begin
+        if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+          EndLoop := True;
+        if Event.keyboard.unichar = Ord (' ') then
           al_stop_samples
-        ELSE IF (ORD ('0') <= Event.keyboard.unichar)
-        AND (Event.keyboard.unichar <= ORD ('9')) THEN
-        BEGIN
-          IF Event.keyboard.unichar = ORD ('0') THEN
+        else if (Ord ('0') <= Event.keyboard.unichar)
+        and (Event.keyboard.unichar <= Ord ('9')) then
+        begin
+          if Event.keyboard.unichar = Ord ('0') then
             Ndx := 10
-          ELSE
-            Ndx := (Event.keyboard.unichar - ORD ('0') + 10) MOD 10;
-          IF SampleData[Ndx] <> NIL THEN
-          BEGIN
+          else
+            Ndx := (Event.keyboard.unichar - Ord ('0') + 10) mod 10;
+          if SampleData[Ndx] <> Nil then
+          begin
             LogPrintLn ('Playing %d', [Ndx]);
-            IF NOT al_play_sample (SampleData[Ndx], 1, 0.5, 1, ALLEGRO_PLAYMODE_LOOP, NIL) THEN
+            if not al_play_sample (SampleData[Ndx], 1, 0.5, 1, ALLEGRO_PLAYMODE_LOOP, Nil) then
               LogWriteLn ('al_play_sample_data failed, perhaps too many sounds');
-          END
-        END
-      END;
+          end
+        end
+      end;
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      EndLoop := TRUE;
-    END
-  UNTIL EndLoop;
+      EndLoop := True;
+    end
+  until EndLoop;
 { Sample data and other objects will be automatically freed. }
   al_uninstall_audio;
-  CloseLog (FALSE)
-END.
+  CloseLog (False)
+end.

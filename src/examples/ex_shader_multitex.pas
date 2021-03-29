@@ -26,79 +26,79 @@ PROGRAM ex_shader_multitex;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     Allegro5, al5base, al5image;
 
-  FUNCTION LoadBitmap (CONST FileName: AL_STR): ALLEGRO_BITMAPptr;
-  VAR
+  function LoadBitmap (const FileName: AL_STR): ALLEGRO_BITMAPptr;
+  var
     lBitmap: ALLEGRO_BITMAPptr;
-  BEGIN
+  begin
     lBitmap := al_load_bitmap (FileName);
-    IF lBitmap = NIL THEN
+    if lBitmap = Nil then
       AbortExample (FileName + ' not found or failed to load');
-    EXIT (lBitmap)
-  END;
+    Exit (lBitmap)
+  end;
 
 
-  VAR
-    Display: ALLEGRO_DISPLAYptr = NIL;
-    Bitmap: ARRAY [0..1] OF ALLEGRO_BITMAPptr = (NIL, NIL);
-    Timer: ALLEGRO_TIMERptr = NIL;
-    Queue: ALLEGRO_EVENT_QUEUEptr = NIL;
+  var
+    Display: ALLEGRO_DISPLAYptr = Nil;
+    Bitmap: array [0..1] of ALLEGRO_BITMAPptr = (Nil, Nil);
+    Timer: ALLEGRO_TIMERptr = Nil;
+    Queue: ALLEGRO_EVENT_QUEUEptr = Nil;
     Event: ALLEGRO_EVENT;
-    Redraw: BOOLEAN = TRUE;
-    Shader: ALLEGRO_SHADERptr = NIL;
-    T, dw, dh: INTEGER;
+    Redraw: Boolean = True;
+    Shader: ALLEGRO_SHADERptr = Nil;
+    T, dw, dh: Integer;
     PixelFile: AL_STR;
-    Scale, Angle, x, y: DOUBLE;
-BEGIN
+    Scale, Angle, x, y: Double;
+begin
   T := 0;
   PixelFile := '';
 
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_install_mouse;
   al_install_keyboard;
   al_init_image_addon;
   InitPlatformSpecific;
 
-  al_set_new_bitmap_flags (ALLEGRO_MIN_LINEAR OR ALLEGRO_MAG_LINEAR OR ALLEGRO_MIPMAP);
+  al_set_new_bitmap_flags (ALLEGRO_MIN_LINEAR or ALLEGRO_MAG_LINEAR or ALLEGRO_MIPMAP);
   al_set_new_display_option (ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
   al_set_new_display_option (ALLEGRO_SAMPLES, 4, ALLEGRO_SUGGEST);
   al_set_new_display_flags (ALLEGRO_PROGRAMMABLE_PIPELINE);
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN AbortExample ('Error creating display.');
+  if Display = Nil then AbortExample ('Error creating display.');
 
   Bitmap[0] := LoadBitmap ('data/mysha.pcx');
   Bitmap[1] := LoadBitmap ('data/obp.jpg');
 
   Shader := al_create_shader (ALLEGRO_SHADER_AUTO);
-  IF Shader = NIL THEN AbortExample ('Error creating shader.');
+  if Shader = Nil then AbortExample ('Error creating shader.');
 
-  IF al_get_shader_platform (Shader) = ALLEGRO_SHADER_GLSL THEN
+  if al_get_shader_platform (Shader) = ALLEGRO_SHADER_GLSL then
   { TODO: #ifdef ALLEGRO_CFG_SHADER_GLSL }
     PixelFile := 'data/ex_shader_multitex_pixel.glsl'
-  ELSE
+  else
   { TODO: #ifdef ALLEGRO_CFG_SHADER_HLSL }
     PixelFile := 'data/ex_shader_multitex_pixel.hlsl';
 
-  IF PixelFile = '' THEN AbortExample ('No shader source');
-  IF NOT al_attach_shader_source (
+  if PixelFile = '' then AbortExample ('No shader source');
+  if not al_attach_shader_source (
     Shader, ALLEGRO_VERTEX_SHADER,
     al_get_default_shader_source (ALLEGRO_SHADER_AUTO, ALLEGRO_VERTEX_SHADER))
-  THEN
+  then
     AbortExample (
       'al_attach_shader_source for vertex shader failed: ' +
       al_get_shader_log (Shader)
     );
-  IF NOT al_attach_shader_source_file (Shader, ALLEGRO_PIXEL_SHADER, PixelFile)
-  THEN
+  if not al_attach_shader_source_file (Shader, ALLEGRO_PIXEL_SHADER, PixelFile)
+  then
     AbortExample (
       'al_attach_shader_source_file for pixel shader failed: ' +
       al_get_shader_log (Shader)
     );
-  IF NOT al_build_shader (Shader) THEN
+  if not al_build_shader (Shader) then
     AbortExample ('al_build_shader failed: ' + al_get_shader_log (Shader));
 
   al_use_shader (Shader);
@@ -110,21 +110,21 @@ BEGIN
   al_register_event_source(Queue, al_get_timer_event_source (Timer));
   al_start_timer (Timer);
 
-  REPEAT
+  repeat
     al_wait_for_event (Queue, @Event);
-    IF Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE THEN
+    if Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE then
        BREAK;
-    IF Event.ftype = ALLEGRO_EVENT_KEY_CHAR THEN
-      IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
+    if Event.ftype = ALLEGRO_EVENT_KEY_CHAR then
+      if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
         BREAK;
-    IF Event.ftype = ALLEGRO_EVENT_TIMER THEN
-    BEGIN
-      Redraw := TRUE;
-      INC (T)
-    END;
+    if Event.ftype = ALLEGRO_EVENT_TIMER then
+    begin
+      Redraw := True;
+      Inc (T)
+    end;
 
-    IF Redraw AND al_is_event_queue_empty (Queue) THEN
-    BEGIN
+    if Redraw and al_is_event_queue_empty (Queue) then
+    begin
       Scale := 1 + 100 * (1 + sin (t * ALLEGRO_PI * 2 / 60 / 10));
       Angle := ALLEGRO_PI * 2 * t / 60 / 15;
       x := 120 - 20 * cos (ALLEGRO_PI * 2 * t / 60 / 25);
@@ -133,7 +133,7 @@ BEGIN
       dw := al_get_display_width (Display);
       dh := al_get_display_height (Display);
 
-      Redraw := FALSE;
+      Redraw := False;
       al_clear_to_color (al_map_rgb_f (0, 0, 0));
 
     { We set a second bitmap for texture unit 1. Unit 0 will have
@@ -147,12 +147,12 @@ BEGIN
 	Scale, Scale, Angle, 0
       );
       al_flip_display
-    END
-  UNTIL FALSE;
+    end
+  until False;
 
-  al_use_shader (NIL);
+  al_use_shader (Nil);
 
   al_destroy_bitmap (Bitmap[0]);
   al_destroy_bitmap (Bitmap[1]);
   al_destroy_shader (Shader)
-END.
+end.

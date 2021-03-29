@@ -1,4 +1,4 @@
-UNIT Player;
+unit Player;
 (*< Player stuff. *)
 (*
   Copyright (c) 2019 Guillermo Martínez J.
@@ -23,35 +23,35 @@ UNIT Player;
     distribution.
  *)
 
-INTERFACE
+interface
 
-  USES
+  uses
     Engine, GameMath;
 
-  CONST
+  const
   (* Rotation amount. *)
     ROT_RATE = 15 * DEG_TO_RAD;
   (* Acceleration (thrust). *)
     ACCEL_FACTOR = 1;
 
-  TYPE
+  type
   (* The player's ship. *)
-    TShip = CLASS (TMoveableSprite)
-    PUBLIC
+    TShip = class (TMoveableSprite)
+    public
     (* Initializes the sprite. *)
-      PROCEDURE Initialize; OVERRIDE;
+      procedure Initialize; override;
 
     (* Rotates the ship to the right. *)
-      PROCEDURE RotateRight;
+      procedure RotateRight;
     (* Rotates the ship to the left. *)
-      PROCEDURE RotateLeft;
+      procedure RotateLeft;
     (* Ship thrust. *)
-      PROCEDURE Thrust;
-    END;
+      procedure Thrust;
+    end;
 
-IMPLEMENTATION
+implementation
 
-  USES
+  uses
     Graphics;
 
 (*
@@ -59,43 +59,43 @@ IMPLEMENTATION
  ***************************************************************************)
 
 (* Initializes the sprite. *)
-  PROCEDURE TShip.Initialize;
-  CONST
-    tpx: ARRAY [0..3] OF INTEGER = (14, -7, -7, 13);
-    tpy: ARRAY [0..3] OF INTEGER = ( 0, -7,  7,  0);
+  procedure TShip.Initialize;
+  const
+    tpx: array [0..3] of Integer = (14, -7, -7, 13);
+    tpy: array [0..3] of Integer = ( 0, -7,  7,  0);
     SIZE = 13;
-  BEGIN
-    SELF.Polygon.Color := Graphics.Yelow;
-    INHERITED Initialize;
-    SELF.Polygon.SetVertices (tpx, tpy);
-    SELF.Polygon.Fill := FALSE;
-    SELF.Radius := SIZE;
+  begin
+    Self.Polygon.Color := Graphics.Yelow;
+    inherited Initialize;
+    Self.Polygon.SetVertices (tpx, tpy);
+    Self.Polygon.Fill := False;
+    Self.Radius := SIZE;
   { Start position. }
-    SELF.PosX := MAX_WIDTH / 2; SELF.PosY := MAX_HEIGHT / 2;
-    SELF.Vr := 0
-  END;
+    Self.PosX := MAX_WIDTH / 2; Self.PosY := MAX_HEIGHT / 2;
+    Self.Vr := 0
+  end;
 
 
 
 (* Rotates the ship. *)
-  PROCEDURE TShip.RotateRight;
-  BEGIN
-    SELF.Angle := SELF.Angle + ROT_RATE
-  END;
+  procedure TShip.RotateRight;
+  begin
+    Self.Angle := Self.Angle + ROT_RATE
+  end;
 
-  PROCEDURE TShip.RotateLeft;
-  BEGIN
-    SELF.Angle := SELF.Angle - ROT_RATE
-  END;
+  procedure TShip.RotateLeft;
+  begin
+    Self.Angle := Self.Angle - ROT_RATE
+  end;
 
 
 
 (* Ship thrust. *)
-  PROCEDURE TShip.Thrust;
-  BEGIN
-    SELF.Vx := SELF.Vx + cos (SELF.Angle) * ACCEL_FACTOR;
-    SELF.Vy := SELF.Vy + sin (SELF.Angle) * ACCEL_FACTOR
-  END;
+  procedure TShip.Thrust;
+  begin
+    Self.Vx := Self.Vx + cos (Self.Angle) * ACCEL_FACTOR;
+    Self.Vy := Self.Vy + sin (Self.Angle) * ACCEL_FACTOR
+  end;
 
-END.
+end.
 

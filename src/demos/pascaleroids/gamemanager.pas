@@ -1,4 +1,4 @@
-UNIT GameManager;
+unit GameManager;
 (*< Defines the game manager. *)
 (*
   Copyright (c) 2019 Guillermo Martínez J.
@@ -23,22 +23,22 @@ UNIT GameManager;
     distribution.
  *)
 
-INTERFACE
+interface
 
-  USES
+  uses
     Asteroids, Effects, Input,
     Allegro5;
 
-  CONST
+  const
   (* Desired frame rate. *)
     FPS = 14;
   (* #pts per new extra ship. *)
     EXTRA_SHIP = 10000;
 
-  TYPE
+  type
   (* The game manager. *)
-    TGameManager = CLASS (TObject)
-    PRIVATE
+    TGameManager = class (TObject)
+    private
       fEventQueue: ALLEGRO_EVENT_QUEUEptr;
       fDisplay: ALLEGRO_DISPLAYptr;
       fTimer: ALLEGRO_TIMERptr;
@@ -48,32 +48,32 @@ INTERFACE
       fAsteroidManager: TAsteroidManager;
       fEffectManager: TEffectManager;
 
-      PROCEDURE CreateDisplay;
-    PUBLIC
+      procedure CreateDisplay;
+    public
     (* Constructor. *)
-      CONSTRUCTOR Create;
+      constructor Create;
     (* Destructor. *)
-      DESTRUCTOR Destroy; OVERRIDE;
+      destructor Destroy; override;
     (* Initializes the game. *)
-      PROCEDURE Initialize;
+      procedure Initialize;
     (* The game loop. *)
-      PROCEDURE Run;
+      procedure Run;
 
     (* Access to user input. *)
-      PROPERTY Input: TUserInput READ fUserInput;
+      property Input: TUserInput read fUserInput;
     (* Access to asteroid manager. *)
-      PROPERTY Asteroids: TAsteroidManager READ fAsteroidManager;
+      property Asteroids: TAsteroidManager read fAsteroidManager;
     (* Access to effects manager. *)
-      PROPERTY Effects: TEffectManager READ fEffectManager;
-    END;
+      property Effects: TEffectManager read fEffectManager;
+    end;
 
-  VAR
+  var
   (* Global reference to the game manager. *)
     Game: TGameManager;
 
-IMPLEMENTATION
+implementation
 
-  USES
+  uses
     Player,
     Engine, Graphics,
     al5font,
@@ -86,76 +86,76 @@ IMPLEMENTATION
 (* Creates the display.
 
    Right now it just creates a window. *)
-  PROCEDURE TGameManager.CreateDisplay;
-  BEGIN
-    IF fDisplay <> NIL THEN al_destroy_display (fDisplay);
+  procedure TGameManager.CreateDisplay;
+  begin
+    if fDisplay <> Nil then al_destroy_display (fDisplay);
     fDisplay := al_create_display (MAX_WIDTH, MAX_HEIGHT);
-    IF fDisplay = NIL THEN
+    if fDisplay = Nil then
       RAISE Exception.Create ('Failed to create display.');
     al_set_window_title (fDisplay, 'Pascaleroids - Allegro game demo');
     al_register_event_source (fEventQueue, al_get_display_event_source (fDisplay))
-  END;
+  end;
 
 
 
 (* Constructor. *)
-  CONSTRUCTOR TGameManager.Create;
-  BEGIN
-    IF Game <> NIL THEN
+  constructor TGameManager.Create;
+  begin
+    if Game <> Nil then
       RAISE Exception.Create ('Only one game manager per game!');
-    INHERITED Create;
+    inherited Create;
     fUserInput := TKeyboardInput.Create;
     fAsteroidManager := TAsteroidManager.Create;
     fEffectManager := TEffectManager.Create;
-    Game := SELF
-  END;
+    Game := Self
+  end;
 
 
 
 (* Destructor. *)
-  DESTRUCTOR TGameManager.Destroy;
-  BEGIN
+  destructor TGameManager.Destroy;
+  begin
     fEffectManager.Free;
     fAsteroidManager.Free;
     fUserInput.Free;
   { Actually, most of these destructions aren't necessary as Allegro cleans them
     when terminating the application, but it is good to be polite. }
-    IF fDisplay <> NIL THEN al_destroy_display (fDisplay);
+    if fDisplay <> Nil then al_destroy_display (fDisplay);
 
-    IF fEventQueue <> NIL THEN al_destroy_event_queue (fEventQueue);
+    if fEventQueue <> Nil then al_destroy_event_queue (fEventQueue);
     al_uninstall_system;
-    INHERITED Destroy
-  END;
+    inherited Destroy
+  end;
 
 
 
 (* Initializes the game. *)
-  PROCEDURE TGameManager.Initialize;
-  BEGIN
+  procedure TGameManager.Initialize;
+  begin
   { Initialize Allegro. }
-    IF NOT al_init THEN
+    if not al_init then
       RAISE Exception.Create ('Can''t initialize Allegro.');
     fEventQueue := al_create_event_queue;
     Graphics.Initialize;
-    SELF.CreateDisplay;
+    Self.CreateDisplay;
     al_install_keyboard;
     al_register_event_source (fEventQueue, al_get_keyboard_event_source);
     fTimer := al_create_timer (ALLEGRO_BPS_TO_SECS (FPS));
     al_register_event_source (fEventQueue, al_get_timer_event_source (fTimer));
     Randomize;
-  END;
+  end;
 
 
 
 (* Execution. *)
-  PROCEDURE TGameManager.Run;
-  VAR
+  procedure TGameManager.Run;
+  var
     Event: ALLEGRO_EVENT;
     lPlayerShip: TShip;
     lFont: ALLEGRO_FONTptr;
-  BEGIN
+  begin
     lPlayerShip := TShip.Create;
-TRY
+try
     lFont := al_create_builtin_font;
     fAsteroidManager.Initialize;
     fEffectManager.Initialize;
@@ -164,38 +164,38 @@ TRY
     fAsteroidManager.NewGame;
     fEffectManager.NewGame;
     al_start_timer (fTimer);
-    REPEAT
+    repeat
       al_wait_for_event (fEventQueue, Event);
-      IF NOT fUserInput.ProcessEvent (Event) THEN
-      CASE Event.ftype OF
+      if not fUserInput.ProcessEvent (Event) then
+      case Event.ftype of
       ALLEGRO_EVENT_DISPLAY_CLOSE:
-        EXIT;
+        Exit;
       ALLEGRO_EVENT_KEY_CHAR:
-        CASE Event.keyboard.keycode OF
+        case Event.keyboard.keycode of
         ALLEGRO_KEY_ESCAPE:
-          EXIT;
+          Exit;
         ALLEGRO_KEY_SPACE:
-          BEGIN
+          begin
             fAsteroidManager.NewBoard (Random (NUM_LARGE));
-            fEffectManager.AddAsteroidExplosion (MAX_WIDTH DIV 2, MAX_HEIGHT DIV 2)
-          END;
-        END;
+            fEffectManager.AddAsteroidExplosion (MAX_WIDTH div 2, MAX_HEIGHT div 2)
+          end;
+        end;
       ALLEGRO_EVENT_TIMER:
-        BEGIN
-          IF (Input.Direction AND DIR_LEFT) <> 0 THEN
+        begin
+          if (Input.Direction and DIR_LEFT) <> 0 then
             lPlayerShip.RotateLeft;
-          IF (Input.Direction AND DIR_RIGHT) <> 0 THEN
+          if (Input.Direction and DIR_RIGHT) <> 0 then
             lPlayerShip.RotateRight;
-          IF (Input.Direction AND DIR_UP) <> 0 THEN
+          if (Input.Direction and DIR_UP) <> 0 then
             lPlayerShip.Thrust;
           fAsteroidManager.Update;
           fEffectManager.Update;
           lPlayerShip.Update;
-        END;
-      END;
+        end;
+      end;
     { Draw and wait. }
-      IF al_is_event_queue_empty (fEventQueue) THEN
-      BEGIN
+      if al_is_event_queue_empty (fEventQueue) then
+      begin
         al_clear_to_color (Graphics.Black);
         al_use_transform (Graphics.IdentityMatrix);
         al_draw_text (lFont, Graphics.White, 1, 1, 0, Format (
@@ -206,11 +206,11 @@ TRY
         fEffectManager.Paint;
         lPlayerShip.Draw;
         al_flip_display
-      END
-    UNTIL FALSE
-FINALLY
+      end
+    until False
+finally
   lPlayerShip.Free;
-END
-  END;
+end
+  end;
 
-END.
+end.

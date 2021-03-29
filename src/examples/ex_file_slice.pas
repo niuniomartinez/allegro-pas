@@ -35,56 +35,56 @@ PROGRAM ex_file_slice;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Allegro5, al5base, al5strings, Common,
     sysutils;
 
-  CONST
+  const
     BUFFER_SIZE = 1024;
 
-  PROCEDURE PackObject
-    (aFile: ALLEGRO_FILEptr; CONST aObject: POINTER; aLen: AL_SIZE_T);
-  BEGIN
+  procedure PackObject
+    (aFile: ALLEGRO_FILEptr; const aObject: POINTER; aLen: AL_SIZE_T);
+  begin
   { First write the length of the object, so we know how big to make the slice
     when it is opened later. }
     al_fwrite32le (aFile, aLen);
     al_fwrite (aFile, aObject, aLen)
-  END;
+  end;
 
 
-  FUNCTION GetNextChunk (aFile: ALLEGRO_FILEptr): ALLEGRO_FILEptr;
-  VAR
-    lLength: LONGINT;
-  BEGIN
+  function GetNextChunk (aFile: ALLEGRO_FILEptr): ALLEGRO_FILEptr;
+  var
+    lLength: LongInt;
+  begin
   { Reads the length of the next chunk, and if not at end of file, returns a
     slice that represents that portion of the file. }
     lLength := al_fread32le (aFile);
-    IF al_feof (aFile) THEN
-      EXIT (NIL)
-    ELSE
-     EXIT (al_fopen_slice (aFile, lLength, 'rw'))
-  END;
+    if al_feof (aFile) then
+      Exit (Nil)
+    else
+     Exit (al_fopen_slice (aFile, lLength, 'rw'))
+  end;
 
 
 
-  CONST
+  const
    FirstString = 'Hello, World!';
    SecondString = 'The quick brown fox jumps over the lazy dog.';
 
-  VAR
+  var
     Master, Slice: ALLEGRO_FILEptr;
     Buffer: PCHAR;
     FileName: AL_STR;
 
-BEGIN
-  IF NOT al_init THEN
+begin
+  if not al_init then
     AbortExample ('Could not init Allegro.');
 
   OpenLog;
 
   FileName := al_string_to_str (GetTempFilename);
   Master := al_fopen (FileName, 'w');
-  IF Master = NIL THEN
+  if Master = Nil then
     AbortExample ('Unable to create temporary file.');
 
 { Pack both strings into the master file. }
@@ -98,15 +98,15 @@ BEGIN
   Buffer := StrAlloc (BUFFER_SIZE);
 
 { Loop through the main file, opening a slice for each object. }
-  REPEAT
+  repeat
     Slice := GetNextChunk (Master);
-    IF Slice <> NIL THEN
-    BEGIN
+    if Slice <> Nil then
+    begin
     { Note: While the slice is open, we must avoid using the master file!
 	    If you were dealing with packed images, this is where you would
 	    pass 'slice' to al_load_bitmap_f(). }
-      IF al_fsize (Slice) < BUFFER_SIZE THEN
-      BEGIN
+      if al_fsize (Slice) < BUFFER_SIZE then
+      begin
       { We could have used al_fgets(), but just to show that the file slice
 	is constrained to the string object, we'll read the entire slice. }
 	al_fread (Slice, Buffer, al_fsize (Slice));
@@ -114,15 +114,15 @@ BEGIN
 	LogWriteLn (al_str_format (
 	  'Chunk of size %d: ''%s''.', [al_fsize (Slice), Buffer]
 	))
-      END;
+      end;
     { The slice must be closed before the next slice is opened. Closing
       the slice will advanced the master file to the end of the slice. }
       al_fclose (Slice)
-    END
-  UNTIL Slice = NIL;
+    end
+  until Slice = Nil;
 
   al_fclose (Master);
 
   StrDispose (Buffer);
-  CloseLog (TRUE)
-END.
+  CloseLog (True)
+end.

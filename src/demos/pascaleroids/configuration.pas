@@ -1,4 +1,4 @@
-UNIT Configuration;
+unit Configuration;
 (* Implements the game configuration. *)
 (*
   Copyright (c) 2018 Guillermo Martínez J.
@@ -22,20 +22,20 @@ UNIT Configuration;
     3. This notice may not be removed or altered from any source
     distribution.
  *)
-INTERFACE
+interface
 
 (* Loads configuration.
 
    This searchs for the configuration file and loads it if exists.  It also
    parses the command-line options if any. *)
-  PROCEDURE Load;
+  procedure Load;
 
-IMPLEMENTATION
+implementation
 
 (* Loads configuration. *)
-  PROCEDURE Load;
-  BEGIN
+  procedure Load;
+  begin
 
-  END;
+  end;
 
-END.
+end.

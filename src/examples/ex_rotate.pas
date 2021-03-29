@@ -29,37 +29,37 @@ PROGRAM ex_rotate;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
    common,
    Allegro5,
    al5image;
 
-  CONST
+  const
      DisplayW = 640;
      DisplayH = 480;
 
-  VAR
+  var
      Display: ALLEGRO_DISPLAYptr;
      Buf, Bmp, MemBmp, SrcBmp: ALLEGRO_BITMAPptr;
      Queue: ALLEGRO_EVENT_QUEUEptr;
      Event: ALLEGRO_EVENT;
-     Theta, K: SINGLE;
-     Mode, Flags: INTEGER;
-     WideMode, MemSrcMode, TransMode, ClipMode: BOOLEAN;
+     Theta, K: Single;
+     Mode, Flags: Integer;
+     WideMode, MemSrcMode, TransMode, ClipMode: Boolean;
      Trans: ALLEGRO_COLOR;
-     EndLoop: BOOLEAN;
+     EndLoop: Boolean;
 
-BEGIN
+begin
    Theta := 0;
    K := 1;
    Mode := 0;
-   WideMode := FALSE;
-   MemSrcMode := FALSE;
-   TransMode := FALSE;
+   WideMode := False;
+   MemSrcMode := False;
+   TransMode := False;
    Flags := 0;
-   ClipMode := FALSE;
+   ClipMode := False;
 
-   IF NOT al_init THEN
+   if not al_init then
       AbortExample ('Could not init Allegro');
 
    al_install_keyboard;
@@ -76,120 +76,120 @@ BEGIN
    LogWriteLn ('');
 
    Display := al_create_display (DisplayW, DisplayH);
-   IF Display = NIL THEN
+   if Display = Nil then
       AbortExample ('Error creating display');
 
    Buf := al_create_bitmap (DisplayW, DisplayH);
-   IF Buf = NIL THEN
+   if Buf = Nil then
       AbortExample ('Unable to create buffer');
 
    Bmp := al_load_bitmap ('data/mysha.pcx');
-   IF Bmp = NIL THEN
+   if Bmp = Nil then
       AbortExample ('Unable to load image');
 
    al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
    MemBmp := al_load_bitmap ('data/mysha.pcx');
-   IF MemBmp = NIL THEN
+   if MemBmp = Nil then
       AbortExample ('Unable to load image');
 
    Queue := al_create_event_queue;
    al_register_event_source (Queue, al_get_keyboard_event_source);
 
-   EndLoop := FALSE;
-   REPEAT
-      IF al_get_next_event (Queue, Event) THEN
-      BEGIN
-         IF Event.ftype = ALLEGRO_EVENT_KEY_CHAR THEN
-         BEGIN
-            IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-               EndLoop := TRUE;
-            IF Event.keyboard.unichar = ORD (' ') THEN
-            BEGIN
+   EndLoop := False;
+   repeat
+      if al_get_next_event (Queue, Event) then
+      begin
+         if Event.ftype = ALLEGRO_EVENT_KEY_CHAR then
+         begin
+            if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+               EndLoop := True;
+            if Event.keyboard.unichar = Ord (' ') then
+            begin
                mode := 1 - mode;
-               IF Mode = 0 THEN
+               if Mode = 0 then
                   LogWriteLn ('Drawing to off-screen buffer')
-               ELSE
+               else
                   LogWriteLn ('Drawing to display backbuffer');
-            END;
-            IF Event.keyboard.unichar = ORD ('w') THEN
-               WideMode := NOT WideMode;
-            IF Event.keyboard.unichar = ORD ('s') THEN
-            BEGIN
-               MemSrcMode := NOT MemSrcMode;
-               IF MemSrcMode THEN
+            end;
+            if Event.keyboard.unichar = Ord ('w') then
+               WideMode := not WideMode;
+            if Event.keyboard.unichar = Ord ('s') then
+            begin
+               MemSrcMode := not MemSrcMode;
+               if MemSrcMode then
                   LogWriteLn ('Source is memory bitmap')
-               ELSE
+               else
                   LogWriteLn ('Source is display bitmap');
-            END;
-            IF Event.keyboard.unichar = ORD ('t') THEN
-               TransMode := NOT transmode;
-            IF Event.keyboard.unichar = ORD ('h') THEN
+            end;
+            if Event.keyboard.unichar = Ord ('t') then
+               TransMode := not transmode;
+            if Event.keyboard.unichar = Ord ('h') then
                Flags := Flags XOR ALLEGRO_FLIP_HORIZONTAL;
-            IF Event.keyboard.unichar = ORD ('v') THEN
+            if Event.keyboard.unichar = Ord ('v') then
                Flags := Flags XOR ALLEGRO_FLIP_VERTICAL;
-            IF Event.keyboard.unichar = ORD ('c') THEN
-               ClipMode := NOT ClipMode;
-         END;
-      END;
+            if Event.keyboard.unichar = Ord ('c') then
+               ClipMode := not ClipMode;
+         end;
+      end;
       (*
        * mode 0 = draw scaled to off-screen buffer before
        *          blitting to display backbuffer
        * mode 1 = draw scaled to display backbuffer
        *)
 
-      IF Mode = 0 THEN
+      if Mode = 0 then
          al_set_target_bitmap (Buf)
-      ELSE
+      else
          al_set_target_backbuffer (Display);
 
-      IF MemSrcMode THEN
+      if MemSrcMode then
          SrcBmp := MemBmp
-      ELSE
+      else
          SrcBmp := Bmp;
-      IF WideMode THEN
+      if WideMode then
          K := 2
-      ELSE
+      else
          K := 1;
 
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
       Trans := al_map_rgba_f (1, 1, 1, 1);
-      IF Mode = 0 THEN
+      if Mode = 0 then
          al_clear_to_color (al_map_rgba_f (1, 0, 0, 1))
-      ELSE
+      else
          al_clear_to_color (al_map_rgba_f (0, 0, 1, 1));
 
-      IF TransMode THEN
-      BEGIN
+      if TransMode then
+      begin
          al_set_blender (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
          Trans := al_map_rgba_f (1, 1, 1, 0.5);
-      END;
+      end;
 
-      IF ClipMode THEN
+      if ClipMode then
          al_set_clipping_rectangle (50, 50, DisplayW - 100, DisplayH - 100)
-      ELSE
+      else
          al_set_clipping_rectangle (0, 0, DisplayW, DisplayH);
 
       al_draw_tinted_scaled_rotated_bitmap (SrcBmp,
          Trans,
-         50, 50, DisplayW DIV 2, DisplayH DIV 2,
+         50, 50, DisplayW div 2, DisplayH div 2,
          K, K, Theta,
          Flags);
 
-      IF Mode = 0 THEN
-      BEGIN
+      if Mode = 0 then
+      begin
          al_set_target_backbuffer (Display);
          al_set_clipping_rectangle (0, 0, DisplayW, DisplayH);
          al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
          al_draw_bitmap (Buf, 0, 0, 0);
-      END;
+      end;
 
       al_flip_display;
       al_rest (0.01);
       Theta := Theta - 0.01;
-   UNTIL EndLoop;
+   until EndLoop;
    al_destroy_bitmap (Bmp);
    al_destroy_bitmap (MemBmp);
    al_destroy_bitmap (Buf);
 
-   CloseLog (FALSE);
-END.
+   CloseLog (False);
+end.

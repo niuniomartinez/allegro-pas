@@ -1,6 +1,6 @@
 program FuriousPaladin;
 (* A simple demo game for Allegro.pas 5 by Handoko.
-   See README for more information. *)
+   See readME for more information. *)
 (*
   Copyright (c) 2018 Handoko
             (c) 2019-2020 Guillermo Martínez.
@@ -43,8 +43,8 @@ type
 
   We still use TFPList because his performance is higher than TList in
   Free Pascal. }
-  TFPList = CLASS (TList)
-  END;
+  TFPList = class (TList)
+  end;
 {$ENDIF}
 
 const
@@ -102,32 +102,32 @@ var
 
 
 
-  PROCEDURE ProcessShutdown; FORWARD;
+  procedure ProcessShutdown; FORWARD;
 
 
 
 (* Shows an error message and ends. *)
-  PROCEDURE AbortProgram (CONST Message: STRING);
-  VAR
+  procedure AbortProgram (const Message: String);
+  var
     Display: ALLEGRO_DISPLAYptr;
-  BEGIN
-    IF al_init_native_dialog_addon THEN
-    BEGIN
-      IF al_is_system_installed THEN
+  begin
+    if al_init_native_dialog_addon then
+    begin
+      if al_is_system_installed then
         Display := al_get_current_display
-      ELSE
-        Display := NIL;
+      else
+        Display := Nil;
       al_show_native_message_box (
         Display,
         'Error', 'Cannot run Furious Paladin', al_string_to_str (Message),
         '', 0
       )
-    END
-    ELSE
+    end
+    else
       WriteLn (ErrOutput, Message);
     ProcessShutDown;
     HALT (1)
-  END;
+  end;
 
 
 
@@ -137,9 +137,9 @@ var
   Transform: ALLEGRO_TRANSFORM;
 begin
 { Loads configuration values. }
-  IF NOT Configuration.Load THEN Halt;
+  if not Configuration.Load then Halt;
 { Quit if Allegro fails to start. }
-  IF NOT al_init THEN AbortProgram ('Cannot init Allegro!');
+  if not al_init then AbortProgram ('Cannot init Allegro!');
 
   // Prepare display
   al_get_monitor_info(0, MonitorInfo);
@@ -184,46 +184,46 @@ begin
   ImgFailed      := LoadBitmap ('imgfailed.png');
 
   // Load animation data: Player Walk Left
-  IF NOT LoadAnimation ('hero-walk-w', 4, imgPlayerWalkL) THEN
+  if not LoadAnimation ('hero-walk-w', 4, imgPlayerWalkL) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Walk Right
-  IF NOT LoadAnimation ('hero-walk-e', 4, imgPlayerWalkR) THEN
+  if not LoadAnimation ('hero-walk-e', 4, imgPlayerWalkR) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Attack Left
-  IF NOT LoadAnimation ('hero-attack-w', 6, ImgPlayerAttackL) THEN
+  if not LoadAnimation ('hero-attack-w', 6, ImgPlayerAttackL) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Attack Right
-  IF NOT LoadAnimation ('hero-attack-e', 6, ImgPlayerAttackR) THEN
+  if not LoadAnimation ('hero-attack-e', 6, ImgPlayerAttackR) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Idle Left
-  IF NOT LoadAnimation ('hero-idle-w', 12, imgPlayerIdleL) THEN
+  if not LoadAnimation ('hero-idle-w', 12, imgPlayerIdleL) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Idle Right
-  IF NOT LoadAnimation ('hero-idle-e', 12, imgPlayerIdleR) THEN
+  if not LoadAnimation ('hero-idle-e', 12, imgPlayerIdleR) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Been Hit Left
-  IF NOT LoadAnimation ('hero-been-hit-w', 6, ImgPlayerBeenHitL) THEN
+  if not LoadAnimation ('hero-been-hit-w', 6, ImgPlayerBeenHitL) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Been Hit Right
-  IF NOT LoadAnimation ('hero-been-hit-e', 6, ImgPlayerBeenHitR) THEN
+  if not LoadAnimation ('hero-been-hit-e', 6, ImgPlayerBeenHitR) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Zombie Walk Left
-  IF NOT LoadAnimation ('zombie-walk-w', 9, ImgZombieWalkL) THEN
+  if not LoadAnimation ('zombie-walk-w', 9, ImgZombieWalkL) then
     AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Walk Right
-  IF NOT LoadAnimation ('zombie-walk-e', 9, ImgZombieWalkR) THEN
+  if not LoadAnimation ('zombie-walk-e', 9, ImgZombieWalkR) then
     AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Attack Left
-  IF NOT LoadAnimation ('zombie-attack-w', 15, ImgZombieAttackL) THEN
+  if not LoadAnimation ('zombie-attack-w', 15, ImgZombieAttackL) then
     AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Attack Right
-  IF NOT LoadAnimation ('zombie-attack-e', 15, ImgZombieAttackR) THEN
+  if not LoadAnimation ('zombie-attack-e', 15, ImgZombieAttackR) then
     AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Killed Left
-  IF NOT LoadAnimation ('zombie-killed-w', 10, ImgZombieKilledL) THEN
+  if not LoadAnimation ('zombie-killed-w', 10, ImgZombieKilledL) then
     AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Killed Right
-  IF NOT LoadAnimation ('zombie-killed-e', 10, ImgZombieKilledR) THEN
+  if not LoadAnimation ('zombie-killed-e', 10, ImgZombieKilledR) then
     AbortProgram ('Can''t load zombie animation');
 
   // Load audio data

@@ -29,85 +29,85 @@ PROGRAM ex_clip;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     Allegro5, al5base, al5font, al5color,
     math;
 
-  TYPE
-    TExample = RECORD
+  type
+    TExample = record
       Pattern: ALLEGRO_BITMAPptr;
       Font: ALLEGRO_FONTptr;
       Queue: ALLEGRO_EVENT_QUEUEptr;
       Background, Text, White: ALLEGRO_COLOR;
 
-      Timer, Counter: ARRAY [1..4] OF DOUBLE;
-      FPS: INTEGER;
+      Timer, Counter: array [1..4] of Double;
+      FPS: Integer;
       TextX, TextY: SINGLE;
-    END;
+    end;
 
-  VAR
+  var
     Ex: TExample;
 
-  FUNCTION ExampleBitmap (CONST w, h: INTEGER): ALLEGRO_BITMAPptr;
-  VAR
+  function ExampleBitmap (const w, h: Integer): ALLEGRO_BITMAPptr;
+  var
     Bmp: ALLEGRO_BITMAPptr;
-    i, j: INTEGER;
+    i, j: Integer;
     mx, my, a, d, l, hue, sat: SINGLE;
     State: ALLEGRO_STATE;
-  BEGIN
+  begin
     mx := w * 0.5;
     my := h * 0.5;
     Bmp := al_create_bitmap (w, h);
     al_store_state (state, ALLEGRO_STATE_TARGET_BITMAP);
     al_set_target_bitmap (Bmp);
     al_lock_bitmap (Bmp, ALLEGRO_PIXEL_FORMAT_ANY, ALLEGRO_LOCK_WRITEONLY);
-    FOR i := 0 TO w - 1 DO
-    BEGIN
-      FOR j := 0 TO h - 1 DO
-      BEGIN
+    for i := 0 to w - 1 do
+    begin
+      for j := 0 to h - 1 do
+      begin
         a := arctan2 (i - mx, j - my);
         d := Sqrt (Sqr (i - mx) + Sqr (j - my));
         l := 1 - power (1.0 - 1 / (1 + d * 0.1), 5);
         hue := a * 180 / ALLEGRO_PI;
         sat := 1;
-        IF (i = 0) OR (j = 0) OR (i = w - 1) OR (j = h - 1) THEN
+        if (i = 0) or (j = 0) or (i = w - 1) or (j = h - 1) then
           hue := hue + 180
-        ELSE IF (i = 1) OR (j = 1) OR (i = w - 2) OR (j = h - 2) THEN
-        BEGIN
+        else if (i = 1) or (j = 1) or (i = w - 2) or (j = h - 2) then
+        begin
           hue := hue + 180;
           sat := 0.5;
-        END;
+        end;
         al_put_pixel (i, j, al_color_hsl (hue, sat, l))
-      END
-    END;
+      end
+    end;
     al_unlock_bitmap (Bmp);
     al_restore_state (State);
     ExampleBitmap := Bmp
-  END;
+  end;
 
 
 
-  PROCEDURE SetXY (CONST x, y: SINGLE);
-  BEGIN
+  procedure SetXY (const x, y: SINGLE);
+  begin
     Ex.TextX := x;
     Ex.TextY := y
-  END;
+  end;
 
 
 
-  PROCEDURE GetXy (VAR x, y: SINGLE);
-  BEGIN
+  procedure GetXy (var x, y: SINGLE);
+  begin
     x := Ex.TextX;
     y := Ex.TextY
-  END;
+  end;
 
 
 
-  PROCEDURE Print (CONST Fmt: AL_STR; CONST Args: ARRAY OF CONST);
-  VAR
-    th: INTEGER;
-  BEGIN
+  procedure Print (const Fmt: AL_STR; const Args: array of const);
+  var
+    th: Integer;
+  begin
     th := al_get_font_line_height (Ex.Font);
 
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
@@ -117,38 +117,38 @@ PROGRAM ex_clip;
     );
 
     Ex.TextY := Ex.TextY + th
-  END;
+  end;
 
 
 
-  PROCEDURE StartTimer (CONST i: INTEGER);
-  BEGIN
+  procedure StartTimer (const i: Integer);
+  begin
     Ex.Timer[i] := Ex.Timer[i] - al_get_time;
     Ex.Counter[i] := Ex.Counter[i] + 1
-  END;
+  end;
 
 
 
-  PROCEDURE StopTimer (CONST i: INTEGER);
-  BEGIN
+  procedure StopTimer (const i: Integer);
+  begin
     Ex.Timer[i] := Ex.Timer[i] + al_get_time
-  END;
+  end;
 
 
 
-  FUNCTION GetFps (CONST i: INTEGER): DOUBLE;
-  BEGIN
-    IF Ex.Timer[i] = 0 THEN EXIT (0);
+  function GetFps (const i: Integer): Double;
+  begin
+    if Ex.Timer[i] = 0 then Exit (0);
     GetFps := Ex.Counter[i] / Ex.Timer[i]
-  END;
+  end;
 
 
-  PROCEDURE Draw;
-  VAR
+  procedure Draw;
+  var
     x, y: SINGLE;
-    iw, ih, cx, cy, cw, ch, gap: LONGINT;
+    iw, ih, cx, cy, cw, ch, gap: LongInt;
     Temp: ALLEGRO_BITMAPptr;
-  BEGIN
+  begin
     x := 0; y := 0;
     iw := al_get_bitmap_width (Ex.Pattern);
     ih := al_get_bitmap_height (Ex.Pattern);
@@ -195,74 +195,74 @@ PROGRAM ex_clip;
 
     StartTimer (3);
     al_set_clipping_rectangle
-      (TRUNC (x + 8 + iw + 1), TRUNC (y + 1), iw - 2, ih - 2);
+      (Trunc (x + 8 + iw + 1), Trunc (y + 1), iw - 2, ih - 2);
     al_draw_bitmap (Ex.Pattern, x + 8 + iw, y, 0);
     al_set_clipping_rectangle (cx, cy, cw, ch);
     StopTimer (3);
     SetXY (x, y + ih + gap);
-  END;
+  end;
 
 
 
-  PROCEDURE Tick;
-  BEGIN
+  procedure Tick;
+  begin
     Draw;
     al_flip_display
-  END;
+  end;
 
 
 
-  PROCEDURE Run;
-  VAR
+  procedure Run;
+  var
     Event: ALLEGRO_EVENT;
-    NeedDraw: BOOLEAN;
-  BEGIN
-    NeedDraw := TRUE;
+    NeedDraw: Boolean;
+  begin
+    NeedDraw := True;
 
-    WHILE TRUE DO
-    BEGIN
-      IF NeedDraw AND al_is_event_queue_empty (Ex.Queue) THEN
-      BEGIN
+    while True do
+    begin
+      if NeedDraw and al_is_event_queue_empty (Ex.Queue) then
+      begin
         tick;
-        NeedDraw := FALSE
-      END;
+        NeedDraw := False
+      end;
 
       al_wait_for_event (Ex.Queue, @Event);
 
-      CASE Event.ftype OF 
+      case Event.ftype of 
       ALLEGRO_EVENT_DISPLAY_CLOSE:
-        EXIT;
+        Exit;
       ALLEGRO_EVENT_KEY_DOWN:
-        IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN EXIT;
+        if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then Exit;
       ALLEGRO_EVENT_TIMER:
-        NeedDraw := TRUE;
-      END
-    END
-  END;
+        NeedDraw := True;
+      end
+    end
+  end;
 
 
 
-  PROCEDURE Init;
-  BEGIN
+  procedure Init;
+  begin
     Ex.FPS := 60;
 
     Ex.font := al_create_builtin_font;
-    IF Ex.Font = NIL THEN AbortExample ('Error creating builtin font.');
+    if Ex.Font = Nil then AbortExample ('Error creating builtin font.');
     Ex.Background := al_color_name ('beige');
     Ex.Text := al_color_name ('blue');
     Ex.White := al_color_name ('white');
     Ex.Pattern := ExampleBitmap (100, 100);
-  END;
+  end;
 
 
 
-  VAR
+  var
     Display: ALLEGRO_DISPLAYptr;
     Timer: ALLEGRO_TIMERptr;
 
-BEGIN
+begin
 
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_install_keyboard;
   al_install_mouse;
@@ -270,7 +270,7 @@ BEGIN
   InitPlatformSpecific;
 
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN AbortExample ('Error creating display');
+  if Display = Nil then AbortExample ('Error creating display');
 
   Init;
 { Ignore message:
@@ -288,4 +288,4 @@ ex_clip.pas(276,35) Warning: Variable "Ex" does not seem to be initialized
   run;
 
   al_destroy_event_queue (Ex.Queue)
-END.
+end.

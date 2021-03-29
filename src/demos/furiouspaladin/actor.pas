@@ -1,4 +1,4 @@
-UNIT Actor;
+unit Actor;
 (*<Defines the @link(TActor) object. *)
 (*
   Copyright (c) 2018 Handoko
@@ -25,24 +25,24 @@ UNIT Actor;
  *)
 
 
-INTERFACE
+interface
 
-  USES
+  uses
     Allegro5, al5base;
 
-  CONST
+  const
   (* Max number of frames in an animation. *)
     MAX_FRAMES = 10;
 
-  TYPE
+  type
   (* Pointer to an animation. *)
     PAnimation = ^TAnimation;
   (* Stores an animation. *)
-    TAnimation = RECORD
+    TAnimation = record
       Images: array [0..MAX_FRAMES - 1] of ALLEGRO_BITMAPptr;
       Count:  Byte;
       Delay:  Byte;
-    END;
+    end;
 
   (* Actor activity.  This is, what he's doing. *)
     TActivity = (WalkL, WalkR, AttackL, AttackR, IdleL, IdleR, HitL, HitR, KilledL, KilledR);
@@ -63,57 +63,57 @@ INTERFACE
 
 
 (* Loads an animation.  @return(@true on success, @false on failure.) *)
-  FUNCTION LoadAnimation (
-    aFileName: AL_STR; CONST aDelay: INTEGER; OUT aAnimation: TAnimation
-  ): BOOLEAN;
+  function LoadAnimation (
+    aFileName: AL_STR; const aDelay: Integer; out aAnimation: TAnimation
+  ): Boolean;
 
 (* Releases resources used by an animation. *)
-  PROCEDURE UnloadAnimation (VAR aAnimation: TAnimation);
+  procedure UnloadAnimation (var aAnimation: TAnimation);
 
-IMPLEMENTATION
+implementation
 
-  USES
+  uses
     Data,
     al5strings;
 
 (* Loads an animation.  @return(@true on success, @false on failure.) *)
-  FUNCTION LoadAnimation (
-    aFileName: AL_STR; CONST aDelay: INTEGER; OUT aAnimation: TAnimation
-  ): BOOLEAN;
-  VAR
-    Ndx: INTEGER;
-  BEGIN
+  function LoadAnimation (
+    aFileName: AL_STR; const aDelay: Integer; out aAnimation: TAnimation
+  ): Boolean;
+  var
+    Ndx: Integer;
+  begin
     aAnimation.Delay := aDelay;
     aFileName := aFileName + '%0.2d.png';
-    FOR Ndx := 0 TO MAX_FRAMES - 1 DO
-    BEGIN
+    for Ndx := 0 to MAX_FRAMES - 1 do
+    begin
       aAnimation.Images[Ndx] := LoadBitmap (al_str_format (aFileName, [Ndx]));
-      IF aAnimation.Images[Ndx] = NIL THEN
-      BEGIN
+      if aAnimation.Images[Ndx] = Nil then
+      begin
 	aAnimation.Count := Ndx;
-	EXIT (Ndx > 0)
-      END
-    END;
+	Exit (Ndx > 0)
+      end
+    end;
     aAnimation.Count := MAX_FRAMES;
-    RESULT := TRUE
-  END;
+    Result := True
+  end;
 
 
 
 (* Releases resources used by an animation. *)
-  PROCEDURE UnloadAnimation (VAR aAnimation: TAnimation);
-  VAR
-    Ndx: INTEGER;
-  BEGIN
+  procedure UnloadAnimation (var aAnimation: TAnimation);
+  var
+    Ndx: Integer;
+  begin
     aAnimation.Count := 0;
-    FOR Ndx := LOW (aAnimation.Images) TO HIGH (aAnimation.Images) DO
-    BEGIN
-      IF aAnimation.Images[Ndx] <> NIL THEN
+    for Ndx := Low (aAnimation.Images) to High (aAnimation.Images) do
+    begin
+      if aAnimation.Images[Ndx] <> Nil then
 	al_destroy_bitmap (aAnimation.Images[Ndx])
-      ELSE
-	EXIT;
-      aAnimation.Images[Ndx] := NIL
-    END
-  END;
+      else
+	Exit;
+      aAnimation.Images[Ndx] := Nil
+    end
+  end;
 
-END.
+end.

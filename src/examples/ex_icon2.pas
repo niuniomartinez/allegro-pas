@@ -33,41 +33,41 @@ PROGRAM ex_icon2;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     Allegro5, al5image;
 
-  CONST
+  const
     NUM_ICONS = 2;
 
-  VAR
+  var
     Display: ALLEGRO_DISPLAYptr;
-    Icons: ARRAY [0..NUM_ICONS-1] OF ALLEGRO_BITMAPptr;
+    Icons: array [0..NUM_ICONS-1] of ALLEGRO_BITMAPptr;
     Queue: ALLEGRO_EVENT_QUEUEptr;
     Event: ALLEGRO_EVENT;
-    u, v: INTEGER;
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+    u, v: Integer;
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_install_keyboard;
   al_init_image_addon;
   InitPlatformSpecific;
 
   Display := al_create_display (320, 200);
-  IF Display = NIL THEN AbortExample ('Could not create display');
+  if Display = Nil then AbortExample ('Could not create display');
   al_clear_to_color (al_map_rgb_f (0, 0, 0));
   al_flip_display;
 
 { First icon 16x16: Read from file. }
   Icons[0] := al_load_bitmap ('data/cursor.tga');
-  IF Icons[0] = NIL THEN AbortExample ('cursor.tga not found');
+  if Icons[0] = Nil then AbortExample ('cursor.tga not found');
 
 { Second icon 32x32: Create it. }
   al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
   Icons[1] := al_create_bitmap (32, 32);
   al_set_target_bitmap (Icons[1]);
-  FOR v := 0 TO 31 DO
-    FOR u := 0 TO 31 DO
+  for v := 0 to 31 do
+    for u := 0 to 31 do
       al_put_pixel (u, v, al_map_rgb_f (u / 31.0, v / 31.0, 1));
   al_set_target_backbuffer (Display);
 
@@ -77,14 +77,14 @@ BEGIN
   al_register_event_source (Queue, al_get_keyboard_event_source);
   al_register_event_source (Queue, al_get_display_event_source (Display));
 
-  WHILE TRUE DO
-  BEGIN
+  while True do
+  begin
     al_wait_for_event (Queue, @Event);
 
-    IF (Event.ftype = ALLEGRO_EVENT_KEY_DOWN)
-    AND (Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE) THEN
-      EXIT;
-    IF Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE THEN
-      EXIT;
-  END
-END.
+    if (Event.ftype = ALLEGRO_EVENT_KEY_DOWN)
+    and (Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE) then
+      Exit;
+    if Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE then
+      Exit;
+  end
+end.

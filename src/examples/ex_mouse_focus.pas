@@ -32,15 +32,15 @@ PROGRAM ex_mouse_focus;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     allegro5;
 
-  VAR
+  var
     Display1, Display2: ALLEGRO_DISPLAYptr;
 
-  PROCEDURE Redraw (Color1, Color2: ALLEGRO_COLOR);
-  BEGIN
+  procedure Redraw (Color1, Color2: ALLEGRO_COLOR);
+  begin
     al_set_target_backbuffer (Display1);
     al_clear_to_color (Color1);
     al_flip_display;
@@ -48,25 +48,25 @@ PROGRAM ex_mouse_focus;
     al_set_target_backbuffer (Display2);
     al_clear_to_color (Color2);
     al_flip_display;
-  END;
+  end;
 
-  VAR
+  var
     Black, Red: ALLEGRO_COLOR;
     OldMouseState, MouseState: ALLEGRO_MOUSE_STATE;
     kst: ALLEGRO_KEYBOARD_STATE;
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
-  IF NOT al_install_mouse THEN AbortExample ('Could not install mouse.');
-  IF NOT al_install_keyboard THEN AbortExample ('Could not install keyboard.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
+  if not al_install_mouse then AbortExample ('Could not install mouse.');
+  if not al_install_keyboard then AbortExample ('Could not install keyboard.');
 
   Display1 := al_create_display (300, 300);
   Display2 := al_create_display (300, 300);
-  IF (Display1 = NIL) OR (Display2 = NIL) THEN
-  BEGIN
+  if (Display1 = Nil) or (Display2 = Nil) then
+  begin
     al_destroy_display (Display1);
     al_destroy_display (Display2);
     AbortExample ('Couldn''t open displays.')
-  END;
+  end;
 
   OpenLog;
   LogWriteLn ('Move the mouse cursor over the displays.');
@@ -74,39 +74,39 @@ BEGIN
   Black := al_map_rgb (0, 0, 0);
   Red := al_map_rgb (255, 0, 0);
 
-  OldMouseState.display := NIL;
+  OldMouseState.display := Nil;
   OldMouseState.x := 0;
   OldMouseState.y := 0;
 
-  REPEAT
+  repeat
     al_get_mouse_state (MouseState);
-    IF (MouseState.display <> OldMouseState.display)
-    OR (MouseState.x <> OldMouseState.x) OR (MouseState.y <> OldMouseState.y)
-    THEN BEGIN
-      IF MouseState.display = NIL THEN
+    if (MouseState.display <> OldMouseState.display)
+    or (MouseState.x <> OldMouseState.x) or (MouseState.y <> OldMouseState.y)
+    then begin
+      if MouseState.display = Nil then
 	LogWriteLn ('Outside either display.')
-      ELSE IF MouseState.display = Display1 THEN
+      else if MouseState.display = Display1 then
 	LogPrintLn ('In display 1, x = %d, y = %d.', [MouseState.x, MouseState.y])
-      ELSE IF MouseState.display = Display2 THEN
+      else if MouseState.display = Display2 then
 	LogPrintLn ('In display 2, x = %d, y = %d.', [MouseState.x, MouseState.y])
-      ELSE
+      else
 	LogPrintLn (
 	  'Unknown display = %p, x = %d, y = %d.',
 	  [MouseState.display, MouseState.x, MouseState.y]
 	);
       OldMouseState := MouseState
-    END;
+    end;
 
-    IF MouseState.display = Display1 THEN
+    if MouseState.display = Display1 then
       Redraw (Red, Black)
-    ELSE IF MouseState.display = Display2 THEN
+    else if MouseState.display = Display2 then
        Redraw (Black, Red)
-    ELSE
+    else
        Redraw (Black, Black);
 
     al_rest (0.1);
 
     al_get_keyboard_state (kst);
-  UNTIL al_key_down (kst, ALLEGRO_KEY_ESCAPE);
-  CloseLog (FALSE)
-END.
+  until al_key_down (kst, ALLEGRO_KEY_ESCAPE);
+  CloseLog (False)
+end.

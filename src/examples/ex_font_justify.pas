@@ -38,54 +38,54 @@ PROGRAM ex_font_justify;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   alGUI, Common,
   allegro5, al5base, al5font, al5image, al5primitives, al5ttf;
 
-CONST
+const
   DEFAULT_TEXT = 'Lorem ipsum dolor sit amet';
 
-TYPE
+type
 (* A widget that aligns text. *)
-  TTextBox = CLASS (TWidget)
-  PRIVATE
-    fcx, fth, fx1, fx2, fdiff: INTEGER;
+  TTextBox = class (TWidget)
+  private
+    fcx, fth, fx1, fx2, fdiff: Integer;
     fClrText, fClr1, fClr2: ALLEGRO_COLOR;
     fText: AL_STR;
-  PUBLIC
+  public
   (* Initializes the widget. *)
-    PROCEDURE Initialize; OVERRIDE;
+    procedure Initialize; override;
   (* Draws the widget. *)
-    PROCEDURE Draw; OVERRIDE;
+    procedure Draw; override;
   (* Handles sliders events. *)
-    PROCEDURE OnWidthSliderChanges (Sender: TObject);
-    PROCEDURE OnDiffSlideChanges (Sender: TObject);
+    procedure OnWidthSliderChanges (Sender: TObject);
+    procedure OnDiffSlideChanges (Sender: TObject);
   (* Handles text entry event. *)
-    PROCEDURE OnTextChanges (Sender: TObject);
-  END;
+    procedure OnTextChanges (Sender: TObject);
+  end;
 
 
 
 (* Encapsulates the example. *)
-  TFontJustifyExample = CLASS (TDialog)
-  PRIVATE
+  TFontJustifyExample = class (TDialog)
+  private
     fFont: ALLEGRO_FONTptr;
-  PUBLIC
+  public
   (* Destructor. *)
-    DESTRUCTOR Destroy; OVERRIDE;
+    destructor Destroy; override;
   (* Initializes the example. *)
-    PROCEDURE Initialize; OVERRIDE;
-  END;
+    procedure Initialize; override;
+  end;
 
 (*
  * TTextBox
  ***************************************************************************)
 
 (* Initializes the widget. *)
-  PROCEDURE TTextBox.Initialize;
-  BEGIN
+  procedure TTextBox.Initialize;
+  begin
     fText := DEFAULT_TEXT;
-    fcx := al_get_bitmap_width (al_get_target_bitmap) DIV 2;
+    fcx := al_get_bitmap_width (al_get_target_bitmap) div 2;
     fth := al_get_font_line_height (Dialog.TextFont);
     fClrText := al_map_rgb_f (0.1, 0.1, 0.1);
     fClr1 := al_map_rgb (0, 0, 255);
@@ -94,13 +94,13 @@ TYPE
     fx1 := fcx - 200;
     fx2 := fcx + 200;
     fdiff := 100
-  END;
+  end;
 
 
 
 (* Draws the widget. *)
-  PROCEDURE TTextBox.Draw;
-  BEGIN
+  procedure TTextBox.Draw;
+  begin
    al_draw_justified_text (
      Dialog.TextFont, fClrText,
      fx1, fx2, 50, fdiff,
@@ -113,29 +113,29 @@ TYPE
      fcx + fdiff / 2, 53 + fth,
      fClr2, 0
    )
-  END;
+  end;
 
 
 
 (* Handles sliders events. *)
-  PROCEDURE TTextBox.OnWidthSliderChanges (Sender: TObject);
-  BEGIN
-    fx1 := fcx - TSlider (Sender).Value DIV 2;
-    fx2 := fcx + TSlider (Sender).Value DIV 2
-  END;
+  procedure TTextBox.OnWidthSliderChanges (Sender: TObject);
+  begin
+    fx1 := fcx - TSlider (Sender).Value div 2;
+    fx2 := fcx + TSlider (Sender).Value div 2
+  end;
 
-  PROCEDURE TTextBox.OnDiffSlideChanges (Sender: TObject);
-  BEGIN
+  procedure TTextBox.OnDiffSlideChanges (Sender: TObject);
+  begin
     fdiff := TSlider (Sender).Value
-  END;
+  end;
 
 
 
 (* Handles text entry event. *)
-  PROCEDURE TTextBox.OnTextChanges (Sender: TObject);
-  BEGIN
+  procedure TTextBox.OnTextChanges (Sender: TObject);
+  begin
     fText := TTextEntry (Sender).Text
-  END;
+  end;
 
 
 
@@ -144,64 +144,64 @@ TYPE
  ***************************************************************************)
 
 (* Destructor. *)
-  DESTRUCTOR TFontJustifyExample.Destroy;
-  BEGIN
-    IF fFont <> NIL THEN al_destroy_font (fFont);
+  destructor TFontJustifyExample.Destroy;
+  begin
+    if fFont <> Nil then al_destroy_font (fFont);
   { fFontGUI is destroyed by TDialog. }
     INHERITED Destroy
-  END;
+  end;
 
 
 
 (* Initializes the example. *)
-  PROCEDURE TFontJustifyExample.Initialize;
-  VAR
+  procedure TFontJustifyExample.Initialize;
+  var
     Display: ALLEGRO_DISPLAYptr;
     lFontGUI: ALLEGRO_FONTptr;
     lTextBox: TTextBox;
     lSlider: TSlider;
     lEntry: TTextEntry;
-  BEGIN
+  begin
     al_set_new_display_flags (ALLEGRO_GENERATE_EXPOSE_EVENTS);
     Display := al_create_display (640, 480);
-    IF Display = NIL THEN  AbortExample ('Error creating display.');
+    if Display = Nil then  AbortExample ('Error creating display.');
 
     fFont := al_load_font ('data/DejaVuSans.ttf', 24, 0);
-    IF fFont = NIL THEN AbortExample ('Failed to load data/DejaVuSans.ttf');
+    if fFont = Nil then AbortExample ('Failed to load data/DejaVuSans.ttf');
 { TODO: Add a button to swap between both textfonts?
     fFont := al_load_font ('data/font.tga', 0, 0);
-    IF fFont = NIL THEN AbortExample ('Failed to load data/font.tga');
+    if fFont = Nil then AbortExample ('Failed to load data/font.tga');
 }
     lFontGUI := al_load_font ('data/DejaVuSans.ttf', 14, 0);
-    IF lFontGUI = NIL THEN AbortExample ('Failed to load data/DejaVuSans.ttf');
-    SELF.TextFont := lFontGUI;
+    if lFontGUI = Nil then AbortExample ('Failed to load data/DejaVuSans.ttf');
+    Self.TextFont := lFontGUI;
   { Creates the dialog. }
     lTextBox := TTextBox.Create;
-    SELF.Add (lTextBox, 0, 0, 10, 10);
+    Self.Add (lTextBox, 0, 0, 10, 10);
 
-    SELF.Add (TLabel.CreateLabel ('Text'), 0, 10, 1, 1);
+    Self.Add (TLabel.CreateLabel ('Text'), 0, 10, 1, 1);
     lEntry := TTextEntry.CreateTextEntry (DEFAULT_TEXT);
     lEntry.OnTextChanges := lTextBox.OnTextChanges;
-    SELF.Add (lEntry, 1, 10, 8, 1);
+    Self.Add (lEntry, 1, 10, 8, 1);
 
-    SELF.Add (TLabel.CreateLabel ('Width'), 0, 12, 1, 1);
+    Self.Add (TLabel.CreateLabel ('Width'), 0, 12, 1, 1);
     lSlider := TSlider.CreateSlider (al_get_display_width (Display), oHorizontal);
     lSlider.OnChange := lTextBox.OnWidthSliderChanges;
     lSlider.Value := 400;
-    SELF.Add (lSlider, 1, 12, 8, 1);
+    Self.Add (lSlider, 1, 12, 8, 1);
 
-    SELF.Add (TLabel.CreateLabel ('Diff'), 0, 14, 1, 1);
+    Self.Add (TLabel.CreateLabel ('Diff'), 0, 14, 1, 1);
     lSlider := TSlider.CreateSlider (al_get_display_width (Display), oHorizontal);
     lSlider.OnChange := lTextBox.OnDiffSlideChanges;
     lSlider.Value := 100;
-    SELF.Add (lSlider, 1, 14, 8, 1);
+    Self.Add (lSlider, 1, 14, 8, 1);
     INHERITED Initialize
-  END;
+  end;
 
-VAR
+var
   Example: TFontJustifyExample;
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_init_primitives_addon;
   al_install_keyboard;
@@ -216,4 +216,4 @@ BEGIN
   Example.Initialize;
   Example.Run;
   Example.Free
-END.
+end.

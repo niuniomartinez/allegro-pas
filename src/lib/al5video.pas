@@ -1,4 +1,4 @@
-UNIT al5video;
+unit al5video;
 (***<Video playback.
 
   Currently we have an Ogg backend (Theora + Vorbis). See http://xiph.org/
@@ -26,19 +26,19 @@ UNIT al5video;
     distribution.
  *)
 
-{$include allegro5.cfg}
+{$INCLUDE allegro5.cfg}
 
-INTERFACE
+interface
 
-  USES
+  uses
     allegro5, al5base, al5audio;
 
-  CONST
+  const
     ALLEGRO_EVENT_VIDEO_FRAME_SHOW = 550;
     ALLEGRO_EVENT_VIDEO_FINISHED   = 551;
   { _ALLEGRO_EVENT_VIDEO_SEEK      = 552; } { internal }
 
-  TYPE
+  type
     ALLEGRO_VIDEO_POSITION_TYPE = (
       ALLEGRO_VIDEO_POSITION_ACTUAL        = 0,
       ALLEGRO_VIDEO_POSITION_VIDEO_DECODE  = 1,
@@ -50,42 +50,42 @@ INTERFACE
 
 { Declaration order is different than in the original header to build the
   documentation in correct order. }
-  FUNCTION al_init_video_addon: AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  PROCEDURE al_shutdown_video_addon;
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  FUNCTION al_get_allegro_video_version: AL_UINT32;
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
+  function al_init_video_addon: AL_BOOL;
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  procedure al_shutdown_video_addon;
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  function al_get_allegro_video_version: AL_UINT32;
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
 
-  FUNCTION al_open_video (filename: AL_STR): ALLEGRO_VIDEOptr;
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  PROCEDURE al_close_video (video: ALLEGRO_VIDEOptr);
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  PROCEDURE al_start_video (video: ALLEGRO_VIDEOptr; mixer: ALLEGRO_MIXERptr);
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  PROCEDURE al_start_video_with_voice (video: ALLEGRO_VIDEOptr; voice: ALLEGRO_VOICEptr);
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  FUNCTION al_get_video_event_source (video: ALLEGRO_VIDEOptr): ALLEGRO_EVENT_SOURCEptr;
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  PROCEDURE al_set_video_playing (video: ALLEGRO_VIDEOptr; playing: AL_BOOL);
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  FUNCTION al_is_video_playing (video: ALLEGRO_VIDEOptr): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  FUNCTION al_get_video_audio_rate (video: ALLEGRO_VIDEOptr): AL_DOUBLE;
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  FUNCTION al_get_video_fps (video: ALLEGRO_VIDEOptr): AL_DOUBLE;
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  FUNCTION al_get_video_scaled_width (video: ALLEGRO_VIDEOptr): AL_FLOAT;
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  FUNCTION al_get_video_scaled_height (video: ALLEGRO_VIDEOptr): AL_FLOAT;
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  FUNCTION al_get_video_frame (video: ALLEGRO_VIDEOptr): ALLEGRO_BITMAPptr;
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  FUNCTION al_get_video_position (video: ALLEGRO_VIDEOptr; which: ALLEGRO_VIDEO_POSITION_TYPE): AL_DOUBLE;
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
-  FUNCTION al_seek_video (video: ALLEGRO_VIDEOptr;  pos_in_seconds: AL_DOUBLE): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_VIDEO_LIB_NAME;
+  function al_open_video (filename: AL_STR): ALLEGRO_VIDEOptr;
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  procedure al_close_video (video: ALLEGRO_VIDEOptr);
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  procedure al_start_video (video: ALLEGRO_VIDEOptr; mixer: ALLEGRO_MIXERptr);
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  procedure al_start_video_with_voice (video: ALLEGRO_VIDEOptr; voice: ALLEGRO_VOICEptr);
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  function al_get_video_event_source (video: ALLEGRO_VIDEOptr): ALLEGRO_EVENT_SOURCEptr;
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  procedure al_set_video_playing (video: ALLEGRO_VIDEOptr; playing: AL_BOOL);
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  function al_is_video_playing (video: ALLEGRO_VIDEOptr): AL_BOOL;
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  function al_get_video_audio_rate (video: ALLEGRO_VIDEOptr): AL_DOUBLE;
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  function al_get_video_fps (video: ALLEGRO_VIDEOptr): AL_DOUBLE;
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  function al_get_video_scaled_width (video: ALLEGRO_VIDEOptr): AL_FLOAT;
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  function al_get_video_scaled_height (video: ALLEGRO_VIDEOptr): AL_FLOAT;
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  function al_get_video_frame (video: ALLEGRO_VIDEOptr): ALLEGRO_BITMAPptr;
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  function al_get_video_position (video: ALLEGRO_VIDEOptr; which: ALLEGRO_VIDEO_POSITION_TYPE): AL_DOUBLE;
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
+  function al_seek_video (video: ALLEGRO_VIDEOptr;  pos_in_seconds: AL_DOUBLE): AL_BOOL;
+    CDECL; external ALLEGRO_VIDEO_LIB_NAME;
 
-IMPLEMENTATION
+implementation
 
-END.
+end.

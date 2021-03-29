@@ -31,40 +31,40 @@ PROGRAM ex_mixer_chain;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5, al5base, al5audio, al5acodec, al5strings;
 
-VAR
+var
   Voice: ALLEGRO_VOICEptr;
   Mixer: ALLEGRO_MIXERptr;
-  SubMixer: ARRAY [0..1] OF ALLEGRO_MIXERptr;
-  Samples: ARRAY [0..1] OF ALLEGRO_SAMPLE_INSTANCEptr;
-  SampleData: ARRAY [0..1] OF ALLEGRO_SAMPLEptr;
-  SampleTime, MaxSampleTime: REAL;
-  i: INTEGER;
+  SubMixer: array [0..1] of ALLEGRO_MIXERptr;
+  Samples: array [0..1] of ALLEGRO_SAMPLE_INSTANCEptr;
+  SampleData: array [0..1] of ALLEGRO_SAMPLEptr;
+  SampleTime, MaxSampleTime: Real;
+  i: Integer;
   FileName: AL_STR;
 
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   OpenLog;
 
-  IF ParamCount < 2 THEN
-  BEGIN
+  if ParamCount < 2 then
+  begin
     LogWriteLn ('This example needs to be run from the command line.');
     LogWriteLn ('Usage: ex_mixer_chain file1 file2');
-    CloseLog (TRUE);
+    CloseLog (True);
     Halt
-  END;
+  end;
 
   al_init_acodec_addon;
 
-  IF NOT al_install_audio THEN AbortExample ('Could not init sound!');
+  if not al_install_audio then AbortExample ('Could not init sound!');
 
   Voice := al_create_voice
     (44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
-  IF Voice = NIL THEN AbortExample ('Could not create ALLEGRO_VOICE.');
+  if Voice = Nil then AbortExample ('Could not create ALLEGRO_VOICE.');
 
   Mixer := al_create_mixer
     (44100, ALLEGRO_AUDIO_DEPTH_FLOAT32, ALLEGRO_CHANNEL_CONF_2);
@@ -72,38 +72,38 @@ BEGIN
     (44100, ALLEGRO_AUDIO_DEPTH_FLOAT32, ALLEGRO_CHANNEL_CONF_2);
   SubMixer[1] := al_create_mixer
     (44100, ALLEGRO_AUDIO_DEPTH_FLOAT32, ALLEGRO_CHANNEL_CONF_2);
-  IF (Mixer = NIL) OR (SubMixer[0] = NIL) OR (SubMixer[1] = NIL) THEN
+  if (Mixer = Nil) or (SubMixer[0] = Nil) or (SubMixer[1] = Nil) then
     AbortExample ('al_create_mixer failed.');
 
-  IF NOT al_attach_mixer_to_voice (Mixer, Voice) THEN
+  if not al_attach_mixer_to_voice (Mixer, Voice) then
       AbortExample ('al_attach_mixer_to_voice failed.');
 
-  FOR i := 0 TO 1 DO
-  BEGIN
+  for i := 0 to 1 do
+  begin
     FileName := al_string_to_str (ParamStr (i + 1));
     SampleData[i] := al_load_sample (FileName);
-    IF SampleData[i] = NIL THEN
+    if SampleData[i] = Nil then
       AbortExample (al_str_format ('Could not load sample from ''%s''!', [filename]));
-    Samples[i] := al_create_sample_instance (NIL);
-    IF Samples[i] = NIL THEN AbortExample ('al_create_sample failed.');
-    IF NOT al_set_sample (Samples[i], SampleData[i]) THEN
+    Samples[i] := al_create_sample_instance (Nil);
+    if Samples[i] = Nil then AbortExample ('al_create_sample failed.');
+    if not al_set_sample (Samples[i], SampleData[i]) then
       AbortExample ('al_set_sample failed.');
-    IF NOT al_attach_sample_instance_to_mixer (Samples[i], SubMixer[i]) THEN
+    if not al_attach_sample_instance_to_mixer (Samples[i], SubMixer[i]) then
       AbortExample ('al_attach_sample_instance_to_mixer failed.');
-    IF NOT al_attach_mixer_to_mixer (SubMixer[i], Mixer) THEN
+    if not al_attach_mixer_to_mixer (SubMixer[i], Mixer) then
       AbortExample ('al_attach_mixer_to_mixer failed.')
-  END;
+  end;
 
 { Play sample in looping mode. }
-  FOR i := 0 TO 1 DO
-  BEGIN
+  for i := 0 to 1 do
+  begin
     al_set_sample_instance_playmode (Samples[i], ALLEGRO_PLAYMODE_LOOP);
     al_play_sample_instance (Samples[i])
-  END;
+  end;
 
   MaxSampleTime := al_get_sample_instance_time (Samples[0]);
   SampleTime := al_get_sample_instance_time (Samples[1]);
-  IF SampleTime > MaxSampleTime THEN MaxSampleTime := SampleTime;
+  if SampleTime > MaxSampleTime then MaxSampleTime := SampleTime;
 
   LogWriteLn ('Playing...');
 
@@ -120,17 +120,17 @@ BEGIN
   LogWriteLn ('Done.');
 
 { Free the memory allocated. }
-  FOR i := 0 TO 1 DO
-  BEGIN
-    al_set_sample (Samples[i], NIL);
+  for i := 0 to 1 do
+  begin
+    al_set_sample (Samples[i], Nil);
     al_destroy_sample (SampleData[i]);
     al_destroy_sample_instance (Samples[i]);
     al_destroy_mixer (SubMixer[i])
-  END;
+  end;
   al_destroy_mixer (Mixer);
   al_destroy_voice (Voice);
 
   al_uninstall_audio;
 
-  CloseLog (TRUE)
-END.
+  CloseLog (True)
+end.

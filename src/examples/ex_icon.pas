@@ -26,44 +26,44 @@ PROGRAM ex_icon;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   Allegro5, al5image;
 
-VAR
+var
   Display: ALLEGRO_DISPLAYptr;
   Icon1, Icon2: ALLEGRO_BITMAPptr;
   Queue: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
   Timer: ALLEGRO_TIMERptr;
-  i, u, v: INTEGER;
+  i, u, v: Integer;
 
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_install_keyboard;
   al_init_image_addon;
   InitPlatformSpecific;
 
   Display := al_create_display (320, 200);
-  IF Display = NIL THEN AbortExample ('Could not create display');
+  if Display = Nil then AbortExample ('Could not create display');
   al_clear_to_color (al_map_rgb_f (0, 0, 0));
   al_flip_display;
 
 { First icon: Read from file. }
   Icon1 := al_load_bitmap ('data/icon.tga');
-  IF Icon1 = NIL THEN AbortExample ('icon.tga not found');
+  if Icon1 = Nil then AbortExample ('icon.tga not found');
 
 { Second icon: Create it. }
   al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
   Icon2 := al_create_bitmap (16, 16);
   al_set_target_bitmap (Icon2);
-  FOR i := 0 TO 255 DO
-  BEGIN
-    u := i MOD 16;
-    v := i DIV 16;
+  for i := 0 to 255 do
+  begin
+    u := i mod 16;
+    v := i div 16;
     al_put_pixel (u, v, al_map_rgb_f (u / 15.0, v / 15.0, 1))
-  END;
+  end;
   al_set_target_backbuffer (Display);
 
   al_set_window_title (Display, 'Changing icon example');
@@ -75,21 +75,21 @@ BEGIN
   al_register_event_source (Queue, al_get_timer_event_source (Timer));
   al_start_timer (Timer);
 
-  WHILE TRUE DO
-  BEGIN
+  while True do
+  begin
     al_wait_for_event (Queue, @Event);
 
-    IF (Event.ftype = ALLEGRO_EVENT_KEY_DOWN)
-    AND (Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE) THEN
-      EXIT;
-    IF Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE THEN
-      EXIT;
-    IF Event.ftype = ALLEGRO_EVENT_TIMER THEN
-    BEGIN
-      IF (Event.timer.count AND 1) <> 0 THEN
+    if (Event.ftype = ALLEGRO_EVENT_KEY_DOWN)
+    and (Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE) then
+      Exit;
+    if Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE then
+      Exit;
+    if Event.ftype = ALLEGRO_EVENT_TIMER then
+    begin
+      if (Event.timer.count and 1) <> 0 then
 	al_set_display_icon (Display, Icon2)
-      ELSE
+      else
 	al_set_display_icon (Display, Icon1)
-    END
-  END
-END.
+    end
+  end
+end.

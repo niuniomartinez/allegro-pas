@@ -35,28 +35,28 @@ PROGRAM ex_timer_pause;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5;
 
-CONST
+const
   Duration = 5.0; { Timer lasts for 5 seconds. }
   PrePause = 2.0; { How long to wait before pausing. }
   Pause = 2.0;    { How long to pause timer for. }
 
-VAR
+var
   Timer1, Timer2: ALLEGRO_TIMERptr;
   Queue: ALLEGRO_EVENT_QUEUEptr;
   ev: ALLEGRO_EVENT;
-  TimerId: INTEGER;
+  TimerId: Integer;
 
 { Run our test. }
-BEGIN
-  Timer1 := NIL;
-  Timer2 := NIL;
-  Queue  := NIL;
+begin
+  Timer1 := Nil;
+  Timer2 := Nil;
+  Queue  := Nil;
 
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   OpenLog;
 
@@ -84,16 +84,16 @@ BEGIN
   al_start_timer (Timer2);
 
   al_wait_for_event (Queue, @ev);
-  IF al_get_timer_event_source (Timer1) = ev.any.source THEN
+  if al_get_timer_event_source (Timer1) = ev.any.source then
     TimerId := 1
-  ELSE
+  else
     TimerId := 2;
   LogPrintLn ('Timer%d finished at: %2.2fs.', [TimerId, al_get_time() * 100]);
 
   al_wait_for_event (Queue, @ev);
-  IF al_get_timer_event_source (Timer1) = ev.any.source THEN
+  if al_get_timer_event_source (Timer1) = ev.any.source then
     TimerId := 1
-  ELSE
+  else
     TimerId := 2;
   LogPrintLn ('Timer%d finished at: %2.2fs.', [TimerId, al_get_time() * 100]);
 
@@ -102,5 +102,5 @@ BEGIN
   al_destroy_timer (Timer2);
 
   LogWriteLn ('Done');
-  CloseLog (TRUE)
-END.
+  CloseLog (True)
+end.

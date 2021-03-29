@@ -1,4 +1,4 @@
-UNIT Engine;
+unit Engine;
 (*< Defines base classes for different parts of the game. *)
 (*
   Copyright (c) 2019 Guillermo Martínez J.
@@ -23,85 +23,85 @@ UNIT Engine;
     distribution.
  *)
 
-INTERFACE
+interface
 
-  USES
+  uses
     Graphics,
     Allegro5;
 
-  CONST
+  const
   (* Arena width. *)
     MAX_WIDTH = 640;
   (* Arena height. *)
     MAX_HEIGHT = 480;
 
-  TYPE
+  type
   (* Base class for sprites.
 
      In this game, sprite origin is at the center. *)
-    TSprite = CLASS (TObject)
-    PRIVATE
-      fVisible, fActive: BOOLEAN;
-      fPx, fPy, fAngle, fRadius: SINGLE;
+    TSprite = class (TObject)
+    private
+      fVisible, fActive: Boolean;
+      fPx, fPy, fAngle, fRadius: Single;
       fPolygon: TPolygon;
-      fValue: INTEGER;
-    PROTECTED
+      fValue: Integer;
+    protected
     (* Sprite polygon. *)
-      PROPERTY Polygon: TPolygon READ fPolygon;
-    PUBLIC
+      property Polygon: TPolygon read fPolygon;
+    public
     (* Initializes the sprite.
 
        This will reset the polygon and set @link(Visible) and @link(Active) to
        @true. *)
-      PROCEDURE Initialize; VIRTUAL;
+      procedure Initialize; virtual;
     (* Suspends sprite activity. *)
-      PROCEDURE Suspend;
+      procedure Suspend;
     (* Restores sprite. *)
-      PROCEDURE Restore; VIRTUAL;
+      procedure Restore; virtual;
     (* Draws sprite. *)
-      PROCEDURE Draw; VIRTUAL;
+      procedure Draw; virtual;
     (* Updates the sprite. *)
-      PROCEDURE Update; VIRTUAL; ABSTRACT;
+      procedure Update; virtual; abstract;
     (* Tests collision with other sprite. *)
-      FUNCTION IntersectWith (aSpr: TSprite): BOOLEAN; VIRTUAL;
+      function IntersectWith (aSpr: TSprite): Boolean; virtual;
 
     (* Tells if sprite is visible.  Note that non visible sprites would be
        updated and collide. @seealso(Active) *)
-      PROPERTY Visible: BOOLEAN READ fVisible WRITE fVisible;
+      property Visible: Boolean read fVisible write fVisible;
     (* Tells if sprite is active.  This means that the sprite will be updated
        and collisions will be checked. *)
-      PROPERTY Active: BOOLEAN READ fActive WRITE fActive;
+      property Active: Boolean read fActive write fActive;
     (* Sprite horizontal position. *)
-      PROPERTY PosX: SINGLE READ fPx WRITE fPx;
+      property PosX: Single read fPx write fPx;
     (* Sprite vertical position. *)
-      PROPERTY PosY: SINGLE READ fPy WRITE fPy;
+      property PosY: Single read fPy write fPy;
     (* Rotation angle. *)
-      PROPERTY Angle: SINGLE READ fAngle WRITE fAngle;
+      property Angle: Single read fAngle write fAngle;
     (* Object radius.  Used in collision detection. *)
-      PROPERTY Radius: SINGLE READ fRadius WRITE fRadius;
+      property Radius: Single read fRadius write fRadius;
     (* Score gained by destroying this sprite. *)
-      PROPERTY Value: INTEGER READ fValue WRITE fValue;
-    END;
+      property Value: Integer read fValue write fValue;
+    end;
 
 
 
   (* A sprite that moves in a continuous motion. *)
-    TMoveableSprite = CLASS (TSprite)
-    PRIVATE
-      fVx, fVy, fVr: SINGLE;
-    PUBLIC
+    TMoveableSprite = class (TSprite)
+    private
+      fVx, fVy, fVr: Single;
+    public
     (* Updates the sprite.
 
        Just moves the sprite in the given velocities. *)
-      PROCEDURE Update; OVERRIDE;
+      procedure Update; override;
 
     (* Velocity in the X axis. *)
-      PROPERTY Vx: SINGLE READ fVx WRITE fVx;
+      property Vx: Single read fVx write fVx;
     (* Velocity in the Y axis. *)
-      PROPERTY Vy: SINGLE READ fVy WRITE fVy;
+      property Vy: Single read fVy write fVy;
     (* Rotation velocity. *)
-      PROPERTY Vr: SINGLE READ fVr WRITE fVr;
-    END;
+      property Vr: Single read fVr write fVr;
+    end;
 
 
 
@@ -109,73 +109,73 @@ INTERFACE
 
      Managers manages parts of the game (i.e. player, asteroids, effects...)
      and are created and used by the @link(TGameManager). *)
-    TManager = CLASS (TObject)
-    PUBLIC
+    TManager = class (TObject)
+    public
     (* Initializes the manager.  It is called when program starts. *)
-      PROCEDURE Initialize; VIRTUAL; ABSTRACT;
+      procedure Initialize; virtual; abstract;
     (* Starts a new game. *)
-      PROCEDURE NewGame; VIRTUAL; ABSTRACT;
+      procedure NewGame; virtual; abstract;
     (* Updates the content.  It is called once per frame. *)
-      PROCEDURE Update; VIRTUAL; ABSTRACT;
+      procedure Update; virtual; abstract;
     (* Paints the content.  It is called when screen needs to be updated. *)
-      PROCEDURE Paint; VIRTUAL; ABSTRACT;
-    END;
+      procedure Paint; virtual; abstract;
+    end;
 
-IMPLEMENTATION
+implementation
 
 (*
  * TSprite
  ***************************************************************************)
 
 (* Initializes sprite. *)
-  PROCEDURE TSprite.Initialize;
-  BEGIN
-    SELF.Restore;
+  procedure TSprite.Initialize;
+  begin
+    Self.Restore;
     fPolygon.Reset
-  END;
+  end;
 
 
 
 (* Suspends sprite. *)
-  PROCEDURE TSprite.Suspend;
-  BEGIN
-    fVisible := FALSE;
-    fActive := FALSE
-  END;
+  procedure TSprite.Suspend;
+  begin
+    fVisible := False;
+    fActive := False
+  end;
 
 
 
 (* Restores sprite. *)
-  PROCEDURE TSprite.Restore;
-  BEGIN
-    fVisible := TRUE;
-    fActive := TRUE
-  END;
+  procedure TSprite.Restore;
+  begin
+    fVisible := True;
+    fActive := True
+  end;
 
 
 
 (* Draws sprite. *)
-  PROCEDURE TSprite.Draw;
-  VAR
+  procedure TSprite.Draw;
+  var
     TransformationMatrix: ALLEGRO_TRANSFORM;
-  BEGIN
-    IF fVisible THEN
-    BEGIN
+  begin
+    if fVisible then
+    begin
       al_build_transform (TransformationMatrix, fPx, fPy, 1, 1, fAngle);
       al_use_transform (TransformationMatrix);
       fPolygon.Draw
-    END;
-  END;
+    end;
+  end;
 
 
 
 (* Tests collision. *)
-  FUNCTION TSprite.IntersectWith (aSpr: TSprite): BOOLEAN;
-  BEGIN
-    RESULT := fActive AND aSpr.fActive
-          AND (ABS (aSpr.fPx - fPx + 2) < fRadius)
-          AND (ABS (aSpr.fPy - fPy + 2) < fRadius)
-  END;
+  function TSprite.IntersectWith (aSpr: TSprite): Boolean;
+  begin
+    Result := fActive and aSpr.fActive
+          and (ABS (aSpr.fPx - fPx + 2) < fRadius)
+          and (ABS (aSpr.fPy - fPy + 2) < fRadius)
+  end;
 
 
 
@@ -184,22 +184,22 @@ IMPLEMENTATION
  ***************************************************************************)
 
 (* Updates sprite. *)
-  PROCEDURE TMoveableSprite.Update;
-  BEGIN
-    IF fActive THEN
-    BEGIN
+  procedure TMoveableSprite.Update;
+  begin
+    if fActive then
+    begin
     { Position. }
       fPx := fPx + fVx;
       fPy := fPy + fVy;
     { If center is outside the screen, move to the opposite side. }
-      IF fPx - fRadius > MAX_WIDTH THEN fPx := fPx - (MAX_WIDTH + 2 * fRadius);
-      IF fPx < -fRadius THEN fPx := fPx + (MAX_WIDTH + 2 * fRadius);
-      IF fPy - fRadius > MAX_HEIGHT THEN fPY := fPy - (MAX_HEIGHT + 2 * fRadius);
-      IF fPy < -fRadius THEN fPy := fPy + (MAX_HEIGHT + 2 * fRadius);
+      if fPx - fRadius > MAX_WIDTH then fPx := fPx - (MAX_WIDTH + 2 * fRadius);
+      if fPx < -fRadius then fPx := fPx + (MAX_WIDTH + 2 * fRadius);
+      if fPy - fRadius > MAX_HEIGHT then fPY := fPy - (MAX_HEIGHT + 2 * fRadius);
+      if fPy < -fRadius then fPy := fPy + (MAX_HEIGHT + 2 * fRadius);
     { Rotation. }
       fAngle := fAngle + fVr
-    END
-  END;
+    end
+  end;
 
-END.
+end.
 

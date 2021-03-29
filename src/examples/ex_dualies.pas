@@ -27,49 +27,49 @@ PROGRAM ex_dualies;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5, al5image;
 
-  PROCEDURE Go;
-  VAR
+  procedure Go;
+  var
     d1, d2: ALLEGRO_DISPLAYptr;
     b1, b2: ALLEGRO_BITMAPptr;
     Queue: ALLEGRO_EVENT_QUEUEptr;
     Event: ALLEGRO_EVENT;
-  BEGIN
+  begin
     al_set_new_display_flags (ALLEGRO_FULLSCREEN);
 
     al_set_new_display_adapter (0);
     d1 := al_create_display (640, 480);
-    IF d1 = NIL THEN AbortExample ('Error creating first display.');
+    if d1 = Nil then AbortExample ('Error creating first display.');
     b1 := al_load_bitmap ('data/mysha.pcx');
-    IF b1 = NIL THEN AbortExample ('Error loading mysha.pcx.');
+    if b1 = Nil then AbortExample ('Error loading mysha.pcx.');
 
     al_set_new_display_adapter (1);
     d2 := al_create_display (640, 480);
-    IF d2 = NIL THEN AbortExample ('Error creating second display.');
+    if d2 = Nil then AbortExample ('Error creating second display.');
     b2 := al_load_bitmap ('data/allegro.pcx');
-    IF b2 = NIL THEN AbortExample ('Error loading allegro.pcx.');
+    if b2 = Nil then AbortExample ('Error loading allegro.pcx.');
 
     Queue := al_create_event_queue;
     al_register_event_source (Queue, al_get_keyboard_event_source);
 
-    WHILE TRUE DO
-    BEGIN
-      IF NOT al_is_event_queue_empty (Queue) THEN
-      BEGIN
+    while True do
+    begin
+      if not al_is_event_queue_empty (Queue) then
+      begin
 	al_get_next_event (Queue, Event);
-	IF Event.ftype = ALLEGRO_EVENT_KEY_DOWN THEN
-	  IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-	  BEGIN
+	if Event.ftype = ALLEGRO_EVENT_KEY_DOWN then
+	  if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+	  begin
 	    al_destroy_bitmap (b1);
 	    al_destroy_bitmap (b2);
 	    al_destroy_display (d1);
 	    al_destroy_display (d2);
-	    EXIT
-	  END
-      END;
+	    Exit
+	  end
+      end;
 
       al_set_target_backbuffer (d1);
       al_draw_scaled_bitmap (b1, 0, 0, 320, 200, 0, 0, 640, 480, 0);
@@ -80,18 +80,18 @@ USES
       al_flip_display;
 
       al_rest (0.1)
-    END
-  END;
+    end
+  end;
 
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_install_keyboard;
 
   al_init_image_addon;
 
-  IF al_get_num_video_adapters < 2 THEN
+  if al_get_num_video_adapters < 2 then
     AbortExample ('You need 2 or more adapters/monitors for this example.');
 
   Go
-END.
+end.

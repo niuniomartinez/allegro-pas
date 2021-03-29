@@ -1,4 +1,4 @@
-UNIT al5opengl;
+unit al5opengl;
 (***<OpenGL integration.
 
   You can disable the detection of any OpenGL extension by Allegro with a
@@ -32,11 +32,11 @@ UNIT al5opengl;
     distribution.
  *)
 
-{$include allegro5.cfg}
+{$INCLUDE allegro5.cfg}
 
-INTERFACE
+interface
 
-  USES
+  uses
     Allegro5, al5base,
 {$IFDEF FPC}
     GL;
@@ -60,41 +60,41 @@ INTERFACE
  *      By Milan Mimica.
  *)
 
-  TYPE
+  type
   {** @exclude }
     ALLEGRO_OPENGL_VARIANT = (
       ALLEGRO_DESKTOP_OPENGL = 0,
       ALLEGRO_OPENGL_ES
     );
 
-  FUNCTION al_get_opengl_version: AL_UINT32;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_have_opengl_extension (CONST extension: AL_STR): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_opengl_proc_address (CONST name: AL_STR): AL_VOIDptr;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  function al_get_opengl_version: AL_UINT32;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_have_opengl_extension (const extension: AL_STR): AL_BOOL;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_get_opengl_proc_address (const name: AL_STR): AL_VOIDptr;
+    CDECL; external ALLEGRO_LIB_NAME;
 { ALLEGRO_OGL_EXT_LIST is defined using a pre-processor.  The result is a HUGE
   (and I mean HUGE as in HUGE) record with thousands (ok, may be just hundreds)
   of fields.  That's why this function isn't defined.
 AL_FUNC(ALLEGRO_OGL_EXT_LIST*, al_get_opengl_extension_list,     (void));
 }
-  FUNCTION al_get_opengl_texture (bitmap: ALLEGRO_BITMAPptr): GLuint;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_remove_opengl_fbo (bitmap: ALLEGRO_BITMAPptr);
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_opengl_fbo (bitmap: ALLEGRO_BITMAPptr): GLuint;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_get_opengl_texture_size (bitmap: ALLEGRO_BITMAPptr; OUT w, h: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_get_opengl_texture_position (bitmap: ALLEGRO_BITMAPptr; OUT u, v: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_opengl_program_object (shader: ALLEGRO_SHADERptr): GLuint;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  PROCEDURE al_set_current_opengl_context (display: ALLEGRO_DISPLAYptr);
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
-  FUNCTION al_get_opengl_variant: AL_INT;
-    CDECL; EXTERNAL ALLEGRO_LIB_NAME;
+  function al_get_opengl_texture (bitmap: ALLEGRO_BITMAPptr): GLuint;
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_remove_opengl_fbo (bitmap: ALLEGRO_BITMAPptr);
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_get_opengl_fbo (bitmap: ALLEGRO_BITMAPptr): GLuint;
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_get_opengl_texture_size (bitmap: ALLEGRO_BITMAPptr; out w, h: AL_INT);
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_get_opengl_texture_position (bitmap: ALLEGRO_BITMAPptr; out u, v: AL_INT);
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_get_opengl_program_object (shader: ALLEGRO_SHADERptr): GLuint;
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_set_current_opengl_context (display: ALLEGRO_DISPLAYptr);
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_get_opengl_variant: ALLEGRO_OPENGL_VARIANT;
+    CDECL; external ALLEGRO_LIB_NAME;
 
-IMPLEMENTATION
+implementation
 
-END.
+end.

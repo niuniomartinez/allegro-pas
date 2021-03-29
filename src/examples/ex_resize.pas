@@ -27,51 +27,51 @@ PROGRAM ex_resize;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5, al5primitives;
 
 
 
-  PROCEDURE Redraw;
-  VAR
-    Black, White: ALLEGRO_COLOR;
-    w, h: INTEGER;
-  BEGIN
-    White := al_map_rgba_f (1, 1, 1, 1);
-    Black := al_map_rgba_f (0, 0, 0, 1);
+  procedure Redraw;
+  var
+    lBlack, lWhite: ALLEGRO_COLOR;
+    w, h: Integer;
+  begin
+    lWhite := al_map_rgba_f (1, 1, 1, 1);
+    lBlack := al_map_rgba_f (0, 0, 0, 1);
 
-    al_clear_to_color (White);
+    al_clear_to_color (lWhite);
     w := al_get_bitmap_width (al_get_target_bitmap);
     h := al_get_bitmap_height (al_get_target_bitmap);
-    al_draw_line (0, h, w / 2, 0, Black, 0);
-    al_draw_line (w / 2, 0, w, h, Black, 0);
-    al_draw_line (w / 4, h / 2, 3 * w / 4, h / 2, Black, 0);
+    al_draw_line (0, h, w / 2, 0, lBlack, 0);
+    al_draw_line (w / 2, 0, w, h, lBlack, 0);
+    al_draw_line (w / 4, h / 2, 3 * w / 4, h / 2, lBlack, 0);
     al_flip_display
-  END;
+  end;
 
 
 
-VAR
+var
   Display: ALLEGRO_DISPLAYptr;
   Timer: ALLEGRO_TIMERptr;
   Events: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
-  rs, s: INTEGER;
-  Resize: BOOLEAN;
-BEGIN
+  rs, s: Integer;
+  Resize: Boolean;
+begin
   rs := 100;
-  Resize := FALSE;
+  Resize := False;
 
 { Initialize Allegro and create an event queue. }
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  if not al_init then AbortExample ('Could not init Allegro.');
   al_init_primitives_addon;
   Events := al_create_event_queue;
 
 { Setup a display driver and register events from it. }
   al_set_new_display_flags (ALLEGRO_RESIZABLE);
   Display := al_create_display (rs, rs);
-  IF Display = NIL THEN AbortExample ('Could not create display.');
+  if Display = Nil then AbortExample ('Could not create display.');
   al_register_event_source (Events, al_get_display_event_source (Display));
 
   Timer := al_create_timer (0.1);
@@ -84,26 +84,26 @@ BEGIN
 
 { Display a pulsating window until a key or the closebutton is pressed. }
   Redraw;
-  WHILE TRUE DO
-  BEGIN
-    IF Resize THEN
-    BEGIN
-      INC (rs, 10);
-      IF rs = 300 THEN rs := 100;
+  while True do
+  begin
+    if Resize then
+    begin
+      Inc (rs, 10);
+      if rs = 300 then rs := 100;
       s := rs;
-      IF s > 200 THEN s := 400 - s;
+      if s > 200 then s := 400 - s;
       al_resize_display (Display, s, s);
       Redraw;
-      Resize := FALSE;
-    END;
+      Resize := False;
+    end;
     al_wait_for_event (Events, @Event);
-    CASE Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_TIMER:
-      Resize := TRUE;
+      Resize := True;
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      EXIT;
+      Exit;
     ALLEGRO_EVENT_KEY_DOWN:
-      EXIT;
-    END
-  END
-END.
+      Exit;
+    end
+  end
+end.

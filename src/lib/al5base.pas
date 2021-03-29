@@ -1,4 +1,4 @@
-UNIT al5Base;
+unit al5Base;
 (***<Base definitions to interface with Allegro dynamic module.
 
   This unit includes definitions of data types used by Allegro.  They're used
@@ -29,11 +29,11 @@ UNIT al5Base;
 
 {$INCLUDE allegro5.cfg}
 
-INTERFACE
+interface
 
-  CONST
+  const
   (* Defines some constants to build the correct names of the library files. *)
-{$IFDEF DEBUGMODE}
+{$IFDEF DEBUGmodE}
     _DBG_ = '-debug'; (***<@exclude *)
 {$ELSE}
     _DBG_ = ''; (***<@exclude *)
@@ -41,9 +41,9 @@ INTERFACE
 
 {$IF DEFINED(UNIX)}
   {$INCLUDE al5_unix.inc}
-{$ELSEIF DEFINED(LINUX)}
+{$ELSEIf DEFINED(LINUX)}
   {$INCLUDE al5_unix.inc}
-{$ELSEIF DEFINED(WINDOWS)}
+{$ELSEIf DEFINED(WINDOWS)}
   {$INCLUDE al5_win.inc}
 {$ENDIF}
 
@@ -83,17 +83,17 @@ INTERFACE
    Then: it defines the types used by C declarations.
  *)
 
-  TYPE
-    AL_POINTER = POINTER;
-    AL_INT8 = SHORTINT;
-    AL_UINT8 = BYTE;
-    AL_INT16 = SMALLINT;
-    AL_UINT16 = WORD;
-    AL_INT32 = LONGINT;
-    AL_UINT32 = LONGWORD;
+  type
+    AL_POINTER = Pointer;
+    AL_INT8 = ShortInt;
+    AL_UINT8 = Byte;
+    AL_INT16 = SmallInt;
+    AL_UINT16 = Word;
+    AL_INT32 = LongInt;
+    AL_UINT32 = LongWord;
     AL_INT64 = INT64;
 {$IFDEF FPC}
-    AL_UINT64 = QWORD;
+    AL_UINT64 = QWord;
 {$ELSE}
   {$IFDEF ISDELPHI2007ANDUP}
     AL_UINT64 = UINT64;
@@ -103,7 +103,7 @@ INTERFACE
 {$ENDIF}
 
 
-    AL_BOOL = LONGBOOL;
+    AL_BOOL = LongBool;
     AL_CHAR = AL_INT8;
     AL_UCHAR = AL_UINT8;
     AL_SHORT = AL_INT16;
@@ -129,26 +129,26 @@ INTERFACE
     AL_UINTPTR_T = AL_UINT32;
 {$ENDIF}
     AL_OFF_T = AL_UINT;
-    AL_FLOAT = SINGLE;
-    AL_DOUBLE = DOUBLE;
+    AL_FLOAT = Single;
+    AL_DOUBLE = Double;
     AL_STR = ANSISTRING;
 
     AL_VOIDptr = AL_POINTER;
 {$IFDEF ISDELPHI2009ANDUP}
     AL_STRptr = PAnsiChar;
 {$ELSE}
-    AL_STRptr = PCHAR;
+    AL_STRptr = PChar;
 {$ENDIF}
     AL_INTptr = ^AL_INT;
     AL_FLOATptr = ^AL_FLOAT;
 
-    AL_DATA_PTR_T = RECORD
-      CASE INTEGER OF
+    AL_DATA_PTR_T = record
+      case Integer of
         0: ( int_value : AL_INTPTR_T  );
         1: ( uint_value: AL_UINTPTR_T );
         2: ( ptr_value : AL_POINTER   );
-    END;
+    end;
 
-IMPLEMENTATION
+implementation
 
-END.
+end.

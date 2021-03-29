@@ -26,20 +26,20 @@ PROGRAM ex_mouse;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     Allegro5, al5image, al5primitives;
 
-  CONST
+  const
     NUM_BUTTONS = 3;
 
-  PROCEDURE DrawMouseButton (But: INTEGER; Down: BOOLEAN);
-  CONST
-    Offset: ARRAY [1..NUM_BUTTONS] OF INTEGER = (0, 70, 35);
-  VAR
+  procedure DrawMouseButton (But: Integer; Down: Boolean);
+  const
+    Offset: array [1..NUM_BUTTONS] of Integer = (0, 70, 35);
+  var
     Grey, Black: ALLEGRO_COLOR;
-    x, y: INTEGER;
-  BEGIN
+    x, y: Integer;
+  begin
     x := 400 + Offset[But];
     y := 130;
 
@@ -48,20 +48,20 @@ PROGRAM ex_mouse;
 
     al_draw_filled_rectangle (x, y, x + 27, y + 42, Grey);
     al_draw_rectangle (x + 0.5, y + 0.5, x + 26.5, y + 41.5, Black, 0);
-    IF Down THEN
+    if Down then
       al_draw_filled_rectangle (x + 2, y + 2, x + 25, y + 40, Black)
-  END;
+  end;
 
 
 
-VAR
+var
   Display: ALLEGRO_DISPLAYptr;
   Cursor: ALLEGRO_BITMAPptr;
   msEstate: ALLEGRO_MOUSE_STATE;
   KbdState: ALLEGRO_KEYBOARD_STATE;
-  i: INTEGER;
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  i: Integer;
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_init_primitives_addon;
   al_install_mouse;
@@ -70,24 +70,24 @@ BEGIN
   InitPlatformSpecific;
 
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN AbortExample ('Error creating display');
+  if Display = Nil then AbortExample ('Error creating display');
 
   al_hide_mouse_cursor (display);
 
   Cursor := al_load_bitmap ('data/cursor.tga');
-  IF Cursor = NIL THEN AbortExample ('Error loading cursor.tga');
+  if Cursor = Nil then AbortExample ('Error loading cursor.tga');
 
-  REPEAT
+  repeat
     al_get_mouse_state (msEstate);
     al_get_keyboard_state (KbdState);
 
     al_clear_to_color (al_map_rgb ($FF, $FF, $C0));
-    FOR i := 1 TO NUM_BUTTONS DO
+    for i := 1 to NUM_BUTTONS do
       DrawMouseButton (i, al_mouse_button_down (msEstate, i));
     al_draw_bitmap (Cursor, msEstate.x, msestate.y, 0);
     al_flip_display;
 
     al_rest (0.005);
-  UNTIL al_key_down (KbdState, ALLEGRO_KEY_ESCAPE)
-END.
+  until al_key_down (KbdState, ALLEGRO_KEY_ESCAPE)
+end.
 

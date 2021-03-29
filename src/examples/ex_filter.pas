@@ -26,110 +26,110 @@ PROGRAM ex_filter;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Allegro5, al5base, al5font, al5image, Common;
 
-  CONST
+  const
     FPS = 60;
-    FilterFlags: ARRAY [0..5] OF INTEGER = (
+    FilterFlags: array [0..5] of Integer = (
       0,
       ALLEGRO_MIN_LINEAR,
       ALLEGRO_MIPMAP,
-      ALLEGRO_MIN_LINEAR OR ALLEGRO_MIPMAP,
+      ALLEGRO_MIN_LINEAR or ALLEGRO_MIPMAP,
       0,
       ALLEGRO_MAG_LINEAR
     );
 
-    FilterText: ARRAY [0..3] OF AL_STR = (
+    FilterText: array [0..3] of AL_STR = (
       'nearest', 'linear',
       'nearest mipmap', 'linear mipmap'
     );
 
-  TYPE
-    TExample = RECORD
+  type
+    TExample = record
       Display: ALLEGRO_DISPLAYptr;
       Font: ALLEGRO_FONTptr;
-      Bitmaps: ARRAY [0..1] OF ARRAY [0..8] OF ALLEGRO_BITMAPptr;
+      Bitmaps: array [0..1] of array [0..8] of ALLEGRO_BITMAPptr;
       bg, fg, Info: ALLEGRO_COLOR;
-      Bitmap, Ticks: INTEGER;
-    END;
+      Bitmap, Ticks: Integer;
+    end;
 
-  VAR
+  var
     Example: TExample;
 
 
 
-  PROCEDURE Update;
-  BEGIN
-    INC (Example.Ticks)
-  END;
+  procedure Update;
+  begin
+    Inc (Example.Ticks)
+  end;
 
 
 
-  PROCEDURE Redraw;
-  VAR
-    w, h, i: INTEGER;
+  procedure Redraw;
+  var
+    w, h, i: Integer;
     x, y, bw, bh, t, Scale, Angle: REAL;
     Bmp: ALLEGRO_BITMAPptr;
-  BEGIN
+  begin
     w := al_get_display_width (Example.Display);
     h := al_get_display_height (Example.Display);
 
     al_clear_to_color (Example.bg);
 
-    FOR i := 0 TO 5 DO
-    BEGIN
-      x := (i DIV 2) * w / 3 + w / 6;
-      y := (i MOD 2) * h / 2 + h / 4;
+    for i := 0 to 5 do
+    begin
+      x := (i div 2) * w / 3 + w / 6;
+      y := (i mod 2) * h / 2 + h / 4;
       Bmp := Example.Bitmaps[Example.Bitmap][i];
       bw := al_get_bitmap_width (Bmp);
       bh := al_get_bitmap_height (Bmp);
-      t := 1 - 2 * ABS ((Example.Ticks MOD (FPS * 16)) / 16 / FPS - 0.5);
+      t := 1 - 2 * Abs ((Example.Ticks mod (FPS * 16)) / 16 / FPS - 0.5);
       Angle := Example.Ticks * ALLEGRO_PI * 2 / FPS / 8;
 
-      IF i < 4 THEN
+      if i < 4 then
          Scale := 1 - t * 0.9
-      ELSE
+      else
          scale := 1 + t * 9;
 
       al_draw_text (
         Example.Font, Example.fg, x, y - 64 - 14,
-        ALLEGRO_ALIGN_CENTRE, FilterText[i MOD 4]
+        ALLEGRO_ALIGN_CENTRE, FilterText[i mod 4]
       );
 
-      al_set_clipping_rectangle (TRUNC (x - 64), TRUNC (y - 64), 128, 128);
+      al_set_clipping_rectangle (Trunc (x - 64), Trunc (y - 64), 128, 128);
       al_draw_scaled_rotated_bitmap (
         Bmp, bw / 2, bh / 2,
         x, y, scale, scale, angle, 0
       );
       al_set_clipping_rectangle (0, 0, w, h);
-    END;
+    end;
     al_draw_text (
       Example.Font, Example.Info, w / 2, h - 14,
       ALLEGRO_ALIGN_CENTRE, 'press space to change')
-  END;
+  end;
 
 
-  CONST
+  const
     w = 640; h = 480;
-  VAR
+  var
     Timer: ALLEGRO_TIMERptr;
     Queue: ALLEGRO_EVENT_QUEUEptr;
     Event: ALLEGRO_EVENT;
-    Done, NeedRedraw: BOOLEAN;
-    i, x, y, c: INTEGER;
+    Done, NeedRedraw: Boolean;
+    i, x, y, c: Integer;
     Mysha: ALLEGRO_BITMAPptr;
     Lock: ALLEGRO_LOCKED_REGIONptr;
     Row, Ptr: PBYTE;
 
-BEGIN
-  done := FALSE;
-  NeedRedraw := TRUE;
+begin
+  done := False;
+  NeedRedraw := True;
 
-  IF NOT al_init THEN
+  if not al_init then
     AbortExample ('Failed to init Allegro.');
 
-  IF NOT al_init_image_addon THEN
+  if not al_init_image_addon then
     AbortExample ('Failed to init IIO addon.');
 
   al_init_font_addon;
@@ -137,25 +137,25 @@ BEGIN
   InitPlatformSpecific;
 
   Example.Display := al_create_display (w, h);
-  IF Example.Display = NIL THEN
+  if Example.Display = Nil then
     AbortExample ('Error creating display.');
 
-  IF NOT al_install_keyboard THEN
+  if not al_install_keyboard then
     AbortExample ('Error installing keyboard.');
 
-  IF NOT al_install_mouse THEN
+  if not al_install_mouse then
     AbortExample ('Error installing mouse.');
 
   Example.Font := al_load_font ('data/fixed_font.tga', 0, 0);
-  IF Example.Font = NIL THEN
+  if Example.Font = Nil then
     AbortExample ('Error loading data/fixed_font.tga');
 
   Mysha := al_load_bitmap ('data/mysha256x256.png');
-  IF Mysha = NIL THEN
+  if Mysha = Nil then
     AbortExample ('Error loading data/mysha256x256.png');
 
-  FOR i := LOW (FilterFlags) TO HIGH (FilterFlags) DO
-  BEGIN
+  for i := Low (FilterFlags) to High (FilterFlags) do
+  begin
   { Only power-of-two bitmaps can have mipmaps. }
     al_set_new_bitmap_flags (FilterFlags[i]);
     Example.Bitmaps[0][i] := al_create_bitmap (1024, 1024);
@@ -164,22 +164,22 @@ BEGIN
       Example.Bitmaps[0][i],
       ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE, ALLEGRO_LOCK_WRITEONLY
     );
-    FOR y := 0 TO 1023 DO
-    BEGIN
+    for y := 0 to 1023 do
+    begin
       Row := PBYTE (Lock^.data) + Lock^.pitch * y;
       Ptr := Row;
-      FOR X := 0 TO 1023 DO
-      BEGIN
+      for X := 0 to 1023 do
+      begin
         c := 0;
-        IF (((x SHR 2) AND 1) XOR ((y SHR 2) AND 1)) <> 0 THEN c := 255;
-        Ptr^ := c; INC (ptr);
-        Ptr^ := c; INC (ptr);
-        Ptr^ := c; INC (ptr);
-        Ptr^ := 255; INC (ptr)
-      END
-    END;
+        if (((x shr 2) and 1) XOR ((y shr 2) and 1)) <> 0 then c := 255;
+        Ptr^ := c; Inc (ptr);
+        Ptr^ := c; Inc (ptr);
+        Ptr^ := c; Inc (ptr);
+        Ptr^ := 255; Inc (ptr)
+      end
+    end;
     al_unlock_bitmap (Example.Bitmaps[0][i])
-  END;
+  end;
 
   Example.bg := al_map_rgb_f (0, 0, 0);
   Example.fg := al_map_rgb_f (1, 1, 1);
@@ -195,37 +195,37 @@ BEGIN
 
   al_start_timer (Timer);
 
-  REPEAT
-    IF NeedRedraw AND al_is_event_queue_empty (Queue) THEN
-    BEGIN
+  repeat
+    if NeedRedraw and al_is_event_queue_empty (Queue) then
+    begin
       Redraw;
       al_flip_display;
-      NeedRedraw := FALSE;
-    END;
+      NeedRedraw := False;
+    end;
 
     al_wait_for_event (Queue, @Event);
-    CASE Event.ftype OF
+    case Event.ftype OF
     ALLEGRO_EVENT_KEY_DOWN:
-      BEGIN
-        IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN Done := TRUE;
-        IF Event.keyboard.keycode = ALLEGRO_KEY_SPACE THEN
-          Example.Bitmap := (Example.Bitmap + 1) MOD 2
-      END;
+      begin
+        if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then Done := True;
+        if Event.keyboard.keycode = ALLEGRO_KEY_SPACE then
+          Example.Bitmap := (Example.Bitmap + 1) mod 2
+      end;
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      Done := TRUE;
+      Done := True;
     ALLEGRO_EVENT_TIMER:
-      BEGIN
+      begin
         Update;
-        NeedRedraw := TRUE
-      END;
+        NeedRedraw := True
+      end;
     ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-      Example.Bitmap := (Example.Bitmap + 1) MOD 2
-    END
-  UNTIL Done;
+      Example.Bitmap := (Example.Bitmap + 1) mod 2
+    end
+  until Done;
 
-  FOR i := 0 TO 5 DO
-  BEGIN
+  for i := 0 to 5 do
+  begin
     al_destroy_bitmap (Example.Bitmaps[0][i]);
     al_destroy_bitmap (Example.Bitmaps[1][i])
-  END
-END.
+  end
+end.

@@ -31,39 +31,39 @@ PROGRAM ex_bitmap;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   Allegro5, al5base, al5image, al5strings,
   sysutils;
-VAR
+var
   FileName: AL_STR;
   Bitmap: ALLEGRO_BITMAPptr;
   Timer: ALLEGRO_TIMERptr;
   Display: ALLEGRO_DISPLAYptr;
   EventQueue: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
-  Redraw, EndLoop: BOOLEAN;
-  Zoom, T0, T1: DOUBLE;
-BEGIN
+  Redraw, EndLoop: Boolean;
+  Zoom, T0, T1: Double;
+begin
 { The first commandline argument can optionally specify an
   image to display instead of the default. Allegro's image
   addon suports BMP, DDS, PCX, TGA and can be compiled with
   PNG and JPG support on all platforms. Additional formats
   are supported by platform specific libraries and support for
   image formats can also be added at runtime. }
-  IF ParamCount > 0 THEN
+  if ParamCount > 0 then
     FileName := al_string_to_str (ParamStr (1))
-  ELSE
+  else
     FileName := 'data/mysha.pcx';
 
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  if not al_init then AbortExample ('Could not init Allegro.');
 
 { Initializes and displays a log window for debugging purposes. }
   OpenLog;
 
 { The second parameter to the process can optionally specify what
   adapter to use. }
-  IF ParamCount > 2 THEN al_set_new_display_adapter (StrToInt (ParamStr(2)));
+  if ParamCount > 2 then al_set_new_display_adapter (StrToInt (ParamStr(2)));
 
 { Allegro requires installing drivers for all input devices before
   they can be used. }
@@ -79,7 +79,7 @@ BEGIN
 
 { Create a new display that we can render the image to. }
   Display := al_create_display (640, 480);
-  IF Display = NIL THEN AbortExample ('Could not create display');
+  if Display = Nil then AbortExample ('Could not create display');
 
   al_set_window_title (Display, FileName);
 
@@ -87,7 +87,7 @@ BEGIN
   T0 := al_get_time;
   Bitmap := al_load_bitmap (FileName);
   t1 := al_get_time;
-  IF Bitmap = NIL THEN
+  if Bitmap = Nil then
     AbortExample (
       al_str_format ('"%s" not found or failed to load.', [filename])
     );
@@ -104,13 +104,13 @@ BEGIN
 
 { Primary 'game' loop. }
   Zoom := 1;
-  Redraw := TRUE;
-  EndLoop := FALSE;
-  REPEAT
+  Redraw := True;
+  EndLoop := False;
+  repeat
     al_wait_for_event (EventQueue, @Event); { Wait for and get an event. }
-    CASE Event.ftype OF
+    case Event.ftype OF
     ALLEGRO_EVENT_DISPLAY_ORIENTATION:
-      CASE Event.display.orientation OF
+      case Event.display.orientation OF
       ALLEGRO_DISPLAY_ORIENTATION_0_DEGREES:
         LogWriteLn ('0 degrees');
       ALLEGRO_DISPLAY_ORIENTATION_90_DEGREES:
@@ -123,9 +123,9 @@ BEGIN
         LogWriteLn ('Face up');
       ALLEGRO_DISPLAY_ORIENTATION_FACE_DOWN:
         LogWriteLn ('Face down');
-      END;
+      end;
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      EndLoop := TRUE;
+      EndLoop := True;
     ALLEGRO_EVENT_KEY_CHAR:
     { Use keyboard to zoom image in and out.
       1: Reset zoom.
@@ -133,39 +133,39 @@ BEGIN
       -: Zoom out 10%
       f: Zoom to width of window
     }
-      BEGIN
-        IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-          EndLoop := TRUE; { Quit on escape key. }
-        IF event.keyboard.unichar = ORD ('1') THEN
+      begin
+        if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+          EndLoop := True; { Quit on escape key. }
+        if event.keyboard.unichar = Ord ('1') then
           Zoom := 1;
-        IF event.keyboard.unichar = ORD ('+') THEN
+        if event.keyboard.unichar = Ord ('+') then
           Zoom := Zoom * 1.1;
-        IF event.keyboard.unichar = ORD ('-') THEN
+        if event.keyboard.unichar = Ord ('-') then
           Zoom := Zoom / 1.1;
-        IF event.keyboard.unichar = ORD ('f') THEN
+        if event.keyboard.unichar = Ord ('f') then
           Zoom := al_get_display_width (Display) / al_get_bitmap_width (Bitmap);
-      END;
+      end;
     ALLEGRO_EVENT_TIMER:
     { Trigger a redraw on the timer event. }
-      Redraw := TRUE;
-    END;
+      Redraw := True;
+    end;
 
   { Redraw, but only if the event queue is empty. }
-    IF Redraw AND  al_is_event_queue_empty (EventQueue) THEN
-    BEGIN
-      Redraw := FALSE;
+    if Redraw and  al_is_event_queue_empty (EventQueue) then
+    begin
+      Redraw := False;
     { Clear so we don't get trippy artifacts left after zoom. }
       al_clear_to_color (al_map_rgb_f (0, 0, 0));
-      IF Zoom = 1 THEN
+      if Zoom = 1 then
         al_draw_bitmap (Bitmap, 0, 0, 0)
-      ELSE
+      else
         al_draw_scaled_rotated_bitmap (
           Bitmap, 0, 0, 0, 0, Zoom, Zoom, 0, 0);
       al_flip_display;
-    END;
-  UNTIL EndLoop;
+    end;
+  until EndLoop;
 
   al_destroy_bitmap (Bitmap);
 
-  CloseLog (FALSE);
-END.
+  CloseLog (False);
+end.

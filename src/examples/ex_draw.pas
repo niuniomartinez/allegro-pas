@@ -27,12 +27,12 @@ PROGRAM ex_draw;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     Allegro5, al5base, al5image, al5font, al5color, al5primitives;
 
-  TYPE
-    RExample = RECORD
+  type
+    RExample = record
       Font: ALLEGRO_FONTptr;
       Queue: ALLEGRO_EVENT_QUEUEptr;
       Background, Text, White, Foreground: ALLEGRO_COLOR;
@@ -40,21 +40,21 @@ PROGRAM ex_draw;
       Pattern: ALLEGRO_BITMAPptr;
       Zoom: ALLEGRO_BITMAPptr;
 
-      Timer, Counter: ARRAY [0..3] OF DOUBLE;
-      FPS: INTEGER;
+      Timer, Counter: array [0..3] of Double;
+      FPS: Integer;
       TextX, TextY: REAL;
 
-      Software: BOOLEAN;
-      Samples: INTEGER;
-      What: INTEGER;
-      Thickness: INTEGER;
-    END;
+      Software: Boolean;
+      Samples: Integer;
+      What: Integer;
+      Thickness: Integer;
+    end;
 
-  VAR
+  var
    Ex: RExample;
 
-  CONST
-    Names: ARRAY [0..4] OF AL_STR = (
+  const
+    Names: array [0..4] of AL_STR = (
       'filled rectangles',
       'rectangles',
       'filled circles',
@@ -62,26 +62,26 @@ PROGRAM ex_draw;
       'lines'
     );
 
-  PROCEDURE DrawPattern (Bmp: ALLEGRO_BITMAPptr);
-  VAR
-    w, h, x, y: INTEGER;
+  procedure DrawPattern (Bmp: ALLEGRO_BITMAPptr);
+  var
+    w, h, x, y: Integer;
     Format: ALLEGRO_PIXEL_FORMAT;
     Light, Dark, c: ALLEGRO_COLOR;
     Lock: ALLEGRO_LOCKED_REGIONptr;
     r, g, b: BYTE;
     Data: PBYTE;
-  BEGIN
+  begin
     w := al_get_bitmap_width (Bmp);
     h := al_get_bitmap_height (Bmp);
     Format := ALLEGRO_PIXEL_FORMAT_BGR_888;
     Light := al_map_rgb_f (1, 1, 1);
     Dark := al_map_rgb_f (1, 0.9, 0.8);
     Lock := al_lock_bitmap (Bmp, format, ALLEGRO_LOCK_WRITEONLY);
-    FOR Y := 0 TO (h - 1) DO
-    BEGIN
-      FOR X := 0 TO (w - 1) DO
-      BEGIN
-        IF ((x + y) AND 1) <> 0 THEN c := Light ELSE c := Dark;
+    for Y := 0 to (h - 1) do
+    begin
+      for X := 0 to (w - 1) do
+      begin
+        if ((x + y) and 1) <> 0 then c := Light else c := Dark;
         Data := Lock^.data;
         al_unmap_rgb (c, r, g, b);
         Data := Data + (y * Lock^.pitch);
@@ -89,88 +89,88 @@ PROGRAM ex_draw;
         Data[0] := r;
         Data[1] := g;
         Data[2] := b
-      END
-    END;
+      end
+    end;
     al_unlock_bitmap (Bmp)
-  END;
+  end;
 
 
 
-  PROCEDURE SetXY (x, y: REAL);
-  BEGIN
+  procedure SetXY (x, y: REAL);
+  begin
     Ex.TextX := x;
     Ex.TextY := y
-  END;
+  end;
 
 
 
-  PROCEDURE Printf (CONST aFmt: AL_STR; CONST aVals: ARRAY OF CONST);
-  VAR
+  procedure Printf (const aFmt: AL_STR; const aVals: array of const);
+  var
     State: ALLEGRO_STATE;
-    th: INTEGER;
-  BEGIN
+    th: Integer;
+  begin
     th := al_get_font_line_height (Ex.Font);
     al_store_state(&state, ALLEGRO_STATE_BLENDER);
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
     al_draw_textf (Ex.Font, Ex.Text, Ex.TextX, Ex.TextY, 0, aFmt, aVals);
     al_restore_state (state);
     Ex.TextY := Ex.TextY + th
-  END;
+  end;
 
-  PROCEDURE Print (CONST aText: AL_STR); INLINE;
-  BEGIN
+  procedure Print (const aText: AL_STR); inline;
+  begin
     Printf (aText, [])
-  END;
+  end;
 
 
 
-  PROCEDURE Primitive (l, t, r, b: REAL; Clr: ALLEGRO_COLOR; NoFill: BOOLEAN);
-  VAR
+  procedure Primitive (l, t, r, b: REAL; Clr: ALLEGRO_COLOR; NoFill: Boolean);
+  var
     cx, cy, rx, ry: REAL;
-    tk, w: INTEGER;
-  BEGIN
+    tk, w: Integer;
+  begin
     cx := (l + r) / 2;
     cy := (t + b) / 2;
     rx := (r - l) / 2;
     ry := (b - t) / 2;
-    IF NoFill THEN tk := 0 ELSE tk := Ex.Thickness;
+    if NoFill then tk := 0 else tk := Ex.Thickness;
     w := Ex.What;
-    IF NoFill THEN
-    BEGIN
-      IF w = 0 THEN w := 1 ELSE IF w = 2 THEN w := 3
-    END;
-    CASE w OF
+    if NoFill then
+    begin
+      if w = 0 then w := 1 else if w = 2 then w := 3
+    end;
+    case w OF
       0: al_draw_filled_rectangle (l, t, r, b, Clr);
       1: al_draw_rectangle (l, t, r, b, Clr, tk);
       2: al_draw_filled_ellipse (cx, cy, rx, ry, Clr);
       3: al_draw_ellipse (cx, cy, rx, ry, Clr, tk);
       4: al_draw_line (l, t, r, b, Clr, tk);
-    END
-  END;
+    end
+  end;
 
 
 
-  PROCEDURE Draw;
-  VAR
+  procedure Draw;
+  var
     x, y: REAL;
-    cx, cy, cw, ch, w, h, RectsNum, i, j: LONGINT;
+    cx, cy, cw, ch, w, h, RectsNum, i, j: LongInt;
     Screen, mem: ALLEGRO_BITMAPptr;
-    Rects: ARRAY [0..(16 * 4) - 1] OF REAL;
+    Rects: array [0..(16 * 4) - 1] of REAL;
     rgba: ALLEGRO_COLOR;
     sw: AL_STR;
-  BEGIN
+  begin
     w := al_get_bitmap_width (Ex.Zoom);
     h := al_get_bitmap_height (Ex.Zoom);
     Screen := al_get_target_bitmap;
     RectsNum := 16;
-    FOR j := 0 TO 3 DO
-      FOR i := 0 TO 3 DO
-      BEGIN
+    for j := 0 to 3 do
+      for i := 0 to 3 do
+      begin
         Rects[(j * 4 + i) * 4 + 0] := 2 + i * 0.25 + i * 7;
         Rects[(j * 4 + i) * 4 + 1] := 2 + j * 0.25 + j * 7;
         Rects[(j * 4 + i) * 4 + 2] := 2 + i * 0.25 + i * 7 + 5;
         Rects[(j * 4 + i) * 4 + 3] := 2 + j * 0.25 + j * 7 + 5;
-      END;
+      end;
     al_get_clipping_rectangle (cx, cy, cw, ch);
     al_clear_to_color (Ex.Background);
 
@@ -185,8 +185,8 @@ PROGRAM ex_draw;
 
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
 
-    IF Ex.Software THEN
-    BEGIN
+    if Ex.Software then
+    begin
       al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
       al_set_new_bitmap_format (al_get_bitmap_format (al_get_target_bitmap));
       mem := al_create_bitmap (w, h);
@@ -194,20 +194,20 @@ PROGRAM ex_draw;
       x := 0;
       y := 0;
       sw := 'software'
-    END
-    ELSE BEGIN
-      mem := NIL;
+    end
+    else begin
+      mem := Nil;
       x := 8;
       y := 40;
       sw := 'hardware'
-    END;
+    end;
     al_draw_bitmap (Ex.Pattern, x, y, 0);
 
   { Draw the test scene. }
 
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-    FOR i := 0 TO (RectsNum - 1) DO
-    BEGIN
+    for i := 0 to (RectsNum - 1) do
+    begin
       rgba := Ex.Foreground;
       rgba.a := rgba.a * 0.5; { May be "/ 2" is better? }
       Primitive (
@@ -215,19 +215,19 @@ PROGRAM ex_draw;
          y + Rects[i * 4 + 1],
          x + Rects[i * 4 + 2],
          y + Rects[i * 4 + 3],
-         rgba, FALSE)
-    END;
+         rgba, False)
+    end;
 
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
 
-    IF Ex.Software THEN
-    BEGIN
+    if Ex.Software then
+    begin
       al_set_target_bitmap(screen);
       x := 8;
       y := 40;
       al_draw_bitmap(mem, x, y, 0);
       al_destroy_bitmap(mem);
-    END;
+    end;
 
   { Grab screen contents into our bitmap. }
     al_set_target_bitmap (Ex.Zoom);
@@ -240,13 +240,13 @@ PROGRAM ex_draw;
     al_draw_scaled_bitmap (Ex.Zoom, 0, 0, w, h, x, y, w * 16, h * 16, 0);
 
   { Draw outlines. }
-    FOR i := 0 TO (RectsNum - 1) DO
+    for i := 0 to (RectsNum - 1) do
       Primitive (
          x + Rects[i * 4 + 0] * 16,
          y + Rects[i * 4 + 1] * 16,
          x + Rects[i * 4 + 2] * 16,
          y + Rects[i * 4 + 3] * 16,
-         Ex.Outline, TRUE);
+         Ex.Outline, True);
 
     SetXY (8, 640 - 48);
     Printf ('Thickness: %d (press T to change)', [Ex.Thickness]);
@@ -256,69 +256,69 @@ PROGRAM ex_draw;
 { FIXME: doesn't work
       al_get_display_option (ALLEGRO_SAMPLE_BUFFERS));
 }
-  END;
+  end;
 
 
 
-  PROCEDURE Tick;
-  BEGIN
+  procedure Tick;
+  begin
     Draw;
     al_flip_display
-  END;
+  end;
 
 
 
-  PROCEDURE Run;
-  VAR
+  procedure Run;
+  var
     Event: ALLEGRO_EVENT;
-    NeedDraw: BOOLEAN;
-  BEGIN
-    NeedDraw := TRUE;
+    NeedDraw: Boolean;
+  begin
+    NeedDraw := True;
 
-    WHILE TRUE DO
-    BEGIN
-      IF NeedDraw AND al_is_event_queue_empty (Ex.Queue) THEN
-      BEGIN
+    while True do
+    begin
+      if NeedDraw and al_is_event_queue_empty (Ex.Queue) then
+      begin
         Tick;
-        NeedDraw := FALSE
-      END;
+        NeedDraw := False
+      end;
 
       al_wait_for_event (Ex.Queue, @Event);
 
-      CASE Event.ftype OF
+      case Event.ftype OF
       ALLEGRO_EVENT_DISPLAY_CLOSE:
-        EXIT;
+        Exit;
       ALLEGRO_EVENT_KEY_DOWN:
-        CASE Event.keyboard.keycode OF
+        case Event.keyboard.keycode OF
         ALLEGRO_KEY_ESCAPE:
-          EXIT;
+          Exit;
         ALLEGRO_KEY_SPACE:
-          BEGIN
-            INC (Ex.What);
-            IF Ex.What >= 5 THEN Ex.What := 0
-          END;
+          begin
+            Inc (Ex.What);
+            if Ex.What >= 5 then Ex.What := 0
+          end;
         ALLEGRO_KEY_S:
-          Ex.Software := NOT Ex.Software;
+          Ex.Software := not Ex.Software;
         ALLEGRO_KEY_T:
-          BEGIN
-            INC (Ex.Thickness);
-            IF Ex.Thickness >= 2 THEN Ex.Thickness := 0
-          END;
-        END;
+          begin
+            Inc (Ex.Thickness);
+            if Ex.Thickness >= 2 then Ex.Thickness := 0
+          end;
+        end;
       ALLEGRO_EVENT_TIMER:
-        NeedDraw := TRUE;
-      END
-    END
-  END;
+        NeedDraw := True;
+      end
+    end
+  end;
 
 
 
-  PROCEDURE Init;
-  BEGIN
+  procedure Init;
+  begin
     Ex.FPS := 60;
 
     Ex.Font := al_load_font ('data/fixed_font.tga', 0, 0);
-    IF Ex.Font = NIL THEN AbortExample ('data/fixed_font.tga not found.');
+    if Ex.Font = Nil then AbortExample ('data/fixed_font.tga not found.');
     Ex.Background := al_color_name ('beige');
     Ex.Foreground := al_color_name ('black');
     Ex.Outline := al_color_name ('red');
@@ -327,19 +327,19 @@ PROGRAM ex_draw;
     Ex.Pattern := al_create_bitmap (32, 32);
     Ex.Zoom := al_create_bitmap (32, 32);
     DrawPattern (Ex.Pattern);
-  END;
+  end;
 
 
 
-VAR
+var
   Display: ALLEGRO_DISPLAYptr;
   Timer: ALLEGRO_TIMERptr;
 { TODO Not yet implemented.
   Config: ALLEGRO_CONFIGptr;
-  Value, Str: STRING;
+  Value, Str: String;
 }
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_init_primitives_addon;
   al_install_keyboard;
@@ -363,13 +363,13 @@ BEGIN
    al_save_config_file("ex_draw.ini", config);
    al_destroy_config(config);
 }
-  IF Ex.samples > 0 THEN
-  BEGIN
+  if Ex.samples > 0 then
+  begin
     al_set_new_display_option (ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_REQUIRE);
     al_set_new_display_option (ALLEGRO_SAMPLES, Ex.Samples, ALLEGRO_SUGGEST)
-  END;
+  end;
   Display := al_create_display (640, 640);
-  IF Display = NIL THEN AbortExample ('Unable to create display.');
+  if Display = Nil then AbortExample ('Unable to create display.');
 
   Init;
 
@@ -385,4 +385,4 @@ BEGIN
   Run;
 
   al_destroy_event_queue (Ex.Queue)
-END.
+end.

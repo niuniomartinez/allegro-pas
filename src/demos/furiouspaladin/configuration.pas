@@ -1,4 +1,4 @@
-UNIT Configuration;
+unit Configuration;
 (*<Stores and manages the configuration.  This includes command line parsing. *)
 (*
   Copyright (c) 2018 Handoko
@@ -24,57 +24,57 @@ UNIT Configuration;
     distribution.
  *)
 
-INTERFACE
+interface
 
-  CONST
+  const
   (* Requested screen width. *)
     ScreenWidth     = 500;
   (* Requested screen height. *)
     ScreenHeight    = 300;
 
 
-  VAR
+  var
   (* Tells if running in debug mode. *)
-    DebugMode:         BOOLEAN = FALSE;
+    DebugMode:         Boolean = False;
   (* A cheating:  Player recover health faster. *)
-    CheatFastRecover:  BOOLEAN = FALSE;
+    CheatFastRecover:  Boolean = False;
   (* A cheating:  Player can't be harmed. *)
-    CheatStoneSkin:    BOOLEAN = FALSE;
+    CheatStoneSkin:    Boolean = False;
 
 (* Loads configuration and parses command line.
    @returns(@true on success, @false otherwise @(i.e. not able to run@).)*)
-  FUNCTION Load: BOOLEAN;
+  function Load: Boolean;
 
-IMPLEMENTATION
+implementation
 
-  USES
+  uses
     al5nativedlg, al5strings,
     sysutils;
 
-  FUNCTION Load;
-  VAR
-    Ndx: INTEGER;
-    Command: STRING;
-  BEGIN
+  function Load;
+  var
+    Ndx: Integer;
+    Command: String;
+  begin
   { Parses command line. }
-    FOR Ndx := 1 TO ParamCount DO
-    BEGIN
+    for Ndx := 1 to ParamCount do
+    begin
       Command  := LowerCase (ParamStr (Ndx));
-      IF Command = '-debug' THEN DebugMode := TRUE
-      ELSE IF Command = '-fastrecover' THEN CheatFastRecover := TRUE
-      ELSE IF Command = '-stoneskin' THEN CheatStoneSkin := True
-      ELSE BEGIN
+      if Command = '-debug' then DebugMode := True
+      else if Command = '-fastrecover' then CheatFastRecover := True
+      else if Command = '-stoneskin' then CheatStoneSkin := True
+      else begin
       { Unknown command line found. }
         al_show_native_message_box (
-          NIL,
+          Nil,
           'Error', 'Unknown command:', al_string_to_str (ParamStr (Ndx)),
           '', ALLEGRO_MESSAGEBOX_ERROR
         );
-        EXIT (FALSE)
-      END
-    END;
-    RESULT := TRUE
-  END;
+        Exit (False)
+      end
+    end;
+    Result := True
+  end;
 
-END.
+end.
 

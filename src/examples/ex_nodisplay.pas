@@ -27,25 +27,25 @@ PROGRAM ex_nodisplay;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5, al5image;
 
-VAR
+var
   Bmp, Sprite: ALLEGRO_BITMAPptr;
   c1, c2, c3: ALLEGRO_COLOR;
-  rc: BOOLEAN;
+  rc: Boolean;
 
-BEGIN
-  IF NOT al_init THEN AbortExample ('Error initialising Allegro.');
+begin
+  if not al_init then AbortExample ('Error initialising Allegro.');
   al_init_image_addon;
   InitPlatformSpecific;
 
   Sprite := al_load_bitmap ('data/cursor.tga');
-  IF Sprite = NIL THEN AbortExample ('Error loading data/cursor.tga.');
+  if Sprite = Nil then AbortExample ('Error loading data/cursor.tga.');
 
   Bmp := al_create_bitmap (256, 256);
-  IF Bmp = NIL THEN AbortExample ('Error creating bitmap.');
+  if Bmp = Nil then AbortExample ('Error creating bitmap.');
 
   al_set_target_bitmap (Bmp);
 
@@ -57,21 +57,21 @@ BEGIN
   al_draw_bitmap (Sprite, 0, 0, 0);
   al_draw_tinted_bitmap (Sprite, c1, 64, 0, ALLEGRO_FLIP_HORIZONTAL);
   al_draw_tinted_bitmap (Sprite, c2, 0, 64, ALLEGRO_FLIP_VERTICAL);
-  al_draw_tinted_bitmap (Sprite, c3, 64, 64, ALLEGRO_FLIP_HORIZONTAL OR ALLEGRO_FLIP_VERTICAL);
+  al_draw_tinted_bitmap (Sprite, c3, 64, 64, ALLEGRO_FLIP_HORIZONTAL or ALLEGRO_FLIP_VERTICAL);
 
-  al_set_target_bitmap (NIL);
+  al_set_target_bitmap (Nil);
 
-  rc := al_save_bitmap ('ex_nodisplay_out.tga', Bmp);
+  rc := al_save_bitmap ('ex_nodisplay_OUT.tga', Bmp);
 
 {$IFDEF LINUX}
-  IF rc THEN
-    WriteLn ('Saved ex_nodisplay_out.tga.')
-  ELSE
+  if rc then
+    WriteLn ('Saved ex_nodisplay_OUT.tga.')
+  else
 {$ELSE}
-  IF NOT RC THEN
+  if not RC then
 {$ENDIF}
-    AbortExample ('Error saving ex_nodisplay_out.tga.');
+    AbortExample ('Error saving ex_nodisplay_OUT.tga.');
 
   al_destroy_bitmap (Sprite);
   al_destroy_bitmap (Bmp)
-END.
+end.

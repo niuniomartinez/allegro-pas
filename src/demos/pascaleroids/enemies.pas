@@ -1,4 +1,4 @@
-UNIT Enemies;
+unit Enemies;
 (*< Defines an enemy ship. *)
 (*
   Copyright (c) 2019 Guillermo Martínez J.
@@ -23,31 +23,31 @@ UNIT Enemies;
     distribution.
  *)
 
-INTERFACE
+interface
 
-  USES
+  uses
     Engine;
 
-  TYPE
+  type
   (* The enemy sprite. *)
-    TEnemy = CLASS (TMoveableSprite)
-    PUBLIC
+    TEnemy = class (TMoveableSprite)
+    public
     (* Initializes the enemy. *)
-      PROCEDURE Initialize; OVERRIDE;
-    END;
+      procedure Initialize; override;
+    end;
 
-IMPLEMENTATION
+implementation
 
 (*
  * TEnemy
  ***************************************************************************)
 
 (* Initializes. *)
-  PROCEDURE TEnemy.Initialize;
-  BEGIN
-    INHERITED Initialize;
-    SELF.Polygon.Fill := FALSE
-  END;
+  procedure TEnemy.Initialize;
+  begin
+    inherited Initialize;
+    Self.Polygon.Fill := False
+  end;
 
-END.
+end.
 

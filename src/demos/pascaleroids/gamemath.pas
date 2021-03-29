@@ -1,4 +1,4 @@
-UNIT GameMath;
+unit GameMath;
 (*< Defines some helpful math stuff. *)
 (*
   Copyright (c) 2019 Guillermo Martínez J.
@@ -23,27 +23,27 @@ UNIT GameMath;
     distribution.
  *)
 
-INTERFACE
+interface
 
-  USES
+  uses
     Allegro5;
 
-  CONST
+  const
   (* Multiply with degrees (0..360) to get radians. *)
     DEG_TO_RAD = ALLEGRO_TAU / 360;
   (* Multiply with radians to get degrees (0..360). *)
     RAD_TO_DEG = 1 / DEG_TO_RAD;
 
 (* Returns a random number in the given interval. *)
-  FUNCTION GetRandomNumber (CONST aMin, aMax: INTEGER): SINGLE;
+  function GetRandomNumber (const aMin, aMax: Integer): Single;
 
-IMPLEMENTATION
+implementation
 
 (* Returns a random number in the given interval. *)
-  FUNCTION GetRandomNumber (CONST aMin, aMax: INTEGER): SINGLE;
-  BEGIN
-    RESULT := aMin + (Random * (aMax - aMin + 1))
-  END;
+  function GetRandomNumber (const aMin, aMax: Integer): Single;
+  begin
+    Result := aMin + (Random * (aMax - aMin + 1))
+  end;
 
-END.
+end.
 

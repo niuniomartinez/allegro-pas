@@ -29,15 +29,15 @@ PROGRAM ex_user_events;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5, al5base;
 
-TYPE
+type
   MY_EVENTptr = ^MY_EVENT;
 (* Just some fantasy event, supposedly used in an RPG - it's just to show that
  * in practice, the 4 user fields we have now never will be enough. *)
-  MY_EVENT = RECORD
+  MY_EVENT = record
     id,
     ftype, { For example "attack" or "buy". }
     x, y, z, { Position in the game world the event takes place. }
@@ -45,48 +45,48 @@ TYPE
     source_unit_id, { E.g. attacker or seller. }
     destination_unit_id, { E.g. defender of buyer. }
     item_id, { E.g. weapon used or item sold. }
-    amount: INTEGER; { Gold the item is sold for. }
-  END;
+    amount: Integer; { Gold the item is sold for. }
+  end;
 
 
 
-  FUNCTION NewEvent (id: INTEGER): MY_EVENTptr;
-  VAR
+  function NewEvent (id: Integer): MY_EVENTptr;
+  var
     Event: MY_EVENTptr;
-  BEGIN
+  begin
     Getmem (Event, sizeof (MY_EVENT));
     Event^.id := id;
-    EXIT (Event)
-  END;
+    Exit (Event)
+  end;
 
 
 
-  PROCEDURE MyEventDtor (Event: ALLEGRO_USER_EVENTptr);
-  CDECL; { DO NOT FORGET THIS! }
-  VAR
+  procedure MyEventDtor (Event: ALLEGRO_USER_EVENTptr);
+  CDECL; { do not FORGET THIS! }
+  var
     lPointer: POINTER;
-  BEGIN
+  begin
     lPointer := Event^.data1.ptr_value;
     LogPrintLn ('MyEventDtor: %p', [lPointer]);
     Freemem (lPointer, sizeof (MY_EVENT))
-  END;
+  end;
 
-VAR
-  MY_SIMPLE_EVENT_TYPE, MY_COMPLEX_EVENT_TYPE: LONGWORD;
+var
+  MY_SIMPLE_EVENT_type, MY_COMPLEX_EVENT_type: LONGWORD;
   Timer: ALLEGRO_TIMERptr;
   UserSrc: ALLEGRO_EVENT_SOURCE;
   Queue: ALLEGRO_EVENT_QUEUEptr;
   UserEvent, Event: ALLEGRO_EVENT;
   MyEvent: MY_EVENTptr;
 
-BEGIN
-  MY_SIMPLE_EVENT_TYPE := ALLEGRO_GET_EVENT_TYPE ('mset');
-  MY_COMPLEX_EVENT_TYPE := ALLEGRO_GET_EVENT_TYPE ('mcet');
+begin
+  MY_SIMPLE_EVENT_type := ALLEGRO_GET_EVENT_type ('mset');
+  MY_COMPLEX_EVENT_type := ALLEGRO_GET_EVENT_type ('mcet');
 
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   Timer := al_create_timer (0.5);
-  IF Timer = NIL THEN AbortExample ('Could not install timer.');
+  if Timer = Nil then AbortExample ('Could not install timer.');
 
   OpenLog;
 
@@ -98,44 +98,44 @@ BEGIN
 
   al_start_timer (Timer);
 
-  WHILE TRUE DO
-  BEGIN
+  while True do
+  begin
     al_wait_for_event (Queue, @Event);
 
-    IF Event.ftype = ALLEGRO_EVENT_TIMER THEN
-    BEGIN
+    if Event.ftype = ALLEGRO_EVENT_TIMER then
+    begin
       LogPrintLn ('Got timer event %d.', [Event.timer.count]);
-      UserEvent.user.ftype := MY_SIMPLE_EVENT_TYPE;
+      UserEvent.user.ftype := MY_SIMPLE_EVENT_type;
       UserEvent.user.data1.int_value := Event.timer.count;
-      al_emit_user_event (@UserSrc, @UserEvent, NIL);
+      al_emit_user_event (@UserSrc, @UserEvent, Nil);
 
-      UserEvent.user.ftype := MY_COMPLEX_EVENT_TYPE;
+      UserEvent.user.ftype := MY_COMPLEX_EVENT_type;
       UserEvent.user.data1.ptr_value := NewEvent (Event.timer.count);
       al_emit_user_event (@UserSrc, @UserEvent, @MyEventDtor);
-    END
-    ELSE IF Event.ftype = MY_SIMPLE_EVENT_TYPE THEN
-    BEGIN
+    end
+    else if Event.ftype = MY_SIMPLE_EVENT_type then
+    begin
       al_unref_user_event (@Event.user);
 
       LogPrintLn
-        ('Got simple user event %d.', [INTEGER (Event.user.data1.int_value)]);
-      IF Event.user.data1.int_value = 5 THEN
-      BEGIN
+        ('Got simple user event %d.', [Integer (Event.user.data1.int_value)]);
+      if Event.user.data1.int_value = 5 then
+      begin
         al_destroy_user_event_source (UserSrc);
         al_destroy_event_queue (Queue);
         al_destroy_timer (Timer);
 
         LogWrite ('Done.');
-        CloseLog (TRUE);
-        EXIT
-      END
-    END
-    ELSE IF Event.ftype = MY_COMPLEX_EVENT_TYPE THEN
-    BEGIN
+        CloseLog (True);
+        Exit
+      end
+    end
+    else if Event.ftype = MY_COMPLEX_EVENT_type then
+    begin
       MyEvent := UserEvent.user.data1.ptr_value;
       LogPrintLn ('Got complex user event %d.', [MyEvent^.id]);
       al_unref_user_event (@Event.user)
-    END
-  END;
+    end
+  end;
 
-END.
+end.

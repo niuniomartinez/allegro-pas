@@ -1,4 +1,4 @@
-UNIT Common;
+unit Common;
 (* Common stuff for examples. *)
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.
@@ -27,96 +27,96 @@ UNIT Common;
   {$IFNDEF FPC_DELPHI}{$MODE DELPHI}{$ENDIF}
 {$ENDIF}
 
-INTERFACE
+interface
 
-  USES
+  uses
     allegro5, al5base, al5nativedlg;
 
-  VAR
+  var
     TextLog: ALLEGRO_TEXTLOGptr;
 
 (* Initializes platform specific stuff. *)
-  PROCEDURE InitPlatformSpecific;
+  procedure InitPlatformSpecific;
 (* Exits program with error. *)
-  PROCEDURE AbortExample (CONST Message: AL_STR);
+  procedure AbortExample (const Message: AL_STR);
 (* Opens a log window. *)
-  PROCEDURE OpenLog;
-  PROCEDURE OpenLogMonospace;
+  procedure OpenLog;
+  procedure OpenLogMonospace;
 (* Closes the log window. *)
-  PROCEDURE CloseLog (WaitForUser: BOOLEAN);
+  procedure CloseLog (WaitForUser: Boolean);
 (* Prints a message on the log window. *)
-  PROCEDURE LogWrite (Str: AL_STR);
-  PROCEDURE LogWriteLn (Str: AL_STR);
+  procedure LogWrite (Str: AL_STR);
+  procedure LogWriteLn (Str: AL_STR);
 (* Prints a formatted message on the log window. *)
-  PROCEDURE LogPrint (Fmt: AL_STR; Values: ARRAY OF CONST);
-  PROCEDURE LogPrintLn (Fmt: AL_STR; Values: ARRAY OF CONST);
+  procedure LogPrint (Fmt: AL_STR; Values: array of const);
+  procedure LogPrintLn (Fmt: AL_STR; Values: array of const);
 
 {$IFDEF DCC }
 (* Delphi doesn't has GetTempFilename (or I can't find the declaration, and
    Internet failed to tell me) so let's define it. *)
-  FUNCTION GetTempFilename: AL_STR;
+  function GetTempFilename: AL_STR;
 {$ENDIF }
 
-IMPLEMENTATION
+implementation
 
-  USES
+  uses
     al5strings,
     sysutils;
 
 (* Platform specific stuff. *)
-  PROCEDURE InitPlatformSpecific;
-  BEGIN
+  procedure InitPlatformSpecific;
+  begin
   { TODO: Android stuff, if android. }
-  END;
+  end;
 
 
 
 (* Exits program with error. *)
-  PROCEDURE AbortExample (CONST Message: AL_STR);
-  VAR
+  procedure AbortExample (const Message: AL_STR);
+  var
     Display: ALLEGRO_DISPLAYptr;
-  BEGIN
-    IF al_init_native_dialog_addon THEN
-    BEGIN
-      IF al_is_system_installed THEN
+  begin
+    if al_init_native_dialog_addon then
+    begin
+      if al_is_system_installed then
         Display := al_get_current_display
-      ELSE
-        Display := NIL;
+      else
+        Display := Nil;
       al_show_native_message_box
         (Display, 'Error', 'Cannot run example', Message, '', 0)
-    END
-    ELSE
+    end
+    else
       WriteLn (ErrOutput, Message);
     HALT (1)
-  END;
+  end;
 
 
 
 (* Opens a log window. *)
-  PROCEDURE OpenLog;
-  BEGIN
-    IF al_init_native_dialog_addon THEN
+  procedure OpenLog;
+  begin
+    if al_init_native_dialog_addon then
       TextLog := al_open_native_text_log ('Log', 0)
-  END;
+  end;
 
 
 
-  PROCEDURE OpenLogMonospace;
-  BEGIN
-    IF al_init_native_dialog_addon THEN
+  procedure OpenLogMonospace;
+  begin
+    if al_init_native_dialog_addon then
       TextLog := al_open_native_text_log ('Log', ALLEGRO_TEXTLOG_MONOSPACE)
-   END;
+   end;
 
 
 
 (* Closes the log window. *)
-  PROCEDURE CloseLog (WaitForUser: BOOLEAN);
-  VAR
+  procedure CloseLog (WaitForUser: Boolean);
+  var
     Queue: ALLEGRO_EVENT_QUEUEptr;
     Event: ALLEGRO_EVENT;
-  BEGIN
-    IF (TextLog <> NIL) AND WaitForUser THEN
-    BEGIN
+  begin
+    if (TextLog <> Nil) and WaitForUser then
+    begin
       Queue := al_create_event_queue;
       al_register_event_source (
         Queue,
@@ -124,48 +124,48 @@ IMPLEMENTATION
       );
       al_wait_for_event (Queue, @Event);
       al_destroy_event_queue (Queue)
-    END;
+    end;
     al_close_native_text_log (TextLog);
-    TextLog := NIL
-  END;
+    TextLog := Nil
+  end;
 
 
 (* Prints a message on the log window. *)
-  PROCEDURE LogWrite (Str: AL_STR);
-  BEGIN
+  procedure LogWrite (Str: AL_STR);
+  begin
     al_append_native_text_log (TextLog, Str)
-  END;
+  end;
 
-  PROCEDURE LogWriteLn (Str: AL_STR);
-  BEGIN
+  procedure LogWriteLn (Str: AL_STR);
+  begin
     LogWrite (Str + #10)
-  END;
+  end;
 
 
 
 (* Prints a formatted message on the log window. *)
-  PROCEDURE LogPrint (Fmt: AL_STR; Values: ARRAY OF CONST);
-  BEGIN
+  procedure LogPrint (Fmt: AL_STR; Values: array of const);
+  begin
     al_append_native_text_log (TextLog, al_str_format (Fmt, Values))
-  END;
+  end;
 
-  PROCEDURE LogPrintLn (Fmt: AL_STR; Values: ARRAY OF CONST);
-  BEGIN
+  procedure LogPrintLn (Fmt: AL_STR; Values: array of const);
+  begin
     LogPrint (Fmt + #10, Values)
-  END;
+  end;
 
 
 {$IFDEF DCC }
-  FUNCTION GetTempFilename: AL_STR;
-  VAR
-    Count: INTEGER;
-  BEGIN
+  function GetTempFilename: AL_STR;
+  var
+    Count: Integer;
+  begin
     Count := 1;
-    REPEAT
-      RESULT := UTF8Encode (Format ('tmpfile_%0.2d', [Count]));
-      INC (Count)
-    UNTIL NOT FileExists (al_str_to_string (RESULT))
-  END;
+    repeat
+      Result := UTF8Encode (Format ('tmpfile_%0.2d', [Count]));
+      Inc (Count)
+    until not FileExists (al_str_to_string (Result))
+  end;
 {$ENDIF }
 
-END.
+end.

@@ -1,4 +1,4 @@
-UNIT al5nativedlg;
+unit al5nativedlg;
 (***<Defines an API that allows to use native dialogs and menus in a
   cross-platform way.  This includes message dialogs, file choosers, main
   menu and more.
@@ -26,25 +26,25 @@ UNIT al5nativedlg;
     distribution.
  *)
 
-{$include allegro5.cfg}
+{$INCLUDE allegro5.cfg}
 
-INTERFACE
+interface
 
-  USES
+  uses
     allegro5, al5base;
 
 {$IF DEFINED (LINUX) OR DEFINED (UNIX)}
 {$HINT Assumming GTK+.}
-  CONST
+  const
     ALLEGRO_GTK_TOPLEVEL = ALLEGRO_GTK_TOPLEVEL_INTERNAL; {**<@exclude }
 {$ENDIF}
 
-  TYPE
+  type
     ALLEGRO_FILECHOOSERptr = AL_POINTER;
     ALLEGRO_TEXTLOGptr = AL_POINTER;
     ALLEGRO_MENUptr = AL_POINTER;
     ALLEGRO_MENUptrptr = ^ALLEGRO_MENUptr;
-    ALLEGRO_MENU_INFO = RECORD
+    ALLEGRO_MENU_INFO = record
     (*** Label of the option. *)
       caption: AL_STRptr;
     (*** Identifier. *)
@@ -53,7 +53,7 @@ INTERFACE
       flags: AL_INT;
     (*** Option icon/glyph. *)
       icon: ALLEGRO_BITMAPptr;
-    END;
+    end;
 
 { IMPLEMENTATION NOTE:
     ALLEGRO_START_OF_MENU is not defined due to differences between Pascal and
@@ -68,142 +68,142 @@ INTERFACE
     will force to install it, make makefiles more complex and force Delphi and
     Lazarus users to add a step... Too much complex).
 
-    If somebody finds or knows a solution that I don't know, please suggest it.
+    If somebody finds or knows a way that I don't know, please suggest it.
 }
 (*** Helper to build native menus. @seealso(ALLEGRO_MENU_INFO) *)
-  FUNCTION ALLEGRO_ITEM_OF_MENU (
-    CONST caption: AL_STRptr; id, flags: AL_INT; icon: ALLEGRO_BITMAPptr
-  ): ALLEGRO_MENU_INFO; INLINE;
+  function ALLEGRO_ITEM_OF_MENU (
+    const caption: AL_STRptr; id, flags: AL_INT; icon: ALLEGRO_BITMAPptr
+  ): ALLEGRO_MENU_INFO; inline;
 (*** Helper to build native menus. @seealso(ALLEGRO_MENU_INFO) *)
-  FUNCTION ALLEGRO_MENU_SEPARATOR: ALLEGRO_MENU_INFO; INLINE;
+  function ALLEGRO_MENU_SEPARATOR: ALLEGRO_MENU_INFO; inline;
 (*** Helper to build native menus. @seealso(ALLEGRO_MENU_INFO) *)
-  FUNCTION ALLEGRO_END_OF_MENU: ALLEGRO_MENU_INFO;
+  function ALLEGRO_end_OF_MENU: ALLEGRO_MENU_INFO;
 
-  FUNCTION al_init_native_dialog_addon: AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  PROCEDURE al_shutdown_native_dialog_addon;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_init_native_dialog_addon: AL_BOOL;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  procedure al_shutdown_native_dialog_addon;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
 
-  FUNCTION al_create_native_file_dialog
-    (CONST initial_path, title, patterns: AL_STR; Mode: AL_INT)
+  function al_create_native_file_dialog
+    (const initial_path, title, patterns: AL_STR; Mode: AL_INT)
   : ALLEGRO_FILECHOOSERptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_show_native_file_dialog
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_show_native_file_dialog
     (display: ALLEGRO_DISPLAYptr; dialog: ALLEGRO_FILECHOOSERptr): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_get_native_file_dialog_count
-    (CONST dialog: ALLEGRO_FILECHOOSERptr): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_get_native_file_dialog_path
-    (CONST dialog: ALLEGRO_FILECHOOSERptr; index: AL_SIZE_T): AL_STRptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_get_native_file_dialog_count
+    (const dialog: ALLEGRO_FILECHOOSERptr): AL_INT;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_get_native_file_dialog_path
+    (const dialog: ALLEGRO_FILECHOOSERptr; index: AL_SIZE_T): AL_STRptr;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
 (*** Frees up all resources used by the file dialog. *)
-  PROCEDURE al_destroy_native_file_dialog (dialog: ALLEGRO_FILECHOOSERptr);
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
+  procedure al_destroy_native_file_dialog (dialog: ALLEGRO_FILECHOOSERptr);
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
 
-  FUNCTION al_show_native_message_box (
+  function al_show_native_message_box (
     display: ALLEGRO_DISPLAYptr;
-    CONST title, heading, str, buttons: AL_STR;
+    const title, heading, str, buttons: AL_STR;
     flags: AL_INT
-  ): AL_INT; INLINE;
+  ): AL_INT; inline;
 
-  FUNCTION al_open_native_text_log
-    (CONST title: AL_STR; flags: AL_INT): ALLEGRO_TEXTLOGptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  PROCEDURE al_close_native_text_log (textlog: ALLEGRO_TEXTLOGptr);
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  PROCEDURE al_append_native_text_log
-    (textlog: ALLEGRO_TEXTLOGptr; CONST str: AL_STR);
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_get_native_text_log_event_source (textlog: ALLEGRO_TEXTLOGptr)
+  function al_open_native_text_log
+    (const title: AL_STR; flags: AL_INT): ALLEGRO_TEXTLOGptr;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  procedure al_close_native_text_log (textlog: ALLEGRO_TEXTLOGptr);
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  procedure al_append_native_text_log
+    (textlog: ALLEGRO_TEXTLOGptr; const str: AL_STR);
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_get_native_text_log_event_source (textlog: ALLEGRO_TEXTLOGptr)
     : ALLEGRO_EVENT_SOURCEptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
 
 { creating/modifying menus }
-  FUNCTION al_create_menu: ALLEGRO_MENUptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_create_popup_menu: ALLEGRO_MENUptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_build_menu (VAR info: ARRAY OF ALLEGRO_MENU_INFO): ALLEGRO_MENUptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_append_menu_item (
-    parent: ALLEGRO_MENUptr; CONST title: AL_STRptr; id: AL_UINT16;
+  function al_create_menu: ALLEGRO_MENUptr;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_create_popup_menu: ALLEGRO_MENUptr;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_build_menu (var info: array OF ALLEGRO_MENU_INFO): ALLEGRO_MENUptr;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_append_menu_item (
+    parent: ALLEGRO_MENUptr; const title: AL_STRptr; id: AL_UINT16;
     flags: AL_INT; icon: ALLEGRO_BITMAPptr; submenu: ALLEGRO_MENUptr
   ): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-   FUNCTION al_insert_menu_item (
-     parent: ALLEGRO_MENUptr; pos: AL_INT; CONST title: AL_STRptr;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+   function al_insert_menu_item (
+     parent: ALLEGRO_MENUptr; pos: AL_INT; const title: AL_STRptr;
      id: AL_UINT16; flags: AL_INT; icon: ALLEGRO_BITMAPptr;
      submenu: ALLEGRO_MENUptr
    ): AL_BOOL;
-   CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_remove_menu_item (menu: ALLEGRO_MENUptr; pos: AL_INT): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_clone_menu (menu: ALLEGRO_MENUptr): ALLEGRO_MENUptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_clone_menu_for_popup (menu: ALLEGRO_MENUptr): ALLEGRO_MENUptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  PROCEDURE al_destroy_menu (menu: ALLEGRO_MENUptr);
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
+   CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_remove_menu_item (menu: ALLEGRO_MENUptr; pos: AL_INT): AL_BOOL;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_clone_menu (menu: ALLEGRO_MENUptr): ALLEGRO_MENUptr;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_clone_menu_for_popup (menu: ALLEGRO_MENUptr): ALLEGRO_MENUptr;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  procedure al_destroy_menu (menu: ALLEGRO_MENUptr);
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
 
 { properties }
-  FUNCTION al_get_menu_item_caption (menu: ALLEGRO_MENUptr; pos: AL_INT)
+  function al_get_menu_item_caption (menu: ALLEGRO_MENUptr; pos: AL_INT)
     : AL_STRptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  PROCEDURE al_set_menu_item_caption
-    (menu: ALLEGRO_MENUptr; pos: AL_INT; CONST caption: AL_STR);
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_get_menu_item_flags (menu: ALLEGRO_MENUptr; pos: AL_INT): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  PROCEDURE al_set_menu_item_flags (menu: ALLEGRO_MENUptr; pos, flags: AL_INT);
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_get_menu_item_icon (menu: ALLEGRO_MENUptr; pos: AL_INT)
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  procedure al_set_menu_item_caption
+    (menu: ALLEGRO_MENUptr; pos: AL_INT; const caption: AL_STR);
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_get_menu_item_flags (menu: ALLEGRO_MENUptr; pos: AL_INT): AL_INT;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  procedure al_set_menu_item_flags (menu: ALLEGRO_MENUptr; pos, flags: AL_INT);
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_get_menu_item_icon (menu: ALLEGRO_MENUptr; pos: AL_INT)
     : ALLEGRO_BITMAPptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  PROCEDURE al_set_menu_item_icon
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  procedure al_set_menu_item_icon
     (menu: ALLEGRO_MENUptr; pos: AL_INT; icon: ALLEGRO_BITMAPptr);
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
 
 {
 #if defined(ALLEGRO_UNSTABLE) || defined(ALLEGRO_INTERNAL_UNSTABLE) || defined(ALLEGRO_NATIVE_DIALOG_SRC)
 }
-  FUNCTION al_toggle_menu_item_flags
+  function al_toggle_menu_item_flags
     (menu: ALLEGRO_MENUptr; pos, flags: AL_INT): AL_INT;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
 
 { querying menus }
-  FUNCTION al_find_menu (haystack: ALLEGRO_MENUptr; id: AL_UINT16)
+  function al_find_menu (haystack: ALLEGRO_MENUptr; id: AL_UINT16)
     : ALLEGRO_MENUptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_find_menu_item (
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_find_menu_item (
     haystack: ALLEGRO_MENUptr; id: AL_INT16;
     menu: ALLEGRO_MENUptrptr; index: AL_INTptr
   ): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
 
 { menu events }
-  FUNCTION al_get_default_menu_event_source: ALLEGRO_EVENT_SOURCEptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_enable_menu_event_source (menu: ALLEGRO_MENUptr)
+  function al_get_default_menu_event_source: ALLEGRO_EVENT_SOURCEptr;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_enable_menu_event_source (menu: ALLEGRO_MENUptr)
     : ALLEGRO_EVENT_SOURCEptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  PROCEDURE al_disable_menu_event_source (menu: ALLEGRO_MENUptr);
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  procedure al_disable_menu_event_source (menu: ALLEGRO_MENUptr);
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
 
 { displaying menus }
-  FUNCTION al_get_display_menu (display: ALLEGRO_DISPLAYptr): ALLEGRO_MENUptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_set_display_menu (display: ALLEGRO_DISPLAYptr; menu: ALLEGRO_MENUptr): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_popup_menu (popup: ALLEGRO_MENUptr; display: ALLEGRO_DISPLAYptr): AL_BOOL;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
-  FUNCTION al_remove_display_menu (display: ALLEGRO_DISPLAYptr): ALLEGRO_MENUptr;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_get_display_menu (display: ALLEGRO_DISPLAYptr): ALLEGRO_MENUptr;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_set_display_menu (display: ALLEGRO_DISPLAYptr; menu: ALLEGRO_MENUptr): AL_BOOL;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_popup_menu (popup: ALLEGRO_MENUptr; display: ALLEGRO_DISPLAYptr): AL_BOOL;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_remove_display_menu (display: ALLEGRO_DISPLAYptr): ALLEGRO_MENUptr;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
 
-  FUNCTION al_get_allegro_native_dialog_version: AL_UINT32;
-    CDECL; EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_get_allegro_native_dialog_version: AL_UINT32;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
 
-  CONST
+  const
     ALLEGRO_FILECHOOSER_FILE_MUST_EXIST = 1; {**<@exclude }
     ALLEGRO_FILECHOOSER_SAVE            = 2; {**<@exclude }
     ALLEGRO_FILECHOOSER_FOLDER          = 4; {**<@exclude }
@@ -211,14 +211,14 @@ INTERFACE
     ALLEGRO_FILECHOOSER_SHOW_HIDDEN     = 16; {**<@exclude }
     ALLEGRO_FILECHOOSER_MULTIPLE        = 32; {**<@exclude }
 
-    ALLEGRO_MESSAGEBOX_WARN             = 1 SHL 0; {**<@exclude }
-    ALLEGRO_MESSAGEBOX_ERROR            = 1 SHL 1; {**<@exclude }
-    ALLEGRO_MESSAGEBOX_OK_CANCEL        = 1 SHL 2; {**<@exclude }
-    ALLEGRO_MESSAGEBOX_YES_NO           = 1 SHL 3; {**<@exclude }
-    ALLEGRO_MESSAGEBOX_QUESTION         = 1 SHL 4; {**<@exclude }
+    ALLEGRO_MESSAGEBOX_WARN             = 1 shl 0; {**<@exclude }
+    ALLEGRO_MESSAGEBOX_ERROR            = 1 shl 1; {**<@exclude }
+    ALLEGRO_MESSAGEBOX_OK_CANCEL        = 1 shl 2; {**<@exclude }
+    ALLEGRO_MESSAGEBOX_YES_NO           = 1 shl 3; {**<@exclude }
+    ALLEGRO_MESSAGEBOX_QUESTION         = 1 shl 4; {**<@exclude }
 
-    ALLEGRO_TEXTLOG_NO_CLOSE            = 1 SHL 0; {**<@exclude }
-    ALLEGRO_TEXTLOG_MONOSPACE           = 1 SHL 1; {**<@exclude }
+    ALLEGRO_TEXTLOG_NO_CLOSE            = 1 shl 0; {**<@exclude }
+    ALLEGRO_TEXTLOG_MONOSPACE           = 1 shl 1; {**<@exclude }
 
     ALLEGRO_EVENT_NATIVE_DIALOG_CLOSE   = 600; {**<@exclude }
     ALLEGRO_EVENT_MENU_CLICK            = 601; {**<@exclude }
@@ -234,59 +234,59 @@ INTERFACE
   delphi, inline function declared in interface section must not use local
   symbols, that's why I've defined it here. }
 {**@exclude }
-  FUNCTION _al_show_native_message_box (
-    display: ALLEGRO_DISPLAYptr; CONST title, heading, str, buttons: AL_STRptr;
+  function _al_show_native_message_box (
+    display: ALLEGRO_DISPLAYptr; const title, heading, str, buttons: AL_STRptr;
     flags: AL_INT
   ): AL_INT; CDECL;
-  EXTERNAL ALLEGRO_NATIVE_DLG_LIB_NAME NAME 'al_show_native_message_box';
+  external ALLEGRO_NATIVE_DLG_LIB_NAME NAME 'al_show_native_message_box';
 
-IMPLEMENTATION
+implementation
 
 
-  FUNCTION al_show_native_message_box (
-    display: ALLEGRO_DISPLAYptr; CONST title, heading, str, buttons: AL_STR;
+  function al_show_native_message_box (
+    display: ALLEGRO_DISPLAYptr; const title, heading, str, buttons: AL_STR;
     flags: AL_INT
   ): AL_INT;
-  VAR
+  var
     ButtonsPtr: AL_STRptr;
-  BEGIN
-    IF buttons <> '' THEN
+  begin
+    if buttons <> '' then
       ButtonsPtr := AL_STRptr (buttons)
-    ELSE
-      ButtonsPtr := NIL;
+    else
+      ButtonsPtr := Nil;
     al_show_native_message_box := _al_show_native_message_box (
        display, AL_STRptr (Title), AL_STRptr (Heading), AL_STRptr (Str), ButtonsPtr, flags
     )
-  END;
+  end;
 
 
 
 (* Menu options. *)
-  FUNCTION ALLEGRO_ITEM_OF_MENU (
-    CONST caption: AL_STRptr; id, flags: AL_INT; icon: ALLEGRO_BITMAPptr
+  function ALLEGRO_ITEM_OF_MENU (
+    const caption: AL_STRptr; id, flags: AL_INT; icon: ALLEGRO_BITMAPptr
   ): ALLEGRO_MENU_INFO;
-  BEGIN
+  begin
     ALLEGRO_ITEM_OF_MENU.caption := caption;
     ALLEGRO_ITEM_OF_MENU.id := id;
     ALLEGRO_ITEM_OF_MENU.flags := flags;
     ALLEGRO_ITEM_OF_MENU.icon := icon
-  END;
+  end;
 
 
 
-  FUNCTION ALLEGRO_MENU_SEPARATOR: ALLEGRO_MENU_INFO;
-  BEGIN
+  function ALLEGRO_MENU_SEPARATOR: ALLEGRO_MENU_INFO;
+  begin
   { There's an issue here.  Allegro sets it to (-1) but id is unsigned
     (uint16_t) wich makes FPC to raise a warning.  That's why I set it to
     maximum value for 16bit integers. }
-    ALLEGRO_MENU_SEPARATOR := ALLEGRO_ITEM_OF_MENU (NIL, $FFFF, 0, NIL)
-  END;
+    ALLEGRO_MENU_SEPARATOR := ALLEGRO_ITEM_OF_MENU (Nil, $FFFF, 0, Nil)
+  end;
 
 
 
-  FUNCTION ALLEGRO_END_OF_MENU: ALLEGRO_MENU_INFO;
-  BEGIN
-    ALLEGRO_END_OF_MENU := ALLEGRO_ITEM_OF_MENU (NIL, 0, 0, NIL)
-  END;
+  function ALLEGRO_end_OF_MENU: ALLEGRO_MENU_INFO;
+  begin
+    ALLEGRO_end_OF_MENU := ALLEGRO_ITEM_OF_MENU (Nil, 0, 0, Nil)
+  end;
 
-END.
+end.

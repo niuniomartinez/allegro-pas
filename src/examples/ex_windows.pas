@@ -26,29 +26,29 @@ PROGRAM ex_windows;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   Allegro5, al5font, al5image;
 
-CONST
+const
   W = 100;
   H = 100;
   Margin = 20;
 
-VAR
-  Displays: ARRAY [0..1] OF ALLEGRO_DISPLAYptr;
-  Info: ARRAY OF  ALLEGRO_MONITOR_INFO;
-  x, y, a, dw, dh: INTEGER;
+var
+  Displays: array [0..1] of ALLEGRO_DISPLAYptr;
+  Info: array of  ALLEGRO_MONITOR_INFO;
+  x, y, a, dw, dh: Integer;
   MyFont: ALLEGRO_FONTptr;
   Events: ALLEGRO_EVENT_QUEUEptr;
   Event: ALLEGRO_EVENT;
-  i: INTEGER;
-  EndExample: BOOLEAN;
+  i: Integer;
+  EndExample: Boolean;
 
-BEGIN
+begin
   Randomize;
 
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   al_install_mouse;
   al_init_font_addon;
@@ -56,10 +56,10 @@ BEGIN
 
   SetLength (Info, al_get_num_video_adapters);
 
-  FOR i := LOW (Info) TO HIGH (Info) DO al_get_monitor_info (i, Info[i]);
+  for i := Low (Info) to High (Info) do al_get_monitor_info (i, Info[i]);
 
-  x := TRUNC (((info[0].x2 - info[0].x1) / 3) - (W / 2));
-  y := TRUNC (((info[0].y2 - info[0].y1) / 2) - (H / 2));
+  x := Trunc (((info[0].x2 - info[0].x1) / 3) - (W / 2));
+  y := Trunc (((info[0].y2 - info[0].y1) / 2) - (H / 2));
 
   al_set_new_window_position (x, y);
 
@@ -70,51 +70,51 @@ BEGIN
 
   Displays[1] := al_create_display (W, H);
 
-  if (Displays[0] = NIL) OR (Displays[1] = NIL) THEN 
+  if (Displays[0] = Nil) or (Displays[1] = Nil) then
     AbortExample ('Could not create displays.');
 
   al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
   MyFont := al_load_font ('data/fixed_font.tga', 0, 0);
-  if MyFont = NIL THEN  AbortExample ('Could not load font.');
+  if MyFont = Nil then  AbortExample ('Could not load font.');
 
   events := al_create_event_queue;
   al_register_event_source (Events, al_get_mouse_event_source);
   al_register_event_source (Events, al_get_display_event_source (Displays[0]));
   al_register_event_source (Events, al_get_display_event_source (Displays[1]));
 
-  EndExample := FALSE;
-  REPEAT
-    FOR i := LOW (Displays) TO HIGH (Displays) DO
-    BEGIN
+  EndExample := False;
+  repeat
+    for i := Low (Displays) to High (Displays) do
+    begin
       al_set_target_backbuffer (Displays[i]);
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-      IF i = 0 THEN
+      if i = 0 then
          al_clear_to_color (al_map_rgb (255, 0, 255))
-      ELSE
+      else
          al_clear_to_color (al_map_rgb (155, 255, 0));
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
       al_draw_text (myfont, al_map_rgb (0, 0, 0), 50, 50, ALLEGRO_ALIGN_CENTRE, 'Click me...');
       al_flip_display
-    END;
+    end;
 
-    IF al_wait_for_event_timed (events, @event, 1) THEN
-    BEGIN
-      IF Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE THEN
-	EndExample := TRUE
-      ELSE IF event.ftype = ALLEGRO_EVENT_MOUSE_BUTTON_DOWN THEN
-      BEGIN
+    if al_wait_for_event_timed (events, @event, 1) then
+    begin
+      if Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE then
+	EndExample := True
+      else if event.ftype = ALLEGRO_EVENT_MOUSE_BUTTON_DOWN then
+      begin
 	a := Random (Length (Info));
 	dw := Info[a].x2 - Info[a].x1;
 	dh := Info[a].y2 - Info[a].y1;
 	x := Margin + Info[a].x1 + (Random (dw - W - Margin));
 	y := Margin + Info[a].y1 + (Random (dh - H - Margin));
 	al_set_window_position (Event.mouse.display, x, y);
-      END
-    END
-  UNTIL EndExample;
+      end
+    end
+  until EndExample;
 
   al_destroy_event_queue (Events);
 
   al_destroy_display (Displays[0]);
   al_destroy_display (Displays[1]);
-END.
+end.

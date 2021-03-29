@@ -1,4 +1,4 @@
-UNIT Effects;
+unit Effects;
 (*<Implements different effects. *)
 (*
   Copyright (c) 2019 Guillermo Martínez J.
@@ -23,12 +23,12 @@ UNIT Effects;
     distribution.
  *)
 
-INTERFACE
+interface
 
-  USES
+  uses
     Engine;
 
-  CONST
+  const
   (* Explosion size. *)
     EXP_SIZE = 13;
   (* Fire length. *)
@@ -36,69 +36,69 @@ INTERFACE
   (* Fire life. *)
     FIRE_LIFE = 14;
 
-  TYPE
+  type
   (* An explosion. *)
-    TExplosion = CLASS (TSprite)
-    PRIVATE
-      fCnt: INTEGER;
-    PUBLIC
+    TExplosion = class (TSprite)
+    private
+      fCnt: Integer;
+    public
     (* Restores the sprite. *)
-      PROCEDURE Restore; OVERRIDE;
+      procedure Restore; override;
     (* Updates the explosion. *)
-      PROCEDURE Update; OVERRIDE;
+      procedure Update; override;
     (* Draws the explosion. *)
-      PROCEDURE Draw; OVERRIDE;
-    END;
+      procedure Draw; override;
+    end;
 
 
 
   (* The fire sprite. *)
-    TFire = CLASS (TMoveableSprite)
-    PRIVATE
+    TFire = class (TMoveableSprite)
+    private
       fvx, fvy, { Vector components.  Temporary. }
-      fCount: INTEGER;
-    PUBLIC
+      fCount: Integer;
+    public
     (* Somebody shooted a fire. *)
-      PROCEDURE Shoot (aX, aY, aAngle: INTEGER);
+      procedure Shoot (aX, aY, aAngle: Integer);
     (* Updates sprite. *)
-      PROCEDURE Update; OVERRIDE;
+      procedure Update; override;
     (* Tests collision with sprite.
 
        Since @italic(Fire) is a line, collision calculation is slightly
        different. *)
-      FUNCTION IntersectWith (aSpr: TSprite): BOOLEAN; OVERRIDE;
-    END;
+      function IntersectWith (aSpr: TSprite): Boolean; override;
+    end;
 
 
 
   (* The effects manager. *)
-    TEffectManager = CLASS (TManager)
-    PRIVATE
+    TEffectManager = class (TManager)
+    private
       fExplosion: TExplosion;
-    PUBLIC
+    public
     (* Constructor. *)
-      CONSTRUCTOR Create;
+      constructor Create;
     (* Destructor. *)
-      DESTRUCTOR Destroy; OVERRIDE;
+      destructor Destroy; override;
     (* Creates an explosion. *)
-      PROCEDURE AddAsteroidExplosion (CONST aX, aY: INTEGER);
+      procedure AddAsteroidExplosion (const aX, aY: Integer);
     (* Initializes. *)
-      PROCEDURE Initialize; OVERRIDE;
+      procedure Initialize; override;
     (* New game. *)
-      PROCEDURE NewGame; OVERRIDE;
+      procedure NewGame; override;
     (* Updates effects. *)
-      PROCEDURE Update; OVERRIDE;
+      procedure Update; override;
     (* Draw sprites. *)
-      PROCEDURE Paint; OVERRIDE;
-    END;
+      procedure Paint; override;
+    end;
 
-IMPLEMENTATION
+implementation
 
-  USES
+  uses
     Graphics,
     Allegro5, al5primitives, math;
 
-  CONST
+  const
   (* How the explosion grows. *)
     EXP_RATE = 1.7;
 
@@ -107,36 +107,36 @@ IMPLEMENTATION
  ***************************************************************************)
 
 (* Restores. *)
-  PROCEDURE TExplosion.Restore;
-  BEGIN
-    SELF.Visible := TRUE;
-    SELF.Active := TRUE;
+  procedure TExplosion.Restore;
+  begin
+    Self.Visible := True;
+    Self.Active := True;
     Polygon.Color := Yelow;
     fCnt := 0
-  END;
+  end;
 
 
 
 (* Updates. *)
-  PROCEDURE TExplosion.Update;
-  BEGIN
-    IF SELF.Active THEN
-    BEGIN
-      INC (fCnt);
-      IF fCnt > EXP_SIZE THEN SELF.Suspend;
-    END;
-  END;
+  procedure TExplosion.Update;
+  begin
+    if Self.Active then
+    begin
+      Inc (fCnt);
+      if fCnt > EXP_SIZE then Self.Suspend;
+    end;
+  end;
 
 
 
 (* Draws. *)
-  PROCEDURE TExplosion.Draw;
-  VAR
-    Size: REAL;
+  procedure TExplosion.Draw;
+  var
+    Size: Real;
     TransformationMatrix: ALLEGRO_TRANSFORM;
-  BEGIN
-    IF SELF.Visible THEN
-    BEGIN
+  begin
+    if Self.Visible then
+    begin
       Size := EXP_SIZE + power (EXP_RATE, 1 + fCnt);
 
       al_build_transform (TransformationMatrix, PosX, PosY, 1, 1, 0);
@@ -146,8 +146,8 @@ IMPLEMENTATION
       al_draw_line (-EXP_SIZE,  Size, EXP_SIZE,  Size, Polygon.Color, 0);
       al_draw_line (-Size, -EXP_SIZE, -Size, EXP_SIZE, Polygon.Color, 0);
       al_draw_line ( Size, -EXP_SIZE,  Size, EXP_SIZE, Polygon.Color, 0)
-    END
-  END;
+    end
+  end;
 
 
 
@@ -156,46 +156,46 @@ IMPLEMENTATION
  ***************************************************************************)
 
 (* Somebody shooted a fire. *)
-  PROCEDURE TFire.Shoot (aX, aY, aAngle: INTEGER);
-  BEGIN
-    SELF.Initialize;
+  procedure TFire.Shoot (aX, aY, aAngle: Integer);
+  begin
+    Self.Initialize;
 
-    fvx := TRUNC (FIRE_LENGTH * cos (aAngle));
-    fvy := TRUNC (FIRE_LENGTH * sin (aAngle));
-    SELF.PosX := aX; SELF.PosY := aY;
+    fvx := Trunc (FIRE_LENGTH * cos (aAngle));
+    fvy := Trunc (FIRE_LENGTH * sin (aAngle));
+    Self.PosX := aX; Self.PosY := aY;
 
-    SELF.Polygon.AddPoint (0, 0);
-    SELF.Polygon.AddPoint (fvx, fvy);
-    SELF.Polygon.AddPoint (0, 0); { Not sure this is needed. }
-    SELF.Polygon.Fill := FALSE;
+    Self.Polygon.AddPoint (0, 0);
+    Self.Polygon.AddPoint (fvx, fvy);
+    Self.Polygon.AddPoint (0, 0); { Not sure this is needed. }
+    Self.Polygon.Fill := False;
     fCount := 0
-  END;
+  end;
 
 
 
 (* Updates. *)
-  PROCEDURE TFire.Update;
-  BEGIN
-    IF SELF.Active THEN
-    BEGIN
-      INC (fCount);
-      IF fCount >= FIRE_LIFE THEN SELF.Suspend ELSE INHERITED Update
-    END
-  END;
+  procedure TFire.Update;
+  begin
+    if Self.Active then
+    begin
+      Inc (fCount);
+      if fCount >= FIRE_LIFE then Self.Suspend else inherited Update
+    end
+  end;
 
 
 
 (* Collision. *)
-  FUNCTION TFire.IntersectWith (aSpr: TSprite): BOOLEAN;
-  VAR
-    midptx, midpty: INTEGER;
-  BEGIN
-    midptx := TRUNC (PosX + PosX + fvx) DIV 2;
-    midpty := TRUNC (PosY + PosY + fvy) DIV 2;
-    RESULT := SELF.Active AND aSpr.Active
-      AND (ABS (aSpr.PosX - midptx  + 2) < aSpr.Radius)
-      AND (ABS (aSpr.PosY - midpty  + 2) < aSpr.Radius)
-  END;
+  function TFire.IntersectWith (aSpr: TSprite): Boolean;
+  var
+    midptx, midpty: Integer;
+  begin
+    midptx := Trunc (PosX + PosX + fvx) div 2;
+    midpty := Trunc (PosY + PosY + fvy) div 2;
+    Result := Self.Active and aSpr.Active
+      and (ABS (aSpr.PosX - midptx  + 2) < aSpr.Radius)
+      and (ABS (aSpr.PosY - midpty  + 2) < aSpr.Radius)
+  end;
 
 
 
@@ -204,61 +204,61 @@ IMPLEMENTATION
  ***************************************************************************)
 
 (* Constructor. *)
-  CONSTRUCTOR TEffectManager.Create;
-  BEGIN
-    INHERITED Create;
+  constructor TEffectManager.Create;
+  begin
+    inherited Create;
     fExplosion := TExplosion.Create
-  END;
+  end;
 
 
 
 (* Destructor. *)
-  DESTRUCTOR TEffectManager.Destroy;
-  BEGIN
+  destructor TEffectManager.Destroy;
+  begin
     fExplosion.Free;
-    INHERITED Destroy
-  END;
+    inherited Destroy
+  end;
 
 
 
 (* Adds an explosion. *)
-  PROCEDURE TEffectManager.AddAsteroidExplosion (CONST aX, aY: INTEGER);
-  BEGIN
+  procedure TEffectManager.AddAsteroidExplosion (const aX, aY: Integer);
+  begin
     fExplosion.Restore;
     fExplosion.PosX := aX; fExplosion.PosY := aY
-  END;
+  end;
 
 
 
 (* Initializes. *)
-  PROCEDURE TEffectManager.Initialize;
-  BEGIN
+  procedure TEffectManager.Initialize;
+  begin
     fExplosion.Suspend;
-  END;
+  end;
 
 
 
 (* New game. *)
-  PROCEDURE TEffectManager.NewGame;
-  BEGIN
+  procedure TEffectManager.NewGame;
+  begin
     fExplosion.Suspend;
-  END;
+  end;
 
 
 
 (* Updates. *)
-  PROCEDURE TEffectManager.Update;
-  BEGIN
+  procedure TEffectManager.Update;
+  begin
     fExplosion.Update
-  END;
+  end;
 
 
 
 (* Draws. *)
-  PROCEDURE TEffectManager.Paint;
-  BEGIN
+  procedure TEffectManager.Paint;
+  begin
     fExplosion.Draw
-  END;
+  end;
 
-END.
+end.
 

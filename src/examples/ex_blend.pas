@@ -27,55 +27,55 @@ PROGRAM ex_blend;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   Allegro5, al5base, al5font, al5image, al5primitives, al5strings;
 
 
-VAR
+var
 (* A structure holding all variables of our example program. *)
-  Ex: RECORD
+  Ex: record
    Example: ALLEGRO_BITMAPptr; (* Our example bitmap. *)
    OffScreen: ALLEGRO_BITMAPptr; (* An offscreen buffer, for testing. *)
    Memory: ALLEGRO_BITMAPptr; (* A memory buffer, for testing. *)
    MyFont: ALLEGRO_FONTptr; (* Our font. *)
    Queue: ALLEGRO_EVENT_QUEUEptr; (* Our events queue. *)
-   Image: INTEGER; (* Which test image to use. *)
-   Mode: INTEGER; (* How to draw it. *)
-   BUTTONS_X: INTEGER; (* Where to draw buttons. *)
+   Image: Integer; (* Which test image to use. *)
+   Mode: Integer; (* How to draw it. *)
+   ButtonsX: Integer; (* Where to draw buttons. *)
 
-   FPS: INTEGER;
-   LastSecond: DOUBLE;
-   FramesAccum: INTEGER;
-   fFPS: DOUBLE;
-  END;
+   FPS: Integer;
+   LastSecond: Double;
+   FramesAccum: Integer;
+   fFPS: Double;
+  end;
 
 
 
 (* Print some text with a shadow. *)
-  PROCEDURE Print
-    (CONST aX, aY: INTEGER; CONST aVertical: BOOLEAN; CONST Text: AL_STR);
-  VAR
+  procedure Print
+    (const aX, aY: Integer; const aVertical: Boolean; const Text: AL_STR);
+  var
     Color: ALLEGRO_COLOR;
-    h, i, j: INTEGER;
+    h, i, j: Integer;
     ui, Letter: ALLEGRO_USTR_INFO;
     us: ALLEGRO_USTRptr;
-  BEGIN
+  begin
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
     h := al_get_font_line_height (Ex.MyFont);
 
-    FOR j := 0 TO 1 DO
-    BEGIN
-      IF j = 0 THEN
+    for j := 0 to 1 do
+    begin
+      if j = 0 then
         Color := al_map_rgb (0, 0, 0)
-      ELSE
+      else
         Color := al_map_rgb (255, 255, 255);
 
-      IF aVertical THEN
-      BEGIN
+      if aVertical then
+      begin
         us := al_ref_cstr (ui, Text);
-        FOR i := 0 TO al_ustr_length (us) - 1 DO
-        BEGIN
+        for i := 0 to al_ustr_length (us) - 1 do
+        begin
           al_draw_ustr (
             Ex.MyFont, Color, aX + 1 - j, aY + 1 - j + h * i, 0,
             al_ref_ustr (
@@ -83,71 +83,71 @@ VAR
               al_ustr_offset (us, i + 1)
             )
           )
-        END
-      END
-      ELSE
+        end
+      end
+      else
         al_draw_text (Ex.MyFont, Color, aX + 1 - j, aY + 1 - j, 0, Text)
-    END
-  END;
+    end
+  end;
 
 
 
 (* Create an example bitmap. *)
-  FUNCTION CreateExampleBitmap: ALLEGRO_BITMAPptr;
-  VAR
+  function CreateExampleBitmap: ALLEGRO_BITMAPptr;
+  var
     lBmp: ALLEGRO_BITMAPptr;
-    i, j, x, y, r: INTEGER;
-    rc: DOUBLE;
+    i, j, x, y, r: Integer;
+    rc: Double;
     Locked: ALLEGRO_LOCKED_REGIONptr;
     Data: PBYTE;
-  BEGIN
+  begin
     lBmp := al_create_bitmap (100, 100);
     Locked := al_lock_bitmap (
       lBmp, ALLEGRO_PIXEL_FORMAT_ABGR_8888, ALLEGRO_LOCK_WRITEONLY
     );
     Data := Locked^.data;
 
-    FOR j := 0 TO 99 DO
-    BEGIN
-      FOR i := 0 TO 99 DO
-      BEGIN
+    for j := 0 to 99 do
+    begin
+      for i := 0 to 99 do
+      begin
         x := i - 50; y := j - 50;
-        r := TRUNC (sqrt (x * x + y * y));
+        r := Trunc (sqrt (x * x + y * y));
         rc := 1 - r / 50.0;
-        IF rc < 0 THEN rc := 0;
-        Data[i * 4 + 0] := TRUNC (i * 255 / 100);
-        Data[i * 4 + 1] := TRUNC (j * 255 / 100);
-        Data[i * 4 + 2] := TRUNC (rc * 255);
-        Data[i * 4 + 3] := TRUNC (rc * 255);
-      END;
+        if rc < 0 then rc := 0;
+        Data[i * 4 + 0] := Trunc (i * 255 / 100);
+        Data[i * 4 + 1] := Trunc (j * 255 / 100);
+        Data[i * 4 + 2] := Trunc (rc * 255);
+        Data[i * 4 + 3] := Trunc (rc * 255);
+      end;
       Data := Data + Locked^.pitch;
-    END;
+    end;
     al_unlock_bitmap (lBmp);
-    EXIT (lBmp)
-  END;
+    Exit (lBmp)
+  end;
 
 
 
 (* Draw our example scene. *)
-  PROCEDURE Draw;
+  procedure Draw;
 
-    FUNCTION mIs (a, b: INTEGER): AL_STR; INLINE;
-    BEGIN
-      IF a = b THEN mIs := '*' ELSE mIs := ' '
-    END;
+    function mIs (a, b: Integer): AL_STR; inline;
+    begin
+      if a = b then mIs := '*' else mIs := ' '
+    end;
 
-  CONST
-    BlendNames: ARRAY [0..3] OF AL_STR = ('ZERO', 'ONE', 'ALPHA', 'INVERSE');
-    BlendVNnames: ARRAY [0..3] OF AL_STR = ('ZERO', 'ONE', 'ALPHA', 'INVER');
-    BlendModes: ARRAY [0..3] OF ALLEGRO_BLEND_MODE = (
+  const
+    BlendNames: array [0..3] of AL_STR = ('ZERO', 'ONE', 'ALPHA', 'INVERSE');
+    BlendVNnames: array [0..3] of AL_STR = ('ZERO', 'ONE', 'ALPHA', 'INVER');
+    BlendModes: array [0..3] of ALLEGRO_BLEND_MODE = (
       ALLEGRO_ZERO, ALLEGRO_ONE, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA
     );
-   VAR
-    Test: ARRAY [0..4] OF ALLEGRO_COLOR;
+   var
+    Test: array [0..4] of ALLEGRO_COLOR;
     Target: ALLEGRO_BITMAPptr;
-    x, y: SINGLE;
-    i, j: INTEGER;
-   BEGIN
+    x, y: Single;
+    i, j: Integer;
+   begin
     Target := al_get_target_bitmap;
     x := 40; y := 40;
 
@@ -159,141 +159,141 @@ VAR
     Test[3] := al_map_rgba_f (1, 0, 0, 0.75);
     Test[4] := al_map_rgba_f (0, 0, 0, 0);
 
-    Print (TRUNC (x), 0, FALSE, al_str_format (
+    Print (Trunc (x), 0, False, al_str_format (
       'D  E  S  T  I  N  A  T  I  O  N  (%0.2f fps)', [Ex.fFPS])
     );
-    Print (0, TRUNC (y), TRUE, 'S O U R C E');
-    FOR i := LOW (BlendNames) TO HIGH (BlendNames) DO
-    BEGIN
-      Print (TRUNC (x + i * 110), 20, FALSE, BlendNames[i]);
-      Print (20, TRUNC (y + i * 110), TRUE, BlendVNnames[i])
-    END;
+    Print (0, Trunc (y), True, 'S O U R C E');
+    for i := Low (BlendNames) to High (BlendNames) do
+    begin
+      Print (Trunc (x + i * 110), 20, False, BlendNames[i]);
+      Print (20, Trunc (y + i * 110), True, BlendVNnames[i])
+    end;
 
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
-    IF (Ex.Mode >= 1) AND (Ex.Mode <= 5) THEN
-    BEGIN
+    if (Ex.Mode >= 1) and (Ex.Mode <= 5) then
+    begin
       al_set_target_bitmap (Ex.OffScreen);
       al_clear_to_color(test[Ex.Mode - 1])
-    END;
-    IF (Ex.Mode >= 6) AND (Ex.Mode <= 10) THEN
-    BEGIN
+    end;
+    if (Ex.Mode >= 6) and (Ex.Mode <= 10) then
+    begin
       al_set_target_bitmap (Ex.Memory);
       al_clear_to_color (Test[Ex.Mode - 6])
-    END;
+    end;
 
-    FOR j := LOW (BlendModes) TO HIGH (BlendModes) DO
-    BEGIN
-      FOR i := LOW (BlendModes) TO HIGH (BlendModes) DO
-      BEGIN
+    for j := Low (BlendModes) to High (BlendModes) do
+    begin
+      for i := Low (BlendModes) to High (BlendModes) do
+      begin
         al_set_blender (ALLEGRO_ADD, BlendModes[j], BlendModes[i]);
-        IF Ex.Image = 0 THEN
+        if Ex.Image = 0 then
           al_draw_bitmap (Ex.Example, x + i * 110, y + j * 110, 0)
-        ELSE IF (Ex.Image >= 1) AND (Ex.Image <= 6) THEN
+        else if (Ex.Image >= 1) and (Ex.Image <= 6) then
           al_draw_filled_rectangle (
             x + i * 110,       y + j * 110,
             x + i * 110 + 100, y + j * 110 + 100,
             Test[Ex.Image - 1]
           )
-      END
-    END;
+      end
+    end;
 
-    IF (Ex.Mode >= 1) AND (Ex.Mode <= 5) THEN
-    BEGIN
+    if (Ex.Mode >= 1) and (Ex.Mode <= 5) then
+    begin
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
       al_set_target_bitmap (Target);
       al_draw_bitmap_region (Ex.OffScreen, x, y, 430, 430, x, y, 0)
-    END;
-    IF (Ex.Mode >= 6) AND (Ex.Mode <= 10) THEN
-    BEGIN
+    end;
+    if (Ex.Mode >= 6) and (Ex.Mode <= 10) then
+    begin
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
       al_set_target_bitmap (Target);
       al_draw_bitmap_region (Ex.Memory, x, y, 430, 430, x, y, 0)
-    END;
+    end;
 
-    Print (Ex.BUTTONS_X, 20 * 1, FALSE, 'What to draw');
-    Print (Ex.BUTTONS_X, 20 * 2, FALSE, mIs (Ex.Image, 0)+' Picture');
-    Print (Ex.BUTTONS_X, 20 * 3, FALSE, mIs (Ex.Image, 1)+' Rec1 (1/1/1/1)');
-    Print (Ex.BUTTONS_X, 20 * 4, FALSE, mIs (Ex.Image, 2)+' Rec2 (1/1/1/.5)');
-    Print (Ex.BUTTONS_X, 20 * 5, FALSE, mIs (Ex.Image, 3)+' Rec3 (1/1/1/.25)');
-    Print (Ex.BUTTONS_X, 20 * 6, FALSE, mIs (Ex.Image, 4)+' Rec4 (1/0/0/.75)');
-    Print (Ex.BUTTONS_X, 20 * 7, FALSE, mIs (Ex.Image, 5)+' Rec5 (0/0/0/0)');
+    Print (Ex.ButtonsX, 20 * 1, False, 'What to draw');
+    Print (Ex.ButtonsX, 20 * 2, False, mIs (Ex.Image, 0)+' Picture');
+    Print (Ex.ButtonsX, 20 * 3, False, mIs (Ex.Image, 1)+' Rec1 (1/1/1/1)');
+    Print (Ex.ButtonsX, 20 * 4, False, mIs (Ex.Image, 2)+' Rec2 (1/1/1/.5)');
+    Print (Ex.ButtonsX, 20 * 5, False, mIs (Ex.Image, 3)+' Rec3 (1/1/1/.25)');
+    Print (Ex.ButtonsX, 20 * 6, False, mIs (Ex.Image, 4)+' Rec4 (1/0/0/.75)');
+    Print (Ex.ButtonsX, 20 * 7, False, mIs (Ex.Image, 5)+' Rec5 (0/0/0/0)');
 
-    Print (Ex.BUTTONS_X, 20 * 9, FALSE, 'Where to draw');
-    Print (Ex.BUTTONS_X, 20 * 10, FALSE, mIs (Ex.Mode, 0)+' screen');
+    Print (Ex.ButtonsX, 20 * 9, False, 'Where to draw');
+    Print (Ex.ButtonsX, 20 * 10, False, mIs (Ex.Mode, 0)+' screen');
 
-    Print (Ex.BUTTONS_X, 20 * 11, FALSE, mIs (Ex.Mode, 1)+' offscreen1');
-    Print (Ex.BUTTONS_X, 20 * 12, FALSE, mIs (Ex.Mode, 2)+' offscreen2');
-    Print (Ex.BUTTONS_X, 20 * 13, FALSE, mIs (Ex.Mode, 3)+' offscreen3');
-    Print (Ex.BUTTONS_X, 20 * 14, FALSE, mIs (Ex.Mode, 4)+' offscreen4');
-    Print (Ex.BUTTONS_X, 20 * 15, FALSE, mIs (Ex.Mode, 5)+' offscreen5');
+    Print (Ex.ButtonsX, 20 * 11, False, mIs (Ex.Mode, 1)+' offscreen1');
+    Print (Ex.ButtonsX, 20 * 12, False, mIs (Ex.Mode, 2)+' offscreen2');
+    Print (Ex.ButtonsX, 20 * 13, False, mIs (Ex.Mode, 3)+' offscreen3');
+    Print (Ex.ButtonsX, 20 * 14, False, mIs (Ex.Mode, 4)+' offscreen4');
+    Print (Ex.ButtonsX, 20 * 15, False, mIs (Ex.Mode, 5)+' offscreen5');
 
-    Print (Ex.BUTTONS_X, 20 * 16, FALSE, mIs (Ex.Mode, 6)+' memory1');
-    Print (Ex.BUTTONS_X, 20 * 17, FALSE, mIs (Ex.Mode, 7)+' memory2');
-    Print (Ex.BUTTONS_X, 20 * 18, FALSE, mIs (Ex.Mode, 8)+' memory3');
-    Print (Ex.BUTTONS_X, 20 * 19, FALSE, mIs (Ex.Mode, 9)+' memory4');
-    Print (Ex.BUTTONS_X, 20 * 20, FALSE, mIs (Ex.Mode, 10)+' memory5')
-  END;
+    Print (Ex.ButtonsX, 20 * 16, False, mIs (Ex.Mode, 6)+' memory1');
+    Print (Ex.ButtonsX, 20 * 17, False, mIs (Ex.Mode, 7)+' memory2');
+    Print (Ex.ButtonsX, 20 * 18, False, mIs (Ex.Mode, 8)+' memory3');
+    Print (Ex.ButtonsX, 20 * 19, False, mIs (Ex.Mode, 9)+' memory4');
+    Print (Ex.ButtonsX, 20 * 20, False, mIs (Ex.Mode, 10)+' memory5')
+  end;
 
 
 
 (* Called a fixed amount of times per second. *)
-  PROCEDURE Tick;
-  VAR
-    t: DOUBLE;
-  BEGIN
+  procedure Tick;
+  var
+    t: Double;
+  begin
   { Count frames during the last second or so. }
     t := al_get_time ();
-    IF t >= Ex.LastSecond + 1 THEN
-    BEGIN
+    if t >= Ex.LastSecond + 1 then
+    begin
       Ex.fFPS := Ex.FramesAccum / (t - Ex.LastSecond);
       Ex.FramesAccum := 0;
       Ex.LastSecond := t
-    END;
+    end;
 
     draw;
     al_flip_display;
     Ex.FramesAccum := Ex.FramesAccum + 1
-  END;
+  end;
 
 
 
 (* Run our test. *)
-  PROCEDURE run;
-  VAR
+  procedure run;
+  var
     Event: ALLEGRO_EVENT;
-    x, y: SINGLE;
-    NeedDraw: BOOLEAN;
-  BEGIN
-    NeedDraw := TRUE;
+    x, y: Single;
+    NeedDraw: Boolean;
+  begin
+    NeedDraw := True;
 
-    REPEAT
+    repeat
     { Perform frame skipping so we don't fall behind the timer events. }
-      IF NeedDraw AND al_is_event_queue_empty (Ex.Queue) THEN
-      BEGIN
+      if NeedDraw and al_is_event_queue_empty (Ex.Queue) then
+      begin
         Tick;
-        NeedDraw := FALSE
-      END;
+        NeedDraw := False
+      end;
 
       al_wait_for_event (ex.Queue, @Event);
 
-      CASE Event.ftype OF
+      case Event.ftype OF
       { Was the X button on the window pressed? }
       ALLEGRO_EVENT_DISPLAY_CLOSE:
-        EXIT;
+        Exit;
       { Was a key pressed? }
       ALLEGRO_EVENT_KEY_DOWN:
-        IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN EXIT;
+        if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then Exit;
       { Is it time for the next timer tick? }
       ALLEGRO_EVENT_TIMER:
         NeedDraw := true;
       { Mouse click? }
       ALLEGRO_EVENT_MOUSE_BUTTON_UP:
-        BEGIN
+        begin
           x := Event.mouse.x;
           y := Event.mouse.y;
-          IF x >= Ex.BUTTONS_X THEN
-          BEGIN
-            CASE TRUNC (y / 20) OF
+          if x >= Ex.ButtonsX then
+          begin
+            case Trunc (y / 20) OF
               2: Ex.image := 0;
               3: Ex.image := 1;
               4: Ex.image := 2;
@@ -314,38 +314,38 @@ VAR
               18: Ex.mode := 8;
               19: Ex.mode := 9;
               20: Ex.mode := 10;
-            END
-          END
-        END;
-      END
-    UNTIL FALSE
-  END;
+            end
+          end
+        end;
+      end
+    until False
+  end;
 
 
 
 (* Initialize the example. *)
-  PROCEDURE Init;
-  BEGIN
-   Ex.BUTTONS_X := 40 + 110 * 4;
+  procedure Init;
+  begin
+   Ex.ButtonsX := 40 + 110 * 4;
    Ex.FPS := 60;
 
    Ex.MyFont := al_load_font ('data/font.tga', 0, 0);
-   IF Ex.MyFont = NIL THEN
+   if Ex.MyFont = Nil then
      AbortExample ('data/font.tga not found');
    Ex.Example := CreateExampleBitmap;
 
    Ex.OffScreen := al_create_bitmap (640, 480);
    al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
    Ex.Memory := al_create_bitmap (640, 480)
-  END;
+  end;
 
 
 
-VAR
+var
   Display: ALLEGRO_DISPLAYptr;
   Timer: ALLEGRO_TIMERptr;
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
    al_init_primitives_addon;
    al_install_keyboard;
@@ -356,7 +356,7 @@ BEGIN
    InitPlatformSpecific;
 
    Display := al_create_display (640, 480);
-   IF display = NIL THEN  AbortExample ('Error creating display.');
+   if display = Nil then  AbortExample ('Error creating display.');
 
    Init;
 
@@ -371,7 +371,7 @@ ex_blend.pas(364,36) Warning: Variable "Ex" does not seem to be initialized
    al_register_event_source (Ex.Queue, al_get_display_event_source (Display));
    al_register_event_source (Ex.Queue, al_get_timer_event_source (Timer));
 { TODO:
-   IF al_is_touch_input_installed THEN
+   if al_is_touch_input_installed then
      al_register_event_source (
        Ex.Queue, al_get_touch_input_mouse_emulation_event_source
      );
@@ -381,4 +381,4 @@ ex_blend.pas(364,36) Warning: Variable "Ex" does not seem to be initialized
    Run;
 
    al_destroy_event_queue (Ex.Queue)
-END.
+end.

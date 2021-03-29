@@ -26,16 +26,16 @@ PROGRAM ex_monitorinfo;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Allegro5,
     Common;
 
-  VAR
+  var
    Info: ALLEGRO_MONITOR_INFO;
-   NumAdapters, i, j: INTEGER;
+   NumAdapters, i, j: Integer;
    Mode: ALLEGRO_DISPLAY_MODE;
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
    OpenLog;
 
@@ -43,8 +43,8 @@ BEGIN
 
    LogPrintLn ('%d adapters found...', [NumAdapters]);
 
-   FOR i := 1 TO NumAdapters DO
-   BEGIN
+   for i := 1 to NumAdapters do
+   begin
      al_get_monitor_info (i - 1, Info);
      LogPrintLn (
        'Adapter %d: (%d, %d) - (%d, %d)',
@@ -52,15 +52,15 @@ BEGIN
      );
      al_set_new_display_adapter (i - 1);
      LogWriteLn ('   Available fullscreen display modes:');
-     FOR j := 1 TO al_get_num_display_modes DO
-     BEGIN
+     for j := 1 to al_get_num_display_modes do
+     begin
        al_get_display_mode (j - 1, Mode);
        LogPrintLn (
          '   Mode %3d: %4d x %4d, %d Hz',
          [j - 1, Mode.width, Mode.height, Mode.refresh_rate]
        )
-     END
-   END;
+     end
+   end;
 
-   CloseLog (TRUE)
-END.
+   CloseLog (True)
+end.

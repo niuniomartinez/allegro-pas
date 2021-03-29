@@ -31,33 +31,33 @@ PROGRAM ex_config;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Allegro5, al5base, Common;
 
-  PROCEDURE Test (Name: AL_STR; Expr: BOOLEAN);
-  BEGIN
-    IF Expr THEN
+  procedure Test (Name: AL_STR; Expr: Boolean);
+  begin
+    if Expr then
       LogPrintLn (' PASS - %s', [Name])
-    ELSE
+    else
       LogPrintLn ('!FAIL - %s', [Name])
-  END;
+  end;
 
 
 
-  VAR
+  var
     Cfg: ALLEGRO_CONFIGptr;
     Value: AL_STR;
   { Iteration deactivated.
     IteratorSection: ALLEGRO_CONFIG_SECTIONptr;
-    IteratorEntry: ALLEGRO_CONFIG_ENTRYptr;
+    IteratorEntry: ALLEGRO_CONFIG_ENtryptr;
   }
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   OpenLog;
 
   Cfg := al_load_config_file ('data/sample.cfg');
-  IF Cfg = NIL THEN
+  if Cfg = Nil then
     AbortExample ('Couldn''t load data/sample.cfg');
 
   Value := al_get_config_value (Cfg, '', 'old_var');
@@ -130,8 +130,8 @@ BEGIN
 
   al_destroy_config (Cfg);
 
-  CloseLog (TRUE);
+  CloseLog (True);
 
 { TODO: return passed ? 0 : 1; }
-END.
+end.
 

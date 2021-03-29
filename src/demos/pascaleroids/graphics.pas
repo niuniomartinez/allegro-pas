@@ -1,4 +1,4 @@
-UNIT Graphics;
+unit Graphics;
 (*< Grphics stuff. *)
 (*
   Copyright (c) 2019 Guillermo Martínez J.
@@ -27,47 +27,47 @@ UNIT Graphics;
   {$modeSwitch advancedRecords}
 {$ENDIF}
 
-INTERFACE
+interface
 
-  USES
+  uses
     Allegro5, al5primitives;
 
-  CONST
+  const
   (* Max points in polygon. *)
     MAX_POINTS = 10;
 
-  TYPE
+  type
   (* A polygon.
 
      Note that this object assumes that polygon is centered at {0, 0}, and it
      is a closed polygon. *)
-    TPolygon = RECORD
-    PRIVATE
-      fNPoints: INTEGER;
-      fPoints: ARRAY [0..MAX_POINTS + 1] OF ALLEGRO_VERTEX;
-      fFill: BOOLEAN;
+    TPolygon = record
+    private
+      fNPoints: Integer;
+      fPoints: array [0..MAX_POINTS + 1] of ALLEGRO_VERTEX;
+      fFill: Boolean;
 
-      FUNCTION GetColor: ALLEGRO_COLOR; INLINE;
-      PROCEDURE SetColor (CONST aColor: ALLEGRO_COLOR); INLINE;
-    PUBLIC
+      function GetColor: ALLEGRO_COLOR; inline;
+      procedure SetColor (const aColor: ALLEGRO_COLOR); inline;
+    public
     (* Resets the polygon (this is, zero points). *)
-      PROCEDURE Reset;
+      procedure Reset;
     (* Adds a point to the polygon. *)
-      PROCEDURE AddPoint (CONST aX, aY: SINGLE);
+      procedure AddPoint (const aX, aY: Single);
     (* Set a list of vertices. *)
-      PROCEDURE SetVertices (CONST aVx, aVy: ARRAY OF INTEGER);
+      procedure SetVertices (const aVx, aVy: array of Integer);
     (* Draw polygon. *)
-      PROCEDURE Draw;
+      procedure Draw;
 
     (* Number of points of polygon. *)
-      PROPERTY NumPoints: INTEGER READ fNPoints;
+      property NumPoints: Integer read fNPoints;
     (* Tells if polygon is filled. *)
-      PROPERTY Fill: BOOLEAN READ fFill WRITE fFill;
+      property Fill: Boolean read fFill write fFill;
     (* Polygon color. *)
-      PROPERTY Color: ALLEGRO_COLOR READ GetColor WRITE SetColor;
-    END;
+      property Color: ALLEGRO_COLOR read GetColor write SetColor;
+    end;
 
-  VAR
+  var
   (* Identity matrix. *)
     IdentityMatrix: ALLEGRO_TRANSFORM;
   (* Colors. *)
@@ -76,16 +76,16 @@ INTERFACE
     LightBlue, Cyan, Magenta: ALLEGRO_COLOR;
 
 (* Initializes graphics system.  This doesn't creates the display. *)
-  PROCEDURE Initialize;
+  procedure Initialize;
 
-IMPLEMENTATION
+implementation
 
-  USES
+  uses
     sysutils;
 
 (* Initializes graphics system.  This doesn't creates the display. *)
-  PROCEDURE Initialize;
-  BEGIN
+  procedure Initialize;
+  begin
     al_init_primitives_addon;
 
     Black := al_map_rgb (  0,   0,   0);
@@ -98,7 +98,7 @@ IMPLEMENTATION
     Magenta   := al_map_rgb (255,   0, 255);
 
     al_identity_transform (IdentityMatrix);
-  END;
+  end;
 
 
 
@@ -106,74 +106,74 @@ IMPLEMENTATION
  * TPolygon
  ***************************************************************************)
 
-   FUNCTION TPolygon.GetColor: ALLEGRO_COLOR;
-   BEGIN
-     RESULT := fPoints[0].color
-   END;
+   function TPolygon.GetColor: ALLEGRO_COLOR;
+   begin
+     Result := fPoints[0].color
+   end;
 
 
 
-   PROCEDURE TPolygon.SetColor (CONST aColor: ALLEGRO_COLOR);
-   VAR
-     Ndx: INTEGER;
-   BEGIN
-     FOR Ndx := LOW (fPoints) TO HIGH (fPoints) DO
+   procedure TPolygon.SetColor (const aColor: ALLEGRO_COLOR);
+   var
+     Ndx: Integer;
+   begin
+     for Ndx := Low (fPoints) to High (fPoints) do
        fPoints[Ndx].color := aColor
-   END;
+   end;
 
 
 
 (* Reset. *)
-  PROCEDURE TPolygon.Reset;
-  VAR
-    Ndx: INTEGER;
-  BEGIN
-    fNPoints := 0; SELF.AddPoint (0, 0);
-    FOR Ndx := LOW (fPoints) TO HIGH (fPoints) DO
-    BEGIN
+  procedure TPolygon.Reset;
+  var
+    Ndx: Integer;
+  begin
+    fNPoints := 0; Self.AddPoint (0, 0);
+    for Ndx := Low (fPoints) to High (fPoints) do
+    begin
       fPoints[Ndx].z := 0;
       fPoints[Ndx].u := 0;
       fPoints[Ndx].v := 0
-    END
-  END;
+    end
+  end;
 
 
 
 (* Adds a point to the polygon. *)
-  PROCEDURE TPolygon.AddPoint (CONST aX, aY: SINGLE);
-  BEGIN
-    IF fNPoints > MAX_POINTS THEN
+  procedure TPolygon.AddPoint (const aX, aY: Single);
+  begin
+    if fNPoints > MAX_POINTS then
       RAISE Exception.CreateFmt ('Exceeded polygon size (%d)', [MAX_POINTS]);
     fPoints[fNPoints].x := aX; fPoints[fNPoints].y := aY;
-    INC (fNPoints);
+    Inc (fNPoints);
   { Close the loop to correct triangle fan. }
-    IF fNPoints > 1 THEN fPoints[fNPoints] := fPoints[1]
-  END;
+    if fNPoints > 1 then fPoints[fNPoints] := fPoints[1]
+  end;
 
 
 
 (* Sets vertices. *)
-  PROCEDURE TPolygon.SetVertices (CONST aVx, aVy: ARRAY OF INTEGER);
-  VAR
-    Ndx: INTEGER;
-  BEGIN
-    IF HIGH (aVx) > HIGH (fPoints) THEN
+  procedure TPolygon.SetVertices (const aVx, aVy: array of Integer);
+  var
+    Ndx: Integer;
+  begin
+    if High (aVx) > High (fPoints) then
       RAISE Exception.CreateFmt
-        ('Can''t create polygon of %d points...', [HIGH (aVx)]);
-    SELF.Reset;
-    FOR Ndx := LOW(aVx) TO HIGH(aVx) DO SELF.AddPoint (aVx[Ndx], aVy[Ndx])
-  END;
+        ('Can''t create polygon of %d points...', [High (aVx)]);
+    Self.Reset;
+    for Ndx := LOW(aVx) to HIGH(aVx) do Self.AddPoint (aVx[Ndx], aVy[Ndx])
+  end;
 
 
 
 (* Draw poly. *)
-  PROCEDURE TPolygon.Draw;
-  BEGIN
-    IF SELF.fFill THEN
-      al_draw_prim (SELF.fPoints, NIL, NIL, 0, fNPoints + 1, ALLEGRO_PRIM_TRIANGLE_FAN)
-    ELSE
-      al_draw_prim (SELF.fPoints, NIL, NIL, 1, fNPoints, ALLEGRO_PRIM_LINE_LOOP)
-  END;
+  procedure TPolygon.Draw;
+  begin
+    if Self.fFill then
+      al_draw_prim (Self.fPoints, Nil, Nil, 0, fNPoints + 1, ALLEGRO_PRIM_TRIANGLE_FAN)
+    else
+      al_draw_prim (Self.fPoints, Nil, Nil, 1, fNPoints, ALLEGRO_PRIM_LINE_LOOP)
+  end;
 
-END.
+end.
 

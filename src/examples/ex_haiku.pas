@@ -44,16 +44,16 @@ PROGRAM haiku;
 {$IFDEF FPC}
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
   {$MODE DELPHI}
-  {$MODESWITCH ADVANCEDRECORDS+}
+  {$MODESWITCH ADVANCEDrecordS+}
 {$ENDIF}
 
 
-USES
+uses
    Common,
    Allegro5,
    al5base, al5audio, al5acodec, al5image, al5strings;
 
-CONST
+const
    TYPE_EARTH = 0;
    TYPE_WIND  = 1;
    TYPE_WATER = 2;
@@ -77,7 +77,7 @@ CONST
 
    MAX_ANIMS = 10;
 
-TYPE
+type
    TInterp = (
       INTERP_LINEAR,
       INTERP_FAST,
@@ -89,39 +89,39 @@ TYPE
    );
 
    PAnim = ^TAnim;
-   TAnim = RECORD
-      lVal: PSINGLE;   { NIL if unused. }
+   TAnim = record
+      lVal: PSingle;   { Nil if unused. }
       StartVal,
-      EndVal:     SINGLE;
+      EndVal:     Single;
       Func: TInterp;
-      StartTime, EndTime: SINGLE;
-   END;
+      StartTime, EndTime: Single;
+   end;
 
    PSprite = ^TSprite;
-   TSprite = RECORD
-      Image: LONGWORD; { IMG_ }
-      X, ScaleX, AlignX: SINGLE;
-      Y, ScaleY, AlignY: SINGLE;
-      Angle: SINGLE;
-      R, G, B: SINGLE;
-      Opacity: SINGLE;
-      Anims: ARRAY [0..MAX_ANIMS - 1] OF TAnim; { Keep it simple. }
-   END;
+   TSprite = record
+      Image: LongWord; { IMG_ }
+      X, ScaleX, AlignX: Single;
+      Y, ScaleY, AlignY: Single;
+      Angle: Single;
+      R, G, B: Single;
+      Opacity: Single;
+      Anims: array [0..MAX_ANIMS - 1] of TAnim; { Keep it simple. }
+   end;
 
    PToken = ^TToken;
-   TToken = RECORD
-      TheType: LONGWORD; { TYPE_ }
-      X, Y: SINGLE;
-      Pitch: LONGINT; { [0, NUM_PITCH] }
+   TToken = record
+      TheType: LongWord; { type_ }
+      X, Y: Single;
+      Pitch: LongInt; { [0, NUM_PITCH] }
       Bot, Top: TSprite;
-   END;
+   end;
 
    PFlair = ^TFlair;
-   TFlair = RECORD
+   TFlair = record
      Next: PFlair;
-     EndTime: SINGLE;
+     EndTime: Single;
      Sprite: TSprite;
-   END;
+   end;
 
 
 
@@ -129,30 +129,30 @@ TYPE
  * Globals                                                                  *
  ****************************************************************************)
 
-CONST
+const
    NUM_PITCH   = 8;
    TOKENS_X    = 16;
    TOKENS_Y    = NUM_PITCH;
    NUM_TOKENS  = TOKENS_X * TOKENS_Y;
 
-VAR
+var
    Display: ALLEGRO_DISPLAYptr;
    RefreshTimer, PlaybackTimer: ALLEGRO_TIMERptr;
 
-   Images: ARRAY [0..IMG_MAX - 1] OF ALLEGRO_BITMAPptr;
-   ElementSamples: ARRAY [0..NUM_TYPES - 1] OF ARRAY [0..NUM_PITCH - 1] OF ALLEGRO_SAMPLEptr;
+   Images: array [0..IMG_MAX - 1] of ALLEGRO_BITMAPptr;
+   ElementSamples: array [0..NUM_TYPES - 1] of array [0..NUM_PITCH - 1] of ALLEGRO_SAMPLEptr;
    SelectSample: ALLEGRO_SAMPLEptr;
 
-   Tokens: ARRAY [0..NUM_TOKENS - 1] OF TToken;
-   Buttons: ARRAY [0..NUM_TYPES - 1] OF TToken;
+   Tokens: array [0..NUM_TOKENS - 1] of TToken;
+   Buttons: array [0..NUM_TYPES - 1] of TToken;
    Glow, GlowOverlay: TSprite;
-   GlowColor: ARRAY [0..NUM_TYPES - 1] OF ALLEGRO_COLOR;
-   Flairs: PFlair = NIL;
-   HoverToken: PToken = NIL;
-   SelectedButton: PToken = NIL;
-   PlaybackColumn: LONGINT = 0;
+   GlowColor: array [0..NUM_TYPES - 1] of ALLEGRO_COLOR;
+   Flairs: PFlair = Nil;
+   HoverToken: PToken = Nil;
+   SelectedButton: PToken = Nil;
+   PlaybackColumn: LongInt = 0;
 
-CONST
+const
    ScreenW = 1024;
    ScreenH = 600;
    GameBoardX = 100.0;
@@ -174,10 +174,10 @@ CONST
  * Init                                                                     *
  ****************************************************************************)
 
-   PROCEDURE LoadImages;
-   VAR
-      Ndx: INTEGER;
-   BEGIN
+   procedure LoadImages;
+   var
+      Ndx: Integer;
+   begin
       Images[IMG_EARTH]       := al_load_bitmap (HAIKU_DATA+'earth4.png');
       Images[IMG_WIND]        := al_load_bitmap (HAIKU_DATA+'wind3.png');
       Images[IMG_WATER]       := al_load_bitmap (HAIKU_DATA+'water.png');
@@ -191,43 +191,43 @@ CONST
       Images[IMG_GLOW]        := al_load_bitmap (HAIKU_DATA+'healthy_glow.png');
       Images[IMG_GLOW_OVERLAY]:= al_load_bitmap (HAIKU_DATA+'overlay_pretty.png');
 
-      FOR Ndx := LOW (Images) TO HIGH (Images) DO
-         IF Images[Ndx] = NIL THEN
+      for Ndx := Low (Images) to High (Images) do
+         if Images[Ndx] = Nil then
             AbortExample ('Error loading image.');
-   END;
+   end;
 
 
 
-   PROCEDURE LoadSamples;
-   CONST
-      Base: ARRAY [0..NUM_TYPES - 1] OF AL_STR = (
+   procedure LoadSamples;
+   const
+      Base: array [0..NUM_TYPES - 1] of AL_STR = (
          'earth', 'air', 'water', 'fire'
       );
-   VAR
+   var
       Name: AL_STR;
-      t, p: LONGINT;
-   BEGIN
-      FOR t := 0 TO NUM_TYPES - 1 DO
-      BEGIN
-         FOR p := 0 TO NUM_PITCH - 1 DO
-         BEGIN
+      t, p: LongInt;
+   begin
+      for t := 0 to NUM_TYPES - 1 do
+      begin
+         for p := 0 to NUM_PITCH - 1 do
+         begin
             Name := HAIKU_DATA + al_str_format ('%s_%d.ogg', [Base[t], p]);
             ElementSamples[t][p] := al_load_sample (Name);
-            IF ElementSamples[t][p] = NIL THEN
+            if ElementSamples[t][p] = Nil then
                AbortExample ('Error loading "' + Name + '".');
-         END;
-      END;
+         end;
+      end;
       SelectSample := al_load_sample (HAIKU_DATA+'select.ogg');
-      IF SelectSample = NIL THEN
+      if SelectSample = Nil then
          AbortExample ('Error loading select.ogg.');
-   END;
+   end;
 
 
 
-   PROCEDURE InitSprite (VAR Spr: TSprite; Image: INTEGER; x, y, Scale, Opacity: SINGLE);
-   VAR
-      Ndx: INTEGER;
-   BEGIN
+   procedure InitSprite (var Spr: TSprite; Image: Integer; x, y, Scale, Opacity: Single);
+   var
+      Ndx: Integer;
+   begin
       Spr.Image := Image;
       Spr.X := x;
       Spr.Y := y;
@@ -240,25 +240,25 @@ CONST
       Spr.G := 1.0;
       Spr.B := 1.0;
       Spr.Opacity := Opacity;
-      FOR Ndx := LOW (Spr.Anims) TO HIGH (Spr.Anims) DO
-         Spr.Anims[Ndx].lval := NIL;
-   END;
+      for Ndx := Low (Spr.Anims) to High (Spr.Anims) do
+         Spr.Anims[Ndx].lval := Nil;
+   end;
 
 
 
-   PROCEDURE InitTokens;
-   CONST
+   procedure InitTokens;
+   const
       TokenW = TokenSize * TokenScale;
       TokenX = GameBoardX + TokenW / 2;
       TokenY = 80;
-   VAR
-      Ndx, tx, ty: INTEGER;
-      px, py: SINGLE;
-   BEGIN
-      FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
-      BEGIN
-         tx := Ndx MOD TOKENS_X;
-         ty := Ndx DIV TOKENS_X;
+   var
+      Ndx, tx, ty: Integer;
+      px, py: Single;
+   begin
+      for Ndx := Low (Tokens) to High (Tokens) do
+      begin
+         tx := Ndx mod TOKENS_X;
+         ty := Ndx div TOKENS_X;
          px := TokenX + tx * TokenW;
          py := TokenY + ty * TokenW;
 
@@ -268,36 +268,36 @@ CONST
          Tokens[Ndx].Pitch := NUM_PITCH - 1 - ty;
          InitSprite (Tokens[Ndx].Bot, IMG_BLACK, px, py, TokenScale, 0.4);
          InitSprite (Tokens[Ndx].Top, IMG_BLACK, px, py, TokenScale, 0.0);
-      END;
-   END;
+      end;
+   end;
 
 
 
-   PROCEDURE InitButtons;
-   CONST
-      Dist: ARRAY [0..NUM_TYPES - 1] OF SINGLE = (-1.5, -0.5, 0.5, 1.5);
-   VAR
-      Ndx: INTEGER;
-      X, Y: SINGLE;
-   BEGIN
+   procedure InitButtons;
+   const
+      Dist: array [0..NUM_TYPES - 1] of Single = (-1.5, -0.5, 0.5, 1.5);
+   var
+      Ndx: Integer;
+      X, Y: Single;
+   begin
       Y := ScreenH - 80;
-      FOR Ndx := LOW (Buttons) TO HIGH (Buttons) DO
-      BEGIN
-         X := ScreenW DIV 2 + 150 * Dist[Ndx];
+      for Ndx := Low (Buttons) to High (Buttons) do
+      begin
+         X := ScreenW div 2 + 150 * Dist[Ndx];
          Buttons[Ndx].TheType := Ndx;
          Buttons[Ndx].X := X;
          Buttons[Ndx].Y := Y;
          InitSprite (Buttons[Ndx].Bot, IMG_DROPSHADOW, X, Y, DropshadowUnselScale, 0.4);
          Buttons[Ndx].Bot.AlignY := 0.0;
          InitSprite (Buttons[Ndx].Top, Ndx, X, Y, ButtonUnselScale, 1.0);
-      END;
-   END;
+      end;
+   end;
 
 
 
-   PROCEDURE InitGlow;
-   BEGIN
-     InitSprite (Glow, IMG_GLOW, ScreenW DIV 2, ScreenH, 1.0, 1.0);
+   procedure InitGlow;
+   begin
+     InitSprite (Glow, IMG_GLOW, ScreenW div 2, ScreenH, 1.0, 1.0);
      Glow.AlignY := 1.0;
      Glow.R := 0.0;
      Glow.g := 0.0;
@@ -314,7 +314,7 @@ CONST
      GlowColor[TYPE_WIND]  := al_map_rgb ($AD, $D8, $E6); { lightblue }
      GlowColor[TYPE_WATER] := al_map_rgb ($41, $69, $E1); { royalblue }
      GlowColor[TYPE_FIRE]  := al_map_rgb ($FF, $00, $00); { red }
-   END;
+   end;
 
 
 
@@ -322,55 +322,55 @@ CONST
  * Flairs                                                                   *
  ****************************************************************************)
 
-   FUNCTION MakeFlair (Image: INTEGER; X, Y, EndTime: SINGLE): PSprite;
-   VAR
+   function MakeFlair (Image: Integer; X, Y, EndTime: Single): PSprite;
+   var
       FL: PFlair;
-   BEGIN
+   begin
       GetMem (FL, SizeOf (TFlair));
       InitSprite (FL^.Sprite, Image, X, Y, 1.0, 1.0);
       FL^.EndTime := EndTime;
       FL^.Next := Flairs;
       Flairs := FL;
-      EXIT (@(FL^.Sprite))
-   END;
+      Exit (@(FL^.Sprite))
+   end;
 
 
 
-   PROCEDURE FreeOldFlairs (Now: SINGLE);
-   VAR
+   procedure FreeOldFlairs (Now: Single);
+   var
       Prev, Fl, Next: PFlair;
-   BEGIN
-      Prev := NIL;
+   begin
+      Prev := Nil;
       Fl := Flairs;
-      WHILE Fl <> NIL DO
-      BEGIN
+      while Fl <> Nil do
+      begin
          Next := Fl^.Next;
-         IF Fl^.EndTime > Now THEN
+         if Fl^.EndTime > Now then
             Prev := Fl
-         ELSE BEGIN
-            IF Prev <> NIL THEN
+         else begin
+            if Prev <> Nil then
                Prev^.Next := Next
-            ELSE
+            else
                Flairs := Next;
             FreeMem (Fl, SizeOf (TFlair));
-         END;
+         end;
          Fl := Next;
-      END;
-   END;
+      end;
+   end;
 
 
 
-   PROCEDURE FreeAllFlairs;
-   VAR
+   procedure FreeAllFlairs;
+   var
       Next: PFlair;
-   BEGIN
-     WHILE Flairs <> NIL DO
-     BEGIN
+   begin
+     while Flairs <> Nil do
+     begin
         Next := Flairs^.Next;
         FreeMem (Flairs, SizeOf (TFlair));
         Flairs := Next;
-     END;
-   END;
+     end;
+   end;
 
 
 
@@ -378,54 +378,54 @@ CONST
  * Animations                                                               *
  ****************************************************************************)
 
-   VAR
+   var
      DummyAnim: TAnim;
 
-   FUNCTION GetNextAnim (CONST Spr: TSprite): PAnim;
-   VAR
-     Ndx: LONGWORD;
-   BEGIN
-     FOR Ndx := LOW (Spr.Anims) TO HIGH (Spr.Anims) DO
-       IF Spr.Anims[Ndx].lval = NIL THEN
-         EXIT (@(Spr.Anims[Ndx]));
-     EXIT (@DummyAnim)
-   END;
+   function GetNextAnim (const Spr: TSprite): PAnim;
+   var
+     Ndx: LongWord;
+   begin
+     for Ndx := Low (Spr.Anims) to High (Spr.Anims) do
+       if Spr.Anims[Ndx].lval = Nil then
+         Exit (@(Spr.Anims[Ndx]));
+     Exit (@DummyAnim)
+   end;
 
 
 
-   PROCEDURE FixConflictingAnims (VAR Grp: TSprite; lVal: PSINGLE; StartTime, StartVal: SINGLE);
-   VAR
-      Ndx: LONGWORD;
+   procedure FixConflictingAnims (var Grp: TSprite; lVal: PSingle; StartTime, StartVal: Single);
+   var
+      Ndx: LongWord;
       Anim: PAnim;
-   BEGIN
-      FOR Ndx := LOW (Grp.Anims) TO HIGH (Grp.Anims) DO
-      BEGIN
+   begin
+      for Ndx := Low (Grp.Anims) to High (Grp.Anims) do
+      begin
          Anim := @(Grp.Anims[Ndx]);
-         IF Anim^.lVal = lVal THEN
-         BEGIN
+         if Anim^.lVal = lVal then
+         begin
          { If an old animation would overlap with the new one, truncate it
            and make it converge to the new animation's starting value. }
-            IF Anim^.EndTime > StartTime THEN
-            BEGIN
+            if Anim^.EndTime > StartTime then
+            begin
                Anim^.EndTime := StartTime;
                Anim^.EndVal := StartVal;
-            END;
+            end;
          { Cancel any old animations which are scheduled to start after the
            new one, or which have been reduced to nothing. }
-            IF (Anim^.StartTime >= StartTime)
-            OR (Anim^.StartTime >= Anim^.EndTime) THEN
-               Grp.Anims[Ndx].lVal := NIL;
-         END;
-      END;
-   END;
+            if (Anim^.StartTime >= StartTime)
+            or (Anim^.StartTime >= Anim^.EndTime) then
+               Grp.Anims[Ndx].lVal := Nil;
+         end;
+      end;
+   end;
 
 
 
-   PROCEDURE AnimFull (VAR Spr: TSprite; lVal: PSINGLE; StartVal, EndVal: SINGLE; Func: TInterp; Delay, Duration: SINGLE);
-   VAR
-      StartTime: SINGLE;
+   procedure AnimFull (var Spr: TSprite; lVal: PSingle; StartVal, EndVal: Single; Func: TInterp; Delay, Duration: Single);
+   var
+      StartTime: Single;
       Anim: PAnim;
-   BEGIN
+   begin
      StartTime := al_get_time + Delay;
      FixConflictingAnims (Spr, lVal, StartTime, StartVal);
 
@@ -436,162 +436,162 @@ CONST
      Anim^.Func := Func;
      Anim^.StartTime := StartTime;
      Anim^.EndTime := StartTime + Duration;
-   END;
+   end;
 
 
 
-   PROCEDURE Anim (VAR Spr: TSprite; lVal: PSINGLE; StartVal, EndVal: SINGLE; Func: TInterp; Duration: SINGLE);
-   BEGIN
+   procedure Anim (var Spr: TSprite; lVal: PSingle; StartVal, EndVal: Single; Func: TInterp; Duration: Single);
+   begin
       AnimFull (Spr, lVal, StartVal, EndVal, Func, 0, Duration);
-   END;
+   end;
 
 
 
-   PROCEDURE AnimTo (VAR Spr: TSprite; lVal: PSINGLE; EndVal: SINGLE; Func: TInterp; Duration: SINGLE);
-   BEGIN
+   procedure AnimTo (var Spr: TSprite; lVal: PSingle; EndVal: Single; Func: TInterp; Duration: Single);
+   begin
      AnimFull (Spr, lVal, lVal^, EndVal, Func, 0, Duration);
-   END;
+   end;
 
 
 
-   PROCEDURE AnimDelta (VAR Spr: TSprite; lVal: PSINGLE; Delta: SINGLE; Func: TInterp; Duration: SINGLE);
-   BEGIN
+   procedure AnimDelta (var Spr: TSprite; lVal: PSingle; Delta: Single; Func: TInterp; Duration: Single);
+   begin
      AnimFull (Spr, lVal, lVal^, lVal^ + Delta, Func, 0, Duration);
-   END;
+   end;
 
 
 
-   PROCEDURE AnimTint (VAR Spr: TSprite; CONST Color: ALLEGRO_COLOR; Func: TInterp; Duration: SINGLE);
-   VAR
-      R, G, B: SINGLE;
-   BEGIN
+   procedure AnimTint (var Spr: TSprite; const Color: ALLEGRO_COLOR; Func: TInterp; Duration: Single);
+   var
+      R, G, B: Single;
+   begin
      al_unmap_rgb_f (Color, R, G, B);
      AnimTo (Spr, @(Spr.r), R, Func, Duration);
      AnimTo (Spr, @(Spr.g), G, Func, Duration);
      AnimTo (Spr, @(Spr.b), B, Func, Duration);
-   END;
+   end;
 
 
 
-   FUNCTION Interpolate (Func: TInterp; t: SINGLE): SINGLE;
-   VAR
-      b, c, d: SINGLE;
-   BEGIN
-      CASE Func OF
+   function Interpolate (Func: TInterp; t: Single): Single;
+   var
+      b, c, d: Single;
+   begin
+      case Func of
          INTERP_LINEAR:
-            EXIT (t);
+            Exit (t);
          INTERP_FAST:
-            EXIT (-t * (t - 2));
+            Exit (-t * (t - 2));
          INTERP_DOUBLE_FAST:
-         BEGIN
+         begin
             t := t - 1;
-            EXIT (t * t * t + 1);
-         END;
+            Exit (t * t * t + 1);
+         end;
          INTERP_SLOW:
-            EXIT (t * t);
+            Exit (t * t);
          INTERP_DOUBLE_SLOW:
-            EXIT (t * t * t);
+            Exit (t * t * t);
          INTERP_SLOW_IN_OUT:
-         BEGIN
+         begin
          { Quadratic easing in/out - acceleration until halfway, then deceleration. }
             b := 0; { TODO: Why are these values in variables? }
             c := 1;
             d := 1;
             t := t / (d / 2);
-            IF t < 1 THEN
-               EXIT (c / 2 * t * t + b)
-            ELSE BEGIN
+            if t < 1 then
+               Exit (c / 2 * t * t + b)
+            else begin
                t := t - 1;
-               EXIT ((-c) / 2 * (t * (t - 2) - 1) + b)
-            END
-         END;
+               Exit ((-c) / 2 * (t * (t - 2) - 1) + b)
+            end
+         end;
          INTERP_BOUNCE:
-         BEGIN { TODO: Next comment may explay the previous TODO (WTF?) }
+         begin { TODO: Next comment may explay the previous TODO (WTF?) }
          { BOUNCE EASING: exponentially decaying parabolic bounce
            t: current time, b: beginning value, c: change in position, d: duration
            bounce easing out }
-            IF t < (1 / 2.75) THEN
-               EXIT (7.5625 * t * t)
-            ELSE IF t < (2 / 2.75) THEN
-            BEGIN
+            if t < (1 / 2.75) then
+               Exit (7.5625 * t * t)
+            else if t < (2 / 2.75) then
+            begin
                t := t - (1.5 / 2.75);
-               EXIT (7.5625 * t * t + 0.75)
-            END
-            ELSE IF t < (2.5 / 2.75) THEN
-            BEGIN
+               Exit (7.5625 * t * t + 0.75)
+            end
+            else if t < (2.5 / 2.75) then
+            begin
                t := t - (2.5 / 2.75);
-               EXIT (7.5625 * t * t + 0.9375)
-            END
-            ELSE BEGIN
+               Exit (7.5625 * t * t + 0.9375)
+            end
+            else begin
                t := t - (2.625 / 2.75);
-               EXIT (7.5625 * t * t + 0.984375)
-            END;
-         END;
-         ELSE
-            EXIT (0.0)
-      END
-   END;
+               Exit (7.5625 * t * t + 0.984375)
+            end;
+         end;
+         else
+            Exit (0.0)
+      end
+   end;
 
 
 
-   PROCEDURE UpdateAnim (VAR Anim: TAnim; Now: SINGLE);
-   VAR
-      dt, t, Range: SINGLE;
-   BEGIN
-      IF Anim.lVal = NIL THEN
-         EXIT;
-      IF Now < Anim.StartTime THEN
-         EXIT;
+   procedure UpdateAnim (var Anim: TAnim; Now: Single);
+   var
+      dt, t, Range: Single;
+   begin
+      if Anim.lVal = Nil then
+         Exit;
+      if Now < Anim.StartTime then
+         Exit;
       dt := Now - Anim.StartTime;
       t := dt / (Anim. EndTime - Anim.StartTime);
-      IF t >= 1.0 THEN
-      BEGIN
+      if t >= 1.0 then
+      begin
       { Animation has run to completion }
          Anim.lVal^ := Anim.EndVal;
-         Anim.lVal := NIL;
-         EXIT;
-      END;
+         Anim.lVal := Nil;
+         Exit;
+      end;
       Range := Anim.EndVal - Anim.StartVal;
       Anim.lVal^ := Anim.StartVal + Interpolate (Anim.Func, t) * Range;
-   END;
+   end;
 
 
 
-   PROCEDURE UpdateSpriteAnims (VAR Spr: TSprite; Now: SINGLE);
-   VAR
-      Ndx: INTEGER;
-   BEGIN
-      FOR Ndx := LOW (Spr.Anims) TO HIGH (Spr.Anims) DO
+   procedure UpdateSpriteAnims (var Spr: TSprite; Now: Single);
+   var
+      Ndx: Integer;
+   begin
+      for Ndx := Low (Spr.Anims) to High (Spr.Anims) do
          UpdateAnim (Spr.Anims[Ndx], Now);
-   END;
+   end;
 
 
-   PROCEDURE UpdateTokenAnims (VAR Token: TToken; Now: SINGLE);
-   BEGIN
+   procedure UpdateTokenAnims (var Token: TToken; Now: Single);
+   begin
       UpdateSpriteAnims (Token.Bot, Now);
       UpdateSpriteAnims (Token.Top, Now);
-   END;
+   end;
 
 
 
-   PROCEDURE UpdateAnims (Now: SINGLE);
-   VAR
+   procedure UpdateAnims (Now: Single);
+   var
       fl: PFlair;
-      Ndx: INTEGER;
-   BEGIN
-      FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
+      Ndx: Integer;
+   begin
+      for Ndx := Low (Tokens) to High (Tokens) do
          UpdateTokenAnims (Tokens[Ndx], Now);
-      FOR Ndx := LOW (Buttons) TO HIGH (Buttons) DO
+      for Ndx := Low (Buttons) to High (Buttons) do
          UpdateTokenAnims (Buttons[Ndx], Now);
       UpdateSpriteAnims (Glow, Now);
       UpdateSpriteAnims (GlowOverlay, Now);
       fl := Flairs;
-      WHILE fl <> NIL DO
-      BEGIN
+      while fl <> Nil do
+      begin
          UpdateSpriteAnims (fl^.Sprite, Now);
          fl := fl^.Next;
-      END;
-   END;
+      end;
+   end;
 
 
 
@@ -599,12 +599,12 @@ CONST
  * Drawing                                                                  *
  ****************************************************************************)
 
-   PROCEDURE DrawSprite (CONST Spr: TSprite);
-   VAR
+   procedure DrawSprite (const Spr: TSprite);
+   var
       Bmp: ALLEGRO_BITMAPptr;
       Tint: ALLEGRO_COLOR;
-      cx, cy: SINGLE;
-   BEGIN
+      cx, cy: Single;
+   begin
       Bmp := Images[Spr.Image];
       cx := Spr.AlignX * al_get_bitmap_width (Bmp);
       cy := Spr.AlignY * al_get_bitmap_height (Bmp);
@@ -613,41 +613,41 @@ CONST
          Bmp, Tint, cx, cy,
          Spr.x, Spr.y, Spr.ScaleX, Spr.ScaleY, Spr.Angle, 0
       );
-   END;
+   end;
 
 
 
-   PROCEDURE DrawToken (CONST Token: TToken);
-   BEGIN
+   procedure DrawToken (const Token: TToken);
+   begin
       DrawSprite (Token.Bot);
       DrawSprite (Token.Top);
-   END;
+   end;
 
 
 
-   PROCEDURE DrawScreen;
-   VAR
+   procedure DrawScreen;
+   var
       fl: PFlair;
-      Ndx: INTEGER;
-   BEGIN
+      Ndx: Integer;
+   begin
       al_clear_to_color (al_map_rgb (0, 0, 0));
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_ONE);
       DrawSprite (Glow);
       DrawSprite (GlowOverlay);
-      FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
+      for Ndx := Low (Tokens) to High (Tokens) do
          DrawToken (Tokens[Ndx]);
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-      FOR Ndx := LOW (Buttons) TO HIGH (Buttons) DO
+      for Ndx := Low (Buttons) to High (Buttons) do
          DrawToken (Buttons[Ndx]);
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_ONE);
       fl := Flairs;
-      WHILE fl <> NIL DO
-      BEGIN
+      while fl <> Nil do
+      begin
          DrawSprite (fl^.Sprite);
          fl := fl^.Next;
-      END;
+      end;
       al_flip_display;
-   END;
+   end;
 
 
 
@@ -655,11 +655,11 @@ CONST
  * Playback                                                                 *
  ****************************************************************************)
 
-   PROCEDURE SpawnWindEffects (x, y: SINGLE);
-   VAR
-      Now: SINGLE;
+   procedure SpawnWindEffects (x, y: Single);
+   var
+      Now: Single;
       Spr: PSprite;
-   BEGIN
+   begin
       Now := al_get_time;
       Spr := MakeFlair (IMG_AIR_EFFECT, x, y, Now + 1);
       Anim (Spr^, @(Spr^.ScaleX), 0.9, 1.3, INTERP_FAST, 1);
@@ -671,16 +671,16 @@ CONST
       Anim (Spr^, @(Spr^.ScaleX), 1.1, 1.5, INTERP_FAST, 1.2);
       Anim (Spr^, @(Spr^.ScaleY), 1.1, 0.5, INTERP_FAST, 1.2);
       AnimDelta (Spr^, @(spr^.x), 10, INTERP_FAST, 1.2);
-   END;
+   end;
 
 
 
-   PROCEDURE SpawnFireEffects (x, y: SINGLE);
-   VAR
-      Now: SINGLE;
+   procedure SpawnFireEffects (x, y: Single);
+   var
+      Now: Single;
       Spr: PSprite;
-      i: INTEGER;
-   BEGIN
+      i: Integer;
+   begin
       Now := al_get_time;
       Spr := MakeFlair (IMG_MAIN_FLAME, x, y, Now + 0.8);
       Spr^.AlignY := 0.75;
@@ -689,8 +689,8 @@ CONST
       AnimFull (Spr^, @(Spr^.ScaleX),  1.3, 1.4, INTERP_BOUNCE, 0.4, 0.5);
       AnimFull (Spr^, @(Spr^.ScaleY),  1.3, 1.4, INTERP_BOUNCE, 0.4, 0.5);
       AnimFull (Spr^, @(Spr^.Opacity), 1.0, 0.0, INTERP_FAST, 0.3, 0.5);
-      FOR i := 0 TO 2 DO
-      BEGIN
+      for i := 0 to 2 do
+      begin
          Spr := MakeFlair (IMG_FLAME, x, y, Now + 0.7);
          Spr^.AlignX := 1.3;
          Spr^.Angle := ALLEGRO_TAU / 3 * i;
@@ -698,46 +698,46 @@ CONST
          Anim (Spr^, @(Spr^.Opacity), 1.0, 0.0, INTERP_SLOW, 0.7);
          Anim (Spr^, @(Spr^.ScaleX),  0.2, 1.0, INTERP_FAST, 0.7);
          Anim (Spr^, @(Spr^.ScaleY),  0.2, 1.0, INTERP_FAST, 0.7);
-      END;
-   END;
+      end;
+   end;
 
 
 
-   PROCEDURE SpawnWaterEffects (x, y: SINGLE);
+   procedure SpawnWaterEffects (x, y: Single);
 
-      FUNCTION RandomSign: SINGLE;
-      BEGIN
-         IF Random (2) > 0 THEN
-            EXIT (-1)
-         ELSE
-            EXIT (1)
-      END;
+      function RandomSign: Single;
+      begin
+         if Random (2) > 0 then
+            Exit (-1)
+         else
+            Exit (1)
+      end;
 
-      FUNCTION RandomFloat (Min, Max: SINGLE): SINGLE;
-      BEGIN
-         EXIT (Random * (Max - Min) + Min)
-      END;
+      function RandomFloat (Min, Max: Single): Single;
+      begin
+         Exit (Random * (Max - Min) + Min)
+      end;
 
-   CONST
+   const
       MaxDuration = 1;
 
-      FUNCTION MRand (Min, Max: SINGLE): SINGLE;
-      BEGIN
-         EXIT (RandomFloat (Min, Max) * MaxDuration)
-      END;
+      function MRand (Min, Max: Single): Single;
+      begin
+         Exit (RandomFloat (Min, Max) * MaxDuration)
+      end;
 
-   VAR
-      Now: SINGLE;
+   var
+      Now: Single;
       Spr: PSprite;
-      i: INTEGER;
-   BEGIN
+      i: Integer;
+   begin
       Now := al_get_time;
       Spr := MakeFlair (IMG_WATER, x, y, Now + MaxDuration);
       Anim (Spr^, @(Spr^.ScaleX), 1.0, 2.0, INTERP_FAST, 0.5);
       Anim (Spr^, @(Spr^.ScaleY), 1.0, 2.0, INTERP_FAST, 0.5);
       Anim (Spr^, @(Spr^.Opacity), 0.5, 0.0, INTERP_FAST, 0.5);
-      FOR i := 0 TO 8 DO
-      BEGIN
+      for i := 0 to 8 do
+      begin
          Spr := MakeFlair (IMG_WATER_DROPS, x, y, Now + MaxDuration);
          Spr^.ScaleX := RandomFloat (0.3, 1.2) * RandomSign;
          Spr^.ScaleY := RandomFloat (0.3, 1.2) * RandomSign;
@@ -745,186 +745,186 @@ CONST
          Spr^.r := RandomFloat (0, 0.6);
          Spr^.g := RandomFloat (0.4, 0.6);
          Spr^.b := 1;
-         IF i = 0 THEN
+         if i = 0 then
             AnimTo (Spr^, @(Spr^.Opacity), 0, INTERP_LINEAR, MaxDuration)
-         ELSE
+         else
             AnimTo (Spr^, @(Spr^.Opacity), 0, INTERP_DOUBLE_SLOW, MRand (0.7, 1));
          AnimTo (Spr^, @(Spr^.ScaleX), RandomFloat (0.8, 3), INTERP_FAST, MRand (0.7, 1));
          AnimTo (Spr^, @(Spr^.ScaleY), RandomFloat (0.8, 3), INTERP_FAST, MRand (0.7, 1));
          AnimDelta (Spr^, @(Spr^.X), MRand (0, 20) * RandomSign, INTERP_FAST, MRand (0.7, 1));
          AnimDelta (Spr^, @(Spr^.Y), MRand (0, 20) * RandomSign, INTERP_FAST, MRand (0.7, 1))
-      END
-   END;
+      end
+   end;
 
 
 
-   PROCEDURE PlayElement (TheType, Pitch: INTEGER; Volume, Pan: SINGLE);
-   BEGIN
-      al_play_sample (ElementSamples[TheType][Pitch], Volume, Pan, 1.0, ALLEGRO_PLAYMODE_ONCE, NIL);
-   END;
+   procedure PlayElement (TheType, Pitch: Integer; Volume, Pan: Single);
+   begin
+      al_play_sample (ElementSamples[TheType][Pitch], Volume, Pan, 1.0, ALLEGRO_PLAYMODE_ONCE, Nil);
+   end;
 
 
 
-   PROCEDURE ActivateToken (Token: TToken);
-   CONST
+   procedure ActivateToken (Token: TToken);
+   const
       sc = TokenScale;
-   VAR
+   var
       Spr: PSprite;
-   BEGIN
+   begin
       Spr := @(Token.Top);
-      CASE Token.TheType OF
+      case Token.TheType of
       TYPE_EARTH:
-         BEGIN
+         begin
             PlayElement (TYPE_EARTH, Token.Pitch, 0.8, 0.0);
             Anim (Spr^, @(Spr^.ScaleX), Spr^.ScaleX + 0.4, Spr^.ScaleX, INTERP_FAST, 0.3);
             Anim (Spr^, @(Spr^.ScaleY), Spr^.ScaleY + 0.4, Spr^.ScaleY, INTERP_FAST, 0.3);
-         END;
+         end;
       TYPE_WIND:
-         BEGIN
+         begin
             PlayElement (TYPE_WIND, Token.Pitch, 0.8, 0.0);
             AnimFull (Spr^, @(Spr^.ScaleX), sc * 1.0, sc * 0.8, INTERP_SLOW_IN_OUT, 0.0, 0.5);
             AnimFull (Spr^, @(Spr^.ScaleX), sc * 0.8, sc * 1.0, INTERP_SLOW_IN_OUT, 0.5, 0.8);
             AnimFull (Spr^, @(Spr^.ScaleY), sc * 1.0, sc * 0.8, INTERP_SLOW_IN_OUT, 0.0, 0.5);
             AnimFull (Spr^, @(Spr^.ScaleY), sc * 0.8, sc * 1.0, INTERP_SLOW_IN_OUT, 0.5, 0.8);
             SpawnWindEffects (Spr^.x, Spr^.y);
-         END;
+         end;
       TYPE_WATER:
-         BEGIN
+         begin
             PlayElement (TYPE_WATER, Token.Pitch, 0.7, 0.5);
             AnimFull (Spr^, @(Spr^.ScaleX), sc * 1.3, sc * 0.8, INTERP_BOUNCE, 0.0, 0.5);
             AnimFull (Spr^, @(Spr^.ScaleX), sc * 0.8, sc * 1.0, INTERP_BOUNCE, 0.5, 0.5);
             AnimFull (Spr^, @(Spr^.ScaleY), sc * 0.8, sc * 1.3, INTERP_BOUNCE, 0.0, 0.5);
             AnimFull (Spr^, @(Spr^.ScaleY), sc * 1.3, sc * 1.0, INTERP_BOUNCE, 0.5, 0.5);
             SpawnWaterEffects (Spr^.x, Spr^.y);
-         END;
+         end;
       TYPE_FIRE:
-         BEGIN
+         begin
             PlayElement (TYPE_FIRE, Token.Pitch, 0.8, 0.0);
             Anim (Spr^, @(Spr^.ScaleX), sc * 1.3, sc, INTERP_SLOW_IN_OUT, 1.0);
             Anim (Spr^, @(Spr^.ScaleY), sc * 1.3, sc, INTERP_SLOW_IN_OUT, 1.0);
             SpawnFireEffects (Spr^.x, Spr^.y);
-         END;
-      END;
-   END;
+         end;
+      end;
+   end;
 
 
 
-   PROCEDURE UpdatePlayback;
-   VAR
-      y: INTEGER;
-   BEGIN
-      FOR Y := 0 TO (TOKENS_Y - 1) DO
+   procedure UpdatePlayback;
+   var
+      y: Integer;
+   begin
+      for Y := 0 to (TOKENS_Y - 1) do
          ActivateToken (Tokens[Y * TOKENS_X + PlaybackColumn]);
-      INC (PlaybackColumn);
-      IF PlaybackColumn >= TOKENS_X THEN
+      Inc (PlaybackColumn);
+      if PlaybackColumn >= TOKENS_X then
          PlaybackColumn := 0;
-   END;
+   end;
 
 (****************************************************************************
  * Control                                                                  *
  ****************************************************************************)
 
-   FUNCTION IsTouched (Token: TToken; Size, x, y: SINGLE): BOOLEAN;
-   VAR
-      Half: SINGLE;
-   BEGIN
+   function IsTouched (Token: TToken; Size, x, y: Single): Boolean;
+   var
+      Half: Single;
+   begin
      Half := Size / 2;
-     EXIT ((Token.x - Half <= x) AND (x < Token.x + Half)
-           AND (Token.y - Half <= y) AND (y < Token.y + Half))
-   END;
+     Exit ((Token.x - Half <= x) and (x < Token.x + Half)
+           and (Token.y - Half <= y) and (y < Token.y + Half))
+   end;
 
 
 
-   FUNCTION GetTouchedToken (x, y: SINGLE): PToken;
-   VAR
-     Ndx: INTEGER;
-   BEGIN
-     FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
-       IF IsTouched (Tokens[Ndx], TokenSize, x, y) THEN
-         EXIT (@Tokens[Ndx]);
-     EXIT (NIL)
-   END;
+   function GetTouchedToken (x, y: Single): PToken;
+   var
+     Ndx: Integer;
+   begin
+     for Ndx := Low (Tokens) to High (Tokens) do
+       if IsTouched (Tokens[Ndx], TokenSize, x, y) then
+         Exit (@Tokens[Ndx]);
+     Exit (Nil)
+   end;
 
 
 
-   FUNCTION GetTouchedButton (x, y: SINGLE): PToken;
-   VAR
-      Ndx: INTEGER;
-   BEGIN
-     FOR Ndx := LOW (Buttons) TO HIGH (Buttons) DO
-       IF IsTouched (Buttons[Ndx], ButtonSize, x, y) THEN
-         EXIT (@Buttons[Ndx]);
-     EXIT (NIL)
-   END;
+   function GetTouchedButton (x, y: Single): PToken;
+   var
+      Ndx: Integer;
+   begin
+     for Ndx := Low (Buttons) to High (Buttons) do
+       if IsTouched (Buttons[Ndx], ButtonSize, x, y) then
+         Exit (@Buttons[Ndx]);
+     Exit (Nil)
+   end;
 
 
 
-  PROCEDURE UnselectToken (VAR token: TToken);
-  VAR
+  procedure UnselectToken (var token: TToken);
+  var
     Spr: PSprite;
-  BEGIN
-    IF token.TheType <> TYPE_NONE THEN
-    BEGIN
+  begin
+    if token.TheType <> TYPE_NONE then
+    begin
       spr := @(token.top);
       AnimFull (Spr^, @(Spr^.Opacity), Spr^.Opacity, 0, INTERP_SLOW, 0.15, 0.15);
       token.TheType := TYPE_NONE
-    END
-  END;
+    end
+  end;
 
 
 
-  PROCEDURE UnselectAllTokens;
-  VAR
-    Ndx: INTEGER;
-  BEGIN
-    FOR Ndx := LOW (Tokens) TO HIGH (Tokens) DO
+  procedure UnselectAllTokens;
+  var
+    Ndx: Integer;
+  begin
+    for Ndx := Low (Tokens) to High (Tokens) do
       UnselectToken (Tokens[Ndx])
-  END;
+  end;
 
 
 
-   PROCEDURE SelectToken (VAR Token: TToken);
-   VAR
-     PrevType: LONGWORD;
+   procedure SelectToken (var Token: TToken);
+   var
+     PrevType: LongWord;
      Spr: PSprite;
-   BEGIN
-     IF SelectedButton <> NIL THEN
-     BEGIN
+   begin
+     if SelectedButton <> Nil then
+     begin
        PrevType := Token.TheType;
        UnselectToken (Token);
 
      { Unselect only if same type, for touch input. }
-       IF PrevType <> SelectedButton^.TheType THEN
-       BEGIN
+       if PrevType <> SelectedButton^.TheType then
+       begin
          Spr := @(Token.Top);
          Spr^.Image := SelectedButton^.TheType;
          AnimTo (Spr^, @(Spr^.Opacity), 1, INTERP_FAST, 0.15);
          Token.TheType := SelectedButton^.TheType
-       END
-     END
-   END;
+       end
+     end
+   end;
 
 
 
-   PROCEDURE ChangeHealthyGlow (TheType: INTEGER; x: SINGLE);
-   BEGIN
+   procedure ChangeHealthyGlow (TheType: Integer; x: Single);
+   begin
       AnimTint (Glow, GlowColor[TheType], INTERP_SLOW_IN_OUT, 3.0);
       AnimTo (Glow, @Glow.x, x, INTERP_SLOW_IN_OUT, 3.0);
 
       AnimTint (GlowOverlay, GlowColor[TheType], INTERP_SLOW_IN_OUT, 4.0);
       AnimTo (GlowOverlay, @GlowOverlay.Opacity, 1.0, INTERP_SLOW_IN_OUT, 4.0);
-   END;
+   end;
 
 
 
-   PROCEDURE SelectButton (Button: PToken);
-   VAR
+   procedure SelectButton (Button: PToken);
+   var
       Spr: PSprite;
-   BEGIN
-      IF Button <> SelectedButton THEN
-      BEGIN
-        IF SelectedButton <> NIL THEN
-        BEGIN
+   begin
+      if Button <> SelectedButton then
+      begin
+        if SelectedButton <> Nil then
+        begin
            Spr := @(SelectedButton^.Top);
            AnimTo (Spr^, @(Spr^.ScaleX), ButtonUnselScale, INTERP_SLOW, 0.3);
            AnimTo (Spr^, @(Spr^.ScaleY), ButtonUnselScale, INTERP_SLOW, 0.3);
@@ -933,7 +933,7 @@ CONST
            Spr := @(SelectedButton^.Bot);
            AnimTo (Spr^, @(Spr^.ScaleX), DropshadowUnselScale, INTERP_SLOW, 0.3);
            AnimTo (Spr^, @(Spr^.ScaleY), DropshadowUnselScale, INTERP_SLOW, 0.3);
-        END;
+        end;
         SelectedButton := Button;
 
         Spr := @(Button^.Top);
@@ -947,114 +947,114 @@ CONST
 
         ChangeHealthyGlow (Button^.TheType, Button^.x);
 
-        al_play_sample (SelectSample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NIL);
-      END
-   END;
+        al_play_sample (SelectSample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, Nil);
+      end
+   end;
 
 
 
-   PROCEDURE onMouseDown (x, y: SINGLE; mButton: INTEGER);
-   VAR
+   procedure onMouseDown (x, y: Single; mButton: Integer);
+   var
       Token, Button: PToken;
-   BEGIN
-      IF mButton = 1 THEN
-      BEGIN
+   begin
+      if mButton = 1 then
+      begin
          Token := GetTouchedToken (x, y);
-         IF Token <> NIL THEN
+         if Token <> Nil then
             SelectToken (Token^)
-         ELSE BEGIN
+         else begin
             Button := GetTouchedButton (x, y);
-            IF Button <> NIL THEN
+            if Button <> Nil then
                SelectButton (Button);
-         END;
-      END
-      ELSE IF mButton = 2 THEN
-      BEGIN
+         end;
+      end
+      else if mButton = 2 then
+      begin
          Token := GetTouchedToken (x, y);
-         IF Token <> NIL THEN
+         if Token <> Nil then
             UnselectToken (Token^);
-      END;
-   END;
+      end;
+   end;
 
 
 
-   PROCEDURE onMouseAxes (x, y: SINGLE);
-   VAR
+   procedure onMouseAxes (x, y: Single);
+   var
       Token: PToken;
       Spr: PSprite;
-   BEGIN
+   begin
       Token := GetTouchedToken (x, y);
-      IF Token = HoverToken THEN
-         EXIT;
-      IF HoverToken <> NIL THEN
-      BEGIN
+      if Token = HoverToken then
+         Exit;
+      if HoverToken <> Nil then
+      begin
          Spr := @(HoverToken^.Bot);
          AnimTo (Spr^, @(Spr^.Opacity), 0.4, INTERP_DOUBLE_SLOW, 0.2);
-      END;
+      end;
       HoverToken := Token;
-      IF HoverToken <> NIL THEN
-      BEGIN
+      if HoverToken <> Nil then
+      begin
          Spr := @(HoverToken^.Bot);
          AnimTo (Spr^, @(Spr^.Opacity), 0.7, INTERP_FAST, 0.2);
-      END;
-   END;
+      end;
+   end;
 
 
 
-   PROCEDURE MainLoop (Queue: ALLEGRO_EVENT_QUEUEptr);
-   VAR
+   procedure MainLoop (Queue: ALLEGRO_EVENT_QUEUEptr);
+   var
       Event: ALLEGRO_EVENT;
-      EndLoop, Redraw: BOOLEAN;
-      Now: SINGLE;
-   BEGIN
-      EndLoop := FALSE;
-      Redraw := TRUE;
-      REPEAT
-         IF Redraw AND al_is_event_queue_empty (Queue) THEN
-         BEGIN
+      EndLoop, Redraw: Boolean;
+      Now: Single;
+   begin
+      EndLoop := False;
+      Redraw := True;
+      repeat
+         if Redraw and al_is_event_queue_empty (Queue) then
+         begin
             Now := al_get_time;
             FreeOldFlairs (Now);
             UpdateAnims (Now);
             DrawScreen;
-            Redraw := FALSE;
-         END;
+            Redraw := False;
+         end;
 
          al_wait_for_event (Queue, @Event);
 
-         IF Event.timer.source = RefreshTimer THEN
+         if Event.timer.source = RefreshTimer then
             Redraw := true
-         ELSE IF Event.timer.source = PlaybackTimer THEN
+         else if Event.timer.source = PlaybackTimer then
             UpdatePlayback
-         ELSE IF Event.ftype = ALLEGRO_EVENT_MOUSE_AXES THEN
+         else if Event.ftype = ALLEGRO_EVENT_MOUSE_AXES then
             onMouseAxes (Event.mouse.x, Event.mouse.y)
-         ELSE IF Event.ftype = ALLEGRO_EVENT_MOUSE_BUTTON_DOWN THEN
+         else if Event.ftype = ALLEGRO_EVENT_MOUSE_BUTTON_DOWN then
             onMouseDown (event.mouse.x, event.mouse.y, event.mouse.button)
-         ELSE IF Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE THEN
-            EndLoop := TRUE
-         ELSE IF Event.ftype = ALLEGRO_EVENT_KEY_DOWN THEN
-         BEGIN
-            IF Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE THEN
-               EndLoop := TRUE;
-            IF Event.keyboard.keycode = ALLEGRO_KEY_C THEN
+         else if Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE then
+            EndLoop := True
+         else if Event.ftype = ALLEGRO_EVENT_KEY_DOWN then
+         begin
+            if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+               EndLoop := True;
+            if Event.keyboard.keycode = ALLEGRO_KEY_C then
                UnselectAllTokens;
-         END;
-      UNTIL EndLoop;
-   END;
+         end;
+      until EndLoop;
+   end;
 
-VAR
+var
    Queue: ALLEGRO_EVENT_QUEUEptr;
-BEGIN
-   IF NOT al_init THEN
+begin
+   if not al_init then
       AbortExample ('Error initialising Allegro.');
-   IF NOT al_install_audio OR NOT al_reserve_samples (128) THEN
+   if not al_install_audio or not al_reserve_samples (128) then
       AbortExample ('Error initialising audio.');
    al_init_acodec_addon;
    al_init_image_addon;
 
-   al_set_new_bitmap_flags (ALLEGRO_MIN_LINEAR OR ALLEGRO_MAG_LINEAR);
+   al_set_new_bitmap_flags (ALLEGRO_MIN_LINEAR or ALLEGRO_MAG_LINEAR);
 
    Display := al_create_display (ScreenW, ScreenH);
-   IF Display = NIL THEN
+   if Display = Nil then
       AbortExample ('Error creating display.');
    al_set_window_title (Display, 'Haiku - A Musical Instrument');
 
@@ -1085,4 +1085,4 @@ BEGIN
    MainLoop (Queue);
 
    FreeAllFlairs;
-END.
+end.

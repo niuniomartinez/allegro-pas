@@ -35,7 +35,7 @@ PROGRAM ex_stream_file;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-  USES
+  uses
     Common,
     allegro5, al5base, al5audio, al5acodec, al5strings;
 
@@ -44,94 +44,94 @@ PROGRAM ex_stream_file;
  *)
 { -- $define BYPASS_MIXER }
 
-VAR
-  i, ArgStart: INTEGER;
+var
+  i, ArgStart: Integer;
   Voice: ALLEGRO_VOICEptr;
   Mixer: ALLEGRO_MIXERptr;
-  Loop, Playing: BOOLEAN;
+  Loop, Playing: Boolean;
   Stream: ALLEGRO_AUDIO_STREAMptr;
   FileName: AL_STR;
   Event: ALLEGRO_EVENT;
   Queue: ALLEGRO_EVENT_QUEUEptr;
 
-BEGIN
-  Loop := FALSE;
+begin
+  Loop := False;
   ArgStart := 1;
 
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   OpenLog;
 
-  IF ParamCount < 1 THEN
-  BEGIN
+  if ParamCount < 1 then
+  begin
     LogWriteLn ('This example needs to be run from the command line.');
     LogWriteLn ('Usage: ex_stream_file [--loop] {audio_files}');
-    CloseLog (TRUE)
-  END;
+    CloseLog (True)
+  end;
 
-  IF ParamStr (1) = '--loop' THEN
-  BEGIN
-    Loop := TRUE;
+  if ParamStr (1) = '--loop' then
+  begin
+    Loop := True;
     ArgStart := 2
-  END;
+  end;
 
   al_init_acodec_addon;
 
-  IF NOT al_install_audio THEN AbortExample ('Could not init sound!');
+  if not al_install_audio then AbortExample ('Could not init sound!');
 
   Voice := al_create_voice
     (44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
-  IF Voice = NIL THEN AbortExample ('Could not create ALLEGRO_VOICE.');
+  if Voice = Nil then AbortExample ('Could not create ALLEGRO_VOICE.');
   LogWriteLn ('Voice created.');
 
 {$IF NOT DEFINED(BYPASS_MIXER) }
   Mixer := al_create_mixer
     (44100, ALLEGRO_AUDIO_DEPTH_FLOAT32, ALLEGRO_CHANNEL_CONF_2);
-  IF Mixer = NIL THEN AbortExample ('Could not create ALLEGRO_MIXER.');
+  if Mixer = Nil then AbortExample ('Could not create ALLEGRO_MIXER.');
   LogWriteLn ('Mixer created.');
 
-  IF NOT al_attach_mixer_to_voice (Mixer, Voice) THEN
+  if not al_attach_mixer_to_voice (Mixer, Voice) then
     AbortExample ('al_attach_mixer_to_voice failed.');
 {$ENDIF }
 
-  FOR i := ArgStart TO ParamCount DO
-  BEGIN
+  for i := ArgStart to ParamCount do
+  begin
     FileName := al_string_to_str (ParamStr (i));
-    Playing := TRUE;
+    Playing := True;
     Queue := al_create_event_queue;
 
     Stream := al_load_audio_stream (FileName, 4, 2048);
-    IF Stream = NIL THEN
+    if Stream = Nil then
       AbortExample (al_str_format (
         'Could not create an ALLEGRO_AUDIO_STREAM from "%s"!', [FileName]
       ));
     LogPrintLn ('Stream created from "%s".', [FileName]);
-    if Loop THEN
+    if Loop then
       al_set_audio_stream_playmode (Stream, ALLEGRO_PLAYMODE_LOOP)
-    ELSE
+    else
       al_set_audio_stream_playmode (Stream, ALLEGRO_PLAYMODE_ONCE);
 
     al_register_event_source (Queue, al_get_audio_stream_event_source (Stream));
 
 {$IF NOT DEFINED(BYPASS_MIXER) }
-    IF NOT al_attach_audio_stream_to_mixer (Stream, Mixer) THEN
+    if not al_attach_audio_stream_to_mixer (Stream, Mixer) then
       LogWriteLn ('al_attach_audio_stream_to_mixer failed')
 {$ELSE }
-    IF NOT al_attach_audio_stream_to_voice (Stream, Voice) THEN
+    if not al_attach_audio_stream_to_voice (Stream, Voice) then
       AbortExample ('al_attach_audio_stream_to_voice failed.')
 {$ENDIF }
-    ELSE BEGIN
+    else begin
       LogPrint ('Playing %s ... Waiting for stream to finish ', [FileName]);
-      REPEAT
+      repeat
 	al_wait_for_event (Queue, @Event);
-	IF Event.ftype = ALLEGRO_EVENT_AUDIO_STREAM_FINISHED THEN
-	  Playing := FALSE
-      UNTIL NOT Playing;
+	if Event.ftype = ALLEGRO_EVENT_AUDIO_STREAM_FINISHED then
+	  Playing := False
+      until not Playing;
       LogWriteLn (' ')
-    END;
+    end;
     al_destroy_event_queue (Queue);
     al_destroy_audio_stream (Stream)
-  END;
+  end;
   LogWriteLn ('Done.');
 
 {$IF NOT DEFINED(BYPASS_MIXER) }
@@ -141,5 +141,5 @@ BEGIN
 
   al_uninstall_audio;
 
-  CloseLog (TRUE)
-END.
+  CloseLog (True)
+end.

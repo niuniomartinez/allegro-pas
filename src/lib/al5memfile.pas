@@ -1,4 +1,4 @@
-UNIT al5memfile;
+unit al5memfile;
 (***<Defines the @italic(memfile interface).
 
      The memfile interface allows you to treat a fixed block of contiguous
@@ -27,17 +27,17 @@ UNIT al5memfile;
 
 {$include allegro5.cfg}
 
-INTERFACE
+interface
 
-  USES
+  uses
     allegro5, al5base;
 
 
-  FUNCTION al_open_memfile (mem: AL_POINTER; size: AL_INT64; CONST mode: AL_STR): ALLEGRO_FILEptr;
-    CDECL; EXTERNAL ALLEGRO_MEMFILE_LIB_NAME;
-  FUNCTION al_get_allegro_memfile_version: AL_UINT64;
-    CDECL; EXTERNAL ALLEGRO_MEMFILE_LIB_NAME;
+  function al_open_memfile (mem: AL_POINTER; size: AL_INT64; const mode: AL_STR): ALLEGRO_FILEptr;
+    CDECL; external ALLEGRO_MEMFILE_LIB_NAME;
+  function al_get_allegro_memfile_version: AL_UINT64;
+    CDECL; external ALLEGRO_MEMFILE_LIB_NAME;
 
-IMPLEMENTATION
+implementation
 
-END.
+end.

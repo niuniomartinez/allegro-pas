@@ -27,46 +27,46 @@ PROGRAM ex_kcm_direct;
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
-USES
+uses
   Common,
   allegro5, al5base, al5audio, al5acodec, al5strings;
 
 
 
-  PROCEDURE Play (FileName: AL_STR);
-  VAR
+  procedure Play (FileName: AL_STR);
+  var
     SampleData: ALLEGRO_SAMPLEptr;
     Sample: ALLEGRO_SAMPLE_INSTANCEptr;
     Voice: ALLEGRO_VOICEptr;
-    Chan, Depth: INTEGER;
-    Freq: LONGWORD;
-    SampleTime: REAL;
-  BEGIN
+    Chan, Depth: Integer;
+    Freq: LongWord;
+    SampleTime: Real;
+  begin
   { Load the entire sound file from disk. }
     SampleData := al_load_sample (FileName);
-    IF SampleData = NIL THEN
-    BEGIN
+    if SampleData = Nil then
+    begin
       LogPrintLn ('Could not load sample from ''%s''!', [FileName]);
-      EXIT
-    END;
+      Exit
+    end;
 
-    Sample := al_create_sample_instance (NIL);
-    IF Sample = NIL THEN
+    Sample := al_create_sample_instance (Nil);
+    if Sample = Nil then
       AbortExample ('al_create_sample failed.');
 
-    IF NOT al_set_sample (Sample, SampleData) THEN
-    BEGIN
+    if not al_set_sample (Sample, SampleData) then
+    begin
       LogWriteLn ('al_set_sample failed.');
-      EXIT
-    END;
+      Exit
+    end;
 
-    Depth := ORD (al_get_sample_instance_depth (Sample));
-    IF Depth < 8 THEN Depth := 8 + Depth * 8 ELSE Depth := 0;
-    Chan := ORD (al_get_sample_instance_channels (Sample));
+    Depth := Ord (al_get_sample_instance_depth (Sample));
+    if Depth < 8 then Depth := 8 + Depth * 8 else Depth := 0;
+    Chan := Ord (al_get_sample_instance_channels (Sample));
     Freq := al_get_sample_instance_frequency (Sample);
     LogPrintLn (
       'Loaded sample: %d-bit depth, %d channels, %d Hz.',
-      [Depth, (Chan SHR 4) + (Chan MOD $F), Freq]
+      [Depth, (Chan shr 4) + (Chan mod $F), Freq]
     );
     LogWrite ('Trying to create a voice with the same specs... ');
     Voice := al_create_voice (
@@ -74,10 +74,10 @@ USES
       al_get_sample_instance_depth (Sample),
       al_get_sample_instance_channels (Sample)
     );
-    IF Voice = NIL THEN AbortExample ('Could not create ALLEGRO_VOICE.');
+    if Voice = Nil then AbortExample ('Could not create ALLEGRO_VOICE.');
     LogWriteLn ('done.');
 
-    IF NOT al_attach_sample_instance_to_voice (Sample, Voice) THEN
+    if not al_attach_sample_instance_to_voice (Sample, Voice) then
       AbortExample ('al_attach_sample_instance_to_voice failed.');
 
   { Play sample in looping mode. }
@@ -96,34 +96,34 @@ USES
     LogWriteLn ('');
 
   { Free the memory allocated. }
-    al_set_sample (Sample, NIL);
+    al_set_sample (Sample, Nil);
     al_destroy_sample (SampleData);
     al_destroy_sample_instance (Sample);
     al_destroy_voice (Voice)
-  END;
+  end;
 
-VAR
-  i: INTEGER;
-BEGIN
-  IF NOT al_init THEN AbortExample ('Could not init Allegro.');
+var
+  i: Integer;
+begin
+  if not al_init then AbortExample ('Could not init Allegro.');
 
   OpenLog;
 
-  IF ParamCount < 1 THEN
-  BEGIN
+  if ParamCount < 1 then
+  begin
     LogWriteLn ('This example needs to be run from the command line.');
     LogWriteLn ('Usage: ex_kcm_direct {audio_files}');
-    CloseLog (TRUE);
+    CloseLog (True);
     HALT
-  END;
+  end;
 
   al_init_acodec_addon;
 
-  IF NOT al_install_audio THEN AbortExample ('Could not init sound!');
+  if not al_install_audio then AbortExample ('Could not init sound!');
 
-  FOR i := 1 TO ParamCount DO Play (al_string_to_str (ParamStr (i)));
+  for i := 1 to ParamCount do Play (al_string_to_str (ParamStr (i)));
 
   al_uninstall_audio;
   LogWriteLn ('Done');
-  CloseLog (TRUE)
-END.
+  CloseLog (True)
+end.
