@@ -1,4 +1,4 @@
-PROGRAM ex_keyboard_focus;
+program ex_keyboard_focus;
 (*
  *    Example program for the Allegro library.
  *

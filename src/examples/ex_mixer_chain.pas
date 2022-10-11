@@ -1,4 +1,4 @@
-PROGRAM ex_mixer_chain;
+program ex_mixer_chain;
 (*
  *    Example program for the Allegro library.
  *

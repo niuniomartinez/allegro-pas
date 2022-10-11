@@ -1,4 +1,4 @@
-PROGRAM ex_monitorinfo;
+program ex_monitorinfo;
 (*
   Copyright (c) 2012-2019 Guillermo Martínez J.
 

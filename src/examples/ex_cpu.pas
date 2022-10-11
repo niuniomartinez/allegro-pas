@@ -1,4 +1,4 @@
-PROGRAM ex_cpu;
+program ex_cpu;
 (* An example showing the use of al_get_cpu_count and al_get_ram_size. *)
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.
@@ -89,7 +89,7 @@ begin
     end;
 
     al_wait_for_event (Queue, @Event);
-    case event.ftype OF
+    case event.ftype of
     ALLEGRO_EVENT_KEY_DOWN:
       if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then Done := True;
     ALLEGRO_EVENT_DISPLAY_CLOSE:

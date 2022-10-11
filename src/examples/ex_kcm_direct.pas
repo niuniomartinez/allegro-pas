@@ -1,4 +1,4 @@
-PROGRAM ex_kcm_direct;
+program ex_kcm_direct;
 (* Shows the ability to play a sample without a mixer. *)
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.

@@ -1,4 +1,4 @@
-PROGRAM ex_windows;
+program ex_windows;
 (*
   Copyright (c) 2012-2018 Guillermo Martínez J.
 

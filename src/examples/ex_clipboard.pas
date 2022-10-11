@@ -1,4 +1,4 @@
-PROGRAM ex_clipboard;
+program ex_clipboard;
 (* An example showing bitmap flipping flags, by Steven Wallace.
 
   NOTE: Previous comment seems misplaced... *)
@@ -98,7 +98,7 @@ begin
     end;
 
     al_wait_for_event (Queue, @Event);
-    case Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_KEY_DOWN:
       if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
         Done := true

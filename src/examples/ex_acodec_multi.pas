@@ -1,4 +1,4 @@
-PROGRAM ex_acodec_multi;
+program ex_acodec_multi;
 (*
  * Milan Mimica (Translated to Pascal by Guillermo Martínez J.)
  * Audio example that plays multiple files at the same time
@@ -41,7 +41,7 @@ var
   Samples: array of ALLEGRO_SAMPLE_INSTANCEptr;
   Mixer: ALLEGRO_MIXERptr;
   Voice: ALLEGRO_VOICEptr;
-  LongestSample, SampleTime: REAL;
+  LongestSample, SampleTime: Real;
   FileName: AL_STR;
 
 begin

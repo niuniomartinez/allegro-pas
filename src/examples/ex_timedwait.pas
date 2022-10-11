@@ -1,4 +1,4 @@
-PROGRAM ex_timedwait;
+program ex_timedwait;
 (*
  *    Example program for the Allegro library, by Peter Wang.
  *
@@ -39,7 +39,7 @@ uses
 procedure TestRelativeTimeout (Queue: ALLEGRO_EVENT_QUEUEptr);
 var
   Event: ALLEGRO_EVENT;
-  Shade: REAL;
+  Shade: Real;
 begin
   Shade := 0.1;
 
@@ -72,7 +72,7 @@ end;
   var
     Timeout: ALLEGRO_TIMEOUT;
     Event: ALLEGRO_EVENT;
-    Shade: REAL;
+    Shade: Real;
     Ret: Boolean;
   begin
     Shade := 0.1;

@@ -1,4 +1,4 @@
-PROGRAM ex_disable_screensaver;
+program ex_disable_screensaver;
 (*
   Copyright (c) 2012-2019 Guillermo Martínez J.
 

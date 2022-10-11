@@ -1,4 +1,4 @@
-PROGRAM ex_depth_mask;
+program ex_depth_mask;
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.
 
@@ -42,7 +42,7 @@ PROGRAM ex_depth_mask;
     Queue: ALLEGRO_EVENT_QUEUEptr;
     Mysha, Obp: ALLEGRO_BITMAPptr;
     Font, Font2: ALLEGRO_FONTptr;
-    DirectSpeedMeasure: SINGLE;
+    DirectSpeedMeasure: Single;
     Sprites: array [1..COUNT] of record
       X, Y, Angle: Double;
     end;
@@ -215,7 +215,7 @@ PROGRAM ex_depth_mask;
       end;
 
       al_wait_for_event (Queue, @Event);
-      case Event.ftype OF
+      case Event.ftype of
       ALLEGRO_EVENT_KEY_CHAR:
 	if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then Done := True;
       ALLEGRO_EVENT_DISPLAY_CLOSE:

@@ -1,4 +1,4 @@
-PROGRAM ex_lines;
+program ex_lines;
 (*
  * This example exercises line drawing, and single buffer mode.
  *)
@@ -124,7 +124,7 @@ uses
 
    procedure Splat (const x, y: Integer; Blend: Boolean);
    var
-      Theta: SINGLE;
+      Theta: Single;
    begin
       al_set_target_bitmap (dBuf);
 

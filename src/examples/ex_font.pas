@@ -1,4 +1,4 @@
-PROGRAM ex_font;
+program ex_font;
 (* An example. *)
 (*
   Copyright (c) 2012-2018 Guillermo Martínez J.
@@ -47,7 +47,7 @@ PROGRAM ex_font;
     EndLoop := False;
     repeat
       al_wait_for_event (Queue, @Event);
-      case Event.ftype OF
+      case Event.ftype of
       ALLEGRO_EVENT_DISPLAY_CLOSE:
 	EndLoop := True;
       ALLEGRO_EVENT_KEY_DOWN:

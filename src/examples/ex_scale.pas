@@ -1,4 +1,4 @@
-PROGRAM ex_scale;
+program ex_scale;
 (*
  *    Example program for the Allegro library, by Peter Wang.
  *)

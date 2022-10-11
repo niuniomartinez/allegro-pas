@@ -1,4 +1,4 @@
-PROGRAM ex_mouse_focus;
+program ex_mouse_focus;
 (*
  *    Example program for the Allegro library.
  *

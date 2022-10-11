@@ -1,4 +1,4 @@
-PROGRAM ex_convert;
+program ex_convert;
 (* Image conversion example *)
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.

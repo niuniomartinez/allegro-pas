@@ -6,7 +6,7 @@ unit al5image;
    things like compression level or gamma handling. Refer to
    @link(al_get_system_config) for their documentation.
  *)
-(* Copyright (c) 2012-2019 Guillermo Martínez J.
+(* Copyright (c) 2012-2022 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -36,6 +36,8 @@ interface
     al5base;
 
   function al_init_image_addon: AL_BOOL;
+    CDECL; external ALLEGRO_IMAGE_LIB_NAME;
+  function al_is_image_addon_initialized: AL_BOOL;
     CDECL; external ALLEGRO_IMAGE_LIB_NAME;
   procedure al_shutdown_image_addon;
     CDECL; external ALLEGRO_IMAGE_LIB_NAME;

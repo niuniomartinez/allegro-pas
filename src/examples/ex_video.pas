@@ -1,4 +1,4 @@
-PROGRAM ex_video;
+program ex_video;
 (*    Example program for the Allegro library.
  *
  *    Demonstrate how to use the al5video add-on.

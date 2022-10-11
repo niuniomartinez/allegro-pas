@@ -1,4 +1,4 @@
-PROGRAM ex_file_slice;
+program ex_file_slice;
 (*
  *  ex_file_slice - Use slices to pack many objects into a single file.
  *

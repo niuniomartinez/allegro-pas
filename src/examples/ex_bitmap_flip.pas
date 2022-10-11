@@ -1,4 +1,4 @@
-PROGRAM ex_bitmap_flip;
+program ex_bitmap_flip;
 (* An example showing bitmap flipping flags, by Steven Wallace. *)
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.
@@ -35,10 +35,10 @@ PROGRAM ex_bitmap_flip;
     INTERVAL = 0.01;
 
   var
-    BmpX: SINGLE = 200;
-    BmpY: SINGLE = 200;
-    BmpDx: SINGLE = 96;
-    BmpDy: SINGLE = 96;
+    BmpX: Single = 200;
+    BmpY: Single = 200;
+    BmpDx: Single = 96;
+    BmpDy: Single = 96;
     BmpFlag: Integer = 0;
 
 
@@ -151,7 +151,7 @@ begin
     end;
 
     al_wait_for_event (Queue, @Event);
-    case Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_KEY_DOWN:
       if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
         Done := True

@@ -1,4 +1,4 @@
-PROGRAM ex_gldepth;
+program ex_gldepth;
 (* An example program showing how to set and use a depth buffer with an OpenGL
  * display.
  *
@@ -273,7 +273,7 @@ begin
   while DoLoop do
   begin
     al_wait_for_event (Queue, @Event);
-    case Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       DoLoop := False;
     ALLEGRO_EVENT_KEY_DOWN:

@@ -1,4 +1,4 @@
-PROGRAM ex_camera;
+program ex_camera;
 (* An example demonstrating how to use ALLEGRO_TRANSFORM to represent a 3D
  * camera.
  *)
@@ -39,7 +39,7 @@ const
 
 type
   RVector = record
-    x, y, z: SINGLE;
+    x, y, z: Single;
   end;
 
   RCamera = record
@@ -90,7 +90,7 @@ var
 
 
 (* Returns a vector multiplied by a scalar. *)
-  function VectorMul (a: RVector; s: SINGLE): RVector;
+  function VectorMul (a: RVector; s: Single): RVector;
   begin
     VectorMul.x := a.x * s;
     VectorMul.y := a.y * s;
@@ -571,7 +571,7 @@ begin
   EndExample := False;
   repeat
     al_wait_for_event (Queue, @Event);
-    case Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       EndExample := True;
     ALLEGRO_EVENT_DISPLAY_RESIZE:

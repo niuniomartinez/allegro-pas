@@ -1,4 +1,4 @@
-PROGRAM ex_expose;
+program ex_expose;
 (*
   Copyright (c) 2012-2019 Guillermo Martínez J.
 
@@ -70,7 +70,7 @@ begin
   while True do
   begin
     al_wait_for_event (Queue, @Event);
-    case event.ftype OF
+    case event.ftype of
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       begin
 	al_destroy_event_queue (Queue);

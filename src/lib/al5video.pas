@@ -4,7 +4,7 @@ unit al5video;
   Currently we have an Ogg backend (Theora + Vorbis). See http://xiph.org/
   for installation instructions, licensing information and supported video
   formats.. *)
-(* Copyright (c) 2012-2019 Guillermo Martínez J.
+(* Copyright (c) 2012-2022 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages

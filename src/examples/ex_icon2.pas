@@ -1,4 +1,4 @@
-PROGRAM ex_icon2;
+program ex_icon2;
 (*
  *      Example program for the Allegro library.
  *

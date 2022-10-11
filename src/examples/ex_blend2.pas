@@ -1,4 +1,4 @@
-PROGRAM ex_blend2;
+program ex_blend2;
 (* Example program for the Allegro library.
  *
  * Compare software blending routines with hardware blending.
@@ -143,7 +143,7 @@ type
 (* Helper function to build colors. *)
   function Makecol (R, G, B, A: Integer): ALLEGRO_COLOR;
   var
-    af: REAL;
+    af: Real;
   begin
   { Premultiply alpha. }
     af := a / 255;
@@ -160,7 +160,7 @@ type
 (* Constructor. *)
   constructor TSample.CreateSample (const aMemory: Boolean);
   begin
-    INHERITED Create;
+    inherited Create;
     fMemory := aMemory
   end;
 
@@ -170,7 +170,7 @@ type
   destructor TSample.Destroy;
   begin
     if fTarget <> Nil then al_destroy_bitmap (fTarget);
-    INHERITED Destroy
+    inherited Destroy
   end;
 
 
@@ -178,7 +178,7 @@ type
 (* Initializes. *)
   procedure TSample.Initialize;
   begin
-    INHERITED Initialize;
+    inherited Initialize;
   { Combining ALLEGRO_MEMORY_BITMAP with ALLEGRO_VIDEO_BITMAP is invalid,
     so be sure this will not happen. }
       al_set_new_bitmap_flags (
@@ -227,7 +227,7 @@ type
     );
     var
       w, h: Integer;
-      s: REAL;
+      s: Real;
     begin
       case aMode of
       ORIENTATION_ORIGINAL:
@@ -451,7 +451,7 @@ type
     if Allegro <> Nil then al_destroy_bitmap (Allegro);
     if Mysha <> Nil then al_destroy_bitmap (Mysha);
 
-    INHERITED Destroy
+    inherited Destroy
   end;
 
 
@@ -593,7 +593,7 @@ type
       a[Ndx].Value := 0; a[Ndx].Value := 255
     end;
 
-    INHERITED Initialize
+    inherited Initialize
   end;
 
 var

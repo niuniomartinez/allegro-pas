@@ -1,4 +1,4 @@
-PROGRAM ex_nodisplay;
+program ex_nodisplay;
 (* Test that bitmap manipulation without a display works. *)
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.

@@ -1,4 +1,4 @@
-PROGRAM ex_draw;
+program ex_draw;
 (* Tests some drawing primitives. *)
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.
@@ -42,7 +42,7 @@ PROGRAM ex_draw;
 
       Timer, Counter: array [0..3] of Double;
       FPS: Integer;
-      TextX, TextY: REAL;
+      TextX, TextY: Real;
 
       Software: Boolean;
       Samples: Integer;
@@ -96,7 +96,7 @@ PROGRAM ex_draw;
 
 
 
-  procedure SetXY (x, y: REAL);
+  procedure SetXY (x, y: Real);
   begin
     Ex.TextX := x;
     Ex.TextY := y
@@ -124,9 +124,9 @@ PROGRAM ex_draw;
 
 
 
-  procedure Primitive (l, t, r, b: REAL; Clr: ALLEGRO_COLOR; NoFill: Boolean);
+  procedure Primitive (l, t, r, b: Real; Clr: ALLEGRO_COLOR; NoFill: Boolean);
   var
-    cx, cy, rx, ry: REAL;
+    cx, cy, rx, ry: Real;
     tk, w: Integer;
   begin
     cx := (l + r) / 2;
@@ -139,7 +139,7 @@ PROGRAM ex_draw;
     begin
       if w = 0 then w := 1 else if w = 2 then w := 3
     end;
-    case w OF
+    case w of
       0: al_draw_filled_rectangle (l, t, r, b, Clr);
       1: al_draw_rectangle (l, t, r, b, Clr, tk);
       2: al_draw_filled_ellipse (cx, cy, rx, ry, Clr);
@@ -152,10 +152,10 @@ PROGRAM ex_draw;
 
   procedure Draw;
   var
-    x, y: REAL;
+    x, y: Real;
     cx, cy, cw, ch, w, h, RectsNum, i, j: LongInt;
     Screen, mem: ALLEGRO_BITMAPptr;
-    Rects: array [0..(16 * 4) - 1] of REAL;
+    Rects: array [0..(16 * 4) - 1] of Real;
     rgba: ALLEGRO_COLOR;
     sw: AL_STR;
   begin
@@ -285,11 +285,11 @@ PROGRAM ex_draw;
 
       al_wait_for_event (Ex.Queue, @Event);
 
-      case Event.ftype OF
+      case Event.ftype of
       ALLEGRO_EVENT_DISPLAY_CLOSE:
         Exit;
       ALLEGRO_EVENT_KEY_DOWN:
-        case Event.keyboard.keycode OF
+        case Event.keyboard.keycode of
         ALLEGRO_KEY_ESCAPE:
           Exit;
         ALLEGRO_KEY_SPACE:

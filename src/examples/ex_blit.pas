@@ -1,4 +1,4 @@
-PROGRAM ex_blit;
+program ex_blit;
 (*
  * An example demonstrating different blending modes.
  *
@@ -284,7 +284,7 @@ ex_blit.pas(67,5) Note: Local variable "Lock" is assigned but never used
         NeedDraw := False
       end;
       al_wait_for_event (EventQueue, @Event);
-      case Event.ftype OF
+      case Event.ftype of
       ALLEGRO_EVENT_DISPLAY_CLOSE:
         Exit;
       ALLEGRO_EVENT_KEY_DOWN:

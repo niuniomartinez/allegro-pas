@@ -5,7 +5,7 @@ unit Allegro5;
   add-ons.
 
   @bold(See also:) @link(getst Getting started) *)
-(* Copyright (c) 2012-2020 Guillermo Martínez J. <niunio@users.sourceforge.net>
+(* Copyright (c) 2012-2022 Guillermo Martínez J. <niunio@users.sourceforge.net>
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -56,9 +56,14 @@ interface
  *****************************************************************************)
 
   const
+  (* All these constants exist just to build the ALLEGRO_VERSION_INT one.  I was
+    tempted to remove them but keeping them shows what ALLEGRO_VERSION_INT is
+    build from.
+
+    They are defined to make it run with any compatible DLL/so/dylib version. *)
     ALLEGRO_VERSION      =   5;
     ALLEGRO_SUB_VERSION  =   2;
-    ALLEGRO_WIP_VERSION  =   0;
+    ALLEGRO_WIP_VERSION  =   8;
   (* Not sure we need it, but ALLEGRO_VERSION_STR contains it:
      0 = SVN
      1 = first release
@@ -66,18 +71,19 @@ interface
 
      Note x.y.z (= x.y.z.0) has release number 1, and x.y.z.1 has release
      number 2, just to confuse you. *)
-    ALLEGRO_RELEASE_NUMBER = 2;
-    ALLEGRO_PAS_VERSION_STR = '5.2.β.1-1';
-    ALLEGRO_DATE_STR = '2020';
-    ALLEGRO_DATE = 20200515; { yyyymmdd }
+    ALLEGRO_RELEASE_NUMBER = 1;
+
+    { ALLEGRO_PAS_VERSION_STR = '5.2.β.2'; }
+    ALLEGRO_PAS_VERSION_STR = '5.2.β.1 + SVN#503';
+  (* Dates aren't for Allegro but for Allegro.pas. *)
+    ALLEGRO_DATE_STR = '2022';
+    ALLEGRO_DATE = 20221008; { yyyymmdd }
     ALLEGRO_VERSION_INT  = (
 	   (ALLEGRO_VERSION shl 24)
 	or (ALLEGRO_SUB_VERSION shl 16)
 	or (ALLEGRO_WIP_VERSION shl  8)
 	or  ALLEGRO_RELEASE_NUMBER
     );
-    ALLEGRO_IS_ALPHA = FALSE;
-    ALLEGRO_IS_BETA = TRUE;
 
   type
     ALLEGRO_USER_MAIN = function (argc: AL_INT; argv: AL_POINTER): AL_INT; CDECL;
@@ -102,6 +108,7 @@ interface
  *****************************************************************************)
 
   type
+    ALLEGRO_TIMEOUTptr = ^ALLEGRO_TIMEOUT;
     ALLEGRO_TIMEOUT = record
       __pad1__, __pad2__: AL_UINT64; {**<@exclude }
     end;
@@ -1008,6 +1015,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
       ALLEGRO_SUPPORTED_ORIENTATIONS = 32, {**<@exclude }
       ALLEGRO_OPENGL_MAJOR_VERSION = 33, {**<@exclude }
       ALLEGRO_OPENGL_MINOR_VERSION = 34, {**<@exclude }
+      ALLEGRO_DEFAULT_SHADER_PLATFORM = 35, {**<@exclude }
       ALLEGRO_DISPLAY_OPTIONS_COUNT {**<@exclude }
     );
 
@@ -1299,19 +1307,95 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  *   By Shawn Hargreaves.
  *****************************************************************************)
 
- { TODO: Coming soon ;). }
+  type
+  (*** A fixed point number. *)
+    AL_FIXED = AL_INT32;
+  (*** @exclude. *)
+    __FIXED_ARRAY__ = array [0..1023] of AL_FIXED;
+
+{$INCLUDE trigtabl.inc}
+
+  const
+  (*** This constant gives a ratio which can be used to convert a fixed point
+     number in binary angle format to a fixed point number in radians. *)
+    AL_FIXTORAD_R: AL_FIXED = 1608;    { al_ftofix (tau/256) }
+  (*** This constant gives a ratio which can be used to convert a fixed point
+     number in radians to a fixed point number in binary angle format. *)
+    AL_RADTOFIX_R: AL_FIXED = 2670177; { al_ftofix (256/2pi) }
 
 
 
 (*
- * fmath.h
+ * fmaths.h
  *
  *   Fixed point math routines.
  *
  *   By Shawn Hargreaves.
  *****************************************************************************)
 
- { TODO: Coming soon ;). }
+(*** This finds out the non negative square root of `x'. *)
+  function al_fixsqrt (x: AL_FIXED): AL_FIXED; cdecl;
+    external ALLEGRO_LIB_NAME;
+(*** Fixed point hypotenuse (returns the square root of `x*x + y*y'). *)
+  function al_fixhypot (x, y: AL_FIXED): AL_FIXED; cdecl;
+    external ALLEGRO_LIB_NAME;
+(*** This function finds the inverse tangent of a value using a lookup table. *)
+  function al_fixatan (x: AL_FIXED): AL_FIXED; cdecl;
+    external ALLEGRO_LIB_NAME;
+  function al_fixatan2 (y, x: AL_FIXED): AL_FIXED; cdecl;
+    external ALLEGRO_LIB_NAME;
+
+
+
+(*
+ * fmaths.inl
+ *
+ *   Fixed point math inline functions (generic C).
+ *
+ *   By Shawn Hargreaves.
+ *****************************************************************************)
+
+(*** Converts a floating point value to fixed point. *)
+  function al_ftofix (x: AL_DOUBLE): AL_FIXED;
+    inline;
+(*** Converts fixed point to floating point. *)
+  function al_fixtof (x: AL_FIXED): AL_DOUBLE;
+    inline;
+
+(*** Safe function to add fixed point numbers clamping overflow. *)
+  function al_fixadd (x, y: AL_FIXED): AL_FIXED;
+    inline;
+(*** Safe function to subtract fixed point numbers clamping underflow. *)
+  function al_fixsub (x, y: AL_FIXED): AL_FIXED;
+    inline;
+  function al_fixmul (x, y: AL_FIXED): AL_FIXED;
+    inline;
+  function al_fixdiv (x, y: AL_FIXED): AL_FIXED;
+    inline;
+
+(*** Returns the greatest integer not greater than x. *)
+  function al_fixfloor (x: AL_FIXED): AL_FIXED; inline;
+(*** Returns the smallest integer not less than x. *)
+  function al_fixceil (x: AL_FIXED): AL_FIXED; inline;
+(*** Converts an integer to fixed point. *)
+  function al_itofix (x: AL_INT): AL_FIXED; inline;
+(*** Returns the integer part of x, which is alwais smaller than (or equal to)
+  X in absolute value. *)
+  function al_fixtrunc (x: AL_FIXED): AL_INT; inline;
+(*** Converts fixed point to integer, rounding as required to the nearest
+  integer. *)
+  function al_fixtoi (x: AL_FIXED): AL_INT; inline;
+
+(*** This function finds the cosine of a value using a lookup table. *)
+  function al_fixcos (x: AL_FIXED): AL_FIXED; inline;
+(*** This function finds the sine of a value using a lookup table. *)
+  function al_fixsin (x: AL_FIXED): AL_FIXED; inline;
+(*** This function finds the tangent of a value using a lookup table. *)
+  function al_fixtan (x: AL_FIXED): AL_FIXED; inline;
+(*** This function finds the inverse cosine of a value using a lookup table. *)
+  function al_fixacos (x: AL_FIXED): AL_FIXED; inline;
+(*** This function finds the inverse sine of a value using a lookup table. *)
+  function al_fixasin (x: AL_FIXED): AL_FIXED; inline;
 
 
 
@@ -1621,10 +1705,15 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
   const
     ALLEGRO_DEFAULT_DISPLAY_ADAPTER = -1; {**<@exclude }
 
-  function al_get_num_video_adapters: AL_INT; CDECL;
-    external ALLEGRO_LIB_NAME;
-  function al_get_monitor_info (adapter: AL_INT; out info: ALLEGRO_MONITOR_INFO): AL_BOOL; CDECL;
-    external ALLEGRO_LIB_NAME;
+  function al_get_num_video_adapters: AL_INT;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_get_monitor_info (adapter: AL_INT; out info: ALLEGRO_MONITOR_INFO): AL_BOOL;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_get_monitor_dpi (adapter: AL_INT): AL_INT;
+    CDECL; external ALLEGRO_LIB_NAME;
+{ #if defined(ALLEGRO_UNSTABLE) || defined(ALLEGRO_INTERNAL_UNSTABLE) || defined(ALLEGRO_SRC)
+AL_FUNC(int, al_get_monitor_refresh_rate, (int adapter));
+#endif}
 
 
 
@@ -1773,6 +1862,8 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
     CDECL; external ALLEGRO_LIB_NAME;
   procedure al_invert_transform (var trans: ALLEGRO_TRANSFORM);
     CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_transpose_transform (var trans: ALLEGRO_TRANSFORM);
+    CDECL; external ALLEGRO_LIB_NAME;
   function al_check_inverse (var trans: ALLEGRO_TRANSFORM; tol: AL_FLOAT): AL_BOOL; inline;
   procedure al_orthographic_transform (var trans: ALLEGRO_TRANSFORM; left, top, n, right, bottom, f: AL_FLOAT);
     CDECL; external ALLEGRO_LIB_NAME;
@@ -1804,12 +1895,22 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
     (*** OpenGL Shading Language. *)
       ALLEGRO_SHADER_GLSL = 1,
     (*** High Level Shader Language (for Direct3D). *)
-      ALLEGRO_SHADER_HLSL = 2
+      ALLEGRO_SHADER_HLSL = 2,
+    (*** Like @code(ALLEGRO_SHADER_AUTO), but pick a more minimalimplementation
+         that supports only basic alpha blending.. *)
+      ALLEGRO_SHADER_AUTO_MINIMAL = 3,
+    (*** Minimal GLSL shader. *)
+      ALLEGRO_SHADER_GLSL_MINIMAL = 4,
+    (*** Minimal HLSL shader. *)
+      ALLEGRO_SHADER_HLSL_MINIMAL = 5,
+    (*** HLSL shader using shader model 3.0. *)
+      ALLEGRO_SHADER_HLSL_SM_3_0 = 6
     );
 
 
 
   const
+  (* Shader variable names. *)
     ALLEGRO_SHADER_VAR_COLOR           = 'al_color';           {**<@exclude }
     ALLEGRO_SHADER_VAR_POS             = 'al_pos';             {**<@exclude }
     ALLEGRO_SHADER_VAR_PROJVIEW_MATRIX = 'al_projview_matrix'; {**<@exclude }
@@ -1866,9 +1967,22 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
 { TODO: Some stuff needs the "path.h" section.
 
-        By the way, Free pascal and Delphi include functions to get information
-        from the application and the executable, so I'll not add such stuff at
-        the moment. }
+        By the way, both Free pascal and Delphi include functions to get the
+        same information, so I'll not add such stuff at the moment. }
+
+  type
+    ALLEGRO_SYSTEM_ID = (
+      ALLEGRO_SYSTEM_ID_UNKNOWN    = 0,
+      ALLEGRO_SYSTEM_ID_ANDROID    = $414E4452, { AL_ID ('ANDR') }
+      ALLEGRO_SYSTEM_ID_IPHONE     = $4950484F, { AL_ID ('IPHO') }
+      ALLEGRO_SYSTEM_ID_MACOSX     = $4F535820, { AL_ID ('OSX ') }
+      ALLEGRO_SYSTEM_ID_RASPERRYPI = $52415350, { AL_ID ('RASP') }
+      ALLEGRO_SYSTEM_ID_SDL        = $53444C32, { AL_ID ('SDL2') }
+      ALLEGRO_SYSTEM_ID_WINDOWS    = $57494E44, { AL_ID ('WIND') }
+      ALLEGRO_SYSTEM_ID_GP32XWIZ   = $57495A20, { AL_ID ('WIZ ') }
+      ALLEGRO_SYSTEM_ID_XGLX       = $58474C58  { AL_ID ('XGLX') }
+    );
+
 
   function al_init: AL_BOOL; inline;
 
@@ -1880,6 +1994,8 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
   function al_is_system_installed: AL_BOOL;
     CDECL; external ALLEGRO_LIB_NAME;
   function al_get_system_config: ALLEGRO_CONFIGptr;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_get_system_id: ALLEGRO_SYSTEM_ID;
     CDECL; external ALLEGRO_LIB_NAME;
 
   function al_inhibit_screensaver (inhibit: AL_BOOL): AL_BOOL;
@@ -1893,13 +2009,73 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  *   Thread routines.
  *****************************************************************************)
 
-{ TODO:
-   I'm not sure if this unit should be included.
-   Is RTL's TThread compatible with Allegro?  There seems to be some problems
-   as LCL fails when used with Allegro (I didn't test VCL yet).
+{ Allegro's thread code has a bug somewhere (I suspect it is a wrong data type
+  in the MUTEX stuff, quite similar to the bug with textured 3D renderer I
+  found in the 4 branch) so it is unusable.  So it is disabled. }
+{$IF FALSE}
+
+  type
+    ALLEGRO_THREADptr = AL_POINTER;
+    ALLEGRO_MUTEXptr = AL_POINTER;
+    ALLEGRO_CONDptr = AL_POINTER;
+
+    ALLEGRO_THREAD_METHOD = function (thread: ALLEGRO_THREADptr; arg: AL_POINTER): AL_POINTER; CDECL;
+    ALLEGRO_DETACHED_THREAD = function (arg: AL_POINTER): AL_POINTER; CDECL;
+
+
+
+  function al_create_thread (proc: ALLEGRO_THREAD_METHOD; arg: AL_POINTER)
+    : ALLEGRO_THREADptr;
+    CDECL; external ALLEGRO_LIB_NAME;
+{
+#if defined(ALLEGRO_UNSTABLE) || defined(ALLEGRO_INTERNAL_UNSTABLE) || defined(ALLEGRO_SRC)
+AL_FUNC(ALLEGRO_THREAD *, al_create_thread_with_stacksize,
+   (void *(*proc)(ALLEGRO_THREAD *thread, void *arg), void *arg, size_t stacksize));
+#endif
 }
+  procedure al_start_thread (outer: ALLEGRO_THREADptr);
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_join_thread (outer: ALLEGRO_THREADptr); inline;
+  procedure al_join_thread_ex
+    (outer: ALLEGRO_THREADptr; out ret_value: AL_POINTER);
+    inline;
+  procedure al_set_thread_should_stop (outer: ALLEGRO_THREADptr);
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_get_thread_should_stop (outer: ALLEGRO_THREADptr): AL_BOOL;
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_destroy_thread (thread: ALLEGRO_THREADptr);
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_run_detached_thread (proc: ALLEGRO_DETACHED_THREAD; arg: AL_POINTER);
+    CDECL; external ALLEGRO_LIB_NAME;
 
+  function al_create_mutex: ALLEGRO_MUTEXptr;
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_create_mutex_recursive: ALLEGRO_MUTEXptr;
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_lock_mutex (mutex: ALLEGRO_MUTEXptr);
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_unlock_mutex (mutex: ALLEGRO_MUTEXptr);
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_destroy_mutex (mutex: ALLEGRO_MUTEXptr);
+    CDECL; external ALLEGRO_LIB_NAME;
 
+  function al_create_cond: ALLEGRO_CONDptr;
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_destroy_cond (cond: ALLEGRO_CONDptr);
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_wait_cond (cond: ALLEGRO_CONDptr; mutex: ALLEGRO_MUTEXptr);
+    CDECL; external ALLEGRO_LIB_NAME;
+  function al_wait_cond_until (
+    cond: ALLEGRO_CONDptr; mutex: ALLEGRO_MUTEXptr;
+    const timeout: ALLEGRO_TIMEOUTptr
+  ): AL_INT;
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_broadcast_cond (cond: ALLEGRO_CONDptr);
+    CDECL; external ALLEGRO_LIB_NAME;
+  procedure al_signal_cond (cond: ALLEGRO_CONDptr);
+    CDECL; external ALLEGRO_LIB_NAME;
+
+{$ENDIF}
 
 (*
  * timer.h
@@ -1986,18 +2162,23 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 {@exclude}
   function _al_load_bitmap_f
     (fp: ALLEGRO_FILEptr; const ident: AL_STRptr): ALLEGRO_BITMAPptr;
-    CDECL; external ALLEGRO_LIB_NAME NAME 'al_load_bitmap_f';
+    CDECL; external ALLEGRO_LIB_NAME name 'al_load_bitmap_f';
 {@exclude}
   function _al_load_bitmap_flags_f (
     fp: ALLEGRO_FILEptr; const ident: AL_STRptr; flags: AL_INT
   ): ALLEGRO_BITMAPptr;
-    CDECL; external ALLEGRO_LIB_NAME NAME 'al_load_bitmap_flags_f';
+    CDECL; external ALLEGRO_LIB_NAME name 'al_load_bitmap_flags_f';
 {@exclude}
   procedure _al_set_memory_interface_ (iface: AL_POINTER);
-    CDECL; external ALLEGRO_LIB_NAME NAME 'al_set_memory_interface';
+    CDECL; external ALLEGRO_LIB_NAME name 'al_set_memory_interface';
 {@exclude}
   function _al_check_inverse (var trans: ALLEGRO_TRANSFORM; tol: AL_FLOAT): AL_INT;
-    CDECL; external ALLEGRO_LIB_NAME NAME 'al_check_inverse';
+    CDECL; external ALLEGRO_LIB_NAME name 'al_check_inverse';
+{$IF FALSE see thread.h explanation.}
+{@exclude}
+  procedure _al_join_thread (outer: ALLEGRO_THREADptr; ret_value: AL_POINTER);
+    CDECL; external ALLEGRO_LIB_NAME name 'al_join_thread';
+{$ENDIF}
 
 implementation
 
@@ -2054,6 +2235,199 @@ implementation
   function ALLEGRO_GET_EVENT_TYPE (const str: AL_STR): AL_INT;
   begin
     ALLEGRO_GET_EVENT_TYPE := AL_ID (str)
+  end;
+
+
+
+(*
+ * fmaths.inl
+ *****************************************************************************)
+
+  function al_ftofix (x: AL_DOUBLE): AL_FIXED;
+  begin
+    if x > 32767.0 then
+    begin
+      al_set_errno (AL_ERANGE);
+      Result := $7FFFFFFF
+    end
+    else if x < -32767.0 then
+    begin
+      al_set_errno (AL_ERANGE);
+      Result := -$7FFFFFFF
+    end
+    else if x < 0 then
+      Result := Trunc (x * 65536 - 0.5)
+    else
+      Result := Trunc (x * 65536 + 0.5)
+  end;
+
+
+
+  function al_fixtof (x: AL_FIXED): al_double;
+  begin
+    Result := x / 65536.0
+  end;
+
+
+
+  function al_fixadd (x, y: AL_FIXED): AL_FIXED;
+  begin
+    Result := x + y;
+    if Result >= 0 then
+    begin
+      if (x < 0) and (y < 0) then
+      begin
+        al_set_errno (AL_ERANGE);
+        Result := -$7FFFFFFF
+      end
+    end
+    else begin
+      if (x > 0) and (y > 0) then
+      begin
+        al_set_errno (AL_ERANGE);
+        Result := $7FFFFFFF
+      end
+    end
+  end;
+
+
+
+  function al_fixsub (x, y: AL_FIXED): AL_FIXED;
+  begin
+    Result := x - y;
+    if Result >= 0 then
+    begin
+      if (x < 0) and (y > 0) then
+      begin
+        al_set_errno (AL_ERANGE);
+        Result := -$7FFFFFFF
+      end
+    end
+    else begin
+      if (x > 0) and (y < 0) then
+      begin
+        al_set_errno (AL_ERANGE);
+        Result := $7FFFFFFF
+      end
+    end
+  end;
+
+
+
+  function al_fixmul (x, y: AL_FIXED): AL_FIXED;
+  begin
+  { Martin Kalbfuss suggested this. }
+    Result := AL_FIXED (( AL_INT64 ( x ) * y ) shr 16)
+  end;
+
+
+
+  function al_fixdiv (x, y: AL_FIXED): AL_FIXED;
+  begin
+    if y = 0 then
+    begin
+      al_set_errno (AL_ERANGE);
+      if x < 0 then
+        Result := -$7FFFFFFF
+      else
+        Result := $7FFFFFFF
+    end
+    else
+      Result := al_ftofix (al_fixtof (x) / al_fixtof (y))
+  end;
+
+
+
+  function al_fixfloor (x: AL_FIXED): AL_FIXED;
+  begin
+    if x >= 0 then
+      Result := x shr 16
+    else
+      Result := not ((not x) shr 16)
+  end;
+
+
+
+  function al_fixceil (x: AL_FIXED): AL_FIXED;
+  begin
+    if x > $7FFF0000 then
+    begin
+      al_set_errno (AL_ERANGE);
+      Exit ($7FFF)
+    end;
+    Result := al_fixfloor (x + $FFFF)
+  end;
+
+
+
+  function al_itofix (x: AL_INT): AL_FIXED;
+  begin
+    Result := x shl 16
+  end;
+
+
+
+  function al_fixtrunc (x: AL_FIXED): AL_INT;
+  begin
+    if x < 0 then
+    { SHR doesn't keep the sign bit. }
+      Result := AL_INT ((x shr 16) or $ffff0000)
+    else
+      Result := x shr 16
+  end;
+
+
+
+  function al_fixtoi (x: AL_FIXED): AL_INT;
+  begin
+    Result := al_fixfloor (x) + ((x and $8000) shr 15)
+  end;
+
+
+
+  function al_fixcos (x: AL_FIXED): AL_FIXED;
+  begin
+    Result := _al_fix_cos_tbl[((x + $4000) shr 15) and $1ff]
+  end;
+
+
+
+  function al_fixsin (x: AL_FIXED): AL_FIXED;
+  begin
+    Result := _al_fix_cos_tbl[((x - $400000 + $4000) shr 15) and $1ff]
+  end;
+
+
+
+  function al_fixtan (x: AL_FIXED): AL_FIXED;
+  begin
+    Result := _al_fix_tan_tbl[((x + $4000) shr 15) and $ff];
+  end;
+
+
+
+  function al_fixacos (x: AL_FIXED): AL_FIXED;
+  begin
+    if (-65536 > x) or (x > 65536) then
+    begin
+      al_set_errno (AL_EDOM);
+      Result := 0
+    end
+    else
+      Result := _al_fix_acos_tbl [(x + 65536 + 127) shr 8]
+  end;
+
+
+
+  function al_fixasin (x: AL_FIXED): AL_FIXED;
+  begin
+    if (-65536 > x) or (x > 65536) then
+    begin
+      al_set_errno (AL_EDOM);
+      Result := 0
+    end
+    else
+      Result := $00400000 - _al_fix_acos_tbl [(x + 65536 + 127) shr 8];
   end;
 
 
@@ -2116,6 +2490,27 @@ implementation
   begin
     al_init := al_install_system (ALLEGRO_VERSION_INT, Nil)
   end;
+
+
+
+(*
+ * threads.h
+ *****************************************************************************)
+
+ {$IF FALSE See explanation in the INTERFACE section. }
+
+  procedure al_join_thread (outer: ALLEGRO_THREADptr);
+  begin
+    _al_join_thread (outer, Nil)
+  end;
+
+  procedure al_join_thread_ex
+    (outer: ALLEGRO_THREADptr; out ret_value: AL_POINTER);
+  begin
+    _al_join_thread (outer, @ret_value)
+  end;
+
+{$ENDIF}
 
 
 

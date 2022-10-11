@@ -1,4 +1,4 @@
-PROGRAM haiku;
+program haiku;
 (*
  *    Haiku - A Musical Instrument, by Mark Oates.
  *

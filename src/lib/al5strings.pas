@@ -5,7 +5,7 @@ unit al5strings;
   @include(../docs/strings.pds)
 
   @include(../docs/utf8.pds) *)
-(* Copyright (c) 2012-2020 Guillermo Martínez J.
+(* Copyright (c) 2012-2022 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -74,7 +74,7 @@ interface
 { TODO: al_str_to_int, al_str_to_float, al_int_to_str, al_float_to_str... }
 { TODO: al_str_lenth? }
 
-  function al_str_format (const Fmt: AL_STR; const Args : array OF const)
+  function al_str_format (const Fmt: AL_STR; const Args : array of const)
   : AL_STR;
 
 
@@ -261,7 +261,7 @@ implementation
 
 
 (* Formats a string with given arguments. *)
-  function al_str_format (const Fmt: AL_STR; const Args : array OF const)
+  function al_str_format (const Fmt: AL_STR; const Args : array of const)
     : AL_STR;
   begin
     Result := al_string_to_str (Format (Fmt, Args))

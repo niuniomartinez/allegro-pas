@@ -1,6 +1,6 @@
-PROGRAM ex_menu;
+program ex_menu;
 (*
-  Copyright (c) 2012-2020 Guillermo Martínez J.
+  Copyright (c) 2012-2022 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -54,8 +54,6 @@ PROGRAM ex_menu;
     MAX_WIDTH = 960;
     MAX_HEIGHT = 600;
 
-
-
   var
     WindowsMenuHeight, dCount: Integer;
     Display: ALLEGRO_DISPLAYptr;
@@ -71,52 +69,52 @@ PROGRAM ex_menu;
 
     function CreateMainMenu: ALLEGRO_MENUptr;
     var
-      MainMenuInfo: array [0..14] of ALLEGRO_MENU_INFO;
+      lMainMenuInfo: array [0..14] of ALLEGRO_MENU_INFO;
     begin
     { This is one way to define a menu. The entire system, nested menus and all,
       can be defined by this single array. }
-      MainMenuInfo[0] := ALLEGRO_ITEM_OF_MENU ('&File->', FILE_ID, 0, Nil);
-        MainMenuInfo[1] := ALLEGRO_ITEM_OF_MENU ('&Open', FILE_OPEN_ID, 0, Nil);
-        MainMenuInfo[2] := ALLEGRO_MENU_SEPARATOR;
-        MainMenuInfo[3] := ALLEGRO_ITEM_OF_MENU ('E&xit', FILE_EXIT_ID, 0, Nil);
-        MainMenuInfo[4] := ALLEGRO_END_OF_MENU;
+      lMainMenuInfo[0] := ALLEGRO_ITEM_OF_MENU ('&File->', FILE_ID, 0, Nil);
+        lMainMenuInfo[1] := ALLEGRO_ITEM_OF_MENU ('&Open', FILE_OPEN_ID, 0, Nil);
+        lMainMenuInfo[2] := ALLEGRO_MENU_SEPARATOR;
+        lMainMenuInfo[3] := ALLEGRO_ITEM_OF_MENU ('E&xit', FILE_EXIT_ID, 0, Nil);
+        lMainMenuInfo[4] := ALLEGRO_END_OF_MENU;
 
-      MainMenuInfo[5] := ALLEGRO_ITEM_OF_MENU (
+      lMainMenuInfo[5] := ALLEGRO_ITEM_OF_MENU (
         '&Dynamic Options->',
         DYNAMIC_ID,
         0, Nil
       );
-        MainMenuInfo[6] := ALLEGRO_ITEM_OF_MENU (
+        lMainMenuInfo[6] := ALLEGRO_ITEM_OF_MENU (
           '&Checkbox',
           DYNAMIC_CHECKBOX_ID,
           ALLEGRO_MENU_ITEM_CHECKED,
           Nil
         );
-        MainMenuInfo[7] := ALLEGRO_ITEM_OF_MENU (
+        lMainMenuInfo[7] := ALLEGRO_ITEM_OF_MENU (
           '&Disabled',
           DYNAMIC_DISABLED_ID,
           ALLEGRO_MENU_ITEM_DISABLED,
           Nil
         );
-        MainMenuInfo[8] := ALLEGRO_ITEM_OF_MENU (
+        lMainMenuInfo[8] := ALLEGRO_ITEM_OF_MENU (
           'D&ELETE ME!',
           DYNAMIC_DELETE_ID,
           0, Nil
         );
-        MainMenuInfo[9] := ALLEGRO_ITEM_OF_MENU (
+        lMainMenuInfo[9] := ALLEGRO_ITEM_OF_MENU (
           'C&lick Me',
           DYNAMIC_CREATE_ID,
           0, Nil
         );
-        MainMenuInfo[10] := ALLEGRO_END_OF_MENU;
+        lMainMenuInfo[10] := ALLEGRO_END_OF_MENU;
 
-      MainMenuInfo[11] := ALLEGRO_ITEM_OF_MENU ('&Help->', HELP_ID, 0, Nil);
-        MainMenuInfo[12] := ALLEGRO_ITEM_OF_MENU ('&About',HELP_ABOUT_ID,0,Nil);
-        MainMenuInfo[13] := ALLEGRO_END_OF_MENU;
+      lMainMenuInfo[11] := ALLEGRO_ITEM_OF_MENU ('&Help->', HELP_ID, 0, Nil);
+        lMainMenuInfo[12] := ALLEGRO_ITEM_OF_MENU ('&About',HELP_ABOUT_ID,0,Nil);
+        lMainMenuInfo[13] := ALLEGRO_END_OF_MENU;
 
-      MainMenuInfo[14] := ALLEGRO_END_OF_MENU;
+      lMainMenuInfo[14] := ALLEGRO_END_OF_MENU;
     { Create menu. }
-      Result := al_build_menu (MainMenuInfo);
+      Result := al_build_menu (lMainMenuInfo);
     { Add an icon to the Help/About item. Note that Allegro assumes ownership of
       the bitmap. }
       al_set_menu_item_icon (
@@ -220,7 +218,7 @@ PROGRAM ex_menu;
 (* Draws background. *)
   procedure DrawBackground (Picture: ALLEGRO_BITMAPptr);
   var
-    t, sw, sh, dw, dh, cx, cy: REAL;
+    t, sw, sh, dw, dh, cx, cy: Real;
   begin
     t := al_get_timer_count (Timer) * 0.1;
     sw := al_get_bitmap_width (Picture);
@@ -258,14 +256,14 @@ PROGRAM ex_menu;
     aEnabled: Boolean
   );
   var
-    Flags: AL_INT;
+    lFlags: AL_INT;
   begin
-    Flags := al_get_menu_item_flags (aMenu, aItem);
+    lFlags := al_get_menu_item_flags (aMenu, aItem);
     if aEnabled then
-      Flags := Flags and not ALLEGRO_MENU_ITEM_DISABLED
+      lFlags := lFlags and not ALLEGRO_MENU_ITEM_DISABLED
     else
-      Flags := Flags or ALLEGRO_MENU_ITEM_DISABLED;
-    al_set_menu_item_flags (amenu, aItem, Flags)
+      lFlags := lFlags or ALLEGRO_MENU_ITEM_DISABLED;
+    al_set_menu_item_flags (aMenu, aItem, lFlags)
   end;
 
 
@@ -296,27 +294,28 @@ PROGRAM ex_menu;
 
     procedure CreateChildWindow;
     var
-      ChildWindow: ALLEGRO_DISPLAYptr;
-      ChildMenuInfo: array [0..3] of ALLEGRO_MENU_INFO;
-      ChildMenu: ALLEGRO_MENUptr;
+      lChildWindow: ALLEGRO_DISPLAYptr;
+      lChildMenuInfo: array [0..3] of ALLEGRO_MENU_INFO;
+      lChildMenu: ALLEGRO_MENUptr;
     begin
-      ChildWindow := al_create_display (INITIAL_WIDTH, INITIAL_HEIGHT);
-      if ChildWindow <> Nil then
+      lChildWindow := al_create_display (INITIAL_WIDTH, INITIAL_HEIGHT);
+      if lChildWindow <> Nil then
       begin
-        al_set_window_title (ChildWindow, 'ex_menu - Child Window');
+        al_set_window_title (lChildWindow, 'ex_menu - Child Window');
       { Create and bind child menu. }
-        ChildMenuInfo[0] := ALLEGRO_ITEM_OF_MENU ('&File->', 0, 0, Nil);
-          ChildMenuInfo[1] := ALLEGRO_ITEM_OF_MENU ('&Close', FILE_CLOSE_ID, 0, Nil);
-          ChildMenuInfo[2] := ALLEGRO_END_OF_MENU;
-        ChildMenuInfo[3] := ALLEGRO_END_OF_MENU;
-        ChildMenu := al_build_menu (ChildMenuInfo);
-        al_set_display_menu (ChildWindow, ChildMenu);
+        lChildMenuInfo[0] := ALLEGRO_ITEM_OF_MENU ('&File->', 0, 0, Nil);
+          lChildMenuInfo[1] := ALLEGRO_ITEM_OF_MENU
+            ('&Close', FILE_CLOSE_ID, 0, Nil);
+          lChildMenuInfo[2] := ALLEGRO_END_OF_MENU;
+        lChildMenuInfo[3] := ALLEGRO_END_OF_MENU;
+        lChildMenu := al_build_menu (lChildMenuInfo);
+        al_set_display_menu (lChildWindow, lChildMenu);
       { Clean child window. }
         al_clear_to_color (al_map_rgb (0,0,0));
         al_flip_display;
         al_register_event_source (
           Queue,
-          al_get_display_event_source (ChildWindow)
+          al_get_display_event_source (lChildWindow)
         );
       { Restore target bitmap. }
         al_set_target_backbuffer (Display)
@@ -338,7 +337,7 @@ PROGRAM ex_menu;
     end;
 
   begin
-    case aOption OF
+    case aOption of
     DYNAMIC_CHECKBOX_ID:
       begin
         if IsEnabled (MainMenu, DYNAMIC_DISABLED_ID) then
@@ -403,7 +402,7 @@ begin
     end;
   { Dispatch events. }
     al_wait_for_event (Queue, @Event);
-    case (Event.ftype) OF
+    case (Event.ftype) of
     ALLEGRO_EVENT_DISPLAY_RESIZE:
       begin
         al_acknowledge_resize (Display);
@@ -463,9 +462,8 @@ begin
     ALLEGRO_EVENT_MOUSE_BUTTON_UP:
     { Popup a context menu on a right click in the main window. }
       if (Event.mouse.display = Display) and (Event.mouse.button = 2) then
-      begin
-        if PopupMenu <> Nil then al_popup_menu (PopupMenu, Display)
-      end;
+        if PopupMenu <> Nil then
+          al_popup_menu (PopupMenu, Display);
     ALLEGRO_EVENT_TIMER:
       Redraw := True;
     end;

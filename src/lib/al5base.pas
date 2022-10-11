@@ -5,7 +5,7 @@ unit al5Base;
   internally to be sure they're the correct in any platform (i.e. 32bit or
   64bit).  You may use them if you wish.
  *)
-(* Copyright (c) 2012-2019 Guillermo Martínez J. <niunio@users.sourceforge.net>
+(* Copyright (c) 2012-2022 Guillermo Martínez J. <niunio@users.sourceforge.net>
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -32,6 +32,9 @@ unit al5Base;
 interface
 
   const
+  (* Constants for error values. *)
+    AL_EDOM   = 1;
+    AL_ERANGE = 2;
   (* Defines some constants to build the correct names of the library files. *)
 {$IFDEF DEBUGmodE}
     _DBG_ = '-debug'; (***<@exclude *)

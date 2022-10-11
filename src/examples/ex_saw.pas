@@ -1,4 +1,4 @@
-PROGRAM ex_saw;
+program ex_saw;
 (* Recreate exstream.c from A4. *)
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.

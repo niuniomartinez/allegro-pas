@@ -1,5 +1,9 @@
 In no special order
 
+  * THREAD EXAMPLE PROJECTS.  Note that ex_threads.pas was disabled!
+
+  * Threading examples don't work as expected.  There are bugs in Allegro!
+
   * Configuration load in ex_draw.pas.
 
   * Check the "pointer types":  Where to use them.

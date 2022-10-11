@@ -1,4 +1,4 @@
-PROGRAM ex_stream_file;
+program ex_stream_file;
 (*
  * An example program that plays a file from the disk using Allegro5
  * streaming API. The file is being read in small chunks and played on the

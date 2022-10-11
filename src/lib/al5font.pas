@@ -4,7 +4,7 @@ unit al5font;
   @bold(See also)
 
   @link(al5ttf) *)
-(* Copyright (c) 2012-2020 Guillermo Martínez J.
+(* Copyright (c) 2012-2022 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -54,6 +54,7 @@ interface
 
 (* Initialization. *)
   function al_init_font_addon: AL_BOOL; CDECL; external ALLEGRO_FONT_LIB_NAME;
+  function al_is_font_addon_initialized: AL_BOOL; CDECL; external ALLEGRO_FONT_LIB_NAME;
   procedure al_shutdown_font_addon; CDECL; external ALLEGRO_FONT_LIB_NAME;
   function al_get_allegro_font_version: AL_UINT32; CDECL; external ALLEGRO_FONT_LIB_NAME;
 
@@ -248,7 +249,7 @@ implementation
       font, color,
       x, y, max_width, line_height, flags,
       Format (fmt, values)
-    );
+    )
   end;
 
 end.

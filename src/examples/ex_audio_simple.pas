@@ -1,4 +1,4 @@
-PROGRAM ex_audio_simple;
+program ex_audio_simple;
 (*    Example program for the Allegro library.
  *
  *    Demonstrate 'simple' audio interface.
@@ -92,7 +92,7 @@ begin
   EndLoop := False;
   repeat
     al_wait_for_event (EventQueue, @Event);
-    case Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_KEY_CHAR:
       begin
         if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then

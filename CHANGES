@@ -4,6 +4,18 @@ Changes between versions 5.2.b.1-1 and 5.2.b.2
   API changes
   -----------
     : al_get_opengl_variant returns an ALLEGRO_OPENGL_VARIANT now.
+    : Removed constants ALLEGRO_IS_ALPHA and ALLEGRO_IS_BETA.
+
+  News
+  ----
+    : Added notes about threading.
+    : Added stuff from Allegro 5.2.8
+      - Audio devices.
+      - Oklab color space.
+      - Linear color conversion.
+      - New shader modes.
+      - Platform identification.
+      - Transformation transpose.
 
 
 

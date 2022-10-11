@@ -1,3 +1,10 @@
+#al5base.AL_EDOM
+An error value returned by @link(al_get_errno) in some cases.
+@seealso(AL_ERANGE)
+#al5base.AL_ERANGE
+An error value returned by @link(al_get_errno) in some cases.
+@seealso(AL_EDOM)
+
 #al5base.AL_POINTER
 Generic pointer.
 #al5base.AL_INT8
@@ -77,41 +84,38 @@ This is a workaround because some Pascal compilers doesn't allow to cast a @code
 
 
 #Allegro5.ALLEGRO_PAS_VERSION_STR
-Allegro.pas version string.
+Allegro.pas version string.  Note this is @bold(not) the Allegro's version.
 @seealso(al_get_allegro_version)
 @seealso(ALLEGRO_VERSION_INT)
-@seealso(ALLEGRO_IS_ALPHA)
-@seealso(ALLEGRO_IS_BETA)
 #Allegro5.ALLEGRO_VERSION
 Major version of Allegro.
+@seealso(ALLEGRO_VERSION_INT)
+@seealso(ALLEGRO_PAS_VERSION_STR)
 #Allegro5.ALLEGRO_SUB_VERSION
 Minor version of Allegro.
+@seealso(ALLEGRO_VERSION_INT)
+@seealso(ALLEGRO_PAS_VERSION_STR)
 #Allegro5.ALLEGRO_WIP_VERSION
 Revision number of Allegro.
+@seealso(ALLEGRO_VERSION_INT)
+@seealso(ALLEGRO_PAS_VERSION_STR)
 #Allegro5.ALLEGRO_DATE_STR
-Release year.
+Release year for Allegro.pas.
+@seealso(ALLEGRO_VERSION_INT)
+@seealso(ALLEGRO_PAS_VERSION_STR)
 #Allegro5.ALLEGRO_DATE
-Release date as integer with digits: yyyymmdd.
+Release date for Allegro.pas as integer with digits: yyyymmdd.
+@seealso(ALLEGRO_VERSION_INT)
+@seealso(ALLEGRO_PAS_VERSION_STR)
 #Allegro5.ALLEGRO_VERSION_INT
-Packs version number in a simple @link(AL_INT) number.
+Packs Allegro's version number in a simple @link(AL_INT) number.
+
+Note this is @bold(not) the actual Allegro version, you should use @link(al_get_allegro_version) to get this.  @code(ALLEGRO_VERSION_INT) just has a value that identifies all compatible Allegro DLL/so/dylib files.
 @seealso(al_get_allegro_version)
 @seealso(ALLEGRO_PAS_VERSION_STR)
 @seealso(ALLEGRO_VERSION)
 @seealso(ALLEGRO_SUB_VERSION)
 @seealso(ALLEGRO_WIP_VERSION)
-@seealso(ALLEGRO_IS_ALPHA)
-@seealso(ALLEGRO_IS_BETA)
-#Allegro5.ALLEGRO_IS_ALPHA
-@true if current version is an alpha version.
-
-Alpha versions are Work In Progress releases for evaluation.  API is not fixed and my change in later versions.
-@seealso(ALLEGRO_IS_BETA)
-#Allegro5.ALLEGRO_IS_BETA
-@true if current version is a beta version.
-
-Beta versions are mostly for evaluation.  API is assumed as stable but some small changes may be make in later versions.
-@seealso(ALLEGRO_IS_ALPHA)
-
 
 #Allegro5.ALLEGRO_USER_MAIN
 Description of user main function for @link(al_run_main).
@@ -139,6 +143,8 @@ The release number is 0 for an unofficial version and 1 or greater for an
 official release. For example "5.0.2[1]" would be the (first) official 5.0.2
 release while "5.0.2[0]" would be a compile of a version from the "5.0.2"
 branch before the official release.
+
+Remember this version number isn't for Allegro.pas but for Allegro.  In most cases will @bold(not) be the same than @link(ALLEGRO_VERSION_INT).
 @seealso(ALLEGRO_VERSION_INT)
 #Allegro5.al_run_main
 This function is useful in cases where you don't have a @code(main) function
@@ -162,6 +168,8 @@ if you really need it to remove this warning from documentation).
 Just to be sure that PI number is available.
 #allegro5.ALLEGRO_TAU
 The @italic(tau) number.
+
+This is the full circle, which is more convenient in most cases.  For more information read @html(<a href="https://tauday.com/tau-manifesto">The Tau manifesto</a>).
 
 #Allegro5.AL_ID
 This function can be used to create a packed 32 bit integer from 8 bit
@@ -2480,6 +2488,8 @@ The supported options are:
      calling @link(al_acknowledge_resize).)
   @itemlabel(@bold(@code(ALLEGRO_OPENGL_MAJOR_VERSION))) @item(Request a specific OpenGL major version.)
   @itemlabel(@bold(@code(ALLEGRO_OPENGL_MINOR_VERSION))) @item(Request a specific OpenGL minor version.)
+  @itemlabel(@bold(@code(ALLEGRO_OPENGL_MINOR_VERSION))) @item(Request a specific OpenGL minor version.)
+  @itemlabel(@bold(@code(ALLEGRO_DEFAULT_SHADER_PLATFORM))) @item(Specify the shader platform to use for the default shader. See @link(ALLEGRO_SHADER_PLATFORM). The default is @link(ALLEGRO_SHADER_AUTO).)
 )
 @seealso(al_get_new_display_option)@seealso(al_set_new_display_flags) @seealso(al_reset_new_display_options) @seealso(al_get_display_option)
 #Allegro5.al_get_new_display_option
@@ -2639,7 +2649,317 @@ This function may not draw exactly where you expect it to. See the @bold(Pixel-p
 
 
 #Allegro5.al_get_errno
-Some Allegro functions will set an error number as well as returning an error code.  Call this function to retrieve the last error number set for the calling thread. @seealso(al_set_errno)
+Some Allegro functions will set an error number as well as returning an error code.  Call this function to retrieve the last error number set for the calling thread.
+@seealso(al_set_errno) @seealso(AL_EDOM) @seealso(AL_ERANGE)
+
+
+
+#Allegro5.AL_FIXED
+Allegro provides some routines for working with fixed point numbers, and defines the type @code(AL_FIXED) to be a signed 32-bit integer.  The high word is used for the integer part and the low word for the fraction, giving a range of -32768 to 32767 and an accuracy of about four or five decimal places.  Fixed point numbers can be assigned, compared, added, subtracted, negated and shifted (for multiplying or dividing by powers of two) using the normal integer operators, but you should take care to use the appropriate conversion routines when mixing fixed point with integer or floating point values. Writing @code(fixed_point_1 + fixed_point_2) is OK, but @code(fixed_point + integer) is not.
+
+The only advantage of fixed point math routines is that you don't require a floating point coprocessor to use them.  This was great in the time period of i386 and i486 machines, but stopped being so useful with the coming of the Pentium class of processors.  From Pentium onwards, CPUs have increased their strength in floating point operations, equaling or even surpassing integer math performance.
+
+Depending on the type of operations your program may need, using floating point types may be faster than fixed types if you are targeting a specific machine class. Many embedded processors have no FPUs so fixed point maths can be useful there.
+@seealso(al_itofix) @seealso(al_fixtoi) @seealso(al_fixtrunc) @seealso(al_ftofix) @seealso(al_fixtof)
+@seealso(al_fixadd) @seealso(al_fixsub) @seealso(al_fixmul) @seealso(al_fixdiv)
+@seealso(al_fixsqrt)
+@seealso(al_fixcos) @seealso(al_fixsin) @seealso(al_fixtan)
+
+#Allegro5.AL_FIXTORAD_R
+Example:
+@longcode(!
+var
+  RadAngle, BinaryAngle: AL_FIXED;
+begin
+...
+
+{ Set the binary angle to 90 degrees. }
+  BinaryAngle := 64;
+{ Now convert to radians (about 1.57). }
+  RadAngle = al_fixmul (BinaryAngle, AL_FIXTORAD_R);
+...
+end.
+!)
+@seealso(AL_FIXED) @seealso(al_fixmul) @seealso(AL_RADTOFIX_R)
+#Allegro5.AL_RADTOFIX_R
+Example:
+@longcode(!
+var
+  RadAngle, BinaryAngle: AL_FIXED;
+begin
+  BinaryAngle := al_fixmul (RadAngle, AL_RADTOFIX_R)
+end.
+!)
+@seealso(AL_FIXED) @seealso(al_fixmul) @seealso(AL_FIXTORAD_R)
+
+#Allegro5.al_fixsqrt
+If `x' is negative, @link(al_get_errno) is set to @link(AL_EDOM) and the function returns zero.
+#Allegro5.al_fixhypot
+This should be better than calculating the formula yourself manually, since the error is much smaller.
+#Allegro5.al_fixatan
+The input value must be a fixed point radian.  The inverse tangent is the value whose tangent is x.
+
+Example:
+@longcode(!
+var
+  InverseTangent: AL_FIXED;
+begin
+{ Sets InverseTangent to binary angle 13. }
+  InverseTangent := al_fixatan (al_ftofix (0.326))
+en.
+!)
+@return(The inverse tangent of a fixed point value, measured as a fixed point binary format angle.)
+@seealso(al_fixtan) @seealso(al_fixatan2)
+#Allegro5.al_fixatan2
+Computes the arc tangent of @code(y / x), but the signs of both arguments are used to determine the quadrant of the result, and @code(x) is permitted to be zero.  This function is useful to convert Cartesian coordinates to polar coordinates.
+
+Example:
+@longcode(!
+var
+  ResultValue: AL_FIXED;
+begin
+{ Sets ResultValue to binary angle 64. }
+  ResultValue := al_fixatan2 (al_itofix (1), 0);
+{ Sets ResultValue to binary angle -109. }
+  ResultValue ::= al_fixatan2 (al_itofix (-1), al_itofix (-2));
+{ Fails. }
+  ResultValue := al_fixatan2 (0, 0);
+  if al_get_errno <> 0 then Halt (-1)
+end.
+!)
+@return(The arc tangent of y / x in fixed point binary format angle, from -128 to 128. If both x and y are zero, returns zero and sets Allegro's errno to @link(AL_EDOM).)
+@seealso(al_fixtan) @seealso(al_fixatan)
+
+#Allegro5.al_ftofix
+Unlike @link(al_itofix), this function clamps values which could overflow the type conversion, setting @link(al_get_errno) to non-zero in the process if this happens.
+@seealso(al_itofix) @seealso(al_fixtof)
+#Allegro5.al_fixtof
+@seealso(al_ftofix)
+
+#Allegro5.al_fixadd
+Although fixed point numbers can be added with the normal '+' integer operator, that doesn't provide any protection against overflow.  If overflow is a problem, you should use this function instead.  It is slower than using integer operators, but if an overflow occurs it will set @link(al_get_errno) and clamp the result, rather than just letting it wrap.
+
+Example:
+@longcode(!
+var
+  Value: AL_FIXED;
+begin
+{ This will put 5035 into Value. }
+  Value := al_fixadd (al_itofix (5000), al_itofix (35));
+{ Sets errno and puts -32768 into Value. }
+  Value = al_fixadd (al_itofix (-31000), al_itofix (-3000));
+{ This will fail. }
+  if al_get_errno <> 0 then Halt (-1)
+end.
+!)
+@returns(The clamped result of adding x to y, setting Allegro's errno to @link(AL_ERANGE) if there was an overflow.)
+@seealso(al_fixsub) @seealso(al_fixmul) @seealso(al_fixdiv)
+#Allegro5.al_fixsub
+Although fixed point numbers can be substracted with the normal '-' integer operator, that doesn't provide any protection against overflow.  If overflow is a problem, you should use this function instead.  It is slower than using integer operators, but if an overflow occurs it will set @link(al_get_errno) and clamp the result, rather than just letting it wrap.
+
+Example:
+@longcode(!
+var
+  Value: AL_FIXED;
+begin
+{ This will put 4965 into Value. }
+  Value := al_fixsub (al_itofix (5000), al_itofix (35));
+{ Sets errno and puts -32768 into Value. }
+  Value = al_fixsub (al_itofix (-31000), al_itofix (3000));
+{ This will fail. }
+  if al_get_errno <> 0 then Halt (-1)
+end.
+!)
+@returns(The clamped result of substracting y from x, setting Allegro's errno to @link(AL_ERANGE) if there was an overflow.)
+@seealso(al_fixadd) @seealso(al_fixmul) @seealso(al_fixdiv)
+#Allegro5.al_fixmul
+A fixed point value can be multiplied or divided by an integer with the normal * and / operators.  To multiply two fixed point values, though, you must use this function.
+
+Example:
+@longcode(!
+var
+  Value: AL_FIXED;
+begin
+{ This will put 30000 into Value. }
+  Value := al_fixmul (al_itofix (10), al_itofix (3000))
+end.
+!)
+@return(The clamped result of multiplying x by y.)
+@seealso(al_fixadd) @seealso(al_fixsub) @seealso(al_fixdiv)
+#Allegro5.al_fixdiv
+A fixed point value can be divided by an integer with the normal / operator.  To divide two fixed point values, though, you must use this function.  If a division by zero occurs, Allegro's errno will be set and the maximum possible value will be returned, but errno is not cleared if the operation is successful.  This means that if you are going to test for division by zero you should call @code(@link(al_set_errno) @(0@)) before calling @code(al_fixdiv).
+
+Example:
+
+@longcode(!
+var
+  Value: AL_FIXED;
+begin
+{ This will put 0.06060 Value. }
+  Value := al_fixdiv (al_itofix (2), al_itofix (33));
+{ This will put 0 into Value. }
+  Value := al_fixdiv (0, al_itofix (-30));
+{ Sets errno and puts -32768 into Value. }
+  Value := al_fixdiv (al_itofix (-100), al_itofix (0));
+  if al_get_errno <> 0 then Halt (-1)
+end.
+!)
+@return(The result of dividing x by y. If y is zero, returns the maximum possible fixed point value and sets Allegro's errno to @link(AL_ERANGE).)
+@seealso(al_fixadd) @seealso(al_fixsub) @seealso(al_fixmul)
+
+#Allegro5.al_fixfloor
+That is, it rounds towards negative infinity.
+
+Example:
+@longcode(!
+var
+  Number: AL_FIXED;
+begin
+{ This will put 33 into Number. }
+  Number := al_fixfloor (al_itofix (100) / 3);
+{ And this will round down to 16. }
+  Number := al_fixfloor (al_itofix (100) / 6)
+end.
+!)
+@seealso(al_fixtoi) @seealso(al_fixceil)
+#Allegro5.al_fixceil
+That is, it rounds towards positive infinity.
+
+Example:
+@longcode(!
+var
+  Number: AL_FIXED;
+begin
+{ This will put 34 into Number. }
+  Number := al_fixceil (al_itofix (100) / 3);
+{ And this will round down to 17. }
+  Number := al_fixceil (al_itofix (100) / 6)
+end.
+!)
+@seealso(al_fixtoi) @seealso(al_fixfloor)
+#Allegro5.al_itofix
+This is the same thing as @code(x shl 16).  Remember that overflows (trying to convert an integer greater than 32767) and underflows (trying to convert an integer lesser than -32768) are not detected even in debug builds!  The values simply "wrap around".
+
+Example:
+@longcode(!
+var
+  Number: AL_FIXED;
+begin
+{ This conversion is OK. }
+  Number := al_itofix (100);
+  if al_fixtoi (number) <> 100 then Halt (-1);
+{ This is not OK. }
+  Number := al_itofix (64000);
+  if al_fixtoi (number) <> 64000 then Halt (-1)
+end.
+!)
+@returns(The value of the integer converted to fixed point ignoring overflows.)
+@seealso(al_fixtoi) @seealso(al_ftofix) @seealso(al_fixtof)
+#Allegro5.al_fixtoi)
+Example:
+@longcode(!
+var
+  Value: AL_FIXED;
+begin
+{ This will put 33 into Value. }
+  Value := al_fixtoi (al_itofix (100) div 3);
+{ But this will round up to 17. }
+  Value := al_fixtoi (al_itofix (100) div 6)
+end.
+!)
+@seealso(al_itofix) @seealso(al_fixtrunc)
+#Allegro5.al_fixtrunc
+@seealso(al_fixtoi) @seealso(al_itofix)
+
+#Allegro5.al_fixcos
+The input value must be a @html(<a href="introduction.html#fix_trig">fixed point binary angle</a>).
+
+Example:
+@longcode(!
+var
+  Angle: AL_FIXED;
+  Value: Real;
+begin
+{ Set the binary angle to 45 degrees. }
+  Angle := al_itofix (32);
+{ The cosine of 45 degrees is about 0.7071. }
+  Value := al_fixtof (al_fixcos (Angle));
+  if not ((Value > 0.7) and (Value < 0.71)) then Halt (-1)
+end.
+!)
+@return(The cosine of a fixed point binary format angle.)
+@seealso(al_fixsin) @seealso(al_fixacos)
+#Allegro5.al_fixsin
+The input value must be a @html(<a href="introduction.html#fix_trig">fixed point binary angle</a>).
+
+Example:
+@longcode(!
+var
+  Angle: AL_FIXED;
+  Value: Real;
+begin
+{ Set the binary angle to 90 degrees. }
+  Angle := al_itofix (64);
+{ The sine of 90 degrees is about one. }
+  Value := al_fixtof (al_fixsin (Angle));
+  if Value <> 1 then Halt (-1)
+end.
+!)
+@return(The cosine of a fixed point binary format angle.)
+@seealso(al_fixcos) @seealso(al_fixasin)
+#Allegro5.al_fixtan
+The input value must be a @html(<a href="introduction.html#fix_trig">fixed point binary angle</a>).
+
+Example:
+@longcode(!
+var
+  Angle: AL_FIXED, ResA, ResB;
+  Dif: Real;
+begin
+  Angle := al_itofix (37);
+{ Prove that tan (angle) = sin (angle) / cos (angle). }
+  ResA := al_fixdiv (al_fixsin (Angle), al_fixcos (Angle));
+  ResB := al_fixtan (Angle);
+  Dif := al_fixtof (al_fixsub (ResA, ResB));
+  WriteLn (Format ('Precision error: %f', [Dif]))
+end.
+!)
+@return(The tangent of a fixed point binary format angle.)
+@seealso(al_fixatan) @seealso(al_fixcos) @seealso(al_fixsin)
+#Allegro5.al_fixacos
+The inverse cosine is defined only in the domain from -1 to 1.  Outside of this input range, the function will set Allegro's errno to @link(AL_EDOM) and return zero.
+
+Example:
+@longcode(!
+var
+  Value: AL_FIXED;
+begin
+{ Sets Value to binary angle 128. }
+  Value = al_fixacos (al_itofix (-1))
+end.
+!)
+@return(The inverse cosine of a fixed point value, measured as fixed point binary format angle, or zero if the input was out of range.  All return values of this function will be in the range 0 to 128.)
+@seealso(al_fixcos) @seealso(al_get_errno)
+#Allegro5.al_fixasin
+The inverse sine is defined only in the domain from -1 to 1.  Outside of this input range, the function will set Allegro's errno to @link(AL_EDOM) and return zero.
+
+Example:
+@longcode(!
+var
+  Angle: Real;
+  Value: AL_FIXED;
+begin
+{ Sets Value to right binary angle (64). }
+  Value = al_fixasin (al_itofix (1))
+{ Sets Angle to 0.2405. }
+  Angle := al_fixtof (al_fixmul (al_fixasin (al_ftofix (0.238)), AL_FIXTORAD_R));
+{ This will trigger the if. }
+  Value := al_fixasin (al_ftofix (-1.09));
+  if al_get_errno <> 0 then Halt (-1)
+end.
+!)
+@return(The inverse sine of a fixed point value, measured as fixed point binary format angle, or zero if the input was out of range.  All return values of this function will be in the range 0 to 128.)
+@seealso(al_fixsin) @seealso(al_get_errno)
 
 
 
@@ -3088,7 +3408,7 @@ BEGIN
 END;
 !)
 @param(trans Transformation to alter.)
-@seealso(al_translate_transform) @seealso(al_rotate_transform) @seealso(al_scale_transform)
+@seealso(al_translate_transform) @seealso(al_rotate_transform) @seealso(al_scale_transform) @seealso(al_transpose_transform)
 #Allegro5.al_build_transform
 Builds a transformation given some parameters. This call is equivalent to calling the transformations in this order: make identity, rotate, scale, translate. This method is faster, however, than actually calling those functions.
 
@@ -3101,7 +3421,7 @@ this function was previously documented to be equivalent to a different (and mor
 @param(sx Horizontal scale.)
 @param(sy Vertical scale.)
 @param(theta Rotation angle in radians:)
-@seealso(al_translate_transform) @seealso(al_rotate_transform) @seealso(al_scale_transform) @seealso(al_compose_transform)
+@seealso(al_identity_transform) @seealso(al_translate_transform) @seealso(al_rotate_transform) @seealso(al_scale_transform) @seealso(al_compose_transform)
 #Allegro5.al_build_camera_transform
 Builds a transformation which can be used to transform 3D coordinates in world space to camera space. This involves translation and a rotation. The function expects three coordinate triplets: The camera's position, the position the camera is looking at and an up vector. The up vector does not need to be of unit length and also does not need to be perpendicular to the view direction - it can usually just be the world up direction (most commonly 0/1/0).
 
@@ -3136,40 +3456,41 @@ al_build_camera_transform (
     1, 1, 0
 );
 !)
-@seealso(al_translate_transform_3d) @seealso(al_rotate_transform_3d) @seealso(al_scale_transform_3d) @seealso(al_compose_transform) @seealso(al_use_transform)
+@seealso(al_identity_transform) @seealso(al_translate_transform_3d) @seealso(al_rotate_transform_3d) @seealso(al_scale_transform_3d) @seealso(al_compose_transform) @seealso(al_use_transform)
 #Allegro5.al_translate_transform
 Applies a translation to a transformation.
 @param(trans Transformation to alter.)
 @param(x Horizontal translation.)
 @param(y Vertical translation.)
-@seealso(al_rotate_transform) @seealso(al_scale_transform) @seealso(al_build_transform)
+@seealso(al_identity_transform) @seealso(al_rotate_transform) @seealso(al_scale_transform) @seealso(al_build_transform)
 #Allegro5.al_translate_transform_3d
 Combines the given transformation with a transformation which translates coordinates by the given vector.
-@seealso(al_use_projection_transform)
+@seealso(al_identity_transform) @seealso(al_use_projection_transform)
 #Allegro5.al_rotate_transform
 Applies a rotation to a transformation.
 @param(trans Transformation to alter.)
 @param(theta Rotation angle in radians.)
-@seealso(al_translate_transform) @seealso(al_scale_transform) @seealso(al_build_transform)
+@seealso(al_identity_transform) @seealso(al_translate_transform) @seealso(al_scale_transform) @seealso(al_build_transform)
 #Allegro5.al_rotate_transform_3d
 Combines the given transformation with a transformation which rotates coordinates around the given vector by the given angle in radians.
 
 Note: The vector is assumed to be of unit length (otherwise it will also incur a scale).
+@seealso(al_identity_transform) @seealso(al_rotate_transform)
 #Allegro5.al_scale_transform
 Applies a scale to a transformation.
 @param(trans Transformation to alter.)
 @param(sx Horizontal scale.)
 @param(sy Vertical scale.)
-@seealso(al_translate_transform) @seealso(al_rotate_transform) @seealso(al_build_transform)
+@seealso(al_identity_transform) @seealso(al_translate_transform) @seealso(al_rotate_transform) @seealso(al_build_transform)
 #Allegro5.al_scale_transform_3d
 Combines the given transformation with a transformation which scales coordinates by the given vector.
-@seealso(al_use_projection_transform)
+@seealso(al_identity_transform) @seealso(al_use_projection_transform)
 #Allegro5.al_transform_coordinates
 Transforms a pair of coordinates.
 @param(trans Transformation to use.)
 @param(x Horizontal coordinate.)
 @param(y Vertical coordinate.)
-@seealso(al_use_transform) @seealso(al_transform_coordinates_3d)
+@seealso(al_identity_transform) @seealso(al_use_transform) @seealso(al_transform_coordinates_3d)
 #Allegro5.al_transform_coordinates_3d
 Transforms x, y, z coordinates.
 
@@ -3178,7 +3499,7 @@ Note: If you are using a projection transform you most likely will want to use a
 @param(x Horizontal coordinate.)
 @param(y Vertical coordinate.)
 @param(z Depth coordinate.)
-@seealso(al_use_transform) @seealso(al_transform_coordinates)
+@seealso(al_identity_transform) @seealso(al_use_transform) @seealso(al_transform_coordinates)
 #Allegro5.al_transform_coordinates_4d
 Transforms x, y, z, w coordinates.
 @param(trans Transformation to use.)
@@ -3186,14 +3507,14 @@ Transforms x, y, z, w coordinates.
 @param(y Vertical coordinate.)
 @param(z Depth coordinate.)
 @param(w W coordinate.)
-@seealso(al_use_transform) @seealso(al_transform_coordinates) @seealso(al_transform_coordinates_3d)
+@seealso(al_identity_transform) @seealso(al_use_transform) @seealso(al_transform_coordinates) @seealso(al_transform_coordinates_3d)
 #Allegro5.al_transform_coordinates_3d_projective
 Transforms @code(x), @code(y), @code(z) as homogeneous coordinates. This is the same as using @link(al_transform_coordinates_4d) with the @code(w) coordinate set to 1, then dividing @code(x), @code(y), @code(z) by the resulting @code(w). This will provide the same coordinates Allegro will draw to when a projective transform is in effect as set with al_use_projection_transform.
 @param(trans Transformation to use.)
 @param(x Horizontal coordinate.)
 @param(y Vertical coordinate.)
 @param(z Depth coordinate.)
-@seealso(al_use_transform) @seealso(al_transform_coordinates) @seealso(al_transform_coordinates_3d) @seealso(al_use_projection_transform)
+@seealso(al_identity_transform) @seealso(al_use_transform) @seealso(al_transform_coordinates) @seealso(al_transform_coordinates_3d) @seealso(al_use_projection_transform)
 #Allegro5.al_compose_transform
 Composes (combine) two transformations by a matrix multiplication.
 @longcode(!
@@ -3202,7 +3523,7 @@ trans := trans other
 Note that the order of matrix multiplications is important. The effect of applying the combined transform will be as if first applying @code(trans) and then applying @code(other) and not the other way around.
 @param(trans ransformation to alter.)
 @param(other ransformation used to transform trans.)
-@seealso(al_translate_transform) @seealso(al_rotate_transform) @seealso(al_scale_transform)
+@seealso(al_identity_transform) @seealso(al_translate_transform) @seealso(al_rotate_transform) @seealso(al_scale_transform)
 #Allegro5.al_get_current_transform
 Returns the transformation of the current target bitmap, as set by @link(al_use_transform). If there is no target bitmap, this function returns @nil.
 @return(A pointer to the current transformation.)
@@ -3225,7 +3546,18 @@ Inverts the passed transformation. If the transformation is nearly singular (clo
 
 Allegro's transformation inversion functions work correctly only with 2D transformations.
 @param(trans Transformation to invert.)
-@seealso(al_check_inverse)
+@seealso(al_identity_transform) @seealso(al_check_inverse) @seealso(al_transpose_transform)
+#Allegro5.al_transpose_transform
+Transposes the matrix of the given transform. This can be used for inversing a rotation transform. For example:
+@longcode(#
+al_build_camera_transform (camera, 0, 0, 0, x, y, z, xu, yu, zu)
+al_copy_transform (inverse, camera)
+al_transpose_transform (camera)
+{ Now "inverse" will be a transformation rotating in the opposite
+  direction from "camera". Note that this only works if the camera
+  position is 0/0/0 as in the example. }
+#)
+@seealso(al_identity_transform)
 #Allegro5.al_check_inverse
 Checks if the transformation has an inverse using the supplied tolerance. Tolerance should be a small value between 0 and 1, with 1e-7 being sufficient for most applications.
 
@@ -3454,19 +3786,34 @@ Returns a string containing the source code to Allegro's default vertex or pixel
 
 
 
+#Allegro5.ALLEGRO_SYSTEM_ID
+The system Allegro is running on.
+@definitionlist(
+  @itemlabel(ALLEGRO_SYSTEM_ID_UNKNOWN) @item(Unknown system.)
+  @itemlabel(ALLEGRO_SYSTEM_ID_XGLX) @item(Xglx)
+  @itemlabel(ALLEGRO_SYSTEM_ID_WINDOWS) @item(Windows)
+  @itemlabel(ALLEGRO_SYSTEM_ID_MACOSX) @item(macOS)
+  @itemlabel(ALLEGRO_SYSTEM_ID_ANDROID) @item(Android)
+  @itemlabel(ALLEGRO_SYSTEM_ID_IPHONE) @item(iOS)
+  @itemlabel(ALLEGRO_SYSTEM_ID_GP2XWIZ) @item(GP2XWIZ)
+  @itemlabel(ALLEGRO_SYSTEM_ID_RASPBERRYPI) @item(Raspberry Pi)
+  @itemlabel(ALLEGRO_SYSTEM_ID_SDL) @item(SDL)
+)
+@seealso(al_get_system_id)
 #Allegro5.al_init
 Like @link(al_install_system), but automatically passes in the version and @nil as @code(atexit_ptr):
 
 @bold(Note)
 
 It is typically wrong to call al_init anywhere except the final game binary. In particular, do not call it inside a shared library unless you know what you're doing. In those cases, it is better to call @link(al_install_system) either with a @nil @code(atexit_ptr), or with a pointer to @code(atexit) provided by the user of this shared library.
+@seealso(al_uninstall_system) @seealso(al_get_system_id)
 
 #Allegro5.al_install_system
 Initializes the Allegro system.  No other Allegro functions can be called before this (with one or two exceptions).
 @param(version Should always be set to @link(ALLEGRO_VERSION_INT).)
 @param(atexit_ptr If non-@nil, and if hasn't been done already, @code(al_uninstall_system) will be registered as an atexit function. @code(atexit) is a function provided by standard C runtime library.  It allows similar functionality than @code(FINALIZATION) section in Pascal.)
 @returns(@true if Allegro was successfully initialized by this function call @(or already was initialized previously@), @false if Allegro cannot be used.)
-@seealso(al_init)
+@seealso(al_init) @seealso(al_uninstall_system) @seealso(al_get_system_id)
 #Allegro5.al_uninstall_system
 Closes down the Allegro system.
 
@@ -3487,10 +3834,125 @@ If multiple copies are found, then they are merged using @link(al_merge_config_i
 The contents of this file are documented inside a prototypical allegro5.cfg that you can find in the @code(resources) directory of the distributions of Allegro.pas.
 
 Note that Allegro will not look into that file unless you make a copy of it and place it next to your executable!
+#allegro5.al_get_system_id
+Returns the platform that Allegro is running on.
+@seealso(ALLEGRO_SYSTEM_ID)
 
 #Allegro5.al_inhibit_screensaver
 This function allows the user to stop the system screensaver from starting up if @true is passed, or resets the system back to the default state (the state at program start) if @false is passed.
 @returns(@true if the state was set successfully, otherwise @false.)
+
+
+
+#Allegro5.ALLEGRO_THREADptr
+An opaque structure representing a thread.
+@seealso(al_create_thread)
+#Allegro5.ALLEGRO_MUTEXptr
+An opaque structure representing a mutex.
+@seealso(al_create_mutex)
+#Allegro5.ALLEGRO_CONDptr
+An opaque structure representing a condition variable.
+@seealso(al_create_cond)
+#Allegro5.ALLEGRO_THREAD_METHOD
+Defines the method used by threads.
+@seealso(al_create_thread)
+
+#Allegro5.al_create_thread
+Spawns a new thread which begins executing @code(proc).  The new thread is passed its own thread handle and the value @code(arg).
+
+@Return(A pointer to the thread on success.  Otherwise, returns @nil if there was an error.)
+@seealso(al_run_detached_thread) @seealso(al_start_thread) @seealso(al_join_thread) @seealso(al_destroy_thread)
+#Allegro5.al_start_thread
+When a @code(thread) is created, it is initially in a suspended state.  Calling @code(al_start_thread) will start its actual execution.
+
+Starting a thread which has already been started does nothing.
+@seealso(al_run_detached_thread) @seealso(al_create_thread) @seealso(al_join_thread)
+#Allegro5.al_join_thread
+Waits for the @code(thread) to finish executing.  This implicitly calls @link(al_set_thread_should_stop) first.
+@seealso(al_create_thread) @seealso(al_join_thread_ex) @seealso(al_get_thread_should_stop) @seealso(al_destroy_thread)
+#Allegro5.al_join_thread_ex
+Same than @link(al_join_thread), but the value returned by the thread function will be stored at @code(ret_value).
+@seealso(al_create_thread) @seealso(al_join_thread) @seealso(al_get_thread_should_stop) @seealso(al_destroy_thread)
+#Allegro5.al_set_thread_should_stop
+Sets the flag to indicate thread should stop. Returns immediately.
+@seealso(al_join_thread) @seealso(al_get_thread_should_stop)
+#Allegro5.al_get_thread_should_stop
+Checks if another thread is waiting for thread to stop. Threads which run in a loop should check this periodically and act on it when convenient.
+
+@bold(Note:) We don’t support forceful killing of threads.
+@return(@true if another thread has called @link(al_join_thread) or @link(al_set_thread_should_stop) on this thread.)
+@seealso(al_join_thread) @seealso(al_set_thread_should_stop)
+#Allegro5.al_destroy_thread
+Frees the resources used by a @code(thread). Implicitly performs @code(al_join_thread) on the thread if it hasn’t been done already.
+
+Does nothing if thread is @nil.
+@seealso(al_join_thread)
+#Allegro5.al_run_detached_thread
+Runs the passed function in its own thread, with @code(arg) passed to it as only parameter. This is similar to calling @link(al_create_thread), @link(al_start_thread) and (after the thread has finished) @code(al_destroy_thread) - but you don’t have the possibility of ever calling @code(al_join_thread) on the thread.
+
+#Allegro5.al_create_mutex
+Creates the mutex object (a mutual exclusion device). The mutex may or may not support “recursive” locking.
+@return(The mutex on success or @nil on error.)
+@seealso(al_create_mutex_recursive) @seealso(al_lock_mutex) @seealso(al_destroy_mutex)
+#Allegro5.al_create_mutex_recursive
+Creates the mutex object (a mutual exclusion device), with support for “recursive” locking. That is, the mutex will count the number of times it has been locked by the same thread. If the caller tries to acquire a lock on the mutex when it already holds the lock then the count is incremented. The mutex is only unlocked when the thread releases the lock on the mutex an equal number of times, i.e. the count drops down to zero.
+@seealso(al_create_mutex)
+#Allegro5.al_lock_mutex
+Acquires the lock on @code(mutex). If the @code(mutex) is already locked by another thread, the call will block until the @code(mutex) becomes available and locked.
+
+If the @code(mutex) is already locked by the calling thread, then the behaviour depends on whether the @code(mutex) was created with @link(al_create_mutex) or @link(al_create_mutex_recursive). In the former case, the behaviour is undefined; the most likely behaviour is deadlock. In the latter case, the count in the mutex will be incremented and the call will return immediately.
+
+We don’t yet have @code(al_mutex_trylock).
+@seealso(al_create_mutex) @seealso( al_unlock_mutex)
+#Allegro5.al_unlock_mutex
+Releases the lock on @code(mutex) if the calling thread holds the lock on it.
+
+If the calling thread doesn’t hold the lock, or if the @code(mutex) is not locked, undefined behaviour results.
+@seealso(al_lock_mutex)
+#Allegro5.al_destroy_mutex
+Frees the resources used by the @code(mutex). The @code(mutex) should be unlocked. Destroying a locked @code(mutex) results in undefined behaviour.
+
+Does nothing if @code(mutex) is @nil.
+@seealso(al_create_mutex)
+
+#Allegro5.al_create_cond
+Creates a condition variable.
+@return(The condition value on success or @nil on error.)
+@seealso(al_wait_cond) @seealso(al_destroy_cond)
+#Allegro5.al_destroy_cond
+Destroys a condition variable.
+
+Destroying a condition variable which has threads block on it results in undefined behaviour.
+
+Does nothing if @code(cond) is @nil.
+@seealso(al_create_cond)
+#Allegro5.al_wait_cond
+On entering this function, @code(mutex) must be locked by the calling thread. The function will atomically release @code(mutex) and block on @code(cond). The function will return when @code(cond) is @italic(“signalled”), acquiring the lock on the mutex in the process.
+
+Example of proper use:
+@longcode(!
+al_lock_mutex (Mutex);
+WHILE something_not_true DO
+  al_wait_cond (cond, mutex);
+do_something;
+al_unlock_mutex (mutex);
+!)
+The @code(mutex) should be locked before checking the condition, and should be rechecked @code(al_wait_cond) returns. @code(al_wait_cond) can return for other reasons than the condition becoming true (e.g. the process was signalled). If multiple threads are blocked on the condition variable, the condition may no longer be @true by the time the second and later threads are unblocked. Remember not to unlock the mutex prematurely.
+@seealso(al_wait_cond_until) @seealso(al_broadcast_cond) @seealso(al_signal_cond)
+#Allegro5.al_wait_cond_until
+Like @link(al_wait_cond) but the call can return if the absolute time passes timeout before the condition is signalled.
+@return(zero on success, non-zero if the call timed out.)
+@seealso(al_wait_cond)
+#Allegro5.al_broadcast_cond
+Unblocks all threads currently waiting on a condition variable. That is, broadcast that some condition which those threads were waiting for has become true.
+
+@bold(Note:) The pthreads spec says to lock the mutex associated with cond before signalling for predictable scheduling behaviour.
+@seealso(al_signal_cond)
+#Allegro5.al_signal_cond
+Unblocks at least one thread waiting on a condition variable.
+
+Generally you should use @link(al_broadcast_cond) but @code(al_signal_cond) may be more efficient when it’s applicable.
+@seealso(al_broadcast_cond)
 
 
 
@@ -3632,6 +4094,13 @@ Sample depth and type as well as signedness. Mixers only use 32-bit signed float
 
 @bold(@code(ALLEGRO_AUDIO_DEPTH_UINT8)): @code(INT8 + UNSIGNED)
 
+#al5audio.ALLEGRO_PLAYMODE
+@value(ALLEGRO_PLAYMODE_ONCE the sample/stream is played from start to finish an then it stops.)
+@value(ALLEGRO_PLAYMODE_LOOP the sample/stream is played from start to finish (or between the two loop points). When it reaches the end, it restarts from the beginning.)
+@value(ALLEGRO_PLAYMODE_LOOP_ONCE just like ALLEGRO_PLAYMODE_ONCE, but respects the loop end point.)
+@value(ALLEGRO_PLAYMODE_BIDIR the sample is played from start to finish (or between the two loop points). When it reaches the end, it reverses the playback direction and plays until it reaches the beginning when it reverses the direction back to normal. This is mode is rarely supported for streams.)
+
+
 #al5audio.ALLEGRO_AUDIO_PAN_NONE
 A special value for the pan property of sample instances and audio streams. Use this value to disable panning on sample instances and audio streams, and play them without attentuation implied by panning support.
 
@@ -3676,6 +4145,9 @@ A pointer to an Allegro voice.
 
 A voice represents an audio device on the system, which may be a real device, or an abstract device provided by the operating system. To play back audio, you would attach a mixer, sample instance or audio stream to a voice.
 @seealso(ALLEGRO_MIXERptr) @seealso(ALLEGRO_SAMPLEptr) @seealso(ALLEGRO_AUDIO_STREAMptr)
+#al5audio.ALLEGRO_AUDIO_DEVICEptr
+An opaque datatype that represents an audio device.
+@seealso(al_get_audio_output_device)
 
 #al5audio.ALLEGRO_MIXER_CALLBACK
 @seealso(al_set_mixer_postprocess_callback)
@@ -4123,6 +4595,17 @@ Returns the size of a sample, in bytes, for the given format. The format is one 
 #al5audio.al_fill_silence
 Fills a buffer with silence, for the given format and channel configuration. The buffer must have enough space for the given number of samples, and be properly aligned.
 
+#al5audio.al_get_num_audio_output_devices
+Gets the number of available audio output devices on the system.
+@return(@code(-1) for unsupported drivers.)
+@seealso(al_get_audio_output_device)
+#al5audio.al_get_audio_output_device
+Gets the output audio device of the specified @code(index).
+@seealso(al_get_num_audio_output_devices) @seealso(al_get_audio_device_name)
+#al5audio.al_get_audio_device_name
+Gets the user friendly display name of the device.
+@seealso(al_get_audio_output_device)
+
 #al5audio.al_reserve_samples
 Reserves a number of sample instances, attaching them to the default mixer. If no default mixer is set when this function is called, then it will create one and attach it to the default voice. If no default voice has been set, it, too, will be created.
 
@@ -4237,6 +4720,15 @@ The @code(stream_loader) argument may be @nil to unregister an entry.
 @return(@true on success, @false on error. Returns @false if unregistering an entry that doesn't exist.)
 @seealso(al_register_audio_stream_loader)
 
+#al5audio.al_register_sample_identifier
+Registers an identify handler for al_identify_sample. The given function will be used to detect files for the given extension. It will be called with a single argument of type @link(ALLEGRO_FILEptr) which is a file handle opened for reading and located at the first byte of the file. The handler should try to read as few bytes as possible to safely determine if the given file contents correspond to the type with the extension and return true in that case, false otherwise. The file handle must not be closed but there is no need to reset it to the beginning.
+
+The extension should include the leading dot (‘.’) character. It will be matched case-insensitively.
+
+The identifier argument may be @nil to unregister an entry.
+@returns(@true on success, @false on error. It returns @false if unregistering an entry that doesn’t exist.)
+@seealso(al_identify_bitmap)
+
 #al5audio.al_load_sample
 Loads a few different audio file formats based on their extension.
 
@@ -4310,6 +4802,16 @@ The audio stream will start in the playing state. It should be attached to a voi
 the @link(al5audio) library does not support any audio file formats by default. You must use the @link(al5acodec) addon, or register your own format handler.
 @return(the stream on success, @nil on failure. On success the file should be considered owned by the audio stream, and will be closed when the audio stream is destroyed. On failure the file will be closed.)
 @seealso(al_load_audio_stream) @seealso(al_register_audio_stream_loader_f) @seealso(al_init_acodec_addon)
+
+#al5audio.al_identify_sample
+This works exactly as @link(al_identify_sample_f) but you specify the filename of the file for which to detect the type and not a file handle.  The extension, if any, of the passed filename is not taken into account - only the file contents.
+@seealso(al_init_acodec_addon) @seealso(al_identify_sample_f) @seealso(al_register_sample_identifier)
+
+#al5audio.al_identify_sample_f
+Tries to guess the audio file type of the open @link(ALLEGRO_FILEptr) by reading the first few bytes.  By default Allegro cannot recognize any file types, but calling @code(al_init_acodec_addon) will add detection of the types it can read.  You can also use @code(al_register_sample_identifier) to add identification for custom file types.
+
+@return(a pointer to a static string with a file extension for the type, including the leading dot. For example @code('.wav') or @code('.ogg).  Returns @nil if the audio type cannot be determined.)
+@seealso(al_init_acodec_addon) @code(al_identify_sample) @code(al_register_sample_identifier)
 
 #al5audio.al_create_audio_recorder
 Creates an audio recorder using the system's default recording device. (So if the returned device does not work, try updating the system's default recording device.)
@@ -4557,7 +5059,30 @@ H = atan2 @(b, a@)
 #al5color.al_is_color_valid
 Checks if all components of the color are between 0 and 1. Some of the color conversions in this addon support color spaces with more colors than can be represented in sRGB and when converted to RGB will result in invalid color components outside the @code(0..1) range.
 
+#al5color.al_color_rgb_to_linear
+Converts gamma corrected sRGB values (i.e. normal RGB) to linear sRGB space.
+@seealso(al_color_linear) @seealso(al_color_linear_to_rgb)
+#al5color.al_color_linear
+Returns an @link(ALLEGRO_COLOR) structure from linear sRGB values. Allegro RGB values are assumed to be sRGB. The sRGB standard is in wide use by various display devices. It accounts for a standard gamma correction applied to RGB colors before they get displayed.
 
+Gamma correction means if for example we have a medium gray color specified with @code(@link(al_map_rgb_f) @(0.5,0.5,0.5@)) then we do not want the monitor to set the pixel to exactly half the physical maximum intensity, but instead to an intensity that appears to be half as bright as the maximum to the person looking at it. In this case that would be closer to 21% of maximum intensity rather than to 50% intensity.
+
+For some applications it may be useful to specify a color in linear sRGB components, in which case you can use this function. For example:
+@longcode(#
+var
+  Gray: ALLEGRO_COLOR;
+  Htm: String;
+begin
+  ...
+  gray = al_color_linear (0.216, 0.216, 0.216);
+  al_color_rgb_to_html (gray.r, gray.g, gray.b, html); { #808080 }
+  ...
+end.
+#)
+@seealso(al_color_linear_to_rgb) @seealso(al_color_rgb_to_linear)
+#al5color.al_color_linear_to_rgb
+Converts linear sRGB color values to gamma corrected (i.e. normal) RGB values.
+@seealso(al_color_linear) @seealso(al_color_rgb_to_linear)
 
 #al5font.ALLEGRO_FONTptr
 A handle identifying any kind of font. Usually you will create it with @link(al_load_font) which supports loading all kinds of TrueType fonts supported by the FreeType library. If you instead pass the filename of a bitmap file, it will be loaded with @link(al_load_bitmap) and a font in Allegro's bitmap font format will be created from it with @link(al_grab_font_from_bitmap).
@@ -4730,10 +5255,13 @@ Note that if you intend to load bitmap fonts, you will need to initialise @link(
 
 Similarly, if you wish to load truetype-fonts, do not forget to also call @link(al_init_ttf_addon).
 @return(@true on success, @false on failure.)
-@seealso(al_init_image_addon) @seealso(al_init_ttf_addon) @seealso(al_shutdown_font_addon)
+@seealso(al_is_font_addon_initialized) @seealso(al_init_image_addon) @seealso(al_init_ttf_addon) @seealso(al_shutdown_font_addon)
+#al5font.al_is_font_addon_initialized
+Returns @true if the font addon is is initialized, otherwise returns false.
+@seealso(al_init_font_addon) @seealso(al_shutdown_font_addon)
 #al5font.al_shutdown_font_addon
 Shuts down the font addon. This is done automatically at program exit, but can be called any time the user wishes as well.
-@seealso(al_init_font_addon)
+@seealso(al_init_font_addon) @seealso(al_is_font_addon_initialized)
 #al5font.al_get_allegro_font_version
 Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version).
 #al5font.al_get_font_ranges
@@ -4899,9 +5427,14 @@ The DDS format is only supported to load from, and only if the DDS file
 contains textures compressed in the DXT1, DXT3 and DXT5 formats. Note that when
 loading a DDS file, the created bitmap will always be a video bitmap and will
 have the pixel format matching the format in the file.
+@seealso(al_is_image_addon_initialized) @seealso(al_shutdown_image_addon)
+#al5image.al_is_image_addon_initialized
+Returns @true if the image addon is is initialized, otherwise returns false.
+@seealso(al_init_image_addon) @seealso(al_shutdown_image_addon)
 #al5image.al_shutdown_image_addon
 Shuts down the image addon.  This is done automatically at program exit, but
 can be called any time the user wishes as well.
+@seealso(al_init_image_addon) @seealso(al_is_image_addon_initialized)
 #al5image.al_get_allegro_image_version
 Returns the (compiled) version of the addon, in the same format as
 @link(al_get_allegro_version).
@@ -4969,9 +5502,13 @@ Initializes the native dialog addon.
 
 Prior to Allegro 5.1.0 native dialog functions could be called without explicit initialisation, but that is now deprecated. Future functionality may require explicit initialisation. An exception is @link(al_show_native_message_box), which may be useful to show an error message if Allegro fails to initialise.
 @return(@true on success, @false on error.)
-@seealso(al_shutdown_native_dialog_addon)
+@seealso(al_shutdown_native_dialog_addon) @seealso(al_is_native_dialog_addon_initialized)
+#al5nativedlg.al_is_native_dialog_addon_initialized
+Returns @true if the native dialog addon is is initialized, otherwise returns false.
+@seealso(al_init_native_dialog_addon) @seealso(al_shutdown_native_dialog_addon)
 #al5nativedlg.al_shutdown_native_dialog_addon
-Shuts down the native dialog addon. @seealso(al_init_native_dialog_addon)
+Shuts down the native dialog addon. @seealso(al_init_native_dialog_addon) @seealso(al_is_native_dialog_addon_initialized)
+
 
 #al5nativedlg.al_create_native_file_dialog
 Creates a new native file dialog. You should only have one such dialog opened at a time.
@@ -5428,10 +5965,13 @@ Returns the (compiled) version of the addon, in the same format as @link(al_get_
 #al5primitives.al_init_primitives_addon
 Initializes the primitives addon.
 @returns(@true on success, @false on failure.)
-@seealso(al_shutdown_primitives_addon)
+@seealso(al_shutdown_primitives_addon) @seealso(al_is_primitives_addon_initialized)
+#al5primitives.al_is_primitives_addon_initialized
+Returns @true if the primitives addon is is initialized, otherwise returns false.
+@seealso(al_init_primitives_addon) @seealso(al_shutdown_primitives_addon)
 #al5primitives.al_shutdown_primitives_addon
 Shut down the primitives addon.  This is done automatically at program exit, but can be called any time the user wishes as well.
-@seealso(al_init_primitives_addon)
+@seealso(al_init_primitives_addon) @seealso(al_is_primitives_addon_initialized)
 #al5primitives.al_draw_prim
 Draws a subset of the passed vertex array.
 

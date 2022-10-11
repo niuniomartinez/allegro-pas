@@ -10,7 +10,7 @@ unit al5opengl;
 )
   Any extension which appears in the section is treated as not available (it
   does not matter if you set it to 0 or any other value). *)
-(* Copyright (c) 2012-2019 Guillermo Martínez J.
+(* Copyright (c) 2012-2022 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages

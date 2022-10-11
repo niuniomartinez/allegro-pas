@@ -1,4 +1,4 @@
-PROGRAM ex_inject_events;
+program ex_inject_events;
 (*
  * Ryan Roden-Corrent
  * Example that injects regular (non-user-type) allegro events into a queue.
@@ -70,7 +70,7 @@ begin
   begin
     al_wait_for_event (Queue, @Event);
 
-    case Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_KEY_DOWN:
       LogPrintLn ('Got keydown: %d.', [Event.keyboard.keycode]);
     ALLEGRO_EVENT_JOYSTICK_AXIS:

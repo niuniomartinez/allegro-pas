@@ -16,9 +16,9 @@ TDEMfp = $(wildcard $(FPSRC)*.pas)
 FURIOUSPALADIN = $(FPBIN)furiouspaladin$(BINSUF)
 
 TDEMpa = $(wildcard $(PASRC)*.pas)
-PASCALEROIDS =  $(PABIN)pascaleroids$(BINSUF)
+PASCALROIDS =  $(PABIN)pascalroids$(BINSUF)
 
-DEMFILES = $(FURIOUSPALADIN) $(PASCALEROIDS)
+DEMFILES = $(FURIOUSPALADIN) $(PASCALROIDS)
 
 ALLFILES = $(LIBFILES) $(TEXM) $(TDEMfp)
 

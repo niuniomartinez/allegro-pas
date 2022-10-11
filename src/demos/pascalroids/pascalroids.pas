@@ -1,7 +1,7 @@
-unit Configuration;
-(* Implements the game configuration. *)
+program pascalroids;
+(* Implementation of Asteroids. *)
 (*
-  Copyright (c) 2018 Guillermo Martínez J.
+  Copyright (c) 2022 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -22,20 +22,34 @@ unit Configuration;
     3. This notice may not be removed or altered from any source
     distribution.
  *)
-interface
 
-(* Loads configuration.
+{$IFDEF FPC}
+  {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+{$ENDIF}
 
-   This searchs for the configuration file and loads it if exists.  It also
-   parses the command-line options if any. *)
-  procedure Load;
+uses
+  Game,
+  al5nativedlg,
+  sysutils;
 
-implementation
+var
+  PascalroidsGame: TPascalroids;
 
-(* Loads configuration. *)
-  procedure Load;
-  begin
-
-  end;
-
+begin
+  PascalroidsGame := TPascalroids.Create;
+  try
+    try
+      if PascalroidsGame.Initialize then
+        PascalroidsGame.Run
+    finally
+      PascalroidsGame.Free
+    end
+  except
+    on Error: Exception do
+      al_show_native_message_box (
+        Nil,
+        'Pascalroids Game', 'There''s an error:', Error.Message,
+        'Close', ALLEGRO_MESSAGEBOX_ERROR
+      );
+  end
 end.

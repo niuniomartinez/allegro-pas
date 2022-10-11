@@ -1,0 +1,5 @@
+@section(1 threads Threads)
+
+Allegro includes a simple cross-platform threading interface. It is a thin layer on top of two threading APIs: Windows threads and POSIX Threads (pthreads). Enforcing a consistent semantics on all platforms would be difficult at best, hence the behaviour of the following functions will differ subtly on different platforms (more so than usual). Your best bet is to be aware of this and code to the intersection of the semantics and avoid edge cases.
+
+@bold(See also:) @link(al_create_thread)

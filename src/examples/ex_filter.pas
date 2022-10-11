@@ -1,4 +1,4 @@
-PROGRAM ex_filter;
+program ex_filter;
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.
 
@@ -69,7 +69,7 @@ PROGRAM ex_filter;
   procedure Redraw;
   var
     w, h, i: Integer;
-    x, y, bw, bh, t, Scale, Angle: REAL;
+    x, y, bw, bh, t, Scale, Angle: Real;
     Bmp: ALLEGRO_BITMAPptr;
   begin
     w := al_get_display_width (Example.Display);
@@ -204,7 +204,7 @@ begin
     end;
 
     al_wait_for_event (Queue, @Event);
-    case Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_KEY_DOWN:
       begin
         if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then Done := True;

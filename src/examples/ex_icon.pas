@@ -1,4 +1,4 @@
-PROGRAM ex_icon;
+program ex_icon;
 (*
   Copyright (c) 2012-2018 Guillermo Martínez J.
 

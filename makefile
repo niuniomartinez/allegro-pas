@@ -14,7 +14,7 @@ SHELL = /bin/sh
 
 # ===============================================
 # Project name
-PROJECT = Allegro.pas 5.2.b.1-1
+PROJECT = Allegro.pas 5.2.b.2
 
 # ===============================================
 
@@ -79,12 +79,16 @@ OPTOPT = -O3 -CX -Xs -XX
 # ---------------------
 
 # Debugging options.
-# Adds GDB information to the executable, and shows warnings and hints.
-DBGOPT = -O1 -g -gl -vh -vw
+# Shows all compilation warnings and hints.
+DBGOPT = -O1 -gl -vh -vw
 # Adds some code to check ranges and overflows.
 DBGOPT += -Ct -Cr -CR -Co
+# Adds GDB information to the executable
+DBGOPT += -g
 # Adds code for valgrind
 # DBGOPT += -gv
+# Use heaptrace unit (for memory leak/corruption debugging).
+DBGOPT += -gh
 
 # Liks with "debug" Allegro.  Useful when creating an add-on or testing Allegro
 # itself.
@@ -109,7 +113,7 @@ OBJDIR = obj/
 BINDIR = bin/
 
 FPDIR = furiouspaladin/
-PADIR = pascaleroids/
+PADIR = pascalroids/
 
 LIBSRC = $(SRCDIR)$(LIBDIR)
 EXMSRC = $(SRCDIR)$(EXMDIR)

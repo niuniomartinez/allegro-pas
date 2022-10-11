@@ -1,4 +1,4 @@
-PROGRAM ex_bitmap;
+program ex_bitmap;
 (*
  * This example displays a picture on the screen, with support for
  * command-line parameters, multi-screen, screen-orientation and
@@ -108,9 +108,9 @@ begin
   EndLoop := False;
   repeat
     al_wait_for_event (EventQueue, @Event); { Wait for and get an event. }
-    case Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_DISPLAY_ORIENTATION:
-      case Event.display.orientation OF
+      case Event.display.orientation of
       ALLEGRO_DISPLAY_ORIENTATION_0_DEGREES:
         LogWriteLn ('0 degrees');
       ALLEGRO_DISPLAY_ORIENTATION_90_DEGREES:

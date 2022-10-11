@@ -1,4 +1,4 @@
-PROGRAM ex_memfile;
+program ex_memfile;
 (*
  *      Example program for the Allegro library.
  *

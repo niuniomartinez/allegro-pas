@@ -1,0 +1,6 @@
+@section(1 fix_trig Fixed point trig)
+The fixed point square root, sin, cos, tan, inverse sin, and inverse cos functions are implemented using lookup tables, which are very fast but not particularly accurate.  At the moment the inverse tan uses an iterative search on the tan table, so it is a lot slower than the others.  On machines with good floating point processors using these functions could be slower.  Always profile your code.
+
+Angles are represented in a binary format with 256 equal to a full circle, 64 being a right angle and so on.  This has the advantage that a simple bitwise @code(and) can be used to keep the angle within the range zero to a full circle.
+
+@bold(See also:) @link(AL_FIXED)

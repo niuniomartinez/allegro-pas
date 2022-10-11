@@ -1,4 +1,4 @@
-PROGRAM ex_shader_target;
+program ex_shader_target;
 (*
  *    Example program for the Allegro library.
  *
@@ -157,10 +157,10 @@ begin
     if al_get_next_event (Queue, Event) then
     begin
       if Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE then
-        BREAK;
+        Break;
       if Event.ftype = ALLEGRO_EVENT_KEY_CHAR then
         if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
-          BREAK
+          Break
     end;
 
     for I := Low (Region) to High (Region) do

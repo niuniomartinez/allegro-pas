@@ -9,7 +9,7 @@
 
   Note that makefiles included works only for Free Pascal.  Right now Delphi's
   "make" utility isn't compatible with Free Pascal's one (wich is GNU compliant)
-  but in future releases a Delphi makefiles would be included.
+  but in future releases Delphi makefiles would be included.
 
 The make chain
 --------------

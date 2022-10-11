@@ -12,3 +12,10 @@
 @include(src/docs/fileio.pds)
 @include(src/docs/keyboard.pds)
 @include(src/docs/transformations.pds)
+@section(1 threads Threads)
+Allegro includes a simple cross-platform threading interfaces but unfortunatelly @bold(it is not compatible with Pascal).
+
+Anyway Free Pascal and Delphi threading interface and their @code(TThread) class works perfectly so use it.
+
+Note that documentation includes the description of the Allegro's threading interfaces but code was disabled (at the moment).
+@include(src/docs/threads.pds)

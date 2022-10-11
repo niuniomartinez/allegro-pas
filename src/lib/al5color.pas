@@ -2,7 +2,7 @@ unit al5color;
 (***<Color management.
 
   @include(../docs/al5color.pds) *)
-(* Copyright (c) 2012-2019 Guillermo Martínez J.
+(* Copyright (c) 2012-2022 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -96,6 +96,18 @@ interface
   function al_color_lch (l, c, h: AL_FLOAT): ALLEGRO_COLOR;
     CDECL; external ALLEGRO_COLOR_LIB_NAME;
   function al_is_color_valid (color: ALLEGRO_COLOR): AL_BOOL;
+    CDECL; external ALLEGRO_COLOR_LIB_NAME;
+  procedure al_color_oklab_to_rgb (l, a, b: AL_FLOAT; out red, green, blue: AL_FLOAT);
+    CDECL; external ALLEGRO_COLOR_LIB_NAME;
+  procedure al_color_rgb_to_oklab (red, green, blue: AL_FLOAT; out l, a, b: AL_FLOAT);
+    CDECL; external ALLEGRO_COLOR_LIB_NAME;
+  function al_color_oklab (l, a, b: AL_FLOAT): ALLEGRO_COLOR;
+    CDECL; external ALLEGRO_COLOR_LIB_NAME;
+  procedure al_color_linear_to_rgb (x, y, z: AL_FLOAT; out red, green, blue: AL_FLOAT);
+    CDECL; external ALLEGRO_COLOR_LIB_NAME;
+  procedure al_color_rgb_to_linear (red, green, blue: AL_FLOAT; out x, y, z: AL_FLOAT);
+    CDECL; external ALLEGRO_COLOR_LIB_NAME;
+  function al_color_linear (r, g, b: AL_FLOAT): ALLEGRO_COLOR;
     CDECL; external ALLEGRO_COLOR_LIB_NAME;
 
 

@@ -1,4 +1,4 @@
-PROGRAM ex_shader_multitex;
+program ex_shader_multitex;
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.
 
@@ -113,10 +113,10 @@ begin
   repeat
     al_wait_for_event (Queue, @Event);
     if Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE then
-       BREAK;
+       Break;
     if Event.ftype = ALLEGRO_EVENT_KEY_CHAR then
       if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
-        BREAK;
+        Break;
     if Event.ftype = ALLEGRO_EVENT_TIMER then
     begin
       Redraw := True;

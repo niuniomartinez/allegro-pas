@@ -1,4 +1,4 @@
-PROGRAM ex_resize2;
+program ex_resize2;
 (*
  *    Test program for Allegro.
  *

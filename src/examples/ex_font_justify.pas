@@ -1,4 +1,4 @@
-PROGRAM ex_font_justify;
+program ex_font_justify;
 (*
  * Example program for the Allegro library.
  *
@@ -148,7 +148,7 @@ type
   begin
     if fFont <> Nil then al_destroy_font (fFont);
   { fFontGUI is destroyed by TDialog. }
-    INHERITED Destroy
+    inherited Destroy
   end;
 
 
@@ -195,7 +195,7 @@ type
     lSlider.OnChange := lTextBox.OnDiffSlideChanges;
     lSlider.Value := 100;
     Self.Add (lSlider, 1, 14, 8, 1);
-    INHERITED Initialize
+    inherited Initialize
   end;
 
 var

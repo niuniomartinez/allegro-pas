@@ -1,4 +1,4 @@
-PROGRAM ex_dualies;
+program ex_dualies;
 (* Shows how to manage two adapters/monitors. *)
 (*
   Copyright (c) 2012-2019 Guillermo Martínez J.

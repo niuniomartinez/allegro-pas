@@ -1,4 +1,4 @@
-PROGRAM ex_transform;
+program ex_transform;
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.
 
@@ -41,7 +41,7 @@ var
   Software, Redraw, Blend, UseSubbitmap, EndLoop: Boolean;
   w, h: Integer;
   Font, SoftFont: ALLEGRO_FONTptr;
-  t: SINGLE;
+  t: Single;
   Tint: ALLEGRO_COLOR;
 begin
   Software := False;

@@ -1,4 +1,4 @@
-PROGRAM ex_resize;
+program ex_resize;
 (* Display a pulsating window until a key or the closebutton is pressed. *)
 (*
   Copyright (c) 2012-2019 Guillermo Martínez J.

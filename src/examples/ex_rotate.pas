@@ -1,4 +1,4 @@
-PROGRAM ex_rotate;
+program ex_rotate;
 (*
  *    Example program for the Allegro library, by Peter Wang.
  *)

@@ -4,7 +4,7 @@ unit al5nativedlg;
   menu and more.
 
   @include(../docs/al5nativedlg.pds) *)
-(* Copyright (c) 2012-2019 Guillermo Martínez J.
+(* Copyright (c) 2012-2022 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -80,6 +80,8 @@ interface
   function ALLEGRO_end_OF_MENU: ALLEGRO_MENU_INFO;
 
   function al_init_native_dialog_addon: AL_BOOL;
+    CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
+  function al_is_native_dialog_addon_initialized: AL_BOOL;
     CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;
   procedure al_shutdown_native_dialog_addon;
     CDECL; external ALLEGRO_NATIVE_DLG_LIB_NAME;

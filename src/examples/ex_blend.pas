@@ -1,4 +1,4 @@
-PROGRAM ex_blend;
+program ex_blend;
 (* An example demonstrating different blending modes. *)
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.
@@ -276,7 +276,7 @@ var
 
       al_wait_for_event (ex.Queue, @Event);
 
-      case Event.ftype OF
+      case Event.ftype of
       { Was the X button on the window pressed? }
       ALLEGRO_EVENT_DISPLAY_CLOSE:
         Exit;
@@ -293,7 +293,7 @@ var
           y := Event.mouse.y;
           if x >= Ex.ButtonsX then
           begin
-            case Trunc (y / 20) OF
+            case Trunc (y / 20) of
               2: Ex.image := 0;
               3: Ex.image := 1;
               4: Ex.image := 2;

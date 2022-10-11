@@ -1,4 +1,4 @@
-PROGRAM ex_config;
+program ex_config;
 (*
  *    Example program for the Allegro library.
  *

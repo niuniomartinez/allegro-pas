@@ -1,4 +1,4 @@
-PROGRAM ex_clip;
+program ex_clip;
 (* Test performance of al_draw_bitmap_region, al_create_sub_bitmap and
  * al_set_clipping_rectangle when clipping a bitmap.
  *)
@@ -43,7 +43,7 @@ PROGRAM ex_clip;
 
       Timer, Counter: array [1..4] of Double;
       FPS: Integer;
-      TextX, TextY: SINGLE;
+      TextX, TextY: Single;
     end;
 
   var
@@ -53,7 +53,7 @@ PROGRAM ex_clip;
   var
     Bmp: ALLEGRO_BITMAPptr;
     i, j: Integer;
-    mx, my, a, d, l, hue, sat: SINGLE;
+    mx, my, a, d, l, hue, sat: Single;
     State: ALLEGRO_STATE;
   begin
     mx := w * 0.5;
@@ -88,7 +88,7 @@ PROGRAM ex_clip;
 
 
 
-  procedure SetXY (const x, y: SINGLE);
+  procedure SetXY (const x, y: Single);
   begin
     Ex.TextX := x;
     Ex.TextY := y
@@ -96,7 +96,7 @@ PROGRAM ex_clip;
 
 
 
-  procedure GetXy (var x, y: SINGLE);
+  procedure GetXy (var x, y: Single);
   begin
     x := Ex.TextX;
     y := Ex.TextY
@@ -145,7 +145,7 @@ PROGRAM ex_clip;
 
   procedure Draw;
   var
-    x, y: SINGLE;
+    x, y: Single;
     iw, ih, cx, cy, cw, ch, gap: LongInt;
     Temp: ALLEGRO_BITMAPptr;
   begin

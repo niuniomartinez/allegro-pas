@@ -1,4 +1,4 @@
-PROGRAM ex_display_options;
+program ex_display_options;
 (* Test retrieving and settings possible modes.
 
    Implementation note:  Compiler will return several warning messages about

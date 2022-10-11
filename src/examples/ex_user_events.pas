@@ -1,4 +1,4 @@
-PROGRAM ex_user_events;
+program ex_user_events;
 (*
  *    Example program for the Allegro library.
  *)
@@ -72,7 +72,7 @@ type
   end;
 
 var
-  MY_SIMPLE_EVENT_type, MY_COMPLEX_EVENT_type: LONGWORD;
+  MY_SIMPLE_EVENT_TYPE, MY_COMPLEX_EVENT_TYPE: LongWord;
   Timer: ALLEGRO_TIMERptr;
   UserSrc: ALLEGRO_EVENT_SOURCE;
   Queue: ALLEGRO_EVENT_QUEUEptr;
@@ -80,8 +80,8 @@ var
   MyEvent: MY_EVENTptr;
 
 begin
-  MY_SIMPLE_EVENT_type := ALLEGRO_GET_EVENT_type ('mset');
-  MY_COMPLEX_EVENT_type := ALLEGRO_GET_EVENT_type ('mcet');
+  MY_SIMPLE_EVENT_TYPE := ALLEGRO_GET_EVENT_TYPE ('mset');
+  MY_COMPLEX_EVENT_TYPE := ALLEGRO_GET_EVENT_TYPE ('mcet');
 
   if not al_init then AbortExample ('Could not init Allegro.');
 
@@ -105,15 +105,15 @@ begin
     if Event.ftype = ALLEGRO_EVENT_TIMER then
     begin
       LogPrintLn ('Got timer event %d.', [Event.timer.count]);
-      UserEvent.user.ftype := MY_SIMPLE_EVENT_type;
+      UserEvent.user.ftype := MY_SIMPLE_EVENT_TYPE;
       UserEvent.user.data1.int_value := Event.timer.count;
       al_emit_user_event (@UserSrc, @UserEvent, Nil);
 
-      UserEvent.user.ftype := MY_COMPLEX_EVENT_type;
+      UserEvent.user.ftype := MY_COMPLEX_EVENT_TYPE;
       UserEvent.user.data1.ptr_value := NewEvent (Event.timer.count);
       al_emit_user_event (@UserSrc, @UserEvent, @MyEventDtor);
     end
-    else if Event.ftype = MY_SIMPLE_EVENT_type then
+    else if Event.ftype = MY_SIMPLE_EVENT_TYPE then
     begin
       al_unref_user_event (@Event.user);
 
@@ -130,7 +130,7 @@ begin
         Exit
       end
     end
-    else if Event.ftype = MY_COMPLEX_EVENT_type then
+    else if Event.ftype = MY_COMPLEX_EVENT_TYPE then
     begin
       MyEvent := UserEvent.user.data1.ptr_value;
       LogPrintLn ('Got complex user event %d.', [MyEvent^.id]);

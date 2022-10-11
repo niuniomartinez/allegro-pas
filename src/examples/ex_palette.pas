@@ -1,4 +1,4 @@
-PROGRAM ex_palette;
+program ex_palette;
 (*
   Copyright (c) 2012-2019 Guillermo Martínez J.
 

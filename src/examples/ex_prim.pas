@@ -1,4 +1,4 @@
-PROGRAM ex_prim;
+program ex_prim;
 (*         ______   ___    ___
  *        /\  _  \ /\_ \  /\_ \
  *        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
@@ -349,7 +349,7 @@ PROGRAM ex_prim;
 (* Constructor. *)
   constructor TCustomScreen.Create (const aName: AL_STR);
   begin
-    INHERITED Create;
+    inherited Create;
     fName := aName
   end;
 
@@ -544,7 +544,7 @@ PROGRAM ex_prim;
 (* Constructor. *)
   constructor TPrimitivesExample.Create;
   begin
-    INHERITED Create;
+    inherited Create;
     fDisplay := Nil;
     fBkg := Nil;
     fTexture := Nil;
@@ -574,7 +574,7 @@ PROGRAM ex_prim;
     if fBkg <> Nil then al_destroy_bitmap (fBkg);
     if fFont <> Nil then al_destroy_font (fFont);
     if fDisplay <> Nil then al_destroy_display (fDisplay);
-    INHERITED Destroy
+    inherited Destroy
   end;
 
 
@@ -723,7 +723,7 @@ PROGRAM ex_prim;
         Self.Update;
         if al_get_time - fStartTime >= FixedTimestep then
         { break if we start taking too long }
-          BREAK
+          Break
       end;
       Self.Draw;
       Inc (fFramesDone)
@@ -780,7 +780,7 @@ PROGRAM ex_prim;
     Ndx, x, y: Integer;
     Color: ALLEGRO_COLOR;
   begin
-    INHERITED Create ('Low Level Primitives');
+    inherited Create ('Low Level Primitives');
 
     for Ndx := Low (Vtx) to High (Vtx) do
     begin
@@ -822,7 +822,7 @@ PROGRAM ex_prim;
     Ndx, x, y: Integer;
     Color: ALLEGRO_COLOR;
   begin
-    INHERITED Create ('Indexed Primitives');
+    inherited Create ('Indexed Primitives');
 
     for Ndx := 0 to 3 do
     begin
@@ -857,7 +857,7 @@ PROGRAM ex_prim;
   var
     Ndx: Integer;
   begin
-    INHERITED Update; { Updates Theta and builds MainTrans. }
+    inherited Update; { Updates Theta and builds MainTrans. }
     for Ndx := Low (Indices1) to High (Indices1) do
     begin
       Indices1[Ndx] := Trunc (al_get_time() + Ndx) mod 13;
@@ -886,7 +886,7 @@ PROGRAM ex_prim;
 (* Constructor. *)
   constructor THighPrimitives.Create;
   begin
-    INHERITED Create ('High Level Primitives')
+    inherited Create ('High Level Primitives')
   end;
 
 
@@ -915,7 +915,7 @@ PROGRAM ex_prim;
 (* Constructor. *)
   constructor TTransformationsPrimitives.Create;
   begin
-    INHERITED Create ('Transformations')
+    inherited Create ('Transformations')
   end;
 
 
@@ -961,7 +961,7 @@ PROGRAM ex_prim;
     x, y: Single;
     Color: ALLEGRO_COLOR;
   begin
-    INHERITED Create ('Low Level Filled Primitives');
+    inherited Create ('Low Level Filled Primitives');
     for Ndx := Low (vtx) to High (vtx) do
     begin
       if (Ndx mod 2) = 0 then
@@ -1012,7 +1012,7 @@ PROGRAM ex_prim;
     x, y: Single;
     Color: ALLEGRO_COLOR;
   begin
-    INHERITED Create ('Indexed Filled Primitives');
+    inherited Create ('Indexed Filled Primitives');
     for Ndx := Low (Indices1) to High (Indices1) do
     begin
       Indices1[Ndx] := Ndx + 12;
@@ -1083,7 +1083,7 @@ PROGRAM ex_prim;
 (* Constructor. *)
   constructor THighFilledPrimitives.Create;
   begin
-    INHERITED Create ('High Level Filled Primitives');
+    inherited Create ('High Level Filled Primitives');
   end;
 
 
@@ -1110,7 +1110,7 @@ PROGRAM ex_prim;
     Ndx, x, y: Integer;
     Color: ALLEGRO_COLOR;
   begin
-    INHERITED Create ('Textured Primitives');
+    inherited Create ('Textured Primitives');
 
     for Ndx := Low (Vtx) to High (Vtx) do
     begin
@@ -1158,7 +1158,7 @@ PROGRAM ex_prim;
     x, y: Single;
     Color: ALLEGRO_COLOR;
   begin
-    INHERITED Create ('Filled Textured Primitives');
+    inherited Create ('Filled Textured Primitives');
     for Ndx := Low (vtx) to High (vtx) do
     begin
       if (Ndx mod 2) = 0 then
@@ -1222,7 +1222,7 @@ var
   var
     Ndx, x, y: Integer;
   begin
-    INHERITED Create ('Custom Vertex Format');
+    inherited Create ('Custom Vertex Format');
 
     Decl := al_create_vertex_decl (Elems, sizeof (CUSTOM_VERTEX));
 
@@ -1257,7 +1257,7 @@ var
     Ndx, x, y: Integer;
     Color: ALLEGRO_COLOR;
   begin
-    INHERITED Create ('Vertex Buffers');
+    inherited Create ('Vertex Buffers');
 
     for Ndx := Low (Vtx) to High (Vtx) do
     begin
@@ -1301,7 +1301,7 @@ var
   begin
     al_destroy_vertex_buffer (vbuff);
     al_destroy_vertex_buffer (vbuff2);
-    INHERITED Destroy
+    inherited Destroy
   end;
 
 
@@ -1339,7 +1339,7 @@ var
     Flags: ALLEGRO_PRIM_BUFFER_FLAGS;
     x, y: Single;
   begin
-    INHERITED Create ('Indexed Buffers');
+    inherited Create ('Indexed Buffers');
     vbuff := al_create_vertex_buffer_ex
       (Nil, Nil, 13, ALLEGRO_PRIM_BUFFER_readwrite);
     if vbuff = Nil then
@@ -1397,7 +1397,7 @@ var
   begin
     al_destroy_vertex_buffer (vbuff);
     al_destroy_index_buffer (ibuff);
-    INHERITED Destroy
+    inherited Destroy
   end;
 
 
@@ -1423,7 +1423,7 @@ var
 {$ENDIF}
       al_unlock_index_buffer (ibuff)
     end;
-    INHERITED Update
+    inherited Update
   end;
 
 

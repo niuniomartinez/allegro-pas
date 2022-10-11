@@ -1,4 +1,4 @@
-PROGRAM ex_display_events;
+program ex_display_events;
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.
 
@@ -57,7 +57,7 @@ PROGRAM ex_display_events;
     Color, Black, Red, Blue: ALLEGRO_COLOR;
     i: Integer;
     EndExample: Boolean;
-    x, y: SINGLE;
+    x, y: Single;
 begin
   if not al_init then AbortExample ('Could not init Allegro.');
 

@@ -2,7 +2,7 @@ unit al5primitives;
 (***<Primitive drawing.
 
   @include(../docs/al5primitives.pds) *)
-(* Copyright (c) 2012-2019 Guillermo Martínez J.
+(* Copyright (c) 2012-2022 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -172,6 +172,8 @@ interface
  * Primary Functions
  *)
   function al_init_primitives_addon: AL_BOOL;
+    CDECL; external ALLEGRO_PRIMITIVES_LIB_NAME;
+  function al_is_primitives_addon_initialized: AL_BOOL;
     CDECL; external ALLEGRO_PRIMITIVES_LIB_NAME;
   procedure al_shutdown_primitives_addon;
     CDECL; external ALLEGRO_PRIMITIVES_LIB_NAME;

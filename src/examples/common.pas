@@ -87,7 +87,7 @@ implementation
     end
     else
       WriteLn (ErrOutput, Message);
-    HALT (1)
+    Halt (1)
   end;
 
 

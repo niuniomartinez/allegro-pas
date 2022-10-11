@@ -24,9 +24,9 @@ $(FURIOUSPALADIN): $(FPSRC)furiouspaladin.pas $(FPSRC)*.pas $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBSRC) -FU$(OBJDIR) $< -o$@
 	@echo Demonstration Game Furious Paladin ready!
 
-$(PASCALEROIDS): $(PASRC)pascaleroids.pas $(PASRC)*.pas $(LIBFILES)
+$(PASCALROIDS): $(PASRC)pascalroids.pas $(PASRC)*.pas $(LIBFILES)
 	fpc $(FLAGS) -Fu$(LIBSRC) -FU$(OBJDIR) $< -o$@
-	@echo Demonstration Game Pascaleroids ready!
+	@echo Demonstration Game Pascalroids ready!
 
 # Documentation.
 docs: $(LIBFILES) $(DOCFILES)
@@ -63,6 +63,7 @@ help: addbanner
 	@echo --------
 	@echo "make all       } Builds the whole project."
 	@echo "make examples  } Builds the examples only."
+	@echo "make demos     } Builds the demonstration game only."
 	@echo "make docs      } Builds internal documentation."
 	@echo "make clean     } Deletes temporary files."
 	@echo "make veryclean } Deletes all generated files."

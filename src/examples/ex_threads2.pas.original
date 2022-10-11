@@ -1,0 +1,402 @@
+program ex_threads2;
+(* Simple threads example. *)
+(*
+  Copyright (c) 2022 Guillermo Martínez J.
+
+  This software is provided 'as-is', without any express or implied
+  warranty. In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+    1. The origin of this software must not be misrepresented; you must not
+    claim that you wrote the original software. If you use this software
+    in a product, an acknowledgment in the product documentation would be
+    appreciated but is not required.
+
+    2. Altered source versions must be plainly marked as such, and must not be
+    misrepresented as being the original software.
+
+    3. This notice may not be removed or altered from any source
+    distribution.
+ *)
+
+  uses
+    Common,
+    Allegro5, al5Base;
+
+  const
+    MandelWidth = 120; MandelHeight = MandelWidth;
+    DisplayWidth = MandelWidth * 3; DisplayHeight = MandelHeight * 2;
+
+  type
+    TPalette = array [0..255] of ALLEGRO_COLOR;
+
+(* Thread-safe pseudo-random number generator. *)
+  function LocalRand (var aSeed: Integer): Integer;
+  const
+    LocalRandMax = $FFFF;
+  begin
+    aSeed := Integer ((aSeed + 1) * 1103515245 + 12345);
+    Result := (aSeed shr 16) and LocalRandMax
+  end;
+
+
+
+(* Generates a monochromatic palette from a random color. *)
+  procedure GeneratePalette (var aPalette: TPalette; var aSeed: Integer);
+
+    function RandomValue: Byte; inline;
+    begin
+      Result := 128 + LocalRand (aSeed) mod 128
+    end;
+
+  var
+    rMax, gMax, bMax: Byte;
+    Ndx: Integer;
+  begin
+  { Get color. }
+    rMax := RandomValue;
+    gMax := RandomValue;
+    bMax := RandomValue;
+  { Create palette. }
+    for Ndx := Low (aPalette) to High (aPalette) do
+      aPalette[Ndx] := al_map_rgb (
+        rMax * Ndx div 256,
+        gMax * Ndx div 256,
+        bMax * Ndx div 256
+      )
+  end;
+
+
+
+(*
+ * Mandelbrot fractal calculation.
+ *************************************************************************)
+
+  type
+  (* Imaginary number representation. *)
+    Imaginary = record r, i: Double end;
+
+(* Calculates Mandelbrot orbit for given point. *)
+  function CalculateMandelPoint (const aPoint: Imaginary; const aMax:Integer)
+    : Integer;
+  const
+    Z_MAX2 = 4.0;
+  var
+    z, z1: Imaginary;
+    lIterations: Integer;
+  begin
+    z := aPoint;
+    for lIterations := 1 to aMax do
+    begin
+      z1.r := z.r * z.r - z.i * z.i;
+      z1.i := 2 * z.r * z.i;
+      z1.r := z1.r + aPoint.r;
+      z1.i := z1.i + aPoint.i;
+      if (z1.r * z1.r + z1.i * z1.i) > Z_MAX2 then
+        Exit (lIterations);  { outside set }
+      z := z1
+    end;
+    Result := 0 { inside set }
+  end;
+
+
+
+(*
+ * Mandelbrot fractal rendering.
+ *************************************************************************)
+
+  type
+    PThreadInfo = ^TThreadInfo;
+    TThreadInfo = record
+    (* Thread identifier. *)
+      Id: Integer;
+    (* Thread management. *)
+      Thread: ALLEGRO_THREADptr;
+      Mutex: ALLEGRO_MUTEXptr;
+      Cond: ALLEGRO_CONDptr;
+    (* Tells if thread is paused. *)
+      Paused: Boolean;
+    (* Bitmap where the Mandelbrot portion will be rendered. *)
+      Bmp: ALLEGRO_BITMAPptr;
+    (* Palette used to draw the Mandelbrot fractal. *)
+      ColorPalette: TPalette;
+    (* Central point of the portion to render. *)
+      Center: Imaginary;
+    (* Zoom.  That is, radius from the center to the limits of the Mandelbrot
+       portion to be rendered. *)
+      Zoom: Double;
+    end;
+
+ (* Renders a Mandelbrot portion in the given bitmap. *)
+   procedure RenderMandelbrot (
+     const lMin, lMax: Imaginary;
+     aInfo: PThreadInfo;
+     aColors: TPalette
+   );
+   var
+   (* Distance between points. *)
+     lDistance: Double;
+   (* Current point to be rendered. *)
+     lX, lY: Integer;
+     lCurrentPoint: Imaginary;
+     lW, lH, lColor: Integer;
+   begin
+     lW := al_get_bitmap_width (aInfo^.Bmp);
+     lH := al_get_bitmap_height (aInfo^.Bmp);
+   { Calculate distance between points. }
+     lDistance := (lMax.r - lMin.r) / lW;
+   { First point. }
+     lCurrentPoint := lMin;
+     lY := 0;
+     repeat
+       lX := 0;
+       lCurrentPoint.r := lMin.r;
+       repeat
+         lColor := CalculateMandelPoint (lCurrentPoint, 255);
+         al_lock_mutex (aInfo^.Mutex);
+           al_set_target_bitmap (aInfo^.Bmp);
+           al_put_pixel (lX, lY, aColors[lColor]);
+         al_unlock_mutex (aInfo^.Mutex);
+         lCurrentPoint.r := lCurrentPoint.r + lDistance;
+         Inc (lX)
+       until lX > lW;
+       lCurrentPoint.i := lCurrentPoint.i + lDistance;
+       Inc (lY)
+     until lY > lH
+   end;
+
+
+
+ (* Thread method. *)
+   function RenderMandelbrotThread (
+     aThread: ALLEGRO_THREADptr;
+     anArgument: AL_POINTER
+   ): AL_POINTER;
+      CDECL;
+   var
+     lInfo: PThreadInfo absolute anArgument;
+   (* Limits of the portion to be rendered. *)
+     lMin, lMax: Imaginary;
+   (* Palette. *)
+     lPalette: TPalette;
+   (* Pseudo random seed. *)
+     lSeed: Integer;
+   begin
+     lSeed := lInfo^.Id;
+     lPalette := Default (TPalette);
+     while not al_get_thread_should_stop (aThread) do
+     begin
+       if not lInfo^.Paused then
+       begin
+       { Calculate limits of the portion. }
+         lMin.r := lInfo^.Center.r - lInfo^.Zoom;
+         lMin.i := lInfo^.Center.i - lInfo^.Zoom;
+         lMax.r := lInfo^.Center.r + lInfo^.Zoom;
+         lMax.i := lInfo^.Center.i + lInfo^.Zoom;
+       { Get the color palette. }
+         GeneratePalette (lPalette, lSeed);
+       { Do the render. }
+         RenderMandelbrot (lMin, lMax, lInfo, lPalette)
+       end;
+ { Uncomment next line to make it run just once.
+   Exit (Nil);
+ }
+       al_rest (0)
+     end;
+     Result := Nil
+   end;
+
+
+
+ (* Sets up the thread information.  It doesn't executes the thread. *)
+   function InitMandelbrot (aInfo: PThreadInfo): Boolean;
+   begin
+     LogPrintLn ('Creating thread %d...', [aInfo^.Id]);
+   { Thread control. }
+     aInfo^.Thread := al_create_thread (@RenderMandelbrotThread, aInfo);
+     if not Assigned (aInfo^.Thread) then
+     begin
+       LogPrintLn ('Can''t create thread number %d.', [aInfo^.Id]);
+       Exit (False)
+     end;
+     aInfo^.Mutex := al_create_mutex;
+     if not Assigned (aInfo^.Mutex) then
+     begin
+       LogPrintLn ('Can''t create thread %d mutex.', [aInfo^.Id]);
+       Exit (False)
+     end;
+     aInfo^.Cond := al_create_cond;
+     if not Assigned (aInfo^.Cond) then
+     begin
+       LogPrintLn ('Can''t create thread %d "cond".', [aInfo^.Id]);
+       Exit (False)
+     end;
+     aInfo^.Paused := False;
+   { Output bitmap. }
+     al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
+     aInfo^.Bmp := al_create_bitmap (MandelWidth, MandelHeight);
+     if not Assigned (aInfo^.Bmp) then
+     begin
+       LogWriteLn ('Can''t create bitmap for output.');
+       Exit (False)
+     end;
+   { What to render. }
+     aInfo^.Center.r := 0; aInfo^.Center.i := 0;
+     aInfo^.Zoom := 1.5;
+
+     LogPrintLn ('Thread %d ready.', [aInfo^.Id]);
+     Result := True
+   end;
+
+
+
+ (* Releases all resources used by the thread. *)
+   procedure EndMandelbrot (var aInfo: TThreadInfo);
+   begin
+     if not Assigned (aInfo.Thread) then Exit; { Only if it exists. }
+     LogPrintLn ('Destroying thread %d...', [aInfo.Id]);
+   { Tell thread it should stop (if it didn't yet).
+
+     Thread migh be waiting on a condition variable, so signal de condition to
+     force it to wake up. }
+     al_set_thread_should_stop (aInfo.Thread);
+     al_lock_mutex (aInfo.Mutex);
+     al_broadcast_cond (aInfo.Cond);
+     al_unlock_mutex (aInfo.Mutex);
+   { al_destroy_thread() implititly joins the threads, so this call isn't
+     strictly necessary. }
+     al_join_thread (aInfo.Thread);
+   { Release resources. }
+     al_destroy_thread (aInfo.Thread); aInfo.Thread := Nil;
+     if Assigned (aInfo.Bmp) then al_destroy_bitmap (aInfo.Bmp);
+     if Assigned (aInfo.Cond) then al_destroy_cond (aInfo.Cond);
+     if Assigned (aInfo.Mutex) then al_destroy_mutex (aInfo.Mutex);
+
+     LogPrintLn ('Thread %d done.', [aInfo.Id])
+   end;
+
+
+
+
+(*
+ * Main thread.
+ *************************************************************************)
+
+  var
+    EventQueue: ALLEGRO_EVENT_QUEUEptr;
+    Display: ALLEGRO_DISPLAYptr;
+    Timer: ALLEGRO_TIMERptr;
+
+(* Initializes the program. *)
+  procedure InitializeExample;
+
+    function CreateDisplay: Boolean;
+    begin
+      al_set_new_display_flags (ALLEGRO_WINDOWED or ALLEGRO_GENERATE_EXPOSE_EVENTS);
+      Display := al_create_display (DisplayWidth, DisplayHeight);
+      Result := Assigned (Display);
+      if result then
+        al_register_event_source (EventQueue, al_get_display_event_source (Display))
+    end;
+
+  begin
+    if not al_init then AbortExample ('Could not init Allegro.');
+  { Initializes and displays a log window for debugging purposes. }
+    OpenLog;
+  { Configures Allegro. }
+    EventQueue := al_create_event_queue;
+    al_install_keyboard;
+    al_register_event_source (EventQueue, al_get_keyboard_event_source);
+    if not CreateDisplay then AbortExample ('Could not create display.');
+  { Helper functions from common.pas. }
+    InitPlatformSpecific;
+  { Timer. }
+    Timer := al_create_timer (ALLEGRO_BPS_TO_SECS (50));
+    al_register_event_source (EventQueue, al_get_timer_event_source (Timer));
+
+    LogWriteLn ('Allegro is up and running.');
+  end;
+
+
+
+(* Releases all used resources. *)
+  procedure FinalizeExample;
+  begin
+    LogWriteLn ('Closing example...');
+    if Assigned (EventQueue) then al_destroy_event_queue (EventQueue);
+    if Assigned (Display) then al_destroy_display (Display);
+    LogWriteLn ('Done.');
+    CloseLog (True)
+  end;
+
+
+
+(* Executes the example. *)
+  procedure RunExample;
+  var
+    EndProgram, UpdateDisplay: Boolean;
+    Event: ALLEGRO_EVENT;
+
+    lThread: TThreadInfo;
+  begin
+    EndProgram := False;
+    UpdateDisplay := True;
+
+    lThread := Default (TThreadInfo);
+    lThread.Id := 1;
+    if not InitMandelbrot (@lThread) then
+    begin
+      EndMandelbrot (lThread);
+      Exit
+    end;
+
+    al_start_timer (Timer);
+    al_start_thread (lThread.Thread);
+{ Use next call instead of the "al_start_thread" one debug it.
+
+  Note that the function has a pseudo-infinite loop so you should fix it
+  before!
+    RenderMandelbrotThread (lThread.Thread, @lThread);
+}
+    repeat
+    { Display update. }
+      if UpdateDisplay and al_is_event_queue_empty (EventQueue) then
+      begin
+        al_set_target_backbuffer (Display);
+        al_clear_to_color (al_map_rgba (0, 0, 0, 1));
+        al_lock_mutex (lThread.Mutex);
+          al_draw_bitmap (lThread.Bmp, 0, 0, 0);
+        al_unlock_mutex (lThread.Mutex);
+      { Updated. }
+        al_flip_display;
+        UpdateDisplay := False
+      end;
+    { Events. }
+      al_wait_for_event (EventQueue, @Event);
+      case Event.ftype of
+      ALLEGRO_EVENT_DISPLAY_CLOSE:
+        EndProgram := True;
+      ALLEGRO_EVENT_KEY_DOWN:
+        if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+          EndProgram := True
+        else
+          UpdateDisplay := True;
+      ALLEGRO_EVENT_TIMER:
+        UpdateDisplay := True;
+      end
+    { TODO: Fake thread. }
+    until EndProgram;
+
+    EndMandelbrot (lThread)
+  end;
+
+begin
+  InitializeExample;
+  RunExample;
+  FinalizeExample
+end.
+

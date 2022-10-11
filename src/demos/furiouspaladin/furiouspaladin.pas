@@ -30,24 +30,38 @@ program FuriousPaladin;
 {$ENDIF}
 
 uses
-  Actor, Configuration, Data,
-  Classes, SysUtils, al5Base, al5image, al5font, al5ttf,
-  al5primitives, al5audio, al5acodec, Allegro5, al5nativedlg,
-  al5strings;
+  Classes, SysUtils,
+  Allegro5, al5Base, al5acodec, al5audio, al5font, al5image, al5nativedlg,
+  al5primitives, al5strings, al5ttf;
 
 type
   TAppState = (Intro1, Intro2, Playing, Paused, Lose, Win);
 
-{$IFDEF DCC}
-{ Delphi doesn't have TFPList, so define it here.
+  TActivity = (WalkL, WalkR, AttackL, AttackR, IdleL, IdleR, HitL, HitR, KilledL, KilledR);
 
-  We still use TFPList because his performance is higher than TList in
-  Free Pascal. }
-  TFPList = class (TList)
+  PImageList = ^TImageList;
+  TImageList = record
+    Images: array of ALLEGRO_BITMAPptr;
+    Count:  Byte;
+    Delay:  Byte;
   end;
-{$ENDIF}
+
+  TActor = record
+    PosX, PosY:      Real;
+    MinX, MaxX:      Real;
+    Speed:           Real;
+    CurrentActivity: TActivity;
+    LastActivity:    TActivity;
+    AnimImage:       PImageList;
+    AnimProgress:    Byte;
+    AnimDelay:       Byte;
+  end;
+
+  PActor = ^TActor;
 
 const
+  ScreenWidth     = 500;
+  ScreenHeight    = 300;
   MaxPlayerHealth = 500;
   PlayerHealthInc = 0.08;
   EnemyStrength   = 140;
@@ -66,6 +80,10 @@ var
   // Allegro event
   EventQueue:        ALLEGRO_EVENTptr;
   Timer:             ALLEGRO_TIMERptr;
+  // Debug and Cheat
+  DebugMode:         Boolean = False;
+  CheatFastRecover:  Boolean = False;
+  CheatStoneSkin:    Boolean = False;
   // Display
   Display:           ALLEGRO_DISPLAYptr;
   // Background and info images
@@ -76,21 +94,23 @@ var
   ImgPaused:         ALLEGRO_BITMAPptr;
   ImgWin:            ALLEGRO_BITMAPptr;
   ImgFailed:         ALLEGRO_BITMAPptr;
+{ Data directory.  Assigned on initialization. }
+  DataPath: string;
   // Animation data
-  ImgPlayerWalkL:    TAnimation;
-  ImgPlayerWalkR:    TAnimation;
-  ImgPlayerAttackL:  TAnimation;
-  ImgPlayerAttackR:  TAnimation;
-  ImgPlayerIdleL:    TAnimation;
-  ImgPlayerIdleR:    TAnimation;
-  ImgPlayerBeenHitL: TAnimation;
-  ImgPlayerBeenHitR: TAnimation;
-  ImgZombieWalkL:    TAnimation;
-  ImgZombieWalkR:    TAnimation;
-  ImgZombieAttackL:  TAnimation;
-  ImgZombieAttackR:  TAnimation;
-  ImgZombieKilledL:  TAnimation;
-  ImgZombieKilledR:  TAnimation;
+  ImgPlayerWalkL:    TImageList;
+  ImgPlayerWalkR:    TImageList;
+  ImgPlayerAttackL:  TImageList;
+  ImgPlayerAttackR:  TImageList;
+  ImgPlayerIdleL:    TImageList;
+  ImgPlayerIdleR:    TImageList;
+  ImgPlayerBeenHitL: TImageList;
+  ImgPlayerBeenHitR: TImageList;
+  ImgZombieWalkL:    TImageList;
+  ImgZombieWalkR:    TImageList;
+  ImgZombieAttackL:  TImageList;
+  ImgZombieAttackR:  TImageList;
+  ImgZombieKilledL:  TImageList;
+  ImgZombieKilledR:  TImageList;
   // Audio data
   AudioInstance:     ALLEGRO_SAMPLE_INSTANCEptr;
   AudioBackground:   ALLEGRO_SAMPLEptr;
@@ -102,23 +122,19 @@ var
 
 
 
-  procedure ProcessShutdown; FORWARD;
+(* Forward declarations. *)
+  procedure ProcessShutdown; forward;
 
 
 
 (* Shows an error message and ends. *)
   procedure AbortProgram (const Message: String);
-  var
-    Display: ALLEGRO_DISPLAYptr;
   begin
     if al_init_native_dialog_addon then
     begin
-      if al_is_system_installed then
-        Display := al_get_current_display
-      else
-        Display := Nil;
+      if Assigned (Display) then al_destroy_display (Display);
       al_show_native_message_box (
-        Display,
+        Nil,
         'Error', 'Cannot run Furious Paladin', al_string_to_str (Message),
         '', 0
       )
@@ -126,7 +142,33 @@ var
     else
       WriteLn (ErrOutput, Message);
     ProcessShutDown;
-    HALT (1)
+    Halt (1)
+  end;
+
+
+
+(* Helper to load animations. *)
+  function LoadAnimation (
+    aFileName: String;
+    const aCount, aDelay: Integer;
+    out aAnimation: TImageList
+  ): Boolean;
+  var
+    Ndx: Integer;
+  begin
+  { Build file path. }
+    aFileName := Concat (DataPath, aFileName, '%0.2d.png');
+    aAnimation.Delay := aDelay;
+    aAnimation.Count := aCount;
+    SetLength (aAnimation.Images, aCount);
+    for Ndx := 0 to High (aAnimation.Images) do
+    begin
+      aAnimation.Images[Ndx] := al_load_bitmap (
+	al_str_format (aFileName, [Ndx])
+      );
+      if not Assigned (aAnimation.Images[Ndx]) then Exit (False)
+    end;
+    Result := True;
   end;
 
 
@@ -135,11 +177,21 @@ procedure ProcessInit;
 var
   MonitorInfo: ALLEGRO_MONITOR_INFO;
   Transform: ALLEGRO_TRANSFORM;
+  i: Integer;
 begin
-{ Loads configuration values. }
-  if not Configuration.Load then Halt;
-{ Quit if Allegro fails to start. }
-  if not al_init then AbortProgram ('Cannot init Allegro!');
+
+  // Debug and cheat
+  for i := 1 to ParamCount do begin
+    if (LowerCase(ParamStr(i)) = '-debug') then       DebugMode := True;
+    if (LowerCase(ParamStr(i)) = '-fastrecover') then CheatFastRecover := True;
+    if (LowerCase(ParamStr(i)) = '-stoneskin') then   CheatStoneSkin := True;
+  end;
+
+  // Quit if Allegro fails to start
+  if not(al_init) then Halt;
+
+  // Get default data path used for loading font, images and sounds
+  DataPath := ExtractFilePath(ParamStr(0))+'data'+DirectorySeparator;
 
   // Prepare display
   al_get_monitor_info(0, MonitorInfo);
@@ -160,7 +212,7 @@ begin
   // Enable font;
   al_init_font_addon;
   al_init_ttf_addon;
-  SystemFont := LoadFont ('tuffy_bold.ttf', 12);
+  SystemFont := al_load_ttf_font(DataPath+'tuffy_bold.ttf', 12, 0);
   // Enable drawing basic shapes
   al_init_primitives_addon;
   // Enable audio
@@ -175,62 +227,62 @@ begin
   al_start_timer(Timer);
 
   // Load background image
-  ImgIntroPage1  := LoadBitmap ('imgintro1.jpg');
-  ImgIntroPage2  := LoadBitmap ('imgintro2.jpg');
-  ImgBackground1 := LoadBitmap ('imgdusk.jpg');
-  ImgBackground2 := LoadBitmap ('imgdawn.jpg');
-  ImgPaused      := LoadBitmap ('imgpaused.png');
-  ImgWin         := LoadBitmap ('imgwin.png');
-  ImgFailed      := LoadBitmap ('imgfailed.png');
+  ImgIntroPage1  := al_load_bitmap(DataPath+'imgintro1.jpg');
+  ImgIntroPage2  := al_load_bitmap(DataPath+'imgintro2.jpg');
+  ImgBackground1 := al_load_bitmap(DataPath+'imgdusk.jpg');
+  ImgBackground2 := al_load_bitmap(DataPath+'imgdawn.jpg');
+  ImgPaused      := al_load_bitmap(DataPath+'imgpaused.png');
+  ImgWin         := al_load_bitmap(DataPath+'imgwin.png');
+  ImgFailed      := al_load_bitmap(DataPath+'imgfailed.png');
 
   // Load animation data: Player Walk Left
-  if not LoadAnimation ('hero-walk-w', 4, imgPlayerWalkL) then
+  if not LoadAnimation ('hero-walk-w', 8, 4, imgPlayerWalkL) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Walk Right
-  if not LoadAnimation ('hero-walk-e', 4, imgPlayerWalkR) then
+  if not LoadAnimation ('hero-walk-e', 8, 4, imgPlayerWalkR) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Attack Left
-  if not LoadAnimation ('hero-attack-w', 6, ImgPlayerAttackL) then
+  if not LoadAnimation ('hero-attack-w', 7, 6, ImgPlayerAttackL) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Attack Right
-  if not LoadAnimation ('hero-attack-e', 6, ImgPlayerAttackR) then
+  if not LoadAnimation ('hero-attack-e', 7, 6, ImgPlayerAttackR) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Idle Left
-  if not LoadAnimation ('hero-idle-w', 12, imgPlayerIdleL) then
+  if not LoadAnimation ('hero-idle-w', 9, 12, ImgPlayerIdleL) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Idle Right
-  if not LoadAnimation ('hero-idle-e', 12, imgPlayerIdleR) then
+  if not LoadAnimation ('hero-idle-e', 9, 12, ImgPlayerIdleR) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Been Hit Left
-  if not LoadAnimation ('hero-been-hit-w', 6, ImgPlayerBeenHitL) then
+  if not LoadAnimation ('hero-been-hit-w', 4, 6, ImgPlayerBeenHitL) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Player Been Hit Right
-  if not LoadAnimation ('hero-been-hit-e', 6, ImgPlayerBeenHitR) then
+  if not LoadAnimation ('hero-been-hit-e', 4, 6, ImgPlayerBeenHitR) then
     AbortProgram ('Can''t load hero animation');
   // Load animation data: Zombie Walk Left
-  if not LoadAnimation ('zombie-walk-w', 9, ImgZombieWalkL) then
+  if not LoadAnimation ('zombie-walk-w', 8, 9, ImgZombieWalkL) then
     AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Walk Right
-  if not LoadAnimation ('zombie-walk-e', 9, ImgZombieWalkR) then
+  if not LoadAnimation ('zombie-walk-e', 8, 9, ImgZombieWalkR) then
     AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Attack Left
-  if not LoadAnimation ('zombie-attack-w', 15, ImgZombieAttackL) then
+  if not LoadAnimation ('zombie-attack-w', 7, 15, ImgZombieAttackL) then
     AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Attack Right
-  if not LoadAnimation ('zombie-attack-e', 15, ImgZombieAttackR) then
+  if not LoadAnimation ('zombie-attack-e', 7, 15, ImgZombieAttackR) then
     AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Killed Left
-  if not LoadAnimation ('zombie-killed-w', 10, ImgZombieKilledL) then
+  if not LoadAnimation ('zombie-killed-w', 5, 10, ImgZombieKilledL) then
     AbortProgram ('Can''t load zombie animation');
   // Load animation data: Zombie Killed Right
-  if not LoadAnimation ('zombie-killed-e', 10, ImgZombieKilledR) then
+  if not LoadAnimation ('zombie-killed-e', 5, 10, ImgZombieKilledR) then
     AbortProgram ('Can''t load zombie animation');
 
   // Load audio data
-  AudioBackground := LoadSample ('auduntitledremix.ogg');
-  AudioSword      := LoadSample ('audsword.wav');
-  AudioHurt       := LoadSample ('audhit1.ogg');
-  AudioFailed     := LoadSample ('auddie1.ogg');
+  AudioBackground := al_load_sample(DataPath+'auduntitledremix.ogg');
+  AudioSword      := al_load_sample(DataPath+'audsword.wav');
+  AudioHurt       := al_load_sample(DataPath+'audhit1.ogg');
+  AudioFailed     := al_load_sample(DataPath+'auddie1.ogg');
   AudioInstance   := al_create_sample_instance(AudioBackground);
 
 
@@ -244,10 +296,9 @@ end;
 
 
 
-var
-  SavedAudioPosition: AL_UINT = 0; // Used for pausing and resumming the game music
-
 procedure Start(State: TAppState);
+const
+  SavedAudioPosition: AL_UINT = 0; // Used for pausing and resumming the game music
 begin
   case State of
 
@@ -330,10 +381,10 @@ end;
 
 
 
-var
+procedure ProcessUserInput;
+const
   EscJustPressed:   Boolean = False;
   SpaceJustPressed: Boolean = False;
-procedure ProcessUserInput;
 var
   KeyState:    ALLEGRO_KEYBOARD_STATE;
   isFaceRight: Boolean;
@@ -443,9 +494,11 @@ end;
 
 
 procedure ProcessUpdate;
+type
+  TArrayOfPointer = array of Pointer;
 var
   Enemy: PActor;
-  EnemiesExpired: array of Pointer;
+  EnemiesExpired: TArrayOfPointer;
   EnemiesExpiredCount: Integer;
   i: Integer;
 begin
@@ -551,7 +604,8 @@ begin
   end;
   Inc(SpawnDelay);
 
-  EnemiesExpiredCount := 0; SetLength (EnemiesExpired, 0);
+  EnemiesExpired := Default (TArrayOfPointer); { Avoids compilation warning. }
+  EnemiesExpiredCount := 0;
   for i := 0 to (Enemies.Count-1) do
     with TActor(Enemies[i]^) do begin
       // Calculate animation data and position
@@ -725,21 +779,6 @@ end;
 
 procedure ProcessShutDown;
 begin
-  UnloadAnimation (ImgPlayerWalkL);
-  UnloadAnimation (ImgPlayerWalkR);
-  UnloadAnimation (ImgPlayerAttackL);
-  UnloadAnimation (ImgPlayerAttackR);
-  UnloadAnimation (ImgPlayerIdleL);
-  UnloadAnimation (ImgPlayerIdleR);
-  UnloadAnimation (ImgPlayerBeenHitL);
-  UnloadAnimation (ImgPlayerBeenHitR);
-  UnloadAnimation (ImgZombieWalkL);
-  UnloadAnimation (ImgZombieWalkR);
-  UnloadAnimation (ImgZombieAttackL);
-  UnloadAnimation (ImgZombieAttackR);
-  UnloadAnimation (ImgZombieKilledL);
-  UnloadAnimation (ImgZombieKilledR);
-
   al_destroy_bitmap(ImgIntroPage1);
   al_destroy_bitmap(ImgIntroPage2);
   al_destroy_bitmap(ImgBackground1);
@@ -759,16 +798,15 @@ end;
 
 
 
-var
-  Event: ALLEGRO_EVENT;
 begin
   ProcessInit;
   Start(Intro1);
-  while (GameIsRunning) do begin
-    al_wait_for_event (EventQueue, @Event);
+  while GameIsRunning do
+ begin
+    al_wait_for_event (EventQueue, Nil);
     ProcessUserInput;
     ProcessUpdate;
-    ProcessDrawing;
+    ProcessDrawing
   end;
-  ProcessShutdown;
+  ProcessShutdown
 end.

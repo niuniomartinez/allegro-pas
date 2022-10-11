@@ -1,4 +1,4 @@
-PROGRAM ex_mouse;
+program ex_mouse;
 (*
   Copyright (c) 2012-2018 Guillermo Martínez J.
 

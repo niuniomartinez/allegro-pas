@@ -1,4 +1,4 @@
-PROGRAM ex_timer_pause;
+program ex_timer_pause;
 (* A test of pausing/resuming a timer.
  *
  * 1. Create two 5s long timers.

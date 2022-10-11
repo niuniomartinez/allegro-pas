@@ -1,4 +1,4 @@
-PROGRAM ex_window_title;
+program ex_window_title;
 (* An example showing how to set the title of a window, by Beoran. *)
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.
@@ -86,7 +86,7 @@ begin
     end;
 
     al_wait_for_event (Queue, @Event);
-    case Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_KEY_DOWN:
       if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
         Done := True

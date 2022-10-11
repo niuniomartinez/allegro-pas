@@ -1,4 +1,4 @@
-PROGRAM ex_joysick_events;
+program ex_joysick_events;
 (*
  *    Example program for the Allegro library, by Peter Wang.
  *    Pascal version by Guillermo "Ñuño" Martínez.
@@ -233,7 +233,7 @@ PROGRAM ex_joysick_events;
 
       al_wait_for_event (EventQueue, @Event);
 
-      case Event.ftype OF
+      case Event.ftype of
       { ALLEGRO_EVENT_JOYSTICK_AXIS - a joystick axis value changed. }
       ALLEGRO_EVENT_JOYSTICK_AXIS:
 	if (Event.joystick.stick < MAX_STICKS)

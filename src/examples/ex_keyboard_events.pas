@@ -1,4 +1,4 @@
-PROGRAM ex_keyboard_events;
+program ex_keyboard_events;
 (*
  *    Example program for the Allegro library, by Peter Wang.
  *    Updated by Ryan Dickie.

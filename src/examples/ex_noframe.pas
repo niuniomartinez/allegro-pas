@@ -1,4 +1,4 @@
-PROGRAM ex_noframe;
+program ex_noframe;
 (*
   Copyright (c) 2012-2019 Guillermo Martínez J.
 

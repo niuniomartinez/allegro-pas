@@ -1,4 +1,4 @@
-PROGRAM ex_projection;
+program ex_projection;
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.
 
@@ -278,7 +278,7 @@ begin
   Black := al_map_rgba_f (0, 0, 0, 1);
   repeat
     al_wait_for_event (Queue, @Event);
-    case Event.ftype OF
+    case Event.ftype of
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       EndExample := True;
     ALLEGRO_EVENT_DISPLAY_RESIZE:

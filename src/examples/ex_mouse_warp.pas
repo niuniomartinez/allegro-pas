@@ -1,4 +1,4 @@
-PROGRAM ex_mouse_warp;
+program ex_mouse_warp;
 (*
   Copyright (c) 2012-2018 Guillermo Martínez J.
 

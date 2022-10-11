@@ -1,4 +1,4 @@
-PROGRAM ex_drawpixels;
+program ex_drawpixels;
 (*
   Copyright (c) 2012-2020 Guillermo Martínez J.
 
@@ -37,14 +37,14 @@ PROGRAM ex_drawpixels;
 
   type
     TPoint = record
-      X, Y: SINGLE;
+      X, Y: Single;
     end;
 
   var
     Display: ALLEGRO_DISPLAYptr;
     KeyState: ALLEGRO_KEYBOARD_STATE;
     Stars: array [1..3] of array [1..(NUM_STARS div 3)] of TPoint;
-    Speeds: array [1..3] of SINGLE = (0.0001, 0.05, 0.15);
+    Speeds: array [1..3] of Single = (0.0001, 0.05, 0.15);
     Colors: array [1..3] of ALLEGRO_COLOR;
     Start, Now, Elapsed, FrameCount: LongInt;
     TotalFrames: Integer;

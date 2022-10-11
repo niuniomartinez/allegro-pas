@@ -2,7 +2,7 @@ unit al5audio;
 (***<Audio addon.
 
      @include(../docs/al5audio.pds) *)
-(* Copyright (c) 2012-2019 Guillermo Martínez J.
+(* Copyright (c) 2012-2022 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -116,10 +116,14 @@ interface
     ALLEGRO_PLAYMODE = (
       ALLEGRO_PLAYMODE_ONCE   = $100,
       ALLEGRO_PLAYMODE_LOOP   = $101,
-      ALLEGRO_PLAYMODE_BIDIR  = $102
+      ALLEGRO_PLAYMODE_BIDIR  = $102,
     { @exclude
       _ALLEGRO_PLAYMODE_STREAM_ONCE   = 0x103,   /* internal */
       _ALLEGRO_PLAYMODE_STREAM_ONEDIR = 0x104    /* internal */
+    }
+      ALLEGRO_PLAYMODE_LOOP_ONCE = $105
+    { @exclude
+      _ALLEGRO_PLAYMODE_STREAM_LOOP_ONCE   = 0x106   /* internal */
     }
     );
 
@@ -149,6 +153,7 @@ interface
     ALLEGRO_AUDIO_STREAMptr = AL_POINTER;
     ALLEGRO_MIXERptr = AL_POINTER;
     ALLEGRO_VOICEptr = AL_POINTER;
+    ALLEGRO_AUDIO_DEVICEptr = AL_POINTER;
 
 {
 #ifndef __cplusplus
@@ -168,6 +173,7 @@ typedef enum ALLEGRO_MIXER_QUALITY ALLEGRO_MIXER_QUALITY;
     ALLEGRO_SAMPLE_LOADER_F = function (fp: ALLEGRO_FILEptr): ALLEGRO_SAMPLEptr; CDECL;
     ALLEGRO_SAMPLE_SAVER_F = function (fp: ALLEGRO_FILEptr; spl: ALLEGRO_SAMPLEptr): AL_BOOL; CDECL;
     ALLEGRO_AUDIO_STREAM_LOADER_F = function (fp: ALLEGRO_FILEptr; buffer_count: AL_SIZE_T; samples: AL_UINT): ALLEGRO_AUDIO_STREAMptr; CDECL;
+    ALLEGRO_SAMPLE_IDENTIFIER_F = function (fp: ALLEGRO_FILEptr): AL_BOOL; CDECL;
 
 (* Initialization. *)
   function al_install_audio: AL_BOOL; CDECL; external ALLEGRO_AUDIO_LIB_NAME;
@@ -336,6 +342,8 @@ ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_sample_instance_channel_matrix, (ALLEGRO_SAM
     {
 #if defined(ALLEGRO_UNSTABLE) || defined(ALLEGRO_INTERNAL_UNSTABLE) || defined(ALLEGRO_KCM_AUDIO_SRC)
 ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_audio_stream_channel_matrix, (ALLEGRO_AUDIO_STREAM *stream, const float *matrix));
+ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_AUDIO_STREAM *, al_play_audio_stream, (const char *filename));
+ALLEGRO_KCM_AUDIO_FUNC(ALLEGRO_AUDIO_STREAM *, al_play_audio_stream_f, (ALLEGRO_FILE *fp, const char *ident));
 #endif
     }
 
@@ -423,6 +431,13 @@ ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_audio_stream_channel_matrix, (ALLEGRO_AUDIO_
   procedure al_fill_silence (bur: AL_VOIDptr; samples: AL_UINT; depth: ALLEGRO_AUDIO_DEPTH; chan_conf: ALLEGRO_CHANNEL_CONF);
     CDECL; external ALLEGRO_AUDIO_LIB_NAME;
 
+  function al_get_num_audio_output_devices: AL_INT;
+    CDECL; external ALLEGRO_AUDIO_LIB_NAME;
+  function al_get_audio_output_device (index: AL_INT): ALLEGRO_AUDIO_DEVICEptr;
+    CDECL; external ALLEGRO_AUDIO_LIB_NAME;
+  function al_get_audio_device_name (device: ALLEGRO_AUDIO_DEVICEptr): AL_STRptr;
+    CDECL; external ALLEGRO_AUDIO_LIB_NAME;
+
 (* Simple audio layer. *)
   function al_reserve_samples (reserve_samples: AL_INT): AL_BOOL;
     CDECL; external ALLEGRO_AUDIO_LIB_NAME;
@@ -459,6 +474,9 @@ ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_audio_stream_channel_matrix, (ALLEGRO_AUDIO_
   function al_register_audio_stream_loader (const ext: AL_STR; stream_loader: ALLEGRO_AUDIO_STREAM_LOADER): AL_BOOL;
     CDECL; external ALLEGRO_AUDIO_LIB_NAME;
 
+  function al_register_sample_identifier (const ext: AL_STR; identifier: ALLEGRO_SAMPLE_IDENTIFIER_F): AL_BOOL;
+    CDECL; external ALLEGRO_AUDIO_LIB_NAME;
+
   function al_register_sample_loader_f (const ext: AL_STR; loader: ALLEGRO_SAMPLE_LOADER_F): AL_BOOL;
     CDECL; external ALLEGRO_AUDIO_LIB_NAME;
   function al_register_sample_saver_f (const ext: AL_STR; saver: ALLEGRO_SAMPLE_SAVER_F): AL_BOOL;
@@ -478,6 +496,11 @@ ALLEGRO_KCM_AUDIO_FUNC(bool, al_set_audio_stream_channel_matrix, (ALLEGRO_AUDIO_
   function al_save_sample_f (fp: ALLEGRO_FILEptr; const ident: AL_STR; spl: ALLEGRO_FILEptr): AL_BOOL;
     CDECL; external ALLEGRO_AUDIO_LIB_NAME;
   function al_load_audio_stream_f (fp: ALLEGRO_FILEptr; const ident: AL_STR; buffer_count: AL_SIZE_T; samples: AL_UINT): ALLEGRO_AUDIO_STREAMptr
+    CDECL; external ALLEGRO_AUDIO_LIB_NAME;
+
+  function al_identify_sample_f (p: ALLEGRO_FILEptr): AL_STRptr;
+    CDECL; external ALLEGRO_AUDIO_LIB_NAME;
+  function al_identify_sample (filename: AL_STR): AL_STRptr;
     CDECL; external ALLEGRO_AUDIO_LIB_NAME;
 
   {
