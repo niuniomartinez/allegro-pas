@@ -1,7 +1,7 @@
 unit Game;
 (* Defines the Pascalroid game object. *)
 (*
-  Copyright (c) 2022 Guillermo Martínez J.
+  Copyright (c) 2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -26,21 +26,24 @@ unit Game;
 interface
 
   uses
-    Engine, Graphics, Player;
+    Asteroids, Engine, Graphics, Player, Sprites;
 
   type
   (* Implements the game scene. *)
     TPascalroidsScene = class (TGameScene)
     private
       fShip: TShipSprite;
+      fLasers: TSpriteManager;
+      fAsteroids: TAsteroidsManager;
+      fInput: TPlayerInput;
     public
-    (* Initializes the scene. *)
+    (* Initialize the scene. *)
       procedure Initialize; override;
     (* Game logic. *)
       procedure Update; override;
-    (* Draws screen. *)
+    (* Draw screen. *)
       procedure Draw; override;
-    (* Closes the scene. *)
+    (* Close the scene. *)
       procedure Finalize; override;
     end;
 
@@ -56,7 +59,7 @@ interface
     (* Destructor. *)
       destructor Destroy; override;
 
-    (* Initializes the program. *)
+    (* Initialize the program. *)
       function Initialize: Boolean; override;
     end;
 
@@ -71,38 +74,51 @@ implementation
  * TPascalroidsScene
  ************************************************************************)
 
+  const
+    MaxLasers = 10;
+
   procedure TPascalroidsScene.Initialize;
   begin
     inherited Initialize;
-    fShip := TShipSprite.Create;
-    fShip.X := 100; fShip.Y := 100;
-    fShip.Angle := 20
+    fInput := TKeyboardInput.Create;
+    fLasers := TSpriteManager.Create (MaxLasers, TLaser);
+    fAsteroids := TAsteroidsManager.Create;
+fAsteroids.NewAsteroid;
+fAsteroids.NewAsteroid;
+fAsteroids.NewAsteroid;
+fAsteroids.NewAsteroid;
+    fShip := TShipSprite.Create (fInput, fLasers);
+    fShip.Initialize
   end;
 
 
 
-(* Updates. *)
   procedure TPascalroidsScene.Update;
   begin
     if Self.Game.Display.UserClickedClose then Self.Game.Terminate;
-    fShip.Update
+    fShip.Update;
+    fAsteroids.Update;
+    fLasers.Update
   end;
 
 
 
-(* Draws screen. *)
   procedure TPascalroidsScene.Draw;
   begin
     al_clear_to_color (clrBlack);
+    fLasers.Draw;
+    fAsteroids.Draw;
     fShip.Draw
   end;
 
 
 
-(* Closes the scene. *)
   procedure TPascalroidsScene.Finalize;
   begin
-    fShip.Free
+    fShip.Free;
+    fLasers.Free;
+    fAsteroids.Free;
+    fInput.Free
   end;
 
 
@@ -111,7 +127,6 @@ implementation
  * TPascalroids
  ************************************************************************)
 
-(* Constructor. *)
   constructor TPascalroids.Create;
   begin
     inherited Create;
@@ -120,7 +135,6 @@ implementation
 
 
 
-(* Destructor. *)
   destructor TPascalroids.Destroy;
   begin
     fGameScene.Free;
@@ -129,7 +143,6 @@ implementation
 
 
 
-(* Initializes. *)
   function TPascalroids.Initialize: Boolean;
   begin
     Self.display.Title := Concat ('Pascalroids ',ALLEGRO_PAS_VERSION_STR);

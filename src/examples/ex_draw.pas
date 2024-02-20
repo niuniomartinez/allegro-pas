@@ -1,7 +1,7 @@
 program ex_draw;
 (* Tests some drawing primitives. *)
 (*
-  Copyright (c) 2012-2020 Guillermo Martínez J.
+  Copyright (c) 2012-2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -29,7 +29,7 @@ program ex_draw;
 
   uses
     Common,
-    Allegro5, al5base, al5image, al5font, al5color, al5primitives;
+    Allegro5, al5color, al5font, al5image, al5primitives, al5strings;
 
   type
     RExample = record
@@ -54,7 +54,7 @@ program ex_draw;
    Ex: RExample;
 
   const
-    Names: array [0..4] of AL_STR = (
+    Names: array [0..4] of String = (
       'filled rectangles',
       'rectangles',
       'filled circles',
@@ -104,7 +104,7 @@ program ex_draw;
 
 
 
-  procedure Printf (const aFmt: AL_STR; const aVals: array of const);
+  procedure Printf (const aFmt: String; const aVals: array of const);
   var
     State: ALLEGRO_STATE;
     th: Integer;
@@ -112,12 +112,16 @@ program ex_draw;
     th := al_get_font_line_height (Ex.Font);
     al_store_state(&state, ALLEGRO_STATE_BLENDER);
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-    al_draw_textf (Ex.Font, Ex.Text, Ex.TextX, Ex.TextY, 0, aFmt, aVals);
+    al_draw_textf (
+      Ex.Font, Ex.Text,
+      Ex.TextX, Ex.TextY, 0,
+      al_string_to_str (aFmt), aVals
+    );
     al_restore_state (state);
     Ex.TextY := Ex.TextY + th
   end;
 
-  procedure Print (const aText: AL_STR); inline;
+  procedure Print (const aText: String); inline;
   begin
     Printf (aText, [])
   end;
@@ -157,7 +161,7 @@ program ex_draw;
     Screen, mem: ALLEGRO_BITMAPptr;
     Rects: array [0..(16 * 4) - 1] of Real;
     rgba: ALLEGRO_COLOR;
-    sw: AL_STR;
+    sw: String;
   begin
     w := al_get_bitmap_width (Ex.Zoom);
     h := al_get_bitmap_height (Ex.Zoom);

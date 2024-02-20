@@ -36,7 +36,7 @@ interface
     AL_EDOM   = 1;
     AL_ERANGE = 2;
   (* Defines some constants to build the correct names of the library files. *)
-{$IFDEF DEBUGmodE}
+{$IFDEF DEBUGMODE}
     _DBG_ = '-debug'; (***<@exclude *)
 {$ELSE}
     _DBG_ = ''; (***<@exclude *)
@@ -44,9 +44,9 @@ interface
 
 {$IF DEFINED(UNIX)}
   {$INCLUDE al5_unix.inc}
-{$ELSEIf DEFINED(LINUX)}
+{$ELSEIF DEFINED(LINUX)}
   {$INCLUDE al5_unix.inc}
-{$ELSEIf DEFINED(WINDOWS)}
+{$ELSEIF DEFINED(WINDOWS)}
   {$INCLUDE al5_win.inc}
 {$ENDIF}
 
@@ -134,7 +134,7 @@ interface
     AL_OFF_T = AL_UINT;
     AL_FLOAT = Single;
     AL_DOUBLE = Double;
-    AL_STR = ANSISTRING;
+    AL_STR = AnsiString;
 
     AL_VOIDptr = AL_POINTER;
 {$IFDEF ISDELPHI2009ANDUP}

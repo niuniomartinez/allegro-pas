@@ -5,7 +5,7 @@ program ex_gldepth;
  * Use arrow keys to rotate, PgUp/PgDown to move closer/farther away.
  *)
 (*
-  Copyright (c) 2012-2020 Guillermo Martínez J.
+  Copyright (c) 2012-2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -201,11 +201,11 @@ program ex_gldepth;
     TextColor: ALLEGRO_COLOR;
   begin
     aFont := al_load_font ('data/fixed_font.tga', 0, 0);
-    if aFont = Nil then
+    if not Assigned (aFont) then
       AbortExample ('Error loading `data/fixed_font.tga');
 
     tmpBmp := al_load_bitmap ('data/mysha.pcx');
-    if tmpBmp = Nil then
+    if not Assigned (tmpBmp) then
       AbortExample ('Error loading ''data/mysha.pcx''');
     SetupTextures := True;
     w := 128;
@@ -252,7 +252,7 @@ begin
   al_set_new_display_flags (ALLEGRO_OPENGL);
   al_set_new_display_option (ALLEGRO_DEPTH_SIZE, 16, ALLEGRO_SUGGEST);
   Display := al_create_display (640, 480);
-  if Display = Nil then
+  if not Assigned (Display) then
     AbortExample ('Could not create display.');
 
   Timer := al_create_timer (1 / 60);

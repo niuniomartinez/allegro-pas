@@ -1,7 +1,7 @@
 @section(1 keyboard Keyboard)
 
 @section(2 keycodes Key codes)
-  The constant @code(ALLEGRO_KEY_MAX) is always one higher than the highest key code. So if you want to use the key code as array index you can  do something like this:
+  The constant @code(ALLEGRO_KEY_MAX) is always one higher than the highest key code. So if you want to use the key code as array index you can do something like this:
 
 @longcode(%
 VAR

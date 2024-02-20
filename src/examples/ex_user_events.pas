@@ -3,7 +3,7 @@ program ex_user_events;
  *    Example program for the Allegro library.
  *)
 (*
-  Copyright (c) 2012-2020 Guillermo Martínez J.
+  Copyright (c) 2012-2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -31,7 +31,7 @@ program ex_user_events;
 
 uses
   Common,
-  allegro5, al5base;
+  allegro5;
 
 type
   MY_EVENTptr = ^MY_EVENT;
@@ -86,7 +86,7 @@ begin
   if not al_init then AbortExample ('Could not init Allegro.');
 
   Timer := al_create_timer (0.5);
-  if Timer = Nil then AbortExample ('Could not install timer.');
+  if not Assigned (Timer) then AbortExample ('Could not install timer.');
 
   OpenLog;
 
@@ -102,6 +102,7 @@ begin
   begin
     al_wait_for_event (Queue, @Event);
 
+  { Use IF instead of CASE because user events are variables. }
     if Event.ftype = ALLEGRO_EVENT_TIMER then
     begin
       LogPrintLn ('Got timer event %d.', [Event.timer.count]);

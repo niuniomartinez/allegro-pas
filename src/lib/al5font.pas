@@ -65,7 +65,7 @@ interface
   function al_load_font (const filename: AL_STR; size, flags: AL_INT): ALLEGRO_FONTptr;
     CDECL; external ALLEGRO_FONT_LIB_NAME;
 
-  function al_grab_font_from_bitmap (bmp: ALLEGRO_BITMAPptr; n: AL_INT; var ranges: array OF AL_INT): ALLEGRO_FONTptr;
+  function al_grab_font_from_bitmap (bmp: ALLEGRO_BITMAPptr; n: AL_INT; var ranges: array of AL_INT): ALLEGRO_FONTptr;
     CDECL; external ALLEGRO_FONT_LIB_NAME;
   function al_create_builtin_font: ALLEGRO_FONTptr;
     CDECL; external ALLEGRO_FONT_LIB_NAME;
@@ -78,8 +78,8 @@ interface
     inline;
   procedure al_draw_justified_ustr (const font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: AL_FLOAT; flags: AL_INT; const str: ALLEGRO_USTRptr);
     CDECL; external ALLEGRO_FONT_LIB_NAME;
-  procedure al_draw_textf (const font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: AL_FLOAT; flags: AL_INT; const fmt: AL_STR; const values: array OF const);
-  procedure al_draw_justified_textf (const font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: AL_FLOAT; flags: AL_INT; const fmt: AL_STR; const values: array OF const);
+  procedure al_draw_textf (const font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: AL_FLOAT; flags: AL_INT; const fmt: AL_STR; const values: array of const);
+  procedure al_draw_justified_textf (const font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x1, x2, y, diff: AL_FLOAT; flags: AL_INT; const fmt: AL_STR; const values: array of const);
   function al_get_text_width (const font: ALLEGRO_FONTptr; const str: AL_STR): AL_INT;
     inline;
   function al_get_ustr_width (const font: ALLEGRO_FONTptr; const ustr: ALLEGRO_USTRptr): AL_INT;
@@ -104,7 +104,7 @@ interface
   function al_get_allegro_font_version: AL_UINT32;
     CDECL; external ALLEGRO_FONT_LIB_NAME;
 }
-  function al_get_font_ranges (font: ALLEGRO_FONTptr; ranges_count: AL_INT; var ranges: array OF AL_INT): AL_INT;
+  function al_get_font_ranges (font: ALLEGRO_FONTptr; ranges_count: AL_INT; var ranges: array of AL_INT): AL_INT;
     CDECL; external ALLEGRO_FONT_LIB_NAME;
 
   procedure al_draw_glyph (const f: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y: AL_FLOAT; codepoint: AL_INT);
@@ -122,7 +122,7 @@ ALLEGRO_FONT_FUNC(bool, al_get_glyph, (const ALLEGRO_FONT *f, int prev_codepoint
 
   procedure al_draw_multiline_text (const font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y, max_width, line_height: AL_FLOAT; flags: AL_INT; const str: AL_STR);
     CDECL; external ALLEGRO_FONT_LIB_NAME;
-  procedure al_draw_multiline_textf (const font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y, max_width, line_height: AL_FLOAT; flags: AL_INT; const fmt: AL_STR; const values: array OF const);
+  procedure al_draw_multiline_textf (const font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y, max_width, line_height: AL_FLOAT; flags: AL_INT; const fmt: AL_STR; const values: array of const);
   procedure al_draw_multiline_ustr (const font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR; x, y, max_width, line_height: AL_FLOAT; flags: AL_INT; const str: ALLEGRO_USTRptr);
     CDECL; external ALLEGRO_FONT_LIB_NAME;
 
@@ -191,7 +191,7 @@ implementation
   procedure al_draw_textf (
     const font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR;
     x, y: AL_FLOAT; flags: AL_INT;
-    const fmt: AL_STR; const values: array OF const
+    const fmt: AL_STR; const values: array of const
   );
   begin
     al_draw_text (font, color, x, y, flags, Format (fmt, values))
@@ -202,7 +202,7 @@ implementation
   procedure al_draw_justified_textf (
     const font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR;
     x1, x2, y, diff: AL_FLOAT; flags: AL_INT;
-    const fmt: AL_STR; const values: array OF const
+    const fmt: AL_STR; const values: array of const
   );
   begin
     al_draw_justified_text (
@@ -242,7 +242,7 @@ implementation
   procedure al_draw_multiline_textf (
     const font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR;
     x, y, max_width, line_height: AL_FLOAT; flags: AL_INT;
-    const fmt: AL_STR; const values: array OF const
+    const fmt: AL_STR; const values: array of const
   );
   begin
     al_draw_multiline_text (

@@ -1,7 +1,9 @@
 program ex_convert;
-(* Image conversion example *)
+(* Image conversion example.
+
+   MUST be compiled as a console application. *)
 (*
-  Copyright (c) 2012-2020 Guillermo Martínez J.
+  Copyright (c) 2012-2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -28,7 +30,6 @@ program ex_convert;
 {$ENDIF}
 
   uses
-    Common,
     Allegro5, al5image, al5strings;
 
   var
@@ -36,46 +37,45 @@ program ex_convert;
     t0, t1: Double;
 
 begin
-  if not al_init then AbortExample ('Could not init Allegro.');
-
-  OpenLog;
-
   if ParamCount < 2 then
   begin
-    LogWriteLn ('This example needs to be run from the command line.');
-    LogWriteLn ('Usage: ex_convert <infile> <outfile>');
-    LogWriteLn ('    Possible file types: BMP PCX PNG TGA');
-    CloseLog (True);
-    HALT
+    WriteLn ('This example needs to be run from the command line.');
+    WriteLn ('Usage: ex_convert <infile> <outfile>');
+    WriteLn ('    Possible file types: BMP PCX PNG TGA.');
+    WriteLn ('    It may support more file formats.');
+    WriteLn;
+    Exit
   end;
-
+{ Initialize Allegro. }
+  if not al_init then
+  begin
+    WriteLn (stderr, 'Could not init Allegro.');
+    Halt (1)
+  end;
   al_init_image_addon;
-
+{ Set bitmap options to work without a display. }
   al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_ARGB_8888);
   al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
-
+{ Load the bitmap. }
   Bitmap := al_load_bitmap_flags (
     al_string_to_str (ParamStr (1)),
     ALLEGRO_NO_PREMULTIPLIED_ALPHA
   );
-  if Bitmap = Nil then
+  if not Assigned (Bitmap) then
   begin
-    LogWriteLn ('Error loading input file');
-    CloseLog (True);
-    HALT
+    WriteLn (stderr, 'Error loading input file');
+    Halt (-2)
   end;
-
+{ Save the bitmap. }
   t0 := al_get_time;
   if not al_save_bitmap (al_string_to_str (ParamStr (2)), Bitmap) then
   begin
-    LogWriteLn ('Error saving bitmap');
-    CloseLog (True);
-    HALT
+    WriteLn (stderr, 'Error saving bitmap.');
+    Halt (-3)
   end;
+{ Just for fun. }
   t1 := al_get_time;
-  LogPrintLn ('Saving took %.4f seconds', [t1 - t0]);
-
-  al_destroy_bitmap (Bitmap);
-
-  CloseLog (True)
+  WriteLn (al_str_to_string (al_str_format ('Saving took %.4f seconds', [t1 - t0])));
+{ Close. }
+  al_destroy_bitmap (Bitmap)
 end.

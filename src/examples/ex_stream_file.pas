@@ -9,7 +9,7 @@ program ex_stream_file;
  * by Milan Mimica (Translated to Pascal by Gillermo Martínez J.)
  *)
 (*
-  Copyright (c) 2012-2020 Guillermo Martínez J.
+  Copyright (c) 2012-2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -37,7 +37,7 @@ program ex_stream_file;
 
   uses
     Common,
-    allegro5, al5base, al5audio, al5acodec, al5strings;
+    allegro5, al5audio, al5acodec, al5strings;
 
 (* Attaches the stream directly to a voice. Streamed file's and voice's sample
  * rate, channels and depth must match.
@@ -50,7 +50,7 @@ var
   Mixer: ALLEGRO_MIXERptr;
   Loop, Playing: Boolean;
   Stream: ALLEGRO_AUDIO_STREAMptr;
-  FileName: AL_STR;
+  FileName: String;
   Event: ALLEGRO_EVENT;
   Queue: ALLEGRO_EVENT_QUEUEptr;
 
@@ -81,13 +81,15 @@ begin
 
   Voice := al_create_voice
     (44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_2);
-  if Voice = Nil then AbortExample ('Could not create ALLEGRO_VOICE.');
+  if not Assigned (Voice) then
+    AbortExample ('Could not create ALLEGRO_VOICE.');
   LogWriteLn ('Voice created.');
 
 {$IF NOT DEFINED(BYPASS_MIXER) }
   Mixer := al_create_mixer
     (44100, ALLEGRO_AUDIO_DEPTH_FLOAT32, ALLEGRO_CHANNEL_CONF_2);
-  if Mixer = Nil then AbortExample ('Could not create ALLEGRO_MIXER.');
+  if not Assigned (Mixer) then
+    AbortExample ('Could not create ALLEGRO_MIXER.');
   LogWriteLn ('Mixer created.');
 
   if not al_attach_mixer_to_voice (Mixer, Voice) then
@@ -96,12 +98,12 @@ begin
 
   for i := ArgStart to ParamCount do
   begin
-    FileName := al_string_to_str (ParamStr (i));
+    FileName := ParamStr (i);
     Playing := True;
     Queue := al_create_event_queue;
 
     Stream := al_load_audio_stream (FileName, 4, 2048);
-    if Stream = Nil then
+    if not Assigned (Stream) then
       AbortExample (al_str_format (
         'Could not create an ALLEGRO_AUDIO_STREAM from "%s"!', [FileName]
       ));

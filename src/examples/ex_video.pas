@@ -4,7 +4,7 @@ program ex_video;
  *    Demonstrate how to use the al5video add-on.
  *)
 (*
-  Copyright (c) 2019-2020 Guillermo Martínez J.
+  Copyright (c) 2019-2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -32,13 +32,13 @@ program ex_video;
 
 uses
    Common,
-   allegro5, al5base, al5audio, al5font, al5primitives, al5video, al5strings,
+   allegro5, al5audio, al5font, al5primitives, al5video, al5strings,
    sysutils;
 
 var
   Screen: ALLEGRO_DISPLAYptr;
   Font: ALLEGRO_FONTptr;
-  FileName: AL_STR;
+  FileName: String;
   Zoom: Real;
 
   procedure VideoDisplay (Video: ALLEGRO_VIDEOptr);
@@ -57,7 +57,7 @@ var
     tc := al_map_rgba_f (0, 0, 0, 0.5);
     bc := al_map_rgba_f (0.5, 0.5, 0.5, 0.5);
 
-    if Frame = Nil then Exit;
+    if not Assigned (Frame) then Exit;
 
     if Zoom = 0 then
     begin
@@ -92,7 +92,7 @@ var
       8, 8, bc
     );
     Position := al_get_video_position (Video, ALLEGRO_VIDEO_POSITION_ACTUAL);
-    al_draw_text (Font, tc, 8, 8 , 0, FileName);
+    al_draw_text (Font, tc, 8, 8 , 0, al_string_to_str (FileName));
     al_draw_textf (
       Font, tc, 8, 8 + 13, 0,
       '%3d:%02d (V: %+5.2f A: %+5.2f)',
@@ -185,13 +185,13 @@ begin
     AbortExample ('Could not set video mode - exiting');
 
   Font := al_create_builtin_font;
-  if Font = Nil then AbortExample ('No font.');
+  if not Assigned (Font) then AbortExample ('No font.');
 
   al_set_new_bitmap_flags (ALLEGRO_MIN_LINEAR or ALLEGRO_MAG_LINEAR);
 
   FileName := al_string_to_str (ParamStr (FilenameArgIdx));
   Video := al_open_video (FileName);
-  if Video = Nil then
+  if not Assigned (Video) then
     AbortExample (al_str_format ('Cannot read %s.', [FileName]));
   LogPrintLn ('video FPS: %f', [al_get_video_fps (Video)]);
   LogPrintLn ('video audio rate: %f', [al_get_video_audio_rate (Video)]);

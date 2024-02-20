@@ -1,6 +1,6 @@
 program ex_palette;
 (*
-  Copyright (c) 2012-2019 Guillermo Martínez J.
+  Copyright (c) 2012-2022 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -141,11 +141,11 @@ begin
 
   al_set_new_display_flags (ALLEGRO_PROGRAMMABLE_PIPELINE or ALLEGRO_OPENGL);
   Display := al_create_display (640, 480);
-  if Display = Nil then AbortExample ('Could not create display.');
+  if not Assigned (Display) then AbortExample ('Could not create display.');
 
   al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_SINGLE_CHANNEL_8);
   Bitmap := al_load_bitmap_flags ('data/alexlogo.bmp', ALLEGRO_KEEP_INDEX);
-  if Bitmap = Nil then
+  if not Assigned (Bitmap) then
     AbortExample ('"data/alexlogo.bmp" not found or failed to load.');
 
 { Create 8 sprites. }
@@ -161,11 +161,11 @@ begin
       Sprites[i].Flags := 0;
     Sprites[i].t := i / 8;
     Sprites[i].i := i mod 6;
-    Sprites[i].j := (Sprites[i].i + 1) mod 6;
+    Sprites[i].j := (Sprites[i].i + 1) mod 6
   end;
 
   Background := al_load_bitmap ('data/bkg.png');
-  if Background = Nil then
+  if not Assigned (Background) then
     AbortExample ('"data/bkg.png" not found or failed to load.');
 { Continue even if fail to load. }
 
@@ -181,19 +181,19 @@ begin
       al_color_rgb_to_hsl (r, g, b, h, s, l);
       if j = 6 then
       begin
-	if (l < 0.3) or (0.7 < l) then
-	begin
-	  h := 0;
-	  s := 1;
-	  l := 0.5
-	end
+        if (l < 0.3) or (0.7 < l) then
+        begin
+          h := 0;
+          s := 1;
+          l := 0.5
+        end
       end
       else begin
-	h := h + (j * 60);
-	if (l < 0.3) or (0.7 < l) then
-	begin
-	  if (j and 1) <> 0 then l := 1 - l
-	end
+        h := h + (j * 60);
+        if (l < 0.3) or (0.7 < l) then
+        begin
+          if (j and 1) <> 0 then l := 1 - l
+        end
       end;
       al_color_hsl_to_rgb (h, s, l, r, g, b);
 
@@ -203,8 +203,8 @@ begin
     end
   end;
 
-  Shader := al_create_shader(ALLEGRO_SHADER_GLSL);
-  if Shader = Nil then
+  Shader := al_create_shader (ALLEGRO_SHADER_GLSL);
+  if not Assigned (Shader) then
     AbortExample ('Cannot use GLSL (OpenGL) shader.');
 
   al_attach_shader_source (
@@ -262,16 +262,16 @@ begin
       if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then EndExample := True;
     ALLEGRO_EVENT_TIMER:
       begin
-	Redraw := True;
-	t := t + 1;
-	for i := Low (Sprites) to High (Sprites) do
-	begin
-	  if Sprites[i].Flags <> 0 then Dir := 1 else Dir := -1;
-	  sincos (Sprites[i].Angle, s, h);
-	  Sprites[i].x := Sprites[i].x + h * 2 * Dir;
-	  Sprites[i].y := Sprites[i].y + s * 2 * Dir;
-	  Sprites[i].Angle := Sprites[i].Angle + ALLEGRO_PI / 180 * Dir
-	end
+        Redraw := True;
+        t := t + 1;
+        for i := Low (Sprites) to High (Sprites) do
+        begin
+          if Sprites[i].Flags <> 0 then Dir := 1 else Dir := -1;
+          sincos (Sprites[i].Angle, s, h);
+          Sprites[i].x := Sprites[i].x + h * 2 * Dir;
+          Sprites[i].y := Sprites[i].y + s * 2 * Dir;
+          Sprites[i].Angle := Sprites[i].Angle + ALLEGRO_PI / 180 * Dir
+        end
       end;
     end;
 
@@ -291,18 +291,18 @@ begin
 
       for i := Low (Sprites) to High (Sprites) do
       begin
-	j := 7 - i;
-	Position := (1 + sin ((t / 60 + Sprites[j].t) * 2 * ALLEGRO_PI)) / 2;
-	Pal := InterpolatePalette (
-		 Pals[Sprites[j].i], Pals[Sprites[j].j], Position
-	       );
-	al_set_shader_float_vector ('pal', 3, @Pal, 256);
-	al_draw_rotated_bitmap (
-	  Bitmap,
-	  64, 64,
-	  Sprites[j].x, Sprites[j].y, Sprites[j].Angle,
-	  Sprites[j].Flags
-	);
+        j := 7 - i;
+        Position := (1 + sin ((t / 60 + Sprites[j].t) * 2 * ALLEGRO_PI)) / 2;
+        Pal := InterpolatePalette (
+                 Pals[Sprites[j].i], Pals[Sprites[j].j], Position
+               );
+        al_set_shader_float_vector ('pal', 3, @Pal, 256);
+        al_draw_rotated_bitmap (
+          Bitmap,
+          64, 64,
+          Sprites[j].x, Sprites[j].y, Sprites[j].Angle,
+          Sprites[j].Flags
+        );
       end;
 
       sc := 0.5;

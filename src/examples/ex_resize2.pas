@@ -4,8 +4,18 @@ program ex_resize2;
  *
  *    Resizing the window currently shows broken behaviour.
  *)
+(* NOTE: For some reason using al_set_display_flag to force full-screen on
+         Linux break the application, so all related code was disabled.
+
+         You may try at your won risk.  Note that it would block your terminal
+         so be sure you'll be able to kill the application (running from a
+         terminal emulator allows to kill it just by closing such terminal;
+         using xkill will do it too).
+
+         I didn't test it on Windows (yet) so it may work.
+ *)
 (*
-  Copyright (c) 2012-2020 Guillermo Martínez J.
+  Copyright (c) 2012-2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -33,7 +43,7 @@ program ex_resize2;
 
 uses
   Common,
-  allegro5, al5base, al5Image, al5font;
+  allegro5, al5Image, al5font;
 
 var
   Display: ALLEGRO_DISPLAYptr;
@@ -42,22 +52,60 @@ var
   Event: ALLEGRO_EVENT;
   Font: ALLEGRO_FONTptr;
   Redraw: Boolean;
-  MaxStr: AL_STR;
+  MaxStr: String;
+
+  procedure UpdateDisplay;
+  begin
+    al_clear_to_color (al_map_rgb (255, 0, 0));
+    al_draw_scaled_bitmap (
+      Bmp,
+      0, 0, al_get_bitmap_width (Bmp), al_get_bitmap_height (Bmp),
+      0, 0, al_get_display_width (Display), al_get_display_height (Display),
+      0
+    );
+    if (al_get_display_flags (Display) and ALLEGRO_MAXIMIZED) <> 0 then
+      MaxStr := 'yes'
+    else
+      MaxStr := 'no';
+    al_draw_multiline_textf (
+      Font, al_map_rgb (255, 255, 0),
+      0, 0, 640, al_get_font_line_height (Font),
+      0,
+      Concat (
+        'size: %d x %d'#10,
+        'maximized: %s'{#10,
+        '+ key to maximize'#10,
+        '- key to un-maximize'
+     }
+      ),
+      [
+        al_get_display_width (Display),
+        al_get_display_height (Display),
+        MaxStr
+      ]
+    );
+    al_flip_display;
+    Redraw := False
+  end;
 
 begin
-  if not al_init then AbortExample ('Could not init Allegro.');
+  if not al_init then
+    AbortExample ('Could not init Allegro.');
   al_install_keyboard;
   al_init_image_addon;
   al_init_font_addon;
 
-  al_set_new_display_flags
-    (ALLEGRO_RESIZABLE or ALLEGRO_GENERATE_EXPOSE_EVENTS);
+  al_set_new_display_flags (
+    ALLEGRO_RESIZABLE or ALLEGRO_GENERATE_EXPOSE_EVENTS
+  );
   Display := al_create_display (640, 480);
-  if Display = Nil then AbortExample ('Unable to set any graphic mode.');
+  if not Assigned (Display) then
+    AbortExample ('Unable to set any graphic mode.');
 
   al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
   Bmp := al_load_bitmap ('data/mysha.pcx');
-  if Bmp = Nil then AbortExample ('Unable to load image.');
+  if not Assigned (Bmp) then
+    AbortExample ('Unable to load image.');
 
   Font := al_create_builtin_font;
 
@@ -68,36 +116,7 @@ begin
   Redraw := True;
   while True do
   begin
-    if Redraw and al_is_event_queue_empty (Queue) then
-    begin
-      al_clear_to_color (al_map_rgb (255, 0, 0));
-      al_draw_scaled_bitmap (
-        Bmp,
-        0, 0, al_get_bitmap_width (Bmp), al_get_bitmap_height (Bmp),
-        0, 0, al_get_display_width (Display), al_get_display_height (Display),
-        0
-      );
-      if (al_get_display_flags (Display) and ALLEGRO_MAXIMIZED) <> 0 then
-        MaxStr := 'yes'
-      else
-        MaxStr := 'no';
-      al_draw_multiline_textf (
-        Font, al_map_rgb (255, 255, 0),
-        0, 0, 640, al_get_font_line_height (Font),
-        0,
-        'size: %d x %d'#10 +
-        'maximized: %s'#10 +
-        '+ key to maximize'#10 +
-        '- key to un-maximize',
-        [
-          al_get_display_width (Display),
-          al_get_display_height (Display),
-          MaxStr
-        ]
-      );
-      al_flip_display;
-      Redraw := False
-    end;
+    if Redraw and al_is_event_queue_empty (Queue) then UpdateDisplay;
 
     al_wait_for_event (Queue, @Event);
     case Event.ftype of
@@ -115,17 +134,21 @@ begin
         al_destroy_display (Display);
         Exit
       end;
+  { Code disabled.  Read comment at beginning to know why.
     ALLEGRO_EVENT_KEY_CHAR:
       if Event.keyboard.unichar = Ord ('+') then
         al_set_display_flag (Display, ALLEGRO_MAXIMIZED, True)
       else if Event.keyboard.unichar = Ord ('-') then
         al_set_display_flag (Display, ALLEGRO_MAXIMIZED, False);
+  }
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       begin
         al_destroy_bitmap (Bmp);
         al_destroy_display (Display);
         Exit
       end;
+    otherwise
+      LogWriteLn ('Unknown event');
     end
   end
 end.

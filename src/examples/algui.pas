@@ -1,11 +1,17 @@
 unit alGUI;
 (* A very simple GUI to be used by the example programs.
  *
- * It's intended to be as simple and transparent as possible (simplistic,
- * even).
+ * It's intended to be as simple and transparent as possible.  Delphi and
+ * Lazarus programmers will see familiar stuff here.
+ *
+ * Remember this is not a complete GUI for final games or applications but it
+ * can be used as gide or inspiration to build your own.
+ *
+ * Dialog is divided in two classes (TApplication and TDialog) just to make it
+ * more readeable.
  *)
 (*
-  Copyright (c) 2019-2020 Guillermo Martínez J.
+  Copyright (c) 2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -27,488 +33,518 @@ unit alGUI;
     distribution.
 *)
 
-{$IFDEF FPC}{$MODE OBJFPC}{$ENDIF}
+{$IFDEF FPC}
+{ Needed to support classes. }
+  {$IFNDEF FPC_DELPHI}
+    {$MODE DELPHI}
+  {$ENDIF}
+{$ENDIF}
 
 interface
 
   uses
-    allegro5, al5base, al5font, al5strings,
-    Classes;
+    allegro5, al5base, al5font,
+    Classes, Contnrs;
 
   const
-  (* Initial number of widgets. *)
-    MIN_WIDGETS = 16;
+  (* Window size. *)
+    wWidth = 800; wHeight = 600;
 
   type
     TWidget = class; { Forward declaration. }
 
 
 
-  (* Dialog container.  This is much like VCL/LCL TForm class so most Delphi
-     and Lazarus users should be used to it.
-
-     Note this dialog manages its own event queue that dispatches events from
-     current display, keyboard and mouse. *)
-    TDialog = class (TObject)
+  (* Base class for examples.
+   *
+   * Much like Delphi/Lazarus TApplication.
+   *)
+    TApplication = class (TObject)
     private
-    { Defines a grid that helps defining widget position and sizes. }
-      fGridM, fGridN,
-    { Defines a margin in the upper-left side.  In pixels. }
-      fPadX, fPadY: Integer;
-    { Dialog graphic style. }
-      fBgColor, fFgColor, fFgDisabledColor,
-      fBgTextColor, fSelectColor: ALLEGRO_COLOR;
-      fTextFont: ALLEGRO_FONTptr;
-    { Event management. }
-      fEventQueue: ALLEGRO_EVENT_QUEUEptr;
-      fEvent: ALLEGRO_EVENT;
-
-      fAllWidgets: array of TWidget;
-      fNextWidget, fKeyFocus, fMouseDownWidget: Integer;
-
       fTerminated: Boolean;
+      fEventQueue: ALLEGRO_EVENT_QUEUEptr;
+      fDisplay: ALLEGRO_DISPLAYptr;
+      fTextFont: ALLEGRO_FONTptr;
+      fTitle: AL_STR;
 
-      procedure SetTextFont (aFont: ALLEGRO_FONTptr);
-      function GetWidget (const Ndx: Integer): TWidget;
-    (* Updates the dialog. *)
-      procedure Update;
-    (* Renders the dialog. *)
-      procedure Draw;
-    (* Looks for a widget that wants key focus. *)
-      function SearchKeyFocus(const aNdx:Integer; const aInc:Integer=1):Integer;
-    (* Changes key focus, if widget wants it. *)
-      procedure SetKeyFocus (const aNdx: Integer);
-    (* Looks for a widget in the given pixel. *)
-      function SearchWidgetIn (const aX, aY: Integer): Integer;
+      function GetTitle: String;
+      procedure SetTitle (const aTitle: String);
+    protected
+    (* Process events.
+     *
+     * Descendant should call this if it doesn't process the event. *)
+      procedure ProcessEvent (const aEvent: ALLEGRO_EVENT); virtual;
+    (* Draw contents.
+     *
+     * Called by Run when needed. *)
+      procedure Draw; virtual; abstract;
     public
-    (* Constructor.
-
-       Do not create the dialog before to initialize Allegro and create a
-       display. *)
-      constructor Create (const aGridM, aGridN: Integer);
     (* Destructor. *)
       destructor Destroy; override;
-    (* Adds a new widget. Returns the widget index. *)
-      function Add (aWidget: TWidget; agx, agy, agw, agh: Integer): Integer;
-    (* Initializes the dialog.  Should call this after adding all widgets. *)
+    (* Initialize the application.
+     *
+     * This initialize Allegro, keyboard, mouse and create the window.
+     *)
       procedure Initialize; virtual;
-    (* Executes the dialog until Terminate is called. *)
-      procedure Run; virtual;
-    (* Sets "Terminated" to True. *)
-      procedure Terminate;
+    (* Execute the program. *)
+      procedure Run;
+    (* Tell the application that should terminate. *)
+      procedure Terminate; virtual;
+    (* Show an error message on window and wait user keypress. *)
+      procedure ShowErrorMessage (const aText: String);
 
-    (* Background color.  Default is grey. *)
-      property BgColor: ALLEGRO_COLOR read fBgColor write fBgColor;
-    (* Foreground/text color.  Default is black. *)
-      property FgColor: ALLEGRO_COLOR read fFgColor write fFgColor;
-    (* Disabled foreground color. *)
-      property FgDisabledColor: ALLEGRO_COLOR
-        read fFgDisabledColor write fFgDisabledColor;
-    (* Background color for text widgets. *)
-      property BgTextColor: ALLEGRO_COLOR read fBgTextColor write fBgTextColor;
-    (* Background color for selected text. *)
-      property SelectedColor: ALLEGRO_COLOR
-        read fSelectColor write fSelectColor;
-    (* Text font.  Default is 8x8 system font. *)
-      property TextFont: ALLEGRO_FONTptr read fTextFont write SetTextFont;
-    (* Number of widgets. *)
-      property WidgetCount: Integer read fNextWidget;
-    (* Indexed access to widgets. *)
-      property Widgets[const Ndx: Integer]: TWidget read GetWidget;
-    (* Tells if method "Terminate" was called.  Default is False. *)
+    (* Window title. *)
+      property Title: String read GetTitle write SetTitle;
+    (* Tells if terminate was called. *)
       property Terminated: Boolean read fTerminated;
+    (* Pointer to system text font. *)
+      property SysFont: ALLEGRO_FONTptr read fTextFont;
     end;
 
 
 
-  (* Base class for dialog widgets. *)
-    TWidget = class (TObject)
+
+  (* Base class for dialogs.
+   *
+   * Its similar to Delphi/Lazarus TForm but see it extends TApplication.
+   *)
+    TDialog = class (TApplication)
     private
-      fDialog: TDialog;
-    { Position and size in grid units. }
-      fGridX, fGridY, fGridW, fGridH,
-    { Position and size in pixels. }
-      fX, fY, fWidth, fHeight: Integer;
-    { State. }
-      fEnabled, fHasKeyFocus: Boolean;
-      fTag: Integer;
+      fWidgetList: TObjectList;
+      fClrBackground, fClrForeground,
+      fClrDisabled,
+      fClrSelectedBackground, fClrSelectedText: ALLEGRO_COLOR;
+      fTextFont: ALLEGRO_FONTptr;
+      fLineHeight, fKeyFocus, fMouseDownWidget: Integer;
 
-      procedure AdjustSize (aSizeX, aSizeY, aPadX, aPadY: Integer);
+      procedure DestroyTextFont;
+
+      function GetWidgetCount: Integer;
+      function GetWidget (const aNdx: Integer): TWidget;
+      procedure SetTextFont (aFont: ALLEGRO_FONTptr);
+    (* Look for a widget that wants key focus. *)
+      function SearchKeyFocus(const aNdx:Integer; const aInc:Integer=1):Integer;
+    (* Change key focus if widget wants it. *)
+      procedure SetKeyFocus (const aNdx: Integer);
     protected
-    (* Tells if widget wants key focus.  Default returns False. *)
-      function WantsKeyFocus: Boolean; virtual;
-
-    (* Handler for the ALLEGRO_EVENT_KEY_CHAR. *)
-      procedure onKeyChar (Event: ALLEGRO_KEYBOARD_EVENT); virtual;
-    (* Handler for the ALLEGRO_EVENT_MOUSE_BUTTON_DOWN. *)
-      procedure onMouseDown (Mouse: ALLEGRO_MOUSE_EVENT); virtual;
-    (* Handler for the ALLEGRO_EVENT_MOUSE_BUTTON_UP. *)
-      procedure onMouseUp; virtual;
-    (* Handler for the ALLEGRO_EVENT_MOUSE_AXES. *)
-      procedure onMouseMove (Mouse: ALLEGRO_MOUSE_EVENT); virtual;
+    (* Process events. *)
+      procedure ProcessEvent (const aEvent: ALLEGRO_EVENT); override;
+    (* Draw dialog. *)
+      procedure Draw; override;
     public
     (* Constructor. *)
       constructor Create; virtual;
-    (* Initializes the widget.  By default it does nothing. *)
-      procedure Initialize; virtual;
-    (* Tells if pixel is inside the widget. *)
-      function IsInside (const aX, aY: Integer): Boolean; inline;
-    (* Renders the widget. *)
-      procedure Draw; virtual; abstract;
+    (* Destructor. *)
+      destructor Destroy; override;
+    (* Initialize dialog. *)
+      procedure Initialize; override;
+    (* Add a new widget to the dialog.  Returns index. *)
+      function AddWidget (aWidget: TWidget): Integer;
+    (* Add a new widget to the dialog. *)
+      procedure AppendWidget (aWidget: TWidget);
+    (* Remove and destroy a widget from the dialog. *)
+      procedure RemoveWidget (aWidget: TWidget);
+    (* Extract a widget from the dialog. It doesn't destroy it. *)
+      procedure ExtractWidget (aWidget: TWidget);
+    (* Set dialog in initial state.  Call this after adding widgets. *)
+      procedure Reset;
+    (* Look for a widget in the given pixel.
+     * Returns widget index or -1 if don't find any.
+     *)
+      function SearchWidgetIn (const aX, aY: Integer): Integer;
 
-    (* Dialog that contains the widget. *)
+    (* How many widgets it has. *)
+      property WidgetCount: Integer read GetWidgetCount;
+    (* Indexed access to widgets.  It is zero-based. *)
+      property Widget[const aNdx: Integer]: TWidget read GetWidget;
+    (* Background color. *)
+      property clrBackground: ALLEGRO_COLOR
+        read fClrBackground write fClrBackground;
+    (* Foreground color. *)
+      property clrForeground: ALLEGRO_COLOR
+        read fClrForeground write fClrForeground;
+    (* Color used in disabled widgets. *)
+      property clrDisabled: ALLEGRO_COLOR
+        read fClrDisabled write fClrDisabled;
+    (* Background color for selected widgets. *)
+      property clrSelectedBackground: ALLEGRO_COLOR
+        read fClrSelectedBackground write fClrSelectedBackground;
+    (* Text color for selected widgets. *)
+      property clrSelectedText: ALLEGRO_COLOR
+        read fClrSelectedText write fClrSelectedText;
+    (* Text font for widgets. *)
+      property TextFont: ALLEGRO_FONTptr read fTextFont write SetTextFont;
+    (* Text font height in pixels. *)
+      property LineHeight: Integer read fLineHeight;
+    end;
+
+
+
+  (* Base class for GUI widgets. *)
+    TWidget = class (TObject)
+    private
+      fDialog: TDialog;
+      fX, fY, fWidth, fHeight: Integer;
+      fCaption: AL_STR;
+      fEnabled, fHasKeyFocus: Boolean;
+      fTag: Integer;
+
+      function GetCaption: String;
+      procedure SetCaption (const aCaption: String);
+    protected
+    (* Set x coordinate. *)
+      procedure SetX (const aValue: Integer); virtual;
+    (* Set y coordinate. *)
+      procedure SetY (const aValue: Integer); virtual;
+    (* Set width. *)
+      procedure SetWidth (const aValue: Integer); virtual;
+    (* Set height. *)
+      procedure SetHeight (const aValue: Integer); virtual;
+    (* Set enabled. *)
+      procedure SetEnabled (const aValue: Boolean); virtual;
+
+    (* Handler for the ALLEGRO_EVENT_KEY_CHAR. *)
+      procedure onKeyChar (aEvent: ALLEGRO_KEYBOARD_EVENT); virtual;
+    (* Handler for the ALLEGRO_EVENT_MOUSE_BUTTON_DOWN. *)
+      procedure onMouseDown (aMouse: ALLEGRO_MOUSE_EVENT); virtual;
+    (* Handler for the ALLEGRO_EVENT_MOUSE_BUTTON_UP. *)
+      procedure onMouseUp (aMouse: ALLEGRO_MOUSE_EVENT); virtual;
+    (* Handler for the ALLEGRO_EVENT_MOUSE_AXES. *)
+      procedure onMouseMove (aMouse: ALLEGRO_MOUSE_EVENT); virtual;
+
+    (* Reference to the dialog. *)
       property Dialog: TDialog read fDialog;
-    (* X coordinate. *)
-      property X: Integer read fX;
-    (* Y coordinate. *)
-      property Y: Integer read fY;
-    (* Widget width. *)
-      property Width: Integer read fWidth;
-    (* Widget height. *)
-      property Height: Integer read fHeight;
-    (* Tells if widget is enabled. *)
-      property Enabled: Boolean read fEnabled write fEnabled;
-    (* Widget has key focus. *)
-      property KeyFocus: Boolean read fHasKeyFocus;
-    (* A tag value. *)
+    (* Caption in Allegro way. *)
+      property CaptionStr: AL_STR read fCaption;
+    public
+    (* Constructor. *)
+      constructor Create; overload; virtual;
+      constructor Create (const aX, aY, aWidth, aHeight: Integer);
+        overload; virtual;
+    (* Tell if widget wants key focus.  Default returns false. *)
+      function WantFocus: Boolean; virtual;
+    (* Render the widget. *)
+      procedure Draw; virtual; abstract;
+    (* Check if given point is inside the widget. *)
+      function IsInside (const aX, aY: Integer): Boolean;
+    (* Move the widget the given pixels. *)
+      procedure MoveBy (const aX, aY: Integer); virtual;
+
+    (* Widget position. *)
+      property X: Integer read fX write SetX;
+      property Y: Integer read fY write SetY;
+    (* Widget size. *)
+      property Width: Integer read fWidth write SetWidth;
+      property Height: Integer read fHeight write SetHeight;
+    (* Widget caption. *)
+      property Caption: String read GetCaption write SetCaption;
+    (* Widget is enabled. *)
+      property Enabled: Boolean read fEnabled write SetEnabled;
+    (* Widget has focus. *)
+      property Focus: Boolean read fHasKeyFocus;
+    (* Tag value. *)
       property Tag: Integer read fTag write fTag;
     end;
 
 
 
-  (* A text label. *)
+  (* A label. *)
     TLabel = class (TWidget)
     private
-      fCentered: Boolean;
-      fCaption: AL_STR;
-    public
-    (* Creates the label. *)
-      constructor CreateLabel
-        (const aCaption: AL_STR; const aCentered: Boolean=True);
-    (* Renders label. *)
-      procedure Draw; override;
-
-    (* Centers caption. Default is True. *)
-      property Centered: Boolean read fCentered write fCentered;
-    (* Label caption. *)
-      property Caption: AL_STR read fCaption write fCaption;
-    end;
-
-
-
-  (* Draws a bitmap. *)
-    TBitmap = class (TWidget)
-    private
-      fBitmap: ALLEGRO_BITMAPptr;
-      fOwnsBitmap: Boolean;
-
-      procedure SetBitmap (aBmp: ALLEGRO_BITMAPptr); inline;
+      fAlign: Integer;
     public
     (* Constructor. *)
-      constructor Create; override;
-      constructor CreateBitmap (aBmp: ALLEGRO_BITMAPptr; aOwns: Boolean=True);
-        overload;
-      constructor CreateBitmap (aWidth, aHeight: Integer);
-        overload;
-    (* Destructor. *)
-      destructor Destroy; override;
-    (* Draws bitmap. *)
+      constructor CreateLabel (
+        const aX, aY: Integer;
+        const aCaption: String;
+        const aAlign: Integer = ALLEGRO_ALIGN_LEFT
+      );
+    (* Render the label. *)
       procedure Draw; override;
 
-    (* Tells if widget owns the bitmap.  Default is True. *)
-      property Owns: Boolean read fOwnsBitmap write fOwnsBitmap;
-    (* Reference to bitmap. *)
-      property Bmp: ALLEGRO_BITMAPptr read fBitmap write SetBitmap;
+    (* Label alignment. *)
+      property Align: Integer read fAlign write fAlign;
     end;
 
 
 
-  (* Presents a list of options to select one. *)
-    TOptionList = class (TWidget)
+  (* A label with its own colors. *)
+    TColoredLabel = class (TLabel)
     private
-      fItemList: TStringList;
-      fSelectedItem: Integer;
-      fOnChange: TNotifyEvent;
-
-      procedure SetSelected (const aNdx: Integer); inline;
-    protected
-    (* Tells if widget wants key focus. *)
-      function WantsKeyFocus: Boolean; override;
-
-    (* Handler for the ALLEGRO_EVENT_KEY_CHAR. *)
-      procedure onKeyChar (Event: ALLEGRO_KEYBOARD_EVENT); override;
-    (* Handler for the ALLEGRO_EVENT_MOUSE_BUTTON_DOWN. *)
-      procedure onMouseDown (Mouse: ALLEGRO_MOUSE_EVENT); override;
+      fBgColor, fFgColor: ALLEGRO_COLOR;
     public
     (* Constructor. *)
-      constructor Create; override;
-    (* Creates an option list. *)
-      constructor CreateOptionList (aOptions: array of AL_STR);
-    (* Destructor. *)
-      destructor Destroy; override;
-    (* Initializes the widget. *)
-      procedure Initialize; override;
-    (* Draws option list. *)
+      constructor CreateColoredLabel (
+        const aX, aY: Integer;
+        const aCaption: String;
+        aBg, aFg: ALLEGRO_COLOR;
+        const aAlign: Integer = ALLEGRO_ALIGN_LEFT
+      );
+    (* Render the label. *)
       procedure Draw; override;
 
-    (* List of options. *)
-      property Options: TStringList read fItemList;
-    (* Index of the selected item. *)
-      property Selected: Integer read fSelectedItem write SetSelected;
-
-    (* Event triggered when selection changes. *)
-      property OnSelectChange: TNotifyEvent read fOnChange write fOnChange;
+    (* Label colors. *)
+      property Background: ALLEGRO_COLOR read fBgColor write fBgColor;
+      property Color: ALLEGRO_COLOR read fFgColor write fFgColor;
     end;
 
 
 
-  (* Orientation. *)
-    TOrientation = (oHorizontal, oVertical);
+  (* To identify orientations. *)
+    TOrientation = ( oHorizontal, oVertical );
 
-  (* A slider. *)
+
+
+  (* A slider bar. *)
     TSlider = class (TWidget)
     private
       fOrientation: TOrientation;
-      fMax, fCurrent: Integer;
-
+      fMin, fMax, fStep, fValue: Integer;
+      fInverted, fPressed: Boolean;
       fOnChange: TNotifyEvent;
 
-      procedure SetCurrent (aCurrent: Integer); inline;
-      function CalculateCurrent (aPosition: ALLEGRO_MOUSE_EVENT): Integer; inline;
+      procedure SetMin (aValue: Integer);
+      procedure SetMax (aValue: Integer);
+      procedure SetValue (aValue: Integer);
     protected
-    (* Tells widget wants key focus. *)
-      function WantsKeyFocus: Boolean; override;
-
     (* Handler for the ALLEGRO_EVENT_KEY_CHAR. *)
-      procedure onKeyChar (Event: ALLEGRO_KEYBOARD_EVENT); override;
+      procedure onKeyChar (aEvent: ALLEGRO_KEYBOARD_EVENT); override;
     (* Handler for the ALLEGRO_EVENT_MOUSE_BUTTON_DOWN. *)
-      procedure onMouseDown (Mouse: ALLEGRO_MOUSE_EVENT); override;
+      procedure onMouseDown (aMouse: ALLEGRO_MOUSE_EVENT); override;
+    (* Handler for the ALLEGRO_EVENT_MOUSE_BUTTON_UP. *)
+      procedure onMouseUp (aMouse: ALLEGRO_MOUSE_EVENT); override;
     (* Handler for the ALLEGRO_EVENT_MOUSE_AXES. *)
-      procedure onMouseMove (Mouse: ALLEGRO_MOUSE_EVENT); override;
+      procedure onMouseMove (aMouse: ALLEGRO_MOUSE_EVENT); override;
     public
     (* Constructor. *)
       constructor Create; override;
     (* Creates a slider. *)
-      constructor CreateSlider
-        (const aMax: Integer; const aOrientation: TOrientation);
-    (* Draws option list. *)
+      constructor CreateSlider (
+        aOrientation: TOrientation;
+        aX, aY, aW, aH, aMin, aMax, aStep: integer
+      );
+    (* Tell if widget wants key focus.  Default returns false. *)
+      function WantFocus: Boolean; override;
+    (* Render the widget. *)
       procedure Draw; override;
 
-    (* Current value. *)
-      property Value: Integer read fCurrent write SetCurrent;
+    (* Slider orientation. *)
+      property Orientation: TOrientation
+        read fOrientation write fOrientation;
+    (* Minimun value.  Default is 0. *)
+      property Min: Integer read fMin write SetMin;
+    (* Maximun value. Default is 100. *)
+      property Max: Integer read fMax write SetMax;
+    (* Step.  Default is 10.
+       @seealso(Min) @seealso(Max) @seealso(Value) *)
+      property Step: Integer read fStep write fStep;
+    (* Current value. @seealso(Min) @seealso(Max) @seealso(step) *)
+      property Value: Integer read fValue write SetValue;
+    (* If @true slider will invert the axis.  Default is @false. *)
+      property Inverted: Boolean read fInverted write fInverted;
 
-    (* Event triggered when value changes. *)
+    (* Event triggered when @link(Value) changes. *)
       property OnChange: TNotifyEvent read fOnChange write fOnChange;
-    end;
-
-
-
-  (* Text input field. *)
-    TTextEntry = class (TWidget)
-    private
-      fText: ALLEGRO_USTRptr;
-      fLeftPos, fCursorPos: Integer;
-
-      fOnTextChanges: TNotifyEvent;
-
-      procedure MaybeScroll;
-
-      function GetText: AL_STR;
-      procedure SetText (const aText: AL_STR);
-    protected
-    (* Tells widget wants focus. *)
-      function WantsKeyFocus: Boolean; override;
-    (* Handler for the ALLEGRO_EVENT_KEY_CHAR. *)
-      procedure onKeyChar (Event: ALLEGRO_KEYBOARD_EVENT); override;
-    public
-    (* Constructor. *)
-      constructor Create; override;
-      constructor CreateTextEntry (const aText: AL_STR);
-    (* Destructor. *)
-      destructor Destroy; override;
-    (* Renders the widget. *)
-      procedure Draw; override;
-
-    (* Access to the input string. *)
-      property Text: AL_STR read GetText write SetText;
-
-    (* Event triggered when text changes. *)
-      property OnTextChanges: TNotifyEvent
-        read fOnTextChanges write fOnTextChanges;
     end;
 
 implementation
 
   uses
     Common,
-    al5primitives,
+    al5primitives, al5strings,
     sysutils;
 
-  const
-    CURSOR_WIDTH = 8;
-
-  type
-  (* Saves the Allegro state when created and restores it when destroyed. *)
-    TSaveState = class (TObject)
-    private
-      State: ALLEGRO_STATE;
-    public
-    (* Creates (and saves) the Allegro state. *)
-      constructor Create (const Save: Integer = ALLEGRO_STATE_ALL);
-    (* Restores (and destroys) the Allegro state. *)
-      destructor Destroy; override;
-    end;
-
-
-
 (*
- * TSaveState
- ***************************************************************************)
+ * TApplication
+ *************************************************************************)
 
-(* Constructor. *)
-  constructor TSaveState.Create (const Save: Integer);
+  function TApplication.GetTitle: String;
   begin
-    inherited Create;
-    al_store_state (Self.State, Save)
+    Result := al_str_to_string (fTitle)
   end;
 
 
 
-(* Destructor .*)
-  destructor TSaveState.Destroy;
+  procedure TApplication.SetTitle (const aTitle: String);
   begin
-    al_restore_state (State);
+    fTitle := al_string_to_str (aTitle);
+    if Assigned (fDisplay) then
+      al_set_window_title (fDisplay, fTitle)
+  end;
+
+
+
+  procedure TApplication.ProcessEvent (const aEvent: ALLEGRO_EVENT);
+  begin
+    case aEvent.ftype of
+    ALLEGRO_EVENT_DISPLAY_CLOSE:
+      Self.Terminate;
+    ALLEGRO_EVENT_KEY_CHAR:
+      if aEvent.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+        Self.Terminate;
+    end
+  end;
+
+
+
+  destructor TApplication.Destroy;
+  begin
+    if Assigned (fEventQueue) then al_destroy_event_queue (fEventQueue);
+    if Assigned (fTextFont) then al_destroy_font (fTextFont);
+    if Assigned (fDisplay) then al_destroy_display (fDisplay);
     inherited Destroy
+  end;
+
+
+
+  procedure TApplication.Initialize;
+  begin
+  { Initialize Allegro. }
+    if not al_init or not al_install_keyboard or not al_install_mouse
+    or not al_init_font_addon
+    then
+      raise Exception.Create ('Can''t initialize Allegro!');
+  { Create window. }
+    al_set_new_display_flags (ALLEGRO_WINDOWED);
+    fDisplay := al_create_display (wWidth, wHeight);
+    if not Assigned (fDisplay) then
+      raise Exception.Create ('Can''t create window.');
+  { System text font. }
+    fTextFont := al_create_builtin_font;
+  { Create the event queue. }
+    fEventQueue := al_create_event_queue;
+    if not Assigned (fEventQueue) then
+    begin
+      Self.ShowErrorMessage ('Can''t initialize event queue!');
+      Self.Terminate;
+      Exit
+    end;
+    al_register_event_source (fEventQueue, al_get_keyboard_event_source);
+    al_register_event_source (fEventQueue, al_get_mouse_event_source);
+    al_register_event_source (
+      fEventQueue,
+      al_get_display_event_source (fDisplay)
+    );
+  { Everything is correct. }
+    fTerminated := False
+  end;
+
+
+
+  procedure TApplication.Run;
+  var
+    lEvent: ALLEGRO_EVENT;
+  begin
+    try
+      while not fTerminated do
+      begin
+        if al_is_event_queue_empty (fEventQueue) then Self.Draw;
+        al_wait_for_event (fEventQueue, @lEvent);
+        Self.ProcessEvent (lEvent)
+      end
+    except
+      on Error: Exception do
+        Self.ShowErrorMessage (Error.Message)
+    end
+  end;
+
+
+
+  procedure TApplication.Terminate;
+  begin
+    fTerminated := True
+  end;
+
+
+
+  procedure TApplication.ShowErrorMessage (const aText: String);
+  const
+    TextFontSize = 8;
+    Margin = TextFontSize;
+  var
+    lMessage: AL_STR;
+    lColor: ALLEGRO_COLOR;
+    lKeyboardState: ALLEGRO_KEYBOARD_STATE;
+    lIgnore: Boolean;
+  begin
+    if not al_is_primitives_addon_initialized then
+      lIgnore := al_init_primitives_addon;
+    lIgnore := lIgnore; { Avoid compilation warning. }
+  { Prepare to draw. }
+    lMessage := al_string_to_str (aText);
+    al_set_target_backbuffer (fDisplay);
+    al_set_blender (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
+    lColor := al_map_rgb (255, 255, 255);
+  { Draw message. }
+    al_draw_filled_rectangle (
+      0, 0,
+      wWidth, TextFontSize * 4,
+      al_map_rgb (255, 51, 51)
+    );
+    al_draw_rectangle (
+      1.5, 1.5,
+      wWidth - 1.5, TextFontSize * 4 - 1.5,
+      lColor, 1
+    );
+    al_draw_text (fTextFont, lColor, Margin, Margin, 0, lMessage);
+    al_draw_text (fTextFont, lColor, Margin, Margin * 2, 0, 'Press [C] to close');
+    al_flip_display;
+  { Wait until keypress. }
+    repeat
+      al_rest (0.1);
+      al_get_keyboard_state (lKeyboardState)
+    until al_key_down (lKeyboardState, ALLEGRO_KEY_C)
   end;
 
 
 
 (*
  * TDialog
- ***************************************************************************)
+ *************************************************************************)
+
+  procedure TDialog.DestroyTextFont;
+  begin
+    if Assigned (fTextFont) and (fTextFont <> Self.SysFont) then
+      al_destroy_font (fTextFont)
+  end;
+
+
+
+  function TDialog.GetWidgetCount: Integer;
+  begin
+    Result := fWidgetList.Count
+  end;
+
+
+
+  function TDialog.GetWidget (const aNdx:Integer): TWidget;
+  begin
+    Result := TWidget (fWidgetList.Items[aNdx])
+  end;
+
+
 
   procedure TDialog.SetTextFont (aFont: ALLEGRO_FONTptr);
   begin
-    if fTextFont <> Nil then al_destroy_font (fTextFont);
-    if aFont <> Nil then
-      fTextFont := aFont
-    else
-      fTextFont := al_create_builtin_font
+    Self.DestroyTextFont;
+    fTextFont := aFont;
+    fLineHeight := al_get_font_line_height (fTextFont)
   end;
 
 
 
-  function TDialog.GetWidget (const Ndx: Integer): TWidget;
-  begin
-    Result := fAllWidgets[Ndx]
-  end;
-
-
-
-(* Updates dialog. *)
-  procedure TDialog.Update;
-
-    procedure RelativeCoordinates
-      (const aNdx: Integer; var Mouse: ALLEGRO_MOUSE_EVENT);
-    begin
-        Mouse.x := Mouse.x - fAllWidgets[aNdx].fX;
-        Mouse.y := Mouse.y - fAllWidgets[aNdx].fY;
-    end;
-
-    function GetWidgetMouse (var Mouse: ALLEGRO_MOUSE_EVENT): Integer;
-    begin
-      Result := Self.SearchWidgetIn (Mouse.x, Mouse.y);
-      if Result >= 0 then RelativeCoordinates (Result, Mouse)
-    end;
-
-  var
-    Ndx: Integer;
-  begin
-    while al_get_next_event (fEventQueue, fEvent) do
-      case fEvent.ftype of
-      ALLEGRO_EVENT_DISPLAY_CLOSE:
-        Self.Terminate;
-
-      ALLEGRO_EVENT_KEY_CHAR:
-        case fEvent.keyboard.keycode of
-        ALLEGRO_KEY_ESCAPE:
-          Self.Terminate;
-        ALLEGRO_KEY_TAB:
-          if (fEvent.keyboard.modifiers and ALLEGRO_KEYMOD_SHIFT) <> 0 then
-            Self.SetKeyFocus (Self.SearchKeyFocus (fKeyFocus - 1, -1))
-          else
-            Self.SetKeyFocus (Self.SearchKeyFocus (fKeyFocus + 1));
-        else
-          if (fKeyFocus >= 0) and fAllWidgets[fKeyFocus].Enabled then
-            fAllWidgets[fKeyFocus].onKeyChar (fEvent.keyboard);
-        end;
-
-      ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-        begin
-          Ndx := GetWidgetMouse (fEvent.mouse);
-          if Ndx <> fMouseDownWidget then
-          begin
-            if fMouseDownWidget >= 0 then
-              fAllWidgets[fMouseDownWidget].onMouseUp;
-            fMouseDownWidget := Ndx
-          end;
-          Self.SetKeyFocus (Ndx);
-          if (Ndx >= 0) and fAllWidgets[Ndx].Enabled then
-            fAllWidgets[Ndx].onMouseDown (fEvent.mouse)
-        end;
-      ALLEGRO_EVENT_MOUSE_BUTTON_UP:
-        if fMouseDownWidget >= 0 then
-        begin
-          fAllWidgets[fMouseDownWidget].onMouseUp;
-          fMouseDownWidget := -1
-        end;
-      ALLEGRO_EVENT_MOUSE_AXES:
-        if (fMouseDownWidget >= 0)
-        and fAllWidgets[fMouseDownWidget].Enabled
-        then begin
-          RelativeCoordinates (fMouseDownWidget, fEvent.mouse);
-          fAllWidgets[fMouseDownWidget].onMouseMove (fEvent.mouse)
-        end;
-      end
-  end;
-
-
-
-(* Renders dialog. *)
-  procedure TDialog.Draw;
-  var
-    cx, cy, cw, ch, Ndx: Integer;
-  begin
-    al_get_clipping_rectangle (cx, cy, cw, ch);
-    al_clear_to_color (fBgColor);
-    try
-      for Ndx := 0 to fNextWidget - 1 do
-      begin
-        al_set_clipping_rectangle (
-          fAllWidgets[Ndx].X, fAllWidgets[Ndx].Y,
-          fAllWidgets[Ndx].Width, fAllWidgets[Ndx].Height
-        );
-        fAllWidgets[Ndx].Draw
-      end
-    finally
-      al_set_clipping_rectangle (cx, cy, cw, ch);
-      al_flip_display
-    end
-  end;
-
-
-
-(* Looks for key focus. *)
   function TDialog.SearchKeyFocus (const aNdx, aInc: Integer): Integer;
   begin
-    Result := aNdx; if Result >= fNextWidget then Result := 0;
+    Result := aNdx; if Result >= fWidgetList.Count then Result := 0;
     repeat
-      if fAllWidgets[Result].Enabled and fAllWidgets[Result].WantsKeyFocus then
+      if Self.GetWidget (Result).Enabled
+      and Self.GetWidget (Result).WantFocus
+      then
         Exit;
     { Next widget. }
       Inc (Result, aInc);
-      if Result >= fNextWidget then Result := 0;
-      if Result < 0 then Result := fNextWidget - 1
+      if Result >= fWidgetList.Count then Result := 0;
+      if Result < 0 then Result := fWidgetList.Count - 1
     until Result = aNdx;
   { If here, no widget wants key focus. }
     Result := -1
@@ -516,34 +552,224 @@ implementation
 
 
 
-(* Sets key focus. *)
   procedure TDialog.SetKeyFocus (const aNdx: Integer);
   begin
   { Only if focus changes. }
     if aNdx <> fKeyFocus then
     begin
+      if (0 > aNdx) or (aNdx >= fWidgetList.Count) then Exit;
     { If new focus doesn't want focus, then don't change. }
-      if (0 <= aNdx) and (aNdx < fNextWidget) then
-        if not fAllWidgets[aNdx].Enabled
-        or not fAllWidgets[aNdx].WantsKeyFocus
-        then
-          Exit;
+      if not Self.GetWidget (aNdx).Enabled
+      or not Self.GetWidget (aNdx).WantFocus
+      then
+        Exit;
     { Current widget with focus lost it. }
-      if fKeyFocus >= 0 then fAllWidgets[fKeyFocus].fHasKeyFocus := False;
+      if fKeyFocus >= 0 then Self.GetWidget(fKeyFocus).fHasKeyFocus := False;
     { New focus. }
       fKeyFocus := aNdx;
-      if (0 <= fKeyFocus) and (fKeyFocus < fNextWidget) then
-        fAllWidgets[fKeyFocus].fHasKeyFocus := True
+      if (0 <= fKeyFocus) and (fKeyFocus < fWidgetList.Count) then
+        Self.GetWidget(fKeyFocus).fHasKeyFocus := True
     end
   end;
 
 
 
-(* Looks for a widget in the given pixel. *)
+  procedure TDialog.ProcessEvent (const aEvent: ALLEGRO_EVENT);
+  var
+    lWidget: TWidget;
+    lNdx: Integer;
+
+    procedure KeyCharEvent (const aKeyEvent: ALLEGRO_KEYBOARD_EVENT);
+    begin
+      case aKeyEvent.keycode of
+      ALLEGRO_KEY_ESCAPE:
+        Self.Terminate;
+      ALLEGRO_KEY_TAB:
+        if (aKeyEvent.modifiers and ALLEGRO_KEYMOD_SHIFT) = 0 then
+          Self.SetKeyFocus (Self.SearchKeyFocus (fKeyFocus + 1))
+        else
+          Self.SetKeyFocus (Self.SearchKeyFocus (fKeyFocus - 1, - 1));
+      else { otherwise }
+        begin
+          if fKeyFocus >= 0 then
+          begin
+            lWidget := Self.GetWidget (fKeyFocus);
+            if lWidget.Enabled then lWidget.onKeyChar (aKeyEvent);
+          end;
+          inherited ProcessEvent (aEvent)
+        end;
+      end
+    end;
+
+    procedure MouseAxesEvent (const aMouseEvent: ALLEGRO_MOUSE_EVENT);
+    begin
+      if (fMouseDownWidget >= 0)
+      and Self.GetWidget (fMouseDownWidget).Enabled
+      then
+        Self.GetWidget (fMouseDownWidget).onMouseMove (aMouseEvent)
+      else
+      { Try with current keyboard focus.  Otherwise it will not manage the mouse
+        wheel unless the widget is being clicked.
+      }
+        if (fKeyFocus >= 0) and Self.GetWidget (fKeyFocus).Enabled then
+          Self.GetWidget (fKeyFocus).onMouseMove (aMouseEvent)
+    end;
+
+    procedure MouseButtonDownEvent (const aMouseEvent: ALLEGRO_MOUSE_EVENT);
+    begin
+    { Find widget if any. }
+      lNdx := Self.SearchWidgetIn (aMouseEvent.x, aMouseEvent.y);
+      if lNdx < 0 then Exit;
+      if lNdx <> fMouseDownWidget then
+      begin
+      { If another widget has been clicked (maybe it's blocked). }
+        if fMouseDownWidget >= 0 then
+          Self.GetWidget (fMouseDownWidget).onMouseUp (aMouseEvent);
+        fMouseDownWidget := lNdx
+      end;
+    { Change focus and process. }
+      Self.SetKeyFocus (fMouseDownWidget);
+      lWidget := Self.GetWidget (fMouseDownWidget);
+      if lWidget.Enabled then lWidget.onMouseDown (aMouseEvent)
+    end;
+
+    procedure MouseButtonUpEvent (const aMouseEvent: ALLEGRO_MOUSE_EVENT);
+    begin
+      if fMouseDownWidget >= 0 then
+      begin
+        Self.GetWidget (fMouseDownWidget).onMouseUp (aMouseEvent);
+        fMouseDownWidget := -1
+      end
+    end;
+
+  begin
+    case aEvent.ftype of
+    ALLEGRO_EVENT_KEY_CHAR:
+      KeyCharEvent (aEvent.keyboard);
+    ALLEGRO_EVENT_MOUSE_AXES:
+      MouseAxesEvent (aEvent.mouse);
+    ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+      MouseButtonDownEvent (aEvent.mouse);
+    ALLEGRO_EVENT_MOUSE_BUTTON_UP:
+      MouseButtonUpEvent (aEvent.mouse);
+    else { otherwise }
+      inherited ProcessEvent (aEvent);
+    end
+  end;
+
+
+
+  procedure TDialog.Draw;
+  var
+    lNdx: Integer;
+  begin
+    try
+      al_clear_to_color (fClrBackground);
+      for lNdx := 0 to Self.WidgetCount - 1 do
+        Self.GetWidget (lNdx).Draw
+    finally
+      al_flip_display
+    end
+  end;
+
+
+
+  constructor TDialog.Create;
+  begin
+    inherited Create;
+    fWidgetList := TObjectList.Create (True);
+    fKeyFocus := -1; fMouseDownWidget := -1
+  end;
+
+
+
+  destructor TDialog.Destroy;
+  begin
+    Self.DestroyTextFont;
+    fWidgetList.Free;
+    inherited Destroy
+  end;
+
+
+
+  procedure TDialog.Initialize;
+  var
+    lIgnore: Boolean;
+  begin
+    inherited Initialize;
+    if Self.Terminated then Exit;
+    lIgnore := al_init_primitives_addon;
+    lIgnore := lIgnore; { Avoid compilation warning. }
+  { Init dialog. }
+    Self.SetTextFont (Self.SysFont);
+    fClrBackground :=         al_map_rgb (204, 204, 204);
+    fClrForeground :=         al_map_rgb (  0,   0,   0);
+    fClrDisabled :=           al_map_rgb (  51, 51,  51);
+    fClrSelectedBackground := al_map_rgb (  0,   0, 153);
+    fClrSelectedText :=       al_map_rgb (  0, 153,   0)
+  end;
+
+
+
+  function TDialog.AddWidget (aWidget: TWidget): Integer;
+  begin
+    Result := fWidgetList.Add (aWidget);
+    aWidget.fDialog := Self
+  end;
+
+
+
+  procedure TDialog.AppendWidget (aWidget: TWidget);
+  var
+    lIgnore: Integer;
+  begin
+    lIgnore := Self.AddWidget (aWidget);
+    lIgnore := lIgnore { Avoid compilation warning. }
+  end;
+
+
+
+  procedure TDialog.RemoveWidget (aWidget: TWidget);
+  var
+    lNdx: Integer;
+  begin
+    lNdx := fWidgetList.Remove (aWidget);
+  { Safe focus. }
+    if lNdx = fKeyFocus then fKeyFocus := -1;
+    if lNdx = fMouseDownWidget then fMouseDownWidget := -1
+  end;
+
+
+
+  procedure TDialog.ExtractWidget (aWidget: TWidget);
+  var
+    lNdx: Integer;
+  begin
+    lNdx := fWidgetList.IndexOf (aWidget);
+    if lNdx < 0 then Exit;
+  { Extract widget. }
+    if aWidget <> fWidgetList.Extract (aWidget) then
+    { This error is very unlikely but... }
+      raise Exception.Create ('Can''t extract widget!');
+  { Safe focus. }
+    if lNdx = fKeyFocus then fKeyFocus := -1;
+    if lNdx = fMouseDownWidget then fMouseDownWidget := -1
+  end;
+
+
+
+  procedure TDialog.Reset;
+  begin
+    fMouseDownWidget := -1;
+    Self.SetKeyFocus (Self.SearchKeyFocus (0))
+  end;
+
+
+
   function TDialog.SearchWidgetIn (const aX, aY: Integer): Integer;
   begin
-    for Result := fNextWidget - 1 downto 0 do
-      if fAllWidgets[Result].IsInside (ax, ay) then
+    for Result := fWidgetList.Count - 1 downto 0 do
+      if Self.GetWidget (Result).IsInside (ax, ay) then
         Exit;
   { No widget found. }
     Result := -1
@@ -551,128 +777,55 @@ implementation
 
 
 
-(* Constructor. *)
-  constructor TDialog.Create (const aGridM, aGridN: Integer);
-  begin
-    inherited Create;
-    SetLength (fAllWidgets, MIN_WIDGETS);
-    fGridM := aGridM; fGridN := aGridN;
-    fPadX := 1; fPadY := 1;
-    fKeyFocus := -1; fMouseDownWidget := -1;
-
-    fBgColor :=         al_map_rgb (204, 204, 204);
-    fFgColor :=         al_map_rgb (  0,   0,   0);
-    fFgDisabledColor := al_map_rgb (  51, 51,  51);
-    fBgTextColor :=     al_map_rgb (255, 255, 255);
-    fSelectColor :=     al_map_rgb (  0,   0, 153);
-    Self.SetTextFont (Nil)
-  end;
-
-
-
-(* Destructor. *)
-  destructor TDialog.Destroy;
-  var
-    Ndx: Integer;
-  begin
-    if fEventQueue <> Nil then al_destroy_event_queue (fEventQueue);
-    if fNextWidget > 0 then
-      for Ndx := 0 to fNextWidget - 1 do
-        fAllWidgets[Ndx].Free;
-    if fTextFont <> Nil then al_destroy_font (fTextFont);
-    inherited Destroy
-  end;
-
-
-
-(* Adds a new widget. Returns the widget index. *)
-  function TDialog.Add (aWidget: TWidget; agx, agy, agw, agh: Integer): Integer;
-  begin
-    aWidget.fDialog := Self;
-    aWidget.fGridX := agx; aWidget.fGridY := agy;
-    aWidget.fGridW := agw; aWidget.fGridH := agh;
-
-    Result := fNextWidget;
-    if fNextWidget >= Length (fAllWidgets) then
-      SetLength (fAllWidgets, Length (fAllWidgets) * 2);
-    fAllWidgets[fNextWidget] := aWidget;
-    Inc (fNextWidget)
-  end;
-
-
-
-(* Initializes the dialog.  Should call this after adding all widgets. *)
-  procedure TDialog.Initialize;
-  var
-    lDisplay: ALLEGRO_DISPLAYptr;
-    Ndx,
-    SizeX, SizeY: Integer;
-  begin
-    lDisplay := al_get_current_display;
-  { Calculate grid cell sizes. }
-    SizeX := al_get_display_width (lDisplay) div fGridM;
-    SizeY := al_get_display_height (lDisplay) div fGridN;
-  { Adjust widget position and size, and initializes it. }
-    for Ndx := 0 to fNextWidget - 1 do
-    begin
-      fAllWidgets[Ndx].AdjustSize (SizeX, SizeY, fPadX, fPadY);
-      fAllWidgets[Ndx].initialize
-    end;
-  { Key focus. }
-    Self.SetKeyFocus (Self.SearchKeyFocus (0));
-  { Event management. }
-    fEventQueue := al_create_event_queue;
-    al_register_event_source (fEventQueue, al_get_display_event_source (lDisplay));
-    al_register_event_source (fEventQueue, al_get_keyboard_event_source);
-    al_register_event_source (fEventQueue, al_get_mouse_event_source);
-  { Start. }
-    fTerminated := False
-  end;
-
-
-
-(* Executes the dialog. *)
-  procedure TDialog.Run;
-  begin
-    try
-      repeat
-        Self.Update;
-        Self.Draw
-      until fTerminated
-    except
-      on Error: Exception do
-        AbortExample (al_string_to_str (Error.Message))
-    end
-  end;
-
-
-
-(* Terminate dialog. *)
-  procedure TDialog.Terminate;
-  begin
-    fTerminated := True
-  end;
-
-
-
 (*
  * TWidget
- ***************************************************************************)
+ *************************************************************************)
 
-  procedure TWidget.AdjustSize (aSizeX, aSizeY, aPadX, aPadY: Integer);
+  function TWidget.GetCaption: String;
   begin
-    fX := aSizeX * fGridX + aPadX;
-    fY := aSizeY * fGridY + aPadY;
-    fWidth := aSizeX * fGridW - aPadX - 1;
-    fHeight := aSizeY * fGridH - aPadY - 1
+    Result := al_str_to_string (fCaption)
   end;
 
 
 
-(* Check if wants focus. *)
-  function TWidget.WantsKeyFocus: Boolean;
+  procedure TWidget.SetCaption (const aCaption: String);
   begin
-    Result := False
+    fCaption := al_string_to_str (aCaption)
+  end;
+
+
+
+  procedure TWidget.SetX (const aValue: Integer);
+  begin
+    fX := aValue
+  end;
+
+
+
+  procedure TWidget.SetY (const aValue: Integer);
+  begin
+    fY := aValue
+  end;
+
+
+
+  procedure TWidget.SetWidth (const aValue: Integer);
+  begin
+    fWidth := aValue
+  end;
+
+
+
+  procedure TWidget.SetHeight (const aValue: Integer);
+  begin
+    fHeight := aValue
+  end;
+
+
+
+  procedure TWidget.SetEnabled (const aValue: Boolean);
+  begin
+    fEnabled := aValue
   end;
 
 
@@ -682,630 +835,342 @@ implementation
   {$PUSH}
   {$WARN 5024 OFF : Parameter "$1" not used}
 {$ENDIF}
-  procedure TWidget.onKeyChar (Event: ALLEGRO_KEYBOARD_EVENT); begin end;
+  procedure TWidget.onKeyChar (aEvent: ALLEGRO_KEYBOARD_EVENT); begin end;
 
-  procedure TWidget.onMouseDown (Mouse: ALLEGRO_MOUSE_EVENT); begin end;
+  procedure TWidget.onMouseDown (aMouse: ALLEGRO_MOUSE_EVENT); begin end;
 
-  procedure TWidget.onMouseUp; begin end;
+  procedure TWidget.onMouseUp (aMouse: ALLEGRO_MOUSE_EVENT); begin end;
 
-  procedure TWidget.onMouseMove (Mouse: ALLEGRO_MOUSE_EVENT); begin end;
+  procedure TWidget.onMouseMove (aMouse: ALLEGRO_MOUSE_EVENT); begin end;
 {$IFDEF FPC} {$POP} {$ENDIF}
 
 
-(* Constructor. *)
+
   constructor TWidget.Create;
   begin
     inherited Create;
-    fEnabled := True;
-    fHasKeyFocus := False;
-    fTag := 0
+    Self.SetEnabled (True)
   end;
 
 
 
-(* initializes. *)
-  procedure TWidget.initialize; begin end;
+  constructor TWidget.Create (const aX, aY, aWidth, aHeight: Integer);
+  begin
+    inherited Create;
+    Self.SetX (aX); Self.SetY (aY);
+    Self.SetWidth (aWidth); Self.SetHeight (aHeight);
+    Self.SetEnabled (True)
+  end;
 
 
 
-(* Tells if pixel is inside. *)
+  function TWidget.WantFocus: Boolean;
+  begin
+    Result := False
+  end;
+
+
+
   function TWidget.IsInside (const aX, aY: Integer): Boolean;
   begin
-    Result := (fX <= aX) and (aX <= fX + fWidth) and
-              (fY <= aY) and (aY <= fY + fHeight)
+    Result := (fX < aX) and (aX <= fX + fWidth) and
+              (fY < aY) and (aY <= fY + fHeight)
+  end;
+
+
+
+  procedure TWidget.MoveBy (const aX, aY: Integer);
+  begin
+    Self.SetX (fX + aX);
+    Self.SetY (fY + aY)
   end;
 
 
 
 (*
  * TLabel
- ***************************************************************************)
+ *************************************************************************)
 
-(* Creates the label. *)
-  constructor TLabel.CreateLabel
-    (const aCaption: AL_STR; const aCentered: Boolean);
+  constructor TLabel.CreateLabel (
+    const aX, aY: Integer;
+    const aCaption: String;
+    const aAlign: Integer
+  );
   begin
-    inherited Create;
-    fCentered := aCentered;
-    fCaption := aCaption
+    inherited Create (aX, aY, 0, 0);
+    Self.Caption := aCaption;
+    fAlign := aAlign
   end;
 
 
 
-(* Renders label. *)
   procedure TLabel.Draw;
-  var
-    State: TSaveState;
-    Clr: ALLEGRO_COLOR;
   begin
-    if Self.Enabled then
-      Clr := Dialog.FgColor
-    else
-      Clr := Dialog.FgDisabledColor;
-    State := TSaveState.Create;
-    try
-      al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-      if fCentered then
-        al_draw_text (
-          Dialog.TextFont, Clr,
-          fX + (fWidth div 2), fY,
-          ALLEGRO_ALIGN_CENTRE,
-          fCaption
-        )
-      else
-        al_draw_text (
-          Dialog.TextFont, Clr,
-          fX, fY,
-          0,
-          fCaption
-        )
-    finally
-    { Restore state, including blender. }
-      State.Free
-    end
-  end;
-
-
-
-(*
- * TBitmap
- ***************************************************************************)
-
-  procedure TBitmap.SetBitmap (aBmp: ALLEGRO_BITMAPptr);
-  begin
-    if fOwnsBitmap and Assigned (fBitmap) then
-      al_destroy_bitmap (fBitmap);
-    fBitmap := aBmp
-  end;
-
-
-
-(* Constructor. *)
-  constructor TBitmap.Create;
-  begin
-    inherited Create;
-    fBitmap := Nil;
-    fOwnsBitmap := True
-  end;
-
-
-
-  constructor TBitmap.CreateBitmap (aBmp: ALLEGRO_BITMAPptr; aOwns: Boolean);
-  begin
-    inherited Create;
-    fBitmap := aBmp;
-    fOwnsBitmap := aOwns
-  end;
-
-
-
-  constructor TBitmap.CreateBitmap (aWidth, aHeight: Integer);
-  begin
-    inherited Create;
-    fBitmap := al_create_bitmap (aWidth, aHeight);
-    fOwnsBitmap := fBitmap <> Nil
-  end;
-
-
-
-(* Destructor. *)
-  destructor TBitmap.Destroy;
-  begin
-    if fOwnsBitmap and Assigned (fBitmap) then al_destroy_bitmap (fBitmap);
-    inherited Destroy
-  end;
-
-
-
-(* Draws bitmap. *)
-  procedure TBitmap.Draw;
-  begin
-    al_draw_scaled_bitmap (
-      fBitmap,
-      0, 0, al_get_bitmap_width (fBitmap), al_get_bitmap_height (fBitmap),
-      fX, fY, fWidth, fHeight,
-      0
+    al_draw_text (
+      Self.Dialog.TextFont, Self.Dialog.clrForeground,
+      Self.X, Self.Y, fAlign,
+      Self.CaptionStr
     )
   end;
 
 
 
 (*
- * TOptionList
- ***************************************************************************)
+ * TColoredLabel
+ *************************************************************************)
 
-  procedure TOptionList.SetSelected (const aNdx: Integer);
+  constructor TColoredLabel.CreateColoredLabel (
+    const aX, aY: Integer;
+    const aCaption: String;
+    aBg, aFg: ALLEGRO_COLOR;
+    const aAlign: Integer
+  );
   begin
-    if fSelectedItem <> aNdx then
-    begin
-      fSelectedItem := aNdx;
-      if (0 <= fSelectedItem) and (fSelectedItem < fItemList.Count)
-      and Assigned (fOnChange) then
-        fOnChange (Self)
-    end
+    inherited CreateLabel (aX, aY, aCaption, aAlign);
+    fBgColor := aBg;
+    fFgColor := aFg
   end;
 
 
 
-(* Check if wants focus. *)
-  function TOptionList.WantsKeyFocus: Boolean;
-  begin
-    Result := True
-  end;
-
-
-
-(* Handler for the ALLEGRO_EVENT_KEY_CHAR. *)
-  procedure TOptionList.onKeyChar (Event: ALLEGRO_KEYBOARD_EVENT);
-  begin
-    case Event.keycode of
-    ALLEGRO_KEY_UP:
-      if fSelectedItem <= 0 then
-        Self.SetSelected (fItemList.Count - 1)
-      else
-        Self.SetSelected (fSelectedItem - 1);
-    ALLEGRO_KEY_DOWN:
-      if fSelectedItem >= fItemList.Count - 1 then
-        Self.SetSelected (0)
-      else
-        Self.SetSelected (fSelectedItem + 1);
-    end
-  end;
-
-
-
-(* Handler for the ALLEGRO_EVENT_MOUSE_BUTTON_DOWN. *)
-  procedure TOptionList.onMouseDown (Mouse: ALLEGRO_MOUSE_EVENT);
+  procedure TColoredLabel.Draw;
   var
-    Ndx: Integer;
+    lWidth: Integer;
   begin
-    Ndx := Mouse.y div al_get_font_line_height (Dialog.TextFont);
-    if (0 <= Ndx) and (Ndx < fItemList.Count) then Self.SetSelected (Ndx)
-  end;
-
-
-
-(* Constructor. *)
-  constructor TOptionList.Create;
-  begin
-    inherited Create;
-    fItemList := TStringList.Create
-  end;
-
-
-
-  constructor TOptionList.CreateOptionList (aOptions: array of AL_STR);
-  var
-    Ndx: Integer;
-  begin
-    inherited Create;
-    fItemList := TStringList.Create;
-    for Ndx := Low (aOptions) to High (aOptions) do
-      fItemList.Add (al_str_to_string (aOptions[Ndx]))
-  end;
-
-
-
-(* Destructor. *)
-  destructor TOptionList.Destroy;
-  begin
-    fItemList.Free;
-    inherited Destroy
-  end;
-
-
-
-(* Initializes the widget. *)
-  procedure TOptionList.Initialize;
-  begin
-    inherited Initialize;
-    fSelectedItem := 0
-  end;
-
-
-
-(* Draws list. *)
-  procedure TOptionList.Draw;
-  var
-    State: TSaveState;
-    ClrText, ClrSelected: ALLEGRO_COLOR;
-    Ndx, pX, pY, iY: Integer;
-  begin
-  { Colors depend if enabled and has focus. }
-    if Self.Enabled then
-    begin
-      ClrText := Dialog.fgColor;
-      if Self.KeyFocus then
-        ClrSelected := Dialog.SelectedColor
-      else
-        ClrSelected := Dialog.fgColor
-    end
-    else begin
-      ClrText := Dialog.FgDisabledColor;
-      ClrSelected := Dialog.FgDisabledColor
-    end;
-  { Draw control. }
-    State := TSaveState.Create;
-    try
-      al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-      al_draw_filled_rectangle (
-        fX, fY, fX + fWidth, fY + fHeight,
-        Dialog.BgTextColor
-      );
-      al_draw_rectangle (
-        fX, fY, fX + fWidth, fY + fHeight,
-        Dialog.FgColor,
-        1
-      );
-      pX := fx + 1 ; pY := fY + 1;
-      iY := al_get_font_line_height (Dialog.TextFont);
-      for Ndx := 0 to fItemList.Count - 1 do
-      begin
-        if Ndx = fSelectedItem then
-        begin
-          al_draw_filled_rectangle (
-            pX, pY, pX + fWidth - 3, pY + iY,
-            ClrSelected
-          );
-          al_draw_text (
-            Dialog.TextFont, Dialog.BgTextColor,
-            pX, pY,
-            0,
-            al_string_to_str (fItemList[Ndx])
-          )
-        end
-        else
-          al_draw_text (
-            Dialog.TextFont, ClrText,
-            pX, pY,
-            0,
-            al_string_to_str (fItemList[Ndx])
-          );
-        Inc (pY, iY)
-      end
-    finally
-      State.Free
-    end
+    lWidth := al_get_text_width (Self.Dialog.TextFont, fCaption);
+    al_draw_filled_rectangle (
+      Self.X + 0.5, Self.Y + 0.5,
+      Self.X + lWidth + 0.5, Self.Y + Self.Dialog.LineHeight + 0.5,
+      fBgColor
+    );
+    al_draw_text (
+      Self.Dialog.TextFont, fFgColor,
+      Self.X, Self.Y, fAlign,
+      Self.CaptionStr
+    )
   end;
 
 
 
 (*
  * TSlider
- ***************************************************************************)
+ *************************************************************************)
 
-  procedure TSlider.SetCurrent (aCurrent: Integer);
+  procedure TSlider.SetMin (aValue: Integer);
   begin
-    if aCurrent < 0 then aCurrent := 0;
-    if aCurrent > fMax then aCurrent := fMax;
-    if aCurrent <> fCurrent then
+    if aValue <> fMin then
     begin
-      fCurrent := aCurrent;
-      if Assigned (fOnChange) then fOnChange (Self)
+      fMin := aValue;
+      if fMin > fMax then fMax := fMin + 1;
+      if fValue < fMin then Self.SetValue (fMin)
     end
   end;
 
 
 
-  function TSlider.CalculateCurrent (aPosition: ALLEGRO_MOUSE_EVENT): Integer;
+  procedure TSlider.SetMax (aValue: Integer);
   begin
+    if aValue <> fMax then
+    begin
+      fMax := aValue;
+      if fMin > fMax then fMin := fMax - 1;
+      if fValue > fMax then Self.SetValue (fMax)
+    end
+  end;
+
+
+
+  procedure TSlider.SetValue (aValue: Integer);
+  begin
+    if aValue <> fValue then
+    begin
+      fValue := Clamp (fMin, aValue, fMax);
+      if assigned (fOnChange) then fOnChange (Self)
+    end
+  end;
+
+
+  procedure TSlider.onKeyChar (aEvent: ALLEGRO_KEYBOARD_EVENT);
+  begin
+    case aEvent.keycode of
+    ALLEGRO_KEY_LEFT:
+      if fOrientation = oHorizontal then
+      begin
+        if fInverted then
+          Self.SetValue (fValue + 1)
+        else
+          Self.SetValue (fValue - 1)
+      end;
+    ALLEGRO_KEY_RIGHT:
+      if fOrientation = oHorizontal then
+      begin
+        if fInverted then
+          Self.SetValue (fValue - 1)
+        else
+          Self.SetValue (fValue + 1)
+      end;
+    ALLEGRO_KEY_UP:
+      if fOrientation = oVertical then
+      begin
+        if fInverted then
+          Self.SetValue (fValue + 1)
+        else
+          Self.SetValue (fValue - 1)
+      end;
+    ALLEGRO_KEY_DOWN:
+      if fOrientation = oVertical then
+      begin
+        if fInverted then
+          Self.SetValue (fValue - 1)
+        else
+          Self.SetValue (fValue + 1)
+      end;
+    ALLEGRO_KEY_PGUP:
+      if fInverted then
+        Self.SetValue (fValue + fStep)
+      else
+        Self.SetValue (fValue - fStep);
+    ALLEGRO_KEY_PGDN:
+      if fInverted then
+        Self.SetValue (fValue - fStep)
+      else
+        Self.SetValue (fValue + fStep);
+    end
+  end;
+
+
+
+  procedure TSlider.onMouseDown (aMouse: ALLEGRO_MOUSE_EVENT);
+  var
+    lPosition, lRange, lValue: Integer;
+  begin
+    fPressed := True;
+  { Calculate the mouse position to move the slider. }
     if fOrientation = oHorizontal then
-      Exit (Trunc ((fMax / fWidth) * aPosition.x))
-    else { oVertical }
-      Exit (Trunc ((fMax / fHeight) * aPosition.y))
-  end;
-
-
-
-(* Check if wants focus. *)
-  function TSlider.WantsKeyFocus: Boolean;
-  begin
-    Result := True
-  end;
-
-
-
-(* Handler for the ALLEGRO_EVENT_KEY_CHAR. *)
-  procedure TSlider.onKeyChar (Event: ALLEGRO_KEYBOARD_EVENT);
-  begin
-    case Event.keycode of
-    ALLEGRO_KEY_UP, ALLEGRO_KEY_LEFT:
-      Self.SetCurrent (fCurrent - (fMax div 100));
-    ALLEGRO_KEY_DOWN, ALLEGRO_KEY_RIGHT:
-      Self.SetCurrent (fCurrent + (fMax div 100));
+    begin
+      lRange := Self.Width - Self.Height;
+      lPosition := aMouse.x - (Self.Height div 2)
     end
+    else
+    begin
+      lRange := Self.Height - Self.Width;
+      lPosition := aMouse.y - (Self.Width div 2)
+    end;
+  { Set new value. }
+    lValue := Clamp (fMin, (lPosition * (fMax - fMin)) div lRange, fMax);
+    if fInverted then lValue := fMax - lValue;
+    Self.SetValue (lValue);
   end;
 
 
 
-(* Handler for the ALLEGRO_EVENT_MOUSE_BUTTON_DOWN. *)
-  procedure TSlider.onMouseDown (Mouse: ALLEGRO_MOUSE_EVENT);
+  procedure TSlider.onMouseUp (aMouse: ALLEGRO_MOUSE_EVENT);
   begin
-    Self.SetCurrent (Self.CalculateCurrent (Mouse))
+    fPressed := False;
   end;
 
 
 
-(* Handler for the ALLEGRO_EVENT_MOUSE_AXES. *)
-  procedure TSlider.onMouseMove (Mouse: ALLEGRO_MOUSE_EVENT);
+  procedure TSlider.onMouseMove (aMouse: ALLEGRO_MOUSE_EVENT);
   begin
-    Self.SetCurrent (Self.CalculateCurrent (Mouse))
+    if fPressed then Self.onMouseDown (aMouse)
   end;
 
 
 
-(* Constructor. *)
   constructor TSlider.Create;
   begin
     inherited Create;
     fOrientation := oHorizontal;
-    fMax := 100; fCurrent := 0
+    fMin := 0; fMax := 100; fValue := 0;
+    fStep := 10;
+    fInverted := False; fPressed := False
   end;
 
 
 
-(* Creates a slider. *)
-  constructor TSlider.CreateSlider
-        (const aMax: Integer; const aOrientation: TOrientation);
+  constructor TSlider.CreateSlider (
+    aOrientation: TOrientation;
+    aX, aY, aW, aH, aMin, aMax, aStep: integer
+  );
   begin
-    inherited Create;
+    inherited Create (aX, aY, aW, aH);
     fOrientation := aOrientation;
-    fMax := aMax; fCurrent := 0
+    fMin := aMin; Self.SetMax (aMax); fValue := fMin;
+    fStep := aStep;
+    fInverted := False; fPressed := False
   end;
 
 
+  function TSlider.WantFocus: Boolean;
+  begin Result := True end;
 
-(* Draws option list. *)
+
+
   procedure TSlider.Draw;
   var
-    State: TSaveState;
-    Clr: ALLEGRO_COLOR;
-    cX, cY: Integer;
+    lClr: ALLEGRO_COLOR;
+    cX, cY: Single;
+    lRange, lValue: Integer;
 
     procedure DrawHorizontal;
     begin
-      cY := fY + (fHeight div 2);
-      cX := fX + Trunc (fWidth * (fCurrent / fMax)) - 2;
+      cY := Self.Y + (Self.Height div 2) + 0.5;
+      cX := Self.X + Trunc (Self.Width * (lValue / lRange)) - 1.5;
 
-      al_draw_line (fX, cY, fX + fWidth, cY, Clr, 0);
-      al_draw_filled_rectangle (cX - 2, fY, cX + 2, fY + fHeight, Clr)
+      al_draw_line (
+        Self.X + 0.5, cY,
+        Self.X + fWidth + 0.5, cY,
+        lClr, 1
+      );
+      al_draw_filled_rectangle (
+        cX - 2, Self.Y + 0.5,
+        cX + 2, fY + Self.Height + 0.5,
+        lClr
+      )
     end;
 
     procedure DrawVertical;
     begin
-      cX := fX + (fWidth div 2);
-      cY := fY + Trunc (fHeight * (fCurrent / fMax)) - 2;
+      cX := Self.X + (Self.Width div 2) + 0.5;
+      cY := Self.Y + TRUNC (Self.Height * (lValue / lRange)) - 1.5;
 
-      al_draw_line (cX, fY, cX, fY + fHeight, Clr, 0);
-      al_draw_filled_rectangle (fX, cY - 2, fX + fWidth, cY + 2, Clr)
+      al_draw_line (
+        cX, Self.Y + 0.5,
+        cX, Self.Y + Self.Height + 0.5,
+        lClr, 0
+      );
+      al_draw_filled_rectangle (
+        Self.X + 0.5, cY - 2,
+        Self.X + Self.Width + 0.5, cY + 2,
+        lClr
+      )
     end;
 
   begin
+    if fInverted then lValue := fMax - fValue else lValue := fValue;
   { Widget color. }
     if Self.Enabled then
     begin
-      if Self.KeyFocus then
-        Clr := Dialog.SelectedColor
+      if Self.Focus THEN
+        lClr := Self.Dialog.clrSelectedText
       else
-        Clr := Dialog.FgColor
+        lClr := Self.Dialog.clrForeground
     end
     else
-      Clr := Dialog.FgDisabledColor;
-  { Draw color. }
-    State := TSaveState.Create;
-    try
-      al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-      al_draw_filled_rectangle (
-        fX, fY, fX + fWidth, fY + fHeight,
-        Dialog.BgColor
-      );
-      case fOrientation of
-      oHorizontal:
-        DrawHorizontal;
-      oVertical:
-        DrawVertical;
-      end;
-    finally
-      State.Free
-    end
-  end;
-
-
-
-(*
- * TTextEntry
- ***************************************************************************)
-
-  procedure TTextEntry.MaybeScroll;
-  var
-    tw: LongInt;
-    lUstrInfo: ALLEGRO_USTR_INFO;
-  begin
-    if fCursorPos < fLeftPos + 3 then
-    begin
-      if fCursorPos < 3 then fLeftPos := 0 else fLeftPos := fCursorPos -3
-    end
-    else while True do begin
-      tw := al_get_ustr_width (
-        Dialog.TextFont,
-        al_ref_ustr (lUstrInfo, fText, fLeftPos, fCursorPos)
-      );
-      if Self.X + tw + CURSOR_WIDTH < Self.X + Self.Width then Exit;
-      al_ustr_next (fText, fLeftPos)
-    end
-  end;
-
-
-
-  function TTextEntry.GetText: AL_STR;
-  begin
-    Result := al_cstr (fText)
-  end;
-
-  procedure TTextEntry.SetText (const aText: AL_STR);
-  begin
-    al_ustr_assign_cstr (fText, aText);
-    if Assigned (fOnTextChanges) then fOnTextChanges (Self)
-  end;
-
-
-
-(* Wants key focus. *)
-  function TTextEntry.WantsKeyFocus: Boolean;
-  begin
-    Result := True
-  end;
-
-
-
-(* Handler for the ALLEGRO_EVENT_KEY_CHAR. *)
-  procedure TTextEntry.onKeyChar (Event: ALLEGRO_KEYBOARD_EVENT);
-  begin
-    case Event.keycode of
-    { Cursor position. }
-    ALLEGRO_KEY_LEFT:
-      al_ustr_prev (fText, fCursorPos);
-    ALLEGRO_KEY_RIGHT:
-      al_ustr_next (fText, fCursorPos);
-    ALLEGRO_KEY_HOME:
-      fCursorPos := 0;
-    ALLEGRO_KEY_end:
-      fCursorPos := al_ustr_size (fText);
-    { Text edition. }
-    ALLEGRO_KEY_BACKSPACE:
-      if al_ustr_prev (fText, fCursorPos) then
-      begin
-        al_ustr_remove_chr (fText, fCursorPos);
-        if Assigned (fOnTextChanges) then fOnTextChanges (Self)
-      end;
-    else
-      if Event.unichar >= Ord (' ') then
-      begin
-        al_ustr_insert_chr (fText, fCursorPos, Event.unichar);
-        Inc (fCursorPos, al_utf8_width (Event.unichar));
-        if Assigned (fOnTextChanges) then fOnTextChanges (Self)
-      end;
-    end;
-    Self.MaybeScroll
-  end;
-
-
-
-(* Constructor. *)
-  constructor TTextEntry.Create;
-  begin
-    inherited Create;
-    fCursorPos := 0; fLeftPos := 0;
-    fText := al_ustr_new ('')
-  end;
-
-  constructor TTextEntry.CreateTextEntry (const aText: AL_STR);
-  begin
-    inherited Create;
-    fCursorPos := 0; fLeftPos := 0;
-    fText := al_ustr_new (aText)
-  end;
-
-
-
-(* Destructor. *)
-  destructor TTextEntry.Destroy;
-  begin
-    al_ustr_free (fText);
-    inherited Destroy
-  end;
-
-
-
-(* Renders the widget. *)
-  procedure TTextEntry.Draw;
-  var
-    lUstrInfo: ALLEGRO_USTR_INFO;
-    lSubStr: ALLEGRO_USTRptr;
-    lState: TSaveState;
-    lBgColor: ALLEGRO_COLOR;
-    lX, lPostCursor, lSubW: Integer;
-  begin
-    lState := TSaveState.Create;
-    try
-    { Background. }
-      if Self.Enabled then
-        lBgColor := Dialog.BgTextColor
-      else
-        lBgColor := Dialog.BgColor;
-      al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-      al_draw_filled_rectangle (fX, fY, fX + fWidth, fY + fHeight, lBgColor);
-    { Text (and cursor). }
-      if Self.KeyFocus then
-      begin
-        lX := Self.X;
-        if fCursorPos > 0 then
-        begin
-          lSubStr := al_ref_ustr (lUstrInfo, fText, fLeftPos, fCursorPos);
-          al_draw_ustr (
-            Dialog.TextFont, Dialog.FgColor,
-            Self.X, Self.Y,
-            0,
-            lSubStr
-          );
-          Inc (lX, al_get_ustr_width (Dialog.TextFont, lSubStr))
-        end;
-
-        if LongWord (fCursorPos) = al_ustr_size (fText) then
-          al_draw_filled_rectangle (
-            lX, Self.Y,
-            lX+CURSOR_WIDTH, Self.Y+al_get_font_line_height (Dialog.TextFont),
-            Dialog.FgColor
-          )
-        else begin
-          lPostCursor := fCursorPos;
-          al_ustr_next (fText, lPostCursor);
-          lSubStr := al_ref_ustr (lUstrInfo, fText, fCursorPos, lPostCursor);
-          lSubW := al_get_ustr_width (Dialog.TextFont, lSubStr);
-          al_draw_filled_rectangle (
-            lX, Self.Y,
-            lX + lSubW, Self.Y + al_get_font_line_height (Dialog.TextFont),
-            Dialog.FgColor
-          );
-          al_draw_ustr (Dialog.TextFont, lBgColor, lX, Self.Y, 0, lSubStr);
-          Inc (lX, lSubW);
-          al_draw_ustr (
-            Dialog.TextFont, Dialog.FgColor,
-            lX, Self.Y,
-            0,
-            al_ref_ustr (lUstrInfo, fText, lPostCursor, al_ustr_size (fText))
-          )
-        end
-      end
-      else
-        al_draw_ustr (
-          Dialog.TextFont, Dialog.FgColor,
-          Self.X, Self.Y,
-          0,
-          al_ref_ustr (lUstrInfo, fText, fLeftPos, al_ustr_size (fText))
-        )
-    finally
-      lState.Free
+      lClr := Self.Dialog.clrDisabled;
+  { Draw widget. }
+    al_draw_filled_rectangle (
+      Self.X + 0.5, Self.Y + 0.5,
+      Self.X + Self.Width + 0.5, Self.Y + Self.Height + 0.5,
+      Self.Dialog.clrBackground
+    );
+    lRange := fMax - fMin;
+    case fOrientation of
+    oHorizontal:
+      DrawHorizontal;
+    oVertical:
+      DrawVertical;
     end
   end;
 

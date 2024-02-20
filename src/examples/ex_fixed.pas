@@ -9,7 +9,7 @@ program ex_fixed;
  *    the user exclusively via the allegro_message() function.
  *)
 (*
-  Copyright (c) 2012-2021 Guillermo Martínez J.
+  Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -32,24 +32,31 @@ program ex_fixed;
  *)
 
 {$IFDEF FPC}
-  {$POINTERMATH ON}
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
 uses
-  Common,
-  Allegro5, al5nativedlg,
-  SysUtils;
+  Allegro5, sysutils;
+
+(* Helper routine for text output. *)
+  procedure PrintF (const aFmt: String; aValues: array of const);
+  begin
+    WriteLn (format (aFmt, aValues))
+  end;
 
 var
 (* Declare three 32 bit (16.16) fixed point variables *)
   x, y, z1, z2, z3, z4: AL_FIXED;
 begin
-  if not al_init then AbortExample ('Could not init Allegro.');
+  if not al_init then
+  begin
+    WriteLn (stderr, 'Could not init Allegro.');
+    Halt (1)
+  end;
 { convert integers to fixed point like this. }
   x := al_itofix (10);
 { convert floating point to fixed point like this. }
-  y := al_ftofix (3.14);
+  y := al_ftofix (ALLEGRO_TAU);
 { fixed point variables can be assigned, added, subtracted, negated,
   and compared just like integers, eg: }
   z1 := x + y;
@@ -58,7 +65,7 @@ begin
   would give the wrong result. }
 { fixed point variables can be multiplied or divided by integers or
   floating point numbers, eg: }
-  z2 := y * 2;
+  z2 := y div 2;
 { you can't multiply or divide two fixed point numbers, though:
     z := x * y;
   would give the wrong result. Use fixmul() and fixdiv() instead, eg: }
@@ -66,10 +73,10 @@ begin
 { fixed point trig and square root are also available, eg: }
   z4 := al_fixsqrt (x);
 
-  OpenLog;
-    LogPrintLn ('%f + %f = %f', [al_fixtof (x), al_fixtof (y), al_fixtof (z1)]);
-    LogPrintLn ('%f * 2 = %f',  [al_fixtof (y), al_fixtof (z2)]);
-    LogPrintLn ('%f * %f = %f', [al_fixtof (x), al_fixtof (y), al_fixtof (z3)]);
-    LogPrintLn ('al_fixsqrt (%f) = %f', [al_fixtof (x), al_fixtof (z4)]);
-  CloseLog (True)
+  PrintF ('%f + %f = %f', [al_fixtof (x), al_fixtof (y), al_fixtof (z1)]);
+  PrintF ('%f / 2 = %f',  [al_fixtof (y), al_fixtof (z2)]);
+  PrintF ('%f * %f = %f', [al_fixtof (x), al_fixtof (y), al_fixtof (z3)]);
+  PrintF ('al_fixsqrt (%f) = %f', [al_fixtof (x), al_fixtof (z4)]);
+  Write ('Press [Intro] to continue...');
+  ReadLn
 end.

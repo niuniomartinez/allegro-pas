@@ -19,7 +19,7 @@ program ex_prim;
  *      See README for copyright information.
  *)
 (*
-  Copyright (c) 2012-2020 Guillermo Martínez J.
+  Copyright (c) 2012-2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -61,8 +61,7 @@ program ex_prim;
 
   uses
     Common,
-    Allegro5,
-    al5base, al5font, al5image, al5nativedlg, al5primitives, al5strings,
+    Allegro5, al5base, al5font, al5image, al5primitives, al5strings,
     sysutils;
 
   const
@@ -461,9 +460,9 @@ program ex_prim;
       (const aY: Integer; const aLabel: AL_STR; const aState: Boolean);
     begin
       if aState then
-        al_draw_text (fFont, SolidWhite, 0, aY, 0, aLabel + ': True')
+        al_draw_text (fFont, SolidWhite, 0, aY, 0, Concat (aLabel, ': True'))
       else
-        al_draw_text (fFont, SolidWhite, 0, aY, 0, aLabel + ': False')
+        al_draw_text (fFont, SolidWhite, 0, aY, 0, Concat (aLabel, ': False'))
     end;
 
   begin
@@ -475,7 +474,7 @@ program ex_prim;
       al_clear_to_color (SolidBlack)
     end;
   { Background. }
-    if fDrawBkg and (fBkg <> Nil) then
+    if fDrawBkg and Assigned (fBkg) then
     begin
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
       al_draw_scaled_bitmap (
@@ -495,7 +494,7 @@ program ex_prim;
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
   { Draw example. }
     al_use_transform (fTransformationMatrix);
-    if fScreens[fCurScreen] <> Nil then fScreens[fCurScreen].Draw;
+    if Assigned (fScreens[fCurScreen]) then fScreens[fCurScreen].Draw;
   { Restore. }
     al_use_transform (fIdentity);
     al_set_clipping_rectangle (0, 0, ScreenW, ScreenH);
@@ -507,7 +506,7 @@ program ex_prim;
     end;
   { Show states. }
     al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-    if fScreens[fCurScreen] <> Nil then
+    if Assigned (fScreens[fCurScreen]) then
       al_draw_textf (
         fFont, SolidWhite, ScreenW div 2, ScreenH - 20, ALLEGRO_ALIGN_CENTRE,
         '%d: %s', [fCurScreen, fScreens[fCurScreen].Name]
@@ -567,13 +566,13 @@ program ex_prim;
   var
     Cnt: Integer;
   begin
-    if fBuffer <> Nil then al_destroy_bitmap (fBuffer);
+    if Assigned (fBuffer) then al_destroy_bitmap (fBuffer);
     for Cnt := Low (fScreens) to High (fScreens) do fScreens[Cnt].Free;
-    if fQueue <> Nil then al_destroy_event_queue (fQueue);
-    if fTexture <> Nil then al_destroy_bitmap (fTexture);
-    if fBkg <> Nil then al_destroy_bitmap (fBkg);
-    if fFont <> Nil then al_destroy_font (fFont);
-    if fDisplay <> Nil then al_destroy_display (fDisplay);
+    if Assigned (fQueue) then al_destroy_event_queue (fQueue);
+    if Assigned (fTexture) then al_destroy_bitmap (fTexture);
+    if Assigned (fBkg) then al_destroy_bitmap (fBkg);
+    if Assigned (fFont) then al_destroy_font (fFont);
+    if Assigned (fDisplay) then al_destroy_display (fDisplay);
     inherited Destroy
   end;
 
@@ -620,7 +619,7 @@ program ex_prim;
     if fUseShader then
       al_set_new_display_flags (ALLEGRO_PROGRAMMABLE_PIPELINE);
     fDisplay := al_create_display (ScreenW, ScreenH);
-    if fDisplay = Nil then
+    if not Assigned (fDisplay) then
     begin
       ShowErrorMessage ('Error creating display.');
       Exit
@@ -632,20 +631,20 @@ program ex_prim;
     White := al_map_rgb_f (1, 1, 1);
   { Load a font. }
     fFont := al_load_font ('data/fixed_font.tga', 0, 0);
-    if fFont = Nil then
+    if not Assigned (fFont) then
     begin
       ShowErrorMessage ('Error loading "data/fixed_font.tga".');
       Exit
     end;
   { Textures. }
     fBkg := al_load_bitmap ('data/bkg.png');
-    if fBkg = Nil then
+    if not Assigned (fBkg) then
     begin
       ShowErrorMessage ('Error loading "data/bkg.png".');
       Exit
     end;
     fTexture := al_load_bitmap ('data/texture.tga');
-    if fTexture = Nil then
+    if not Assigned (fTexture) then
     begin
       ShowErrorMessage ('Error loading "data/texture.tga".');
       Exit
@@ -684,7 +683,7 @@ program ex_prim;
     Old := al_get_new_bitmap_flags;
     al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
     fBuffer := al_create_bitmap (ScreenW, ScreenH);
-    if fBuffer = Nil then
+    if not Assigned (fBuffer) then
     begin
       ShowErrorMessage ('Could not create buffer.');
       Exit
@@ -743,8 +742,14 @@ program ex_prim;
 (* Shows an error message box. *)
   procedure TPrimitivesExample.ShowErrorMessage (const aMessage: AL_STR);
   begin
+  {
     al_show_native_message_box
       (fDisplay, 'Error', 'Cannot run example', aMessage, '', 0);
+  }
+    SetErrorColor;
+    LogWriteLn ('[Error] Cannot run example');
+    SetDefaultColor;
+    LogWriteLn (aMessage);
     Self.Terminate
   end;
 
@@ -784,8 +789,8 @@ program ex_prim;
 
     for Ndx := Low (Vtx) to High (Vtx) do
     begin
-      x := Trunc (200 * Cos (Ndx / 13 * 2 * ALLEGRO_PI));
-      y := Trunc (200 * Sin (Ndx / 13 * 2 * ALLEGRO_PI));
+      x := Trunc (200 * Cos (Ndx / 13 * ALLEGRO_TAU));
+      y := Trunc (200 * Sin (Ndx / 13 * ALLEGRO_TAU));
 
       Color := al_map_rgb (
         (Ndx + 1) mod 3 * 64,
@@ -834,8 +839,8 @@ program ex_prim;
 
     for Ndx := Low (vtx) to High (vtx) do
     begin
-      x := Trunc (200 * cos (Ndx / 13 * 2 * ALLEGRO_PI));
-      y := Trunc (200 * sin (Ndx / 13 * 2 * ALLEGRO_PI));
+      x := Trunc (200 * cos (Ndx / 13 * ALLEGRO_TAU));
+      y := Trunc (200 * sin (Ndx / 13 * ALLEGRO_TAU));
 
       Color := al_map_rgb (
         (Ndx + 1) mod 3 * 64,
@@ -900,10 +905,10 @@ program ex_prim;
     al_draw_rounded_rectangle (-200, -125, 200, 125, 50, 100, al_map_rgba_f (0.2, 0.2, 0, 1), Example.Thickness);
 
     al_draw_ellipse (0, 0, 300, 150, al_map_rgba_f (0, 0.5, 0.5, 1), Example.Thickness);
-    al_draw_elliptical_arc (-20, 0, 300, 200, -ALLEGRO_PI / 2, -ALLEGRO_PI, al_map_rgba_f (0.25, 0.25, 0.5, 1), Example.Thickness);
-    al_draw_arc (0, 0, 200, -ALLEGRO_PI / 2, ALLEGRO_PI, al_map_rgba_f (0.5, 0.25, 0, 1), Example.Thickness);
+    al_draw_elliptical_arc (-20, 0, 300, 200, -ALLEGRO_TAU / 4, -ALLEGRO_TAU / 2, al_map_rgba_f (0.25, 0.25, 0.5, 1), Example.Thickness);
+    al_draw_arc (0, 0, 200, -ALLEGRO_TAU / 4, ALLEGRO_TAU / 2, al_map_rgba_f (0.5, 0.25, 0, 1), Example.Thickness);
     al_draw_spline (SplinePoints, al_map_rgba_f (0.1, 0.2, 0.5, 1), Example.Thickness);
-    al_draw_pieslice (0, 25, 150, ALLEGRO_PI * 3 / 4, -ALLEGRO_PI / 2, al_map_rgba_f (0.4, 0.3, 0.1, 1), Example.Thickness)
+    al_draw_pieslice (0, 25, 150, ALLEGRO_TAU * 3 / 8, -ALLEGRO_TAU / 4, al_map_rgba_f (0.4, 0.3, 0.1, 1), Example.Thickness)
   end;
 
 
@@ -942,10 +947,10 @@ program ex_prim;
     al_draw_rounded_rectangle (-200, -125, 200, 125, 50, 100, al_map_rgba_f (0.2, 0.2, 0, 1), Example.Thickness);
 
     al_draw_ellipse (0, 0, 300, 150, al_map_rgba_f (0, 0.5, 0.5, 1), Example.Thickness);
-    al_draw_elliptical_arc (-20, 0, 300, 200, -ALLEGRO_PI / 2, -ALLEGRO_PI, al_map_rgba_f (0.25, 0.25, 0.5, 1), Example.Thickness);
-    al_draw_arc (0, 0, 200, -ALLEGRO_PI / 2, ALLEGRO_PI, al_map_rgba_f (0.5, 0.25, 0, 1), Example.Thickness);
+    al_draw_elliptical_arc (-20, 0, 300, 200, -ALLEGRO_TAU / 4, -ALLEGRO_TAU / 2, al_map_rgba_f (0.25, 0.25, 0.5, 1), Example.Thickness);
+    al_draw_arc (0, 0, 200, -ALLEGRO_TAU / 4, ALLEGRO_TAU / 2, al_map_rgba_f (0.5, 0.25, 0, 1), Example.Thickness);
     al_draw_spline (SplinePoints, al_map_rgba_f (0.1, 0.2, 0.5, 1), Example.Thickness);
-    al_draw_pieslice (0, 25, 150, ALLEGRO_PI * 3 / 4, -ALLEGRO_PI / 2, al_map_rgba_f (0.4, 0.3, 0.1, 1), Example.Thickness)
+    al_draw_pieslice (0, 25, 150, ALLEGRO_TAU * 3 / 8, -ALLEGRO_TAU / 4, al_map_rgba_f (0.4, 0.3, 0.1, 1), Example.Thickness)
   end;
 
 
@@ -966,12 +971,12 @@ program ex_prim;
     begin
       if (Ndx mod 2) = 0 then
       begin
-        x := 150 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
-        y := 150 * sin (Ndx / 20 * 2 * ALLEGRO_PI)
+        x := 150 * cos (Ndx / 20 * ALLEGRO_TAU);
+        y := 150 * sin (Ndx / 20 * ALLEGRO_TAU)
       end
       else begin
-        x := 200 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
-        y := 200 * sin (Ndx / 20 * 2 * ALLEGRO_PI);
+        x := 200 * cos (Ndx / 20 * ALLEGRO_TAU);
+        y := 200 * sin (Ndx / 20 * ALLEGRO_TAU);
       end;
 
       if Ndx = 0 then
@@ -1024,12 +1029,12 @@ program ex_prim;
     begin
       if (Ndx mod 2) = 0 then
       begin
-        x := 150 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
-        y := 150 * sin (Ndx / 20 * 2 * ALLEGRO_PI)
+        x := 150 * cos (Ndx / 20 * ALLEGRO_TAU);
+        y := 150 * sin (Ndx / 20 * ALLEGRO_TAU)
       end
       else begin
-        x := 200 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
-        y := 200 * sin (Ndx / 20 * 2 * ALLEGRO_PI);
+        x := 200 * cos (Ndx / 20 * ALLEGRO_TAU);
+        y := 200 * sin (Ndx / 20 * ALLEGRO_TAU);
       end;
 
       if Ndx = 0 then
@@ -1095,7 +1100,7 @@ program ex_prim;
     al_draw_filled_rectangle (20, -50, 200, 50, al_map_rgb_f (0.3, 0.2, 0.6));
     al_draw_filled_ellipse (-250, 0, 100, 150, al_map_rgb_f (0.3, 0.3, 0.3));
     al_draw_filled_rounded_rectangle (50, -250, 350, -75, 50, 70, al_map_rgb_f (0.4, 0.2, 0));
-    al_draw_filled_pieslice (200, 125, 50, ALLEGRO_PI / 4, 3 * ALLEGRO_PI / 2, al_map_rgb_f (0.3, 0.3, 0.1))
+    al_draw_filled_pieslice (200, 125, 50, ALLEGRO_TAU / 8, 3 * ALLEGRO_TAU / 4, al_map_rgb_f (0.3, 0.3, 0.1))
   end;
 
 
@@ -1114,8 +1119,8 @@ program ex_prim;
 
     for Ndx := Low (Vtx) to High (Vtx) do
     begin
-      x := Trunc (200 * Cos (Ndx / 13 * 2 * ALLEGRO_PI));
-      y := Trunc (200 * Sin (Ndx / 13 * 2 * ALLEGRO_PI));
+      x := Trunc (200 * Cos (Ndx / 13 * ALLEGRO_TAU));
+      y := Trunc (200 * Sin (Ndx / 13 * ALLEGRO_TAU));
          
       Color := al_map_rgb (
         (Ndx + 1) mod 3 * 64,
@@ -1163,12 +1168,12 @@ program ex_prim;
     begin
       if (Ndx mod 2) = 0 then
       begin
-        x := 150 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
-        y := 150 * sin (Ndx / 20 * 2 * ALLEGRO_PI)
+        x := 150 * cos (Ndx / 20 * ALLEGRO_TAU);
+        y := 150 * sin (Ndx / 20 * ALLEGRO_TAU)
       end
       else begin
-        x := 200 * cos (Ndx / 20 * 2 * ALLEGRO_PI);
-        y := 200 * sin (Ndx / 20 * 2 * ALLEGRO_PI);
+        x := 200 * cos (Ndx / 20 * ALLEGRO_TAU);
+        y := 200 * sin (Ndx / 20 * ALLEGRO_TAU);
       end;
 
       if Ndx = 0 then
@@ -1228,8 +1233,8 @@ var
 
     for Ndx := Low (vtx) to High (vtx) do
     begin
-      x := Trunc (200 * cos (Ndx / 4 * 2 * ALLEGRO_PI));
-      y := Trunc (200 * sin (Ndx / 4 * 2 * ALLEGRO_PI));
+      x := Trunc (200 * cos (Ndx / 4 * ALLEGRO_TAU));
+      y := Trunc (200 * sin (Ndx / 4 * ALLEGRO_TAU));
 
       vtx[Ndx].x := x; vtx[Ndx].y := y;
       vtx[Ndx].u := Trunc (64 * x / 100); vtx[Ndx].v := Trunc (64 * y / 100);
@@ -1261,8 +1266,8 @@ var
 
     for Ndx := Low (Vtx) to High (Vtx) do
     begin
-      x := Trunc (200 * Cos (Ndx / 13 * 2 * ALLEGRO_PI));
-      y := Trunc (200 * Sin (Ndx / 13 * 2 * ALLEGRO_PI));
+      x := Trunc (200 * Cos (Ndx / 13 * ALLEGRO_TAU));
+      y := Trunc (200 * Sin (Ndx / 13 * ALLEGRO_TAU));
 
       Color := al_map_rgb (
         (Ndx + 1) mod 3 * 64,
@@ -1276,7 +1281,7 @@ var
     end;
 
     vbuff := al_create_vertex_buffer (vtx, ALLEGRO_PRIM_BUFFER_readwrite);
-    if vbuff = Nil then
+    if not Assigned (vbuff) then
     begin
       vbuff := al_create_vertex_buffer (vtx, ALLEGRO_PRIM_BUFFER_NONE);
       NoSoft := True
@@ -1285,7 +1290,7 @@ var
       NoSoft := False;
 
     vbuff2 := al_create_vertex_buffer (vtx2, ALLEGRO_PRIM_BUFFER_readwrite);
-    if vbuff2 = Nil then
+    if not Assigned (vbuff2) then
     begin
       vbuff2 := al_create_vertex_buffer (vtx2, ALLEGRO_PRIM_BUFFER_NONE);
       NoSoft2 := True
@@ -1309,7 +1314,7 @@ var
 (* Draws screen. *)
   procedure TVertexBuffers.Draw;
   begin
-    if (vbuff <> Nil) and not (Example.Soft and NoSoft) then
+    if Assigned (vbuff) and not (Example.Soft and NoSoft) then
     begin
       al_draw_vertex_buffer (vbuff, Nil, 0, 4, ALLEGRO_PRIM_LINE_LIST);
       al_draw_vertex_buffer (vbuff, Nil, 4, 9, ALLEGRO_PRIM_LINE_STRIP);
@@ -1318,7 +1323,7 @@ var
     else
       Example.DrawUnsupported;
 
-    if (vbuff2 <> Nil) and not (Example.Soft and NoSoft2) then
+    if Assigned (vbuff2) and not (Example.Soft and NoSoft2) then
       al_draw_vertex_buffer (vbuff2, Nil, 0, 13, ALLEGRO_PRIM_POINT_LIST)
     else
       Example.DrawUnsupported
@@ -1342,7 +1347,7 @@ var
     inherited Create ('Indexed Buffers');
     vbuff := al_create_vertex_buffer_ex
       (Nil, Nil, 13, ALLEGRO_PRIM_BUFFER_readwrite);
-    if vbuff = Nil then
+    if not Assigned (vbuff) then
     begin
       vbuff := al_create_vertex_buffer_ex
         (Nil, Nil, 13, ALLEGRO_PRIM_BUFFER_NONE);
@@ -1356,14 +1361,14 @@ var
 
     ibuff := al_create_index_buffer (sizeof (AL_SHORT), Nil, 8, Flags);
 
-    if vbuff <> Nil then
+    if Assigned (vbuff) then
     begin
       vtx := al_lock_vertex_buffer (vbuff, 0, 13, ALLEGRO_LOCK_WRITEONLY);
       try
         for Ndx := 0 to 13 do
         begin
-          x := 200 * cos (Ndx / 13 * 2 * ALLEGRO_PI);
-          y := 200 * sin (Ndx / 13 * 2 * ALLEGRO_PI);
+          x := 200 * cos (Ndx / 13 * ALLEGRO_TAU);
+          y := 200 * sin (Ndx / 13 * ALLEGRO_TAU);
 
           Color := al_map_rgb (
             (Ndx + 1) mod 3 * 64,
@@ -1408,7 +1413,7 @@ var
     Ndx, t: Integer;
     Indices: ^AL_SHORT;
   begin
-    if ibuff <> Nil then
+    if Assigned (ibuff) then
     begin
       t := Trunc (al_get_time);
       Indices := al_lock_index_buffer (ibuff, 0, 8, ALLEGRO_LOCK_WRITEONLY);

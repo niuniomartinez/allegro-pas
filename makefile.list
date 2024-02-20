@@ -26,11 +26,3 @@ ALLFILES = $(LIBFILES) $(TEXM) $(TDEMfp)
 DOCMAIN = $(DOCSRC)allegro5.pds
 DOCINTRO = $(DOCSRC)introduction.pds
 DOCFILES = $(wildcard $(DOCSRC)*.pds)
-
-# Object and other temporal files.
-DOCTMPFILES = $(addprefix $(OBJDIR), $(addsuffix .pduc, $(basename $(notdir $(LIBFILES) ) ) ) )
-
-OBJFILES = $(addprefix $(OBJDIR), $(addsuffix .o, $(basename $(notdir $(ALLFILES) ) ) ) )
-OBJFILES += $(addprefix $(OBJDIR), $(addsuffix .ppu, $(basename $(notdir $(ALLFILES) ) ) ) )
-OBJFILES += $(addprefix $(OBJDIR), $(addsuffix .a, $(basename $(notdir $(ALLFILES) ) ) ) )
-

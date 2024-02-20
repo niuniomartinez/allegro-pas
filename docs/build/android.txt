@@ -1,8 +1,0 @@
-  Since Allegro works on Android systems, Allegro.pas should too.
-  Unfortunatelly I never made anything for Android so I have no idea how does
-  it work (I've read a few tutorials and I find it ridiculously complex, by the
-  way).
-
-  If you have some experience with Android may be you can do it.  Read the
-  "macos.txt" file as it includes some tips and hints about how to modify
-  Allegro.pas.

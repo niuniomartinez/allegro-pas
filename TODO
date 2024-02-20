@@ -1,8 +1,6 @@
 In no special order
 
-  * THREAD EXAMPLE PROJECTS.  Note that ex_threads.pas was disabled!
-
-  * Threading examples don't work as expected.  There are bugs in Allegro!
+  * EXAMPLE PROJECTS.
 
   * Configuration load in ex_draw.pas.
 
@@ -18,8 +16,3 @@ In no special order
     - It doesn't load on Fedora 64bit, but does on Ubuntu 32bit.
     - Suspect it's a problem with the funcion in C, similar than the problem
       with 3D rendering on Allegro 4.
-
-  * There are some "enum" types (sets). Be sure that they have the correct
-    sice in bits & bytes.  Read FPC and Delphi documentation.
-
-  * ex_lines and ex_prim should use Thau instead of Pi.

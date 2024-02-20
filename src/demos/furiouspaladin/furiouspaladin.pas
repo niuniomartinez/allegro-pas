@@ -3,7 +3,7 @@ program FuriousPaladin;
    See readME for more information. *)
 (*
   Copyright (c) 2018 Handoko
-            (c) 2019-2020 Guillermo Martínez.
+            (c) 2019-2022 Guillermo Martínez.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -39,9 +39,10 @@ type
 
   TActivity = (WalkL, WalkR, AttackL, AttackR, IdleL, IdleR, HitL, HitR, KilledL, KilledR);
 
+  TImageArray = array of ALLEGRO_BITMAPptr;
   PImageList = ^TImageList;
   TImageList = record
-    Images: array of ALLEGRO_BITMAPptr;
+    Images: TImageArray;
     Count:  Byte;
     Delay:  Byte;
   end;
@@ -154,21 +155,37 @@ var
     out aAnimation: TImageList
   ): Boolean;
   var
+    lFileName: AnsiString;
     Ndx: Integer;
   begin
   { Build file path. }
     aFileName := Concat (DataPath, aFileName, '%0.2d.png');
+  { Set up. }
     aAnimation.Delay := aDelay;
     aAnimation.Count := aCount;
+    aAnimation.Images := Default (TImageArray);
     SetLength (aAnimation.Images, aCount);
+  { Load. }
     for Ndx := 0 to High (aAnimation.Images) do
     begin
-      aAnimation.Images[Ndx] := al_load_bitmap (
-	al_str_format (aFileName, [Ndx])
-      );
+      lFileName := al_str_format (aFileName, [Ndx]);
+      aAnimation.Images[Ndx] := al_load_bitmap (lFileName);
       if not Assigned (aAnimation.Images[Ndx]) then Exit (False)
     end;
     Result := True;
+  end;
+
+
+
+(* Helper to release animations. *)
+  procedure DestroyAnimation (var aAnimation: TImageList);
+  var
+    Ndx: Integer;
+  begin
+    for Ndx := 0 to High (aAnimation.Images) do
+      if Assigned (aAnimation.Images[Ndx]) then
+        al_destroy_bitmap (aAnimation.Images[Ndx]);
+    SetLength (aAnimation.Images, 0)
   end;
 
 
@@ -203,7 +220,7 @@ begin
     al_use_transform(Transform);
   end
   else
-    al_create_display(ScreenWidth, ScreenHeight);
+    Display := al_create_display (ScreenWidth, ScreenHeight);
   al_set_window_title(Display, 'Furious Paladin');
   // Enable image loading
   al_init_image_addon;
@@ -235,46 +252,33 @@ begin
   ImgWin         := al_load_bitmap(DataPath+'imgwin.png');
   ImgFailed      := al_load_bitmap(DataPath+'imgfailed.png');
 
-  // Load animation data: Player Walk Left
-  if not LoadAnimation ('hero-walk-w', 8, 4, imgPlayerWalkL) then
+  // Load animation data.
+  if not LoadAnimation ('hero-walk-w', 8, 4, ImgPlayerWalkL) then
     AbortProgram ('Can''t load hero animation');
-  // Load animation data: Player Walk Right
-  if not LoadAnimation ('hero-walk-e', 8, 4, imgPlayerWalkR) then
+  if not LoadAnimation ('hero-walk-e', 8, 4, ImgPlayerWalkR) then
     AbortProgram ('Can''t load hero animation');
-  // Load animation data: Player Attack Left
   if not LoadAnimation ('hero-attack-w', 7, 6, ImgPlayerAttackL) then
     AbortProgram ('Can''t load hero animation');
-  // Load animation data: Player Attack Right
   if not LoadAnimation ('hero-attack-e', 7, 6, ImgPlayerAttackR) then
     AbortProgram ('Can''t load hero animation');
-  // Load animation data: Player Idle Left
   if not LoadAnimation ('hero-idle-w', 9, 12, ImgPlayerIdleL) then
     AbortProgram ('Can''t load hero animation');
-  // Load animation data: Player Idle Right
   if not LoadAnimation ('hero-idle-e', 9, 12, ImgPlayerIdleR) then
     AbortProgram ('Can''t load hero animation');
-  // Load animation data: Player Been Hit Left
   if not LoadAnimation ('hero-been-hit-w', 4, 6, ImgPlayerBeenHitL) then
     AbortProgram ('Can''t load hero animation');
-  // Load animation data: Player Been Hit Right
   if not LoadAnimation ('hero-been-hit-e', 4, 6, ImgPlayerBeenHitR) then
     AbortProgram ('Can''t load hero animation');
-  // Load animation data: Zombie Walk Left
   if not LoadAnimation ('zombie-walk-w', 8, 9, ImgZombieWalkL) then
     AbortProgram ('Can''t load zombie animation');
-  // Load animation data: Zombie Walk Right
   if not LoadAnimation ('zombie-walk-e', 8, 9, ImgZombieWalkR) then
     AbortProgram ('Can''t load zombie animation');
-  // Load animation data: Zombie Attack Left
   if not LoadAnimation ('zombie-attack-w', 7, 15, ImgZombieAttackL) then
     AbortProgram ('Can''t load zombie animation');
-  // Load animation data: Zombie Attack Right
   if not LoadAnimation ('zombie-attack-e', 7, 15, ImgZombieAttackR) then
     AbortProgram ('Can''t load zombie animation');
-  // Load animation data: Zombie Killed Left
   if not LoadAnimation ('zombie-killed-w', 5, 10, ImgZombieKilledL) then
     AbortProgram ('Can''t load zombie animation');
-  // Load animation data: Zombie Killed Right
   if not LoadAnimation ('zombie-killed-e', 5, 10, ImgZombieKilledR) then
     AbortProgram ('Can''t load zombie animation');
 
@@ -476,8 +480,7 @@ end;
 
 function BothIntersect(Xa1, Xa2, Xb1, Xb2: Real): Boolean;
 begin
-  Result := False;
-  if (Xa2 < Xb1) or (Xb2 < Xa1) or (Xa1 > Xb2) or (Xb1 > Xa2) then Exit;
+  if (Xa2 < Xb1) or (Xb2 < Xa1) or (Xa1 > Xb2) or (Xb1 > Xa2) then Exit (False);
   Result := True;
 end;
 
@@ -779,6 +782,21 @@ end;
 
 procedure ProcessShutDown;
 begin
+  DestroyAnimation (ImgPlayerWalkL);
+  DestroyAnimation (ImgPlayerWalkR);
+  DestroyAnimation (ImgPlayerAttackL);
+  DestroyAnimation (ImgPlayerAttackR);
+  DestroyAnimation (ImgPlayerIdleL);
+  DestroyAnimation (ImgPlayerIdleR);
+  DestroyAnimation (ImgPlayerBeenHitL);
+  DestroyAnimation (ImgPlayerBeenHitR);
+  DestroyAnimation (ImgZombieWalkL);
+  DestroyAnimation (ImgZombieWalkR);
+  DestroyAnimation (ImgZombieAttackL);
+  DestroyAnimation (ImgZombieAttackR);
+  DestroyAnimation (ImgZombieKilledL);
+  DestroyAnimation (ImgZombieKilledR);
+
   al_destroy_bitmap(ImgIntroPage1);
   al_destroy_bitmap(ImgIntroPage2);
   al_destroy_bitmap(ImgBackground1);
@@ -786,13 +804,18 @@ begin
   al_destroy_bitmap(ImgPaused);
   al_destroy_bitmap(ImgWin);
   al_destroy_bitmap(ImgFailed);
+
+  al_destroy_display(Display);
+
   al_destroy_event_queue(EventQueue);
+
   al_destroy_sample(AudioBackground);
   al_destroy_sample(AudioSword);
   al_destroy_sample(AudioHurt);
   al_destroy_sample(AudioFailed);
   al_destroy_sample_instance(AudioInstance);
   al_uninstall_audio;
+
   al_destroy_font(SystemFont);
 end;
 

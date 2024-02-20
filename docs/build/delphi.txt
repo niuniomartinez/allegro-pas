@@ -35,9 +35,6 @@ Compiling examples and demonstration game
   * Compile.
   * Profit.
 
-  NOTE: All examples compile but ex_saw fails at runtime.  Also some of the
-        examples at ex_prim doesn't work as expected.
-
 
 
 Creating a new game project
@@ -67,7 +64,7 @@ Linking with Allegro debug version
   symbol, this way your programs will link with the "debug" version of Allegro.
   In most cases this isn't necessary.
 
-  Note that you have to compile Allegro by yourself to obtain the "debug"
+  Note that you may have to compile Allegro by yourself to obtain the "debug"
   version of the library.
 
 
@@ -76,22 +73,22 @@ Differences between Delphi, Free Pascal and Lazarus
 ---------------------------------------------------
 
   Note that there are language differences between Delphi and Free Pascal (even
-  using Free Pascal's Delphi mode) so if you want your is portable through both
-  compilers you'll need to be careful.  See the example sources to see how I've
-  tried to write code that work in both compilers.
+  using Free Pascal's Delphi mode) so if you want your code to be portable
+  through both compilers you'll need to be careful.  See the example sources to
+  see how I've tried to write code that work in both compilers.
 
 
 
 Windows manifest
 ----------------
 
-  May be you found that your programs may not work, or they do but a warning
+  May be you found that your programs don't work, or they do but a warning
   window appears talking about "Windows execution privileges" or similar.  This
   is because the modern Windows weird permission system.
 
   To solve this you should add a "manifest" to your programs.  I have few
   experience with Delphi and I'm pretty new with latest Delphi versions (I used
   Delphi 6!) so I'm not sure how to do that.  If you are more experienced,
-  please let me know (see the README file to konw how to contact).  Since the
-  manifest is a XML file, may be you can use the same one I've created for Free
-  Pascal (read "fpc.txt").
+  please let me know (see the README file for contact info).  Since the manifest
+  is a XML file, may be you can use the same one I've created for Free Pascal
+  (read "fpc.txt").

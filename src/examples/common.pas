@@ -1,7 +1,10 @@
 unit Common;
-(* Common stuff for examples. *)
+(* Defines common stuff used by the examples.
+
+   Only the more advanced examples use this unit.
+ *)
 (*
-  Copyright (c) 2012-2020 Guillermo Martínez J.
+  Copyright (c) 2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -23,149 +26,116 @@ unit Common;
     distribution.
  *)
 
-{$IFDEF FPC}
-  {$IFNDEF FPC_DELPHI}{$MODE DELPHI}{$ENDIF}
-{$ENDIF}
-
 interface
 
-  uses
-    allegro5, al5base, al5nativedlg;
+(* Print an error message in current display and wait for a key press. *)
+  procedure ErrorMessage (const aText: String);
 
-  var
-    TextLog: ALLEGRO_TEXTLOGptr;
-
-(* Initializes platform specific stuff. *)
-  procedure InitPlatformSpecific;
-(* Exits program with error. *)
-  procedure AbortExample (const Message: AL_STR);
-(* Opens a log window. *)
-  procedure OpenLog;
-  procedure OpenLogMonospace;
-(* Closes the log window. *)
-  procedure CloseLog (WaitForUser: Boolean);
-(* Prints a message on the log window. *)
-  procedure LogWrite (Str: AL_STR);
-  procedure LogWriteLn (Str: AL_STR);
-(* Prints a formatted message on the log window. *)
-  procedure LogPrint (Fmt: AL_STR; Values: array of const);
-  procedure LogPrintLn (Fmt: AL_STR; Values: array of const);
-
-{$IFDEF DCC }
-(* Delphi doesn't has GetTempFilename (or I can't find the declaration, and
-   Internet failed to tell me) so let's define it. *)
-  function GetTempFilename: AL_STR;
-{$ENDIF }
+(* Returns aMid if aLo <= aMid <= aHi.
+   Else returns aLo if aMid < aLo or aHi if aMid > aHi.
+ *)
+  function Clamp (aLo, aMid, aHi: Integer): Integer; overload;
+  function Clamp (aLo, aMid, aHi: Real): Real; overload;
+{$IFDEF DCC}
+(* Delphi doesn't have DoDirSeparators function. *)
+  procedure DoDirSeparators (var aPath: String);
+{$ENDIF}
 
 implementation
 
   uses
-    al5strings,
-    sysutils;
+{$IFDEF DCC}
+    SysUtils,
+{$ENDIF}
+    allegro5      in '../lib/allegro5.pas',
+    al5font       in '../lib/al5font.pas',
+    al5primitives in '../lib/al5primitives.pas',
+    al5strings    in '../lib/al5strings.pas';
 
-(* Platform specific stuff. *)
-  procedure InitPlatformSpecific;
-  begin
-  { TODO: Android stuff, if android. }
-  end;
-
-
-
-(* Exits program with error. *)
-  procedure AbortExample (const Message: AL_STR);
+  procedure ErrorMessage (const aText: String);
+  const
+    TextFontSize = 8;
+    Margin = TextFontSize;
   var
-    Display: ALLEGRO_DISPLAYptr;
+    lTextFont: ALLEGRO_FONTptr;
+    lColor: ALLEGRO_COLOR;
+    lKeyboardState: ALLEGRO_KEYBOARD_STATE;
   begin
-    if al_init_native_dialog_addon then
-    begin
-      if al_is_system_installed then
-        Display := al_get_current_display
-      else
-        Display := Nil;
-      al_show_native_message_box
-        (Display, 'Error', 'Cannot run example', Message, '', 0)
-    end
-    else
-      WriteLn (ErrOutput, Message);
-    Halt (1)
-  end;
-
-
-
-(* Opens a log window. *)
-  procedure OpenLog;
-  begin
-    if al_init_native_dialog_addon then
-      TextLog := al_open_native_text_log ('Log', 0)
-  end;
-
-
-
-  procedure OpenLogMonospace;
-  begin
-    if al_init_native_dialog_addon then
-      TextLog := al_open_native_text_log ('Log', ALLEGRO_TEXTLOG_MONOSPACE)
-   end;
-
-
-
-(* Closes the log window. *)
-  procedure CloseLog (WaitForUser: Boolean);
-  var
-    Queue: ALLEGRO_EVENT_QUEUEptr;
-    Event: ALLEGRO_EVENT;
-  begin
-    if (TextLog <> Nil) and WaitForUser then
-    begin
-      Queue := al_create_event_queue;
-      al_register_event_source (
-        Queue,
-        al_get_native_text_log_event_source (TextLog)
-      );
-      al_wait_for_event (Queue, @Event);
-      al_destroy_event_queue (Queue)
-    end;
-    al_close_native_text_log (TextLog);
-    TextLog := Nil
-  end;
-
-
-(* Prints a message on the log window. *)
-  procedure LogWrite (Str: AL_STR);
-  begin
-    al_append_native_text_log (TextLog, Str)
-  end;
-
-  procedure LogWriteLn (Str: AL_STR);
-  begin
-    LogWrite (Str + #10)
-  end;
-
-
-
-(* Prints a formatted message on the log window. *)
-  procedure LogPrint (Fmt: AL_STR; Values: array of const);
-  begin
-    al_append_native_text_log (TextLog, al_str_format (Fmt, Values))
-  end;
-
-  procedure LogPrintLn (Fmt: AL_STR; Values: array of const);
-  begin
-    LogPrint (Fmt + #10, Values)
-  end;
-
-
-{$IFDEF DCC }
-  function GetTempFilename: AL_STR;
-  var
-    Count: Integer;
-  begin
-    Count := 1;
+  { Be sure base Allegro is installed. }
+    al_install_keyboard;
+    if not al_is_font_addon_initialized then
+      if not al_init_font_addon then
+        Exit;
+    if not al_is_primitives_addon_initialized then
+      if not al_init_primitives_addon then
+        Exit;
+  { Prepare to draw. }
+    al_set_target_backbuffer (al_get_current_display);
+    al_set_blender (ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
+    lTextFont := al_create_builtin_font;
+    lColor := al_map_rgb (255, 255, 255);
+  { Draw message. }
+    al_draw_filled_rectangle (
+      0, 0,
+      al_get_display_width (al_get_current_display), TextFontSize * 4,
+      al_map_rgb (255, 51, 51)
+    );
+    al_draw_rectangle (
+      1.5, 1.5,
+      al_get_display_width (al_get_current_display) - 1.5, TextFontSize * 4 - 1.5,
+      lColor, 1
+    );
+    al_draw_text (lTextFont, lColor, Margin, Margin, 0, al_string_to_str (aText));
+    al_draw_text (lTextFont, lColor, Margin, Margin * 2, 0, 'Press [C] to close');
+    al_flip_display;
+  { Wait until keypress. }
     repeat
-      Result := UTF8Encode (Format ('tmpfile_%0.2d', [Count]));
-      Inc (Count)
-    until not FileExists (al_str_to_string (Result))
+      al_rest (0.1);
+      al_get_keyboard_state (lKeyboardState)
+    until al_key_down (lKeyboardState, ALLEGRO_KEY_C);
+    al_destroy_font (lTextFont)
   end;
-{$ENDIF }
+
+
+
+  function Clamp (aLo, aMid, aHi: Integer): Integer;
+  begin
+    if aMid < aLo then
+      Result := aLo
+    else if aMid > aHi then
+      Result := aHi
+    else
+      Result := aMid
+  end;
+
+
+
+  function Clamp (aLo, aMid, aHi: Real): Real;
+  begin
+    if aMid < aLo then
+      Result := aLo
+    else if aMid > aHi then
+      Result := aHi
+    else
+      Result := aMid
+  end;
+
+
+
+{$IFDEF DCC}
+{ Implementation is similar than FPC's DoDirSeparators one. }
+  procedure DoDirSeparators (var aPath: String);
+  const
+    DirSeparators: array [0..1] of Char = ('/', '\');
+  var
+    lCnt : longint;
+  begin
+    for lCnt := 1 to Length (aPath) do
+      if (aPath[lCnt] = DirSeparators[0])
+      or (aPath[lCnt] = DirSeparators[1])
+      then
+        aPath[lCnt] := PathDelim
+  end;
+{$ENDIF}
 
 end.

@@ -1,7 +1,7 @@
  - al4font.png: Template for bitmap text fonts.  See al_grab_font_from_bitmap
-                to know how it works.
+                to know how to use it.
  - alex.png: The default Allegro icon.  Note this is *not* exactly the same
-             used by Allegro.  This is a re-mastered version restoring the
+             used by Allegro.  This is a re-mastered version restoring its
              original size.
  - alexlogo.png: HD Alex the Allegator logo combined with the Pascal P.
  - pixelated-alex.png: Pixelated version of Alex the Allegator logo combined

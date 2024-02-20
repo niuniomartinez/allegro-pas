@@ -184,7 +184,7 @@ implementation
     sysutils;
   {$ENDIF}
 
-(* Converts string. *)
+(* Convert string. *)
   function al_string_to_str (const aString: ShortString): AL_STR;
   begin
     Result := AL_STR (aString)
@@ -249,8 +249,11 @@ implementation
 
   function al_str_to_unicodestring (const aString: AL_STR): UnicodeString;
   begin
-    Result :=
-      {$IFDEF ISDELPHI2009ANDUP}UTF8ToString{$ELSE}UTF8Decode{$ENDIF} (aString)
+  {$IFDEF ISDELPHI2009ANDUP}
+    Result := UTF8ToString (aString)
+  {$ELSE}
+    Result := UTF8Decode (aString)
+  {$ENDIF}
   end;
 
   function al_str_to_unicodestring (const aString: AL_STRptr): UnicodeString;

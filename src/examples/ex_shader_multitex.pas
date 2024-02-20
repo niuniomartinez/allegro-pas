@@ -28,9 +28,9 @@ program ex_shader_multitex;
 
   uses
     Common,
-    Allegro5, al5base, al5image;
+    Allegro5, al5image;
 
-  function LoadBitmap (const FileName: AL_STR): ALLEGRO_BITMAPptr;
+  function LoadBitmap (const FileName: String): ALLEGRO_BITMAPptr;
   var
     lBitmap: ALLEGRO_BITMAPptr;
   begin
@@ -50,7 +50,7 @@ program ex_shader_multitex;
     Redraw: Boolean = True;
     Shader: ALLEGRO_SHADERptr = Nil;
     T, dw, dh: Integer;
-    PixelFile: AL_STR;
+    PixelFile: String;
     Scale, Angle, x, y: Double;
 begin
   T := 0;
@@ -68,13 +68,13 @@ begin
   al_set_new_display_option (ALLEGRO_SAMPLES, 4, ALLEGRO_SUGGEST);
   al_set_new_display_flags (ALLEGRO_PROGRAMMABLE_PIPELINE);
   Display := al_create_display (640, 480);
-  if Display = Nil then AbortExample ('Error creating display.');
+  if not Assigned (Display) then AbortExample ('Error creating display.');
 
   Bitmap[0] := LoadBitmap ('data/mysha.pcx');
   Bitmap[1] := LoadBitmap ('data/obp.jpg');
 
   Shader := al_create_shader (ALLEGRO_SHADER_AUTO);
-  if Shader = Nil then AbortExample ('Error creating shader.');
+  if not Assigned (Shader) then AbortExample ('Error creating shader.');
 
   if al_get_shader_platform (Shader) = ALLEGRO_SHADER_GLSL then
   { TODO: #ifdef ALLEGRO_CFG_SHADER_GLSL }
@@ -144,7 +144,7 @@ begin
       al_set_shader_sampler ('tex2', Bitmap[1], 1);
       al_draw_scaled_rotated_bitmap (
         Bitmap[0], x, y, dw / 2, dh / 2,
-	Scale, Scale, Angle, 0
+        Scale, Scale, Angle, 0
       );
       al_flip_display
     end

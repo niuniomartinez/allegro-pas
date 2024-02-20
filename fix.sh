@@ -12,7 +12,6 @@ proc_help()
    echo
    echo "Where platform is one of: win or linux. "
    echo
-   echo
 }
 
 proc_fix()

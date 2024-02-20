@@ -1,0 +1,28 @@
+;; Corrije los archivos de proyecto (dproj, lpi y lps).
+
+;; Origen.
+'ex_01_helloworld' $Origen
+
+;; Quita extensión.
+  '.' FileName CALL:StrPos 1 - #LongitudNombre
+
+  FileName LongitudNombre CALL:LeftStr $Nombre
+;; Realiza la sustitución
+  Origen Nombre SUB:Sustituye
+GOTO:END ;; // No hay STOP en esta versión.
+
+
+:Sustituye
+  $Reemplazo $Original
+  0 #Linea
+  :Bucle
+    Original Linea CALL:FindTextLine #Linea
+    Linea IF
+      Linea CALL:GetTextLine
+      Original Reemplazo CALL:ReplaceStr
+      Linea CALL:SetTextLine
+      GOTO:Bucle
+    FI
+RET
+
+:END

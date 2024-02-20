@@ -1,7 +1,7 @@
 program pascalroids;
 (* Implementation of Asteroids. *)
 (*
-  Copyright (c) 2022 Guillermo Martínez J.
+  Copyright (c) 2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -28,9 +28,7 @@ program pascalroids;
 {$ENDIF}
 
 uses
-  Game,
-  al5nativedlg,
-  sysutils;
+  Game;
 
 var
   PascalroidsGame: TPascalroids;
@@ -38,18 +36,9 @@ var
 begin
   PascalroidsGame := TPascalroids.Create;
   try
-    try
-      if PascalroidsGame.Initialize then
-        PascalroidsGame.Run
-    finally
-      PascalroidsGame.Free
-    end
-  except
-    on Error: Exception do
-      al_show_native_message_box (
-        Nil,
-        'Pascalroids Game', 'There''s an error:', Error.Message,
-        'Close', ALLEGRO_MESSAGEBOX_ERROR
-      );
+    if PascalroidsGame.Initialize then
+      PascalroidsGame.Run
+  finally
+    PascalroidsGame.Free
   end
 end.

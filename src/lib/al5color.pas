@@ -123,7 +123,7 @@ implementation
   function al_color_rgb_to_html (r, g, b: AL_FLOAT): AL_STRptr;
   begin
     Result := '      ';
-    _al_color_rgb_to_html_ (r, g, b, AL_STRptr (Result));
+    _al_color_rgb_to_html_ (r, g, b, AL_STRptr (Result))
   end;
 
 end.

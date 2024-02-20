@@ -16,7 +16,7 @@ program ex_threads;
  *    runs, the bigger the delay.
  *)
 (*
-  Copyright (c) 2022 Guillermo Martínez J.
+  Copyright (c) 2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -38,12 +38,20 @@ program ex_threads;
     distribution.
  *)
 
-{$MODE DELPHI} { To be sure classes and TThread are available. }
+{$IFDEF FPC}
+{ Needed to support classes. }
+  {$IFNDEF FPC_DELPHI}
+    {$MODE DELPHI}
+  {$ENDIF}
+{ Windows manifest. }
+  {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
+{$ENDIF}
+
   uses
 {$ifdef unix}cthreads,{$endif}
     Common,
-    Allegro5, al5nativedlg,
-    Classes, sysutils;
+    Allegro5,
+    Classes, Crt, sysutils;
 
   const
     FPS = 20;
@@ -88,17 +96,18 @@ program ex_threads;
 
     (* Thread-safe pseudo-random number generator. *)
       function Random: Integer;
-    (* Generates a monochromatic palette from a random color. *)
+    (* Generate a monochromatic palette from a random color. *)
       procedure GeneratePalette;
 
-    (* Initializes the data needed by the thread. *)
+    (* Initialize the data needed by the thread. It doesn't execute the
+       thread. *)
       procedure Initialize;
-    (* Releases data needed by the thread. *)
+    (* Release data needed by the thread. *)
       procedure Finalize;
 
-    (* Calculates Mandelbrot orbit for given point. *)
+    (* Calculate Mandelbrot orbit for given point. *)
       function CalculateMandelPoint (const aPoint: Imaginary): Integer;
-    (* Renders a Mandelbrot portion. *)
+    (* Render a Mandelbrot portion. *)
       procedure RenderMandelbrot (const lMin, lMax: Imaginary);
     protected
     (* Execute method. *)
@@ -108,13 +117,13 @@ program ex_threads;
       constructor Create (const aId: Integer);
     (* Destructor. *)
       destructor Destroy; override;
-    (* Tells to the thread that will start manipulating the otuput bitmap
+    (* Tell to the thread that will start manipulating the otuput bitmap
        (reading or writing). *)
       procedure BeginDrawing; inline;
-    (* Tells to the thread that output bitmap manipulation ended. *)
+    (* Tell to the thread that output bitmap manipulation ended. *)
       procedure EndDrawing; inline;
 
-    (* Changes center point. *)
+    (* Change center point. *)
       procedure SetCenter (aX, aY: Double);
 
     (* Access to the output bitmap. *)
@@ -127,7 +136,6 @@ program ex_threads;
  * TMandelbrotRenderer
  *************************************************************************)
 
-(* Thread-safe pseudo-random number generator. *)
   function TMandelbrotRenderer.Random: Integer;
   const
     LocalRandMax = $FFFF;
@@ -138,7 +146,6 @@ program ex_threads;
 
 
 
-(* Generates a monochromatic palette from a random color. *)
   procedure TMandelbrotRenderer.GeneratePalette;
 
     function RandomValue: Byte; inline;
@@ -156,7 +163,7 @@ program ex_threads;
     bMax := RandomValue;
   { Create palette. }
     for Ndx := Low (fColorPalette) to High (fColorPalette) do
-      fColorPalette[Ndx] := al_map_rgb (
+      fColorPalette[MaxIterations - Ndx] := al_map_rgb (
         rMax * Ndx div 256,
         gMax * Ndx div 256,
         bMax * Ndx div 256
@@ -165,7 +172,6 @@ program ex_threads;
 
 
 
-(* Sets up the thread information.  It doesn't executes the thread. *)
   procedure TMandelbrotRenderer.Initialize;
   begin
     fRndSeed := fIdentifier;
@@ -183,7 +189,6 @@ program ex_threads;
 
 
 
-(* Releases resources. *)
   procedure TMandelbrotRenderer.Finalize;
   begin
     if Assigned (fBmp) then
@@ -195,7 +200,6 @@ program ex_threads;
 
 
 
-(* Calculates Mandelbrot orbit for given point. *)
   function TMandelbrotRenderer.CalculateMandelPoint (const aPoint: Imaginary)
     : Integer;
   const
@@ -218,7 +222,6 @@ program ex_threads;
 
 
 
-(* Renders a Mandelbrot portion in the given bitmap. *)
   procedure TMandelbrotRenderer.RenderMandelbrot (const lMin, lMax: Imaginary);
   type
     TLine = array of Integer;
@@ -275,7 +278,6 @@ program ex_threads;
 
 
 
-(* Execute method. *)
   procedure TMandelbrotRenderer.Execute;
   var
   (* Limits of the portion to be rendered. *)
@@ -307,7 +309,6 @@ program ex_threads;
 
 
 
-(* Constructor. *)
   constructor TMandelbrotRenderer.Create (const aId: Integer);
   begin
     inherited Create (True);
@@ -319,7 +320,6 @@ program ex_threads;
 
 
 
-(* Destructor. *)
   destructor TMandelbrotRenderer.Destroy;
   begin
     DoneCriticalSection (fBmpCriticalSection);
@@ -328,7 +328,6 @@ program ex_threads;
 
 
 
-(* Manipulating bitmap. *)
   procedure TMandelbrotRenderer.BeginDrawing;
   begin
     EnterCriticalSection (fBmpCriticalSection);
@@ -348,7 +347,6 @@ program ex_threads;
 
 
 
-(* Changes center. *)
   procedure TMandelbrotRenderer.SetCenter (aX, aY: Double);
   begin
     fCenter.r := aX; fCenter.i := aY
@@ -365,10 +363,56 @@ program ex_threads;
     EventQueue: ALLEGRO_EVENT_QUEUEptr;
     Display: ALLEGRO_DISPLAYptr;
     Timer: ALLEGRO_TIMERptr;
-    Threads: array [0..MaxThreads - 1] of TMandelbrotRenderer;
+    Threads: array [1..MaxThreads] of TMandelbrotRenderer;
 
-(* Initializes the program. *)
-  procedure InitializeExample;
+(* Initialize the program. *)
+  function InitializeExample: Boolean;
+
+  (* Warn about blinking colors and ask if continue. *)
+    function WarningAndContinue: Boolean;
+    var
+      lEvent: ALLEGRO_EVENT;
+      lKey: Char;
+    begin
+      LogWriteLn ('This example will generate fast blinking colors.');
+      LogWriteLn ('That would be harming for some people.');
+      LogWrite ('Do you want to continue? [Y/N] ');
+      repeat
+      { Maybe the input is done by a console window (i.e. using the Crt Common
+        unit). }
+        if KeyPressed then
+        begin
+          lKey := ReadKey;
+          if lKey in ['y', 'Y'] then
+          begin
+            LogWriteLn ('Y');
+            Exit (True)
+          end;
+          if lKey in ['n', 'N'] then
+          begin
+            LogWriteLn ('N');
+            Exit (False)
+          end
+        end;
+      { Or the focus is in the Allegro window. }
+        if al_get_next_event (EventQueue, lEvent) then
+          if lEvent.ftype = ALLEGRO_EVENT_KEY_DOWN then
+          begin
+            if lEvent.keyboard.keycode = ALLEGRO_KEY_Y then
+            begin
+              LogWriteLn ('Y');
+              Exit (True)
+            end
+            else if (lEvent.keyboard.keycode = ALLEGRO_KEY_N)
+            or (lEvent.keyboard.keycode = ALLEGRO_KEY_ESCAPE)
+            then
+            begin
+              LogWriteLn ('N');
+              Exit (False)
+            end
+          end
+      until False
+    end;
 
     function CreateDisplay: Boolean;
     begin
@@ -382,17 +426,19 @@ program ex_threads;
   var
     Cnt: Integer;
   begin
-    LogWriteLn ('Initializing...');
     if not al_init then AbortExample ('Could not init Allegro.');
-  { Initializes and displays a log window for debugging purposes. }
+  { Initialize a log for debugging purposes. }
     OpenLog;
-  { Configures Allegro. }
+    LogWriteLn ('Initializing...');
+  { Configure Allegro. }
     EventQueue := al_create_event_queue;
     al_install_keyboard;
     al_register_event_source (EventQueue, al_get_keyboard_event_source);
     if not CreateDisplay then AbortExample ('Could not create display.');
   { Helper functions from common.pas. }
     InitPlatformSpecific;
+  { Warn about possible problems. }
+    if not WarningAndContinue then Exit (False);
   { Timer. }
     Timer := al_create_timer (ALLEGRO_BPS_TO_SECS (FPS));
     al_register_event_source (EventQueue, al_get_timer_event_source (Timer));
@@ -406,20 +452,22 @@ program ex_threads;
       Threads[Cnt].Initialize
     end;
   { Change this if you change MaxThreads. }
-    Threads[0].SetCenter (-0.56062033041600878303, -0.56064322926933807256);
-    Threads[1].SetCenter (-0.57798076669230014080, -0.63449861991138123418);
-    Threads[2].SetCenter ( 0.36676836392830602929, -0.59081385302214906030);
-    Threads[3].SetCenter (-1.48319283039401317303, -0.00000000200514696273);
-    Threads[4].SetCenter (-0.74052910500707636032,  0.18340899525730713915);
-    Threads[5].SetCenter ( 0.25437906525768350097, -0.00046678223345789554);
-    Threads[6].SetCenter (-0.56062033041600878303,  0.56064322926933807256);
-    Threads[7].SetCenter (-0.57798076669230014080,  0.63449861991138123418);
-    Threads[8].SetCenter ( 0.36676836392830602929,  0.59081385302214906030)
+    Threads[1].SetCenter (-0.56062033041600878303, -0.56064322926933807256);
+    Threads[2].SetCenter (-0.57798076669230014080, -0.63449861991138123418);
+    Threads[3].SetCenter ( 0.36676836392830602929, -0.59081385302214906030);
+    Threads[4].SetCenter (-1.48319283039401317303, -0.00000000200514696273);
+    Threads[5].SetCenter (-0.74052910500707636032,  0.18340899525730713915);
+    Threads[6].SetCenter ( 0.25437906525768350097, -0.00046678223345789554);
+    Threads[7].SetCenter (-0.56062033041600878303,  0.56064322926933807256);
+    Threads[8].SetCenter (-0.57798076669230014080,  0.63449861991138123418);
+    Threads[9].SetCenter ( 0.36676836392830602929,  0.59081385302214906030);
+
+    Result := True
   end;
 
 
 
-(* Releases all used resources. *)
+(* Release all used resources. *)
   procedure FinalizeExample;
   var
     lThread: TMandelbrotRenderer;
@@ -429,10 +477,10 @@ program ex_threads;
     for lThread in Threads do
     begin
     { Terminate only if threads are running. }
-      if not lThread.Suspended then
+      if Assigned (lThread) and not lThread.Suspended then
       begin
-	lThread.Terminate;
-	lThread.WaitFor
+        lThread.Terminate;
+        lThread.WaitFor
       end;
       lThread.Free
     end;
@@ -446,7 +494,7 @@ program ex_threads;
 
 
 
-(* Executes the example. *)
+(* Execute the example. *)
   procedure RunExample;
   var
     EndProgram, UpdateDisplay: Boolean;
@@ -455,7 +503,7 @@ program ex_threads;
     lx, ly: Integer;
     lThread: TMandelbrotRenderer;
 
-  (* Copies thread output to display. *)
+  (* Copy threads output to display. *)
     procedure GetOutput;
     begin
       al_set_target_backbuffer (Display);
@@ -507,26 +555,19 @@ program ex_threads;
             UpdateDisplay := True;
           end
         until al_is_event_queue_empty (EventQueue)
-      until EndProgram;
+      until EndProgram
     except
-      on Error: Exception do LogPrintLn ('[Error] %s', [Error.Message]);
+      on Error: Exception do
+      begin
+        SetErrorColor;
+        LogPrintLn ('[Error] %s', [Error.Message]);
+        SetDefaultColor
+      end
     end
   end;
 
 begin
-  if al_show_native_message_box (
-    Display,
-    'ex_threads',
-    'Warning',
-    'This example will generate fast blinking colors.  That would be harming for some people.' +
-    #10#10'Do you want to continue?',
-    '',
-    ALLEGRO_MESSAGEBOX_WARN or ALLEGRO_MESSAGEBOX_YES_NO
-  ) = 1 then
-  begin
-    InitializeExample;
-    RunExample;
-    FinalizeExample
-  end
+  if InitializeExample then RunExample;
+  FinalizeExample
 end.
 

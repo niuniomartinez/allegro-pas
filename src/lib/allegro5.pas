@@ -1,11 +1,11 @@
-unit Allegro5;
+unit allegro5;
 (***<Wrapper of the Allegro 5 core library.
 
   This unit defines core functions, procedures and data types, that aren't in
   add-ons.
 
   @bold(See also:) @link(getst Getting started) *)
-(* Copyright (c) 2012-2022 Guillermo Martínez J. <niunio@users.sourceforge.net>
+(* Copyright (c) 2012-2024 Guillermo Martínez J. <niunio@users.sourceforge.net>
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -60,7 +60,8 @@ interface
     tempted to remove them but keeping them shows what ALLEGRO_VERSION_INT is
     build from.
 
-    They are defined to make it run with any compatible DLL/so/dylib version. *)
+    They are defined to make it run with compatible DLL/so/dylib version only.
+   *)
     ALLEGRO_VERSION      =   5;
     ALLEGRO_SUB_VERSION  =   2;
     ALLEGRO_WIP_VERSION  =   8;
@@ -70,14 +71,15 @@ interface
      2... = hotfixes?
 
      Note x.y.z (= x.y.z.0) has release number 1, and x.y.z.1 has release
-     number 2, just to confuse you. *)
+     number 2, just to confuse you.
+   *)
     ALLEGRO_RELEASE_NUMBER = 1;
 
     { ALLEGRO_PAS_VERSION_STR = '5.2.β.2'; }
-    ALLEGRO_PAS_VERSION_STR = '5.2.β.1 + SVN#503';
+    ALLEGRO_PAS_VERSION_STR = '5.2.β.1 + SVN#538';
   (* Dates aren't for Allegro but for Allegro.pas. *)
-    ALLEGRO_DATE_STR = '2022';
-    ALLEGRO_DATE = 20221008; { yyyymmdd }
+    ALLEGRO_DATE_STR = '2024';
+    ALLEGRO_DATE = 20240120; { yyyymmdd }
     ALLEGRO_VERSION_INT  = (
 	   (ALLEGRO_VERSION shl 24)
 	or (ALLEGRO_SUB_VERSION shl 16)
@@ -1726,6 +1728,7 @@ AL_FUNC(int, al_get_monitor_refresh_rate, (int adapter));
     ALLEGRO_MOUSE_CURSORptr = AL_POINTER;
 
     ALLEGRO_SYSTEM_MOUSE_CURSOR = (
+      ALLEGRO_SYSTEM_MOUSE_CURSOR_CUSTOM      = -1, { New! }
       ALLEGRO_SYSTEM_MOUSE_CURSOR_NONE        =  0,
       ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT     =  1,
       ALLEGRO_SYSTEM_MOUSE_CURSOR_ARROW       =  2,
@@ -2174,7 +2177,7 @@ AL_FUNC(ALLEGRO_THREAD *, al_create_thread_with_stacksize,
 {@exclude}
   function _al_check_inverse (var trans: ALLEGRO_TRANSFORM; tol: AL_FLOAT): AL_INT;
     CDECL; external ALLEGRO_LIB_NAME name 'al_check_inverse';
-{$IF FALSE see thread.h explanation.}
+{$IF FALSE} { see thread.h explanation.}
 {@exclude}
   procedure _al_join_thread (outer: ALLEGRO_THREADptr; ret_value: AL_POINTER);
     CDECL; external ALLEGRO_LIB_NAME name 'al_join_thread';

@@ -1,6 +1,6 @@
 program ex_transform;
 (*
-  Copyright (c) 2012-2020 Guillermo Martínez J.
+  Copyright (c) 2012-2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -28,10 +28,10 @@ program ex_transform;
 
 uses
   common,
-  Allegro5, al5base, al5image, al5font, al5primitives, al5strings;
+  Allegro5, al5image, al5font, al5primitives;
 
 var
-  Filename: AL_STR;
+  Filename: String;
   Display: ALLEGRO_DISPLAYptr;
   Buffer, Bitmap, Subbitmap, BufferSubbitmap, Overlay: ALLEGRO_BITMAPptr;
   Timer: ALLEGRO_TIMERptr;
@@ -47,10 +47,10 @@ begin
   Software := False;
   Redraw := False;
   Blend := False;
-  UseSubbitmap := False;
+  UseSubbitmap := True;
 
   if Paramcount > 1 then
-    Filename := al_string_to_str (ParamStr (1))
+    Filename := ParamStr (1)
   else
     Filename := 'data/mysha.pcx';
 
@@ -62,9 +62,10 @@ begin
 
   al_init_image_addon;
   al_init_font_addon;
+  InitPlatformSpecific;
 
   Display := al_create_display (640, 480);
-  if Display = Nil then AbortExample ('Error creating display');
+  if not Assigned (Display) then AbortExample ('Error creating display');
 
   Subbitmap := al_create_sub_bitmap (al_get_backbuffer (Display), 50, 50, 640 - 50, 480 - 50);
   Overlay := al_create_sub_bitmap (al_get_backbuffer (Display), 100, 100, 300, 50);
@@ -72,10 +73,10 @@ begin
   al_set_window_title (Display, Filename);
 
   Bitmap := al_load_bitmap (Filename);
-  if Bitmap = Nil then
-    AbortExample (Filename + ' not found or failed to load');
+  if not Assigned (Bitmap) then
+    AbortExample (Concat (Filename, ' not found or failed to load'));
   Font := al_load_font ('data/bmpfont.tga', 0, 0);
-  if Font = Nil then
+  if not Assigned (Font) then
     AbortExample ('data/bmpfont.tga not found or failed to load');
 
   al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
@@ -147,16 +148,16 @@ begin
         if UseSubbitmap then
         begin
           al_clear_to_color (al_map_rgb_f (1, 0, 0));
-          al_set_target_bitmap (BufferSubbitmap);
-        end;
+          al_set_target_bitmap (BufferSubbitmap)
+        end
       end
       else begin
         al_set_target_backbuffer (Display);
         if UseSubbitmap then
         begin;
           al_clear_to_color (al_map_rgb_f (1, 0, 0));
-          al_set_target_bitmap (Subbitmap);
-        end;
+          al_set_target_bitmap (Subbitmap)
+        end
       end;
 
     { Set the transformation on the target bitmap. }
@@ -180,28 +181,34 @@ begin
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
       if Software then
       begin
-        al_draw_text (SoftFont, al_map_rgba_f (1, 1, 1, 1),
-          640 / 2, 430, ALLEGRO_ALIGN_CENTRE, 'Software Rendering'
+        al_draw_text (
+          SoftFont, al_map_rgba_f (1, 1, 1, 1),
+          640 / 2, 430, ALLEGRO_ALIGN_CENTRE,
+          'Software Rendering'
         );
         al_set_target_backbuffer (Display);
-        al_draw_bitmap (Buffer, 0, 0, 0);
+        al_draw_bitmap (Buffer, 0, 0, 0)
       end
       else
-        al_draw_text (Font, al_map_rgba_f (1, 1, 1, 1),
-          640 / 2, 430, ALLEGRO_ALIGN_CENTRE, 'Hardware Rendering'
+        al_draw_text (
+          Font, al_map_rgba_f (1, 1, 1, 1),
+          640 / 2, 430, ALLEGRO_ALIGN_CENTRE,
+          'Hardware Rendering'
         );
 
     { Each target bitmap has its own transformation matrix, so this
       overlay is unaffected by the transformations set earlier. }
       al_set_target_bitmap (Overlay);
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE);
-      al_draw_text (Font, al_map_rgba_f (1, 1, 0, 1),
-        0, 10, ALLEGRO_ALIGN_LEFT, 'hello!'
+      al_draw_text (
+        Font, al_map_rgba_f (1, 1, 0, 1),
+        0, 10, ALLEGRO_ALIGN_LEFT,
+        'hello!'
       );
 
       al_set_target_backbuffer (Display);
-      al_flip_display;
-    end;
+      al_flip_display
+    end
   until EndLoop;
 
   al_destroy_event_queue (Queue);

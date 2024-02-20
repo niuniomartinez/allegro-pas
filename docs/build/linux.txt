@@ -69,5 +69,5 @@ $ sudo ldconfig
   To build the "debug" version, create a dir named "build-debug" and use this
   other cmake command instead:
 
-$ cmake -dCMAKE_BUILD_TYPE=debug ..
+$ cmake -DCMAKE_BUILD_TYPE=debug ..
 

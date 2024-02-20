@@ -1544,7 +1544,7 @@ A character was typed on the keyboard, or a character was auto-repeated.
     As of Allegro 5.0.2 there are some inconsistencies in the treatment of Backspace (8 or 127) and Delete (127 or 0) keys on different platforms. These can be worked around by checking the keycode field.)
 @item(@bold(@code(keyboard.modifiers))
     This is a bitfield of the modifier keys which were pressed when the event occurred. See @html(<a href="introduction.html#kbdmodifiers">"Keyboard modifier flags"</a>) for the constants.)
-@item(@bold(@code(keyboard.repeat))
+@item(@bold(@code(keyboard.frepeat))
     Indicates if this is a repeated character.)
 @item(@bold(@code(keyboard.display))
     The display which had keyboard focus when the event occurred.)
@@ -2488,7 +2488,6 @@ The supported options are:
      calling @link(al_acknowledge_resize).)
   @itemlabel(@bold(@code(ALLEGRO_OPENGL_MAJOR_VERSION))) @item(Request a specific OpenGL major version.)
   @itemlabel(@bold(@code(ALLEGRO_OPENGL_MINOR_VERSION))) @item(Request a specific OpenGL minor version.)
-  @itemlabel(@bold(@code(ALLEGRO_OPENGL_MINOR_VERSION))) @item(Request a specific OpenGL minor version.)
   @itemlabel(@bold(@code(ALLEGRO_DEFAULT_SHADER_PLATFORM))) @item(Specify the shader platform to use for the default shader. See @link(ALLEGRO_SHADER_PLATFORM). The default is @link(ALLEGRO_SHADER_AUTO).)
 )
 @seealso(al_get_new_display_option)@seealso(al_set_new_display_flags) @seealso(al_reset_new_display_options) @seealso(al_get_display_option)
@@ -2496,6 +2495,7 @@ The supported options are:
 Retrieves an extra display setting which was previously set with @link(al_set_new_display_option).
 #Allegro5.al_reset_new_display_options
 This undoes any previous call to al_set_new_display_option on the calling thread.
+@seealso(al_set_new_display_option)
 #Allegro5.al_set_display_option
 Changes an option that was previously set for a display. After displays are created, they take on the options set with @link(al_set_new_display_option). Calling @link(al_set_new_display_option) subsequently only changes options for newly created displays, and doesn't touch the options of already created displays. @code(al_set_display_option) allows changing some of these values. Not all display options can be changed or changing them will have no effect. Changing options other than those listed below is undefined.
 @definitionlist(
@@ -3766,14 +3766,14 @@ VAR
   );
 BEGIN
   ...
-  al_set_shader_int_vector ('flowers', 3, @(Flowers[0][0]), 4);
+  al_set_shader_int_vector ('flowers', 3, @@(Flowers[0][0]), 4);
   ...
 END;
 !)
 @return(@true on success. Otherwise returns @false, e.g. if the uniform by that name does not exist in the shader.)
 @seealso(al_set_shader_float_vector) @seealso(al_use_shader)
 #Allegro5.al_set_shader_float_vector
-Same as @link(al_set_shader_int_vector) except all values are float instead of intteger.
+Same as @link(al_set_shader_int_vector) except all values are float instead of integer.
 @seealso(al_set_shader_int_vector) @seealso(al_use_shader)
 #Allegro5.al_set_shader_bool
 Sets a boolean uniform of the current target bitmap's shader.

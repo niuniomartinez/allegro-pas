@@ -21,7 +21,7 @@ The make chain
                    identify directories and set up compiler options.  It also
                    "calls" the other files of the chain.
 
-  - makefile.list: this is an script that searchs and clasifies the source
+  - makefile.list: this is an script that searches and clasifies the source
                    files.
 
   - makefile.all:  This is where the things actually happens, defining the

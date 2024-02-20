@@ -45,9 +45,8 @@ Introduction
   GNU/Linux, both 32bit and 64 bit, and with Delphi 10.3 Community Edition on
   Windows 7 32bit.  Other operating systems and compilers weren't tested.
 
-  The goal is to make Allegro.pas 5 compatible with any operating system
-  supported by Allegro, which are Windows, Linux, MacOS, iOS and Android.
-  AFAIK all these OS have Pascal compilers.
+  The goal is to make Allegro.pas 5 compatible with all operating system
+  supported by Allegro.  Right now it works on Windows and Linux.
 
   As this is a WIP version you should remember that at the moment not all
   functionality are implemented.
@@ -68,7 +67,6 @@ Implemented
   + 2D and 3D transformations.
   + Clipboard.
   + Custom memory management.
-  + Native dialogs.
   + OpenGL extensions.
   + Demonstration game.
 
@@ -82,7 +80,6 @@ Unimplemented
 
   - Touch-screen support.
   - Phys file system.
-  - Android support.
 
 
 

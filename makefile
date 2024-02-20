@@ -31,7 +31,8 @@ ifeq ($(TARGET),WIN)
 	# Binary sufix.
 	BINSUF = .exe
 	# Extra flags.
-	EFLAGS = -WG
+	# EFLAGS = -WG
+	EFLAGS =
 
 	# File management.
 	# TODO: Detect MSys, Cywing and such...
@@ -64,6 +65,9 @@ endif
 # Optimization options, including "smart linking".
 OPTOPT = -O3 -CX -Xs -XX
 
+# Enable inline.
+OPTOPT += -Si
+
 # Next can be used to optimize for almost any current 32bit PC with Linux or
 # Windows, doing it pretty well.  Of course, it will prevent your executable to
 # run in anything older than PentiumIII.
@@ -72,6 +76,13 @@ OPTOPT = -O3 -CX -Xs -XX
 # Next one can be used to optimize for 64bit PC with Linux or Windows.
 # OPTOPT += -CpATHLON64
 
+# do not show
+# Note:  Call to subroutine "...;" marked as inline is not inlined
+# (In FPC 3.3.1, not in FPC 3.1.1 rev 38027)
+OPTOPT += -vm6058
+
+# do not show Hint: (5024) Parameter "..." not used
+OPTOPT += -vm5024
 
 
 # ---------------------
@@ -79,12 +90,14 @@ OPTOPT = -O3 -CX -Xs -XX
 # ---------------------
 
 # Debugging options.
-# Shows all compilation warnings and hints.
-DBGOPT = -O1 -gl -vh -vw
+DBGOPT = -O1 -g -gl
+# Save debug information in an external file (.dbg).
+DBGOPT += -Xg
+# Show warnings + notes. Do not show hints (there are too many useless hints produced by FPC).
+# (Suggestion from Castle Game Engine)
+DBGOPT += -vwn
 # Adds some code to check ranges and overflows.
 DBGOPT += -Ct -Cr -CR -Co
-# Adds GDB information to the executable
-DBGOPT += -g
 # Adds code for valgrind
 # DBGOPT += -gv
 # Use heaptrace unit (for memory leak/corruption debugging).

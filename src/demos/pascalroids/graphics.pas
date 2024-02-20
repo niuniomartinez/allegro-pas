@@ -1,7 +1,7 @@
 unit Graphics;
 (* Implements some graphics stuff. *)
 (*
-  Copyright (c) 2022 Guillermo Martínez J.
+  Copyright (c) 2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -44,13 +44,14 @@ interface
       NumVertices: Integer;
       fColor: ALLEGRO_COLOR;
 
+    (* Set color to polygon vertices. *)
       procedure SetColor (aColor: ALLEGRO_COLOR);
     public
-    (* Initializes the polygon.  Should be called before add vertices. *)
+    (* Initialize the polygon.  Should be called before add vertices. *)
       procedure Reset;
-    (* Adds a vertex. *)
+    (* Add a vertex. *)
       procedure AddVertex (const aX, aY: AL_FLOAT);
-    (* Draws the polygon. *)
+    (* Draw the polygon. *)
       procedure Draw;
 
       property Color: ALLEGRO_COLOR read fColor write SetColor;
@@ -66,7 +67,7 @@ interface
     public
     (* Constructor. *)
       constructor Create; override;
-    (* Draws the sprite. *)
+    (* Draw the sprite. *)
       procedure Draw; override;
 
     (* Pointer to the polygon to use. *)
@@ -82,18 +83,22 @@ interface
     clrWhite, clrBlack,
     clrGreen, clrRed: ALLEGRO_COLOR;
 
-(* Initializes the unit.  Should be called after create the display. *)
+(* Initialize the unit.  Should be called after create the display. *)
   procedure Initialize;
 
 implementation
 
-(* Initializes. *)
+  var
+    fIdentity: ALLEGRO_TRANSFORM;
+
   procedure Initialize;
   begin
+    al_init_primitives_addon;
     clrBlack := al_map_rgb (  0,   0,   0);
     clrGreen := al_map_rgb (  0, 255,   0);
     clrRed   := al_map_rgb (255,   0,   0);
-    clrWhite := al_map_rgb (255, 255, 255)
+    clrWhite := al_map_rgb (255, 255, 255);
+    al_identity_transform (fIdentity)
   end;
 
 
@@ -102,7 +107,7 @@ implementation
  * TPolygon
  ************************************************************************)
 
-  procedure TPolygon.SetColor(aColor: ALLEGRO_COLOR);
+  procedure TPolygon.SetColor (aColor: ALLEGRO_COLOR);
   var
     lNdx: Integer;
   begin
@@ -112,7 +117,6 @@ implementation
 
 
 
-(* Resets polygon. *)
   procedure TPolygon.Reset;
   begin
     Self.SetColor (clrWhite);
@@ -121,8 +125,7 @@ implementation
 
 
 
-(* Adds vertex. *)
-  procedure TPolygon.AddVertex(const aX, aY: AL_FLOAT);
+  procedure TPolygon.AddVertex (const aX, aY: AL_FLOAT);
   begin
   {$IFDEF DEBUG}
     if (0 > Self.NumVertices) or (Self.NumVertices > MaxVertices )then
@@ -139,7 +142,6 @@ implementation
 
 
 
-(* Draw. *)
   procedure TPolygon.Draw;
   begin
     al_draw_prim (
@@ -155,7 +157,6 @@ implementation
  * TSpritePolygon
  ************************************************************************)
 
-(* Constructor. *)
   constructor TSpritePolygon.Create;
   begin
     inherited Create;
@@ -166,7 +167,6 @@ implementation
 
 
 
-(* Draws sprite. *)
   procedure TSpritePolygon.Draw;
   var
     lMatrix: ALLEGRO_TRANSFORM;
@@ -176,7 +176,8 @@ implementation
       Self.X, Self.Y, Self.Scale, Self.Scale, Self.Angle
     );
     al_use_transform (lMatrix);
-    fPolygon^.Draw
+    fPolygon^.Draw;
+    al_use_transform (fIdentity) { Safe drawing. }
   end;
 
 end.

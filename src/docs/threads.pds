@@ -1,5 +1,6 @@
 @section(1 threads Threads)
+Allegro includes a simple cross-platform threading interfaces but unfortunatelly @bold(it doesn't work with Pascal).
 
-Allegro includes a simple cross-platform threading interface. It is a thin layer on top of two threading APIs: Windows threads and POSIX Threads (pthreads). Enforcing a consistent semantics on all platforms would be difficult at best, hence the behaviour of the following functions will differ subtly on different platforms (more so than usual). Your best bet is to be aware of this and code to the intersection of the semantics and avoid edge cases.
+Anyway Free Pascal and Delphi threading interface and their @code(TThread) class work perfectly so use it.  See examples @code(ex_threads) and @code(ex_threads2) to know how to use them.
 
-@bold(See also:) @link(al_create_thread)
+Note that documentation may include the description of the Allegro's threading interfaces but code was disabled.

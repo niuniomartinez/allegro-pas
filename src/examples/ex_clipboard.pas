@@ -1,9 +1,7 @@
 program ex_clipboard;
-(* An example showing bitmap flipping flags, by Steven Wallace.
-
-  NOTE: Previous comment seems misplaced... *)
+(* Shows how clipboard works. *)
 (*
-  Copyright (c) 2012-2018 Guillermo Martínez J.
+  Copyright (c) 2012-2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -34,82 +32,143 @@ program ex_clipboard;
     allegro5, al5base, al5image, al5font;
 
   const
-    INTERVAL = 0.1;
+  (* Window size. *)
+    wWidth = 800; wHeight = 600;
+    TimeInterval = 0.1;
 
   var
-    Display: ALLEGRO_DISPLAYptr;
-    Timer: ALLEGRO_TIMERptr;
-    Queue: ALLEGRO_EVENT_QUEUEptr;
+    EventQueue: ALLEGRO_EVENT_QUEUEptr;
     Event: ALLEGRO_EVENT;
-    Font: ALLEGRO_FONTptr;
-    Text: AL_STRptr;
-    Done, Redraw: Boolean;
+    Window: ALLEGRO_DISPLAYptr;
+    Timer: ALLEGRO_TIMERptr;
+    TextFont: ALLEGRO_FONTptr;
+    LineHeight: Integer;
+    ClipboardText: AL_STRptr;
+    Redraw, Terminated: Boolean;
+
+(* Helper to draw text. *)
+  procedure PrintText (
+    const aText: AL_STRptr;
+    const y: Integer;
+    const aColor: ALLEGRO_COLOR
+  );
+  const
+    Margin = 8;
+  begin
+    al_draw_text (TextFont, aColor, Margin, Margin + y * LineHeight, 0, aText)
+  end;
+
+
+
+(* Program initialization. *)
+  function Initialize: Boolean;
+  begin
+  { Initialize Allegro. }
+    if not al_init or not al_install_keyboard or not al_init_image_addon
+    or not al_init_font_addon
+    then
+    begin
+      WriteLn ('Can''t initialize Allegro!');
+      Exit (False)
+    end;
+  { Create the timer. }
+    Timer := al_create_timer (TimeInterval);
+    if not Assigned (Timer) then
+    begin
+      WriteLn ('Can''t initialize timer.');
+      Exit (False)
+    end;
+  { Create window. }
+    al_set_new_display_flags (ALLEGRO_WINDOWED);
+    Window := al_create_display (wWidth, wHeight);
+    if not Assigned (Window) then
+    begin
+      WriteLn ('Can''t create window.');
+      Exit (False)
+    end;
+  { Create text font. }
+    TextFont := al_load_font ('data/fixed_font.tga', 0, 0);
+    if not Assigned (TextFont) then
+    begin
+      ErrorMessage ('Can''t load "data/fixed_font.tga".');
+      Exit (False)
+    end;
+    LineHeight := al_get_font_line_height (TextFont);
+  { Create the event queue. }
+    EventQueue := al_create_event_queue;
+    if not Assigned (EventQueue) then
+    begin
+      ErrorMessage ('Can''t initialize event queue!');
+      Exit (False)
+    end;
+    al_register_event_source (EventQueue, al_get_keyboard_event_source);
+    al_register_event_source (EventQueue, al_get_display_event_source (Window));
+    al_register_event_source (EventQueue, al_get_timer_event_source (Timer));
+
+    Result := True
+  end;
+
+
+
+(* Program finalization. *)
+  procedure Finalize;
+  begin
+  { Allegro will destroy most objects at exit but it is a good idea to get used
+    to destroy all created objects.
+  }
+    if Assigned (EventQueue) then al_destroy_event_queue (EventQueue);
+    if Assigned (Timer) then al_destroy_timer (Timer);
+    if Assigned (TextFont) then al_destroy_font (TextFont);
+    if Assigned (Window) then al_destroy_display (Window)
+  end;
 
 begin
-  Text := Nil;
-  Done := False;
-  Redraw := True;
-
-  if not al_init then AbortExample ('Could not init Allegro.');
-
-  if not al_init_image_addon then AbortExample ('Failed to init IIO addon.');
-
-  al_init_font_addon;
-  InitPlatformSpecific;
-
-  Display := al_create_display (640, 480);
-  if Display = Nil then AbortExample ('Error creating display.');
-
-
-  if not al_install_keyboard then AbortExample ('Error installing keyboard.');
-
-  Font := al_load_font ('data/fixed_font.tga', 0, 0);
-  if Font = Nil then AbortExample ('Error loading data/fixed_font.tga');
-
-  Timer := al_create_timer (INTERVAL);
-
-  Queue := al_create_event_queue;
-  al_register_event_source (Queue, al_get_keyboard_event_source);
-  al_register_event_source (Queue, al_get_timer_event_source (Timer));
-  al_register_event_source (Queue, al_get_display_event_source (Display));
-
+  if not Initialize then Exit;
+{ "Game loop". }
+  ClipboardText := Nil;
+  Redraw := True; Terminated := False;
   al_start_timer (Timer);
-
-  al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-
   repeat
-    if Redraw and al_is_event_queue_empty (Queue) then
+  { Window update. }
+    if Redraw and al_is_event_queue_empty (EventQueue) then
     begin
-      if Text <> Nil then al_free (Text);
-      if al_clipboard_has_text (Display) then
-        Text := al_get_clipboard_text (Display)
+    { Get reference to the clipboard text, if any. }
+      if Assigned (ClipboardText) then al_free (ClipboardText);
+      if al_clipboard_has_text (Window) then
+        ClipboardText := al_get_clipboard_text (Window)
       else
-        Text := Nil;
-
+        ClipboardText := Nil;
+    { Draw clipboard content and instructions. }
       al_clear_to_color (al_map_rgb_f (0, 0, 0));
-
-      if Text <> Nil then
-        al_draw_text (Font, al_map_rgba_f (1, 1, 1, 1.0), 0, 0, 0, Text)
+      PrintText (
+        'Copy a text from another application or press [Space bar]...',
+        0,
+        al_map_rgb_f (1, 1, 1)
+      );
+      if Assigned (ClipboardText) then
+        PrintText (ClipboardText, 2, al_map_rgba_f (0, 1, 1, 1.0))
       else
-        al_draw_text (Font, al_map_rgba_f(1, 0, 0, 1.0), 0, 0, 0,
-                      'No clipboard text available.');
+        PrintText ('No clipboard text available.', 2, al_map_rgba_f(1, 0, 0, 1.0));
       al_flip_display;
-      Redraw := False;
+      Redraw := False
     end;
-
-    al_wait_for_event (Queue, @Event);
+  { Check events. }
+    al_wait_for_event (EventQueue, @Event);
     case Event.ftype of
-    ALLEGRO_EVENT_KEY_DOWN:
-      if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
-        Done := true
-      else if Event.keyboard.keycode = ALLEGRO_KEY_SPACE then
-        al_set_clipboard_text (Display, 'Copied from Allegro!');
     ALLEGRO_EVENT_DISPLAY_CLOSE:
-      Done := true;
+      Terminated := True;
+    ALLEGRO_EVENT_KEY_DOWN:
+      case Event.keyboard.keycode of
+      ALLEGRO_KEY_ESCAPE:
+        Terminated := True;
+      ALLEGRO_KEY_SPACE:
+      { Set text to the clipboard (i.e. "copy" text). }
+        al_set_clipboard_text (Window, 'Copied from Allegro!');
+      end;
     ALLEGRO_EVENT_TIMER:
-      Redraw := true
+      Redraw := true;
     end
-  until Done;
-
-  al_destroy_font (Font);
+  until Terminated;
+{ Program finalization. }
+  Finalize
 end.

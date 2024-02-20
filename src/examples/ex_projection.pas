@@ -29,7 +29,7 @@ program ex_projection;
 
   uses
     Common,
-    Allegro5, al5base, al5font, al5image, al5ttf;
+    Allegro5, al5font, al5image, al5strings, al5ttf;
 
   var
   (* How far has the text been scrolled. *)
@@ -63,42 +63,48 @@ program ex_projection;
 
 
   (* Load a bitmap and exit with a message if it's missing. *)
-    function LoadBmp (const Path: AL_STR): ALLEGRO_BITMAPptr;
+    function LoadBmp (const Path: String): ALLEGRO_BITMAPptr;
     var
       lBmp: ALLEGRO_BITMAPptr;
     begin
       lBmp := al_load_bitmap (Path);
-      if lBmp = Nil then AbortExample ('Could not load '+Path);
+      if not Assigned (lBmp) then
+        AbortExample (al_str_format ('Could not load %s.', [Path]));
       Exit (lBmp)
     end;
 
 
 
   (* Load a font and exit with a message if it's missing. *)
-    function LoadFont (const Path: AL_STR; Size, Flags: Integer): ALLEGRO_FONTptr;
+    function LoadFont (const Path: String; Size, Flags: Integer): ALLEGRO_FONTptr;
     var
       lFont: ALLEGRO_FONTptr;
     begin
       lFont := al_load_font (Path, Size, Flags);
-      if lFont = Nil then AbortExample ('Could not load '+Path);
+      if not Assigned (lFont) then
+        AbortExample (al_str_format ('Could not load %s.', [Path]));
       Exit (lFont)
     end;
 
 
 
   (* Print fading text. *)
-    function Print
-      (Font: ALLEGRO_FONTptr; x, y, r, g, b, Fade: Single; const Text: AL_STR): Integer;
+    function Print (
+      aFont: ALLEGRO_FONTptr;
+      x, y, r, g, b, aFade: Single;
+      const aText: String
+    ): Integer;
     var
       c: Single;
     begin
-      c := 1 + (y - Fade) / 360 / 2.0;
+      c := 1 + (y - aFade) / 360 / 2.0;
       if c > 1 then c := 1 else if c < 0 then c := 0;
       al_draw_text (
-        Font, al_map_rgba_f (c * r, c * g, c * b, c),
-        x, y, ALLEGRO_ALIGN_CENTER, Text
+        aFont, al_map_rgba_f (c * r, c * g, c * b, c),
+        x, y, ALLEGRO_ALIGN_CENTER,
+        al_string_to_str (aText)
       );
-      Exit (Trunc (y + al_get_font_line_height (Font)))
+      Exit (Trunc (y + al_get_font_line_height (aFont)))
     end;
 
 
@@ -149,9 +155,9 @@ program ex_projection;
     bw, bh: Integer;
     x, y, c: Single;
 
-    procedure T (str: AL_STR);
+    procedure T (aText: String);
     begin
-      y := Print (Font, x, y, 1, 0.9, 0.3, ScrollY, str)
+      y := Print (Font, x, y, 1, 0.9, 0.3, ScrollY, aText)
     end;
 
   begin
@@ -248,7 +254,7 @@ begin
 
   al_set_new_display_flags (ALLEGRO_RESIZABLE);
   Display := al_create_display (640, 360);
-  if Display = Nil then AbortExample ('Error creating display.');
+  if not Assigned (Display) then AbortExample ('Error creating display.');
 
   al_set_new_bitmap_flags
     (ALLEGRO_MIN_LINEAR or ALLEGRO_MAG_LINEAR or ALLEGRO_MIPMAP);

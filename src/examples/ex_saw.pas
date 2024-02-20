@@ -1,7 +1,7 @@
 program ex_saw;
 (* Recreate exstream.c from A4. *)
 (*
-  Copyright (c) 2012-2020 Guillermo Martínez J.
+  Copyright (c) 2012-2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -45,7 +45,7 @@ program ex_saw;
 
   uses
     Common,
-    Allegro5, al5base, al5audio, al5nativedlg;
+    Allegro5, al5base, al5audio;
 
   const
     SAMPLES_PER_BUFFER = 1024;
@@ -65,9 +65,9 @@ program ex_saw;
     Queue := al_create_event_queue;
     al_register_event_source (Queue, al_get_audio_stream_event_source (Stream));
 
-    if TextLog <> Nil then
-      al_register_event_source
-        (Queue, al_get_native_text_log_event_source (TextLog));
+    { al5nativedlg stopped to work.
+      al_register_event_source (Queue, GetLogWindowEventSource);
+    }
 
     LogWriteLn ('Generating saw wave...');
 
@@ -78,7 +78,7 @@ program ex_saw;
       if Event.ftype = ALLEGRO_EVENT_AUDIO_STREAM_FRAGMENT then
       begin
 	Buf := al_get_audio_stream_fragment (Stream);
-	if Buf <> Nil then
+	if Assigned (Buf) then
 	begin
 	  for i := 0 to SAMPLES_PER_BUFFER - 1 do
 	  begin
@@ -99,7 +99,7 @@ program ex_saw;
 	  if n mod 10 = 0 then LogWrite ('.')
 	end
       end;
-      if Event.ftype = ALLEGRO_EVENT_NATIVE_DIALOG_CLOSE then
+      if Event.ftype = ALLEGRO_EVENT_DISPLAY_CLOSE then
 	n := -1 { See the loop condition. }
     end;
 
@@ -122,8 +122,9 @@ begin
 
   Stream := al_create_audio_stream (
     8, SAMPLES_PER_BUFFER, 22050,
-    ALLEGRO_AUDIO_DEPTH_UINT8, ALLEGRO_CHANNEL_CONF_1);
-  if Stream = Nil then AbortExample ('Could not create stream.');
+    ALLEGRO_AUDIO_DEPTH_UINT8, ALLEGRO_CHANNEL_CONF_1
+  );
+  if not Assigned (Stream) then AbortExample ('Could not create stream.');
 
   if not al_attach_audio_stream_to_mixer (Stream, al_get_default_mixer) then
     AbortExample ('Could not attach stream to mixer.');
