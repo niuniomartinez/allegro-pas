@@ -2,8 +2,9 @@ unit al5memfile;
 (***<Defines the @italic(memfile interface).
 
      The memfile interface allows you to treat a fixed block of contiguous
-     memory as a file that can be used with Allegro's I/O functions. *)
-(* Copyright (c) 2012-2022 Guillermo Martínez J.
+     memory as a file that can be used with Allegro's I/O functions.
+ *)
+(* Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages

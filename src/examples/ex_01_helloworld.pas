@@ -31,8 +31,7 @@ program ex_01_helloworld;
 {$ENDIF}
 
   uses
-    allegro5 in '../lib/allegro5.pas',
-    al5font  in '../lib/al5font.pas';
+    allegro5, al5font;
 
   const
   (* Window size. *)

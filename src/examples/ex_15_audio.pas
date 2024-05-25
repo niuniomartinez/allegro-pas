@@ -29,11 +29,7 @@ program ex_15_audio;
 
   uses
     alcon, Common,
-    allegro5  in '../lib/allegro5.pas',
-    al5audio  in '../lib/al5audio.pas',
-    al5acodec in '../lib/al5acodec.pas',
-    al5font   in '../lib/al5font.pas',
-    al5strings in '../lib/al5strings.pas',
+    allegro5, al5audio, al5acodec, al5font, al5strings,
     sysutils;
 
   const
@@ -85,7 +81,7 @@ program ex_15_audio;
     end;
     TextFont := al_create_builtin_font;
     if not alcon.Initialize then Exit (False);
-  { Initialize the audio subsystem.  al5acodec doesn't need to be initialized. }
+  { Initialize the audio subsystem. }
     if not al_install_audio then
     begin
       ErrorMessage ('Can''t initialize audio subsystem.');

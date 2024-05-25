@@ -28,9 +28,7 @@ program ex_03_bitmap;
 {$ENDIF}
 
   uses
-    allegro5   in '../lib/allegro5.pas',
-    al5image   in '../lib/al5image.pas',
-    al5strings in '../lib/al5strings.pas';
+    allegro5, al5image, al5strings;
 
   const
   (* Window size. *)

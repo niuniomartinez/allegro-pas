@@ -3,8 +3,12 @@ Changes between versions 5.2.b.1-1 and 5.2.0
 
   API changes
   -----------
+    : Most pointers are types instead of aliases now.  This should prevent some
+      mistakes and bugs as it checks parameters and assignations.
     : al_get_opengl_variant returns an ALLEGRO_OPENGL_VARIANT now.
     : Removed constants ALLEGRO_IS_ALPHA and ALLEGRO_IS_BETA.
+    : al_init_user_event_source and al_destroy_user_event_source get pointers
+      now.  This should prevent issues with optimizations.
 
   News
   ----
@@ -16,6 +20,10 @@ Changes between versions 5.2.b.1-1 and 5.2.0
       - New shader modes.
       - Platform identification.
       - Transformation transpose.
+
+  Other
+  -----
+    : A few internal changes in al5strings that should improve compatability.
 
 
 

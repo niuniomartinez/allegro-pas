@@ -28,6 +28,8 @@ unit Common;
 
 interface
 
+(* Helper that waits until user press key 'C'. *)
+  procedure WaitCPress;
 (* Print an error message in current display and wait for a key press. *)
   procedure ErrorMessage (const aText: String);
 
@@ -47,10 +49,19 @@ implementation
 {$IFDEF DCC}
     SysUtils,
 {$ENDIF}
-    allegro5      in '../lib/allegro5.pas',
-    al5font       in '../lib/al5font.pas',
-    al5primitives in '../lib/al5primitives.pas',
-    al5strings    in '../lib/al5strings.pas';
+    allegro5, al5font, al5primitives, al5strings;
+
+  procedure WaitCPress;
+  var
+    lKeyboardState: ALLEGRO_KEYBOARD_STATE;
+  begin
+    repeat
+      al_rest (0.1);
+      al_get_keyboard_state (lKeyboardState)
+    until al_key_down (lKeyboardState, ALLEGRO_KEY_C);
+  end;
+
+
 
   procedure ErrorMessage (const aText: String);
   const
@@ -59,7 +70,6 @@ implementation
   var
     lTextFont: ALLEGRO_FONTptr;
     lColor: ALLEGRO_COLOR;
-    lKeyboardState: ALLEGRO_KEYBOARD_STATE;
   begin
   { Be sure base Allegro is installed. }
     al_install_keyboard;
@@ -88,12 +98,10 @@ implementation
     al_draw_text (lTextFont, lColor, Margin, Margin, 0, al_string_to_str (aText));
     al_draw_text (lTextFont, lColor, Margin, Margin * 2, 0, 'Press [C] to close');
     al_flip_display;
-  { Wait until keypress. }
-    repeat
-      al_rest (0.1);
-      al_get_keyboard_state (lKeyboardState)
-    until al_key_down (lKeyboardState, ALLEGRO_KEY_C);
-    al_destroy_font (lTextFont)
+  { No needed anymore. }
+    al_destroy_font (lTextFont);
+  { Wait keypress. }
+    WaitCPress
   end;
 
 

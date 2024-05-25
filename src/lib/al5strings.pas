@@ -5,7 +5,7 @@ unit al5strings;
   @include(../docs/strings.pds)
 
   @include(../docs/utf8.pds) *)
-(* Copyright (c) 2012-2022 Guillermo Martínez J.
+(* Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -27,7 +27,7 @@ unit al5strings;
     distribution.
  *)
 
-{$INCLUDE allegro5.cfg}
+{$Include allegro5.cfg}
 
 interface
 
@@ -74,7 +74,7 @@ interface
 { TODO: al_str_to_int, al_str_to_float, al_int_to_str, al_float_to_str... }
 { TODO: al_str_lenth? }
 
-  function al_str_format (const Fmt: AL_STR; const Args : array of const)
+  function al_str_format (const aFmt: AL_STR; const aArgs : array of const)
   : AL_STR;
 
 
@@ -85,7 +85,7 @@ interface
 
   {TODO: Documentation says it's not needed as it's used internally.
 	Only basic functionality is implemented for convenience. }
-  {TODO: There are a lot of stuff to add here, including WIDEString and/or
+  {TODO: There are a lot of stuff to add here, including WideString and/or
 	 UnicodeString support. }
 
   type
@@ -176,13 +176,14 @@ interface
 implementation
 
   uses
-  {$IFDEF ISDELPHI2009ANDUP}
+  {$IfDef ISDELPHI2009ANDUP}
   { This unit implements SysUtils and Strings using AnsiString instead of
-    UnicodeString, which is the default in modern Delphi compilers. }
+    UnicodeString, which is the default in modern Delphi compilers.
+  }
     AnsiStrings;
-  {$ELSE}
+  {$Else}
     sysutils;
-  {$ENDIF}
+  {$EndIf}
 
 (* Convert string. *)
   function al_string_to_str (const aString: ShortString): AL_STR;
@@ -205,20 +206,12 @@ implementation
 
   function al_str_to_string (const aString: AL_STR): String;
   begin
-  {$IFDEF ISDELPHI2009ANDUP}
-    Result := al_str_to_unicodestring (aString)
-  {$ELSE}
-    Result := aString
-  {$ENDIF}
+    Result := {$IfDef ISDELPHI2009ANDUP}al_str_to_unicodestring{$EndIf} (aString)
   end;
 
   function al_str_to_string (const aString: AL_STRptr): String;
   begin
-  {$IFDEF ISDELPHI2009ANDUP}
-    Result := UTF8ToString (StrPas (aString))
-  {$ELSE}
-    Result := StrPas (aString)
-  {$ENDIF}
+    Result := {$IfDef ISDELPHI2009ANDUP}UTF8ToString{$EndIf} (StrPas (aString))
   end;
 
 
@@ -249,25 +242,23 @@ implementation
 
   function al_str_to_unicodestring (const aString: AL_STR): UnicodeString;
   begin
-  {$IFDEF ISDELPHI2009ANDUP}
-    Result := UTF8ToString (aString)
-  {$ELSE}
-    Result := UTF8Decode (aString)
-  {$ENDIF}
+    Result :=
+      {$IfDef ISDELPHI2009ANDUP}UTF8ToString{$Else}UTF8Decode{$EndIf} (aString)
   end;
 
   function al_str_to_unicodestring (const aString: AL_STRptr): UnicodeString;
   begin
-    Result := al_str_to_unicodestring (StrPas (aString))
+    Result :=
+      {$IfDef ISDELPHI2009ANDUP}UTF8ToString{$Else}UTF8Decode{$EndIf} (StrPas (aString))
   end;
 
 
 
 (* Formats a string with given arguments. *)
-  function al_str_format (const Fmt: AL_STR; const Args : array of const)
+  function al_str_format (const aFmt: AL_STR; const aArgs : array of const)
     : AL_STR;
   begin
-    Result := al_string_to_str (Format (Fmt, Args))
+    Result := al_string_to_str (Format (al_str_to_string (aFmt), aArgs))
   end;
 
 end.

@@ -15,17 +15,17 @@ examples: $(EXMFILES)
 demos: $(DEMFILES)
 	@echo Finished all demonstration games.
 
-# Executables
+# Executables.
 $(EXMBIN)%$(BINSUF): $(EXMSRC)%$(MAINSUF) $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBSRC) -FU$(OBJDIR) $< -o$@
+	fpc $(FLAGS) $(LIBPATHS) $(OUTPATHS) $< -o$@
 	@echo Example $@ ready!
 
-$(FURIOUSPALADIN): $(FPSRC)furiouspaladin.pas $(FPSRC)*.pas $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBSRC) -FU$(OBJDIR) $< -o$@
+$(FURIOUSPALADIN): $(FPSRC)furiouspaladin.pas $(FURIOUSUNITS) $(LIBFILES)
+	fpc $(FLAGS) $(LIBPATHS) $(OUTPATHS) $< -o$@
 	@echo Demonstration Game Furious Paladin ready!
 
-$(PASCALROIDS): $(PASRC)pascalroids.pas $(PASRC)*.pas $(LIBFILES)
-	fpc $(FLAGS) -Fu$(LIBSRC) -FU$(OBJDIR) $< -o$@
+$(PASCALROIDS): $(PASRC)pascalroids.pas $(PROIDSUNITS) $(LIBFILES)
+	fpc $(FLAGS) $(LIBPATHS) $(OUTPATHS) $< -o$@
 	@echo Demonstration Game Pascalroids ready!
 
 # Documentation.
@@ -59,7 +59,7 @@ clean:
 	$(DELETE) $(OBJDIR)*.pduc
 	$(DELETE) $(OBJDIR)*.compiled
 
-# Show options.
+# Shows all options.
 help: addbanner
 	@echo --------
 	@echo - Help -
@@ -77,5 +77,5 @@ help: addbanner
 addbanner:
 	@echo $(PROJECT)
 	@echo "(c) Guillermo Martínez J. 2006-2024"
-	@echo http://allegro-pas.sourceforge.net
+	@echo https://allegro-pas.sourceforge.net
 	@echo

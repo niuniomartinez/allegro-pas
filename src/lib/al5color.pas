@@ -2,7 +2,7 @@ unit al5color;
 (***<Color management.
 
   @include(../docs/al5color.pds) *)
-(* Copyright (c) 2012-2022 Guillermo Martínez J.
+(* Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages

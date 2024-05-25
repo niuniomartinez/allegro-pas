@@ -33,10 +33,7 @@ program ex_14_joystick;
 
   uses
     Common,
-    allegro5      in '../lib/allegro5.pas',
-    al5font       in '../lib/al5font.pas',
-    al5primitives in '../lib/al5primitivespas',
-    al5strings    in '../lib/al5strings';
+    allegro5, al5font, al5primitives, al5strings;
 
   const
   (* Window size. *)

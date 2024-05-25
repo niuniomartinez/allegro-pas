@@ -2,7 +2,7 @@ unit al5acodec;
 (***<This unit registers audio codec handlers for @link(al_load_sample),
      @link(al_save_sample), @link(al_load_audio_stream), etc.
  *)
-(* Copyright (c) 2012-2022 Guillermo Martínez J.
+(* Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages

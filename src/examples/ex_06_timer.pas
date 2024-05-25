@@ -32,10 +32,7 @@ program ex_06_timer;
 
   uses
     Common,
-    allegro5   in '../lib/allegro5.pas',
-    al5base    in '../lib/al5base.pas',
-    al5font    in '../lib/al5font.pas',
-    al5strings in '../lib/al5strings.pas';
+    allegro5, al5base, al5font, al5strings;
 
   const
   (* Window size. *)

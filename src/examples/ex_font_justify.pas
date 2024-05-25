@@ -7,7 +7,7 @@ program ex_font_justify;
  * Original by Peter Wang.
  *)
 (*
-  Copyright (c) 2012-2020 Guillermo Martínez J.
+  Copyright (c) 2012-2023 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -40,7 +40,7 @@ program ex_font_justify;
 
 uses
   alGUI, Common,
-  allegro5, al5base, al5font, al5image, al5primitives, al5ttf;
+  allegro5, al5font, al5image, al5primitives, al5strings, al5ttf;
 
 const
   DEFAULT_TEXT = 'Lorem ipsum dolor sit amet';
@@ -51,7 +51,7 @@ type
   private
     fcx, fth, fx1, fx2, fdiff: Integer;
     fClrText, fClr1, fClr2: ALLEGRO_COLOR;
-    fText: AL_STR;
+    fText: String;
   public
   (* Initializes the widget. *)
     procedure Initialize; override;
@@ -86,7 +86,7 @@ type
   begin
     fText := DEFAULT_TEXT;
     fcx := al_get_bitmap_width (al_get_target_bitmap) div 2;
-    fth := al_get_font_line_height (Dialog.TextFont);
+    fth := al_get_font_line_height (Dialog.Theme.TextFont);
     fClrText := al_map_rgb_f (0.1, 0.1, 0.1);
     fClr1 := al_map_rgb (0, 0, 255);
     fClr2 := al_map_rgb (0, 255, 0);
@@ -102,10 +102,10 @@ type
   procedure TTextBox.Draw;
   begin
    al_draw_justified_text (
-     Dialog.TextFont, fClrText,
+     Dialog.Theme.TextFont, fClrText,
      fx1, fx2, 50, fdiff,
      ALLEGRO_ALIGN_INTEGER,
-     fText
+     al_string_to_str (fText)
    );
    al_draw_rectangle (fx1, 50, fx2, 50 + fth, fClr1, 0);
    al_draw_line (
@@ -157,7 +157,7 @@ type
   procedure TFontJustifyExample.Initialize;
   var
     Display: ALLEGRO_DISPLAYptr;
-    lFontGUI: ALLEGRO_FONTptr;
+    lTheme: TTheme;
     lTextBox: TTextBox;
     lSlider: TSlider;
     lEntry: TTextEntry;
@@ -172,29 +172,30 @@ type
     fFont := al_load_font ('data/font.tga', 0, 0);
     if fFont = Nil then AbortExample ('Failed to load data/font.tga');
 }
-    lFontGUI := al_load_font ('data/DejaVuSans.ttf', 14, 0);
-    if lFontGUI = Nil then AbortExample ('Failed to load data/DejaVuSans.ttf');
-    Self.TextFont := lFontGUI;
+    lTheme := Self.Theme;
+    lTheme.TextFont := al_load_font ('data/DejaVuSans.ttf', 14, 0);
+    if lTheme.TextFont = Nil then AbortExample ('Failed to load data/DejaVuSans.ttf');
+    Self.Theme := lTheme;
   { Creates the dialog. }
     lTextBox := TTextBox.Create;
-    Self.Add (lTextBox, 0, 0, 10, 10);
+    Self.Widgets.Add (lTextBox, 0, 0, 10, 10);
 
-    Self.Add (TLabel.CreateLabel ('Text'), 0, 10, 1, 1);
+    Self.Widgets.Add (TLabel.CreateLabel ('Text'), 0, 10, 1, 1);
     lEntry := TTextEntry.CreateTextEntry (DEFAULT_TEXT);
     lEntry.OnTextChanges := lTextBox.OnTextChanges;
-    Self.Add (lEntry, 1, 10, 8, 1);
+    Self.Widgets.Add (lEntry, 1, 10, 8, 1);
 
-    Self.Add (TLabel.CreateLabel ('Width'), 0, 12, 1, 1);
+    Self.Widgets.Add (TLabel.CreateLabel ('Width'), 0, 12, 1, 1);
     lSlider := TSlider.CreateSlider (al_get_display_width (Display), oHorizontal);
     lSlider.OnChange := lTextBox.OnWidthSliderChanges;
     lSlider.Value := 400;
-    Self.Add (lSlider, 1, 12, 8, 1);
+    Self.Widgets.Add (lSlider, 1, 12, 8, 1);
 
-    Self.Add (TLabel.CreateLabel ('Diff'), 0, 14, 1, 1);
+    Self.Widgets.Add (TLabel.CreateLabel ('Diff'), 0, 14, 1, 1);
     lSlider := TSlider.CreateSlider (al_get_display_width (Display), oHorizontal);
     lSlider.OnChange := lTextBox.OnDiffSlideChanges;
     lSlider.Value := 100;
-    Self.Add (lSlider, 1, 14, 8, 1);
+    Self.Widgets.Add (lSlider, 1, 14, 8, 1);
     inherited Initialize
   end;
 

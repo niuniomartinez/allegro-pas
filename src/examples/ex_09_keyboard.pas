@@ -32,9 +32,7 @@ program ex_09_keyboard;
 
   uses
     Common, alcon,
-    allegro5   in '../lib/allegro5.pas',
-    al5font    in '../lib/al5font.pas',
-    al5strings in '../lib/al5strings.pas';
+    allegro5, al5font, al5strings;
 
   const
   (* Initial window size. *)

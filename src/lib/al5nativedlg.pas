@@ -3,8 +3,9 @@ unit al5nativedlg;
   cross-platform way.  This includes message dialogs, file choosers, main
   menu and more.
 
-  @include(../docs/al5nativedlg.pds) *)
-(* Copyright (c) 2012-2022 Guillermo Martínez J.
+  @include(../docs/al5nativedlg.pds)
+ *)
+(* Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -40,9 +41,9 @@ interface
 {$ENDIF}
 
   type
-    ALLEGRO_FILECHOOSERptr = AL_POINTER;
-    ALLEGRO_TEXTLOGptr = AL_POINTER;
-    ALLEGRO_MENUptr = AL_POINTER;
+    ALLEGRO_FILECHOOSERptr = type AL_POINTER;
+    ALLEGRO_TEXTLOGptr = type AL_POINTER;
+    ALLEGRO_MENUptr = type AL_POINTER;
     ALLEGRO_MENUptrptr = ^ALLEGRO_MENUptr;
     ALLEGRO_MENU_INFO = record
     (*** Label of the option. *)

@@ -51,10 +51,7 @@ implementation
 
   uses
     Common,
-    allegro5      in '../lib/allegro5.pas',
-    al5font       in '../lib/al5font.pas',
-    al5primitives in '../lib/al5primitives.pas',
-    al5strings    in '../lib/al5strings.pas';
+    allegro5, al5font, al5strings;
 
   const
     ConsoleWidth = 80;
@@ -96,9 +93,6 @@ implementation
     if not al_is_font_addon_initialized then
       if not al_init_font_addon then
         Exit (False);
-    if not al_is_primitives_addon_initialized then
-      if not al_init_primitives_addon then
-        Exit (False);
   { Get current display. }
     Display := al_get_current_display;
     if not Assigned (Display) then Exit (False); { Fatal Error. Halt? }
@@ -108,7 +102,7 @@ implementation
     al_set_new_bitmap_flags (ALLEGRO_MAG_LINEAR); { Better looking scaling. }
     Bitmap := al_create_bitmap (BmpWidth, BmpHeight);
     al_set_new_bitmap_flags (0); { No scaled, so no filter. }
-    ScrollBitmap  := al_create_bitmap (BmpWidth, BmpHeight - 8);
+    ScrollBitmap := al_create_bitmap (BmpWidth, BmpHeight - 8);
     if not (Assigned (Bitmap) and Assigned (ScrollBitmap)) then
     begin
       ErrorMessage ('Can''t create console simulation.');

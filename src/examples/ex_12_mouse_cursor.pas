@@ -32,9 +32,7 @@ program ex_12_mouse_cursor;
 
   uses
     Common,
-    allegro5      in '../lib/allegro5.pas',
-    al5font       in '../lib/al5font.pas',
-    al5image      in '../lib/al5image.pas';
+    allegro5, al5font, al5image;
 
   type
   (* To store mouse descriptions. *)

@@ -347,6 +347,48 @@ interface
       property OnChange: TNotifyEvent read fOnChange write fOnChange;
     end;
 
+
+
+  (* Base class for widgets that can be "clicked" with the mouse. *)
+    TClickableWidget = class (TWidget)
+    private
+      fOnClick: TNotifyEvent;
+    protected
+    (* Handler for the ALLEGRO_EVENT_KEY_CHAR. *)
+      procedure onKeyChar (aEvent: ALLEGRO_KEYBOARD_EVENT); override;
+    (* Handler for the ALLEGRO_EVENT_MOUSE_BUTTON_UP. *)
+      procedure onMouseUp (aMouse: ALLEGRO_MOUSE_EVENT); override;
+    (* Manages a click. *)
+      procedure DoOnClick; virtual;
+    public
+    (* Widget want focus. *)
+      function WantFocus: Boolean; override;
+    (* CLick event. *)
+      property OnClick: TNotifyEvent read fOnClick write fOnClick;
+    end;
+
+
+
+  (* A check box. *)
+    TCheckBox = class (TClickableWidget)
+    private
+      fChecked: Boolean;
+    protected
+    (* Manages a click. *)
+      procedure DoOnClick; override;
+    public
+    (* Constructor. *)
+      constructor CreateCheckbox (
+        const aX, aY, aWidth, aHeight: Integer;
+        const aCaption: String
+      );
+    (* Render the widget. *)
+      procedure Draw; override;
+
+    (* Tell if checkbox is checked. *)
+      property Checked: Boolean read fChecked write fChecked;
+    end;
+
 implementation
 
   uses
@@ -1046,18 +1088,19 @@ implementation
   begin
     fPressed := True;
   { Calculate the mouse position to move the slider. }
+    lRange := fMax - fMin;
     if fOrientation = oHorizontal then
     begin
-      lRange := Self.Width - Self.Height;
-      lPosition := aMouse.x - (Self.Height div 2)
+      lPosition := aMouse.x - Self.x;
+      lValue := ((lPosition * lRange) div Self.Width)
     end
     else
     begin
-      lRange := Self.Height - Self.Width;
-      lPosition := aMouse.y - (Self.Width div 2)
+      lPosition := aMouse.y - Self.y;
+      lValue := ((lPosition * lRange) div Self.Height)
     end;
   { Set new value. }
-    lValue := Clamp (fMin, (lPosition * (fMax - fMin)) div lRange, fMax);
+    lValue := Clamp (fMin, lValue + fMin, fMax);
     if fInverted then lValue := fMax - lValue;
     Self.SetValue (lValue);
   end;
@@ -1148,7 +1191,10 @@ implementation
     end;
 
   begin
+  { Get slider properties. }
     if fInverted then lValue := fMax - fValue else lValue := fValue;
+    if fMin < 0 then Inc (lValue, Abs (fMin));
+    lRange := fMax - fMin;
   { Widget color. }
     if Self.Enabled then
     begin
@@ -1165,13 +1211,118 @@ implementation
       Self.X + Self.Width + 0.5, Self.Y + Self.Height + 0.5,
       Self.Dialog.clrBackground
     );
-    lRange := fMax - fMin;
     case fOrientation of
     oHorizontal:
       DrawHorizontal;
     oVertical:
       DrawVertical;
     end
+  end;
+
+
+
+(*
+ * TClickableWidget
+ *************************************************************************)
+
+
+  procedure TClickableWidget.onKeyChar (aEvent: ALLEGRO_KEYBOARD_EVENT);
+  begin
+    if (aEvent.keycode = ALLEGRO_KEY_ENTER)
+    or (aEvent.keycode = ALLEGRO_KEY_SPACE)
+    or (aEvent.keycode = ALLEGRO_KEY_PAD_ENTER)
+    then
+      Self.DoOnClick
+  end;
+
+
+
+  procedure TClickableWidget.onMouseUp (aMouse: ALLEGRO_MOUSE_EVENT);
+  begin
+    if Self.IsInside (aMouse.x, aMouse.y) then
+      if (aMouse.button and $01) = 1 then
+        Self.DoOnClick
+  end;
+
+
+
+  procedure TClickableWidget.DoOnClick;
+  begin
+    if Assigned (fOnClick) then fOnClick (Self)
+  end;
+
+
+
+  function TClickableWidget.WantFocus: Boolean;
+  begin
+    Result := True
+  end;
+
+
+
+(*
+ * TCheckBox
+ *************************************************************************)
+
+  procedure TCheckBox.DoOnClick;
+  begin
+    fChecked := not fChecked;
+    inherited DoOnClick
+  end;
+
+
+
+  constructor TCheckBox.CreateCheckbox (
+    const aX, aY, aWidth, aHeight: Integer;
+    const aCaption: String
+  );
+  begin
+    inherited Create (aX, aY, aWidth, aHeight);
+    Self.Caption := aCaption;
+    fChecked := False
+  end;
+
+
+
+  procedure TCheckBox.Draw;
+  var
+    lBackColor, lForeColor: ALLEGRO_COLOR;
+
+    procedure SetColors;
+    begin
+      if fChecked then
+      begin
+        lBackColor := Self.Dialog.clrForeground;
+        lForeColor := Self.Dialog.clrBackground
+      end
+      else
+      begin
+        lBackColor := Self.Dialog.clrBackground;
+        lForeColor := Self.Dialog.clrForeground
+      end;
+      if not Self.Enabled then
+        lForeColor := Self.Dialog.clrDisabled
+    end;
+
+  begin
+    SetColors;
+    al_draw_filled_rectangle (
+      Self.X + 0.5, Self.Y + 0.5,
+      Self.X + Self.Width + 0.5, Self.Y + Self.Height + 0.5,
+      lBackColor
+    );
+    al_draw_rectangle (
+      Self.X + 0.5, Self.Y + 0.5,
+      Self.X + Self.Width + 0.5, Self.Y + Self.Height + 0.5,
+      lForeColor, 1
+    );
+    al_draw_text (
+      Self.Dialog.TextFont, lForeColor,
+      Self.X + Self.Width / 2,
+      Self.Y + Self.Height / 2 - Self.Dialog.LineHeight / 2,
+       ALLEGRO_ALIGN_CENTRE,
+      Self.CaptionStr
+    )
   end;
 
 end.

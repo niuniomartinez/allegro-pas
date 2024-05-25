@@ -41,13 +41,7 @@ program ex_13_color;
 
 uses
    algui, Common,
-   allegro5      in '../lib/allegro5.pas',
-   al5base       in '../lib/al5base.pas',
-   al5color      in '../lib/al5color.pas',
-   al5font       in '../lib/al5font.pas',
-   al5primitives in '../lib/al5primitives.pas',
-   al5strings    in '../lib/al5strings.pas',
-   al5ttf        in '../lib/al5ttf.pas';
+   allegro5, al5base, al5color, al5font, al5primitives, al5strings, al5ttf;
 
   const
     SlidersCount = 19;
@@ -329,6 +323,10 @@ uses
   begin
   { Get color components. }
     al_unmap_rgb_f (fColorBox.Color, lR, lG, lB);
+  { For some reason, LCH space makes things go out RGB space. }
+    if lR > 1 then lR := 1; if lR < 0 then lR := 0;
+    if lG > 1 then lG := 1; if lG < 0 then lG := 0;
+    if lB > 1 then lB := 1; if lB < 0 then lB := 0;
   { Deactivate slider events. }
     for lNdx := Low (fSliders) to High (fSliders) do
       fSliders[lNdx].OnChange := Nil;

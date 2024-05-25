@@ -1,22 +1,60 @@
-# Makefile - Sources
+# Makefile generic - Sources
 
-#
-# Builds the list of source files and object files for each bynary type.
-#
+# -----------------
+# -- Directories --
+# -----------------
+
+SRCDIR = src/
+LIBDIR = lib/
+EXMDIR = examples/
+DEMDIR = demos/
+OBJDIR = obj/
+BINDIR = bin/
+
+FPDIR = furiouspaladin/
+PADIR = pascalroids/
+
+LIBSRC = $(SRCDIR)$(LIBDIR)
+EXMSRC = $(SRCDIR)$(EXMDIR)
+DEMSRC = $(SRCDIR)$(DEMDIR)
+FPSRC = $(DEMSRC)$(FPDIR)
+PASRC = $(DEMSRC)$(PADIR)
+
+EXMBIN = $(BINDIR)$(EXMDIR)
+DEMBIN = $(BINDIR)$(DEMDIR)
+FPBIN = $(DEMBIN)$(FPDIR)
+PABIN = $(DEMBIN)$(PADIR)
+
+DOCSRC = $(SRCDIR)docs/
+DOCDIR = docs/lib/
+
+
+
+# General paths.
+LIBPATHS = -Fu$(LIBSRC)
+OUTPATHS = -FU$(OBJDIR)
+
+
+# -----------
+# -- Files --
+# -----------
+
+# Sufix for main unit.
+MAINSUF = .pas
 
 # Allegro sources
-LIBFILES = $(wildcard $(LIBSRC)*$(LIBSUF))
+LIBFILES = $(wildcard $(LIBSRC)*.pas)
 
 # For the examples.
 TEXM = $(wildcard $(EXMSRC)ex_*$(MAINSUF))
 EXMFILES = $(addprefix $(EXMBIN),$(addsuffix $(BINSUF), $(basename $(notdir $(TEXM) ) ) ) )
 
 # For the demonstration games.
-TDEMfp = $(wildcard $(FPSRC)*.pas)
 FURIOUSPALADIN = $(FPBIN)furiouspaladin$(BINSUF)
+FURIOUSUNITS = $(wildcard $(FPSRC)*.pas)
 
-TDEMpa = $(wildcard $(PASRC)*.pas)
 PASCALROIDS =  $(PABIN)pascalroids$(BINSUF)
+PROIDSUNITS = $(wildcard $(PASRC)*.pas)
 
 DEMFILES = $(FURIOUSPALADIN) $(PASCALROIDS)
 

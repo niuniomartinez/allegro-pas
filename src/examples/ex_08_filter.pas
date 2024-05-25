@@ -29,10 +29,7 @@ program ex_08_filter;
 
   uses
     Common,
-    allegro5   in '../lib/allegro5.pas',
-    al5font    in '../lib/al5font.pas',
-    al5image   in '../lib/al5image.pas',
-    al5strings in '../lib/al5strings.pas';
+    allegro5, al5font, al5image, al5strings;
 
   const
   (* Window size. *)
@@ -85,11 +82,13 @@ program ex_08_filter;
       const
         bmpSize = 1024;
       var
+        lLock: ALLEGRO_LOCKED_REGIONptr;
         lColor: ALLEGRO_COLOR;
         lx, ly, lx2, ly2: Integer;
       begin
         Result := al_create_bitmap (bmpSize, bmpSize);
         al_set_target_bitmap (Result);
+        lLock := al_lock_bitmap (Result, al_get_bitmap_format (Result), ALLEGRO_LOCK_WRITEONLY);
         for ly := 0 to bmpSize - 1 do
           for lx := 0 to bmpSize - 1 do
           begin
@@ -100,6 +99,7 @@ program ex_08_filter;
               lColor := clrBlack;
             al_draw_pixel (lx + 0.5, ly + 0.5, lColor)
           end;
+        al_unlock_bitmap (Result);
         al_set_target_backbuffer (Window)
       end;
 
@@ -107,6 +107,11 @@ program ex_08_filter;
       lMysha, lChessBoard: ALLEGRO_BITMAPptr;
       lNdx: Integer;
     begin
+      al_draw_text (
+        TextFont, clrWhite, 10, 10, 0,
+        'Creating textures...'
+      );
+      al_flip_display;
     { Get bitmaps. }
       lMysha := al_load_bitmap ('data/mysha256x256.png');
       if not Assigned (lMysha) then
@@ -149,17 +154,17 @@ program ex_08_filter;
     clrBlack := al_map_rgb (0, 0, 0);
     clrWhite := al_map_rgb (255, 255, 255);
     clrInfo  := al_map_rgb (128, 128, 255);
-  { The bitmaps. }
-    if not CreateBitmaps then Exit (False);
   { The timer. }
     Timer := al_create_timer (1 / FPS);
-  { Create text font. }
+  { Load text font. }
     TextFont := al_load_font ('data/fixed_font.tga', 0, 0);
     if not Assigned (TextFont) then
     begin
       ErrorMessage ('Error loading fixed_font.tga');
       Exit (False)
     end;
+  { The bitmaps. }
+    if not CreateBitmaps then Exit (False);
   { Create the event queue. }
     EventQueue := al_create_event_queue;
     if not Assigned (EventQueue) then

@@ -1,25 +1,14 @@
-program ex_prim;
-(*         ______   ___    ___
- *        /\  _  \ /\_ \  /\_ \
- *        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
- *         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
- *          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
- *           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
- *            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
- *                                           /\____/
- *                                           \_/__/
+program ex_23_primitives;
+(* A sampler of the primitive addon.
  *
- *      A sampler of the primitive addon.
- *      All primitives are rendered using the additive blender, so overdraw
- *      will manifest itself as overly bright pixels.
+ * All primitives are rendered using the additive blender, so overdraw will
+ * manifest itself as overly bright pixels.
  *
- *      By Pavel Sountsov.
- *      Translated to Pascal by Ñuño Martínez.
- *
- *      See README for copyright information.
+ * From an example by Pavel Sountsov.
+ * Ported to Object Pascal by Guillermo Martínez J.
  *)
 (*
-  Copyright (c) 2012-2023 Guillermo Martínez J.
+  Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -44,13 +33,14 @@ program ex_prim;
 {$IFDEF FPC}
 { Needed to support classes and C-style pointers. }
   {$IF NOT DEFINED(FPC_OBJFPC)} {$MODE OBJFPC} {$ENDIF}
-{ Needed to make the executable suitable for modern Windows OS. }
+{ Windows manifest. }
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 {$ENDIF}
 
 {$IFDEF DCC}
 { Pointer arithmetic needed by this example.
-  Not all Delphi versions support it though. }
+  Not all Delphi versions support it though.
+}
   {$INCLUDE allegro5.cfg }
   {$IFDEF ISDELPHI2009ANDUP}
     {$POINTERMATH ON}
@@ -68,38 +58,40 @@ program ex_prim;
     ScreenW = 800; ScreenH = 600;
     RefreshRate = 60;
     FixedTimestep = 1 / RefreshRate;
-    NUM_SCREENS = 12;
-    ROTATE_SPEED = 0.0001;
+    NumScreens = 12;
+    RotationSpeed = 0.0005;
 
   type
   (* Base class for example screens. *)
     TCustomScreen = class (TObject)
     private
-      fName: AL_STR;
+      fName: AnsiString;
     public
     (* Constructor. *)
-      constructor Create (const aName: AL_STR);
-    (* Updates the example.
+      constructor Create (const aName: AnsiString);
+    (* Update the example.
 
-      By default builds MainTrans rotating by Theta angle. *)
+      By default it builds MainTrans rotating by Theta angle.
+     *)
       procedure Update; virtual;
-    (* Draws the screen. *)
+    (* Draw the screen. *)
       procedure Draw; virtual; abstract;
 
     (* Screen name. *)
-      property Name: AL_STR read fName;
+      property Name: AnsiString read fName;
     end;
 
 
 
   (* The example object.
 
-     This is something similar to VCL/LCL TApplication class. *)
+     This is something similar to VCL/LCL TApplication class.
+   *)
     TPrimitivesExample = class (TObject)
     private
       fTerminated,
-      fUseShader, fSoft, fBlend, fDrawBkg, fClip: Boolean;
-      fScreens: array [1..NUM_SCREENS] of TCustomScreen;
+      fSoft, fBlend, fDrawBkg, fClip: Boolean;
+      fScreens: array [1..NumScreens] of TCustomScreen;
       fCurScreen, fFramesDone: Integer;
       fDisplay: ALLEGRO_DISPLAYptr;
       fFont: ALLEGRO_FONTptr;
@@ -109,29 +101,34 @@ program ex_prim;
       fSpeed, fThickness, fTheta: Single;
       fRealTime, fGameTime, fStartTime, fTimeDiff, fFrameDuration: Double;
 
-    (* Updates the example.  Increases Theta angle by Speed. *)
+    (* Helper to draw texts. *)
+      procedure DrawText (
+        const aText: String; aParams: array of const;
+        const aX, aY: Integer;
+        const aCentered: Boolean = False
+      );
+    (* Update the example.  Increases Theta angle by Speed. *)
       procedure Update;
-    (* Renders the example.
+    (* Render the example.
 
-      It applyes blender, transformation matrix, calls screen's draw method and
-      appyes identity matrix. *)
+       It applies blender, transformation matrix, calls screen's draw method and
+       applies identity matrix.
+     *)
       procedure Draw;
     public
     (* Constructor. *)
       constructor Create;
     (* Destructor. *)
       destructor Destroy; override;
-    (* Initializes the application. *)
+    (* Initialize the application. *)
       procedure Initialize;
-    (* Runs the example. *)
+    (* Run the example. *)
       procedure Run;
-    (* Terminates the example. *)
+    (* Terminate the example. *)
       procedure Terminate;
-    (* Shows an error message box. *)
-      procedure ShowErrorMessage (const aMessage: AL_STR);
-    (* Builds the transformation matrix. *)
+    (* Build the transformation matrix. *)
       procedure BuildTransform (ax, ay, sx, sy, aTheta: AL_FLOAT);
-    (* Draws text telling the example isn't supported. *)
+    (* Draw text telling the example isn't supported. *)
       procedure DrawUnsupported;
 
     (* Texture used by primitives. *)
@@ -142,14 +139,16 @@ program ex_prim;
       property Thickness: Single read fThickness;
     (* Tells if it's using software rendering. *)
       property Soft: Boolean read fSoft;
+    public
+    (* Data shared by some examples. *)
+      Vtx, Vtx2: array [0..12] of ALLEGRO_VERTEX;
+      Vtx3: array [0..20] of ALLEGRO_VERTEX;
     end;
 
 
 
   (* Low-level primitives. *)
     TLowPrimitives = class (TCustomScreen)
-    private
-      Vtx, Vtx2: array [0..12] of ALLEGRO_VERTEX;
     public
     (* Constructor. *)
       constructor Create;
@@ -163,7 +162,6 @@ program ex_prim;
     TIndexedPrimitives = class (TCustomScreen)
     private
       Indices1, Indices2, Indices3: array [0..3] of Integer;
-      Vtx, Vtx2: array [0..12] of ALLEGRO_VERTEX;
     public
     (* Constructor. *)
       constructor Create;
@@ -201,8 +199,6 @@ program ex_prim;
 
   (* Filled primitives. *)
     TFilledPrimitives = class (TCustomScreen)
-    private
-      vtx: array [0..20] of ALLEGRO_VERTEX;
     public
     (* Constructor. *)
       constructor Create;
@@ -215,7 +211,6 @@ program ex_prim;
   (* Indexed filled primitives. *)
     TIndexedFilledPrimitives = class (TCustomScreen)
     private
-      vtx: array [0..20] of ALLEGRO_VERTEX;
       Indices1, Indices2, Indices3: array [0..5] of Integer;
     public
     (* Constructor. *)
@@ -242,7 +237,7 @@ program ex_prim;
   (* Textured primitives. *)
     TTexturePrimitives = class (TCustomScreen)
     private
-      Vtx, Vtx2: array [0..12] of ALLEGRO_VERTEX;
+      vtx: array [0..12] of ALLEGRO_VERTEX;
     public
     (* Constructor. *)
       constructor Create;
@@ -271,7 +266,7 @@ program ex_prim;
       u, v: AL_INT16;
       x, y: AL_INT16;
       Color: ALLEGRO_COLOR;
-      junk: array [0..5] of AL_INT;
+      junk: array [0..5] of AL_INT
     end;
 
 
@@ -293,7 +288,6 @@ program ex_prim;
   (* Vertex buffers. *)
     TVertexBuffers = class (TCustomScreen)
     private
-      vtx, vtx2: array [0..12] of ALLEGRO_VERTEX;
       vbuff, vbuff2: ALLEGRO_VERTEX_BUFFERptr;
       NoSoft, NoSoft2: Boolean;
     public
@@ -329,7 +323,7 @@ program ex_prim;
      object. *)
     Example: TPrimitivesExample;
   (* Some colors. *)
-    White, SolidWhite, SolidBlack: ALLEGRO_COLOR;
+    clrWhite, SolidBlack: ALLEGRO_COLOR;
   (* Points used in the spline example at THighPrimitives.Draw and
      TTransformationsPrimitives.Draw. *)
     SplinePoints: ALLEGRO_SPLINE_CONTROL_POINTS = (
@@ -366,88 +360,109 @@ program ex_prim;
  * TPrimitivesExample
  ***************************************************************************)
 
+  procedure TPrimitivesExample.DrawText (
+    const aText: String; aParams: array of const;
+    const aX, aY: Integer;
+    const aCentered: Boolean
+  );
+  var
+    lFlags: LongInt;
+  begin
+    if aCentered then lFlags := ALLEGRO_ALIGN_CENTRE else lFlags := 0;
+    al_draw_textf (
+      fFont, clrWhite, aX, aY, lFlags,
+      al_string_to_str (aText), aParams
+    )
+  end;
+
+
+
 (* Updates the example. *)
   procedure TPrimitivesExample.Update;
+
+    procedure ProcessKeyboard (const aKeyEvent: ALLEGRO_KEYBOARD_EVENT);
+      inline;
+    begin
+      case aKeyEvent.keycode of
+      ALLEGRO_KEY_ESCAPE:
+        Self.Terminate;
+      ALLEGRO_KEY_S:
+        begin
+          fSoft := not fSoft;
+          fTimeDiff := al_get_time;
+          fFramesDone := 0
+        end;
+      ALLEGRO_KEY_C:
+        begin
+          fClip := not fClip;
+          fTimeDiff := al_get_time;
+          fFramesDone := 0
+        end;
+      ALLEGRO_KEY_L:
+        begin
+          fBlend := not fBlend;
+          fTimeDiff := al_get_time;
+          fFramesDone := 0
+        end;
+      ALLEGRO_KEY_B:
+        begin
+          fDrawBkg := not fDrawBkg;
+          fTimeDiff := al_get_time;
+          fFramesDone := 0
+        end;
+      ALLEGRO_KEY_LEFT:
+        fSpeed := fSpeed - RotationSpeed;
+      ALLEGRO_KEY_RIGHT:
+        fSpeed := fSpeed + RotationSpeed;
+      ALLEGRO_KEY_SPACE:
+        fSpeed := 0;
+      ALLEGRO_KEY_PGUP:
+        begin
+          fThickness := fThickness + 0.5;
+          if fThickness < 1.0 then fThickness := 1.0
+        end;
+      ALLEGRO_KEY_PGDN:
+        begin
+          fThickness := fThickness - 0.5;
+          if fThickness < 1.0 then fThickness := 1.0
+        end;
+      ALLEGRO_KEY_UP:
+        begin
+          Inc (fCurScreen);
+          if fCurScreen > High (fScreens) then fCurScreen := Low (fScreens)
+        end;
+      ALLEGRO_KEY_DOWN:
+        begin
+          Dec (fCurScreen);
+          if fCurScreen < Low (fScreens) then fCurScreen := High (fScreens)
+        end;
+      end
+    end;
+
   var
-    Event: ALLEGRO_EVENT;
+    lEvent: ALLEGRO_EVENT;
   begin
   { Events. }
-    while not fTerminated and al_get_next_event (fQueue, Event) do
+    while not fTerminated and al_get_next_event (fQueue, lEvent) do
     begin
-      case Event.ftype of
+      case lEvent.ftype of
       ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
         begin
           Inc (fCurScreen);
           if fCurScreen > High (fScreens) then fCurScreen := Low (fScreens)
         end;
       ALLEGRO_EVENT_DISPLAY_CLOSE:
-          Self.Terminate;
+        Self.Terminate;
       ALLEGRO_EVENT_KEY_CHAR:
-        case Event.keyboard.keycode of
-        ALLEGRO_KEY_ESCAPE:
-          Self.Terminate;
-        ALLEGRO_KEY_S:
-          begin
-            fSoft := not fSoft;
-            fTimeDiff := al_get_time;
-            fFramesDone := 0
-          end;
-        ALLEGRO_KEY_C:
-          begin
-            fClip := not fClip;
-            fTimeDiff := al_get_time;
-            fFramesDone := 0
-          end;
-        ALLEGRO_KEY_L:
-          begin
-            fBlend := not fBlend;
-            fTimeDiff := al_get_time;
-            fFramesDone := 0
-          end;
-        ALLEGRO_KEY_B:
-          begin
-            fDrawBkg := not fDrawBkg;
-            fTimeDiff := al_get_time;
-            fFramesDone := 0
-          end;
-        ALLEGRO_KEY_LEFT:
-          fSpeed := fSpeed - ROTATE_SPEED;
-        ALLEGRO_KEY_RIGHT:
-          fSpeed := fSpeed + ROTATE_SPEED;
-        ALLEGRO_KEY_SPACE:
-          fSpeed := 0;
-        ALLEGRO_KEY_PGUP:
-          begin
-            fThickness := fThickness + 0.5;
-            if fThickness < 1.0 then fThickness := 1.0
-          end;
-        ALLEGRO_KEY_PGDN:
-          begin
-            fThickness := fThickness - 0.5;
-            if fThickness < 1.0 then fThickness := 1.0
-          end;
-        ALLEGRO_KEY_UP:
-          begin
-            Inc (fCurScreen);
-            if fCurScreen > High (fScreens) then fCurScreen := Low (fScreens)
-          end;
-        ALLEGRO_KEY_DOWN:
-          begin
-            Dec (fCurScreen);
-            if fCurScreen < Low (fScreens) then fCurScreen := High (fScreens)
-          end;
-        end
+        ProcessKeyboard (lEvent.keyboard)
       end
     end;
-  { Updates screens. }
+  { Update screen. }
     fTheta := fTheta + fSpeed;
     if fScreens[fCurScreen] <> Nil then
       fScreens[fCurScreen].Update
     else
-      al_draw_textf (
-        fFont, White, 0, 0, 0,
-        'Example %d not supported', [fCurScreen]
-      )
+      Self.DrawText ('Example %d not supported', [fCurScreen], 0, 0)
   end;
 
 
@@ -455,87 +470,99 @@ program ex_prim;
 (* Renders the example. *)
   procedure TPrimitivesExample.Draw;
 
-  { Helper to print boolean statuses. }
-    procedure ShowBoolean
-      (const aY: Integer; const aLabel: AL_STR; const aState: Boolean);
+    procedure DrawStates; inline;
+
+    { Helper to print boolean statuses. }
+      procedure ShowBoolean (
+        const aY: Integer;
+        const aLabel: String;
+        const aState: Boolean
+      );
+      var
+        lStr: String;
+      begin
+        if aState then lStr := 'True' else lStr := 'False';
+        Self.DrawText ('%s: %s', [aLabel, lStr], 0, aY)
+      end;
+
     begin
-      if aState then
-        al_draw_text (fFont, SolidWhite, 0, aY, 0, Concat (aLabel, ': True'))
+      al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
+      if Assigned (fScreens[fCurScreen]) then
+        Self.DrawText (
+          '%d: %s', [fCurScreen, fScreens[fCurScreen].Name],
+          ScreenW div 2, ScreenH - 20, 
+          true
+        )
       else
-        al_draw_text (fFont, SolidWhite, 0, aY, 0, Concat (aLabel, ': False'))
+        Self.DrawText (
+          'Example %d doesn''t work.', [fCurScreen],
+          ScreenW div 2, ScreenH - 20, 
+          true
+        );
+      Self.DrawText (
+        'FPS: %.2f', [fFramesDone / (al_get_time - fTimeDiff)],
+        0, 0
+        );
+      Self.DrawText ('Change Screen (Up/Down). Esc to Quit.', [], 0, 20);
+      Self.DrawText ('Rotation (Left/Right/Space): %.4f', [fSpeed], 0, 40);
+      Self.DrawText ('Thickness (PgUp/PgDown): %.2f', [fThickness], 0, 60);
+      ShowBoolean (80, 'Software (S)', fSoft);
+      ShowBoolean (100, 'Blending (L)', fBlend);
+      ShowBoolean (120, 'Background (B)', fDrawBkg);
+      ShowBoolean (140, 'Clip (C)', fClip)
+    end;
+
+    procedure DrawBackground; inline;
+    begin
+      if fDrawBkg and Assigned (fBkg) then
+      begin
+        al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
+        al_draw_scaled_bitmap (
+          fBkg,
+          0, 0, al_get_bitmap_width (fbkg), al_get_bitmap_height (fbkg),
+          0, 0, ScreenW, ScreenH,
+          0
+        )
+      end
+    end;
+
+    procedure DrawExample; inline;
+    begin
+      if fClip then
+        al_set_clipping_rectangle (
+          ScreenW div 2, ScreenH div 2,
+          ScreenW div 2, ScreenH div 2
+        );
+      if fBlend then
+        al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE)
+      else
+        al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
+      if Assigned (fScreens[fCurScreen]) then
+      begin
+        al_use_transform (fTransformationMatrix);
+        fScreens[fCurScreen].Draw
+      end;
+      al_use_transform (fIdentity);
+      al_set_clipping_rectangle (0, 0, ScreenW, ScreenH)
     end;
 
   begin
-  { Prepare rendering. }
     al_clear_to_color (SolidBlack);
     if fSoft then
     begin
       al_set_target_bitmap (fBuffer);
       al_clear_to_color (SolidBlack)
     end;
-  { Background. }
-    if fDrawBkg and Assigned (fBkg) then
-    begin
-      al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
-      al_draw_scaled_bitmap (
-        fBkg,
-        0, 0, al_get_bitmap_width (fbkg), al_get_bitmap_height (fbkg),
-        0, 0, ScreenW, ScreenH,
-        0
-      )
-    end;
-    if fClip then
-      al_set_clipping_rectangle
-        (ScreenW div 2, ScreenH div 2, ScreenW div 2, ScreenH div 2);
-  { Set blender. }
-    if fBlend then
-      al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE)
-    else
-      al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
-  { Draw example. }
-    al_use_transform (fTransformationMatrix);
-    if Assigned (fScreens[fCurScreen]) then fScreens[fCurScreen].Draw;
-  { Restore. }
-    al_use_transform (fIdentity);
-    al_set_clipping_rectangle (0, 0, ScreenW, ScreenH);
+    DrawBackground;
+    Drawexample;
     if fSoft then
     begin
       al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ZERO);
       al_set_target_backbuffer (fDisplay);
       al_draw_bitmap (fBuffer, 0, 0, 0)
     end;
-  { Show states. }
-    al_set_blender (ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA);
-    if Assigned (fScreens[fCurScreen]) then
-      al_draw_textf (
-        fFont, SolidWhite, ScreenW div 2, ScreenH - 20, ALLEGRO_ALIGN_CENTRE,
-        '%d: %s', [fCurScreen, fScreens[fCurScreen].Name]
-      )
-    else
-      al_draw_textf (
-        fFont, SolidWhite, ScreenW div 2, ScreenH - 20, ALLEGRO_ALIGN_CENTRE,
-        'Example %d doesn''t work.', [fCurScreen]
-      );
-    al_draw_textf (
-      fFont, SolidWhite, 0, 0, 0,
-      'FPS: %.2f', [fFramesDone / (al_get_time - fTimeDiff)]
-    );
-    al_draw_text (
-      fFont, SolidWhite, 0, 20, 0, 'Change Screen (Up/Down). Esc to Quit.');
-    al_draw_textf (
-      fFont, SolidWhite, 0, 40, 0,
-      'Rotation (Left/Right/Space): %.4f', [fSpeed]
-    );
-    al_draw_textf (
-      fFont, SolidWhite, 0, 60, 0,
-      'Thickness (PgUp/PgDown): %.2f', [fThickness]
-    );
-    ShowBoolean (80, 'Software (S)', fSoft);
-    ShowBoolean (100, 'Blending (L)', fBlend);
-    ShowBoolean (120, 'Background (B)', fDrawBkg);
-    ShowBoolean (140, 'Clip (C)', fClip);
-
-    al_flip_display;
+    DrawStates;
+    al_flip_display
   end;
 
 
@@ -544,15 +571,9 @@ program ex_prim;
   constructor TPrimitivesExample.Create;
   begin
     inherited Create;
-    fDisplay := Nil;
-    fBkg := Nil;
-    fTexture := Nil;
-    fBuffer := Nil;
-
-    fUseShader := False;
     fBlend := True;
     fTheta := 0;
-    fSpeed := ROTATE_SPEED;
+    fSpeed := RotationSpeed;
     fThickness := 1;
     fSoft := True;
     fDrawBkg := True;
@@ -580,117 +601,157 @@ program ex_prim;
 
 (* Initializes the application. *)
   procedure TPrimitivesExample.Initialize;
-  var
-    Old: Integer;
-  begin
-  { Check parameters. }
-    if ParamCount > 0 then
+
+    procedure InitializeAllegro;
+    var
+      lOldBitmapFlags: LongInt;
     begin
-      if ParamStr (1) = '--shader' then
-        fUseShader := True
-      else begin
-        ShowErrorMessage (
-          al_str_format ('Invalid command line option: %s.', [ParamStr (1)])
+      if not al_init or not al_install_keyboard or not al_install_mouse
+      or not al_init_image_addon or not al_init_font_addon
+      or not al_init_primitives_addon then
+        raise Exception.CreateFmt (
+          'Could not init Allegro.  Should be compatible with version %d.%d.%d.',
+          [ALLEGRO_VERSION, ALLEGRO_SUB_VERSION, ALLEGRO_WIP_VERSION]
         );
+    { Display. }
+      fDisplay := al_create_display (ScreenW, ScreenH);
+      if not Assigned (fDisplay) then
+        raise Exception.Create ('Error creating display.');
+    { Make and set some color to draw with. }
+      SolidBlack := al_map_rgba_f (0, 0, 0, 1);
+      clrWhite := al_map_rgba_f (1, 1, 1, 1);
+    { Backbuffer. }
+      lOldBitmapFlags := al_get_new_bitmap_flags;
+      al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
+      fBuffer := al_create_bitmap (ScreenW, ScreenH);
+      if not Assigned (fBuffer) then
+      begin
+        ErrorMessage ('Could not create buffer.');
+        Self.Terminate;
+        Exit
+      end;
+      al_set_new_bitmap_flags (lOldBitmapFlags);
+    { Start the event queue. }
+      fQueue := al_create_event_queue;
+      al_register_event_source (fQueue, al_get_keyboard_event_source);
+      al_register_event_source (fQueue, al_get_display_event_source (fDisplay));
+      al_register_event_source (fQueue, al_get_mouse_event_source);
+    { Identity matrix. }
+      al_identity_transform (fIdentity)
+    end;
+
+    procedure LoadData;
+    begin
+    { Load a font. }
+      fFont := al_load_font ('data/fixed_font.tga', 0, 0);
+      if not Assigned (fFont) then
+      begin
+        ErrorMessage ('Error loading "data/fixed_font.tga".');
+        Self.Terminate;
+        Exit
+      end;
+    { Textures. }
+      fBkg := al_load_bitmap ('data/bkg.png');
+      if not Assigned (fBkg) then
+      begin
+        ErrorMessage ('Error loading "data/bkg.png".');
+        Self.Terminate;
+        Exit
+      end;
+      fTexture := al_load_bitmap ('data/texture.tga');
+      if not Assigned (fTexture) then
+      begin
+        ErrorMessage ('Error loading "data/texture.tga".');
+        Self.Terminate;
         Exit
       end
     end;
-  { Initializes Allegro 5 and addons. }
-    if not al_init then
-    begin
-      ShowErrorMessage ('Could not init Allegro.');
-      Exit
-    end;
-    al_init_image_addon;
-    al_init_font_addon;
-    al_init_primitives_addon;
-    InitPlatformSpecific;
-    if not al_install_keyboard then
-    begin
-      ShowErrorMessage ('Error installing keyboard.');
-      Exit
-    end;
-    if not al_install_mouse then
-    begin
-      ShowErrorMessage ('Error installing mouse.');
-      Exit
-    end;
-  { Display. }
-    if fUseShader then
-      al_set_new_display_flags (ALLEGRO_PROGRAMMABLE_PIPELINE);
-    fDisplay := al_create_display (ScreenW, ScreenH);
-    if not Assigned (fDisplay) then
-    begin
-      ShowErrorMessage ('Error creating display.');
-      Exit
-    end;
-    al_set_window_title (fDisplay, 'Primitives Example');
-  { Make and set some color to draw with. }
-    SolidBlack := al_map_rgba_f (0, 0, 0, 1);
-    SolidWhite := al_map_rgba_f (1, 1, 1, 1);
-    White := al_map_rgb_f (1, 1, 1);
-  { Load a font. }
-    fFont := al_load_font ('data/fixed_font.tga', 0, 0);
-    if not Assigned (fFont) then
-    begin
-      ShowErrorMessage ('Error loading "data/fixed_font.tga".');
-      Exit
-    end;
-  { Textures. }
-    fBkg := al_load_bitmap ('data/bkg.png');
-    if not Assigned (fBkg) then
-    begin
-      ShowErrorMessage ('Error loading "data/bkg.png".');
-      Exit
-    end;
-    fTexture := al_load_bitmap ('data/texture.tga');
-    if not Assigned (fTexture) then
-    begin
-      ShowErrorMessage ('Error loading "data/texture.tga".');
-      Exit
-    end;
-  { Start the event queue. }
-    fQueue := al_create_event_queue;
-    al_register_event_source (fQueue, al_get_keyboard_event_source);
-    al_register_event_source (fQueue, al_get_display_event_source (fDisplay));
-    al_register_event_source (fQueue, al_get_mouse_event_source);
 
-    al_identity_transform (fIdentity);
-  { Create the list of screens. }
-    fScreens[1] := TLowPrimitives.Create;
-    fScreens[2] := TIndexedPrimitives.Create;
-    fScreens[3] := THighPrimitives.Create;
-    fScreens[4] := TTransformationsPrimitives.Create;
-    fScreens[5] := TFilledPrimitives.Create;
-    fScreens[6] := TIndexedFilledPrimitives.Create;
-    fScreens[7] := THighFilledPrimitives.Create;
-    fScreens[8] := TTexturePrimitives.Create;
-    fScreens[9] := TFilledTexturePrimitives.Create;
-    fScreens[10] := TCustomVertexFormatPrimitives.Create;
-    fScreens[11] := TVertexBuffers.Create;
+    procedure InitializeVerticesData;
+    var
+      Ndx: Integer;
+      x, y: Single;
+      Color: ALLEGRO_COLOR;
+    begin
+      for Ndx := Low (Self.Vtx) to High (Self.Vtx) do
+      begin
+        x := Trunc (200 * Cos (Ndx / 13 * ALLEGRO_TAU));
+        y := Trunc (200 * Sin (Ndx / 13 * ALLEGRO_TAU));
+
+        Color := al_map_rgb (
+          (Ndx + 1) mod 3 * 64,
+          (Ndx + 2) mod 3 * 64,
+          (Ndx    ) mod 3 * 64
+        );
+
+        Self.Vtx[Ndx].x := x; Self.Vtx[Ndx].y := y; Self.Vtx[Ndx].z := 0;
+        Self.Vtx[Ndx].u := 64 * x / 100; Self.Vtx[Ndx].v := 64 * y / 100;
+        Self.Vtx[Ndx].color := color;
+        Self.Vtx2[Ndx].x := 0.1 * x; Self.Vtx2[Ndx].y := 0.1 * y;
+        Self.Vtx2[Ndx].u := 64 * x / 100; Self.Vtx2[Ndx].v := 64 * y / 100;
+        Self.Vtx2[Ndx].color := color
+      end;
+
+      for Ndx := Low (Self.Vtx3) to High (Self.Vtx3) do
+      begin
+        if (Ndx mod 2) = 0 then
+        begin
+          x := 150 * Cos (Ndx / 20 * ALLEGRO_TAU);
+          y := 150 * Sin (Ndx / 20 * ALLEGRO_TAU)
+        end
+        else begin
+          x := 200 * Cos (Ndx / 20 * ALLEGRO_TAU);
+          y := 200 * Sin (Ndx / 20 * ALLEGRO_TAU)
+        end;
+
+        if Ndx = 0 then
+        begin
+          x := 0; Y := 0
+        end;
+
+        Self.Vtx3[Ndx].x := x; Self.Vtx3[Ndx].y := y; Self.Vtx3[Ndx].z := 0;
+        Self.Vtx3[Ndx].u := 64 * x / 100; Self.Vtx3[Ndx].v := 64 * y / 100;
+        Self.Vtx3[Ndx].color := al_map_rgb (
+          (7 * Ndx + 1) mod 3 * 64,
+          (2 * Ndx + 2) mod 3 * 64,
+          (    Ndx    ) mod 3 * 64
+        );
+      end
+    end;
+
+    procedure CreateScreens;
+    begin
+      fScreens[1] := TLowPrimitives.Create;
+      fScreens[2] := TIndexedPrimitives.Create;
+      fScreens[3] := THighPrimitives.Create;
+      fScreens[4] := TTransformationsPrimitives.Create;
+      fScreens[5] := TFilledPrimitives.Create;
+      fScreens[6] := TIndexedFilledPrimitives.Create;
+      fScreens[7] := THighFilledPrimitives.Create;
+      fScreens[8] := TTexturePrimitives.Create;
+      fScreens[9] := TFilledTexturePrimitives.Create;
+      fScreens[10] := TCustomVertexFormatPrimitives.Create;
+      fScreens[11] := TVertexBuffers.Create;
 {$IF DEFINED(WINDOWS)}
-    fScreens[12] := TIndexedBuffers.Create;
+      fScreens[12] := TIndexedBuffers.Create
 {$ELSE}
-  { For some reason this seems not to work on Linux (or doesn't in my system).
+    { For some reason this seems not to work on Linux (or doesn't in my system).
 
-    My system is Xubuntu 18.04.3 + nVidia GeForce GT610 + nouveau 2.4.97.
+      My system is Xubuntu 18.04.3 + nVidia GeForce GT610 + nouveau 2.4.97.
 
-    If your system is different you may try.  If it works (or find why mine
-    doesn't), let me know. }
-    fScreens[12] := Nil;
+      If your system is different you may try.  If it works (or find why mine
+      doesn't), let me know.
+    }
+      fScreens[12] := Nil
 {$ENDIF}
-  { Backbuffer. }
-    Old := al_get_new_bitmap_flags;
-    al_set_new_bitmap_flags (ALLEGRO_MEMORY_BITMAP);
-    fBuffer := al_create_bitmap (ScreenW, ScreenH);
-    if not Assigned (fBuffer) then
-    begin
-      ShowErrorMessage ('Could not create buffer.');
-      Exit
     end;
-    al_set_new_bitmap_flags (Old);
 
-    fTerminated := False
+  begin
+    fTerminated := False;
+    InitializeAllegro;
+    LoadData;
+    InitializeVerticesData;
+    CreateScreens
   end;
 
 
@@ -708,13 +769,15 @@ program ex_prim;
     fCurScreen := Low (fScreens);
     repeat
       fFrameDuration := al_get_time - fRealTime;
-      al_rest (FixedTimestep - fFrameDuration); { rest at least fixed_dt }
+      al_rest (FixedTimestep - fFrameDuration); { rest at least FixedTimestep }
       fFrameDuration := al_get_time - fRealTime;
       fRealTime := al_get_time;
       fGameTime := fRealTime;
       if fRealTime - fGameTime > fFrameDuration then
       { eliminate excess overflow }
-        fGameTime := fGameTime + FixedTimestep * Trunc ((fRealTime - fGameTime) / FixedTimestep);
+        fGameTime := fGameTime + FixedTimestep
+                   * Trunc ((fRealTime - fGameTime) / FixedTimestep)
+        ;
       while not fTerminated and (fRealTime - fGameTime >= 0) do
       begin
         fStartTime := al_get_time;
@@ -739,22 +802,6 @@ program ex_prim;
 
 
 
-(* Shows an error message box. *)
-  procedure TPrimitivesExample.ShowErrorMessage (const aMessage: AL_STR);
-  begin
-  {
-    al_show_native_message_box
-      (fDisplay, 'Error', 'Cannot run example', aMessage, '', 0);
-  }
-    SetErrorColor;
-    LogWriteLn ('[Error] Cannot run example');
-    SetDefaultColor;
-    LogWriteLn (aMessage);
-    Self.Terminate
-  end;
-
-
-
 (* Builds the transformation matrix. *)
   procedure TPrimitivesExample.BuildTransform (ax, ay, sx, sy, aTheta: AL_FLOAT);
   begin
@@ -764,12 +811,9 @@ program ex_prim;
 
 
 (* Draws text telling the example isn't supported. *)
-  procedure TPrimitivesExample.DrawUnsupported;
+  procedure TPrimitivesExample.DrawUnsupported; inline;
   begin
-    al_draw_textf (
-      fFont, White, 0, 0, 0,
-      '%s not supported', [fScreens[fCurScreen].Name]
-    )
+    Self.DrawText ('%s not supported', [fScreens[fCurScreen].Name], 0, 0)
   end;
 
 
@@ -779,40 +823,19 @@ program ex_prim;
  ***************************************************************************)
 
 
-(* Constructor. *)
   constructor TLowPrimitives.Create;
-  var
-    Ndx, x, y: Integer;
-    Color: ALLEGRO_COLOR;
   begin
-    inherited Create ('Low Level Primitives');
-
-    for Ndx := Low (Vtx) to High (Vtx) do
-    begin
-      x := Trunc (200 * Cos (Ndx / 13 * ALLEGRO_TAU));
-      y := Trunc (200 * Sin (Ndx / 13 * ALLEGRO_TAU));
-
-      Color := al_map_rgb (
-        (Ndx + 1) mod 3 * 64,
-        (Ndx + 2) mod 3 * 64,
-        (Ndx    ) mod 3 * 64);
-
-      Vtx[Ndx].x := x; Vtx[Ndx].y := y; Vtx[Ndx].z := 0;
-      Vtx2[Ndx].x := 0.1 * x; Vtx2[Ndx].y := 0.1 * y;
-      Vtx[Ndx].color := color;
-      Vtx2[Ndx].color := color
-    end
+    inherited Create ('Low Level Primitives')
   end;
 
 
 
-(* Draws screen. *)
   procedure TLowPrimitives.Draw;
   begin
-    al_draw_prim (Vtx, Nil, 0, 4, ALLEGRO_PRIM_LINE_LIST);
-    al_draw_prim (Vtx, Nil, 4, 9, ALLEGRO_PRIM_LINE_STRIP);
-    al_draw_prim (Vtx, Nil, 9, 13, ALLEGRO_PRIM_LINE_LOOP);
-    al_draw_prim (Vtx2, Nil, 0, 13, ALLEGRO_PRIM_POINT_LIST);
+    al_draw_prim (Example.Vtx, Nil, 0, 4, ALLEGRO_PRIM_LINE_LIST);
+    al_draw_prim (Example.Vtx, Nil, 4, 9, ALLEGRO_PRIM_LINE_STRIP);
+    al_draw_prim (Example.Vtx, Nil, 9, 13, ALLEGRO_PRIM_LINE_LOOP);
+    al_draw_prim (Example.Vtx2, Nil, 0, 13, ALLEGRO_PRIM_POINT_LIST)
   end;
 
 
@@ -821,11 +844,9 @@ program ex_prim;
  * TIndexedPrimitives
  ***************************************************************************)
 
-(* Constructor. *)
   constructor TIndexedPrimitives.Create;
   var
-    Ndx, x, y: Integer;
-    Color: ALLEGRO_COLOR;
+    Ndx: Integer;
   begin
     inherited Create ('Indexed Primitives');
 
@@ -835,29 +856,11 @@ program ex_prim;
       Indices2[Ndx] := Ndx + 5;
       Indices3[Ndx] := Ndx + 9;
     end;
-    Indices1[2] := 3; Indices1[3] := 4;
-
-    for Ndx := Low (vtx) to High (vtx) do
-    begin
-      x := Trunc (200 * cos (Ndx / 13 * ALLEGRO_TAU));
-      y := Trunc (200 * sin (Ndx / 13 * ALLEGRO_TAU));
-
-      Color := al_map_rgb (
-        (Ndx + 1) mod 3 * 64,
-        (Ndx + 2) mod 3 * 64,
-        (Ndx    ) mod 3 * 64
-      );
-
-      Vtx[Ndx].x := x; Vtx[Ndx].y := y; Vtx[Ndx].z := 0;
-      Vtx2[Ndx].x := 0.1 * x; Vtx2[Ndx].y := 0.1 * y;
-      Vtx[Ndx].color := color;
-      Vtx2[Ndx].color := color
-    end
+    Indices1[2] := 3; Indices1[3] := 4
   end;
 
 
 
-(* Executes screen. *)
   procedure TIndexedPrimitives.Update;
   var
     Ndx: Integer;
@@ -873,13 +876,12 @@ program ex_prim;
 
 
 
-(* Draws screen. *)
   procedure TIndexedPrimitives.Draw;
   begin
-    al_draw_indexed_prim (vtx, Nil, indices1, 4, ALLEGRO_PRIM_LINE_LIST);
-    al_draw_indexed_prim (vtx, Nil, indices2, 4, ALLEGRO_PRIM_LINE_STRIP);
-    al_draw_indexed_prim (vtx, Nil, indices3, 4, ALLEGRO_PRIM_LINE_LOOP);
-    al_draw_indexed_prim (vtx2, Nil, indices3, 4, ALLEGRO_PRIM_POINT_LIST);
+    al_draw_indexed_prim (Example.vtx, Nil, indices1, 4, ALLEGRO_PRIM_LINE_LIST);
+    al_draw_indexed_prim (Example.vtx, Nil, indices2, 4, ALLEGRO_PRIM_LINE_STRIP);
+    al_draw_indexed_prim (Example.vtx, Nil, indices3, 4, ALLEGRO_PRIM_LINE_LOOP);
+    al_draw_indexed_prim (Example.vtx2, Nil, indices3, 4, ALLEGRO_PRIM_POINT_LIST)
   end;
 
 
@@ -888,7 +890,6 @@ program ex_prim;
  * THighPrimitives
  ***************************************************************************)
 
-(* Constructor. *)
   constructor THighPrimitives.Create;
   begin
     inherited Create ('High Level Primitives')
@@ -896,7 +897,6 @@ program ex_prim;
 
 
 
-(* Draws screen. *)
   procedure THighPrimitives.Draw;
   begin
     al_draw_line (-300, -200, 300, 200, al_map_rgba_f (0, 0.5, 0.5, 1), Example.Thickness);
@@ -917,7 +917,6 @@ program ex_prim;
  * TTransformationsPrimitives
  ***************************************************************************)
 
-(* Constructor. *)
   constructor TTransformationsPrimitives.Create;
   begin
     inherited Create ('Transformations')
@@ -925,20 +924,18 @@ program ex_prim;
 
 
 
-(* Updates screen. *)
   procedure TTransformationsPrimitives.Update;
   var
     t: Double;
   begin
     t := al_get_time / 5;
     Example.BuildTransform (
-      ScreenW / 2, ScreenH / 2, sin (t), cos (t), Example.Theta
+      ScreenW / 2, ScreenH / 2, Sin (t), Cos (t), Example.Theta
     )
   end;
 
 
 
-(* Draws screen. *)
   procedure TTransformationsPrimitives.Draw;
   begin
     al_draw_line (-300, -200, 300, 200, al_map_rgba_f (0, 0.5, 0.5, 1), Example.Thickness);
@@ -959,49 +956,18 @@ program ex_prim;
  * TFilledPrimitives
  ***************************************************************************)
 
-(* Constructor. *)
   constructor TFilledPrimitives.Create;
-  var
-    Ndx: Integer;
-    x, y: Single;
-    Color: ALLEGRO_COLOR;
   begin
-    inherited Create ('Low Level Filled Primitives');
-    for Ndx := Low (vtx) to High (vtx) do
-    begin
-      if (Ndx mod 2) = 0 then
-      begin
-        x := 150 * cos (Ndx / 20 * ALLEGRO_TAU);
-        y := 150 * sin (Ndx / 20 * ALLEGRO_TAU)
-      end
-      else begin
-        x := 200 * cos (Ndx / 20 * ALLEGRO_TAU);
-        y := 200 * sin (Ndx / 20 * ALLEGRO_TAU);
-      end;
-
-      if Ndx = 0 then
-      begin
-        x := 0; Y := 0
-      end;
-
-      Color := al_map_rgb (
-        (7 * Ndx + 1) mod 3 * 64,
-        (2 * Ndx + 2) mod 3 * 64,
-        (    Ndx    ) mod 3 * 64);
-
-      vtx[Ndx].x := x; vtx[Ndx].y := y; vtx[Ndx].z := 0;
-      vtx[Ndx].color := color
-    end
+    inherited Create ('Low Level Filled Primitives')
   end;
 
 
 
-(* Draws screen. *)
   procedure TFilledPrimitives.Draw;
   begin
-    al_draw_prim (vtx, Nil, 0, 6, ALLEGRO_PRIM_TRIANGLE_FAN);
-    al_draw_prim (vtx, Nil, 7, 13, ALLEGRO_PRIM_TRIANGLE_LIST);
-    al_draw_prim (vtx, Nil, 14, 20, ALLEGRO_PRIM_TRIANGLE_STRIP)
+    al_draw_prim (Example.Vtx3, Nil, 0, 6, ALLEGRO_PRIM_TRIANGLE_FAN);
+    al_draw_prim (Example.Vtx3, Nil, 7, 13, ALLEGRO_PRIM_TRIANGLE_LIST);
+    al_draw_prim (Example.Vtx3, Nil, 14, 20, ALLEGRO_PRIM_TRIANGLE_STRIP)
   end;
 
 
@@ -1010,51 +976,22 @@ program ex_prim;
  * TIndexedFilledPrimitives
  ***************************************************************************)
 
-(* Constructor. *)
   constructor TIndexedFilledPrimitives.Create;
   var
     Ndx: Integer;
-    x, y: Single;
-    Color: ALLEGRO_COLOR;
   begin
     inherited Create ('Indexed Filled Primitives');
     for Ndx := Low (Indices1) to High (Indices1) do
     begin
       Indices1[Ndx] := Ndx + 12;
-      if Ndx > 2 then INC(Indices1[Ndx]);
+      if Ndx > 2 then Inc (Indices1[Ndx]);
       Indices2[Ndx] := Ndx + 6;
-      Indices1[Ndx] := Ndx;
-    end;
-    for Ndx := Low (vtx) to High (vtx) do
-    begin
-      if (Ndx mod 2) = 0 then
-      begin
-        x := 150 * cos (Ndx / 20 * ALLEGRO_TAU);
-        y := 150 * sin (Ndx / 20 * ALLEGRO_TAU)
-      end
-      else begin
-        x := 200 * cos (Ndx / 20 * ALLEGRO_TAU);
-        y := 200 * sin (Ndx / 20 * ALLEGRO_TAU);
-      end;
-
-      if Ndx = 0 then
-      begin
-        x := 0; Y := 0
-      end;
-
-      Color := al_map_rgb (
-        (7 * Ndx + 1) mod 3 * 64,
-        (2 * Ndx + 2) mod 3 * 64,
-        (    Ndx    ) mod 3 * 64);
-
-      vtx[Ndx].x := x; vtx[Ndx].y := y; vtx[Ndx].z := 0;
-      vtx[Ndx].color := color
+      Indices1[Ndx] := Ndx
     end
   end;
 
 
 
-(* Updates screen. *)
   procedure TIndexedFilledPrimitives.Update;
   var
     Ndx: Integer;
@@ -1071,12 +1008,11 @@ program ex_prim;
 
 
 
-(* Draws screen. *)
   procedure TIndexedFilledPrimitives.Draw;
   begin
-    al_draw_indexed_prim (vtx, Nil, Indices1, 6, ALLEGRO_PRIM_TRIANGLE_LIST);
-    al_draw_indexed_prim (vtx, Nil, Indices2, 6, ALLEGRO_PRIM_TRIANGLE_STRIP);
-    al_draw_indexed_prim (vtx, Nil, Indices3, 6, ALLEGRO_PRIM_TRIANGLE_FAN)
+    al_draw_indexed_prim (Example.Vtx3, Nil, Indices1, 6, ALLEGRO_PRIM_TRIANGLE_LIST);
+    al_draw_indexed_prim (Example.Vtx3, Nil, Indices2, 6, ALLEGRO_PRIM_TRIANGLE_STRIP);
+    al_draw_indexed_prim (Example.Vtx3, Nil, Indices3, 6, ALLEGRO_PRIM_TRIANGLE_FAN)
   end;
 
 
@@ -1085,15 +1021,13 @@ program ex_prim;
  * THighFilledPrimitives
  ***************************************************************************)
 
-(* Constructor. *)
   constructor THighFilledPrimitives.Create;
   begin
-    inherited Create ('High Level Filled Primitives');
+    inherited Create ('High Level Filled Primitives')
   end;
 
 
 
-(* Draws screen. *)
   procedure THighFilledPrimitives.Draw;
   begin
     al_draw_filled_triangle (-100, -100, -150, 200, 100, 200, al_map_rgb_f (0.5, 0.7, 0.3));
@@ -1109,45 +1043,26 @@ program ex_prim;
  * TTexturePrimitives
  ***************************************************************************)
 
-(* Constructor. *)
   constructor TTexturePrimitives.Create;
   var
-    Ndx, x, y: Integer;
-    Color: ALLEGRO_COLOR;
+    Ndx: Integer;
   begin
     inherited Create ('Textured Primitives');
 
+    Self.Vtx := Example.Vtx;
     for Ndx := Low (Vtx) to High (Vtx) do
-    begin
-      x := Trunc (200 * Cos (Ndx / 13 * ALLEGRO_TAU));
-      y := Trunc (200 * Sin (Ndx / 13 * ALLEGRO_TAU));
-         
-      Color := al_map_rgb (
-        (Ndx + 1) mod 3 * 64,
-        (Ndx + 2) mod 3 * 64,
-        (Ndx    ) mod 3 * 64);
-
-      Vtx[Ndx].x := x; Vtx[Ndx].y := y; Vtx[Ndx].z := 0;
-      Vtx2[Ndx].x := 0.1 * x; Vtx2[Ndx].y := 0.1 * y;
-      vtx[Ndx].u := 64 * x / 100; vtx[Ndx].v := 64 * y / 100;
-      vtx2[Ndx].u := 64 * x / 100; vtx2[Ndx].v := 64 * y / 100;
       if Ndx < 10 then
          vtx[Ndx].color := al_map_rgba_f (1, 1, 1, 1)
-      else
-         vtx[Ndx].color := Color;
-      Vtx2[Ndx].color := Color
-    end
   end;
 
 
 
-(* Draws screen. *)
   procedure TTexturePrimitives.Draw;
   begin
-    al_draw_prim (Vtx, Example.Texture, 0, 4, ALLEGRO_PRIM_LINE_LIST);
-    al_draw_prim (Vtx, Example.Texture, 4, 9, ALLEGRO_PRIM_LINE_STRIP);
-    al_draw_prim (Vtx, Example.Texture, 9, 13, ALLEGRO_PRIM_LINE_LOOP);
-    al_draw_prim (Vtx2, Example.Texture, 0, 13, ALLEGRO_PRIM_POINT_LIST)
+    al_draw_prim (Self.Vtx, Example.Texture, 0, 4, ALLEGRO_PRIM_LINE_LIST);
+    al_draw_prim (Self.Vtx, Example.Texture, 4, 9, ALLEGRO_PRIM_LINE_STRIP);
+    al_draw_prim (Self.Vtx, Example.Texture, 9, 13, ALLEGRO_PRIM_LINE_LOOP);
+    al_draw_prim (Example.Vtx2, Example.Texture, 0, 13, ALLEGRO_PRIM_POINT_LIST)
   end;
 
 
@@ -1156,48 +1071,20 @@ program ex_prim;
  * TFilledTexturePrimitives
  ***************************************************************************)
 
-(* Constructor. *)
   constructor TFilledTexturePrimitives.Create;
   var
     Ndx: Integer;
-    x, y: Single;
-    Color: ALLEGRO_COLOR;
   begin
     inherited Create ('Filled Textured Primitives');
+
+    Self.Vtx := Example.Vtx3;
     for Ndx := Low (vtx) to High (vtx) do
-    begin
-      if (Ndx mod 2) = 0 then
-      begin
-        x := 150 * cos (Ndx / 20 * ALLEGRO_TAU);
-        y := 150 * sin (Ndx / 20 * ALLEGRO_TAU)
-      end
-      else begin
-        x := 200 * cos (Ndx / 20 * ALLEGRO_TAU);
-        y := 200 * sin (Ndx / 20 * ALLEGRO_TAU);
-      end;
-
-      if Ndx = 0 then
-      begin
-        x := 0; Y := 0
-      end;
-
-      Color := al_map_rgb (
-        (7 * Ndx + 1) mod 3 * 64,
-        (2 * Ndx + 2) mod 3 * 64,
-        (    Ndx    ) mod 3 * 64);
-
-      vtx[Ndx].x := x; vtx[Ndx].y := y; vtx[Ndx].z := 0;
-      vtx[Ndx].u := 64 * x / 100; vtx[Ndx].v := 64 * y / 100;
       if Ndx < 10 then
-        vtx[Ndx].color := al_map_rgba_f(1, 1, 1, 1)
-      else
-        vtx[Ndx].color := Color
-    end
+        vtx[Ndx].color := al_map_rgba_f (1, 1, 1, 1)
   end;
 
 
 
-(* Draws screen. *)
   procedure TFilledTexturePrimitives.Draw;
   begin
     al_draw_prim (vtx, Example.Texture, 0, 6, ALLEGRO_PRIM_TRIANGLE_FAN);
@@ -1222,32 +1109,39 @@ var
 
 
 
-(* Constructor. *)
   constructor TCustomVertexFormatPrimitives.Create;
   var
     Ndx, x, y: Integer;
   begin
     inherited Create ('Custom Vertex Format');
 
-    Decl := al_create_vertex_decl (Elems, sizeof (CUSTOM_VERTEX));
+    Self.Decl := al_create_vertex_decl (Elems, sizeof (CUSTOM_VERTEX));
 
     for Ndx := Low (vtx) to High (vtx) do
     begin
       x := Trunc (200 * cos (Ndx / 4 * ALLEGRO_TAU));
       y := Trunc (200 * sin (Ndx / 4 * ALLEGRO_TAU));
 
-      vtx[Ndx].x := x; vtx[Ndx].y := y;
-      vtx[Ndx].u := Trunc (64 * x / 100); vtx[Ndx].v := Trunc (64 * y / 100);
-      vtx[Ndx].color := al_map_rgba_f (1, 1, 1, 1)
+      Self.Vtx[Ndx].x := x;
+      Self.Vtx[Ndx].y := y;
+      Self.Vtx[Ndx].u := Trunc (64 * x / 100);
+      Self.Vtx[Ndx].v := Trunc (64 * y / 100);
+      Self.Vtx[Ndx].color := al_map_rgba_f (1, 1, 1, 1)
     end
   end;
 
 
 
-(* Draws screen. *)
   procedure TCustomVertexFormatPrimitives.Draw;
   begin
-    al_draw_prim_ex (@vtx, Decl, Example.Texture, 0, 4, ALLEGRO_PRIM_TRIANGLE_FAN);
+    al_draw_prim_ex (
+      @Self.Vtx,
+      Self.Decl,
+      Example.Texture,
+      0,
+      4,
+      ALLEGRO_PRIM_TRIANGLE_FAN
+    )
   end;
 
 
@@ -1256,43 +1150,23 @@ var
  * TVertexBuffers
  ***************************************************************************)
 
-(* Constructor. *)
   constructor TVertexBuffers.Create;
-  var
-    Ndx, x, y: Integer;
-    Color: ALLEGRO_COLOR;
   begin
     inherited Create ('Vertex Buffers');
 
-    for Ndx := Low (Vtx) to High (Vtx) do
-    begin
-      x := Trunc (200 * Cos (Ndx / 13 * ALLEGRO_TAU));
-      y := Trunc (200 * Sin (Ndx / 13 * ALLEGRO_TAU));
-
-      Color := al_map_rgb (
-        (Ndx + 1) mod 3 * 64,
-        (Ndx + 2) mod 3 * 64,
-        (Ndx    ) mod 3 * 64);
-
-      Vtx[Ndx].x := x; Vtx[Ndx].y := y; Vtx[Ndx].z := 0;
-      Vtx2[Ndx].x := 0.1 * x; Vtx2[Ndx].y := 0.1 * y;
-      Vtx[Ndx].color := color;
-      Vtx2[Ndx].color := color
-    end;
-
-    vbuff := al_create_vertex_buffer (vtx, ALLEGRO_PRIM_BUFFER_readwrite);
+    vbuff := al_create_vertex_buffer (Example.Vtx, ALLEGRO_PRIM_BUFFER_readwrite);
     if not Assigned (vbuff) then
     begin
-      vbuff := al_create_vertex_buffer (vtx, ALLEGRO_PRIM_BUFFER_NONE);
+      vbuff := al_create_vertex_buffer (Example.Vtx, ALLEGRO_PRIM_BUFFER_NONE);
       NoSoft := True
     end
     else
       NoSoft := False;
 
-    vbuff2 := al_create_vertex_buffer (vtx2, ALLEGRO_PRIM_BUFFER_readwrite);
+    vbuff2 := al_create_vertex_buffer (Example.Vtx2, ALLEGRO_PRIM_BUFFER_readwrite);
     if not Assigned (vbuff2) then
     begin
-      vbuff2 := al_create_vertex_buffer (vtx2, ALLEGRO_PRIM_BUFFER_NONE);
+      vbuff2 := al_create_vertex_buffer (Example.Vtx2, ALLEGRO_PRIM_BUFFER_NONE);
       NoSoft2 := True
     end
     else
@@ -1301,7 +1175,6 @@ var
 
 
 
-(* Destructor. *)
   destructor TVertexBuffers.Destroy;
   begin
     al_destroy_vertex_buffer (vbuff);
@@ -1311,7 +1184,6 @@ var
 
 
 
-(* Draws screen. *)
   procedure TVertexBuffers.Draw;
   begin
     if Assigned (vbuff) and not (Example.Soft and NoSoft) then
@@ -1335,7 +1207,6 @@ var
  * TIndexedBuffers
  ***************************************************************************)
 
-(* Constructor. *)
   constructor TIndexedBuffers.Create;
   var
     Ndx: Integer;
@@ -1397,7 +1268,6 @@ var
 
 
 
-(* Destructor. *)
   destructor TIndexedBuffers.Destroy;
   begin
     al_destroy_vertex_buffer (vbuff);
@@ -1407,7 +1277,6 @@ var
 
 
 
-(* Updates screen. *)
   procedure TIndexedBuffers.Update;
   var
     Ndx, t: Integer;
@@ -1433,7 +1302,6 @@ var
 
 
 
-(* Draws screen. *)
   procedure TIndexedBuffers.Draw;
   begin
     if (not Soft and not Self.Soft) and (vbuff <> Nil) and (ibuff <> Nil) then
@@ -1451,6 +1319,6 @@ begin
     Example.Initialize;
     Example.Run
   finally
-    FreeAndNil (Example)
+    Example.Free
   end
 end.

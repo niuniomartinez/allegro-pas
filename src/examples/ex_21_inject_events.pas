@@ -1,7 +1,12 @@
-program ex_05_subbitmap;
-(* Show how sub-bitmap work. *)
+program ex_21_inject_events;
+(* Example that injects regular (non-user-type) allegro events into a queue.
+ * This could be useful for 'faking' certain event sources.
+ * For example, you could imitate joystick events without a joystick.
+ *
+ * Partially from Ryan Roden-Corrent's and the ex_user_events.c examples.
+ *)
 (*
-  Copyright (c) 2023 Guillermo Martínez J.
+  Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -28,37 +33,41 @@ program ex_05_subbitmap;
 {$ENDIF}
 
   uses
-    Common,
-    allegro5, al5image, al5strings;
+    Common, alcon,
+    allegro5;
 
   const
-  (* Window size. *)
+  (* Initial window size. *)
     wWidth = 800; wHeight = 600;
+
   var
+  (* The event queue. *)
     EventQueue: ALLEGRO_EVENT_QUEUEptr;
-    Event: ALLEGRO_EVENT;
+  (* Pointer to the window information. *)
     Window: ALLEGRO_DISPLAYptr;
-    Bitmap, SubBitmap: ALLEGRO_BITMAPptr;
-    bWidth, bHeight: Integer;
+  (* To control program flow. *)
     Terminated: Boolean;
+  (* Event management. *)
+    Event: ALLEGRO_EVENT;
+    FakeSource: ALLEGRO_EVENT_SOURCE;
 
 (* Program initialization. *)
   function Initialize: Boolean;
   begin
   { Initialize Allegro. }
-    if not al_init or not al_install_keyboard or not al_init_image_addon then
+    if not al_init or not al_install_keyboard then
     begin
       WriteLn ('Can''t initialize Allegro!');
       Exit (False)
     end;
   { Create window. }
-    al_set_new_display_flags (ALLEGRO_WINDOWED);
     Window := al_create_display (wWidth, wHeight);
     if not Assigned (Window) then
     begin
       WriteLn ('Can''t create window.');
       Exit (False)
     end;
+    if not alcon.Initialize then Exit (False);
   { Create the event queue. }
     EventQueue := al_create_event_queue;
     if not Assigned (EventQueue) then
@@ -68,8 +77,36 @@ program ex_05_subbitmap;
     end;
     al_register_event_source (EventQueue, al_get_keyboard_event_source);
     al_register_event_source (EventQueue, al_get_display_event_source (Window));
-
+  { Create and register our 'fake' event source with the Queue. }
+    al_init_user_event_source (@FakeSource);
+    al_register_event_source (EventQueue, @FakeSource);
     Result := True
+  end;
+
+
+
+(* Fake a joystick event. *)
+  procedure EmitJoystickEvent;
+  var
+    lEvent: ALLEGRO_EVENT;
+  begin
+    lEvent.any.ftype := ALLEGRO_EVENT_JOYSTICK_AXIS;
+    lEvent.joystick.stick := 1;
+    lEvent.joystick.axis := 0;
+    lEvent.joystick.pos := 0.5;
+    al_emit_user_event (@FakeSource, @lEvent, Nil)
+  end;
+
+
+
+(* Fake a keyboard event. *)
+  procedure EmitKeyboardEvent;
+  var
+    lEvent: ALLEGRO_EVENT;
+  begin
+    lEvent.any.ftype := ALLEGRO_EVENT_KEY_DOWN;
+    lEvent.keyboard.keycode := ALLEGRO_KEY_ENTER;
+    al_emit_user_event (@FakeSource, @lEvent, Nil)
   end;
 
 
@@ -77,64 +114,46 @@ program ex_05_subbitmap;
 (* Program finalization. *)
   procedure Finalize;
   begin
-  { Sub-bitmap should be destroyed before its parent. }
-    if Assigned (SubBitmap) then al_destroy_bitmap (SubBitmap);
-    if Assigned (Bitmap) then al_destroy_bitmap (Bitmap);
-  { The rest of objects. }
+    alcon.Finalize;
+    al_destroy_user_event_source (@FakeSource);
     if Assigned (EventQueue) then al_destroy_event_queue (EventQueue);
     if Assigned (Window) then al_destroy_display (Window)
   end;
 
 
 
-(* Draw window content. *)
   procedure UpdateScreen;
   begin
-    al_draw_scaled_bitmap (
-      Bitmap,
-      0, 0, bWidth, bHeight,
-      0, 0, wWidth, wHeight,
-      0
-    );
-    al_draw_rotated_bitmap (
-      SubBitmap,
-      bWidth / 2, bHeight / 2,
-      wWidth - (bWidth / 1.5), wHeight - (bHeight / 1.5),
-      ALLEGRO_TAU / 8,
-      0
-    );
+    alcon.DrawConsole;
     al_flip_display
   end;
 
 begin
+{ Program initialization. }
   if not Initialize then Exit;
-{ Load bitmap. }
-  Bitmap := al_load_bitmap ('data/mysha.pcx');
-  if not Assigned (Bitmap) then
-  begin
-    ErrorMessage ('Can''t load "data/allegro.pcx".');
-    Exit
-  end;
-{ Get bitmap sizes. }
-  bWidth := al_get_bitmap_width (Bitmap);
-  bHeight := al_get_bitmap_height (Bitmap);
-{ Create a sub-bitmap from it. }
-  SubBitmap := al_create_sub_bitmap (
-    Bitmap,
-    0, 0,
-    bWidth div 2, bWidth div 2
-  );
-{ "Game loop". }
   Terminated := False;
+{ Emit fake events. }
+  EmitKeyboardEvent;
+  EmitJoystickEvent;
+{ The loop. }
   repeat
+  { Check events. }
     if al_is_event_queue_empty (EventQueue) then UpdateScreen;
     al_wait_for_event (EventQueue, @Event);
     case Event.ftype of
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       Terminated := True;
     ALLEGRO_EVENT_KEY_DOWN:
-      if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
-        Terminated := True;
+      begin
+        if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then
+          Terminated := True;
+        PrintLn ('Got keydown: %d.', [Event.keyboard.keycode]);
+      end;
+    ALLEGRO_EVENT_JOYSTICK_AXIS:
+      PrintLn (
+        'Got joystick axis: stick=%d axis=%d pos=%f.',
+        [Event.joystick.stick, Event.joystick.axis, Event.joystick.pos]
+      );
     end
   until Terminated;
 { Program finalization. }

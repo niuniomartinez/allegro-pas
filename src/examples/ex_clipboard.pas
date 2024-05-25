@@ -1,7 +1,7 @@
 program ex_clipboard;
 (* Shows how clipboard works. *)
 (*
-  Copyright (c) 2012-2023 Guillermo Martínez J.
+  Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -122,6 +122,38 @@ program ex_clipboard;
     if Assigned (Window) then al_destroy_display (Window)
   end;
 
+
+
+(* Get reference to the clipboard text, if any. *)
+  procedure GetClipboardContent;
+  begin
+    if Assigned (ClipboardText) then al_free (ClipboardText);
+    if al_clipboard_has_text (Window) then
+      ClipboardText := al_get_clipboard_text (Window)
+    else
+      ClipboardText := Nil
+  end;
+
+
+
+(* Draw screen. *)
+  procedure UpdateScreen;
+  begin
+  { Draw clipboard content and instructions. }
+    al_clear_to_color (al_map_rgb_f (0, 0, 0));
+    PrintText (
+      'Copy a text from another application or press [Space bar]...',
+      0,
+      al_map_rgb_f (1, 1, 1)
+    );
+    if Assigned (ClipboardText) then
+      PrintText (ClipboardText, 2, al_map_rgba_f (0, 1, 1, 1.0))
+    else
+      PrintText ('No clipboard text available.', 2, al_map_rgba_f(1, 0, 0, 1.0));
+    al_flip_display;
+    Redraw := False
+  end;
+
 begin
   if not Initialize then Exit;
 { "Game loop". }
@@ -132,25 +164,8 @@ begin
   { Window update. }
     if Redraw and al_is_event_queue_empty (EventQueue) then
     begin
-    { Get reference to the clipboard text, if any. }
-      if Assigned (ClipboardText) then al_free (ClipboardText);
-      if al_clipboard_has_text (Window) then
-        ClipboardText := al_get_clipboard_text (Window)
-      else
-        ClipboardText := Nil;
-    { Draw clipboard content and instructions. }
-      al_clear_to_color (al_map_rgb_f (0, 0, 0));
-      PrintText (
-        'Copy a text from another application or press [Space bar]...',
-        0,
-        al_map_rgb_f (1, 1, 1)
-      );
-      if Assigned (ClipboardText) then
-        PrintText (ClipboardText, 2, al_map_rgba_f (0, 1, 1, 1.0))
-      else
-        PrintText ('No clipboard text available.', 2, al_map_rgba_f(1, 0, 0, 1.0));
-      al_flip_display;
-      Redraw := False
+      GetClipboardContent;
+      UpdateScreen
     end;
   { Check events. }
     al_wait_for_event (EventQueue, @Event);

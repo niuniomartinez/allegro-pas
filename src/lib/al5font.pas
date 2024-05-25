@@ -3,8 +3,9 @@ unit al5font;
 
   @bold(See also)
 
-  @link(al5ttf) *)
-(* Copyright (c) 2012-2022 Guillermo Martínez J.
+  @link(al5ttf)
+*)
+(* Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -43,7 +44,7 @@ interface
     ALLEGRO_ALIGN_INTEGER =  4; {**<@exclude }
 
   type
-    ALLEGRO_FONTptr = AL_POINTER;
+    ALLEGRO_FONTptr = type AL_POINTER;
   (*** Callback declaration for @link(al_do_multiline_text). *)
     ALFONT_CALLBACK_MULTILINE_TEXT =
       function (line_num: AL_INT; const line: AL_STRptr; size: AL_INT; extra: AL_POINTER): AL_BOOL; CDECL;
@@ -156,15 +157,6 @@ ALLEGRO_FONT_FUNC(bool, al_get_glyph, (const ALLEGRO_FONT *f, int prev_codepoint
 
 implementation
 
-  uses
-  {$IFDEF ISDELPHI2009ANDUP}
-  { This unit implements SysUtils and Strings using ANSISTRING instead of
-    UNICODESTRING, which is the default in modern Delphi compilers. }
-    AnsiStrings;
-  {$ELSE}
-    sysutils;
-  {$ENDIF}
-
   procedure al_draw_text (
     const font: ALLEGRO_FONTptr; color: ALLEGRO_COLOR;
     x, y: AL_FLOAT; flags: AL_INT;
@@ -194,7 +186,7 @@ implementation
     const fmt: AL_STR; const values: array of const
   );
   begin
-    al_draw_text (font, color, x, y, flags, Format (fmt, values))
+    al_draw_text (font, color, x, y, flags, al_str_format (fmt, values))
   end;
 
 
@@ -208,7 +200,7 @@ implementation
     al_draw_justified_text (
       font, color,
       x1, x2, y, diff, flags,
-      Format (fmt, values)
+      al_str_format (fmt, values)
     )
   end;
 
@@ -248,7 +240,7 @@ implementation
     al_draw_multiline_text (
       font, color,
       x, y, max_width, line_height, flags,
-      Format (fmt, values)
+      al_str_format (fmt, values)
     )
   end;
 

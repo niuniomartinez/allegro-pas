@@ -9,8 +9,9 @@ unit al5opengl;
   GL_EXT_framebuffer_object=0
 )
   Any extension which appears in the section is treated as not available (it
-  does not matter if you set it to 0 or any other value). *)
-(* Copyright (c) 2012-2022 Guillermo Martínez J.
+  does not matter if you set it to 0 or any other value).
+ *)
+(* Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -48,8 +49,9 @@ interface
  * opengl/gl_ext.h
  *)
 
-{ TODO: The extension system uses the C preprocessor to create the structs and
-        constants used.  It's quite complex so I decided to delay it. }
+{ The extension system uses the C preprocessor to create the structs and
+  constants used.  It's quite complex so I decided to not include it.
+}
 
 
 

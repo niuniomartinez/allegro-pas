@@ -3,7 +3,7 @@
         <ProjectGuid>{BB05A6B9-6A90-4ED7-B728-404BBD993065}</ProjectGuid>
         <ProjectVersion>19.2</ProjectVersion>
         <FrameworkType>None</FrameworkType>
-        <MainSource>..\ex_18_window_multiple.pas</MainSource>
+        <MainSource>..\ex_21_inject_events.pas</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
@@ -48,7 +48,7 @@
         <DCC_F>false</DCC_F>
         <DCC_K>false</DCC_K>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
-        <SanitizedProjectName>ex_18_window_multiple</SanitizedProjectName>
+        <SanitizedProjectName>ex_21_inject_events</SanitizedProjectName>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
@@ -114,7 +114,7 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">..\ex_18_window_multiple.pas</Source>
+                    <Source Name="MainSource">..\ex_21_inject_events.pas</Source>
                 </Source>
             </Delphi.Personality>
             <Platforms>

@@ -1,4 +1,4 @@
-program ex_17_window;
+program ex_19_window;
 (* Shows display stuff as icons, events and such. *)
 (*
   Copyright (c) 2024 Guillermo Martínez J.
@@ -29,10 +29,7 @@ program ex_17_window;
 
   uses
     Common,
-    allegro5   in '../lib/allegro5.pas',
-    al5font    in '../lib/al5font.pas',
-    al5image   in '../lib/al5image.pas',
-    al5strings in '../lib/al5strings.pas';
+    allegro5, al5font, al5image, al5strings;
 
   const
   (* Initial window size. *)

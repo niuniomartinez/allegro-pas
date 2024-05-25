@@ -1,12 +1,10 @@
 # ------------------------------------------------------------------------
 # Makefile
 # ------------------------------------------------------------------------
-# Based in the Almake project as used in KOF91 V1.49.
-# Visit http://almake.sf.net/ for almake information.
-# Visit http://kof91.sf.net/  for KOF91 information.
+# from "Makeproject" (http://www.burdjia.com/proyectos/makeproject/)
 
-# This file defines the tarjet platform, and is modified by fix.bat or
-# fix.sh script. See it's sources.
+# This file defines the tarjet platform, and is modified by fix.bat,
+# fix.cmd or fix.sh script. See it's sources.
 include target.os
 
 # Suggested by "GNU Coding Stardards"
@@ -23,7 +21,7 @@ PROJECT = Allegro.pas 5.2.b.2
 # --------------------------------------
 
 # ------------------
-# Win32
+# Windows
 # ------------------
 ifeq ($(TARGET),WIN)
 	# Platform name.
@@ -76,13 +74,15 @@ OPTOPT += -Si
 # Next one can be used to optimize for 64bit PC with Linux or Windows.
 # OPTOPT += -CpATHLON64
 
-# do not show
-# Note:  Call to subroutine "...;" marked as inline is not inlined
+# Do not show Hint:
+# Parameter "..." not used
+# OPTOPT += -vm5024
+
+# Do not show Note:
+# Call to subroutine "...;" marked as inline is not inlined
 # (In FPC 3.3.1, not in FPC 3.1.1 rev 38027)
 OPTOPT += -vm6058
 
-# do not show Hint: (5024) Parameter "..." not used
-OPTOPT += -vm5024
 
 
 # ---------------------
@@ -93,19 +93,16 @@ OPTOPT += -vm5024
 DBGOPT = -O1 -g -gl
 # Save debug information in an external file (.dbg).
 DBGOPT += -Xg
-# Show warnings + notes. Do not show hints (there are too many useless hints produced by FPC).
-# (Suggestion from Castle Game Engine)
-DBGOPT += -vwn
+# Show warnings + notes, but do not show hints.
+# DBGOPT += -vwn
 # Adds some code to check ranges and overflows.
-DBGOPT += -Ct -Cr -CR -Co
+DBGOPT += -Ci -Co -Cr -CR
 # Adds code for valgrind
 # DBGOPT += -gv
 # Use heaptrace unit (for memory leak/corruption debugging).
 DBGOPT += -gh
-
-# Liks with "debug" Allegro.  Useful when creating an add-on or testing Allegro
-# itself.
-# DBGOPT += -dDEBUGMODE
+# Define symbol DEBUG to be used by {$IfDef} blocks.
+DBGOPT += -dDEBUGMODE
 
 
 
@@ -113,38 +110,13 @@ DBGOPT += -gh
 # -- No platform specific --
 # --------------------------
 
-# Sufix for main unit.  See "makefile.list" and "makefile.all".
-MAINSUF = .pas
-LIBSUF  = .pas
-
-# Directories.
-SRCDIR = src/
-LIBDIR = lib/
-EXMDIR = examples/
-DEMDIR = demos/
-OBJDIR = obj/
-BINDIR = bin/
-
-FPDIR = furiouspaladin/
-PADIR = pascalroids/
-
-LIBSRC = $(SRCDIR)$(LIBDIR)
-EXMSRC = $(SRCDIR)$(EXMDIR)
-DEMSRC = $(SRCDIR)$(DEMDIR)
-FPSRC = $(DEMSRC)$(FPDIR)
-PASRC = $(DEMSRC)$(PADIR)
-
-EXMBIN = $(BINDIR)$(EXMDIR)
-DEMBIN = $(BINDIR)$(DEMDIR)
-FPBIN = $(DEMBIN)$(FPDIR)
-PABIN = $(DEMBIN)$(PADIR)
-
-
-# Pascal dialect: Delphi.
+# Pascal dialect.
 # This is to make it more easy to write code that works on both Delphi and FPC
 # compilers.  Actually you can use Allegro.pas in any of the dialects
 # supported by FPC.
 CPFLAGS = -Mdelphi
+# Force use of AnsiStrings.
+# CPFLAGS += -Sh
 
 # Pascal flags.
 PFLAGS = $(CPFLAGS)
@@ -160,12 +132,10 @@ FLAGS = $(OPTOPT) $(PFLAGS) $(EFLAGS)
 # FLAGS += -dNO_MONOLITH
 
 
+
 # -------------------
 # -- Documentation --
 # -------------------
-
-DOCSRC = $(SRCDIR)docs/
-DOCDIR = docs/lib/
 
 DOCFMT = -O html -L en
 DOCOPTS = --staronly --auto-abstract --include-creation-time --use-tipue-search

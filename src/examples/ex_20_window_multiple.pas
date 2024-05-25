@@ -1,4 +1,4 @@
-program ex_18_windows;
+program ex_20_window_multiple;
 (* Show how to manage multiple windows (displays). *)
 (*
   Copyright (c) 2012-2024 Guillermo Martínez J.
@@ -29,9 +29,7 @@ program ex_18_windows;
 
   uses
     Common,
-    allegro5   in '../lib/allegro5.pas',
-    al5font    in '../lib/al5font.pas',
-    al5image   in '../lib/al5image.pas';
+    allegro5, al5font, al5image;
 
   const
   (* Initial window size. *)

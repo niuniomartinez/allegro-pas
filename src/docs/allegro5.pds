@@ -1937,7 +1937,7 @@ VAR
   MyEvent: ALLEGRO_EVENT;
   SomeVar: REAL;
 BEGIN
-  al_init_user_event_source (MyEventSource);
+  al_init_user_event_source (@MyEventSource);
   MyEvent.user.ftype := ALLEGRO_GET_EVENT_TYPE ('MINE');
   MyEvent.user.data1.int_value := 1;
   MyEvent.user.data2.ptr_value := @SomeVar;
@@ -2031,12 +2031,14 @@ However, it is only one technique and you are not obliged to use it.
 
 The user event source will never be destroyed automatically. You must destroy
 it manually with @code(al_destroy_user_event_source).
+@param(source Pointer to the variable that will store the source information.)
 @seealso(ALLEGRO_EVENT_SOURCE) @seealso(al_destroy_user_event_source)
 @seealso(al_emit_user_event) @seealso(ALLEGRO_USER_EVENT)
 #Allegro5.al_destroy_user_event_source
 Destroys an event source initialised with @link(al_init_user_event_source).
 
 This does not free the memory, as that was user allocated to begin with.
+@param(source Pointer to the variable that  stored the source information.)
 @seealso(ALLEGRO_EVENT_SOURCE)
 #Allegro5.al_emit_user_event
 Emits an event from a user event source. The event source must have been initialised with @link(al_init_user_event_source).
@@ -2747,7 +2749,7 @@ begin
 { This will put 5035 into Value. }
   Value := al_fixadd (al_itofix (5000), al_itofix (35));
 { Sets errno and puts -32768 into Value. }
-  Value = al_fixadd (al_itofix (-31000), al_itofix (-3000));
+  Value := al_fixadd (al_itofix (-31000), al_itofix (-3000));
 { This will fail. }
   if al_get_errno <> 0 then Halt (-1)
 end.
@@ -2847,15 +2849,17 @@ var
 begin
 { This conversion is OK. }
   Number := al_itofix (100);
-  if al_fixtoi (number) <> 100 then Halt (-1);
+  if al_fixtoi (Number) <> 100 then Halt (-1);
 { This is not OK. }
   Number := al_itofix (64000);
-  if al_fixtoi (number) <> 64000 then Halt (-1)
+  if al_fixtoi (Number) <> 64000 then Halt (-1)
 end.
 !)
 @returns(The value of the integer converted to fixed point ignoring overflows.)
 @seealso(al_fixtoi) @seealso(al_ftofix) @seealso(al_fixtof)
 #Allegro5.al_fixtoi)
+In general, this is the same as @code(x shr 16) but this won't work with negative numbers.  In that case it is equivalent to @code(not @(@(not x@) shr 16@)).
+
 Example:
 @longcode(!
 var

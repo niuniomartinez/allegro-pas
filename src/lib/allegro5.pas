@@ -53,7 +53,7 @@ interface
  *   Defines basic stuff needed by pretty much everything else.
  *
  *   By Shawn Hargreaves.
- *****************************************************************************)
+ *************************************************************************)
 
   const
   (* All these constants exist just to build the ALLEGRO_VERSION_INT one.  I was
@@ -75,11 +75,11 @@ interface
    *)
     ALLEGRO_RELEASE_NUMBER = 1;
 
-    { ALLEGRO_PAS_VERSION_STR = '5.2.β.2'; }
-    ALLEGRO_PAS_VERSION_STR = '5.2.β.1 + SVN#538';
+    { ALLEGRO_PAS_VERSION_STR = '5.2'; }
+    ALLEGRO_PAS_VERSION_STR = '5.2.beta.1#560';
   (* Dates aren't for Allegro but for Allegro.pas. *)
     ALLEGRO_DATE_STR = '2024';
-    ALLEGRO_DATE = 20240120; { yyyymmdd }
+    ALLEGRO_DATE = 20240509; { yyyymmdd }
     ALLEGRO_VERSION_INT  = (
 	   (ALLEGRO_VERSION shl 24)
 	or (ALLEGRO_SUB_VERSION shl 16)
@@ -92,9 +92,7 @@ interface
 
   function al_get_allegro_version: AL_UINT32;
     CDECL; external ALLEGRO_LIB_NAME;
-  function al_run_main (
-    argc: AL_INT; argv: AL_POINTER; user_main: ALLEGRO_USER_MAIN
-  ): AL_INT;
+  function al_run_main (argc: AL_INT; argv: AL_POINTER; user_main: ALLEGRO_USER_MAIN): AL_INT;
     CDECL; external ALLEGRO_LIB_NAME;
 
   const
@@ -107,7 +105,7 @@ interface
 
 (*
  * altime.h
- *****************************************************************************)
+ *************************************************************************)
 
   type
     ALLEGRO_TIMEOUTptr = ^ALLEGRO_TIMEOUT;
@@ -128,7 +126,7 @@ interface
 
 (*
  * color.h
- *****************************************************************************)
+ *************************************************************************)
 
   type
     ALLEGRO_COLOR = record
@@ -236,11 +234,11 @@ interface
 
 (*
  * bitmap.h
- *****************************************************************************)
+ *************************************************************************)
 
   type
   (*** Abstract type representing a bitmap (2D image). *)
-    ALLEGRO_BITMAPptr = AL_POINTER;
+    ALLEGRO_BITMAPptr = type AL_POINTER;
 
   const
     ALLEGRO_MEMORY_BITMAP            = $0001; {**<@exclude }
@@ -328,7 +326,7 @@ interface
 
 (*
  * bitmap_draw.h
- *****************************************************************************)
+ *************************************************************************)
 
   const
   (* Flags for the blitting functions.  Documented at al_draw_bitmap. *)
@@ -365,21 +363,20 @@ interface
 
 (*
  * path.h
- *****************************************************************************)
+ *************************************************************************)
 
-{ TODO:
-  This header is used by Allegro to build file paths.  AFAIK Delphi and FPC
-  runtime libraries had same functionality so I'll not add it unless it is
-  really needed (i.e. I'm wrong and RTL doesn't include such funtionality). }
+{ This header is used by Allegro to build file paths.  Both Delphi and FPC
+  runtime libraries have equivalent functionality so I'll not add it.
+}
 
 
 
 (*
  * file.h
- *****************************************************************************)
+ *************************************************************************)
 
   type
-    ALLEGRO_FILEptr = AL_POINTER;
+    ALLEGRO_FILEptr = type AL_POINTER;
 
   (*** Pointer to @link(ALLEGRO_FILE_INTERFACE). *)
     ALLEGRO_FILE_INTERFACEptr = ^ALLEGRO_FILE_INTERFACE;
@@ -410,28 +407,21 @@ interface
   (* The basic operations. *)
     function al_fopen (const path, mode: AL_STR): ALLEGRO_FILEptr;
       CDECL; external ALLEGRO_LIB_NAME;
-    function al_fopen_interface (
-      const vt: ALLEGRO_FILE_INTERFACEptr; const path, mode: AL_STR
-    ): ALLEGRO_FILEptr;
+    function al_fopen_interface (const vt: ALLEGRO_FILE_INTERFACEptr; const path, mode: AL_STR): ALLEGRO_FILEptr;
       CDECL; external ALLEGRO_LIB_NAME;
-    function al_create_file_handle (
-      const vt: ALLEGRO_FILE_INTERFACEptr; userdata: AL_POINTER
-    ): ALLEGRO_FILEptr;
+    function al_create_file_handle (const vt: ALLEGRO_FILE_INTERFACEptr; userdata: AL_POINTER): ALLEGRO_FILEptr;
       CDECL; external ALLEGRO_LIB_NAME;
     function al_fclose (f: ALLEGRO_FILEptr): AL_BOOL;
       CDECL; external ALLEGRO_LIB_NAME;
-    function al_fread
-      (f: ALLEGRO_FILEptr; ptr: AL_POINTER; size: AL_SIZE_T): AL_SIZE_T;
+    function al_fread (f: ALLEGRO_FILEptr; ptr: AL_POINTER; size: AL_SIZE_T): AL_SIZE_T;
       CDECL; external ALLEGRO_LIB_NAME;
-    function al_fwrite
-      (f: ALLEGRO_FILEptr; const ptr: AL_POINTER; size: AL_SIZE_T): AL_SIZE_T;
+    function al_fwrite (f: ALLEGRO_FILEptr; const ptr: AL_POINTER; size: AL_SIZE_T): AL_SIZE_T;
       CDECL; external ALLEGRO_LIB_NAME;
     function al_fflush (f: ALLEGRO_FILEptr): AL_BOOL;
       CDECL; external ALLEGRO_LIB_NAME;
     function al_ftell (f: ALLEGRO_FILEptr): AL_INT64;
       CDECL; external ALLEGRO_LIB_NAME;
-    function al_fseek
-      (f: ALLEGRO_FILEptr; offset: AL_INT64; whence: AL_INT): AL_BOOL;
+    function al_fseek (f: ALLEGRO_FILEptr; offset: AL_INT64; whence: AL_INT): AL_BOOL;
       CDECL; external ALLEGRO_LIB_NAME;
     function al_feof (f: ALLEGRO_FILEptr): AL_BOOL;
       CDECL; external ALLEGRO_LIB_NAME;
@@ -467,8 +457,7 @@ interface
       CDECL; external ALLEGRO_LIB_NAME;
     function al_fwrite32be (f: ALLEGRO_FILEptr; l: AL_INT32): AL_SIZE_T;
       CDECL; external ALLEGRO_LIB_NAME;
-    function al_fgets
-      (f: ALLEGRO_FILEptr; const p: AL_STRptr; max: AL_SIZE_T): AL_STRptr
+    function al_fgets (f: ALLEGRO_FILEptr; const p: AL_STRptr; max: AL_SIZE_T): AL_STRptr
       CDECL; external ALLEGRO_LIB_NAME;
     function al_fget_ustr (f: ALLEGRO_FILEptr): ALLEGRO_USTRptr;
       CDECL; external ALLEGRO_LIB_NAME;
@@ -483,16 +472,13 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 }
 
   (* Specific to slices. *)
-    function al_fopen_slice (
-      fp: ALLEGRO_FILEptr; initial_size: AL_SIZE_T; const mode: AL_STR
-    ): ALLEGRO_FILEptr;
+    function al_fopen_slice (fp: ALLEGRO_FILEptr; initial_size: AL_SIZE_T; const mode: AL_STR): ALLEGRO_FILEptr;
       CDECL; external ALLEGRO_LIB_NAME;
 
   (* Thread local state. *)
     function al_get_new_file_interface: ALLEGRO_FILE_INTERFACEptr;
       CDECL; external ALLEGRO_LIB_NAME;
-    procedure al_set_new_file_interface
-      (const file_interface: ALLEGRO_FILE_INTERFACEptr);
+    procedure al_set_new_file_interface (const file_interface: ALLEGRO_FILE_INTERFACEptr);
       CDECL; external ALLEGRO_LIB_NAME;
     procedure al_set_standard_file_interface;
       CDECL; external ALLEGRO_LIB_NAME;
@@ -505,7 +491,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
 (*
  * bitmap_io.h
- *****************************************************************************)
+ *************************************************************************)
 
 (* Bitmap loader flag. *)
   const
@@ -527,35 +513,25 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
   (*** Used by @link(al_register_bitmap_identifier). *)
     ALLEGRO_IIO_IDENTifIER_FUNCTION = function (fp: ALLEGRO_FILEptr): AL_BOOL; CDECL;
 
-  function al_register_bitmap_loader
-    (const ext: AL_STR; loader: ALLEGRO_IIO_LOADER_FUNCTION): AL_BOOL;
+  function al_register_bitmap_loader (const ext: AL_STR; loader: ALLEGRO_IIO_LOADER_FUNCTION): AL_BOOL;
     CDECL; external ALLEGRO_LIB_NAME;
-  function al_register_bitmap_saver
-    (const ext: AL_STR; saver: ALLEGRO_IIO_SAVER_FUNCTION): AL_BOOL;
+  function al_register_bitmap_saver (const ext: AL_STR; saver: ALLEGRO_IIO_SAVER_FUNCTION): AL_BOOL;
     CDECL; external ALLEGRO_LIB_NAME;
-  function al_register_bitmap_loader_f
-    (const ext: AL_STR; fs_loader: ALLEGRO_IIO_FS_LOADER_FUNCTION): AL_BOOL;
+  function al_register_bitmap_loader_f (const ext: AL_STR; fs_loader: ALLEGRO_IIO_FS_LOADER_FUNCTION): AL_BOOL;
     CDECL; external ALLEGRO_LIB_NAME;
-  function al_register_bitmap_saver_f
-    (const ext: AL_STR; fs_saver: ALLEGRO_IIO_FS_SAVER_FUNCTION): AL_BOOL;
+  function al_register_bitmap_saver_f (const ext: AL_STR; fs_saver: ALLEGRO_IIO_FS_SAVER_FUNCTION): AL_BOOL;
     CDECL; external ALLEGRO_LIB_NAME;
-  function al_register_bitmap_identifier
-    (const ext: AL_STR; identifier: ALLEGRO_IIO_IDENTifIER_FUNCTION): AL_BOOL;
+  function al_register_bitmap_identifier (const ext: AL_STR; identifier: ALLEGRO_IIO_IDENTifIER_FUNCTION): AL_BOOL;
     CDECL; external ALLEGRO_LIB_NAME;
   function al_load_bitmap (const filename: AL_STR): ALLEGRO_BITMAPptr;
     CDECL; external ALLEGRO_LIB_NAME;
   function al_load_bitmap_flags (const filename: AL_STR; flags: AL_INT): ALLEGRO_BITMAPptr;
     CDECL; external ALLEGRO_LIB_NAME;
-  function al_load_bitmap_f
-    (fp: ALLEGRO_FILEptr; const ident: AL_STR): ALLEGRO_BITMAPptr;
-  function al_load_bitmap_flags_f (
-    fp: ALLEGRO_FILEptr; const ident: AL_STR; flags: AL_INT
-  ): ALLEGRO_BITMAPptr;
+  function al_load_bitmap_f (fp: ALLEGRO_FILEptr; const ident: AL_STR): ALLEGRO_BITMAPptr;
+  function al_load_bitmap_flags_f (fp: ALLEGRO_FILEptr; const ident: AL_STR; flags: AL_INT): ALLEGRO_BITMAPptr;
   function al_save_bitmap (const filename: AL_STR; bitmap: ALLEGRO_BITMAPptr): AL_BOOL;
     CDECL; external ALLEGRO_LIB_NAME;
-  function al_save_bitmap_f (
-    fp: ALLEGRO_FILEptr; const ident: AL_STR; bitmap: ALLEGRO_BITMAPptr
-  ): AL_BOOL;
+  function al_save_bitmap_f (fp: ALLEGRO_FILEptr; const ident: AL_STR; bitmap: ALLEGRO_BITMAPptr): AL_BOOL;
     CDECL; external ALLEGRO_LIB_NAME;
   function al_identify_bitmap_f (fp: ALLEGRO_FILEptr): AL_STRptr;
     CDECL; external ALLEGRO_LIB_NAME;
@@ -566,7 +542,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
 (*
  * bitmap_lock.h
- *****************************************************************************)
+ *************************************************************************)
 
   type
   (*** Locking flags. *)
@@ -604,7 +580,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
 (*
  * blender.h
- *****************************************************************************)
+ *************************************************************************)
 
   type
   (*** @exclude Blending modes. *)
@@ -651,7 +627,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
 (*
  * events.h
- *****************************************************************************)
+ *************************************************************************)
 
   type
     ALLEGRO_EVENT_TYPE = AL_UINT;
@@ -707,13 +683,13 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
   type
   (* These pointers are declared here as they're needed by the event system. *)
-    ALLEGRO_DISPLAYptr = AL_POINTER;
-    ALLEGRO_JOYSTICKptr = AL_POINTER;
+    ALLEGRO_DISPLAYptr = type AL_POINTER;
+    ALLEGRO_JOYSTICKptr = type AL_POINTER;
   (*** Pointer to keyboard. *)
-    ALLEGRO_KEYBOARDptr = AL_POINTER;
+    ALLEGRO_KEYBOARDptr = type AL_POINTER;
   (*** Pointer to mouse. *)
-    ALLEGRO_MOUSEptr = AL_POINTER;
-    ALLEGRO_TIMERptr = AL_POINTER;
+    ALLEGRO_MOUSEptr = type AL_POINTER;
+    ALLEGRO_TIMERptr = type AL_POINTER;
 
 
   (*** Pointer to @link(ALLEGRO_EVENT_SOURCE). *)
@@ -840,11 +816,10 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
     end;
 
   (*** Pointer to the user event descriptor. @seealso(ALLEGRO_USER_EVENT) *)
-    ALLEGRO_USER_EVENT_DESCRIPTORptr = Pointer;
+    ALLEGRO_USER_EVENT_DESCRIPTORptr = type AL_POINTER;
 
   (*** Pointer to @link(ALLEGRO_USER_EVENT). *)
     ALLEGRO_USER_EVENTptr = ^ALLEGRO_USER_EVENT;
-
     ALLEGRO_USER_EVENT = record
     (*** Event identifier. *)
       ftype: ALLEGRO_EVENT_TYPE;
@@ -891,17 +866,14 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
     ALLEGRO_EVENT_DTOR_PROC = procedure (evt: ALLEGRO_USER_EVENTptr); CDECL;
 
 (* Event sources. *)
-  procedure al_init_user_event_source (out source: ALLEGRO_EVENT_SOURCE);
+  procedure al_init_user_event_source (source: ALLEGRO_EVENT_SOURCEptr);
     CDECL; external ALLEGRO_LIB_NAME;
-  procedure al_destroy_user_event_source (out source: ALLEGRO_EVENT_SOURCE);
+  procedure al_destroy_user_event_source (source: ALLEGRO_EVENT_SOURCEptr);
     CDECL; external ALLEGRO_LIB_NAME;
-(* The second argument is ALLEGRO_EVENT instead of ALLEGRO_USER_EVENT
+(* The second argument is ALLEGRO_EVENTptr instead of ALLEGRO_USER_EVENTptr
  * to prevent users passing a pointer to a too-short structure.
  *)
-  function al_emit_user_event (
-    source: ALLEGRO_EVENT_SOURCEptr; Event: ALLEGRO_EVENTptr;
-    dtor: ALLEGRO_EVENT_DTOR_PROC
-  ): AL_BOOL;
+  function al_emit_user_event (source: ALLEGRO_EVENT_SOURCEptr; Event: ALLEGRO_EVENTptr; dtor: ALLEGRO_EVENT_DTOR_PROC): AL_BOOL;
     CDECL; external ALLEGRO_LIB_NAME;
   procedure al_unref_user_event (event: ALLEGRO_USER_EVENTptr);
     CDECL; external ALLEGRO_LIB_NAME;
@@ -914,7 +886,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
 (* Event queues. *)
   type
-    ALLEGRO_EVENT_QUEUEptr = AL_POINTER;
+    ALLEGRO_EVENT_QUEUEptr = type AL_POINTER;
 
   function al_create_event_queue: ALLEGRO_EVENT_QUEUEptr;
     CDECL; external ALLEGRO_LIB_NAME;
@@ -954,7 +926,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
 (*
  * display.h
- *****************************************************************************)
+ *************************************************************************)
 
   const
   (* Possible bit combinations for the flags parameter of al_set_new_display_flags. *)
@@ -980,7 +952,8 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
   (*** @exclude Possible parameters for al_set_display_option.
 
      Make sure to update ALLEGRO_EXTRA_DISPLAY_SETTINGS if you modify
-     anything here.  *)
+     anything here.
+   *)
     ALLEGRO_DISPLAY_OPTIONS = (
       ALLEGRO_RED_SIZE = 0, {**<@exclude }
       ALLEGRO_GREEN_SIZE = 1, {**<@exclude }
@@ -1169,7 +1142,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  * clipboard.h
  *
  *   Clipboard handling.
- *****************************************************************************)
+ *************************************************************************)
 
   function al_get_clipboard_text (display: ALLEGRO_DISPLAYptr): AL_STRptr;
     CDECL; external ALLEGRO_LIB_NAME;
@@ -1183,11 +1156,11 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
 (*
  * config.h
- *****************************************************************************)
+ *************************************************************************)
 
   type
   (*** An abstract configuration structure. @seealso(al_create_config) *)
-    ALLEGRO_CONFIGptr = AL_POINTER;
+    ALLEGRO_CONFIGptr = type AL_POINTER;
   { Iterating sections and entries means to define the internals of these
     structures.  Instead of that, use TIniFile defined by both Delphi and Free
     Pascal.
@@ -1210,11 +1183,9 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
       CDECL; external ALLEGRO_LIB_NAME;
     function al_load_config_file_f (fp: ALLEGRO_FILEptr): ALLEGRO_CONFIGptr;
       CDECL; external ALLEGRO_LIB_NAME;
-    function al_save_config_file 
-      (const filename: AL_STR; const config: ALLEGRO_CONFIGptr): AL_BOOL;
+    function al_save_config_file (const filename: AL_STR; const config: ALLEGRO_CONFIGptr): AL_BOOL;
       CDECL; external ALLEGRO_LIB_NAME;
-    function al_save_config_file_f
-      (fp: ALLEGRO_FILEptr; const config: ALLEGRO_CONFIGptr): AL_BOOL;
+    function al_save_config_file_f (fp: ALLEGRO_FILEptr; const config: ALLEGRO_CONFIGptr): AL_BOOL;
       CDECL; external ALLEGRO_LIB_NAME;
     procedure al_merge_config_into (master: ALLEGRO_CONFIGptr; const add: ALLEGRO_CONFIGptr);
       CDECL; external ALLEGRO_LIB_NAME;
@@ -1222,15 +1193,13 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
       CDECL; external ALLEGRO_LIB_NAME;
     procedure al_destroy_config (config: ALLEGRO_CONFIGptr);
       CDECL; external ALLEGRO_LIB_NAME;
-    function al_remove_config_section
-      (config: ALLEGRO_CONFIGptr; const section: AL_STR): AL_BOOL;
+    function al_remove_config_section (config: ALLEGRO_CONFIGptr; const section: AL_STR): AL_BOOL;
       CDECL; external ALLEGRO_LIB_NAME;
-    function al_remove_config_key
-      (config: ALLEGRO_CONFIGptr; const section, key: AL_STR): AL_BOOL;
+    function al_remove_config_key (config: ALLEGRO_CONFIGptr; const section, key: AL_STR): AL_BOOL;
       CDECL; external ALLEGRO_LIB_NAME;
 
   { Iterating sections and entries means to define the internals of some
-    structures.  Instead of that, use TIniFile defined by both Delphi and Free
+    structures.  Instead of that, use TIniFile provided by both Delphi and Free
     Pascal.
 
     function al_get_first_config_section
@@ -1253,7 +1222,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  * cpu.h
  *
  *   CPU and system information handling.
- *****************************************************************************)
+ *************************************************************************)
 
   function al_get_cpu_count: AL_INT; CDECL; external ALLEGRO_LIB_NAME;
   function al_get_ram_size: AL_INT;  CDECL; external ALLEGRO_LIB_NAME;
@@ -1266,18 +1235,15 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  *   Debug facilities.
  *
  *   By Shawn Hargreaves.
- *****************************************************************************)
+ *************************************************************************)
 
-{ TODO:
-  At the moment I'll not include this header.
-
-  Actually I'll add this unit only if it's necessary or helpful. }
+{ At the moment I'll not include this header. }
 
 
 
 (*
  * drawing.h
- *****************************************************************************)
+ *************************************************************************)
 
   procedure al_clear_to_color (color: ALLEGRO_COLOR);
     CDECL; external ALLEGRO_LIB_NAME;
@@ -1292,10 +1258,14 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  * error.h
  *
  *   Error handling.
- *****************************************************************************)
+ *************************************************************************)
+
+  const
+  (* Constants for error values. *)
+    AL_EDOM   = 1;
+    AL_ERANGE = 2;
 
   function al_get_errno: AL_INT; CDECL; external ALLEGRO_LIB_NAME;
-
 (*** Sets the error number for the calling thread. @seealso(al_get_errno) *)
   procedure al_set_errno (errnum: AL_INT); CDECL; external ALLEGRO_LIB_NAME;
 
@@ -1307,11 +1277,11 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  *   Fixed point type.
  *
  *   By Shawn Hargreaves.
- *****************************************************************************)
+ *************************************************************************)
 
   type
   (*** A fixed point number. *)
-    AL_FIXED = AL_INT32;
+    AL_FIXED = type AL_INT32;
   (*** @exclude. *)
     __FIXED_ARRAY__ = array [0..1023] of AL_FIXED;
 
@@ -1333,7 +1303,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  *   Fixed point math routines.
  *
  *   By Shawn Hargreaves.
- *****************************************************************************)
+ *************************************************************************)
 
 (*** This finds out the non negative square root of `x'. *)
   function al_fixsqrt (x: AL_FIXED): AL_FIXED; cdecl;
@@ -1355,7 +1325,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  *   Fixed point math inline functions (generic C).
  *
  *   By Shawn Hargreaves.
- *****************************************************************************)
+ *************************************************************************)
 
 (*** Converts a floating point value to fixed point. *)
   function al_ftofix (x: AL_DOUBLE): AL_FIXED;
@@ -1405,21 +1375,21 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  * fshook.h
  *
  *   File system hooks.
- *****************************************************************************)
+ *************************************************************************)
 
- { TODO:
-   Both Delphi and Free Pascal RTL (RunTime Libraries) have a complete set of
-   functions and procedures to work with the file system, I'll not implement
-   this.
+{ Both Delphi and Free Pascal RTLs (RunTime Libraries) provide a complete set
+  of functions and procedures to work with the file system, I'll not implement
+  this.
 
-   If you think it is interesting to have this stuff, may be I add it as an
-   add-on. }
+  If you think it is interesting to have this stuff, may be I add it as an
+  add-on.
+}
 
 
 
 (*
  * fullscreen_mode.h
- *****************************************************************************)
+ *************************************************************************)
 
   type
   (*** Pointer to @link(ALLEGRO_DISPLAY_MODE). *)
@@ -1439,7 +1409,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  * joystick.h
  *
  *   Joystick routines.
- *****************************************************************************)
+ *************************************************************************)
 
   const
   (* internal values *)
@@ -1450,7 +1420,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
   type
     ALLEGRO_JOYSTICK_STATE = record
       stick: array [0.._AL_MAX_JOYSTICK_STICKS - 1] of record
-	axis: array [0.._AL_MAX_JOYSTICK_AXES - 1] of AL_FLOAT; { -1.0 to 1.0 }
+        axis: array [0.._AL_MAX_JOYSTICK_AXES - 1] of AL_FLOAT; { -1.0 to 1.0 }
       end;
       button: array [0.._AL_MAX_JOYSTICK_BUTTONS - 1] of AL_INT; { 0 to 32767 }
     end;
@@ -1511,7 +1481,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
 (*
  * keycodes.h
- *****************************************************************************)
+ *************************************************************************)
 
 {$INCLUDE keycodes.inc}
 
@@ -1521,7 +1491,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  * keyboard.h
  *
  *   Keyboard routines.
- *****************************************************************************)
+ *************************************************************************)
 
   type
     ALLEGRO_KEYBOARD_STATE = record
@@ -1565,7 +1535,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  * mouse.h
  *
  *  Mouse routines.
- *****************************************************************************)
+ *************************************************************************)
 
   const
   (*** @exclude Allow up to four extra axes for future expansion. *)
@@ -1636,7 +1606,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  * touch_input.h
  *
  *   Touch input routines.
- *****************************************************************************)
+ *************************************************************************)
 
 { TODO: Not yet. }
 
@@ -1648,7 +1618,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  *   Haptic (that is, force feedback) routines for Allegro.
  *
  *   By Beoran.
- *****************************************************************************)
+ *************************************************************************)
 
 { TODO: Not yet.  Needs touch_input.h. }
 
@@ -1658,7 +1628,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
  * memory.h
  *
  *   Memory management routines.
- *****************************************************************************)
+ *************************************************************************)
 
   type
     ALLEGRO_MEMORY_INTERFACE = record
@@ -1697,7 +1667,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
 
 (*
  * monitor.h
- *****************************************************************************)
+ *************************************************************************)
 
   type
     ALLEGRO_MONITOR_INFO = record
@@ -1721,11 +1691,11 @@ AL_FUNC(int, al_get_monitor_refresh_rate, (int adapter));
 
 (*
  * mouse_cursor.h
- *****************************************************************************)
+ *************************************************************************)
 
   type
   (*** Pointer to a custom mouse cursor *)
-    ALLEGRO_MOUSE_CURSORptr = AL_POINTER;
+    ALLEGRO_MOUSE_CURSORptr = type AL_POINTER;
 
     ALLEGRO_SYSTEM_MOUSE_CURSOR = (
       ALLEGRO_SYSTEM_MOUSE_CURSOR_CUSTOM      = -1, { New! }
@@ -1771,7 +1741,7 @@ AL_FUNC(int, al_get_monitor_refresh_rate, (int adapter));
 
 (*
  * render_state.h
- *****************************************************************************)
+ *************************************************************************)
 
   type
     ALLEGRO_RENDER_STATE = (
@@ -1810,7 +1780,7 @@ AL_FUNC(int, al_get_monitor_refresh_rate, (int adapter));
 
 (*
  * transformations.h
- *****************************************************************************)
+ *************************************************************************)
 
   type
   (*** Pointer to a @link(ALLEGRO_TRANSFORM). *)
@@ -1830,10 +1800,7 @@ AL_FUNC(int, al_get_monitor_refresh_rate, (int adapter));
     CDECL; external ALLEGRO_LIB_NAME;
   procedure al_build_transform (out trans: ALLEGRO_TRANSFORM; x, y, sx, sy, theta: AL_FLOAT);
     CDECL; external ALLEGRO_LIB_NAME;
-  procedure al_build_camera_transform (out trans: ALLEGRO_TRANSFORM;
-    position_x, position_y, position_z,
-    look_x, look_y, look_z,
-    up_x, up_y, up_z: AL_FLOAT);
+  procedure al_build_camera_transform (out trans: ALLEGRO_TRANSFORM; position_x, position_y, position_z, look_x, look_y, look_z, up_x, up_y, up_z: AL_FLOAT);
     CDECL; external ALLEGRO_LIB_NAME;
   procedure al_translate_transform (var trans: ALLEGRO_TRANSFORM; x, y: AL_FLOAT);
     CDECL; external ALLEGRO_LIB_NAME;
@@ -1881,10 +1848,10 @@ AL_FUNC(int, al_get_monitor_refresh_rate, (int adapter));
 
 (*
  * shader.h
- *****************************************************************************)
+ *************************************************************************)
 
   type
-    ALLEGRO_SHADERptr = AL_POINTER;
+    ALLEGRO_SHADERptr = type AL_POINTER;
 
     ALLEGRO_SHADER_TYPE = (
       ALLEGRO_VERTEX_SHADER = 1,
@@ -1900,7 +1867,8 @@ AL_FUNC(int, al_get_monitor_refresh_rate, (int adapter));
     (*** High Level Shader Language (for Direct3D). *)
       ALLEGRO_SHADER_HLSL = 2,
     (*** Like @code(ALLEGRO_SHADER_AUTO), but pick a more minimalimplementation
-         that supports only basic alpha blending.. *)
+         that supports only basic alpha blending..
+     *)
       ALLEGRO_SHADER_AUTO_MINIMAL = 3,
     (*** Minimal GLSL shader. *)
       ALLEGRO_SHADER_GLSL_MINIMAL = 4,
@@ -1966,12 +1934,13 @@ AL_FUNC(int, al_get_monitor_refresh_rate, (int adapter));
 
 (*
  * system.h
- *****************************************************************************)
+ ************************************************************************)
 
-{ TODO: Some stuff needs the "path.h" section.
+{ Some stuff here need the "path.h" section.
 
-        By the way, both Free pascal and Delphi include functions to get the
-        same information, so I'll not add such stuff at the moment. }
+  By the way, both Free pascal and Delphi provide functions to get the same
+  information, so I'll not add it at the moment.
+}
 
   type
     ALLEGRO_SYSTEM_ID = (
@@ -2010,17 +1979,18 @@ AL_FUNC(int, al_get_monitor_refresh_rate, (int adapter));
  * threads.h
  *
  *   Thread routines.
- *****************************************************************************)
+ *************************************************************************)
 
-{ Allegro's thread code has a bug somewhere (I suspect it is a wrong data type
+{ Allegro's thread code have a bug somewhere (I suspect it is a wrong data type
   in the MUTEX stuff, quite similar to the bug with textured 3D renderer I
-  found in the 4 branch) so it is unusable.  So it is disabled. }
+  found in the 4 branch) so it is unusable.  So it is disabled.
+}
 {$IF FALSE}
 
   type
-    ALLEGRO_THREADptr = AL_POINTER;
-    ALLEGRO_MUTEXptr = AL_POINTER;
-    ALLEGRO_CONDptr = AL_POINTER;
+    ALLEGRO_THREADptr = type AL_POINTER;
+    ALLEGRO_MUTEXptr = type AL_POINTER;
+    ALLEGRO_CONDptr = type AL_POINTER;
 
     ALLEGRO_THREAD_METHOD = function (thread: ALLEGRO_THREADptr; arg: AL_POINTER): AL_POINTER; CDECL;
     ALLEGRO_DETACHED_THREAD = function (arg: AL_POINTER): AL_POINTER; CDECL;
@@ -2080,11 +2050,13 @@ AL_FUNC(ALLEGRO_THREAD *, al_create_thread_with_stacksize,
 
 {$ENDIF}
 
+
+
 (*
  * timer.h
  *
  *   Timer routines.
- *****************************************************************************)
+ *************************************************************************)
 
 (*** Converts microseconds to seconds. *)
   function ALLEGRO_USECS_TO_SECS (x: AL_INT): AL_DOUBLE; inline;
@@ -2129,7 +2101,7 @@ AL_FUNC(ALLEGRO_THREAD *, al_create_thread_with_stacksize,
  * tls.h
  *
  *   Thread local storage routines.
- *****************************************************************************)
+ *************************************************************************)
 
   const
     ALLEGRO_STATE_NEW_DISPLAY_PARAMETERS = $0001; {**<@exclude }
@@ -2159,17 +2131,16 @@ AL_FUNC(ALLEGRO_THREAD *, al_create_thread_with_stacksize,
     CDECL; external ALLEGRO_LIB_NAME;
 
 
-{ DO NOT USE ANY SYMBOL BELOW THIS COMMENT.  They're for internal use only.  In
-  Delphi, inline function declared in interface section must not use local
-  symbols, that's why I've defined it here. }
+{ DO NOT USE ANY SYMBOL BELOW THIS COMMENT.  They're for internal use only.
+
+  On Delphi, inline function declared in interface section must not use local
+  symbols, that's why I've defined it here.
+}
 {@exclude}
-  function _al_load_bitmap_f
-    (fp: ALLEGRO_FILEptr; const ident: AL_STRptr): ALLEGRO_BITMAPptr;
+  function _al_load_bitmap_f (fp: ALLEGRO_FILEptr; const ident: AL_STRptr): ALLEGRO_BITMAPptr;
     CDECL; external ALLEGRO_LIB_NAME name 'al_load_bitmap_f';
 {@exclude}
-  function _al_load_bitmap_flags_f (
-    fp: ALLEGRO_FILEptr; const ident: AL_STRptr; flags: AL_INT
-  ): ALLEGRO_BITMAPptr;
+  function _al_load_bitmap_flags_f (fp: ALLEGRO_FILEptr; const ident: AL_STRptr; flags: AL_INT): ALLEGRO_BITMAPptr;
     CDECL; external ALLEGRO_LIB_NAME name 'al_load_bitmap_flags_f';
 {@exclude}
   procedure _al_set_memory_interface_ (iface: AL_POINTER);
@@ -2187,7 +2158,7 @@ implementation
 
 (*
  * base.h
- *****************************************************************************)
+ *************************************************************************)
 
   function AL_ID (const str: AL_STR): AL_INT;
   begin
@@ -2199,10 +2170,10 @@ implementation
 
 (*
  * bitmap_io.h
- *****************************************************************************)
+ *************************************************************************)
 
-  function al_load_bitmap_f
-    (fp: ALLEGRO_FILEptr; const ident: AL_STR): ALLEGRO_BITMAPptr;
+  function al_load_bitmap_f (fp: ALLEGRO_FILEptr; const ident: AL_STR)
+    : ALLEGRO_BITMAPptr;
   begin
     if ident = '' then
       Result := _al_load_bitmap_f (fp, Nil)
@@ -2213,7 +2184,9 @@ implementation
 
 
   function al_load_bitmap_flags_f (
-    fp: ALLEGRO_FILEptr; const ident: AL_STR; flags: AL_INT
+    fp: ALLEGRO_FILEptr;
+    const ident: AL_STR;
+    flags: AL_INT
   ): ALLEGRO_BITMAPptr;
   begin
     if ident = '' then
@@ -2226,7 +2199,7 @@ implementation
 
 (*
  * events.h
- *****************************************************************************)
+ *************************************************************************)
 
   function ALLEGRO_EVENT_TYPE_IS_USER (t: ALLEGRO_EVENT_TYPE): AL_BOOL;
   begin
@@ -2244,7 +2217,7 @@ implementation
 
 (*
  * fmaths.inl
- *****************************************************************************)
+ *************************************************************************)
 
   function al_ftofix (x: AL_DOUBLE): AL_FIXED;
   begin
@@ -2343,10 +2316,10 @@ implementation
 
   function al_fixfloor (x: AL_FIXED): AL_FIXED;
   begin
-    if x >= 0 then
-      Result := x shr 16
-    else
+    if x < 0 then
       Result := not ((not x) shr 16)
+    else
+      Result := x shr 16
   end;
 
 
@@ -2437,7 +2410,7 @@ implementation
 
 (*
  * memory.h
- *****************************************************************************)
+ *************************************************************************)
 
   procedure al_restore_memory_interface;
   begin
@@ -2476,7 +2449,7 @@ implementation
 
 (*
  * transformation.h
- *****************************************************************************)
+ *************************************************************************)
 
   function al_check_inverse (var trans: ALLEGRO_TRANSFORM; tol: AL_FLOAT): AL_BOOL;
   begin
@@ -2487,7 +2460,7 @@ implementation
 
 (*
  * system.h
- *****************************************************************************)
+ *************************************************************************)
 
   function al_init: AL_BOOL;
   begin
@@ -2498,7 +2471,7 @@ implementation
 
 (*
  * threads.h
- *****************************************************************************)
+ *************************************************************************)
 
  {$IF FALSE See explanation in the INTERFACE section. }
 
@@ -2519,7 +2492,7 @@ implementation
 
 (*
  * timer.h
- *****************************************************************************)
+ *************************************************************************)
 
   function ALLEGRO_USECS_TO_SECS (x: AL_INT): AL_DOUBLE;
   begin
@@ -2544,7 +2517,8 @@ implementation
 initialization
 { Next code suggested by FPC mailing list user.  This should fix some issues
   with memory.  It was removed as it seems to be fixed by Allegro itself.
-  Anyway I'll keep it here in case the bug appears again. }
+  Anyway I'll keep it here in case the bug re-appears again.
+}
 
 { $IF DEFINED(cpui386) OR DEFINED(cpux86_64)}
 { SetExceptionMask(GetExceptionMask + [exZeroDivide, exInvalidOp]); }

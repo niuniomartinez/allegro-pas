@@ -1,4 +1,4 @@
-program ex_22_audio_chain;
+program ex_17_audio_chain;
 (*
  *    Example program for the Allegro library, by Peter Wang,
  *    Ported to Object Pascal by Guillermo Martínez J.
@@ -39,13 +39,7 @@ program ex_22_audio_chain;
 
   uses
     algui, Common,
-    allegro5      in '../lib/allegro5.pas',
-    al5acodec     in '../lib/al5acodec.pas',
-    al5audio      in '../lib/al5audio.pas',
-    al5font       in '../lib/al5font.pas',
-    al5primitives in '../lib/al5primitives.pas',
-    al5strings    in '../lib/al5strings.pas',
-    al5ttf        in '../lib/al5ttf.pas',
+    allegro5, al5acodec, al5audio, al5font, al5primitives, al5strings, al5ttf,
     Classes, Contnrs, Math, sysutils;
 
   const

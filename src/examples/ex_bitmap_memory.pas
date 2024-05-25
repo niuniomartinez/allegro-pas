@@ -33,10 +33,7 @@ program ex_bitmap_memory;
 
   uses
     Common,
-    allegro5   in '../lib/allegro5.pas',
-    al5font    in '../lib/al5font',
-    al5image   in '../lib/al5image.pas',
-    al5strings in '../lib/al5strings.pas';
+    allegro5, al5font, al5image, al5strings;
 
   const
   (* Window size. *)
@@ -220,14 +217,18 @@ program ex_bitmap_memory;
     until lTerminated
   end;
 
+var
+  Terminated: Boolean;
 begin
-  if not initialize then Exit;
+  if not Initialize then Exit;
 { Do the testing. }
-  while true do
-  begin
+  Terminated := False;
+  repeat
     if Test (MemBmp, MemFont, 'Memory bitmap (press SPACE key)') then
-      Exit;
-    if Test (AccelBmp, AccelFont, 'Accelerated bitmap (press SPACE key)') then
-      Exit
-  end
+      Terminated := True;
+    if not Terminated then
+      if Test (AccelBmp, AccelFont, 'Accelerated bitmap (press SPACE key)') then
+        Terminated := True
+  until Terminated;
+  Finalize
 end.

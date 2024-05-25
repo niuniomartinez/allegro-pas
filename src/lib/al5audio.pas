@@ -2,7 +2,7 @@ unit al5audio;
 (***<Audio addon.
 
      @include(../docs/al5audio.pds) *)
-(* Copyright (c) 2012-2022 Guillermo Martínez J.
+(* Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -45,7 +45,7 @@ interface
     ALLEGRO_EVENT_AUDIO_RECORDER_FRAGMENT = 515;
 
   type
-    ALLEGRO_AUDIO_RECORDERptr = AL_POINTER;
+    ALLEGRO_AUDIO_RECORDERptr = type AL_POINTER;
     {
 #if defined(ALLEGRO_UNSTABLE) || defined(ALLEGRO_INTERNAL_UNSTABLE) || defined(ALLEGRO_KCM_AUDIO_SRC)
     }
@@ -142,7 +142,7 @@ interface
     ALLEGRO_AUDIO_PAN_NONE: AL_FLOAT = -1000.0;
 
   type
-    ALLEGRO_SAMPLEptr = AL_POINTER;
+    ALLEGRO_SAMPLEptr = type AL_POINTER;
   (*** Pointer to @link(ALLEGRO_SAMPLE_ID). *)
     ALLEGRO_SAMPLE_IDptr = ^ALLEGRO_SAMPLE_ID;
     ALLEGRO_SAMPLE_ID = record

@@ -12,7 +12,7 @@
         <CompatibilityMode Value="True"/>
       </Flags>
       <AutoCreateForms Value="False"/>
-      <Title Value="ex_17_window"/>
+      <Title Value="ex_18_audio_properties"/>
       <ResourceType Value="res"/>
     </General>
     <i18n>
@@ -24,7 +24,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="../../../bin/examples/ex_17_window"/>
+            <Filename Value="../../../bin/examples/ex_18_audio_properties"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -68,9 +68,9 @@
         <Mode0 Name="default"/>
       </Modes>
     </RunParams>
-    <Units Count="2">
+    <Units Count="3">
       <Unit0>
-        <Filename Value="../ex_17_window.pas"/>
+        <Filename Value="../ex_18_audio_properties.pas"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <UsageCount Value="21"/>
@@ -84,13 +84,22 @@
         <UsageCount Value="21"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="../algui.pas"/>
+        <UnitName Value="alGUI"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="375"/>
+        <CursorPos X="36" Y="388"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
     </Units>
     <JumpHistory HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="../../../bin/examples/ex_17_window"/>
+      <Filename Value="../../../bin/examples/ex_18_audio_properties"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

@@ -28,8 +28,7 @@ program ex_02_events;
 {$ENDIF}
 
   uses
-    allegro5 in '../lib/allegro5.pas',
-    al5font  in '../lib/al5font.pas';
+    allegro5, al5font;
 
   const
   (* Window size. *)

@@ -29,11 +29,7 @@ program ex_10_mouse;
 
   uses
     Common,
-    allegro5      in '../lib/allegro5.pas',
-    al5font       in '../lib/al5font.pas',
-    al5image      in '../lib/al5image.pas',
-    al5primitives in '../lib/al5primitives.pas',
-    al5strings    in '../lib/al5strings.pas';
+    allegro5, al5font, al5image, al5primitives, al5strings;
 
   const
   (* Window size. *)

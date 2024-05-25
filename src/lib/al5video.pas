@@ -3,8 +3,9 @@ unit al5video;
 
   Currently we have an Ogg backend (Theora + Vorbis). See http://xiph.org/
   for installation instructions, licensing information and supported video
-  formats.. *)
-(* Copyright (c) 2012-2022 Guillermo Martínez J.
+  formats..
+ *)
+(* Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -46,7 +47,7 @@ interface
     );
 
   (*** Pointer to the video description. *)
-    ALLEGRO_VIDEOptr = AL_POINTER;
+    ALLEGRO_VIDEOptr = type AL_POINTER;
 
 { Declaration order is different than in the original header to build the
   documentation in correct order. }
