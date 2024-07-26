@@ -10,6 +10,7 @@ Changes between versions 5.2.b.1-1 and 5.2.0
     : al_init_user_event_source and al_destroy_user_event_source get pointers
       now.  This should prevent issues with optimizations.
     : Removed threading support as it seems no compatible with Pascal.
+    : Removed al5nativedlg unit as it seems no compatible with Pascal.
 
   News
   ----

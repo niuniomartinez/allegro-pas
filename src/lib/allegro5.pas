@@ -76,10 +76,10 @@ interface
     ALLEGRO_RELEASE_NUMBER = 1;
 
     { ALLEGRO_PAS_VERSION_STR = '5.2'; }
-    ALLEGRO_PAS_VERSION_STR = '5.2.beta.1#573';
+    ALLEGRO_PAS_VERSION_STR = '5.2#574';
   (* Dates aren't for Allegro but for Allegro.pas. *)
     ALLEGRO_DATE_STR = '2024';
-    ALLEGRO_DATE = 20240509; { yyyymmdd }
+    ALLEGRO_DATE = 20240726; { yyyymmdd }
     ALLEGRO_VERSION_INT  = (
            (ALLEGRO_VERSION shl 24)
         or (ALLEGRO_SUB_VERSION shl 16)
@@ -944,7 +944,7 @@ AL_FUNC(ALLEGRO_FILE*, al_make_temp_file, (const char *tmpl,
     ALLEGRO_FULLSCREEN_WINDOW           = 1 shl 9; {**<@exclude }
     ALLEGRO_MINIMIZED                   = 1 shl 10; {**<@exclude }
     ALLEGRO_PROGRAMMABLE_PIPELINE       = 1 shl 11; {**<@exclude }
-    ALLEGRO_GTK_TOPLEVEL_INTERNAL       = 1 shl 12; {**<@exclude }
+    ALLEGRO_GTK_TOPLEVEL_INTERNAL       = 1 shl 12; {**<@exclude Needed by (unimplemented) "native dialogs" unit(?). }
     ALLEGRO_MAXIMIZED                   = 1 shl 13; {**<@exclude }
     ALLEGRO_OPENGL_ES_PROFILE           = 1 shl 14; {**<@exclude }
 
@@ -1981,74 +1981,9 @@ AL_FUNC(int, al_get_monitor_refresh_rate, (int adapter));
  *   Thread routines.
  *************************************************************************)
 
-{ Allegro's thread code have a bug somewhere (I suspect it is a wrong data type
-  in the MUTEX stuff, quite similar to the bug with textured 3D renderer I
-  found in the 4 branch) so it is unusable.  So it is disabled.
+{ Allegro's thread code doesn't work in Pascal (neither Free Pascal or Delphi
+  compilers) so it was removed.
 }
-{$IF FALSE}
-
-  type
-    ALLEGRO_THREADptr = type AL_POINTER;
-    ALLEGRO_MUTEXptr = type AL_POINTER;
-    ALLEGRO_CONDptr = type AL_POINTER;
-
-    ALLEGRO_THREAD_METHOD = function (thread: ALLEGRO_THREADptr; arg: AL_POINTER): AL_POINTER; CDECL;
-    ALLEGRO_DETACHED_THREAD = function (arg: AL_POINTER): AL_POINTER; CDECL;
-
-
-
-  function al_create_thread (proc: ALLEGRO_THREAD_METHOD; arg: AL_POINTER)
-    : ALLEGRO_THREADptr;
-    CDECL; external ALLEGRO_LIB_NAME;
-{
-#if defined(ALLEGRO_UNSTABLE) || defined(ALLEGRO_INTERNAL_UNSTABLE) || defined(ALLEGRO_SRC)
-AL_FUNC(ALLEGRO_THREAD *, al_create_thread_with_stacksize,
-   (void *(*proc)(ALLEGRO_THREAD *thread, void *arg), void *arg, size_t stacksize));
-#endif
-}
-  procedure al_start_thread (outer: ALLEGRO_THREADptr);
-    CDECL; external ALLEGRO_LIB_NAME;
-  procedure al_join_thread (outer: ALLEGRO_THREADptr); inline;
-  procedure al_join_thread_ex
-    (outer: ALLEGRO_THREADptr; out ret_value: AL_POINTER);
-    inline;
-  procedure al_set_thread_should_stop (outer: ALLEGRO_THREADptr);
-    CDECL; external ALLEGRO_LIB_NAME;
-  function al_get_thread_should_stop (outer: ALLEGRO_THREADptr): AL_BOOL;
-    CDECL; external ALLEGRO_LIB_NAME;
-  procedure al_destroy_thread (thread: ALLEGRO_THREADptr);
-    CDECL; external ALLEGRO_LIB_NAME;
-  procedure al_run_detached_thread (proc: ALLEGRO_DETACHED_THREAD; arg: AL_POINTER);
-    CDECL; external ALLEGRO_LIB_NAME;
-
-  function al_create_mutex: ALLEGRO_MUTEXptr;
-    CDECL; external ALLEGRO_LIB_NAME;
-  function al_create_mutex_recursive: ALLEGRO_MUTEXptr;
-    CDECL; external ALLEGRO_LIB_NAME;
-  procedure al_lock_mutex (mutex: ALLEGRO_MUTEXptr);
-    CDECL; external ALLEGRO_LIB_NAME;
-  procedure al_unlock_mutex (mutex: ALLEGRO_MUTEXptr);
-    CDECL; external ALLEGRO_LIB_NAME;
-  procedure al_destroy_mutex (mutex: ALLEGRO_MUTEXptr);
-    CDECL; external ALLEGRO_LIB_NAME;
-
-  function al_create_cond: ALLEGRO_CONDptr;
-    CDECL; external ALLEGRO_LIB_NAME;
-  procedure al_destroy_cond (cond: ALLEGRO_CONDptr);
-    CDECL; external ALLEGRO_LIB_NAME;
-  procedure al_wait_cond (cond: ALLEGRO_CONDptr; mutex: ALLEGRO_MUTEXptr);
-    CDECL; external ALLEGRO_LIB_NAME;
-  function al_wait_cond_until (
-    cond: ALLEGRO_CONDptr; mutex: ALLEGRO_MUTEXptr;
-    const timeout: ALLEGRO_TIMEOUTptr
-  ): AL_INT;
-    CDECL; external ALLEGRO_LIB_NAME;
-  procedure al_broadcast_cond (cond: ALLEGRO_CONDptr);
-    CDECL; external ALLEGRO_LIB_NAME;
-  procedure al_signal_cond (cond: ALLEGRO_CONDptr);
-    CDECL; external ALLEGRO_LIB_NAME;
-
-{$ENDIF}
 
 
 

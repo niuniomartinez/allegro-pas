@@ -1,10 +1,3 @@
-#al5base.AL_EDOM
-An error value returned by @link(al_get_errno) in some cases.
-@seealso(AL_ERANGE)
-#al5base.AL_ERANGE
-An error value returned by @link(al_get_errno) in some cases.
-@seealso(AL_EDOM)
-
 #al5base.AL_POINTER
 Generic pointer.
 #al5base.AL_INT8
@@ -83,31 +76,31 @@ This is a workaround because some Pascal compilers doesn't allow to cast a @code
 
 
 
-#Allegro5.ALLEGRO_PAS_VERSION_STR
+#allegro5.ALLEGRO_PAS_VERSION_STR
 Allegro.pas version string.  Note this is @bold(not) the Allegro's version.
 @seealso(al_get_allegro_version)
 @seealso(ALLEGRO_VERSION_INT)
-#Allegro5.ALLEGRO_VERSION
+#allegro5.ALLEGRO_VERSION
 Major version of Allegro.
 @seealso(ALLEGRO_VERSION_INT)
 @seealso(ALLEGRO_PAS_VERSION_STR)
-#Allegro5.ALLEGRO_SUB_VERSION
+#allegro5.ALLEGRO_SUB_VERSION
 Minor version of Allegro.
 @seealso(ALLEGRO_VERSION_INT)
 @seealso(ALLEGRO_PAS_VERSION_STR)
-#Allegro5.ALLEGRO_WIP_VERSION
+#allegro5.ALLEGRO_WIP_VERSION
 Revision number of Allegro.
 @seealso(ALLEGRO_VERSION_INT)
 @seealso(ALLEGRO_PAS_VERSION_STR)
-#Allegro5.ALLEGRO_DATE_STR
+#allegro5.ALLEGRO_DATE_STR
 Release year for Allegro.pas.
 @seealso(ALLEGRO_VERSION_INT)
 @seealso(ALLEGRO_PAS_VERSION_STR)
-#Allegro5.ALLEGRO_DATE
+#allegro5.ALLEGRO_DATE
 Release date for Allegro.pas as integer with digits: yyyymmdd.
 @seealso(ALLEGRO_VERSION_INT)
 @seealso(ALLEGRO_PAS_VERSION_STR)
-#Allegro5.ALLEGRO_VERSION_INT
+#allegro5.ALLEGRO_VERSION_INT
 Packs Allegro's version number in a simple @link(AL_INT) number.
 
 Note this is @bold(not) the actual Allegro version, you should use @link(al_get_allegro_version) to get this.  @code(ALLEGRO_VERSION_INT) just has a value that identifies all compatible Allegro DLL/so/dylib files.
@@ -117,10 +110,10 @@ Note this is @bold(not) the actual Allegro version, you should use @link(al_get_
 @seealso(ALLEGRO_SUB_VERSION)
 @seealso(ALLEGRO_WIP_VERSION)
 
-#Allegro5.ALLEGRO_USER_MAIN
+#allegro5.ALLEGRO_USER_MAIN
 Description of user main function for @link(al_run_main).
 
-#Allegro5.al_get_allegro_version
+#allegro5.al_get_allegro_version
 Returns the compiled version of the Allegro library @(i.e. the dll/so/dylib
 file@), packed into a single integer as groups of 8 bits.
 
@@ -146,7 +139,7 @@ branch before the official release.
 
 Remember this version number isn't for Allegro.pas but for Allegro.  In most cases will @bold(not) be the same than @link(ALLEGRO_VERSION_INT).
 @seealso(ALLEGRO_VERSION_INT)
-#Allegro5.al_run_main
+#allegro5.al_run_main
 This function is useful in cases where you don't have a @code(main) function
 but want to run Allegro (mostly useful in a wrapper library).  Under Windows
 and Linux this is no problem because you simply can call
@@ -171,7 +164,7 @@ The @italic(tau) number.
 
 This is the full circle, which is more convenient in most cases.  For more information read @html(<a href="https://tauday.com/tau-manifesto">The Tau manifesto</a>).
 
-#Allegro5.AL_ID
+#allegro5.AL_ID
 This function can be used to create a packed 32 bit integer from 8 bit
 characters, on both 32 and 64 bit machines.  These can be used for various
  things, like custom datafile objects or system IDs. Example:
@@ -185,19 +178,19 @@ END;
 
 
 
-#Allegro5.ALLEGRO_TIMEOUT
+#allegro5.ALLEGRO_TIMEOUT
 Represents a timeout value.
 
 The size of the structure is known so it can be statically allocated.  The
 contents are private. @seealso(al_init_timeout)
 
-#Allegro5.al_get_time
+#allegro5.al_get_time
 Returns the number of seconds since the Allegro library was initialised.
 The return value is undefined if Allegro is uninitialised. The resolution
 depends on the used driver, but typically can be in the order of microseconds.
 @seealso(al_rest)
 
-#Allegro5.al_rest
+#allegro5.al_rest
 Waits for the specified number of seconds. This tells the system to pause the
 current thread for the given amount of time. With some operating systems, the
 accuracy can be in the order of 10ms. That is, even @code(al_rest @(0.000001@))
@@ -206,7 +199,7 @@ might pause for something like 10ms. Also see the other timer rutines (i.e.
 all CPU.
 @seealso(al_get_time) @seealso(al_init_timeout)
 
-#Allegro5.al_init_timeout
+#allegro5.al_init_timeout
 Sets timeout value of some number of seconds after the function call.
 
 For compatibility with all platforms, seconds must be 2,147,483.647 seconds or
@@ -215,12 +208,12 @@ less.
 
 
 
-#Allegro5.ALLEGRO_COLOR
+#allegro5.ALLEGRO_COLOR
 An @code(ALLEGRO_COLOR) structure describes a color in a device independent
 way.  Use @link(al_map_rgb) et al. and @link(al_unmap_rgb) et al. to translate
 from and to various color representations.
 
-#Allegro5.ALLEGRO_PIXEL_FORMAT
+#allegro5.ALLEGRO_PIXEL_FORMAT
 Pixel formats. Each pixel format specifies the exact size and bit layout of a
 pixel in memory. Components are specified from high bits to low bits, so for
 example a fully opaque red pixel in @code(ARGB_8888) format is @code($FFFF0000).
@@ -250,13 +243,13 @@ Unlike regular pixel formats, compressed pixel formats are not laid out in memor
 
 It is not recommended to use compressed bitmaps as target bitmaps, as that operation cannot be hardware accelerated. Due to proprietary algorithms used, it is typically impossible to create compressed memory bitmaps.
 @seealso(al_set_new_bitmap_format) @seealso(al_get_bitmap_format)
-#Allegro5.ALLEGRO_PIXEL_FORMAT_ANY
+#allegro5.ALLEGRO_PIXEL_FORMAT_ANY
 Let the driver choose a format. This is the default format at program start.
-#Allegro5.ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE
+#allegro5.ALLEGRO_PIXEL_FORMAT_ABGR_8888_LE
 Like the version without _LE, but the component order is guaranteed to
 be red, green, blue, alpha. This only makes a difference on big endian
 systems, on little endian it is just an alias.
-#Allegro5.ALLEGRO_PIXEL_FORMAT_SINGLE_CHANNEL_8
+#allegro5.ALLEGRO_PIXEL_FORMAT_SINGLE_CHANNEL_8
 A single 8-bit channel. A pixel value maps onto the red channel when
 displayed, but it is undefined how it maps onto green, blue and alpha
 channels. When drawing to bitmaps of this format, only the red channel
@@ -264,34 +257,34 @@ is taken into account. Allegro may have to use fallback methods to
 render to bitmaps of this format. This pixel format is mainly intended
 for storing the color indices of an indexed (paletted) image, usually in
 conjunction with a pixel shader that maps indices to RGBA values.
-#Allegro5.ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT1
+#allegro5.ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT1
 Compressed using the DXT1 compression algorithm. Each 4x4 pixel block
 is encoded in 64 bytes, resulting in 6-8x compression ratio. Only a
 single bit of alpha per pixel is supported.
-#Allegro5.ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT3
+#allegro5.ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT3
 Compressed using the DXT3 compression algorithm. Each 4x4 pixel block
 is encoded in 128 bytes, resulting in 4x compression ratio. This format
 supports sharp alpha transitions.
-#Allegro5.ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT5
+#allegro5.ALLEGRO_PIXEL_FORMAT_COMPRESSED_RGBA_DXT5
 Compressed using the DXT5 compression algorithm. Each 4x4 pixel block
 is encoded in 128 bytes, resulting in 4x compression ratio. This format
 supports smooth alpha transitions.
 
-#Allegro5.al_map_rgb
+#allegro5.al_map_rgb
 Converts r, g, b (ranging from 0-255) into an @link(ALLEGRO_COLOR), using 255
 for alpha.
  @seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb_f)
-#Allegro5.al_map_rgba
+#allegro5.al_map_rgba
 Convert r, g, b, a (ranging from 0-255) into an @link(ALLEGRO_COLOR).
 @seealso(al_map_rgb) @seealso(al_map_rgba_f) @seealso(al_map_rgb_f)
-#Allegro5.al_map_rgb_f
+#allegro5.al_map_rgb_f
 Convert r, g, b (ranging from 0.0f-1.0f) into an @link(ALLEGRO_COLOR), using
 1.0f for alpha.
 @seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb)
-#Allegro5.al_map_rgba_f
+#allegro5.al_map_rgba_f
 Convert r, g, b, a (ranging from 0.0f-1.0f) into an @link(ALLEGRO_COLOR).
 seealso(al_map_rgba) @seealso(al_map_rgba_f) @seealso(al_map_rgb)
-#Allegro5.al_premul_rgba
+#allegro5.al_premul_rgba
 This is a shortcut for @code(al_map_rgba @(r * a / 255, g * a / 255, b * a / 255, a@)).
 
 By default Allegro uses pre-multiplied alpha for transparent blending of
@@ -310,7 +303,7 @@ BEGIN
 END;
 !)
 @seealso(al_map_rgba) @seealso(al_premul_rgba_f)
-#Allegro5.al_premul_rgba_f
+#allegro5.al_premul_rgba_f
 This is a shortcut for @code(al_map_rgba @(r * a, g * a, b * a, a@)).
 
 By default Allegro uses pre-multiplied alpha for transparent blending of
@@ -330,50 +323,50 @@ END;
 !)
 @seealso(al_map_rgba_f) @seealso(al_premul_rgba)
 
-#Allegro5.al_unmap_rgb
+#allegro5.al_unmap_rgb
 Retrieves components of an @link(ALLEGRO_COLOR), ignoring alpha.  Components
 will range from 0-255.
 @seealso(al_unmap_rgba) @seealso(al_unmap_rgb_f)
-#Allegro5.al_unmap_rgba
+#allegro5.al_unmap_rgba
 Retrieves components of an @link(ALLEGRO_COLOR).  Components will range from
 0-255.
 @seealso(al_unmap_rgb) @seealso(al_unmap_rgba_f)
-#Allegro5.al_unmap_rgb_f
+#allegro5.al_unmap_rgb_f
 Retrieves components of an @link(ALLEGRO_COLOR), ignoring alpha.  Components
 will range from 0.0f-1.0f.
 @seealso(al_unmap_rgb) @seealso(al_unmap_rgba_f)
-#Allegro5.al_unmap_rgba_f
+#allegro5.al_unmap_rgba_f
 Retrieves components of an @link(ALLEGRO_COLOR).  Components will range from
 0.0f-1.0f.
 @seealso(al_unmap_rgba) @seealso(al_unmap_rgb_f)
 
-#Allegro5.al_get_pixel_size
+#allegro5.al_get_pixel_size
 Returns the number of bytes that a pixel of the given format occupies.  For
 blocked pixel formats (e.g. compressed formats), this returns 0.
 @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_pixel_format_bits)
-#Allegro5.al_get_pixel_format_bits
+#allegro5.al_get_pixel_format_bits
 Returns the number of bits that a pixel of the given format occupies.  For
 blocked pixel formats (e.g. compressed formats), this returns 0.
 @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_pixel_size)
-#Allegro5.al_get_pixel_block_size
+#allegro5.al_get_pixel_block_size
 Returns the number of bytes that a block of pixels with this format occupies.
 @seealso(ALLEGRO_PIXEL_FORMAT)
 @seealso(al_get_pixel_block_width) @seealso(al_get_pixel_block_height)
-#Allegro5.al_get_pixel_block_width
+#allegro5.al_get_pixel_block_width
 Returns the width of the pixel block of this format.
 @seealso(ALLEGRO_PIXEL_FORMAT)
 @seealso(al_get_pixel_block_size) @seealso(al_get_pixel_block_height)
-#Allegro5.al_get_pixel_block_height
+#allegro5.al_get_pixel_block_height
 Returns the height of the pixel block of this format.
 @seealso(ALLEGRO_PIXEL_FORMAT)
 @seealso(al_get_pixel_block_width) @seealso(al_get_pixel_block_size)
 
 
 
-#Allegro5.al_set_new_bitmap_format
+#allegro5.al_set_new_bitmap_format
 Sets the pixel format for newly created bitmaps.  The default format is @code(ALLEGRO_PIXEL_FORMAT_ANY) and means the display driver will choose the best format.
 @seealso(al_create_bitmap) @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_get_new_bitmap_format)
-#Allegro5.al_set_new_bitmap_flags
+#allegro5.al_set_new_bitmap_flags
 Sets the flags to use for newly created bitmaps. Valid flags are:
 @definitionlist(
   @itemlabel(ALLEGRO_MEMORY_BITMAP)
@@ -408,26 +401,26 @@ Sets the flags to use for newly created bitmaps. Valid flags are:
   @item(This can only be used for bitmaps whose width and height is a power of two. In that case, it will generate mipmaps and use them when drawing scaled down versions. For example if the bitmap is 64x64, then extra bitmaps of sizes 32x32, 16x16, 8x8, 4x4, 2x2 and 1x1 will be created always containing a scaled down version of the original.)
 )
 @seealso(al_create_bitmap) @seealso(al_add_new_bitmap_flag) @seealso(al_get_new_bitmap_flags) @seealso(al_get_bitmap_flags)
-#Allegro5.al_get_new_bitmap_format
+#allegro5.al_get_new_bitmap_format
 Returns the format used for newly created bitmaps.
 @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_set_new_bitmap_format)
-#Allegro5.al_get_new_bitmap_flags
+#allegro5.al_get_new_bitmap_flags
 Returns the format used for newly created bitmaps.
 @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_set_new_bitmap_flags)
-#Allegro5.al_add_new_bitmap_flag
+#allegro5.al_add_new_bitmap_flag
 A convenience function which does the same as @longcode(!
   al_set_new_bitmap_flags (al_get_new_bitmap_flags OR flag);
 !)
 @seealso(al_set_new_bitmap_flags) @seealso(al_get_new_bitmap_flags) @seealso(al_get_bitmap_flags)
 
-#Allegro5.al_get_bitmap_format
+#allegro5.al_get_bitmap_format
 Returns the pixel format of a bitmap.
 @seealso(ALLEGRO_PIXEL_FORMAT) @seealso(al_set_new_bitmap_format)
-#Allegro5.al_get_bitmap_flags
+#allegro5.al_get_bitmap_flags
 Returns the flags user to create the bitmap.
 @seealso(al_set_new_bitmap_flags)
 
-#Allegro5.al_create_bitmap
+#allegro5.al_create_bitmap
 Creates a new bitmap using the bitmap format and flags for the current
 thread. Blitting between bitmaps of differing formats, or blitting between
 memory bitmaps and display bitmaps may be slow.
@@ -461,7 +454,7 @@ When you are done with using the bitmap you must call @link(al_destroy_bitmap) o
 @seealso(al_set_new_bitmap_format) @seealso(al_set_new_bitmap_flags)
 @seealso(al_clone_bitmap) @seealso(al_create_sub_bitmap) @seealso(al_convert_memory_bitmaps)
 @seealso(al_destroy_bitmap)
-#Allegro5.al_destroy_bitmap
+#allegro5.al_destroy_bitmap
 Destroys the given bitmap, freeing all resources used by it. This function does nothing if the @code(bitmap) argument is @nil.
 
 As a convenience, if the calling thread is currently targeting the bitmap then the bitmap will be untargeted first.  The new target bitmap is unspecified.
@@ -469,40 +462,40 @@ As a convenience, if the calling thread is currently targeting the bitmap then t
 Otherwise, it is an error to destroy a bitmap while it (or a sub-bitmap) is the target bitmap of any thread.
 @seealso(al_create_bitmap)
 
-#Allegro5.al_put_pixel
+#allegro5.al_put_pixel
 Draws a single pixel on the target bitmap.  This operation is slow on
 non-memory bitmaps. Consider locking the bitmap if you are going to use this
 function multiple times on the same bitmap.  This function is not affected by
 the transformations or the color blenders.
 @seealso(ALLEGRO_COLOR) @seealso(al_get_pixel) @seealso(al_put_blended_pixel) @seealso(al_lock_bitmap)
-#Allegro5.al_put_blended_pixel
+#allegro5.al_put_blended_pixel
 Like @link(al_put_pixel), but the pixel color is blended using the current blenders before being drawn.
-#Allegro5.al_get_pixel
+#allegro5.al_get_pixel
 Gets a pixel's color value from the specified bitmap.  This operation is slow
 on non-memory bitmaps.  Consider locking the bitmap if you are going to use
 this function multiple times on the same bitmap.
 @seealso(ALLEGRO_COLOR) @seealso(al_put_pixel) @seealso(al_lock_bitmap)
 
-#Allegro5.al_convert_mask_to_alpha
+#allegro5.al_convert_mask_to_alpha
 Converts the given mask color to an alpha channel in the bitmap.  Can be used
 to convert older 4.2-style bitmaps with magic pink to alpha-ready bitmaps.
 @seealso(ALLEGRO_COLOR)
 
-#Allegro5.al_set_clipping_rectangle
+#allegro5.al_set_clipping_rectangle
 Sets the region of the target bitmap or display that pixels get clipped to.
 The default is to clip pixels to the entire bitmap.
 @seealso(al_get_clipping_rectangle) @seealso(al_reset_clipping_rectangle)
-#Allegro5.al_reset_clipping_rectangle
+#allegro5.al_reset_clipping_rectangle
 Equivalent to calling @code(al_set_clipping_rectangle @(0, 0, w, h@)) where
 @code(w) and @code(h) are the width and height of the target bitmap respectively.
 
 Does nothing if there is no target bitmap.
 @seealso(al_set_clipping_rectangle)
-#Allegro5.al_get_clipping_rectangle
+#allegro5.al_get_clipping_rectangle
 Gets the clipping rectangle of the target bitmap.
 @seealso(al_set_clipping_rectangle)
 
-#Allegro5.al_create_sub_bitmap
+#allegro5.al_create_sub_bitmap
 Creates a sub-bitmap of the parent, at the specified coordinates and of the
 specified size. A sub-bitmap is a bitmap that shares drawing memory with a
 pre-existing (parent) bitmap, but possibly with a different size and clipping
@@ -526,10 +519,10 @@ drawing - they still must be destroyed with @code(al_destroy_bitmap) however.  I
 does not matter whether you destroy a sub-bitmap before or after its parent
 otherwise.
 @seealso(al_create_bitmap) @seealso(al_is_sub_bitmap) @seealso(al_get_parent_bitmap)
-#Allegro5.al_is_sub_bitmap
+#allegro5.al_is_sub_bitmap
 Returns true if the specified bitmap is a sub-bitmap, false otherwise.
 @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap)
-#Allegro5.al_get_parent_bitmap
+#allegro5.al_get_parent_bitmap
 Returns the bitmap this bitmap is a sub-bitmap of. Returns @nil if this
 bitmap is not a sub-bitmap. This function always returns the real bitmap,
 and never a sub-bitmap. This might NOT match what was passed to
@@ -548,13 +541,13 @@ END;
 The message will be printed because only @code(a) is a real bitmap, and both @code(b) and @code(c)
 are its sub-bitmaps.
 @seealso(al_create_sub_bitmap) @seealso(al_is_sub_bitmap)
-#Allegro5.al_get_bitmap_x
+#allegro5.al_get_bitmap_x
 For a sub-bitmap, returns it's x position within the parent.
 @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap) @seealso(al_get_bitmap_y)
-#Allegro5.al_get_bitmap_y
+#allegro5.al_get_bitmap_y
 For a sub-bitmap, returns it's y position within the parent.
 @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap) @seealso(al_get_bitmap_x)
-#Allegro5.al_reparent_bitmap
+#allegro5.al_reparent_bitmap
 For a sub-bitmap, changes the parent, position and size.  This is the same as
 destroying the bitmap and re-creating it with @code(al_create_sub_bitmap) -
 except the bitmap pointer stays the same.  This has many uses, for example an
@@ -563,13 +556,13 @@ different animation frames without having to re-draw the contents.  Or a sprite
 atlas could re-arrange its sprites without having to invalidate all existing
 bitmaps. @seealso(al_create_sub_bitmap) @seealso(al_get_parent_bitmap)
 
-#Allegro5.al_clone_bitmap
+#allegro5.al_clone_bitmap
 Creates a new bitmap with @code(al_create_bitmap), and copyes the pixel data from
 the old bitmap across.  The newly created bitmap will be created with the current new bitmap flags, and not the ones that were used to create the original bitmap.  If the new bitmap is a memory bitmap, its projection
 bitmap is reset to be orthographic.
 @seealso(al_create_bitmap) @seealso(al_set_new_bitmap_format)
 @seealso(al_set_new_bitmap_flags) @seealso(al_convert_bitmap)
-#Allegro5.al_convert_bitmap
+#allegro5.al_convert_bitmap
 Converts the bitmap to the current bitmap flags and format.  The bitmap will
 be as if it was created new with @code(al_create_bitmap) but retain its
 contents.  All of this bitmap's sub-bitmaps are also converted.  If the new
@@ -580,7 +573,7 @@ If this bitmap is a sub-bitmap, then it, its parent and all the sibling
 sub-bitmaps are also converted.
 @seealso(al_create_bitmap) @seealso(al_set_new_bitmap_format)
 @seealso(al_set_new_bitmap_flags) @seealso(al_clone_bitmap)
-#Allegro5.al_convert_memory_bitmaps
+#allegro5.al_convert_memory_bitmaps
 If you create a bitmap when there is no current display (for example because
 you have not called @link(al_create_display) in the current thread) and are
 using the @code(ALLEGRO_CONVERT_BITMAP) bitmap flag (which is set by default)
@@ -597,7 +590,7 @@ This operation will preserve all bitmap flags except
 
 
 
-#Allegro5.al_draw_bitmap
+#allegro5.al_draw_bitmap
 Draws an unscaled, unrotated bitmap at the given position to the current
 target bitmap.  @code(flags) can be a combination of:
 @unorderedlist(
@@ -626,7 +619,7 @@ does not apply when drawing into a memory bitmap.
 @seealso(al_set_target_bitmap) @seealso(al_draw_bitmap_region)
 @seealso(al_draw_scaled_bitmap) @seealso(al_draw_rotated_bitmap)
 @seealso(al_draw_scaled_rotated_bitmap)
-#Allegro5.al_draw_bitmap_region
+#allegro5.al_draw_bitmap_region
 Draws a region of the given bitmap to the target bitmap.
 
 See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be drawn where.
@@ -640,7 +633,7 @@ See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be dra
 @param(flags same as for @code(al_draw_bitmap))
 @seealso(al_draw_bitmap) @seealso(al_draw_scaled_bitmap)
 @seealso(al_draw_rotated_bitmap) @seealso(al_draw_scaled_rotated_bitmap)
-#Allegro5.al_draw_scaled_bitmap
+#allegro5.al_draw_scaled_bitmap
 Draws a scaled version of the given bitmap to the target bitmap.
 
 See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be drawn where.
@@ -656,7 +649,7 @@ See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be dra
 @param(flags same as for al_draw_bitmap)
 @seealso(al_draw_bitmap) @seealso(al_draw_bitmap_region)
 @seealso(al_draw_rotated_bitmap) @seealso(al_draw_scaled_rotated_bitmap)
-#Allegro5.al_draw_rotated_bitmap
+#allegro5.al_draw_rotated_bitmap
 Draws a rotated version of the given bitmap to the target bitmap.
 
 The point at @code(cx/cy) relative to the upper left corner of the bitmap will be drawn at @code(dx/dy) and the bitmap is rotated around this point. If @code(cx,cy) is @code(0,0) the bitmap will rotate around its upper left corner.
@@ -683,7 +676,7 @@ See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be dra
 @param(flags same as for al_draw_bitmap)
 @seealso(al_draw_bitmap) @seealso(al_draw_bitmap_region)
 @seealso(al_draw_scaled_bitmap) @seealso(al_draw_scaled_rotated_bitmap)
-#Allegro5.al_draw_scaled_rotated_bitmap
+#allegro5.al_draw_scaled_rotated_bitmap
 Like @link(al_draw_rotated_bitmap), but can also scale the bitmap.
 
 The point at @code(cx/cy) in the bitmap will be drawn at @code(dx/dy) and the bitmap is
@@ -702,7 +695,7 @@ See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be dra
 @seealso(al_draw_bitmap) @seealso(al_draw_bitmap_region)
 @seealso(al_draw_scaled_bitmap)
 
-#Allegro5.al_draw_tinted_bitmap
+#allegro5.al_draw_tinted_bitmap
 Like @link(al_draw_bitmap) but multiplies all colors in the bitmap with the
 given color. For example:
 @longcode(!
@@ -718,28 +711,28 @@ The above will only draw the red component of the bitmap.
 See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be
 drawn where.
 @seealso(al_draw_bitmap) @seealso(al_draw_tinted_bitmap_region) @seealso(al_draw_tinted_scaled_bitmap) @seealso(al_draw_tinted_rotated_bitmap) @seealso(al_draw_tinted_scaled_rotated_bitmap) @seealso(al_draw_tinted_scaled_rotated_bitmap_region)
-#Allegro5.al_draw_tinted_bitmap_region
+#allegro5.al_draw_tinted_bitmap_region
 Like @link(al_draw_bitmap_region) but multiplies all colors in the bitmap with the given color.
 
 See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be
 @seealso(al_draw_tinted_bitmap)
-#Allegro5.al_draw_tinted_scaled_bitmap
+#allegro5.al_draw_tinted_scaled_bitmap
 Like @link(al_draw_scaled_bitmap) but multiplies all colors in the bitmap with the given color.
 
 See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be
 @seealso(al_draw_tinted_bitmap)
-#Allegro5.al_draw_tinted_rotated_bitmap
+#allegro5.al_draw_tinted_rotated_bitmap
 Like @link(al_draw_rotated_bitmap) but multiplies all colors in the bitmap with the given color.
 
 See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be
 @seealso(al_draw_tinted_bitmap)
-#Allegro5.al_draw_tinted_scaled_rotated_bitmap
+#allegro5.al_draw_tinted_scaled_rotated_bitmap
 Like @link(al_draw_scaled_rotated_bitmap) but multiplies all colors in the bitmap with the given color.
 
 See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be
 drawn where.
 @seealso(al_draw_tinted_bitmap)
-#Allegro5.al_draw_tinted_scaled_rotated_bitmap_region
+#allegro5.al_draw_tinted_scaled_rotated_bitmap_region
 Like @link(al_draw_tinted_scaled_rotated_bitmap) but you specify an area within the bitmap to be drawn.
 
 You can get the same effect with a sub bitmap:
@@ -762,10 +755,10 @@ See @link(al_draw_bitmap) for a note on restrictions on which bitmaps can be dra
 
 
 
-#Allegro5.ALLEGRO_FILEptr
+#allegro5.ALLEGRO_FILEptr
 An opaque object representing an open file. This could be a real file on disk or a virtual file.
 
-#Allegro5.ALLEGRO_FILE_INTERFACE
+#allegro5.ALLEGRO_FILE_INTERFACE
 A structure containing function pointers to handle a type of "file", real
 or virtual. See the full discussion in @link(al_set_new_file_interface).
 
@@ -782,7 +775,7 @@ If @code(fi_fungetc) is @nil, then Allegro's default implementation of a
 16 char long buffer will be used.
 @seealso(al_set_new_file_interface) @seealso(al_fopen_interface)
 @seealso(al_get_file_userdata)
-#Allegro5.al_fopen
+#allegro5.al_fopen
 Creates and opens a file (real or virtual) given the path and mode. The
 current file interface is used to open the file.
 
@@ -803,37 +796,37 @@ binary mode by using a mode argument containing a "b", e.g. @code('rb'), @code('
 @return(a file handle on success, or @nil on error.)
 @seealso(al_fclose) @seealso(al_set_new_file_interface) @seealso(al_fopen_interface)
 @seealso(al_fread) @seealso(al_fwrite)
-#Allegro5.al_fopen_interface
+#allegro5.al_fopen_interface
 Opens a file using the specified interface, instead of the interface set
 with @link(al_set_new_file_interface). @seealso(al_fopen)
-#Allegro5.al_create_file_handle
+#allegro5.al_create_file_handle
 Creates an empty, opened file handle with some abstract user data. This
 allows custom interfaces to extend the @link(ALLEGRO_FILEptr) struct with
 their own data. You should close the handle with the standard
 @link(al_fclose) function when you are finished with it.
 @seealso(al_fopen) @seealso(al_fclose) @seealso(al_set_new_file_interface)
-#Allegro5.al_fclose
+#allegro5.al_fclose
 Closes the given file, writing any buffered output data (if any).
 @return(@true on success, @false on failure.) @seealso(al_fopen)
-#Allegro5.al_fread
+#allegro5.al_fread
 Reads @code(size) bytes into the buffer pointed to by @code(ptr), from the given file.
 @return(The number of bytes actually read. If an error occurs, or the end-of-file is reached, the return value is a short byte count (or zero).
 
 @code(al_fread) does not distinguish between @link(AL_EOF) and other errors. Use @link(al_feof) and @link(al_ferror) to determine which occurred.)
 @seealso(AL_EOF) @seealso(al_fgetc) @seealso(al_fwrite) @seealso(al_fread16be) @seealso(al_fread16le) @seealso(al_fread32be) @seealso(al_fread32le)
-#Allegro5.al_fwrite
+#allegro5.al_fwrite
 Write @code(size) bytes from the buffer pointed to by @code(ptr) into the given file.
 @return(The number of bytes actually written. If an error occurs, the return value is a short byte count @(or zero@).)
 @seealso(al_fputc) @seealso(al_fputs) @seealso(al_fread) @seealso(al_fwrite16be) @seealso(al_fwrite16le) @seealso(al_fwrite32be) @seealso(al_fwrite32le)
-#Allegro5.al_fflush
+#allegro5.al_fflush
 Flushes any pending writes to the given file.
 @return(@true on success, @false otherwise.) @seealso(al_get_errno)
-#Allegro5.al_ftell
+#allegro5.al_ftell
 Returns the current position in the given file, or @code(-1) on error.
 
 On some platforms this function may not support large files.
 @seealso(al_fseek) @seealso(al_get_errno)
-#Allegro5.al_fseek
+#allegro5.al_fseek
 Sets the current position of the given file to a position relative to that
 specified by @code(whence), plus @code(offset) number of bytes.
 
@@ -848,7 +841,7 @@ pushback bytes are forgotten.
 On some platforms this function may not support large files.
 @return(@true on success, @false on failure.)
 @seealso(al_ftell) @seealso(al_get_errno)
-#Allegro5.al_feof
+#allegro5.al_feof
 Returns @true if the end-of-file indicator has been set on the file, i.e.
 we have attempted to read @italic(past) the end of the file.
 
@@ -863,17 +856,17 @@ exactly two bytes:
     ReportError ();
 !)
 @seealso(AL_EOF) @seealso(al_ferror) @seealso(al_fclearerr)
-#Allegro5.al_ferror
+#allegro5.al_ferror
 Returns non-zero if the error indicator is set on the given file, i.e.
 there was some sort of previous error. The error code may be system or
 file interface specific.
 @seealso(al_feof) @seealso(al_fclearerr) @seealso(al_ferrmsg)
-#Allegro5.al_ferrmsg
+#allegro5.al_ferrmsg
 Returns a message string with details about the last error that occurred
 on the given file handle. The returned string is empty if there was no
 error, or if the file interface does not provide more information.
 @seealso(al_fclearerr) @seealso(al_ferror)
-#Allegro5.al_fclearerr
+#allegro5.al_fclearerr
 Clears the error indicator for the given file.
 
 The standard I/O backend also clears the end-of-file indicator, and other
@@ -881,7 +874,7 @@ backends should try to do this. However, they may not if it would require
 too much effort (e.g. PhysicsFS backend), so your code should not rely on
 it if you need your code to be portable to other backends.
 @seealso(al_ferror) @seealso(al_feof)
-#Allegro5.al_fungetc
+#allegro5.al_fungetc
 Ungets a single byte from a file. Pushed-back bytes are not written to the
 file, only made available for subsequent reads, in reverse order.
 
@@ -894,17 +887,17 @@ be cleared after any seeking or writing; also calls to @link(al_fseek) and
 causes the position to become negative, the behavior of @code(al_fseek)
 and @code(al_ftell) are undefined.
 @seealso(al_fgetc) @seealso(al_get_errno)
-#Allegro5.al_fsize
+#allegro5.al_fsize
 Returns the size of the file, if it can be determined, or @code(-1) otherwise.
 
-#Allegro5.al_fgetc
+#allegro5.al_fgetc
 Reads and returns next byte in the given file. Returns a negative number on end of file or if an error occurred.
 @seealso(al_fputc) @seealso(al_fungetc)
-#Allegro5.al_fputc
+#allegro5.al_fputc
 Writes a single byte to the given file. The byte written is the value of @code(c) cast to an unsigned char.
 @param(c byte value to write.) @param(f file to write to.)
 @return(the written byte @(cast back to an @link(AL_INT)@) on success, or negative number on error.)
-#Allegro5.al_fread16le
+#allegro5.al_fread16le
 Reads a 16-bit word in little-endian format (LSB first).
 
 @return(On success, the 16-bit word. On failure, returns EOF @(-1@). Since
@@ -912,44 +905,44 @@ Reads a 16-bit word in little-endian format (LSB first).
   of the file was reached prematurely, or @link(al_ferror) to check if an
   error occurred.)
 @seealso(al_fread16be)
-#Allegro5.al_fread16be
+#allegro5.al_fread16be
 Reads a 16-bit word in big-endian format (MSB first).
 @return(On success, the 16-bit word. On failure, returns EOF @(-1@). Since
   -1 is also a valid return value, use @link(al_feof) to check if the end
   of the file was reached prematurely, or @link(al_ferror) to check if an
   error occurred.)
 @seealso(al_fread16le)
-#Allegro5.al_fwrite16le
+#allegro5.al_fwrite16le
 Writes a 16-bit word in little-endian format (LSB first).
 @return(The number of bytes written: 2 on success, less than 2 on an error.)
 @seealso(al_fwrite16be)
-#Allegro5.al_fwrite16be
+#allegro5.al_fwrite16be
 Writes a 16-bit word in big-endian format (MSB first).
 @return(The number of bytes written: 2 on success, less than 2 on an error.)
 @seealso(al_fwrite16le)
-#Allegro5.al_fread32le
+#allegro5.al_fread32le
 Reads a 32-bit word in little-endian format (LSB first).
 @return(On success, the 32-bit word. On failure, returns EOF @(-1@). Since
   -1 is also a valid return value, use @link(al_feof) to check if the end
   of the file was reached prematurely, or @link(al_ferror) to check if an
   error occurred.)
 @seealso(al_fread32be)
-#Allegro5.al_fread32be
+#allegro5.al_fread32be
 Reads a 32-bit word in big-endian format (MSB first).
 @return(On success, the 32-bit word. On failure, returns EOF @(-1@). Since
   -1 is also a valid return value, use @link(al_feof) to check if the end
   of the file was reached prematurely, or @link(al_ferror) to check if an
   error occurred.)
 @seealso(al_fread32le)
-#Allegro5.al_fwrite32le
+#allegro5.al_fwrite32le
 Writes a 32-bit word in little-endian format (LSB first).
 @return(The number of bytes written: 2 on success, less than 2 on an error.)
 @seealso(al_fwrite32be)
-#Allegro5.al_fwrite32be
+#allegro5.al_fwrite32be
 Writes a 32-bit word in big-endian format (MSB first).
 @return(The number of bytes written: 2 on success, less than 2 on an error.)
 @seealso(al_fwrite32le)
-#Allegro5.al_fgets
+#allegro5.al_fgets
 Reads a string of bytes terminated with a newline or end-of-file into the
 buffer given. The line terminator(s), if any, are included in the returned
 string. A maximum of @code(max-1) bytes are read, with one byte being
@@ -962,7 +955,7 @@ See @link(al_fopen) about translations of end-of-line characters.
 @return(The pointer to @code(buf) on success. Returns @nil if an error
  occurred or if the end of file was reached without reading any bytes.)
 @seealso(al_fget_ustr)
-#Allegro5.al_fget_ustr
+#allegro5.al_fget_ustr
 Read a string of bytes terminated with a newline or end-of-file. The line
 terminator(s), if any, are included in the returned string.
 
@@ -972,7 +965,7 @@ See @link(al_fopen) about translations of end-of-line characters.
  error occurred or if the end of file was reached without reading any
  bytes.)
 @seealso(al_fgetc) @seealso(al_fgets)
-#Allegro5.al_fputs
+#allegro5.al_fputs
 Writes a string to file. Apart from the return value, this is equivalent
 to @code(@link(al_fwrite) @(f, p, Length @(p@)@);)
 
@@ -986,7 +979,7 @@ instead of @code(LF).
 @param(p String to write.)
 @returns(A non-negative integer on success, EOF (-1) on error.)
 @seealso(al_fwrite)
-#Allegro5.al_fopen_slice
+#allegro5.al_fopen_slice
 Opens a slice (subset) of an already open random access file as if it were
 a stand alone file. While the slice is open, the parent file handle must
 not be used in any way.
@@ -1015,50 +1008,50 @@ Otherwise, all activity is restricted to the initial size of the slice.
 A slice must be closed with @link(al_fclose). The parent file will then be
 positioned immediately after the end of the slice.
 @seealso(al_fopen)
-#Allegro5.al_get_new_file_interface
+#allegro5.al_get_new_file_interface
 Returns a pointer to the @link(ALLEGRO_FILE_INTERFACE) table in effect
 for the calling thread.
 @seealso(al_store_state) @seealso(al_restore_state) @seealso(al_set_new_file_interface)
-#Allegro5.al_set_new_file_interface
+#allegro5.al_set_new_file_interface
 Sets the @link(ALLEGRO_FILE_INTERFACE) table for the calling thread.
 This will change the handler for later calls to @link(al_fopen).
 @seealso(al_set_standard_file_interface) @seealso(al_store_state)
 @seealso(al_restore_state)
-#Allegro5.al_set_standard_file_interface
+#allegro5.al_set_standard_file_interface
 Sets the @link(ALLEGRO_FILE_INTERFACE) table to the default, for the
 calling thread. This will change the handler for later calls to
 @link(al_fopen).
 @seealso(al_set_new_file_interface)
 
-#Allegro5.al_get_file_userdata
+#allegro5.al_get_file_userdata
 Returns a pointer to the custom userdata that is attached to the file
 handle. This is intended to be used by functions that extend
 @link(ALLEGRO_FILE_INTERFACE).
 
 
 
-#Allegro5.al_register_bitmap_loader
+#allegro5.al_register_bitmap_loader
 Registers a handler for @link(al_load_bitmap).
 @param(ext File extension.  It should include the leading dot @('.'@) character. It will be
 matched case-insensitively.)
 @param(loader The given function used to handle the loading of bitmaps files with the given extension.  It may be @nil to unregister an entry.)
 @return(@true on success, @false on error. Returns @false if unregistering an entry that doesn't exist.)
 @seealso(al_register_bitmap_saver) @seealso(al_register_bitmap_loader_f)
-#Allegro5.al_register_bitmap_saver
+#allegro5.al_register_bitmap_saver
 Registers a handler for @link(al_save_bitmap).
 @param(ext File extension.  It should include the leading dot @('.'@) character. It will be
 matched case-insensitively.)
 @param(saver The given function used to handle the savint of bitmaps files with the given extension.  It may be @nil to unregister an entry.)
 @return(@true on success, @false on error. Returns @false if unregistering an entry that doesn't exist.)
 @seealso(al_register_bitmap_loader) @seealso(al_register_bitmap_saver_f)
-#Allegro5.al_register_bitmap_loader_f
+#allegro5.al_register_bitmap_loader_f
 Registers a handler for @link(al_load_bitmap_f).
 @param(ext File extension.  It should include the leading dot @('.'@) character. It will be
 matched case-insensitively.)
 @param(fs_loader The given function used to handle the loading of bitmaps files with the given extension.  It may be @nil to unregister an entry.)
 @return(@true on success, @false on error. Returns @false if unregistering an entry that doesn't exist.)
 @seealso(al_register_bitmap_loader)
-#Allegro5.al_register_bitmap_saver_f
+#allegro5.al_register_bitmap_saver_f
 Registers a handler for @link(al_save_bitmap_f).
 @param(ext File extension.  It should include the leading dot @('.'@) character. It will be
 matched case-insensitively.)
@@ -1066,7 +1059,7 @@ matched case-insensitively.)
 @return(@true on success, @false on error. Returns @false if unregistering
 	   an entry that doesn't exist.)
 @seealso(al_register_bitmap_saver)
-#Allegro5.al_register_bitmap_identifier
+#allegro5.al_register_bitmap_identifier
 Registers an identify handler for @link(al_identify_bitmap). The given
 function will be used to detect files for the given extension. It will be
 called with a single argument of type @link(ALLEGRO_FILEptr) which is a file
@@ -1081,7 +1074,7 @@ matched case-insensitively.)
 @return(@true on success, @false on error. Returns @false if unregistering
 	   an entry that doesn't exist.)
 @seealso(al_identify_bitmap)
-#Allegro5.al_load_bitmap
+#allegro5.al_load_bitmap
 Loads an image file into a new @code(ALLEGRO_BITMAPptr). The file type is
 determined by the extension, except if the file has no extension in which
 case @code(al_identify_bitmap) is used instead.
@@ -1098,7 +1091,7 @@ own format handler.
 @seealso(al_load_bitmap_f) @seealso(al_register_bitmap_loader)
 @seealso(al_load_bitmap_flags) @seealso(al_set_new_bitmap_format)
 @seealso(al_set_new_bitmap_flags) @seealso(al_init_image_addon)
-#Allegro5.al_load_bitmap_flags
+#allegro5.al_load_bitmap_flags
 Loads an image file into a new @code(ALLEGRO_BITMAPptr). The file type is
 determined by the extension, except if the file has no extension in which
 case @link(al_identify_bitmap) is used instead.
@@ -1192,7 +1185,7 @@ own format handler.
 ))
 @return(A pointer to the loaded bitmap or @nil on error.)
 @seealso(al_load_bitmap)
-#Allegro5.al_load_bitmap_f
+#allegro5.al_load_bitmap_f
 Loads an image from an @link(ALLEGRO_FILEptr) stream into a new
 @link(ALLEGRO_BITMAPptr). The file type is determined by the passed
 @code(ident) parameter, which is a file name extension including the leading
@@ -1210,7 +1203,7 @@ your own format handler.
 @return(A pointer to the loaded bitmap or @nil on error. The file remains open afterwards.)
 @seealso(al_load_bitmap_flags_f) @seealso(al_load_bitmap)
 @seealso(al_register_bitmap_loader_f) @seealso(al_init_image_addon)
-#Allegro5.al_load_bitmap_flags_f
+#allegro5.al_load_bitmap_flags_f
 Loads an image from an @link(ALLEGRO_FILEptr) stream into a new
 @link(ALLEGRO_BITMAPptr). The file type is determined by the passed
 @code(ident) parameter, which is a file name extension including the leading
@@ -1226,7 +1219,7 @@ formats by default. You must use the @link(al5image) addon, or register
 your own format handler.
 @return(A pointer to the loaded bitmap or @nil on error. The file remains open afterwards.)
 @seealso(al_load_bitmap_f) @seealso(al_load_bitmap_flags)
-#Allegro5.al_save_bitmap
+#allegro5.al_save_bitmap
 Saves an @code(ALLEGRO_BITMAP) to an image file. The file type is determined by
 the extension.
 
@@ -1238,7 +1231,7 @@ own format handler.
 @return(@true on success, @false on error.)
 @seealso(al_save_bitmap_f) @seealso(al_register_bitmap_saver)
 @seealso(al_init_image_addon)
-#Allegro5.al_save_bitmap_f
+#allegro5.al_save_bitmap_f
 Saves an ALLEGRO_BITMAP to an ALLEGRO_FILE stream. The file type is
 determined by the passed @code(ident) parameter, which is a file name
 extension including the leading dot.
@@ -1251,7 +1244,7 @@ own format handler.
 @return(@true on success, @false on error.  The file remains open afterwards.)
 @seealso(al_save_bitmap) @seealso(al_register_bitmap_saver_f)
 @seealso(al_init_image_addon)
-#Allegro5.al_identify_bitmap_f
+#allegro5.al_identify_bitmap_f
 Tries to guess the bitmap file type of the given file by reading the first
 few bytes. The extension, if any, of the passed filename is not taken into
 account - only the file contents. By default Allegro cannot recognize any
@@ -1262,7 +1255,7 @@ including the leading dot. For example ".png" or ".jpg". Returns @nil if the
 bitmap type cannot be determined.)
 @seealso(al_init_image_addon) @seealso(al_identify_bitmap)
 @seealso(al_register_bitmap_identifier)
-#Allegro5.al_identify_bitmap
+#allegro5.al_identify_bitmap
 This works exactly as @link(al_identify_bitmap_f) but you specify the
 filename of the file for which to detect the type and not a file handle. The
 extension, if any, of the passed filename is not taken into account - only
@@ -1272,7 +1265,7 @@ the file contents.
 
 
 
-#Allegro5.ALLEGRO_LOCKED_REGION
+#allegro5.ALLEGRO_LOCKED_REGION
 Users who wish to manually edit or read from a bitmap are required to lock
 it first.  The @code(ALLEGRO_LOCKED_REGION) structure represents the
 locked region of the bitmap.  This call will work with any bitmap,
@@ -1284,7 +1277,7 @@ including memory bitmaps.
 @member pitch Gives the size in bytes of a single row (also known as the stride).  The pitch may be greater than @code(width * pixel_size) due to padding; this is not uncommon.  It is also not uncommon for the pitch to be negative (the bitmap may be upside down).  For blocked bitmaps, 'row' refers to the row of blocks, not of pixels.
 @member pixel_size It is the number of bytes used to represent a single block of pixels for the pixel format of this locked region. For most formats (and historically, this used to be true for all formats), this is just the size of a single pixel, but for blocked pixel formats this value is different.
 
-#Allegro5.al_lock_bitmap
+#allegro5.al_lock_bitmap
 Locks an entire bitmap for reading or writing. If the bitmap is a display
 bitmap it will be updated from system memory after the bitmap is unlocked
 (unless locked read only).
@@ -1320,7 +1313,7 @@ operations on it (with the sole exception of @link(al_put_pixel) and
 @seealso(ALLEGRO_LOCKED_REGION) @seealso(ALLEGRO_PIXEL_FORMAT)
 @seealso(al_unlock_bitmap) @seealso(al_lock_bitmap_region)
 @seealso(al_lock_bitmap_blocked) @seealso(al_lock_bitmap_region_blocked)
-#Allegro5.al_lock_bitmap_region
+#allegro5.al_lock_bitmap_region
 Like @link(al_lock_bitmap), but only locks a specific area of the bitmap. If
 the bitmap is a video bitmap, only that area of the texture will be updated
 when it is unlocked. Locking only the region you indend to modify will be
@@ -1337,7 +1330,7 @@ then the function will have to lock the region with the
 valid data.
 @seealso(ALLEGRO_LOCKED_REGION) @seealso(ALLEGRO_PIXEL_FORMAT)
 @seealso(al_unlock_bitmap)
-#Allegro5.al_lock_bitmap_blocked
+#allegro5.al_lock_bitmap_blocked
 Like @link(al_lock_bitmap), but allows locking bitmaps with a blocked pixel
 format (i.e. a format for which @link(al_get_pixel_block_width) or
 @link(al_get_pixel_block_height) do not return 1) in that format. To that
@@ -1351,25 +1344,25 @@ Currently there are no drawing functions that work when the
 bitmap is locked with a compressed format. @link(al_get_pixel) will also not
 work.
 @seealso(al_lock_bitmap) @seealso(al_lock_bitmap_region_blocked)
-#Allegro5.al_lock_bitmap_region_blocked
+#allegro5.al_lock_bitmap_region_blocked
 Like @link(al_lock_bitmap_blocked), but allows locking a sub-region, for
 performance. Unlike @link(al_lock_bitmap_region) the region specified in
 terms of blocks and not pixels.
 @seealso(al_lock_bitmap_region) @seealso(al_lock_bitmap_blocked)
-#Allegro5.al_unlock_bitmap
+#allegro5.al_unlock_bitmap
 Unlocks a previously locked bitmap or bitmap region. If the bitmap is a video
 bitmap, the texture will be updated to match the system memory copy (unless
 it was locked read only).
 @seealso(al_lock_bitmap) @seealso(al_lock_bitmap_region)
 @seealso(al_lock_bitmap_blocked) @seealso(al_lock_bitmap_region_blocked)
-#Allegro5.al_is_bitmap_locked
+#allegro5.al_is_bitmap_locked
 Returns whether or not a bitmap is already locked.
 @seealso(al_lock_bitmap) @seealso(al_lock_bitmap_region)
 @seealso(al_unlock_bitmap)
 
 
 
-#Allegro5.al_set_blender
+#allegro5.al_set_blender
 Sets the function to use for blending for the current thread.
 
 Blending means, the source and destination colors are combined in drawing
@@ -1470,37 +1463,37 @@ As formula:
 )
 @seealso(al_set_separate_blender) @seealso(al_set_blend_color)
 @seealso(al_get_blender)
-#Allegro5.al_set_blend_color
+#allegro5.al_set_blend_color
 Sets the color to use for blending when using the @code(ALLEGRO_CONST_COLOR)
 or @code(ALLEGRO_INVERSE_CONST_COLOR) blend functions. See
 @link(al_set_blender) for more information.
 @seealso(al_set_blender) @seealso(al_get_blend_color)
-#Allegro5.al_get_blender
+#allegro5.al_get_blender
 Returns the active blender for the current thread.
 @seealso(al_set_blender) @seealso(al_get_separate_blender)
-#Allegro5.al_get_blend_color
+#allegro5.al_get_blend_color
 Returns the color currently used for constant color blending (white by
 default).
 @seealso(al_set_blend_color) @seealso(al_set_blender)
-#Allegro5.al_set_separate_blender
+#allegro5.al_set_separate_blender
 Like @code(al_set_blender), but allows specifying a separate blending
 operation for the alpha channel. This is useful if your target bitmap also
 has an alpha channel and the two alpha channels need to be combined in a
 different way than the color components.
 @seealso(al_set_blender) @seealso(al_get_blender)
 @seealso(al_get_separate_blender)
-#Allegro5.al_get_separate_blender
+#allegro5.al_get_separate_blender
 Returns the active blender for the current thread.
 @seealso(al_set_separate_blender) @seealso(al_get_blender)
 
 
 
-#Allegro5.ALLEGRO_EVENT_TYPE
+#allegro5.ALLEGRO_EVENT_TYPE
 An integer used to distinguish between different types of events.
 @seealso(ALLEGRO_EVENT) @seealso(ALLEGRO_GET_EVENT_TYPE)
 @seealso(ALLEGRO_EVENT_TYPE_IS_USER)
 
-#Allegro5.ALLEGRO_EVENT_JOYSTICK_AXIS
+#allegro5.ALLEGRO_EVENT_JOYSTICK_AXIS
 A joystick axis value changed.
 @unorderedlist(
 @item(@bold(@code(joystick.id)) Pointer to the joystick which generated the event. This is not the same as the event source @code(joystick.source).)
@@ -1508,21 +1501,21 @@ A joystick axis value changed.
 @item(@bold(@code(joystick.axis)) The axis number on the stick, counting from zero.)
 @item(@bold(@code(joystick.pos)) The axis position, from -1.0 to +1.0.)
 )
-#Allegro5.ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN
+#allegro5.ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN
 A joystick button was pressed.
 @unorderedlist(
 @item(@bold(@code(joystick.id)) Pointer to the joystick which generated the event. This is not the same as the event source @code(joystick.source).)
 @item(@bold(@code(joystick.button)) The button which was pressed, counting from zero.)
 )
-#Allegro5.ALLEGRO_EVENT_JOYSTICK_BUTTON_UP
+#allegro5.ALLEGRO_EVENT_JOYSTICK_BUTTON_UP
 A joystick button was released.
 @unorderedlist(
 @item(@bold(@code(joystick.id)) Pointer to the joystick which generated the event. This is not the same as the event source @code(joystick.source).)
 @item(@bold(@code(joystick.button)) The button which was released, counting from zero.)
 )
-#Allegro5.ALLEGRO_EVENT_JOYSTICK_CONFIGURATION
+#allegro5.ALLEGRO_EVENT_JOYSTICK_CONFIGURATION
 A joystick was plugged in or unplugged. See @link(al_reconfigure_joysticks) for details.
-#Allegro5.ALLEGRO_EVENT_KEY_DOWN
+#allegro5.ALLEGRO_EVENT_KEY_DOWN
 A keyboard key was pressed.
 @unorderedlist(
 @item(@bold(@code(keyboard.keycode)) The code corresponding to the physical key which was pressed. See the Key codes section for the list of @code(ALLEGRO_KEY_*) constants.)
@@ -1531,7 +1524,7 @@ A keyboard key was pressed.
 @bold(Note)
 
 this event is about the physical keys being pressed on the keyboard. Look for @link(ALLEGRO_EVENT_KEY_CHAR) events for character input.
-#Allegro5.ALLEGRO_EVENT_KEY_CHAR
+#allegro5.ALLEGRO_EVENT_KEY_CHAR
 A character was typed on the keyboard, or a character was auto-repeated.
 @unorderedlist(
 @item(@bold(@code(keyboard.keycode))
@@ -1553,7 +1546,7 @@ A character was typed on the keyboard, or a character was auto-repeated.
 @bold(Note)
 
 in many input methods, characters are not entered one-for-one with physical key presses. Multiple key presses can combine to generate a single character, e.g. apostrophe + e may produce 'é'. Fewer key presses can also generate more characters, e.g. macro sequences expanding to common phrases.
-#Allegro5.ALLEGRO_EVENT_KEY_UP
+#allegro5.ALLEGRO_EVENT_KEY_UP
 A keyboard key was released.
 @unorderedlist(
 @item(@bold(@code(keyboard.keycode)) The code corresponding to the physical key which was released. See the Key codes section for the list of @code(ALLEGRO_KEY_*) constants.)
@@ -1561,7 +1554,7 @@ A keyboard key was released.
 )
 @bold(Seealso:) @html(<a href="introduction.html#keycodes">Key codes</a>)
 
-#Allegro5.ALLEGRO_EVENT_MOUSE_AXES
+#allegro5.ALLEGRO_EVENT_MOUSE_AXES
 One or more mouse axis values changed.
 @unorderedlist(
 @item(@bold(@code(mouse.x))
@@ -1592,7 +1585,7 @@ Calling @link(al_set_mouse_xy) also will result in a change of axis values, but 
 @bold(Note)
 
 currently mouse.display may be @nil if an event is generated in response to @link(al_set_mouse_axis).
-#Allegro5.ALLEGRO_EVENT_MOUSE_BUTTON_DOWN
+#allegro5.ALLEGRO_EVENT_MOUSE_BUTTON_DOWN
 A mouse button was pressed.
 @unorderedlist(
 @item(@bold(@code(mouse.x))
@@ -1610,7 +1603,7 @@ A mouse button was pressed.
 @item(@bold(@code(mouse.display))
     The display which had mouse focus.)
 )
-#Allegro5.ALLEGRO_EVENT_MOUSE_BUTTON_UP
+#allegro5.ALLEGRO_EVENT_MOUSE_BUTTON_UP
 A mouse button was released.
 @unorderedlist(
 @item(@bold(@code(mouse.x))
@@ -1628,7 +1621,7 @@ A mouse button was released.
 @item(@bold(@code(mouse.display))
     The display which had mouse focus.)
 )
-#Allegro5.ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY
+#allegro5.ALLEGRO_EVENT_MOUSE_ENTER_DISPLAY
 The mouse cursor entered a window opened by the program.
 @unorderedlist(
 @item(@bold(@code(mouse.x))
@@ -1642,7 +1635,7 @@ The mouse cursor entered a window opened by the program.
 @item(@bold(@code(mouse.display))
     The display which had mouse focus.)
 )
-#Allegro5.ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY
+#allegro5.ALLEGRO_EVENT_MOUSE_LEAVE_DISPLAY
 The mouse cursor left the boundaries of a window opened by the program.
 @unorderedlist(
 @item(@bold(@code(mouse.x))
@@ -1656,10 +1649,10 @@ The mouse cursor left the boundaries of a window opened by the program.
 @item(@bold(@code(mouse.display))
     The display which had mouse focus.)
 )
-#Allegro5.ALLEGRO_EVENT_MOUSE_WARPED
+#allegro5.ALLEGRO_EVENT_MOUSE_WARPED
 @link(al_set_mouse_xy) was called to move the mouse. This event is identical to @link(ALLEGRO_EVENT_MOUSE_AXES) otherwise.
 
-#Allegro5.ALLEGRO_EVENT_TIMER
+#allegro5.ALLEGRO_EVENT_TIMER
 A timer counter incremented.
 @unorderedlist(
 @item(@bold(@code(timer.source))
@@ -1668,7 +1661,7 @@ A timer counter incremented.
     The timer count value.)
 )
 
-#Allegro5.ALLEGRO_EVENT_DISPLAY_EXPOSE
+#allegro5.ALLEGRO_EVENT_DISPLAY_EXPOSE
 The display (or a portion thereof) has become visible.
 @unorderedlist(
 @item(@bold(@code(display.source))
@@ -1681,7 +1674,7 @@ The display (or a portion thereof) has become visible.
 @bold(Note)
 
 The display needs to be created with @code(ALLEGRO_GENERATE_EXPOSE_EVENTS) flag for these events to be generated.
-#Allegro5.ALLEGRO_EVENT_DISPLAY_RESIZE
+#allegro5.ALLEGRO_EVENT_DISPLAY_RESIZE
 The window has been resized.
 @unorderedlist(
 @item(@bold(@code(display.source))
@@ -1694,13 +1687,13 @@ The window has been resized.
     The new height of the display.)
 )
 You should normally respond to these events by calling @link(al_acknowledge_resize). Note that further resize events may be generated by the time you process the event, so these fields may hold outdated information.
-#Allegro5.ALLEGRO_EVENT_DISPLAY_CLOSE
+#allegro5.ALLEGRO_EVENT_DISPLAY_CLOSE
 The close button of the window has been pressed.
 @unorderedlist(
 @item(@bold(@code(display.source))
     The display which was closed.)
 )
-#Allegro5.ALLEGRO_EVENT_DISPLAY_LOST
+#allegro5.ALLEGRO_EVENT_DISPLAY_LOST
 When using Direct3D, displays can enter a "lost" state. In that state, drawing calls are ignored, and upon entering the state, bitmap's pixel data can become undefined. Allegro does its best to preserve the correct contents of bitmaps (see the @code(ALLEGRO_NO_PRESERVE_TEXTURE) flag at @link(al_set_new_bitmap_flags)) and restore them when the device is "found" (see @link(ALLEGRO_EVENT_DISPLAY_FOUND)). However, this is not 100% fool proof (see discussion in @link(al_create_bitmap)'s documentation).
 
 @bold(Note)
@@ -1709,26 +1702,26 @@ This event merely means that the display was lost, that is, DirectX suddenly los
 @definitionlist(
   @itemlabel(@bold(@code(display.source))) @item(The display which was lost.)
 )
-#Allegro5.ALLEGRO_EVENT_DISPLAY_FOUND
+#allegro5.ALLEGRO_EVENT_DISPLAY_FOUND
 Generated when a lost device is restored to operating state.
 @unorderedlist(
 @item(@bold(@code(display.source))
     The display which was found.)
 )
 @seealso(ALLEGRO_EVENT_DISPLAY_LOST)
-#Allegro5.ALLEGRO_EVENT_DISPLAY_SWITCH_IN
+#allegro5.ALLEGRO_EVENT_DISPLAY_SWITCH_IN
 The window is the active one again.
 @unorderedlist(
 @item(@bold(@code(display.source))
     The display which was switched into.)
 )
-#Allegro5.ALLEGRO_EVENT_DISPLAY_SWITCH_OUT
+#allegro5.ALLEGRO_EVENT_DISPLAY_SWITCH_OUT
 The window is no longer active, that is the user might have clicked into another window or "tabbed" away. In response to this event you might want to call @link(al_clear_keyboard_state) (possibly passing @code(display.source) as its argument) in order to prevent Allegro's keyboard state from getting out of sync.
 @unorderedlist(
 @item(@bold(@code(display.source))
     The display which was switched out of.)
 )
-#Allegro5.ALLEGRO_EVENT_DISPLAY_ORIENTATION
+#allegro5.ALLEGRO_EVENT_DISPLAY_ORIENTATION
 Generated when the rotation or orientation of a display changes.
 @unorderedlist(
 @item(@bold(@code(display.source))
@@ -1743,7 +1736,7 @@ Generated when the rotation or orientation of a display changes.
         @item(@code(ALLEGRO_DISPLAY_ORIENTATION_FACE_DOWN))
     ))
 )
-#Allegro5.ALLEGRO_EVENT_DISPLAY_HALT_DRAWING
+#allegro5.ALLEGRO_EVENT_DISPLAY_HALT_DRAWING
 When a display receives this event it should stop doing any drawing and then call @link(al_acknowledge_drawing_halt) immediately.
 
 This is currently only relevant for Android and iOS. It will be sent when the application is switched to background mode, in addition to @link(ALLEGRO_EVENT_DISPLAY_SWITCH_OUT). The latter may also be sent in situations where the application is not active but still should continue drawing, for example when a popup is displayed in front of it.
@@ -1756,7 +1749,7 @@ This event means that the next time you call a drawing function, your program wi
 
 Mobile devices usually never quit an application, so to prevent the battery from draining while your application is halted it can be a good idea to call @link(al_stop_timer) on all your timers, otherwise they will keep generating events. If you are using audio, you can also stop all audio voices (or pass @nil to @link(al_set_default_voice) if you use the default mixer), otherwise Allegro will keep streaming silence to the voice even if the stream or mixer are stopped or detached.
 @seealso(ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING)
-#Allegro5.ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING
+#allegro5.ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING
 When a display receives this event, it may resume drawing again, and it must call @link(al_acknowledge_drawing_resume) immediately.
 
 This is currently only relevant for Android and iOS. The event will be sent when an application returns from background mode and is allowed to draw to the display again, in addition to @link(ALLEGRO_EVENT_DISPLAY_SWITCH_IN). The latter event may also be sent in a situation where the application is already active, for example when a popup in front of it closes.
@@ -1766,7 +1759,7 @@ This is currently only relevant for Android and iOS. The event will be sent when
 Unlike @link(ALLEGRO_EVENT_DISPLAY_FOUND) it is not necessary to reload any bitmaps when you receive this event.
 @seealso(ALLEGRO_EVENT_DISPLAY_HALT_DRAWING)
 
-#Allegro5.ALLEGRO_EVENT_TOUCH_BEGIN
+#allegro5.ALLEGRO_EVENT_TOUCH_BEGIN
 The touch input device registered a new touch.
 @unorderedlist(
 @item(@bold(@code(touch.display))
@@ -1784,37 +1777,37 @@ The touch input device registered a new touch.
 @item(@bold(@code(touch.primary))
     Whether this is the only/first touch or an additional touch.)
 )
-#Allegro5.ALLEGRO_EVENT_TOUCH_END
+#allegro5.ALLEGRO_EVENT_TOUCH_END
 A touch ended.
 
 Has the same fields as @link(ALLEGRO_EVENT_TOUCH_BEGIN).
-#Allegro5.ALLEGRO_EVENT_TOUCH_MOVE
+#allegro5.ALLEGRO_EVENT_TOUCH_MOVE
 The position of a touch changed.
 
 Has the same fields as @link(ALLEGRO_EVENT_TOUCH_BEGIN).
-#Allegro5.ALLEGRO_EVENT_TOUCH_CANCEL
+#allegro5.ALLEGRO_EVENT_TOUCH_CANCEL
 A touch was cancelled. This is device specific but could for example mean that a finger moved off the border of the device or moved so fast that it could not be tracked any longer.
 
 Has the same fields as @link(ALLEGRO_EVENT_TOUCH_BEGIN).
 
-#Allegro5.ALLEGRO_EVENT_DISPLAY_CONNECTED
+#allegro5.ALLEGRO_EVENT_DISPLAY_CONNECTED
 This event is sent when a physical display is connected to the device Allegro runs on. Currently, on most platforms, Allegro supports only a single physical display. However, on iOS, a secondary physical display is supported.
 @unorderedlist(
 @item(@bold(@code(display.display))
     The display which was touched.)
 )
-#Allegro5.ALLEGRO_EVENT_DISPLAY_DISCONNECTED
+#allegro5.ALLEGRO_EVENT_DISPLAY_DISCONNECTED
 This event is sent when a physical display is disconnected from the device Allegro runs on. Currently, on most platforms, Allegro supports only a single physical display. However, on iOS, a secondary physical display is supported.
 @unorderedlist(
 @item(@bold(@code(display.display))
     The display which was touched.)
 )
 
-#Allegro5.ALLEGRO_EVENT_TYPE_IS_USER
+#allegro5.ALLEGRO_EVENT_TYPE_IS_USER
 Returns @true if the event type is not a builtin event type, i.e. one of
 those described in @link(ALLEGRO_EVENT_TYPE).
 @seealso(ALLEGRO_GET_EVENT_TYPE)
-#Allegro5.ALLEGRO_GET_EVENT_TYPE
+#allegro5.ALLEGRO_GET_EVENT_TYPE
 Makes an event type identifier, which is a 32-bit integer. Usually, but not
 necessarily, this will be made from four 8-bit character codes, for example:
 @longcode(!
@@ -1837,15 +1830,15 @@ If you need multiple identifiers, you could define them like this:
 @seealso(ALLEGRO_EVENT) @seealso(ALLEGRO_USER_EVENT)
 @seealso(ALLEGRO_EVENT_TYPE_IS_USER)
 
-#Allegro5.ALLEGRO_DISPLAYptr
+#allegro5.ALLEGRO_DISPLAYptr
 Pointer to a display.
 
 An opaque type representing an open display or window.
-#Allegro5.ALLEGRO_JOYSTICKptr
+#allegro5.ALLEGRO_JOYSTICKptr
 A pointer to an abstract data representing a physical joystick.
 @seealso(al_get_joystick)
 
-#Allegro5.ALLEGRO_EVENT_SOURCE
+#allegro5.ALLEGRO_EVENT_SOURCE
 An event source is any object which can generate events.  For example, an
 @link(ALLEGRO_DISPLAYptr) can generate events, and you can get the
 @code(ALLEGRO_EVENT_SOURCE) pointer from an @code(ALLEGRO_DISPLAYptr) with
@@ -1855,16 +1848,16 @@ You may create your own "user" event sources that emit custom events.
 @seealso(ALLEGRO_EVENT) @seealso(al_init_user_event_source)
 @seealso(al_emit_user_event)
 
-#Allegro5.ALLEGRO_ANY_EVENT
+#allegro5.ALLEGRO_ANY_EVENT
 Contains the common information about events.
 @seealso(ALLEGRO_EVENT)
-#Allegro5.ALLEGRO_DISPLAY_EVENT
+#allegro5.ALLEGRO_DISPLAY_EVENT
 Contains display events information. @seealso(ALLEGRO_EVENT)
 @member x The left side of the rectangle which was exposed or the position of the top-level corner of the display.
 @member y The top side of the rectangle which was exposed or the position of the top-level corner of the display.
 @member width The width of the rectangle which was exposed or the new size of the display.
 @member height The height of the rectangle which was exposed or the new size of the display.
-#Allegro5.ALLEGRO_DISPLAY_EVENT.orientation
+#allegro5.ALLEGRO_DISPLAY_EVENT.orientation
 Contains one of the following values:@unorderedlist(
   @item(@bold(@code(ALLEGRO_DISPLAY_ORIENTATION_0_DEGREES)))
   @item(@bold(@code(ALLEGRO_DISPLAY_ORIENTATION_90_DEGREES)))
@@ -1874,16 +1867,16 @@ Contains one of the following values:@unorderedlist(
   @item(@bold(@code(ALLEGRO_DISPLAY_ORIENTATION_FACE_DOWN)))
 )
 
-#Allegro5.ALLEGRO_JOYSTICK_EVENT
+#allegro5.ALLEGRO_JOYSTICK_EVENT
 Contains the joystick events information. @seealso(ALLEGRO_EVENT)
 @member id The joystick which generated the event. This is not the same as the event source.
 @member stick The stick number, counting from zero. Axes on a joystick are grouped into "sticks".
 
-#Allegro5.ALLEGRO_KEYBOARD_EVENT
+#allegro5.ALLEGRO_KEYBOARD_EVENT
 Contains the keyboard events information. @seealso(ALLEGRO_EVENT)
 @member keycode The code corresponding to the physical key which was pressed or released. See the @link(Keyboard) section for the list of @code(ALLEGRO_KEY_* ) constants.
 @member modifiers This is a bitfield of the modifier keys which were pressed when the event occurred. See @link(Keyboard modifier flags) for the constants.
-#Allegro5.ALLEGRO_KEYBOARD_EVENT.unichar
+#allegro5.ALLEGRO_KEYBOARD_EVENT.unichar
 A Unicode code point (character). This may be zero or negative if the
 event was generated for a non-visible "character", such as an arrow or
 Function key. In that case you can act upon the keycode field.
@@ -1898,7 +1891,7 @@ As of Allegro 5.0.2 there are some inconsistencies in the treatment of
 Backspace (8 or 127) and Delete (127 or 0) keys on different platforms.
 These can be worked around by checking the keycode field.
 
-#Allegro5.ALLEGRO_MOUSE_EVENT
+#allegro5.ALLEGRO_MOUSE_EVENT
 Contains the mouse events information. @seealso(ALLEGRO_EVENT)
 @member x x-coordinate.
 @member y y-coordinate.
@@ -1909,11 +1902,11 @@ Contains the mouse events information. @seealso(ALLEGRO_EVENT)
 @member dz Change in the coordinates value since the previous @code(ALLEGRO_EVENT_MOUSE_AXES) event.
 @member dw Change in the coordinates value since the previous @code(ALLEGRO_EVENT_MOUSE_AXES) event.
 
-#Allegro5.ALLEGRO_TOUCH_EVENT
+#allegro5.ALLEGRO_TOUCH_EVENT
 Contains the touch input events information. @seealso(ALLEGRO_EVENT)
 @member id An identifier for this touch. If supported by the device it will stay the same for events from the same finger until the touch ends.
 
-#Allegro5.ALLEGRO_USER_EVENT
+#allegro5.ALLEGRO_USER_EVENT
 An event structure that can be emitted by user event sources. These are the public fields:
 @longcode(!
   source: ALLEGRO_EVENT_SOURCE;
@@ -1946,7 +1939,7 @@ END;
 !)
 Event type identifiers for user events are assigned by the user. Please see the documentation for @link(ALLEGRO_GET_EVENT_TYPE) for the rules you should follow when assigning identifiers.
 @seealso(al_emit_user_event) @seealso(ALLEGRO_GET_EVENT_TYPE) @seealso(al_init_user_event_source)
-#Allegro5.ALLEGRO_EVENT
+#allegro5.ALLEGRO_EVENT
 An @code(ALLEGRO_EVENT) is an union of all builtin event structures, i.e. it is an object large enough to hold the data of any event type. All events have the following fields in common:
 @unorderedlist(
   @item(@code(@bold(ftype @(@link(ALLEGRO_EVENT_TYPE)@))) Indicates the type of event.)
@@ -1994,7 +1987,7 @@ Each event is of one of the following types, with the usable fields given.
 )
 @member any This is to allow the user to access the other fields which are common to all event types, without using some specific type structure.
 
-#Allegro5.al_init_user_event_source
+#allegro5.al_init_user_event_source
 Initialices an event source for emitting user events. The space for the event
 source must already have been allocated.
 
@@ -2034,13 +2027,13 @@ it manually with @code(al_destroy_user_event_source).
 @param(source Pointer to the variable that will store the source information.)
 @seealso(ALLEGRO_EVENT_SOURCE) @seealso(al_destroy_user_event_source)
 @seealso(al_emit_user_event) @seealso(ALLEGRO_USER_EVENT)
-#Allegro5.al_destroy_user_event_source
+#allegro5.al_destroy_user_event_source
 Destroys an event source initialised with @link(al_init_user_event_source).
 
 This does not free the memory, as that was user allocated to begin with.
 @param(source Pointer to the variable that stored the source information.)
 @seealso(ALLEGRO_EVENT_SOURCE)
-#Allegro5.al_emit_user_event
+#allegro5.al_emit_user_event
 Emits an event from a user event source. The event source must have been initialised with @link(al_init_user_event_source).
 @Returns(@false if the event source isn't registered with any queues, hence the event wouldn't have been delivered into any queues.)
 
@@ -2054,65 +2047,65 @@ If @code(dtor) is @nil then reference counting will not be performed. It is safe
 
 You can use @code(al_emit_user_event) to emit both user and non-user events from your user event source. Note that emitting input events will not update the corresponding input device states. For example, you may emit an event of type @link(ALLEGRO_EVENT_KEY_DOWN), but it will not update the @link(ALLEGRO_KEYBOARD_STATE) returned by @link(al_get_keyboard_state).
 @seealso(ALLEGRO_USER_EVENT) @seealso(al_unref_user_event) @seealso(ALLEGRO_EVENT_DTOR_PROC)
-#Allegro5.al_unref_user_event
+#allegro5.al_unref_user_event
 Decreases the reference count of a user-defined event. This must be called on any user event that you get from @link(al_get_next_event), @link(al_peek_next_event), @link(al_wait_for_event), etc. which is reference counted. This function does nothing if the event is not reference counted.
 @seealso(al_emit_user_event) @seealso(ALLEGRO_USER_EVENT)
-#Allegro5.al_set_event_source_data
+#allegro5.al_set_event_source_data
 Assigns the abstract user data to the event source. Allegro does not use the data internally for anything; it is simply meant as a convenient way to associate your own data or objects with events.
 @seealso(al_get_event_source_data)
-#Allegro5.al_get_event_source_data
+#allegro5.al_get_event_source_data
 Returns the abstract user data associated with the event source. If no data was previously set, returns @nil.
 @seealso(al_set_event_source_data)
 
-#Allegro5.ALLEGRO_EVENT_QUEUEptr
+#allegro5.ALLEGRO_EVENT_QUEUEptr
 An event queue holds events that have been generated by event sources that are registered with the queue. Events are stored in the order they are generated. Access is in a strictly FIFO (first-in-first-out) order.
 @seealso(al_create_event_queue) @seealso(al_destroy_event_queue)
 
-#Allegro5.al_create_event_queue
+#allegro5.al_create_event_queue
 Creates a new, empty event queue.
 @return(A pointer to the newly created object if successful, @nil on error.)
 @seealso(al_register_event_source) @seealso(al_destroy_event_queue)@seealso(ALLEGRO_EVENT_QUEUEptr)
-#Allegro5.al_destroy_event_queue
+#allegro5.al_destroy_event_queue
 Destroys the event queue specified. All event sources currently registered
 with the queue will be automatically unregistered before the queue is
 destroyed.
 @seealso(al_create_event_queue) @seealso(ALLEGRO_EVENT_QUEUEptr)
-#Allegro5.al_register_event_source
+#allegro5.al_register_event_source
 Register the event source with the event queue specified. An event source may be registered with any number of event queues simultaneously, or none. Trying to register an event source with the same event queue more than once does nothing.
 @seealso(al_unregister_event_source) @seealso(ALLEGRO_EVENT_SOURCE)
-#Allegro5.al_unregister_event_source
+#allegro5.al_unregister_event_source
 Unregister an event source with an event queue. If the event source is not actually registered with the event queue, nothing happens.
 
 If the queue had any events in it which originated from the event source, they will no longer be in the queue after this call.
 @seealso(al_register_event_source)
-#Allegro5.al_pause_event_queue
+#allegro5.al_pause_event_queue
 Pauses or resumes accepting new events into the event queue (to resume, pass @false for pause). Events already in the queue are unaffected.
 
 While a queue is paused, any events which would be entered into the queue are simply ignored. This is an alternative to unregistering then re-registering all event sources from the event queue, if you just need to prevent events piling up in the queue for a while.
 @seealso(al_is_event_queue_paused)
-#Allegro5.al_is_event_queue_empty
+#allegro5.al_is_event_queue_empty
 Returns @true if the event queue specified is currently empty. @seealso(al_get_next_event) @seealso(al_peek_next_event)
-#Allegro5.al_get_next_event
+#allegro5.al_get_next_event
 Takes the next event out of the event queue specified, and copy the contents into @code(ret_event), returning @true.  The original event will be removed from the queue.  If the event queue is empty, returns @false and the contents of @code(ret_event) are unspecified.
 @seealso(ALLEGRO_EVENT) @seealso(al_peek_next_event) @seealso(al_wait_for_event)
-#Allegro5.al_peek_next_event
+#allegro5.al_peek_next_event
 Copies the contents of the next event in the event queue specified into @code(ret_event) and returns @true. The original event packet will remain at the head of the queue. If the event queue is actually empty, this function returns @false and the contents of @code(ret_event) are unspecified.
 @seealso(ALLEGRO_EVENT) @seealso(al_get_next_event) @seealso(al_drop_next_event)
-#Allegro5.al_drop_next_event
+#allegro5.al_drop_next_event
 Drops (removes) the next event from the queue. If the queue is empty, nothing happens.
 @param(queue Pointer to the queue.)
 @Returns((@true) if an event was dropped.)
 @seealso(al_flush_event_queue) @seealso(al_is_event_queue_empty)
-#Allegro5.al_wait_for_event
+#allegro5.al_wait_for_event
 Waits until the event queue specified is non-empty. If @code(ret_event) is not @nil, the first event in the queue will be copied into @code(ret_event) and removed from the queue. If @code(ret_event) is @nil the first event is left at the head of the queue.
 @seealso(ALLEGRO_EVENT) @seealso(al_wait_for_event_timed) @seealso(al_wait_for_event_until) @seealso(al_get_next_event)
-#Allegro5.al_wait_for_event_timed
+#allegro5.al_wait_for_event_timed
 Waits until the event queue specified is non-empty.
 @param(queue Pointer to the queue.)
 @param(ret_event If it is not @nil, the first event in the queue will be copied into @code(ret_event) and removed from the queue. If it is @nil the first event is left at the head of the queue.)
 @param(secs Determines approximately how many seconds to wait. If the call times out, @false is returned. Otherwise, if an event ocurred, @true is returned.  For compatibility with all platforms, @code(secs) must be 2,147,483.647 seconds or less.)
 @seealso(ALLEGRO_EVENT) @seealso(al_wait_for_event) @seealso(al_wait_for_event_until)
-#Allegro5.al_wait_for_event_until
+#allegro5.al_wait_for_event_until
 Waits until the event queue specified is non-empty.
 @param(queue Pointer to the queue.)
 @param(ret_event If it is not @nil, the first event in the queue will be copied into @code(ret_event) and removed from the queue. If it is @nil the first event is left at the head of the queue.)
@@ -2121,15 +2114,15 @@ Waits until the event queue specified is non-empty.
 
 
 
-#Allegro5.ALLEGRO_NEW_WINDOW_TITLE_MAX_SIZE
+#allegro5.ALLEGRO_NEW_WINDOW_TITLE_MAX_SIZE
 Max size of window titles. @seealso(al_set_new_window_title) @seealso(al_set_window_title)
 
-#Allegro5.al_set_new_display_refresh_rate
+#allegro5.al_set_new_display_refresh_rate
 Sets the refresh rate to use when creating new displays on the calling thread. If the refresh rate is not available, @link(al_create_display) will fail. A list of modes with refresh rates can be found with @link(al_get_num_display_modes) and @link(al_get_display_mode).
 
 The default setting is zero (don't care).
 @seealso(al_get_new_display_refresh_rate)
-#Allegro5.al_set_new_display_flags
+#allegro5.al_set_new_display_flags
 Sets various flags to be used when creating new displays on the calling
 thread. flags is a bitfield containing any reasonable combination of the following:
 @unorderedlist(
@@ -2158,42 +2151,41 @@ thread. flags is a bitfield containing any reasonable combination of the followi
   @item(@bold(@code(ALLEGRO_PROGRAMMABLE_PIPELINE)) Require a programmable graphics pipeline. This flag is required to use @link(ALLEGRO_SHADERptr) objects.)
   @item(@bold(@code(ALLEGRO_FRAMELESS)) Try to create a window without a frame @(i.e. no border or titlebar@). This usually does nothing for fullscreen modes, and even in windowed modes it depends on the underlying platform whether it is supported or not.)
   @item(@bold(@code(ALLEGRO_GENERATE_EXPOSE_EVENTS)) Let the display generate expose events.)
-  @item(@bold(@code(ALLEGRO_GTK_TOPLEVEL)) Create a GTK toplevel window for the display, on X. This flag is conditionally defined by the native dialog addon. You must call @link(al_init_native_dialog_addon) for it to succeed. @code(ALLEGRO_GTK_TOPLEVEL) is incompatible with @code(ALLEGRO_FULLSCREEN).)
 )
 0 can be used for default values.
 @seealso(al_set_new_display_option) @seealso(al_get_display_option) @seealso(al_set_display_option)
-#Allegro5.al_get_new_display_refresh_rate
+#allegro5.al_get_new_display_refresh_rate
 Gets the requested refresh rate to be used when creating new displays on the calling thread.
 @seealso(al_set_new_display_refresh_rate)
-#Allegro5.al_get_new_display_flags
+#allegro5.al_get_new_display_flags
 Gets the display flags to be used when creating new displays on the calling thread.
 @seealso(al_set_new_display_flags) @seealso(al_set_display_flag)
 
-#Allegro5.al_set_new_window_title
+#allegro5.al_set_new_window_title
 Sets the title that will be used when a new display is created. Allegro uses a static buffer of @code(ALLEGRO_NEW_WINDOW_TITLE_MAX_SIZE) to store this, so the length of the titme you set must be less than this.
 @seealso(al_set_window_title) @seealso(al_get_new_window_title) @seealso(al_create_display) @seealso(ALLEGRO_NEW_WINDOW_TITLE_MAX_SIZE)
-#Allegro5.al_get_new_window_title
+#allegro5.al_get_new_window_title
 Returns the title that will be used when a new display is created. This returns the value that @link(al_set_window_title) was called with. The current implementation returns a pointer to a static buffer of which you should make a copy if you want to modify it.
 @seealso(al_set_window_title) @seealso(al_set_new_window_title) @seealso(al_create_display)
 
-#Allegro5.al_get_display_width
+#allegro5.al_get_display_width
 Gets the width of the display. This is like @code(SCREEN_W) in Allegro 4.x.
 @seealso(al_get_display_height)
-#Allegro5.al_get_display_height
+#allegro5.al_get_display_height
 Gets the height of the display. This is like @code(SCREEN_H) in Allegro 4.x.
 @seealso(al_get_display_width)
-#Allegro5.al_get_display_format
+#allegro5.al_get_display_format
 Gets pixel format of the display.
 @seealso(ALLEGRO_PIXEL_FORMAT)
-#Allegro5.al_get_display_refresh_rate
+#allegro5.al_get_display_refresh_rate
 Gets the refresh rate of the display.
 @seealso(al_set_new_display_refresh_rate)
-#Allegro5.al_get_display_flags
+#allegro5.al_get_display_flags
 Gets the flags of the display.
 
 In addition to the flags set for the display at creation time with @link(al_set_new_display_flags) it can also have the @code(ALLEGRO_MINIMIZED) flag set, indicating that the window is currently minimized.  This flag is very platform-dependent as even a minimized application may still render a preview version so normally you should not care whether it is minimized or not.
 @seealso(al_set_new_display_flags) @seealso(al_set_display_flag)
-#Allegro5.al_get_display_orientation
+#allegro5.al_get_display_orientation
 Return the display orientation, which can be one of the following:
 @unorderedlist(
   @item(@code(ALLEGRO_DISPLAY_ORIENTATION_UNKNOWN))
@@ -2204,7 +2196,7 @@ Return the display orientation, which can be one of the following:
   @item(@code(ALLEGRO_DISPLAY_ORIENTATION_FACE_UP))
   @item(@code(ALLEGRO_DISPLAY_ORIENTATION_FACE_DOWN))
 )
-#Allegro5.al_set_display_flag
+#allegro5.al_set_display_flag
 Enables or disables one of the display flags. The flags are the same as for @link(al_set_new_display_flags).  The only flags that can be changed after creation are:
 @unorderedlist(
   @item(@code(ALLEGRO_FULLSCREEN_WINDOW)) @item(@code(ALLEGRO_FRAMELESS)) @item(@code(ALLEGRO_MAXIMIZED))
@@ -2213,23 +2205,23 @@ You can use @code(al_get_display_flags) to query whether the given display prope
 @return(@true if the driver supports toggling the specified flag else @false.)
 @seealso(al_set_new_display_flags) @seealso(al_get_display_flags)
 
-#Allegro5.al_create_display
+#allegro5.al_create_display
 Creates a display, or window, with the specified dimensions. The parameters of the display are determined by the last calls to @code(al_set_new_display_* ). Default parameters are used if none are set explicitly. Creating a new display will automatically make it the active one, with the backbuffer selected for drawing.
 
 Each display that uses OpenGL as a backend has a distinct OpenGL rendering context associated with it. See @link(al_set_target_bitmap) for the discussion about rendering contexts.
 @returns(@nil on error.)
 @seealso(al_set_new_display_flags) @seealso(al_set_new_display_option) @seealso(al_set_new_display_refresh_rate) @seealso(al_set_new_display_adapter) @seealso(al_set_new_window_title) @seealso(al_destroy_display)
-#Allegro5.al_destroy_display
+#allegro5.al_destroy_display
 Destroys a display.
 
 If the target bitmap of the calling thread is tied to the display, then it implies a call to @code(al_set_target_bitmap @(@nil@);) before the display is destroyed.
 
 That special case notwithstanding, you should make sure no threads are currently targeting a bitmap which is tied to the display before you destroy it.
 @seealso(al_set_target_bitmap)
-#Allegro5.al_get_current_display
+#allegro5.al_get_current_display
 Returns the display that is "current" for the calling thread, or @nil if there is none.
 @seealso(al_set_target_bitmap)
-#Allegro5.al_set_target_bitmap
+#allegro5.al_set_target_bitmap
 This function selects the bitmap to which all subsequent drawing operations in the calling thread will draw to. To return to drawing to a display, set the backbuffer of the display as the target bitmap, using @link(al_get_backbuffer).  As a convenience, you may also use @link(al_set_target_backbuffer).
 
 Each video bitmap is tied to a display. When a video bitmap is set to as the target bitmap, the display that the bitmap belongs to is automatically made "current" for the calling thread (if it is not current already). Then drawing other bitmaps which are tied to the same display can be hardware accelerated.
@@ -2265,17 +2257,17 @@ al_draw_line (x1, y1, x2, y2, color, 0);
 !)
 An OpenGL command will be used to directly draw the line into the bitmap's associated texture.
 @seealso(al_get_target_bitmap) @seealso(al_set_target_backbuffer)
-#Allegro5.al_set_target_backbuffer
+#allegro5.al_set_target_backbuffer
 Same as @code(al_set_target_bitmap@(al_get_backbuffer@(display@)@);).
 @seealso(al_set_target_bitmap) @seealso(al_get_backbuffer)
-#Allegro5.al_get_backbuffer
+#allegro5.al_get_backbuffer
 Returns a special bitmap representing the back-buffer of the display.
 
 Care should be taken when using the backbuffer bitmap (and its sub-bitmaps) as the source bitmap (e.g as the bitmap argument to @link(al_draw_bitmap)).  Only untransformed operations are hardware accelerated. These consist of @link(al_draw_bitmap) and @link(al_draw_bitmap_region) when the current transformation is the identity. If the tranformation is not the identity, or some other drawing operation is used, the call will be routed through the memory bitmap routines, which are slow. If you need those operations to be accelerated, then first copy a region of the backbuffer into a temporary bitmap (via the @link(al_draw_bitmap) and @link(al_draw_bitmap_region)), and then use that temporary bitmap as the source bitmap.
-#Allegro5.al_get_target_bitmap
+#allegro5.al_get_target_bitmap
 Returns the target bitmap of the calling thread. @seealso(al_set_target_bitmap)
 
-#Allegro5.al_acknowledge_resize
+#allegro5.al_acknowledge_resize
 When the user receives a resize event (@link(ALLEGRO_EVENT_DISPLAY_RESIZE) from a resizable display, if they wish the display to be resized they must call this function to let the graphics driver know that it can now resize the display.
 
 Adjusts the clipping rectangle to the full size of the backbuffer. This also resets the backbuffers projection transform to default orthographic transform (see @link(al_use_projection_transform)).
@@ -2283,13 +2275,13 @@ Adjusts the clipping rectangle to the full size of the backbuffer. This also res
 Note that a resize event may be outdated by the time you acknowledge it;  there could be further resize events generated in the meantime.
 @return(@true on success.)
 @seealso(al_resize_display) @seealso(ALLEGRO_EVENT)
-#Allegro5.al_resize_display
+#allegro5.al_resize_display
 Resizes the display.  This works on both fullscreen and windowed displays, regardless of the @code(ALLEGRO_RESIZABLE) flag.
 
 Adjusts the clipping rectangle to the full size of the backbuffer.
 @returns(@true on success, or @false on error.)
 @seealso(al_acknowledge_resize)
-#Allegro5.al_flip_display
+#allegro5.al_flip_display
 Copies or updates the front and back buffers so that what has been drawn previously on the currently selected display becomes visible on screen. Pointers to the special back buffer bitmap remain valid and retain their semantics as the back buffer, although the contents may have changed.
 
 Several display options change how this function behaves:
@@ -2308,30 +2300,30 @@ Several display options change how this function behaves:
      set in the system's graphics preferences.)
 )
 @seealso(al_set_new_display_flags) @seealso(al_set_new_display_option) @seealso(al_wait_for_vsync)
-#Allegro5.al_update_display_region
+#allegro5.al_update_display_region
 Does the same as al_flip_display, but tries to update only the specified region. With many drivers this is not possible, but for some it can improve performance. If this is not supported, this function falls back to the behavior of @link(al_flip_display). You can query the support for this function using @code(al_get_display_option @(display, ALLEGRO_UPDATE_DISPLAY_REGION@)).
 @seealso(al_flip_display) @seealso(al_get_display_option)
-#Allegro5.al_is_compatible_bitmap
+#allegro5.al_is_compatible_bitmap
 D3D and OpenGL allow sharing a texture in a way so it can be used for multiple windows. Each @link(ALLEGRO_BITMAPptr) created with @link(al_create_bitmap) however is usually tied to a single @code(ALLEGRO_DISPLAYptr). This function can be used to know if the bitmap is compatible with the given display, even if it is a different display to the one it was created with. It returns @true if the bitmap is compatible (things like a cached texture version can be used) and @false otherwise (blitting in the current display will be slow).
 
 The only time this function is useful is if you are using multiple windows and need accelerated blitting of the same bitmaps to both.
 @Returns(@true if the bitmap is compatible with the current display, @false otherwise. If there is no current display, @false is returned.)
 
-#Allegro5.al_wait_for_vsync
+#allegro5.al_wait_for_vsync
 Waits for the beginning of a vertical retrace. Some driver/card/monitor combinations may not be capable of this.
 
 Note how @link(al_flip_display) usually already waits for the vertical retrace, so unless you are doing something special, there is no reason to call this function.
 @returns(@false if not possible, @true if successful.)
 @seealso(al_flip_display)
 
-#Allegro5.al_get_display_event_source
+#allegro5.al_get_display_event_source
 Retrieves the associated event source. See the documentation on events for a list of the events displays will generate.
 @seealso(ALLEGRO_EVENT_DISPLAY_EXPOSE)
 
-#Allegro5.al_set_display_icon
+#allegro5.al_set_display_icon
 Changes the icon associated with the display (window).
 @seealso(al_set_display_icons) @seealso(al_set_window_title)
-#Allegro5.al_set_display_icons
+#allegro5.al_set_display_icons
 Changes the icons associated with the display (window). Multiple icons can be provided for use in different contexts, e.g. window frame, taskbar, alt-tab popup. The number of icons must be at least one.
 
 @bold(Note)
@@ -2339,37 +2331,37 @@ Changes the icons associated with the display (window). Multiple icons can be pr
 If the underlying OS requires an icon of a size not provided then one of the bitmaps will be scaled up or down to the required size. The choice of bitmap is implementation dependent.
 @seealso(al_set_display_icon) @seealso(al_set_window_title)
 
-#Allegro5.al_get_new_display_adapter
+#allegro5.al_get_new_display_adapter
 Gets the video adapter index where new displays will be created by the calling thread, if previously set with @link(al_set_new_display_adapter). Otherwise returns @code(ALLEGRO_DEFAULT_DISPLAY_ADAPTER).
 @seealso(al_set_new_display_adapter)
-#Allegro5.al_set_new_display_adapter
+#allegro5.al_set_new_display_adapter
 Sets the adapter to use for new displays created by the calling thread. The adapter has a monitor attached to it. Information about the monitor can be gotten using @link(al_get_num_video_adapters) and @link(al_get_monitor_info).
 
 To return to the default behaviour, pass @code(ALLEGRO_DEFAULT_DISPLAY_ADAPTER).
 @seealso(al_get_num_video_adapters) @seealso(al_get_monitor_info)
-#Allegro5.al_set_new_window_position
+#allegro5.al_set_new_window_position
 Sets where the top left pixel of the client area of newly created windows (non-fullscreen) will be on screen, for displays created by the calling thread. Negative values are allowed on some multihead systems.
 
 To reset to the default behaviour, pass @code(@(maxLongint, maxLongint@)).
 @seealso(al_get_new_window_position) @seealso(al_set_window_position)
-#Allegro5.al_get_new_window_position
+#allegro5.al_get_new_window_position
 Gets the position where new non-fullscreen displays created by the calling thread will be placed.
 @seealso(al_set_new_window_position)
-#Allegro5.al_set_window_position
+#allegro5.al_set_window_position
 Sets the position on screen of a non-fullscreen display.
 @seealso(al_get_window_position) @seealso(al_set_new_window_position)
-#Allegro5.al_get_window_position
+#allegro5.al_get_window_position
 Gets the position of a non-fullscreen display.
 @seealso(al_set_window_position)
-#Allegro5.al_set_window_constraints
+#allegro5.al_set_window_constraints
 Constrains a non-fullscreen resizable display. The constraints are a hint only, and are not necessarily respected by the window environment. A value of 0 for any of the parameters indicates no constraint for that parameter.
 
 The constraints will be applied to a display only after the @link(al_apply_window_constraints) function call.
 @seealso(al_apply_window_constraints) (al_get_window_constraints)
-#Allegro5.al_get_window_constraints
+#allegro5.al_get_window_constraints
 Gets the constraints for a non-fullscreen resizable display.
 @seealso(al_set_window_constraints)
-#Allegro5.al_apply_window_constraints
+#allegro5.al_apply_window_constraints
 Enables or disables previously set constraints by @link(al_set_window_constraints) function.
 
 If enabled, the specified display will be automatically resized to new sizes to conform constraints in next cases:
@@ -2383,11 +2375,11 @@ Constrains are not applied when a display is toggle from windowed to maximized o
 If disabled, the specified display will stop using constraints.
 @seealso(al_get_window_constraints) @seealso(al_set_window_constraints)
 
-#Allegro5.al_set_window_title
+#allegro5.al_set_window_title
 Sets the title on a display.
 @seealso(al_set_display_icon) @seealso(al_set_display_icons)
 
-#Allegro5.al_set_new_display_option
+#allegro5.al_set_new_display_option
 Sets an extra display option, to be used when creating new displays on the
    calling thread.  Display options differ from display flags, and specify some
    details of the context to be created within the window itself.  These mainly
@@ -2493,106 +2485,106 @@ The supported options are:
   @itemlabel(@bold(@code(ALLEGRO_DEFAULT_SHADER_PLATFORM))) @item(Specify the shader platform to use for the default shader. See @link(ALLEGRO_SHADER_PLATFORM). The default is @link(ALLEGRO_SHADER_AUTO).)
 )
 @seealso(al_get_new_display_option)@seealso(al_set_new_display_flags) @seealso(al_reset_new_display_options) @seealso(al_get_display_option)
-#Allegro5.al_get_new_display_option
+#allegro5.al_get_new_display_option
 Retrieves an extra display setting which was previously set with @link(al_set_new_display_option).
-#Allegro5.al_reset_new_display_options
+#allegro5.al_reset_new_display_options
 This undoes any previous call to al_set_new_display_option on the calling thread.
 @seealso(al_set_new_display_option)
-#Allegro5.al_set_display_option
+#allegro5.al_set_display_option
 Changes an option that was previously set for a display. After displays are created, they take on the options set with @link(al_set_new_display_option). Calling @link(al_set_new_display_option) subsequently only changes options for newly created displays, and doesn't touch the options of already created displays. @code(al_set_display_option) allows changing some of these values. Not all display options can be changed or changing them will have no effect. Changing options other than those listed below is undefined.
 @definitionlist(
   @itemlabel(@bold(@code(ALLEGRO_SUPPORTED_ORIENTATIONS))) @item(This can be changed to allow new or restrict previously enabled orientations of the screen/device. See al_set_new_display_option for more information on this option.)
 )
 @seealso(al_get_display_option) @seealso(al_set_new_display_option)
-#Allegro5.al_get_display_option
+#allegro5.al_get_display_option
 Returns an extra display setting of the display. @seealso(al_set_new_display_option)
-#Allegro5.al_hold_bitmap_drawing
+#allegro5.al_hold_bitmap_drawing
 Enables or disables deferred bitmap drawing. This allows for efficient drawing of many bitmaps that share a parent bitmap, such as sub-bitmaps from a tilesheet or simply identical bitmaps. Drawing bitmaps that do not share a parent is less efficient, so it is advisable to stagger bitmap drawing calls such that the parent bitmap is the same for large number of those calls. While deferred bitmap drawing is enabled, the only functions that can be used are the bitmap drawing functions and font drawing functions. Changing the state such as the blending modes will result in undefined behaviour. One exception to this rule are the non-projection transformations. It is possible to set a new transformation while the drawing is held.
 
 No drawing is guaranteed to take place until you disable the hold. Thus, the idiom of this function's usage is to enable the deferred bitmap drawing, draw as many bitmaps as possible, taking care to stagger bitmaps that share parent bitmaps, and then disable deferred drawing. As mentioned above, this function also works with bitmap and truetype fonts, so if multiple lines of text need to be drawn, this function can speed things up.
 @seealso(al_is_bitmap_drawing_held)
-#Allegro5.al_is_bitmap_drawing_held
+#allegro5.al_is_bitmap_drawing_held
 Returns whether the deferred bitmap drawing mode is turned on or off. @seealso(al_hold_bitmap_drawing)
 
-#Allegro5.al_acknowledge_drawing_halt
+#allegro5.al_acknowledge_drawing_halt
 Call this in response to the @link(ALLEGRO_EVENT_DISPLAY_HALT_DRAWING) event. This is currently necessary for Android and iOS as you are not allowed to draw to your display while it is not being shown. If you do not call this function to let the operating system know that you have stopped drawing or if you call it to late the application likely will be considered misbehaving and get terminated.
 @seealso(ALLEGRO_EVENT_DISPLAY_HALT_DRAWING) @seealso(al_acknowledge_drawing_resume)
-#Allegro5.al_acknowledge_drawing_resume
+#allegro5.al_acknowledge_drawing_resume
 Call this in response to the @seealso(ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING) event.
 @seealso(ALLEGRO_EVENT_DISPLAY_RESUME_DRAWING) @seealso(al_acknowledge_drawing_halt)
 
 
 
-#Allegro5.al_get_clipboard_text
+#allegro5.al_get_clipboard_text
 This function returns a pointer to a string, allocated with @link(al_malloc) with the text contents of the clipboard if available. If no text is available on the clipboard then this function returns @nil. You must call @link(al_free) on the returned pointer when you don't need it anymore.
 
 Beware that text on the clipboard on Windows may be in Windows format, that is, it may have carriage return newline combinations for the line endings instead of regular newlines for the line endings on Linux or OSX.
 @seealso(al_set_clipboard_text) @seealso(al_clipboard_has_text)
-#Allegro5.al_set_clipboard_text
+#allegro5.al_set_clipboard_text
 This function pastes the text given as an argument to the clipboard.
 @seealso(al_get_clipboard_text) @seealso(al_clipboard_has_text)
-#Allegro5.al_clipboard_has_text
+#allegro5.al_clipboard_has_text
 This function returns true if and only if the clipboard has text available.
 @seealso(al_set_clipboard_text) @seealso(al_get_clipboard_text)
 
 
 
-#Allegro5.al_create_config
+#allegro5.al_create_config
 Creates an empty configuration structure. @seealso(al_load_config_file) @seealso(al_destroy_config)
-#Allegro5.al_add_config_section
+#allegro5.al_add_config_section
 Adds a section to a configuration structure with the given name. If the section already exists then nothing happens.
 @seealso(al_remove_config_section) @seealso(al_create_config)
-#Allegro5.al_set_config_value
+#allegro5.al_set_config_value
 Sets a value in a section of a configuration. If the section doesn't yet exist, it will be created. If a value already existed for the given key,
 it will be overwritten. The section can be @code('') for the global section.
 
 For consistency with the on-disk format of config files, any leading and trailing whitespace will be stripped from the value. If you have significant whitespace you wish to preserve, you should add your own quote characters and remove them when reading the values back in.
 @seealso(al_get_config_value)
-#Allegro5.al_add_config_comment
+#allegro5.al_add_config_comment
 Adds a comment in a section of a configuration. If the section doesn't yet exist, it will be created. The section can be @code('') for the global section.
 
 The comment may or may not begin with a hash character. Any newlines in the comment string will be replaced by space characters.
 @seealso(al_add_config_section)
-#Allegro5.al_get_config_value
+#allegro5.al_get_config_value
 Gets a pointer to an internal character buffer that will only remain valid as long as the @code(ALLEGRO_CONFIGptr) structure is not destroyed. Copy the value if you need a copy.  The section can be @code('') for the global section.
 @return(@nil if section or key do not exist.)
 @seealso(al_set_config_value)
-#Allegro5.al_load_config_file
+#allegro5.al_load_config_file
 Reads a configuration file from disk. The configuration structure should be destroyed with @link(al_destroy_config).
 @return(Pointer to configuration or @nil on error.)
 @seealso(al_load_config_file_f) @seealso(al_save_config_file) @seealso(al_destroy_config)
-#Allegro5.al_load_config_file_f
+#allegro5.al_load_config_file_f
 Reads a configuration file from an already open file.
 @return(@nil on error. The configuration structure should be destroyed with @link(al_destroy_config). The file remains open afterwards.)
 @seealso(al_load_config_file)
-#Allegro5.al_save_config_file
+#allegro5.al_save_config_file
 Writes out a configuration file to disk.
 @return(@true on success, @false on error.)
 @seealso(al_save_config_file_f) @seealso(al_load_config_file)
-#Allegro5.al_save_config_file_f
+#allegro5.al_save_config_file_f
 Writes out a configuration file to an already open file.
 @return(@true on success, @false on error. The file remains open afterwards.)
 @seealso(al_save_config_file)
-#Allegro5.al_merge_config_into
+#allegro5.al_merge_config_into
 Merges one configuration structure into another. Values in configuration @code(add) override those in @code(master). @code(master) is modified. Comments from @code(add) are not retained.
 @seealso(al_merge_config)
-#Allegro5.al_merge_config
+#allegro5.al_merge_config
 Merges two configuration structures, and return the result as a new configuration. Values in configuration @code(cfg2) override those in @code(cfg1). Neither of the input configuration structures are modified. Comments from @code(cfg2) are not retained.
 @seealso(al_merge_config_into)
-#Allegro5.al_destroy_config
+#allegro5.al_destroy_config
 Frees the resources used by a configuration structure. Does nothing if passed @nil.
 @seealso(al_create_config) @seealso(al_load_config_file)
-#Allegro5.al_remove_config_section
+#allegro5.al_remove_config_section
 Removes a section of a configuration.
 @return(@true if the section was removed, or @false if the section did not exist.)
 @seealso(al_add_config_section)
-#Allegro5.al_remove_config_key
+#allegro5.al_remove_config_key
 Removes a key and its associated value in a section of a configuration.
 @return(@true if the entry was removed, or @false if the entry did not exist.)
 
 
 
-#Allegro5.al_get_cpu_count
+#allegro5.al_get_cpu_count
 Returns the number of CPU cores that the system Allegro is running on has
 and which could be detected, or a negative number if detection failed.  Even
 if a positive number is returned, it might be that it is not correct.  For
@@ -2609,7 +2601,7 @@ certainly a bad idea to make your program exclusive to systems for which
 this function returns a certain "desirable" number.
 
 This function may be called prior to @link(al_install_system) or @link(al_init).
-#Allegro5.al_get_ram_size
+#allegro5.al_get_ram_size
 Returns the size in MB of the random access memory that the system Allegro
 is running on has and which could be detected, or a negative number if
 detection failed.  Even if a positive number is returned, it might be that
@@ -2629,15 +2621,15 @@ This function may be called prior to @link(al_install_system) or @link(al_init).
 
 
 
-#Allegro5.al_clear_to_color
+#allegro5.al_clear_to_color
 Clears the complete target bitmap, but confined by the clipping rectangle.
 @seealso(al_set_clipping_rectangle) @seealso(al_clear_depth_buffer)
-#Allegro5.al_clear_depth_buffer
+#allegro5.al_clear_depth_buffer
 Clears the depth buffer (confined by the clipping rectangle) to the given value. A depth buffer is only available if it was requested with @link(al_set_new_display_option) and the requirement could be met by the @link(al_create_display) call creating the current display. Operations involving the depth buffer are also affected by @link(al_set_render_state).
 
 For example, if @code(ALLEGRO_DEPTH_FUNCTION) is set to @code(ALLEGRO_RENDER_LESS) then depth buffer value of 1 represents infinite distance, and thus is a good value to use when clearing the depth buffer.
 @seealso(al_clear_to_color) @seealso(al_set_clipping_rectangle) @seealso(al_set_render_state) @seealso(al_set_new_display_option)
-#Allegro5.al_draw_pixel
+#allegro5.al_draw_pixel
 Draws a single pixel at @code({x, y}). This function, unlike @link(al_put_pixel), does blending and, unlike @link(al_put_blended_pixel), respects the transformations (that is, the pixel's position is transformed, but its size is unaffected - it remains a pixel). This function can be slow if called often; if you need to draw a lot of pixels consider using @link(al_draw_prim) with @code(ALLEGRO_PRIM_POINT_LIST) from the primitives addon.
 
 @bold(Note)
@@ -2650,13 +2642,20 @@ This function may not draw exactly where you expect it to. See the @bold(Pixel-p
 
 
 
-#Allegro5.al_get_errno
+#allegro5.AL_EDOM
+An error value returned by @link(al_get_errno) in some cases.
+@seealso(AL_ERANGE)
+#allegro5.AL_ERANGE
+An error value returned by @link(al_get_errno) in some cases.
+@seealso(AL_EDOM)
+
+#allegro5.al_get_errno
 Some Allegro functions will set an error number as well as returning an error code.  Call this function to retrieve the last error number set for the calling thread.
 @seealso(al_set_errno) @seealso(AL_EDOM) @seealso(AL_ERANGE)
 
 
 
-#Allegro5.AL_FIXED
+#allegro5.AL_FIXED
 Allegro provides some routines for working with fixed point numbers, and defines the type @code(AL_FIXED) to be a signed 32-bit integer.  The high word is used for the integer part and the low word for the fraction, giving a range of -32768 to 32767 and an accuracy of about four or five decimal places.  Fixed point numbers can be assigned, compared, added, subtracted, negated and shifted (for multiplying or dividing by powers of two) using the normal integer operators, but you should take care to use the appropriate conversion routines when mixing fixed point with integer or floating point values. Writing @code(fixed_point_1 + fixed_point_2) is OK, but @code(fixed_point + integer) is not.
 
 The only advantage of fixed point math routines is that you don't require a floating point coprocessor to use them.  This was great in the time period of i386 and i486 machines, but stopped being so useful with the coming of the Pentium class of processors.  From Pentium onwards, CPUs have increased their strength in floating point operations, equaling or even surpassing integer math performance.
@@ -2667,7 +2666,7 @@ Depending on the type of operations your program may need, using floating point 
 @seealso(al_fixsqrt)
 @seealso(al_fixcos) @seealso(al_fixsin) @seealso(al_fixtan)
 
-#Allegro5.AL_FIXTORAD_R
+#allegro5.AL_FIXTORAD_R
 Example:
 @longcode(!
 var
@@ -2683,7 +2682,7 @@ begin
 end.
 !)
 @seealso(AL_FIXED) @seealso(al_fixmul) @seealso(AL_RADTOFIX_R)
-#Allegro5.AL_RADTOFIX_R
+#allegro5.AL_RADTOFIX_R
 Example:
 @longcode(!
 var
@@ -2694,11 +2693,11 @@ end.
 !)
 @seealso(AL_FIXED) @seealso(al_fixmul) @seealso(AL_FIXTORAD_R)
 
-#Allegro5.al_fixsqrt
+#allegro5.al_fixsqrt
 If `x' is negative, @link(al_get_errno) is set to @link(AL_EDOM) and the function returns zero.
-#Allegro5.al_fixhypot
+#allegro5.al_fixhypot
 This should be better than calculating the formula yourself manually, since the error is much smaller.
-#Allegro5.al_fixatan
+#allegro5.al_fixatan
 The input value must be a fixed point radian.  The inverse tangent is the value whose tangent is x.
 
 Example:
@@ -2712,7 +2711,7 @@ en.
 !)
 @return(The inverse tangent of a fixed point value, measured as a fixed point binary format angle.)
 @seealso(al_fixtan) @seealso(al_fixatan2)
-#Allegro5.al_fixatan2
+#allegro5.al_fixatan2
 Computes the arc tangent of @code(y / x), but the signs of both arguments are used to determine the quadrant of the result, and @code(x) is permitted to be zero.  This function is useful to convert Cartesian coordinates to polar coordinates.
 
 Example:
@@ -2732,13 +2731,13 @@ end.
 @return(The arc tangent of y / x in fixed point binary format angle, from -128 to 128. If both x and y are zero, returns zero and sets Allegro's errno to @link(AL_EDOM).)
 @seealso(al_fixtan) @seealso(al_fixatan)
 
-#Allegro5.al_ftofix
+#allegro5.al_ftofix
 Unlike @link(al_itofix), this function clamps values which could overflow the type conversion, setting @link(al_get_errno) to non-zero in the process if this happens.
 @seealso(al_itofix) @seealso(al_fixtof)
-#Allegro5.al_fixtof
+#allegro5.al_fixtof
 @seealso(al_ftofix)
 
-#Allegro5.al_fixadd
+#allegro5.al_fixadd
 Although fixed point numbers can be added with the normal '+' integer operator, that doesn't provide any protection against overflow.  If overflow is a problem, you should use this function instead.  It is slower than using integer operators, but if an overflow occurs it will set @link(al_get_errno) and clamp the result, rather than just letting it wrap.
 
 Example:
@@ -2756,7 +2755,7 @@ end.
 !)
 @returns(The clamped result of adding x to y, setting Allegro's errno to @link(AL_ERANGE) if there was an overflow.)
 @seealso(al_fixsub) @seealso(al_fixmul) @seealso(al_fixdiv)
-#Allegro5.al_fixsub
+#allegro5.al_fixsub
 Although fixed point numbers can be substracted with the normal '-' integer operator, that doesn't provide any protection against overflow.  If overflow is a problem, you should use this function instead.  It is slower than using integer operators, but if an overflow occurs it will set @link(al_get_errno) and clamp the result, rather than just letting it wrap.
 
 Example:
@@ -2774,7 +2773,7 @@ end.
 !)
 @returns(The clamped result of substracting y from x, setting Allegro's errno to @link(AL_ERANGE) if there was an overflow.)
 @seealso(al_fixadd) @seealso(al_fixmul) @seealso(al_fixdiv)
-#Allegro5.al_fixmul
+#allegro5.al_fixmul
 A fixed point value can be multiplied or divided by an integer with the normal * and / operators.  To multiply two fixed point values, though, you must use this function.
 
 Example:
@@ -2788,7 +2787,7 @@ end.
 !)
 @return(The clamped result of multiplying x by y.)
 @seealso(al_fixadd) @seealso(al_fixsub) @seealso(al_fixdiv)
-#Allegro5.al_fixdiv
+#allegro5.al_fixdiv
 A fixed point value can be divided by an integer with the normal / operator.  To divide two fixed point values, though, you must use this function.  If a division by zero occurs, Allegro's errno will be set and the maximum possible value will be returned, but errno is not cleared if the operation is successful.  This means that if you are going to test for division by zero you should call @code(@link(al_set_errno) @(0@)) before calling @code(al_fixdiv).
 
 Example:
@@ -2809,7 +2808,7 @@ end.
 @return(The result of dividing x by y. If y is zero, returns the maximum possible fixed point value and sets Allegro's errno to @link(AL_ERANGE).)
 @seealso(al_fixadd) @seealso(al_fixsub) @seealso(al_fixmul)
 
-#Allegro5.al_fixfloor
+#allegro5.al_fixfloor
 That is, it rounds towards negative infinity.
 
 Example:
@@ -2824,7 +2823,7 @@ begin
 end.
 !)
 @seealso(al_fixtoi) @seealso(al_fixceil)
-#Allegro5.al_fixceil
+#allegro5.al_fixceil
 That is, it rounds towards positive infinity.
 
 Example:
@@ -2839,7 +2838,7 @@ begin
 end.
 !)
 @seealso(al_fixtoi) @seealso(al_fixfloor)
-#Allegro5.al_itofix
+#allegro5.al_itofix
 This is the same thing as @code(x shl 16).  Remember that overflows (trying to convert an integer greater than 32767) and underflows (trying to convert an integer lesser than -32768) are not detected even in debug builds!  The values simply "wrap around".
 
 Example:
@@ -2857,7 +2856,7 @@ end.
 !)
 @returns(The value of the integer converted to fixed point ignoring overflows.)
 @seealso(al_fixtoi) @seealso(al_ftofix) @seealso(al_fixtof)
-#Allegro5.al_fixtoi)
+#allegro5.al_fixtoi)
 In general, this is the same as @code(x shr 16) but this won't work with negative numbers.  In that case it is equivalent to @code(not @(@(not x@) shr 16@)).
 
 Example:
@@ -2872,10 +2871,10 @@ begin
 end.
 !)
 @seealso(al_itofix) @seealso(al_fixtrunc)
-#Allegro5.al_fixtrunc
+#allegro5.al_fixtrunc
 @seealso(al_fixtoi) @seealso(al_itofix)
 
-#Allegro5.al_fixcos
+#allegro5.al_fixcos
 The input value must be a @html(<a href="introduction.html#fix_trig">fixed point binary angle</a>).
 
 Example:
@@ -2893,7 +2892,7 @@ end.
 !)
 @return(The cosine of a fixed point binary format angle.)
 @seealso(al_fixsin) @seealso(al_fixacos)
-#Allegro5.al_fixsin
+#allegro5.al_fixsin
 The input value must be a @html(<a href="introduction.html#fix_trig">fixed point binary angle</a>).
 
 Example:
@@ -2911,7 +2910,7 @@ end.
 !)
 @return(The cosine of a fixed point binary format angle.)
 @seealso(al_fixcos) @seealso(al_fixasin)
-#Allegro5.al_fixtan
+#allegro5.al_fixtan
 The input value must be a @html(<a href="introduction.html#fix_trig">fixed point binary angle</a>).
 
 Example:
@@ -2930,7 +2929,7 @@ end.
 !)
 @return(The tangent of a fixed point binary format angle.)
 @seealso(al_fixatan) @seealso(al_fixcos) @seealso(al_fixsin)
-#Allegro5.al_fixacos
+#allegro5.al_fixacos
 The inverse cosine is defined only in the domain from -1 to 1.  Outside of this input range, the function will set Allegro's errno to @link(AL_EDOM) and return zero.
 
 Example:
@@ -2944,7 +2943,7 @@ end.
 !)
 @return(The inverse cosine of a fixed point value, measured as fixed point binary format angle, or zero if the input was out of range.  All return values of this function will be in the range 0 to 128.)
 @seealso(al_fixcos) @seealso(al_get_errno)
-#Allegro5.al_fixasin
+#allegro5.al_fixasin
 The inverse sine is defined only in the domain from -1 to 1.  Outside of this input range, the function will set Allegro's errno to @link(AL_EDOM) and return zero.
 
 Example:
@@ -2967,7 +2966,7 @@ end.
 
 
 
-#Allegro5.ALLEGRO_DISPLAY_MODE
+#allegro5.ALLEGRO_DISPLAY_MODE
 Used for fullscreen mode queries.  Contains information about a supported fullscreen modes.
 @member width Screen width.
 @member height Screen height.
@@ -2975,10 +2974,10 @@ Used for fullscreen mode queries.  Contains information about a supported fullsc
 @member refresh_rate The refresh rate of the mode. It may be zero if unknown.
 @seealso(al_get_display_mode)
 
-#Allegro5.al_get_num_display_modes
+#allegro5.al_get_num_display_modes
 Gets the number of available fullscreen display modes for the current set of display parameters. This will use the values set with @link(al_set_new_display_refresh_rate), and @link(al_set_new_display_flags) to find the number of modes that match. Setting the new display parameters to zero will give a list of all modes for the default driver.
 @seealso(al_get_display_mode)
-#Allegro5.al_get_display_mode
+#allegro5.al_get_display_mode
 Retrieves a fullscreen mode.  Display parameters should not be changed  between a call of @link(al_get_num_display_modes) and @code(al_get_display_mode).
 @param(index Must be between 0 and the number returned from @code(al_get_num_display_modes - 1).)
 @param(mode Must be an allocated @code(ALLEGRO_DISPLAY_MODE) structure.)
@@ -2987,25 +2986,25 @@ Retrieves a fullscreen mode.  Display parameters should not be changed  between 
 
 
 
-#Allegro5.ALLEGRO_JOYSTICK_STATE
+#allegro5.ALLEGRO_JOYSTICK_STATE
 This is a structure that is used to hold a @italic("snapshot") of a joystick's axes and buttons at a particular instant. All fields public and read-only. @seealso(al_get_joystick_state)
 
-#Allegro5.ALLEGRO_JOYFLAGS
+#allegro5.ALLEGRO_JOYFLAGS
 @deprecated This is a holdover from the old API and may be removed. @seealso(al_get_joystick_stick_flags)
-#Allegro5.ALLEGRO_JOYFLAG_DIGITAL
+#allegro5.ALLEGRO_JOYFLAG_DIGITAL
 The stick provides digital input.
-#Allegro5.ALLEGRO_JOYFLAG_ANALOGUE
+#allegro5.ALLEGRO_JOYFLAG_ANALOGUE
 The stick provides analogue input.
 
-#Allegro5.al_install_joystick
+#allegro5.al_install_joystick
 Installs a joystick driver, returning @true if successful.  If a joystick driver was already installed, returns @true immediately.
 @seealso(al_uninstall_joystick)
-#Allegro5.al_uninstall_joystick
+#allegro5.al_uninstall_joystick
 Uninstalls the active joystick driver. All outstanding @link(ALLEGRO_JOYSTICKptr) pointers are invalidated.  If no joystick driver was active, this function does nothing.
 
 This function is automatically called when Allegro is shut down.
 @seealso(al_install_joystick)
-#Allegro5.al_reconfigure_joysticks
+#allegro5.al_reconfigure_joysticks
 Allegro is able to cope with users connecting and disconnected joystick devices on-the-fly. On existing platforms, the joystick event source will generate an event of type @code(ALLEGRO_EVENT_JOYSTICK_CONFIGURATION) when a device is plugged in or unplugged. In response, you should call @code(al_reconfigure_joysticks).
 
 Afterwards, the number returned by @link(al_get_num_joysticks) may be different, and the handles returned by @link(al_get_joystick) may be different or be ordered differently.
@@ -3016,97 +3015,97 @@ It is possible that on some systems, Allegro won't be able to generate @code(ALL
 @return(@true if the joystick configuration changed, otherwise @false.)
 @seealso(al_get_joystick_event_source) @seealso(ALLEGRO_EVENT)
 
-#Allegro5.al_get_num_joysticks
+#allegro5.al_get_num_joysticks
 Returns the number of joysticks currently on the system (or potentially on the system). This number can change after @link(al_reconfigure_joysticks) is called, in order to support hotplugging.
 
 Returns @code(0) if there is no joystick driver installed.
 @seealso(al_get_joystick) @seealso(al_get_joystick_active)
-#Allegro5.al_get_joystick
+#allegro5.al_get_joystick
 Gets a handle for a joystick on the system. The number may be from @code(0) to @code(al_get_num_joysticks - 1). If successful a pointer to a joystick object is returned, which represents a physical device. Otherwise @nil is returned.
 
 The handle and the index are only incidentally linked. After @code(al_reconfigure_joysticks) is called, @code(al_get_joystick) may return handles in a different order, and handles which represent disconnected devices will not be returned.
 @seealso(al_get_num_joysticks) @seealso(al_reconfigure_joysticks) @seealso(al_get_joystick_active)
-#Allegro5.al_get_joystick_active
+#allegro5.al_get_joystick_active
 Returns if the joystick handle is "active", i.e. in the current configuration, the handle represents some physical device plugged into the system. @link(al_get_joystick) returns active handles. After reconfiguration, active handles may become inactive, and vice versa.
 @seealso(al_reconfigure_joysticks)
-#Allegro5.al_get_joystick_name
+#allegro5.al_get_joystick_name
 Returns the name of the given joystick.
 @seealso(al_get_joystick_stick_name) @seealso(al_get_joystick_axis_name)
 @seealso(al_get_joystick_button_name)
 
-#Allegro5.al_get_joystick_num_sticks
+#allegro5.al_get_joystick_num_sticks
 Returns the number of "sticks" on the given joystick. A stick has one or more axes.
 @seealso(al_get_joystick_num_axes) @seealso(al_get_joystick_num_buttons)
-#Allegro5.al_get_joystick_stick_flags
+#allegro5.al_get_joystick_stick_flags
 Returns the flags of the given "stick". If the stick doesn't exist, @nil is returned. Indices begin from @code(0).
 @seealso(ALLEGRO_JOYFLAGS)
-#Allegro5.al_get_joystick_stick_name
+#allegro5.al_get_joystick_stick_name
 Returns the name of the given "stick". If the stick doesn't exist, @nil is returned.
 @seealso(al_get_joystick_axis_name) @seealso(al_get_joystick_num_sticks)
 
-#Allegro5.al_get_joystick_num_axes
+#allegro5.al_get_joystick_num_axes
 Returns the number of axes on the given "stick". If the stick doesn't exist, @code(0) is returned.
 @seealso(al_get_joystick_num_sticks)
-#Allegro5.al_get_joystick_axis_name
+#allegro5.al_get_joystick_axis_name
 Returns the name of the given axis. If the axis doesn't exist, @nil is returned. Indices begin from @code(0).
 @seealso(al_get_joystick_stick_name) @seealso(al_get_joystick_num_axes)
 
-#Allegro5.al_get_joystick_num_buttons
+#allegro5.al_get_joystick_num_buttons
 Returns the number of buttons on the joystick.
 @seealso(al_get_joystick_num_sticks)
-#Allegro5.al_get_joystick_button_name
+#allegro5.al_get_joystick_button_name
 Returns the name of the given button. If the button doesn't exist, @nil is returned. Indices begin from @code(0).
 @seealso(al_get_joystick_stick_name) @seealso(al_get_joystick_axis_name) @seealso(al_get_joystick_num_buttons)
 
-#Allegro5.al_get_joystick_state
+#allegro5.al_get_joystick_state
 Gets the current joystick state.
 @seealso(ALLEGRO_JOYSTICK_STATE) @seealso(al_get_joystick_num_buttons) @seealso(al_get_joystick_num_axes)
 
-#Allegro5.al_get_joystick_event_source
+#allegro5.al_get_joystick_event_source
 Retrieves the global joystick event source. All joystick events are generated by this event source.
 @seealso(al_register_event_source) @seealso(ALLEGRO_EVENT)
 
 
-#Allegro5.ALLEGRO_KEYBOARD_STATE
+#allegro5.ALLEGRO_KEYBOARD_STATE
 This is a structure that is used to hold a "snapshot" of keyboard at a particular instant.
 
 You cannot read the state of keys directly. Use the function @link(al_key_down).
 @seealso(al_get_keyboard_state)
 @member display Points to the display that had keyboard focus at the time the state was saved. If no display was focused, this points to @nil.
-#Allegro5.al_install_keyboard
+#allegro5.al_install_keyboard
 Installs a keyboard driver.
 @returns(@true if successful.  If a driver was already installed, nothing happens and @true is returned.)
 @seealso(al_uninstall_keyboard) @seealso(al_is_keyboard_installed)
-#Allegro5.al_uninstall_keyboard
+#allegro5.al_uninstall_keyboard
 Uninstalls the active keyboard driver, if any. This will automatically unregister the keyboard event source with any event queues.
 
 This function is automatically called when Allegro is shut down.
 @seealso(al_install_keyboard)
 
-#Allegro5.al_set_keyboard_leds
+#allegro5.al_set_keyboard_leds
 Overrides the state of the keyboard LED indicators. Set @code(leds) to a combination of the keyboard modifier flags to enable the corresponding LED indicators (@code(ALLEGRO_KEYMOD_NUMLOCK), @code(ALLEGRO_KEYMOD_CAPSLOCK) and @code(ALLEGRO_KEYMOD_SCROLLLOCK) are supported) or to @code(-1) to return to default behavior.
 @return(@false if the current keyboard driver cannot set LED.)
 
-#Allegro5.al_get_keyboard_state
+#allegro5.al_get_keyboard_state
 Saves the state of the keyboard specified at the time the function is called into @code(ret_state).
 @seealso(al_key_down) @seealso(ALLEGRO_KEYBOARD_STATE)
-#Allegro5.al_clear_keyboard_state
+#allegro5.al_clear_keyboard_state
 Clears the state of the keyboard, emitting @link(ALLEGRO_EVENT_KEY_UP) for each currently pressed key. The given display is regarded as the one which had the keyboard focus when the event occurred. In case display is @nil no event is emitted. For most keyboard drivers Allegro maintains its own state of the keyboard, which might get out of sync with the real one. This function is intended to remedy such situation by resetting Allegro's keyboard state to a known default (no key pressed). This is particularly useful in response to @link(ALLEGRO_EVENT_DISPLAY_SWITCH_OUT) events.
 
 @bold(Unstable API:) This is a new feature and the exact semantics are still being decided upon.
 @seealso(al_get_keyboard_state) @seealso(ALLEGRO_KEYBOARD_STATE)
-#Allegro5.al_key_down
+#allegro5.al_key_down
 Returns @true if the key specified was held down in the state specified.
 @seealso(ALLEGRO_KEYBOARD_STATE)
 
-#Allegro5.al_get_keyboard_event_source
+#allegro5.al_get_keyboard_event_source
 Retrieves the keyboard event source. All keyboard events are generated by this event source.
 @return(@nil if the keyboard subsystem was not installed.)
 @seealso(al_register_event_source) @seealso(ALLEGRO_EVENT)
 
 
 
-#Allegro5.ALLEGRO_MOUSE_STATE
+#allegro5.ALLEGRO_MOUSE_STATE
 Stores mouse state.  Fields are read-only.
 @seealso(al_get_mouse_state) @seealso(al_get_mouse_state_axis) @seealso(al_mouse_button_down)
 @member x Mouse X position.
@@ -3117,40 +3116,40 @@ Stores mouse state.  Fields are read-only.
 @member pressure Pressure, ranging from 0.0 to 1.0.
 @member display Pointer to the display.
 
-#Allegro5.al_install_mouse
+#allegro5.al_install_mouse
 Installs mouse driver.
 @return(@true if successful.  If a driver was already installed, nothing happens and @true is returned.)
 @seealso(al_uninstall_mouse) @seealso(al_is_mouse_installed)
-#Allegro5.al_uninstall_mouse
+#allegro5.al_uninstall_mouse
 Uninstalls the active mouse driver, if any. This will automatically unregister the mouse event source with any event queues.
 
 This function is automatically called when Allegro is shut down.
 @seealso(al_install_mouse)
-#Allegro5.al_get_mouse_num_buttons
+#allegro5.al_get_mouse_num_buttons
 Returns the number of buttons on the mouse. The first button is 1.
 @seealso(al_get_mouse_num_axes)
-#Allegro5.al_get_mouse_num_axes
+#allegro5.al_get_mouse_num_axes
 Returns the number of axes on the mouse. The first axis is 0.
 @seealso(al_get_mouse_num_buttons)
-#Allegro5.al_set_mouse_xy
+#allegro5.al_set_mouse_xy
 Tryes to position the mouse at the given coordinates on the given display. The mouse movement resulting from a successful move will generate an @link(ALLEGRO_EVENT_MOUSE_WARPED) event.
 @return(@true on success, @false on failure.)
 @seealso(al_set_mouse_z) @seealso(al_set_mouse_w)
-#Allegro5.al_set_mouse_z
+#allegro5.al_set_mouse_z
 Sets the mouse wheel position to the given value.
 @return(@true on success, @false on failure.)
 @seealso(al_set_mouse_xy) @seealso(al_set_mouse_w)
-#Allegro5.al_set_mouse_w
+#allegro5.al_set_mouse_w
 Sets the second mouse wheel position to the given value.
 @return(@true on success, @false on failure.)
 @seealso(al_set_mouse_xy) @seealso(al_set_mouse_z)
-#Allegro5.al_set_mouse_axis
+#allegro5.al_set_mouse_axis
 Sets the given mouse axis to the given value.
 
 The axis number must not be 0 or 1, which are the X and Y axes. Use @code(al_set_mouse_xy) for that.
 @returns(@true on success, @false on failure.)
 @seealso(al_set_mouse_xy) @seealso(al_set_mouse_z) @seealso(al_set_mouse_w)
-#Allegro5.al_get_mouse_state
+#allegro5.al_get_mouse_state
 Saves the state of the mouse specified at the time the function is called into @code(ret_state).
 
 Example:
@@ -3171,16 +3170,16 @@ BEGIN
 END.
 !)
 @seealso(ALLEGRO_MOUSE_STATE) @seealso(al_get_mouse_state_axis) @seealso(al_mouse_button_down)
-#Allegro5.al_mouse_button_down
+#allegro5.al_mouse_button_down
 Returns @true if the mouse button specified was held down in the state specified. Unlike most things, the first mouse button is numbered 1.
 @seealso(ALLEGRO_MOUSE_STATE) @seealso(al_get_mouse_state) @seealso(al_get_mouse_state_axis)
-#Allegro5.al_get_mouse_state_axis
+#allegro5.al_get_mouse_state_axis
 Extracts the mouse axis value from the saved state. The axes are numbered from 0, in this order: x-axis, y-axis, z-axis, w-axis.
 @seealso(ALLEGRO_MOUSE_STATE) @seealso(al_get_mouse_state) @seealso(al_mouse_button_down)
-#Allegro5.al_get_mouse_cursor_position
+#allegro5.al_get_mouse_cursor_position
 On platforms where this information is available, this function returns the global location of the mouse cursor, relative to the desktop. You should not normally use this function, as the information is not useful except for special scenarios as moving a window.
 @return(@true on success, @false on failure.)
-#Allegro5.al_grab_mouse
+#allegro5.al_grab_mouse
 Confines the mouse cursor to the given display. The mouse cursor can only be confined to one display at a time.
 
 Do not assume that the cursor will remain confined until you call @link(al_ungrab_mouse). It may lose the confined status at any time for other reasons.
@@ -3190,14 +3189,14 @@ Do not assume that the cursor will remain confined until you call @link(al_ungra
 not yet implemented on Mac OS X.
 @return(@true if successful, otherwise returns @false.)
 @seealso(al_ungrab_mouse)
-#Allegro5.al_ungrab_mouse
+#allegro5.al_ungrab_mouse
 Stop confining the mouse cursor to any display belonging to the program.
 
 @bold(Note)
 
 not yet implemented on Mac OS X.
 @seealso(al_grab_mouse)
-#Allegro5.al_set_mouse_wheel_precision
+#allegro5.al_set_mouse_wheel_precision
 Sets the precision of the mouse wheel (the z and w coordinates). This precision manifests itself as a multiplier on the @code(dz) and @code(dw) fields in mouse events. It also affects the @code(z) and @code(w) fields of events and @link(ALLEGRO_MOUSE_STATE), but not in a simple way if you alter the precision often, so it is suggested to reset those axes to @code(0) when you change precision. Setting this to a high value allows you to detect small changes in those two axes for some high precision mice. A flexible way of using this precision is to set it to a high value (120 is likely sufficient for most, if not all, mice) and use a floating point @code(dz) and @code(dw) like so:
 @longcode(!
 VAR
@@ -3215,76 +3214,76 @@ END.
 !)
 Precision is set to 1 by default. It is impossible to set it to a lower precision than that.
 @seealso(al_get_mouse_wheel_precision)
-#Allegro5.al_get_mouse_wheel_precision
+#allegro5.al_get_mouse_wheel_precision
 Gets the precision of the mouse wheel (the z and w coordinates).
 @seealso(al_set_mouse_wheel_precision)
 
-#Allegro5.al_get_mouse_event_source
+#allegro5.al_get_mouse_event_source
 Retrieve the mouse event source. All mouse events are generated by this event source.
 @return(@nil if the mouse subsystem was not installed.)
 @seealso(al_register_event_source) @seealso(ALLEGRO_EVENT_MOUSE_AXES)
 
 
 
-#Allegro5.ALLEGRO_MEMORY_INTERFACE
+#allegro5.ALLEGRO_MEMORY_INTERFACE
 Used to define the memory management functions.
 @seealso(al_set_memory_interface)
 
-#Allegro5.al_set_memory_interface
+#allegro5.al_set_memory_interface
 Overrides the memory management functions with implementations of @link(al_malloc_with_context), @link(al_free_with_context), @link(al_realloc_with_context) and @link(al_calloc_with_context). The context arguments may be used for debugging. The new functions should be thread safe.
 @seealso(ALLEGRO_MEMORY_INTERFACE) @seealso(al_restore_memory_interface)
-#Allegro5.al_restore_memory_interface
+#allegro5.al_restore_memory_interface
 Restores the default behavior of the memory management functions.
 @seealso(al_set_memory_interface)
 
-#Allegro5.al_malloc
+#allegro5.al_malloc
 Like @code(GetMem), reserves @code(n) bytes memory on heap and returns a pointer to this memory.  The implementation may be overriden.
 
 Memory allocated with this function @bold(must) be released by @link(al_free).
 @seealso(al_free) @seealso(al_realloc) @seealso(al_calloc)
 @seealso(al_malloc_with_context) @seealso(al_set_memory_interface)
-#Allegro5.al_free
+#allegro5.al_free
 Like @code(FreeMem), releases the memory occupied by pointer @code(p).  The implementation may be overriden.
 
 Additionally, on Windows, a memory block allocated by one DLL must be freed from the same DLL. In the few places where an Allegro function returns a pointer that @bold(must) be freed, you must use @code(al_free) for portability to Windows.
 @seealso(al_malloc) @seealso(al_free_with_context)
-#Allegro5.al_realloc
+#allegro5.al_realloc
 Like @code(ReAllocMem), resizes the memory pointed to by @code(p) so it has size @code(n). The value of @code(p) may change during this operation.  The contents of the memory pointed to by @code(p) (if any) will be copied to the new location, but may be truncated if the newly allocated memory block is smaller in size. If a larger block is allocated, only the used memory is initialized, extra memory will not be zeroed out.  The implementation may be overriden.
 @seealso(al_malloc) @seealso(al_realloc_with_context)
-#Allegro5.al_calloc
+#allegro5.al_calloc
 Like @code(GetMem), reserves memory enough to store @code(c) elements of @code(n) bytes each on heap and returns a pointer to this memory.  The implementation may be overriden.
 @seealso(al_free) @seealso(al_realloc) @seealso(al_malloc)
 @seealso(al_calloc_with_context) @seealso(al_set_memory_interface)
 
-#Allegro5.al_malloc_with_context
+#allegro5.al_malloc_with_context
 This reserves memory for the Allegro library (this matters on Windows), unless overridden with @link(al_set_memory_interface).
 
 Generally you should use the @link(al_malloc) function.
-#Allegro5.al_free_with_context
+#allegro5.al_free_with_context
 This releases the memory reserved by the Allegro library (this matters on Windows), unless overridden with @link(al_set_memory_interface).
 
 Generally you should use the @link(al_free) function.
-#Allegro5.al_realloc_with_context
+#allegro5.al_realloc_with_context
 This reserves memory for the Allegro library (this matters on Windows), unless overridden with @link(al_set_memory_interface).
 
 Generally you should use the @link(al_realloc) function.
-#Allegro5.al_calloc_with_context
+#allegro5.al_calloc_with_context
 This reserves memory for the Allegro library (this matters on Windows), unless overridden with @link(al_set_memory_interface).
 
 Generally you should use the @link(al_calloc) function.
 
 
 
-#Allegro5.ALLEGRO_MONITOR_INFO
+#allegro5.ALLEGRO_MONITOR_INFO
 Describes a monitor's size and position relative to other monitors. @code(x1, y1) will be @code(0, 0) on the primary display. Other monitors can have negative values if they are to the left or above the primary display. @code(x2, y2) are the coordinates one beyond the bottom right pixel, so that @code(x2 - x1) gives the width and @code(y2 - y1) gives the height of the display.
 @seealso(al_get_monitor_info)
 
-#Allegro5.al_get_num_video_adapters
+#allegro5.al_get_num_video_adapters
 Gets the number of video "adapters" attached to the computer. Each video card attached to the computer counts as one or more adapters. An adapter is thus really a video port that can have a monitor connected to it.
 
 On Windows, use @link(al_set_new_display_flags) to switch between Direct3D and OpenGL backends, which will often have different adapters available.
 @seealso(al_get_monitor_info)
-#Allegro5.al_get_monitor_info
+#allegro5.al_get_monitor_info
 Gets information about a monitor's position on the desktop. adapter is a number from 0 to @code(al_get_num_video_adapters - 1).
 
 On Windows, use @link(al_set_new_display_flags) to switch between Direct3D and OpenGL backends, which will often have different adapters available.
@@ -3293,59 +3292,59 @@ On Windows, use @link(al_set_new_display_flags) to switch between Direct3D and O
 
 
 
-#Allegro5.ALLEGRO_SYSTEM_MOUSE_CURSOR
+#allegro5.ALLEGRO_SYSTEM_MOUSE_CURSOR
 Used to identify the mouse cursor. @seealso(al_set_system_mouse_cursor)
 
-#Allegro5.al_create_mouse_cursor
+#allegro5.al_create_mouse_cursor
 Creates a mouse cursor from the bitmap provided.
 @param(x_focus Describes the bit of the cursor that will represent the actual mouse position.)
 @param(y_focus Describes the bit of the cursor that will represent the actual mouse position.)
 @return(A pointer to the cursor on success, or @nil on failure.)
 @seealso(al_set_mouse_cursor) @seealso(al_destroy_mouse_cursor)
-#Allegro5.al_destroy_mouse_cursor
+#allegro5.al_destroy_mouse_cursor
 Frees the memory used by the given cursor.
 
 It has no effect if @code(cursor) is @nil.
 @seealso(al_create_mouse_cursor)
-#Allegro5.al_set_mouse_cursor
+#allegro5.al_set_mouse_cursor
 Sets the given mouse cursor to be the current mouse cursor for the given display.
 
 If the cursor is currently 'shown' (as opposed to 'hidden') the change is immediately visible.
 @return(@true on success, @false on failure.)
 @seealso(al_set_system_mouse_cursor) @seealso(al_show_mouse_cursor) @seealso(al_hide_mouse_cursor)
-#Allegro5.al_set_system_mouse_cursor
+#allegro5.al_set_system_mouse_cursor
 Sets the given system mouse cursor to be the current mouse cursor for the given @code(display). If the cursor is currently 'shown' (as opposed to 'hidden') the change is immediately visible.
 
 If the cursor doesn't exist on the current platform another cursor will be silently be substituted.
 @returns(@true on success, @false on failure.)
 @seealso(ALLEGRO_SYSTEM_MOUSE_CURSOR) @seealso(al_set_mouse_cursor) @seealso(al_show_mouse_cursor) @seealso(al_hide_mouse_cursor)
-#Allegro5.al_show_mouse_cursor
+#allegro5.al_show_mouse_cursor
 Makes a mouse cursor visible in the given display.
 @return(@true if a mouse cursor is shown as a result of the call @(or one already was visible@), @false otherwise.)
 @seealso(al_hide_mouse_cursor)
-#Allegro5.al_hide_mouse_cursor
+#allegro5.al_hide_mouse_cursor
 Hides the mouse cursor in the given display. This has no effect on what the current mouse cursor looks like; it just makes it disappear.
 @return(@true on success @(or if the cursor already was hidden@), @false otherwise.)
 @seealso(al_show_mouse_cursor)
 
 
 
-#Allegro5.ALLEGRO_RENDER_STATE
+#allegro5.ALLEGRO_RENDER_STATE
 Possible render states which can be set with @link(al_set_render_state).
-#Allegro5.ALLEGRO_ALPHA_TEST
+#allegro5.ALLEGRO_ALPHA_TEST
 If this is set to 1, the values of @code(ALLEGRO_ALPHA_FUNCTION) and @code(ALLEGRO_ALPHA_TEST_VALUE) define a comparison function which is performed for each pixel. Only if it evaluates to true the pixel is written. Otherwise no subsequent processing @(like depth test or blending@) is performed.
-#Allegro5.ALLEGRO_WRITE_MASK
+#allegro5.ALLEGRO_WRITE_MASK
 This determines how the framebuffer and depthbuffer are updated whenever a pixel is written @(in case alpha and/or depth testing is enabled: after all such enabled tests succeed@). Depth values are only written if  @code(ALLEGRO_DEPTH_TEST) is 1, in addition to the write mask flag being set.
-#Allegro5.ALLEGRO_DEPTH_TEST
+#allegro5.ALLEGRO_DEPTH_TEST
 If this is set to 1, compare the depth value of any newly written pixels with the depth value already in the buffer, according to @code(ALLEGRO_DEPTH_FUNCTION). Allegro primitives with no explicit z coordinate will write a value of 0 into the depth buffer.
-#Allegro5.ALLEGRO_DEPTH_FUNCTION
+#allegro5.ALLEGRO_DEPTH_FUNCTION
 One of the next values: @code(ALLEGRO_RENDER_NEVER) @code(ALLEGRO_RENDER_ALWAYS) @code(ALLEGRO_RENDER_LESS) @code(ALLEGRO_RENDER_EQUAL) @code(ALLEGRO_RENDER_LESS_EQUAL) @code(ALLEGRO_RENDER_GREATER) @code(ALLEGRO_RENDER_NOT_EQUAL) @code(ALLEGRO_RENDER_GREATER_EQUAL), only used when @code(ALLEGRO_DEPTH_TEST) is 1.
-#Allegro5.ALLEGRO_ALPHA_FUNCTION
+#allegro5.ALLEGRO_ALPHA_FUNCTION
 One of the next values: @code(ALLEGRO_RENDER_NEVER) @code(ALLEGRO_RENDER_ALWAYS) @code(ALLEGRO_RENDER_LESS) @code(ALLEGRO_RENDER_EQUAL) @code(ALLEGRO_RENDER_LESS_EQUAL) @code(ALLEGRO_RENDER_GREATER) @code(ALLEGRO_RENDER_NOT_EQUAL) @code(ALLEGRO_RENDER_GREATER_EQUAL), only used when @code(ALLEGRO_ALPHA_TEST) is 1.
-#Allegro5.ALLEGRO_ALPHA_TEST_VALUE
+#allegro5.ALLEGRO_ALPHA_TEST_VALUE
 Only used when @code(ALLEGRO_ALPHA_TEST) is 1.
 
-#Allegro5.al_set_render_state
+#allegro5.al_set_render_state
 Sets one of several render attributes.
 
 This function does nothing if the target bitmap is a memory bitmap.
@@ -3354,11 +3353,11 @@ This function does nothing if the target bitmap is a memory bitmap.
 
 
 
-#Allegro5.ALLEGRO_TRANSFORM
+#allegro5.ALLEGRO_TRANSFORM
 Defines the generic transformation type, a 4x4 matrix. 2D transforms use only a small subsection of this matrix, namely the top left 2x2 matrix, and the right most 2x1 matrix, for a total of 6 values.
 @member m A 4x4 float matrix.
 
-#Allegro5.al_use_transform
+#allegro5.al_use_transform
 Sets the transformation to be used for the the drawing operations on the target bitmap (each bitmap maintains its own transformation). Every drawing operation after this call will be transformed using this transformation. Call this function with an identity transformation to return to the default behaviour.
 
 This function does nothing if there is no target bitmap.
@@ -3375,7 +3374,7 @@ END;
 !)
 @param(trans Transformation to use.)
 @seealso(al_get_current_transform) @seealso(al_transform_coordinates)
-#Allegro5.al_use_projection_transform
+#allegro5.al_use_projection_transform
 Sets the projection transformation to be used for the the drawing operations on the target bitmap (each bitmap maintains its own projection transformation). Every drawing operation after this call will be transformed using this transformation. To return default behavior, call this function with an orthographic transform like so:
 @longcode(!
 VAR
@@ -3397,11 +3396,11 @@ This function does nothing if there is no target bitmap. This function also does
 
 The parameter is passed by reference as an optimization to avoid the overhead of stack copying. The reference will not be stored in the Allegro library so it is safe to pass references to local variables.
 @seealso(al_get_current_projection_transform)
-#Allegro5.al_copy_transform
+#allegro5.al_copy_transform
 Makes a copy of a transformation.
 @param(src Source transformation.)
 @param(dest Destination transformation.)
-#Allegro5.al_identity_transform
+#allegro5.al_identity_transform
 Sets the transformation to be the identity transformation. This is the default transformation. Use @link(al_use_transform) on an identity transformation to return to the default.
 @longcode(!
 VAR
@@ -3413,7 +3412,7 @@ END;
 !)
 @param(trans Transformation to alter.)
 @seealso(al_translate_transform) @seealso(al_rotate_transform) @seealso(al_scale_transform) @seealso(al_transpose_transform)
-#Allegro5.al_build_transform
+#allegro5.al_build_transform
 Builds a transformation given some parameters. This call is equivalent to calling the transformations in this order: make identity, rotate, scale, translate. This method is faster, however, than actually calling those functions.
 
 @bold(Note)
@@ -3426,7 +3425,7 @@ this function was previously documented to be equivalent to a different (and mor
 @param(sy Vertical scale.)
 @param(theta Rotation angle in radians:)
 @seealso(al_identity_transform) @seealso(al_translate_transform) @seealso(al_rotate_transform) @seealso(al_scale_transform) @seealso(al_compose_transform)
-#Allegro5.al_build_camera_transform
+#allegro5.al_build_camera_transform
 Builds a transformation which can be used to transform 3D coordinates in world space to camera space. This involves translation and a rotation. The function expects three coordinate triplets: The camera's position, the position the camera is looking at and an up vector. The up vector does not need to be of unit length and also does not need to be perpendicular to the view direction - it can usually just be the world up direction (most commonly 0/1/0).
 
 For example:
@@ -3461,41 +3460,41 @@ al_build_camera_transform (
 );
 !)
 @seealso(al_identity_transform) @seealso(al_translate_transform_3d) @seealso(al_rotate_transform_3d) @seealso(al_scale_transform_3d) @seealso(al_compose_transform) @seealso(al_use_transform)
-#Allegro5.al_translate_transform
+#allegro5.al_translate_transform
 Applies a translation to a transformation.
 @param(trans Transformation to alter.)
 @param(x Horizontal translation.)
 @param(y Vertical translation.)
 @seealso(al_identity_transform) @seealso(al_rotate_transform) @seealso(al_scale_transform) @seealso(al_build_transform)
-#Allegro5.al_translate_transform_3d
+#allegro5.al_translate_transform_3d
 Combines the given transformation with a transformation which translates coordinates by the given vector.
 @seealso(al_identity_transform) @seealso(al_use_projection_transform)
-#Allegro5.al_rotate_transform
+#allegro5.al_rotate_transform
 Applies a rotation to a transformation.
 @param(trans Transformation to alter.)
 @param(theta Rotation angle in radians.)
 @seealso(al_identity_transform) @seealso(al_translate_transform) @seealso(al_scale_transform) @seealso(al_build_transform)
-#Allegro5.al_rotate_transform_3d
+#allegro5.al_rotate_transform_3d
 Combines the given transformation with a transformation which rotates coordinates around the given vector by the given angle in radians.
 
 Note: The vector is assumed to be of unit length (otherwise it will also incur a scale).
 @seealso(al_identity_transform) @seealso(al_rotate_transform)
-#Allegro5.al_scale_transform
+#allegro5.al_scale_transform
 Applies a scale to a transformation.
 @param(trans Transformation to alter.)
 @param(sx Horizontal scale.)
 @param(sy Vertical scale.)
 @seealso(al_identity_transform) @seealso(al_translate_transform) @seealso(al_rotate_transform) @seealso(al_build_transform)
-#Allegro5.al_scale_transform_3d
+#allegro5.al_scale_transform_3d
 Combines the given transformation with a transformation which scales coordinates by the given vector.
 @seealso(al_identity_transform) @seealso(al_use_projection_transform)
-#Allegro5.al_transform_coordinates
+#allegro5.al_transform_coordinates
 Transforms a pair of coordinates.
 @param(trans Transformation to use.)
 @param(x Horizontal coordinate.)
 @param(y Vertical coordinate.)
 @seealso(al_identity_transform) @seealso(al_use_transform) @seealso(al_transform_coordinates_3d)
-#Allegro5.al_transform_coordinates_3d
+#allegro5.al_transform_coordinates_3d
 Transforms x, y, z coordinates.
 
 Note: If you are using a projection transform you most likely will want to use al_transform_coordinates_3d_projective instead.
@@ -3504,7 +3503,7 @@ Note: If you are using a projection transform you most likely will want to use a
 @param(y Vertical coordinate.)
 @param(z Depth coordinate.)
 @seealso(al_identity_transform) @seealso(al_use_transform) @seealso(al_transform_coordinates)
-#Allegro5.al_transform_coordinates_4d
+#allegro5.al_transform_coordinates_4d
 Transforms x, y, z, w coordinates.
 @param(trans Transformation to use.)
 @param(x Horizontal coordinate.)
@@ -3512,14 +3511,14 @@ Transforms x, y, z, w coordinates.
 @param(z Depth coordinate.)
 @param(w W coordinate.)
 @seealso(al_identity_transform) @seealso(al_use_transform) @seealso(al_transform_coordinates) @seealso(al_transform_coordinates_3d)
-#Allegro5.al_transform_coordinates_3d_projective
+#allegro5.al_transform_coordinates_3d_projective
 Transforms @code(x), @code(y), @code(z) as homogeneous coordinates. This is the same as using @link(al_transform_coordinates_4d) with the @code(w) coordinate set to 1, then dividing @code(x), @code(y), @code(z) by the resulting @code(w). This will provide the same coordinates Allegro will draw to when a projective transform is in effect as set with al_use_projection_transform.
 @param(trans Transformation to use.)
 @param(x Horizontal coordinate.)
 @param(y Vertical coordinate.)
 @param(z Depth coordinate.)
 @seealso(al_identity_transform) @seealso(al_use_transform) @seealso(al_transform_coordinates) @seealso(al_transform_coordinates_3d) @seealso(al_use_projection_transform)
-#Allegro5.al_compose_transform
+#allegro5.al_compose_transform
 Composes (combine) two transformations by a matrix multiplication.
 @longcode(!
 trans := trans other
@@ -3528,11 +3527,11 @@ Note that the order of matrix multiplications is important. The effect of applyi
 @param(trans ransformation to alter.)
 @param(other ransformation used to transform trans.)
 @seealso(al_identity_transform) @seealso(al_translate_transform) @seealso(al_rotate_transform) @seealso(al_scale_transform)
-#Allegro5.al_get_current_transform
+#allegro5.al_get_current_transform
 Returns the transformation of the current target bitmap, as set by @link(al_use_transform). If there is no target bitmap, this function returns @nil.
 @return(A pointer to the current transformation.)
 @seealso(al_get_current_projection_transform)
-#Allegro5.al_get_current_inverse_transform
+#allegro5.al_get_current_inverse_transform
 Returns the inverse of the current transformation of the target bitmap. If there is no target bitmap, this function returns @nil.
 
 This is similar to calling @code(@link(al_invert_transform) @(@link(al_get_current_transform)^@)) but the result of this function is cached.
@@ -3540,10 +3539,10 @@ This is similar to calling @code(@link(al_invert_transform) @(@link(al_get_curre
 @bold(Note)
 
 Allegro's transformation inversion functions work correctly only with 2D transformations.
-#Allegro5.al_get_current_projection_transform(void)
+#allegro5.al_get_current_projection_transform(void)
 Returns a pointer to the current projection transformation.  If there is no target bitmap, this function returns @nil.
 @seealso(al_use_projection_transform)
-#Allegro5.al_invert_transform
+#allegro5.al_invert_transform
 Inverts the passed transformation. If the transformation is nearly singular (close to not having an inverse) then the returned transformation may be invalid. Use @link(al_check_inverse) to ascertain if the transformation has an inverse before inverting it if you are in doubt.
 
 @bold(Note)
@@ -3551,7 +3550,7 @@ Inverts the passed transformation. If the transformation is nearly singular (clo
 Allegro's transformation inversion functions work correctly only with 2D transformations.
 @param(trans Transformation to invert.)
 @seealso(al_identity_transform) @seealso(al_check_inverse) @seealso(al_transpose_transform)
-#Allegro5.al_transpose_transform
+#allegro5.al_transpose_transform
 Transposes the matrix of the given transform. This can be used for inversing a rotation transform. For example:
 @longcode(#
 al_build_camera_transform (camera, 0, 0, 0, x, y, z, xu, yu, zu)
@@ -3562,7 +3561,7 @@ al_transpose_transform (camera)
   position is 0/0/0 as in the example. }
 #)
 @seealso(al_identity_transform)
-#Allegro5.al_check_inverse
+#allegro5.al_check_inverse
 Checks if the transformation has an inverse using the supplied tolerance. Tolerance should be a small value between 0 and 1, with 1e-7 being sufficient for most applications.
 
 In this function tolerance specifies how close the determinant can be to 0 (if the determinant is 0, the transformation has no inverse). Thus the smaller the tolerance you specify, the "worse" transformations will pass this test. Using a tolerance of 1e-7 will catch errors greater than 1/1000's of a pixel, but let smaller errors pass. That means that if you transformed a point by a transformation and then transformed it again by the inverse transformation that passed this check, the resultant point should less than 1/1000's of a pixel away from the original point.
@@ -3576,14 +3575,14 @@ Allegro's transformation inversion functions work correctly only with 2D transfo
 @param(tol Tolerance.)
 @return(@true if the transformation is invertible, @false otherwise.)
 @seealso(al_invert_transform)
-#Allegro5.al_orthographic_transform
+#allegro5.al_orthographic_transform
 Combines the given transformation with an orthographic transformation which maps the screen rectangle to the given left/top and right/bottom coordinates.
 
 near/far is the z range, coordinates outside of that range will get clipped. Normally -1/1 is fine because all 2D graphics will have a z coordinate of 0. However if you for example do @code(al_draw_rectangle (0, 0, 100, 100)) and rotate around the x axis ("towards the screen") make sure your z range allows values from -100 to 100 or the rotated rectangle will get clipped.
 
 Also, if you are using a depth buffer the z range decides the depth resolution. For example if you have a 16 bit depth buffer there are only 65536 discrete depth values. So if your near/far is set to -1000000/1000000 most of the z positions would not result in separate depth values which could lead to artifacts.
 @seealso(al_use_projection_transform) @seealso(al_perspective_transform)
-#Allegro5.al_perspective_transform
+#allegro5.al_perspective_transform
 Like @link(al_orthographic_transform) but honors perspective. If everything is at a z-position of -near it will look the same as with an orthographic transformation.
 
 To use a specific horizontal field of view you can use the relation:
@@ -3591,12 +3590,12 @@ To use a specific horizontal field of view you can use the relation:
 tan(hfov / 2) = (right - left) / 2 / near
 !)
 @seealso(al_use_projection_transform) @seealso(al_orthographic_transform)
-#Allegro5.al_horizontal_shear_transform(ALLEGRO_TRANSFORM* trans, float theta)
+#allegro5.al_horizontal_shear_transform(ALLEGRO_TRANSFORM* trans, float theta)
 Applies a horizontal shear to the transform
 @param(trans Transformation to alter.)
 @param(theta Rotation angle in radians.)
 @seealso(al_vertical_shear_transform)
-#Allegro5.al_vertical_shear_transform
+#allegro5.al_vertical_shear_transform
 Applies a vertical shear to the transform
 @param(trans Transformation to alter.)
 @param(theta Rotation angle in radians.)
@@ -3604,29 +3603,29 @@ Applies a vertical shear to the transform
 
 
 
-#Allegro5.ALLEGRO_SHADERptr
+#allegro5.ALLEGRO_SHADERptr
 Pointer to an @code(ALLEGRO_SHADER).
 
 An @code(ALLEGRO_SHADER) is a program that runs on the GPU.  It combines both a vertex and a pixel shader. (In OpenGL terms, an @code(ALLEGRO_SHADER) is actually a program which has one or more shaders attached. This can be confusing.)
 
 The source code for the underlying vertex or pixel shader can be provided either as GLSL or HLSL, depending on the value of @link(ALLEGRO_SHADER_PLATFORM) used when creating it.
 @seealso(al_create_shader)
-#Allegro5.ALLEGRO_SHADER_TYPE
+#allegro5.ALLEGRO_SHADER_TYPE
 Used with @link(al_attach_shader_source) and @link(al_attach_shader_source_file) to specify how to interpret the attached source.
-#Allegro5.ALLEGRO_VERTEX_SHADER
+#allegro5.ALLEGRO_VERTEX_SHADER
 A vertex shader is executed for each vertex it is used with. The program will output exactly one vertex at a time.
 
 When Allegro's graphics are being used then in addition to all vertices of primitives from the primitives addon, each drawn bitmap also consists of four vertices.
-#Allegro5.ALLEGRO_PIXEL_SHADER
+#allegro5.ALLEGRO_PIXEL_SHADER
 A pixel shader is executed for each pixel it is used with.  The program will output exactly one pixel at a time - either in the backbuffer or in the current target bitmap.
 
 With Allegro's builtin graphics this means the shader is for example called for each destination pixel of the output of an @link(al_draw_bitmap) call.
 
 A more accurate term for pixel shader would be fragment shader since one final pixel in the target bitmap is not necessarily composed of only a single output but of multiple fragments (for example when multi-sampling is being used).
-#Allegro5.ALLEGRO_SHADER_PLATFORM
+#allegro5.ALLEGRO_SHADER_PLATFORM
 The underlying platform which the @link(ALLEGRO_SHADERptr) is built on top of, which dictates the language used to program the shader.
 
-#Allegro5.al_create_shader
+#allegro5.al_create_shader
 Creates a shader object.
 
 The platform argument is one of the @link(ALLEGRO_SHADER_PLATFORM) values,
@@ -3645,7 +3644,7 @@ display, and a HLSL shader for a Direct3D display.
 @seealso(al_attach_shader_source) @seealso(al_attach_shader_source_file)
 @seealso(al_build_shader) @seealso(al_use_shader)
 @seealso(al_destroy_shader) @seealso(al_get_shader_platform)
-#Allegro5.al_attach_shader_source
+#allegro5.al_attach_shader_source
 Attaches the shader's source code to the shader object and compiles it. Passing @nil deletes the underlying (OpenGL or DirectX) shader.  See also @link(al_attach_shader_source_file) if you prefer to obtain your shader source from an external file.
 
 If you do not use @code(ALLEGRO_PROGRAMMABLE_PIPELINE) Allegro's graphics functions will not use any shader specific functions themselves. In case of a system with no fixed function pipeline (like OpenGL ES 2 or OpenGL 3 or 4) this means Allegro's drawing functions cannot be used.
@@ -3700,11 +3699,11 @@ Examine the output of @link(al_get_default_shader_source) for an example of
 how to use the above uniforms and attributes.
 @return(@true on success and @false on error, in which case the error log is updated. The error log can be retrieved with @link(al_get_shader_log).)
 @seealso(al_attach_shader_source_file) @seealso(al_build_shader) @seealso(al_get_default_shader_source) @seealso(al_get_shader_log)
-#Allegro5.al_attach_shader_source_file
+#allegro5.al_attach_shader_source_file
 Like @link(al_attach_shader_source) but reads the source code for the shader from the named file.
 @return(@true on success and @false on error, in which case the error log is updated. The error log can be retrieved with @link(al_get_shader_log).)
 @seealso(al_attach_shader_source) @seealso(al_build_shader) @seealso(al_get_shader_log)
-#Allegro5.al_build_shader
+#allegro5.al_build_shader
 This is required before the shader can be used with @link(al_use_shader). It should be called after successfully attaching the pixel and/or vertex shaders with @link(al_attach_shader_source) or @link(al_attach_shader_source_file).
 
 @bold(Note)
@@ -3712,19 +3711,19 @@ This is required before the shader can be used with @link(al_use_shader). It sho
 If you are using the @code(ALLEGRO_PROGRAMMABLE_PIPELINE) flag, then you must specify both a pixel and a vertex shader sources for anything to be rendered.
 @return(@true on success and @false on error, in which case the error log is updated. The error log can be retrieved with @link(al_get_shader_log).)
 @seealso(al_use_shader) @seealso(al_get_shader_log)
-#Allegro5.al_get_shader_log
+#allegro5.al_get_shader_log
 Returns a read-only string containing the information log for a shader program. The log is updated by certain functions, such as @link(al_attach_shader_source) or @link(al_build_shader) when there is an error.
 
 This function never returns @nil.
 @seealso(al_attach_shader_source) @seealso(al_attach_shader_source_file) @seealso(al_build_shader)
-#Allegro5.al_get_shader_platform
+#allegro5.al_get_shader_platform
 Returns the platform the shader was created with (either @code(ALLEGRO_SHADER_HLSL) or @code(ALLEGRO_SHADER_GLSL)).
 @seealso(al_create_shader)
-#Allegro5.al_use_shader
+#allegro5.al_use_shader
 Uses the shader for subsequent drawing operations on the current target bitmap. Pass @nil to stop using any shader on the current target bitmap.
 @return(@true on success. Otherwise returns @false, e.g. because the shader is incompatible with the target bitmap.)
 @seealso(al_destroy_shader) @seealso(al_set_shader_sampler) @seealso(al_set_shader_matrix) @seealso(al_set_shader_int) @seealso(al_set_shader_float) @seealso(al_set_shader_bool) @seealso(al_set_shader_int_vector) @seealso(al_set_shader_float_vector)
-#Allegro5.al_destroy_shader
+#allegro5.al_destroy_shader
 Destroy a shader. Any bitmaps which currently use the shader will implicitly stop using the shader. In multi-threaded programs, be careful that no such bitmaps are being accessed by other threads at the time.
 
 As a convenience, if the target bitmap of the calling thread is using the shader then the shader is implicitly unused before being destroyed.
@@ -3732,25 +3731,25 @@ As a convenience, if the target bitmap of the calling thread is using the shader
 This function does nothing if the shader argument is @nil.
 @seealso(al_create_shader)
 
-#Allegro5.al_set_shader_sampler
+#allegro5.al_set_shader_sampler
 Sets a texture sampler uniform and texture unit of the current target bitmap's shader. The given bitmap must be a video bitmap.
 
 Different samplers should use different units. The bitmap passed to Allegro's drawing functions uses the 0th unit, so if you're planning on using the @code(al_tex) variable in your pixel shader as well as another sampler, set the other sampler to use a unit different from 0. With the primitives addon, it is possible to free up the 0th unit by passing @nil as the texture argument to the relevant drawing functions. In this case, you may set a sampler to use the 0th unit and thus not use @code(al_tex) (the @code(al_use_tex) variable will be set to @code(false)).
 @return(@true on success. Otherwise returns @false, e.g. if the uniform by that name does not exist in the shader.)
 @seealso(al_use_shader)
-#Allegro5.al_set_shader_matrix
+#allegro5.al_set_shader_matrix
 Sets a matrix uniform of the current target bitmap's shader.
 @return(@true on success. Otherwise returns @false, e.g. if the uniform by that name does not exist in the shader.)
 @seealso(al_use_shader)
-#Allegro5.al_set_shader_int
+#allegro5.al_set_shader_int
 Sets an integer uniform of the current target bitmap's shader.
 @return(@true on success. Otherwise returns @false, e.g. if the uniform by that name does not exist in the shader.)
 @seealso(al_use_shader)
-#Allegro5.al_set_shader_float
+#allegro5.al_set_shader_float
 Sets a float uniform of the current target bitmap's shader.
 @return(@true on success. Otherwise returns @false, e.g. if the uniform by that name does not exist in the shader.)
 @seealso(al_use_shader)
-#Allegro5.al_set_shader_int_vector
+#allegro5.al_set_shader_int_vector
 Sets an integer vector array uniform of the current target bitmap's shader.
 The @code(num_components) parameter can take one of the values 1, 2, 3 or 4.
 If it is 1 then an array of @code(num_elems) integer elements is added.
@@ -3776,21 +3775,21 @@ END;
 !)
 @return(@true on success. Otherwise returns @false, e.g. if the uniform by that name does not exist in the shader.)
 @seealso(al_set_shader_float_vector) @seealso(al_use_shader)
-#Allegro5.al_set_shader_float_vector
+#allegro5.al_set_shader_float_vector
 Same as @link(al_set_shader_int_vector) except all values are float instead of integer.
 @seealso(al_set_shader_int_vector) @seealso(al_use_shader)
-#Allegro5.al_set_shader_bool
+#allegro5.al_set_shader_bool
 Sets a boolean uniform of the current target bitmap's shader.
 @return(@true on success. Otherwise returns @false, e.g. if the uniform by that name does not exist in the shader.)
 @seealso(al_use_shader)
 
-#Allegro5.al_get_default_shader_source
+#allegro5.al_get_default_shader_source
 Returns a string containing the source code to Allegro's default vertex or pixel shader appropriate for the passed platform. The @code(ALLEGRO_SHADER_AUTO) value means GLSL is used if OpenGL is being used otherwise HLSL.  @code(ALLEGRO_SHADER_AUTO) requires that there is a current display set on the calling thread. This function can return @nil if Allegro was built without support for shaders of the selected platform.
 @seealso(al_attach_shader_source)
 
 
 
-#Allegro5.ALLEGRO_SYSTEM_ID
+#allegro5.ALLEGRO_SYSTEM_ID
 The system Allegro is running on.
 @definitionlist(
   @itemlabel(ALLEGRO_SYSTEM_ID_UNKNOWN) @item(Unknown system.)
@@ -3804,7 +3803,7 @@ The system Allegro is running on.
   @itemlabel(ALLEGRO_SYSTEM_ID_SDL) @item(SDL)
 )
 @seealso(al_get_system_id)
-#Allegro5.al_init
+#allegro5.al_init
 Like @link(al_install_system), but automatically passes in the version and @nil as @code(atexit_ptr):
 
 @bold(Note)
@@ -3812,18 +3811,18 @@ Like @link(al_install_system), but automatically passes in the version and @nil 
 It is typically wrong to call al_init anywhere except the final game binary. In particular, do not call it inside a shared library unless you know what you're doing. In those cases, it is better to call @link(al_install_system) either with a @nil @code(atexit_ptr), or with a pointer to @code(atexit) provided by the user of this shared library.
 @seealso(al_uninstall_system) @seealso(al_get_system_id)
 
-#Allegro5.al_install_system
+#allegro5.al_install_system
 Initializes the Allegro system.  No other Allegro functions can be called before this (with one or two exceptions).
 @param(version Should always be set to @link(ALLEGRO_VERSION_INT).)
 @param(atexit_ptr If non-@nil, and if hasn't been done already, @code(al_uninstall_system) will be registered as an atexit function. @code(atexit) is a function provided by standard C runtime library.  It allows similar functionality than @code(FINALIZATION) section in Pascal.)
 @returns(@true if Allegro was successfully initialized by this function call @(or already was initialized previously@), @false if Allegro cannot be used.)
 @seealso(al_init) @seealso(al_uninstall_system) @seealso(al_get_system_id)
-#Allegro5.al_uninstall_system
+#allegro5.al_uninstall_system
 Closes down the Allegro system.
 
 In most cases you don't need to call this, because it's called by @code(allegro5.pas) @code(FINALIZATION) section.
 @seealso(al_init) @seealso(al_install_system)
-#Allegro5.al_get_system_config(void)
+#allegro5.al_get_system_config(void)
 Returns the system configuration structure. The returned configuration should not be destroyed with @link(al_destroy_config). This is mainly used for configuring Allegro and its addons. You may populate this configuration before Allegro is installed to control things like the logging levels and other features.
 
 Allegro will try to populate this configuration by loading a configuration file from a few different locations, in this order:
@@ -3842,175 +3841,63 @@ Note that Allegro will not look into that file unless you make a copy of it and 
 Returns the platform that Allegro is running on.
 @seealso(ALLEGRO_SYSTEM_ID)
 
-#Allegro5.al_inhibit_screensaver
+#allegro5.al_inhibit_screensaver
 This function allows the user to stop the system screensaver from starting up if @true is passed, or resets the system back to the default state (the state at program start) if @false is passed.
 @returns(@true if the state was set successfully, otherwise @false.)
 
 
 
-#Allegro5.ALLEGRO_THREADptr
-An opaque structure representing a thread.
-@seealso(al_create_thread)
-#Allegro5.ALLEGRO_MUTEXptr
-An opaque structure representing a mutex.
-@seealso(al_create_mutex)
-#Allegro5.ALLEGRO_CONDptr
-An opaque structure representing a condition variable.
-@seealso(al_create_cond)
-#Allegro5.ALLEGRO_THREAD_METHOD
-Defines the method used by threads.
-@seealso(al_create_thread)
-
-#Allegro5.al_create_thread
-Spawns a new thread which begins executing @code(proc).  The new thread is passed its own thread handle and the value @code(arg).
-
-@Return(A pointer to the thread on success.  Otherwise, returns @nil if there was an error.)
-@seealso(al_run_detached_thread) @seealso(al_start_thread) @seealso(al_join_thread) @seealso(al_destroy_thread)
-#Allegro5.al_start_thread
-When a @code(thread) is created, it is initially in a suspended state.  Calling @code(al_start_thread) will start its actual execution.
-
-Starting a thread which has already been started does nothing.
-@seealso(al_run_detached_thread) @seealso(al_create_thread) @seealso(al_join_thread)
-#Allegro5.al_join_thread
-Waits for the @code(thread) to finish executing.  This implicitly calls @link(al_set_thread_should_stop) first.
-@seealso(al_create_thread) @seealso(al_join_thread_ex) @seealso(al_get_thread_should_stop) @seealso(al_destroy_thread)
-#Allegro5.al_join_thread_ex
-Same than @link(al_join_thread), but the value returned by the thread function will be stored at @code(ret_value).
-@seealso(al_create_thread) @seealso(al_join_thread) @seealso(al_get_thread_should_stop) @seealso(al_destroy_thread)
-#Allegro5.al_set_thread_should_stop
-Sets the flag to indicate thread should stop. Returns immediately.
-@seealso(al_join_thread) @seealso(al_get_thread_should_stop)
-#Allegro5.al_get_thread_should_stop
-Checks if another thread is waiting for thread to stop. Threads which run in a loop should check this periodically and act on it when convenient.
-
-@bold(Note:) We don’t support forceful killing of threads.
-@return(@true if another thread has called @link(al_join_thread) or @link(al_set_thread_should_stop) on this thread.)
-@seealso(al_join_thread) @seealso(al_set_thread_should_stop)
-#Allegro5.al_destroy_thread
-Frees the resources used by a @code(thread). Implicitly performs @code(al_join_thread) on the thread if it hasn’t been done already.
-
-Does nothing if thread is @nil.
-@seealso(al_join_thread)
-#Allegro5.al_run_detached_thread
-Runs the passed function in its own thread, with @code(arg) passed to it as only parameter. This is similar to calling @link(al_create_thread), @link(al_start_thread) and (after the thread has finished) @code(al_destroy_thread) - but you don’t have the possibility of ever calling @code(al_join_thread) on the thread.
-
-#Allegro5.al_create_mutex
-Creates the mutex object (a mutual exclusion device). The mutex may or may not support “recursive” locking.
-@return(The mutex on success or @nil on error.)
-@seealso(al_create_mutex_recursive) @seealso(al_lock_mutex) @seealso(al_destroy_mutex)
-#Allegro5.al_create_mutex_recursive
-Creates the mutex object (a mutual exclusion device), with support for “recursive” locking. That is, the mutex will count the number of times it has been locked by the same thread. If the caller tries to acquire a lock on the mutex when it already holds the lock then the count is incremented. The mutex is only unlocked when the thread releases the lock on the mutex an equal number of times, i.e. the count drops down to zero.
-@seealso(al_create_mutex)
-#Allegro5.al_lock_mutex
-Acquires the lock on @code(mutex). If the @code(mutex) is already locked by another thread, the call will block until the @code(mutex) becomes available and locked.
-
-If the @code(mutex) is already locked by the calling thread, then the behaviour depends on whether the @code(mutex) was created with @link(al_create_mutex) or @link(al_create_mutex_recursive). In the former case, the behaviour is undefined; the most likely behaviour is deadlock. In the latter case, the count in the mutex will be incremented and the call will return immediately.
-
-We don’t yet have @code(al_mutex_trylock).
-@seealso(al_create_mutex) @seealso( al_unlock_mutex)
-#Allegro5.al_unlock_mutex
-Releases the lock on @code(mutex) if the calling thread holds the lock on it.
-
-If the calling thread doesn’t hold the lock, or if the @code(mutex) is not locked, undefined behaviour results.
-@seealso(al_lock_mutex)
-#Allegro5.al_destroy_mutex
-Frees the resources used by the @code(mutex). The @code(mutex) should be unlocked. Destroying a locked @code(mutex) results in undefined behaviour.
-
-Does nothing if @code(mutex) is @nil.
-@seealso(al_create_mutex)
-
-#Allegro5.al_create_cond
-Creates a condition variable.
-@return(The condition value on success or @nil on error.)
-@seealso(al_wait_cond) @seealso(al_destroy_cond)
-#Allegro5.al_destroy_cond
-Destroys a condition variable.
-
-Destroying a condition variable which has threads block on it results in undefined behaviour.
-
-Does nothing if @code(cond) is @nil.
-@seealso(al_create_cond)
-#Allegro5.al_wait_cond
-On entering this function, @code(mutex) must be locked by the calling thread. The function will atomically release @code(mutex) and block on @code(cond). The function will return when @code(cond) is @italic(“signalled”), acquiring the lock on the mutex in the process.
-
-Example of proper use:
-@longcode(!
-al_lock_mutex (Mutex);
-WHILE something_not_true DO
-  al_wait_cond (cond, mutex);
-do_something;
-al_unlock_mutex (mutex);
-!)
-The @code(mutex) should be locked before checking the condition, and should be rechecked @code(al_wait_cond) returns. @code(al_wait_cond) can return for other reasons than the condition becoming true (e.g. the process was signalled). If multiple threads are blocked on the condition variable, the condition may no longer be @true by the time the second and later threads are unblocked. Remember not to unlock the mutex prematurely.
-@seealso(al_wait_cond_until) @seealso(al_broadcast_cond) @seealso(al_signal_cond)
-#Allegro5.al_wait_cond_until
-Like @link(al_wait_cond) but the call can return if the absolute time passes timeout before the condition is signalled.
-@return(zero on success, non-zero if the call timed out.)
-@seealso(al_wait_cond)
-#Allegro5.al_broadcast_cond
-Unblocks all threads currently waiting on a condition variable. That is, broadcast that some condition which those threads were waiting for has become true.
-
-@bold(Note:) The pthreads spec says to lock the mutex associated with cond before signalling for predictable scheduling behaviour.
-@seealso(al_signal_cond)
-#Allegro5.al_signal_cond
-Unblocks at least one thread waiting on a condition variable.
-
-Generally you should use @link(al_broadcast_cond) but @code(al_signal_cond) may be more efficient when it’s applicable.
-@seealso(al_broadcast_cond)
-
-
-
-#Allegro5.ALLEGRO_TIMERptr
+#allegro5.ALLEGRO_TIMERptr
 Pointer to timer.  This is an abstract data type representing a timer object.
 @seealso(al_create_timer)
 
-#Allegro5.al_create_timer
+#allegro5.al_create_timer
 Allocates and initializes a timer. The new timer is initially stopped.
 
 Usage note:  typical granularity is on the order of microseconds, but with some drivers might only be milliseconds.
 @param(speed_secs Seconds per "tick". Must be positive.)
 @returns(If successful, a pointer to a new timer object, otherwise @nil.)
 @seealso(al_start_timer) @seealso(al_destroy_timer)
-#Allegro5.al_destroy_timer
+#allegro5.al_destroy_timer
 Uninstalls the timer specified. If the timer is started, it will automatically be stopped before uninstallation. It will also automatically unregister the timer with any event queues.
 
 Does nothing if passed the @nil pointer.
 @seealso(al_create_timer)
-#Allegro5.al_start_timer
+#allegro5.al_start_timer
 Starts the timer specified.  From then, the timer's counter will increment at a constant rate, and it will begin generating events.  Starting a timer that is already started does nothing.  Starting a timer that was stopped will reset the timer's counter, effectively restarting the timer from the beginning.
 @seealso(al_stop_timer) @seealso(al_get_timer_started) @seealso(al_resume_timer)
-#Allegro5.al_stop_timer
+#allegro5.al_stop_timer
 Stops the timer specified. The timer's counter will stop incrementing and it will stop generating events. Stopping a timer that is already stopped does nothing.
 @seealso(al_start_timer) @seealso(al_get_timer_started) @seealso(al_resume_timer)
-#Allegro5.al_resume_timer
+#allegro5.al_resume_timer
 Resumes the timer specified. From then, the timer's counter will increment at a constant rate, and it will begin generating events. Resuming a timer that is already started does nothing. Resuming a stopped timer will not reset the timer's counter (unlike @link(al_start_timer)).
 @seealso(al_start_timer) @seealso(al_stop_timer) @seealso(al_get_timer_started)
-#Allegro5.al_get_timer_speed
+#allegro5.al_get_timer_speed
 Returns the timer's speed, in seconds. (The same value passed to @link(al_create_timer) or @link(al_set_timer_speed).)
 @seealso(al_set_timer_speed)
-#Allegro5.al_set_timer_speed
+#allegro5.al_set_timer_speed
 Sets the timer's speed, i.e. the rate at which its counter will be incremented when it is started. This can be done when the timer is started or stopped. If the timer is currently running, it is made to look as though the speed change occurred precisely at the last tick.
 @param(speed_secs Exactly the same meaning as with @link(al_create_timer).)
 @seealso(al_get_timer_speed)
-#Allegro5.al_get_timer_count
+#allegro5.al_get_timer_count
 Returns the timer's counter value. The timer can be started or stopped.
 @seealso(al_set_timer_count)
-#Allegro5.al_set_timer_count
+#allegro5.al_set_timer_count
 Sets the timer's counter value. The timer can be started or stopped. The @code(count) value may be positive or negative, but will always be incremented by +1 at each tick.
 @seealso(al_get_timer_count) @seealso(al_add_timer_count)
-#Allegro5.al_add_timer_count
+#allegro5.al_add_timer_count
 Add @code(diff) to the timer's counter value. This is similar to writing:
 @longcode(!
 al_set_timer_count (Timer, al_get_timer_count (Timer) + diff);
 !)
 except that the addition is performed atomically, so no ticks will be lost.
 @seealso(al_set_timer_count)
-#Allegro5.al_get_timer_event_source
+#allegro5.al_get_timer_event_source
 Retrieves the associated event source. Timers will generate events of type @link(ALLEGRO_EVENT_TIMER).
 
 
 
-#Allegro5.ALLEGRO_STATE
+#allegro5.ALLEGRO_STATE
 Opaque type which is passed to @link(al_store_state)/@link(al_restore_state).
 
 The various state kept internally by Allegro can be displayed like this:
@@ -4035,7 +3922,7 @@ The various state kept internally by Allegro can be displayed like this:
 )
 In general, the only real global state is the active system driver. All other global state is per-thread, so if your application has multiple separate threads they never will interfere with each other. (Except if there are objects accessed by multiple threads of course. Usually you want to minimize that though and for the remaining cases use synchronization primitives described in the threads section or events described in the events section to control inter-thread communication.)
 
-#Allegro5.al_store_state
+#allegro5.al_store_state
 Stores part of the state of the current thread in the given @link(ALLEGRO_STATE) object. The flags parameter can take any bit-combination of these flags:
 @unorderedlist(
  @item(@code(ALLEGRO_STATE_NEW_DISPLAY_PARAMETERS) - new_display_format, new_display_refresh_rate, new_display_flags)
@@ -4050,7 +3937,7 @@ Stores part of the state of the current thread in the given @link(ALLEGRO_STATE)
  @item(@code(ALLEGRO_STATE_ALL) - all of the above)
 )
 @seealso(al_restore_state)
-#Allegro5.al_restore_state
+#allegro5.al_restore_state
 Restores part of the state of the current thread from the given @link(ALLEGRO_STATE) object.
 @seealso(al_store_state)
 
@@ -5453,297 +5340,6 @@ The mode can be any combination of @code('r') (readable) and @code('w') (writabl
 
 It should be closed with @link(al_fclose). After the file is closed, you are responsible for freeing the memory (if needed).
 #al5memfile.al_get_allegro_memfile_version
-Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version).
-
-
-
-#al5nativedlg.ALLEGRO_FILECHOOSERptr
-Opaque handle to a native file dialog. @seealso(al_create_native_file_dialog)
-#al5nativedlg.ALLEGRO_TEXTLOGptr
-Opaque handle to a text log window. @seealso(al_open_native_text_log)
-#al5nativedlg.ALLEGRO_MENUptr
-An opaque data type that represents a menu that contains menu items. Each of the menu items may optionally include a sub-menu.
-#al5nativedlg.ALLEGRO_MENUptrptr
-Pointer to a @link(ALLEGRO_MENUptr) variable. @seealso(al_find_menu_item)
-#al5nativedlg.ALLEGRO_MENU_INFO
-A structure that defines how to create a complete menu system.
-
-For items, these functions are helpful:
-@preformatted(
-ALLEGRO_ITEM_OF_MENU (caption, id, flags, icon)
-ALLEGRO_MENU_SEPARATOR
-ALLEGRO_END_OF_MENU
-)
-A well-defined menu will contain one or more menu items, and end with @link(ALLEGRO_END_OF_MENU). A menu may contain sub-menus.  An example:
-@longcode(#
-VAR
-  MenuInfo: ARRAY [0..12] OF ALLEGRO_MENU_INFO;
-  Menu: ALLEGRO_MENUptr;
-BEGIN
-  MenuInfo[ 0] := ALLEGRO_ITEM_OF_MENU ('&File->', 1);
-  MenuInfo[ 1] :=   ALLEGRO_ITEM_OF_MENU ('&Open', 2, 0, NIL);
-  MenuInfo[ 2] :=   ALLEGRO_ITEM_OF_MENU ('Open &Recent...->', 3);
-  MenuInfo[ 3] :=     ALLEGRO_ITEM_OF_MENU ('Recent 1', 4, 0, NIL);
-  MenuInfo[ 4] :=     ALLEGRO_ITEM_OF_MENU ('Recent 2', 5, 0, NIL);
-  MenuInfo[ 5] :=     ALLEGRO_END_OF_MENU;
-  MenuInfo[ 6] :=   ALLEGRO_MENU_SEPARATOR;
-  MenuInfo[ 7] :=   ALLEGRO_ITEM_OF_MENU ('E&xit', 6, 0, NIL);
-  MenuInfo[ 8] :=   ALLEGRO_END_OF_MENU;
-  MenuInfo[ 9] := ALLEGRO_ITEM_OF_MENU ('&Help->', 7);
-  MenuInfo[10] :=   ALLEGRO_ITEM_OF_MENU ('&About', 8, 0, NIL);
-  MenuInfo[11] :=   ALLEGRO_END_OF_MENU;
-  MenuInfo[12] := ALLEGRO_END_OF_MENU;
-
-  Menu := al_build_menu (MenuInfo)
-END;
-#)
-If you prefer, you can build the menu without the structure by using @link(al_create_menu) and @link(al_insert_menu_item).
-@seealso(al_build_menu)
-
-#al5nativedlg.al_init_native_dialog_addon
-Initializes the native dialog addon.
-
-@bold(Note)
-
-Prior to Allegro 5.1.0 native dialog functions could be called without explicit initialisation, but that is now deprecated. Future functionality may require explicit initialisation. An exception is @link(al_show_native_message_box), which may be useful to show an error message if Allegro fails to initialise.
-@return(@true on success, @false on error.)
-@seealso(al_shutdown_native_dialog_addon) @seealso(al_is_native_dialog_addon_initialized)
-#al5nativedlg.al_is_native_dialog_addon_initialized
-Returns @true if the native dialog addon is is initialized, otherwise returns false.
-@seealso(al_init_native_dialog_addon) @seealso(al_shutdown_native_dialog_addon)
-#al5nativedlg.al_shutdown_native_dialog_addon
-Shuts down the native dialog addon. @seealso(al_init_native_dialog_addon) @seealso(al_is_native_dialog_addon_initialized)
-
-
-#al5nativedlg.al_create_native_file_dialog
-Creates a new native file dialog. You should only have one such dialog opened at a time.
-@param(initial_path The initial search path and filename.  To start with a blank file name the string should end with a directory separator (this should be the common case).)
-@param(title Title of the dialog.)
-@param(patterns A list of semi-colon separated patterns to match. This should not contain any whitespace characters. If a pattern contains the '/' character, then it is treated as a MIME type (e.g. @code('image/png')). Not all platforms support file patterns. If the native dialog does not provide support, this parameter is ignored.)
-@param(mode 0, or a combination (@code(OR)) of the following flags: @definitionlist(
-  @itemlabel(@bold(@code(ALLEGRO_FILECHOOSER_FILE_MUST_EXIST))) @item(If supported by the native dialog, it will not allow entering new names, but just allow existing files to be selected. Else it is ignored.)
-  @itemlabel(@bold(@code(ALLEGRO_FILECHOOSER_SAVE))) @item(If the native dialog system has a different dialog for saving @(for example one which allows creating new directories@), it is used. Else it is ignored.)
-  @itemlabel(@bold(@code(ALLEGRO_FILECHOOSER_FOLDER))) @item(If there is support for a separate dialog to select a folder instead of a file, it will be used.)
-  @itemlabel(@bold(@code(ALLEGRO_FILECHOOSER_PICTURES))) @item(If a different dialog is available for selecting pictures, it is used. Else it is ignored.)
-  @itemlabel(@bold(@code(ALLEGRO_FILECHOOSER_SHOW_HIDDEN))) @item(If the platform supports it, also hidden files will be shown.)
-  @itemlabel(@bold(@code(ALLEGRO_FILECHOOSER_MULTIPLE))) @item(If supported, allow selectingmultiple files.)
-))
-@Returns(A handle to the dialog which you can pass to @link(al_show_native_file_dialog) to display it, and from which youthen can query the results using @link(al_get_native_file_dialog_count) and @link(al_get_native_file_dialog_path). When you are done, call @link(al_destroy_native_file_dialog) on it.
-
-If a dialog window could not be created then this function returns @nil.)
-#al5nativedlg.al_show_native_file_dialog
-Shows the dialog window. The display may be @nil, otherwise the given display is treated as the parent if possible.
-
-This function blocks the calling thread until it returns, so you may want to spawn a thread and call it from inside that thread.
-@return(@true on success, @false on failure.)
-@seealso(al_create_native_file_dialog)
-#al5nativedlg.al_get_native_file_dialog_count
-Returns the number of files selected, or @code(0) if the dialog was cancelled.
-@seealso(al_create_native_file_dialog) @seealso(al_show_native_file_dialog)
-#al5nativedlg.al_get_native_file_dialog_path
-Returns one of the selected paths with index @code(i). The index should range from @code(0) to the return value of @code(@link(al_get_native_file_dialog_count) (d) - 1).
-@seealso(al_create_native_file_dialog) @seealso(al_show_native_file_dialog)
-
-#al5nativedlg.al_show_native_message_box
-Shows a native GUI message box.  This can be used for example to display an error message if creation of an initial display fails. The display may be @nil, otherwise the given display is treated as the parent if possible.
-
-The message box will have a single "OK" button and use the style informative dialog boxes usually have on the native system. If the @code(buttons) parameter is not an empty string, you can instead specify the button text in a string, with buttons separated by a vertical bar (|).
-
-@bold(Note) @code(buttons) parameter is currently unimplemented on Windows.
-
-The flags available are: @definitionlist(
-  @itemlabel(@bold(@code(ALLEGRO_MESSAGEBOX_WARN))) @item(The message is a warning.  This may cause a different icon @(or other effects@).)
-  @itemlabel(@bold(@code(ALLEGRO_MESSAGEBOX_ERROR))) @item(The message is an error.)
-  @itemlabel(@bold(@code(ALLEGRO_MESSAGEBOX_QUESTION))) @item(The message is a question.)
-  @itemlabel(@bold(@code(ALLEGRO_MESSAGEBOX_OK_CANCEL))) @item(Display a cancel button alongside the "OK" button. Ignored if @code(buttons) is not an empty string.)
-  @itemlabel(@bold(@code(ALLEGRO_MESSAGEBOX_YES_NO))) @item(Display Yes/No buttons instead of the "OK" button. Ignored if @code(buttons) is not an empty string.)
-)
-@code(al_show_native_message_box) may be called without Allegro being installed. This is useful to report an error during initialisation of Allegro itself.
-
-@bold(Example)
-@longcode(#
-Button := al_show_native_message_box (
-  Display,
-  'Warning',
-  'Are you sure?',
-  'If you click yes then you are confirming that "Yes" '+
-  'is your response to the query which you have '+
-  'generated by the action you took to open this '+
-  'message box.',
-  '',
-  ALLEGRO_MESSAGEBOX_YES_NO
-);
-CASE Button OF
-1: { "Yes" pressed }
- ...
-2: { "No" pressed }
- ...
-ELSE { Error }
- ...
-END;
-#)
-@return(
-  @unorderedlist(
-    @item(@code(@bold(0)) if the dialog window was closed without activating a button.)
-    @item(@code(@bold(1)) if the OK or Yes button was pressed.)
-    @item(@code(@bold(2)) if the Cancel or No button was pressed)
-  )
-  If @code(buttons) is not an empty string, the number of the pressed button is returned, starting with 1.
-
-  If a message box could not be created then this returns 0, as if the window was dismissed without activating a button.
-)
-
-#al5nativedlg.al_open_native_text_log
-Opens a window to which you can append log messages with @link(al_append_native_text_log).  This can be useful for debugging if you don't want to depend on a console being available.
-
-Use @link(al_close_native_text_log) to close the window again.
-@param(title Title of the dialog.)
-@param(flags One of: @definitionlist(
-  @itemlabel(@bold(@code(ALLEGRO_TEXTLOG_NO_CLOSE))) @item(Prevent the window from having a close button. Otherwise, if the close button is pressed, an event is generated; see @link(al_get_native_text_log_event_source).)
-  @itemlabel(@bold(@code(ALLEGRO_TEXTLOG_MONOSPACE))) @item(Use a monospace font to display the text.)
-))
-@returns(@nil if there was an error opening the window, or if text log  windows are not implemented on the platform.)
-@seealso(al_append_native_text_log) @seealso(al_close_native_text_log)
-#al5nativedlg.al_close_native_text_log
-Closes a message log window opened with @code(al_open_native_text_log) earlier.
-
-Does nothing if passed @nil.
-@seealso(al_open_native_text_log)
-#al5nativedlg.al_append_native_text_log
-Appends a line of text to the message log window and scrolls to the bottom (if the line would not be visible otherwise). A line is continued until you add a newline character.
-
-If the window is @nil then this function will fall back to calling @code(Write). This makes it convenient to support logging to a window or a terminal.
-#al5nativedlg.al_get_native_text_log_event_source
-Gets an event source for a text log window. The possible events are:
-@definitionlist(
-  @itemlabel(@bold(@code(ALLEGRO_EVENT_NATIVE_DIALOG_CLOSE))) @item(The window was requested to be closed, either by pressing the close button or pressing Escape on the keyboard. The @code(user.data1) field will hold a pointer to the @code(ALLEGRO_TEXTLOG) which generated the event. The @code(user.data2) field will be @code(1) if the event was generated as a result of a key press; otherwise it will be zero.)
-)
-
-#al5nativedlg.al_create_menu
-Creates a menu container that can hold menu items.
-@return(Pointer to the menu struct or @nil on failure.)
-@seealso(al_create_popup_menu) @seealso(al_build_menu) @seealso(al_set_display_menu)
-#al5nativedlg.al_create_popup_menu
-Creates a menu container for popup menus. Only the root (outermost) menu should be created with this function. Sub menus of popups should be created with @link(al_create_menu).
-@return(Pointer to the menu struct or @nil on failure.)
-@seealso(al_create_menu) @seealso(al_build_menu) @seealso(al_popup_menu)
-#al5nativedlg.al_build_menu
-Builds a menu based on the specifications of a sequence of @code(ALLEGRO_MENU_INFO) elements.
-@returns(A pointer to the root @code(ALLEGRO_MENU), or @nil on failure. To gain access to the other menus and items, you will need to search for them using @link(al_find_menu_item).)
-@seealso(ALLEGRO_MENU_INFO) @seealso(al_create_menu) @seealso(al_create_popup_menu)
-#al5nativedlg.al_append_menu_item
-Appends a menu item to the end of the menu. See @link(al_insert_menu_item) for more information.
-@seealso(al_insert_menu_item) @seealso(al_remove_menu_item)
-#al5nativedlg.al_insert_menu_item
-Inserts a menu item at the spot specified.  See the introductory text for a detailed explanation of how the @code(pos) parameter is interpreted.
-@param(parent Can be a popup menu or a regular menu.  To underline one character in the title, prefix it with an ampersand.)
-@param(flags Can be any combination (@code(OR)) of: @definitionlist(
-  @itemlabel(@code(@bold(ALLEGRO_MENU_ITEM_DISABLED))) @item(The item is @italic("grayed out") and cannot be selected.)
-  @itemlabel(@code(@bold(ALLEGRO_MENU_ITEM_CHECKBOX))) @item(The item is a check box. This flag can only be set at the time the menu is created.  If a check box is clicked, it will automatically be toggled.)
-  @itemlabel(@code(@bold(ALLEGRO_MENU_ITEM_CHECKED))) @item(The item is checked.  If set, @code(ALLEGRO_MENU_ITEM_CHECKBOX) will automatically be set as well.)
-))
-@param(icon Not yet supported.)
-@param(submenu Indicates that this item contains a child menu. The child menu must have previously been created with @link(al_create_menu), and not be associated with any other menu.)
-@return(@true on success.)
-@seealso(al_append_menu_item) @seealso(al_remove_menu_item)
-#al5nativedlg.al_remove_menu_item
-Removes the specified item from the menu and destroys it.  If the item contains a sub-menu, it too is destroyed.  Any references to it are invalidated. If you want to preserve that sub-menu, you should first make a copy with @link(al_clone_menu).
-
-This is safe to call on a menu that is currently being displayed.
-@returns(@true if an item was removed.)
-@seealso(al_append_menu_item) @seealso(al_insert_menu_item) @seealso(al_destroy_menu)
-#al5nativedlg.al_clone_menu
-Makes a copy of a menu so that it can be reused on another display.  The menu being cloned can be anything: a regular menu, a popup menu, or a sub-menu. @return(The cloned menu.)
-@seealso(al_clone_menu_for_popup)
-#al5nativedlg.al_clone_menu_for_popup
-Exactly like @link(al_clone_menu), except that the copy is for a popup menu.
-#al5nativedlg.al_destroy_menu
-Destroys an entire menu, including its sub-menus. Any references to it or a sub-menu are no longer valid. It is safe to call this on a menu that is currently being displayed. @seealso(al_remove_menu_item)
-
-#al5nativedlg.al_get_menu_item_caption
-Returns the caption associated with the menu item.  It is valid as long as the caption is not modified.
-
-Returns @nil if the item was not found.
-@seealso(al_set_menu_item_caption)
-#al5nativedlg.al_set_menu_item_caption
-Updates the menu item caption with the new caption.  This will invalidate any previous calls to @link(al_get_menu_item_caption).
-@seealso(al_get_menu_item_caption)
-#al5nativedlg.al_get_menu_item_flags
-Returns the currently set flags.  See @link(al_insert_menu_item) for a description of the available flags.
-
-Returns @code(-1) if the item was not found.
-@seealso(al_set_menu_item_flags)
-#al5nativedlg.al_set_menu_item_flags
-Updates the menu item's flags.  See @link(al_insert_menu_item) for a description of the available flags.
-@seealso(al_get_menu_item_flags)
-#al5nativedlg.al_get_menu_item_icon
-Returns the icon associated with the menu.  It is safe to draw to the returned bitmap, but you must call @link(al_set_menu_item_icon) in order for the changes to be applied.
-
-Returns @nil if the item was not found or if it has no icon.
-@seealso(al_set_menu_item_icon)
-#al5nativedlg.al_set_menu_item_icon
-Sets the icon for the specified menu item.  The menu assumes ownership of the @code(ALLEGRO_BITMAP) and may invalidate the pointer, so you must clone it if you wish to continue using it.
-
-If a video bitmap is passed, it will automatically be converted to a memory bitmap, so it is preferrable to pass a memory bitmap.
-@seealso(al_get_menu_item_icon) @seealso(al_clone_bitmap)
-
-#al5nativedlg.al_toggle_menu_item_flags
-Toggles the specified menu item's flags. See @link(al_insert_menu_item) for a description of the available flags.
-@return(A bitfield of only the specified flags that are set after the toggle. A flag that was not toggled will not be returned, even if it is set. Returns @code(-1) if the @code(id) is invalid.)
-
-@bold(Unstable API:) Redundant with @code(al_get/set_menu_item_flags).
-@seealso(al_get_menu_item_flags) @seealso(al_set_menu_item_flags)
-
-#al5nativedlg.al_find_menu
-Searches in the @code(haystack) menu for any submenu with the given @code(id). (Note that this only represents a literal ID, and cannot be used as an index.)
-@returns(The menu, if found. Otherwise returns @nil.)
-@seealso(al_find_menu_item)
-#al5nativedlg.al_find_menu_item
-Searches in the @code(haystack) menu for an item with the given @code(id). (Note that this only represents a literal ID, and cannot be used as an index.)
-
-If @code(menu) and @code(index) are not @nil, they will be set as the parent menu containing the item and the zero-based (positive) index of the item. (If the menu item was not found, then their values are undefined.)
-@returns(@true if the menu item was found.)
-@seealso(al_find_menu)
-
-#al5nativedlg.al_get_default_menu_event_source
-Returns the default event source used for menu clicks.  If a menu was not given its own event source via @link(al_enable_menu_event_source), then it will use this default source.
-@seealso(al_register_event_source) @seealso(al_enable_menu_event_source)
-@seealso(al_disable_menu_event_source)
-#al5nativedlg.al_enable_menu_event_source
-Enables a unique event source for this @code(menu). It and all of its sub-menus will use this event source. (It is safe to call this multiple times on the same menu.)
-@returns(The event source.)
-@seealso(al_register_event_source) @seealso(al_get_default_menu_event_source) @seealso(al_disable_menu_event_source)
-#al5nativedlg.al_disable_menu_event_source
-Disables a unique event source for the @code(menu), causing it to use the default event source.
-@seealso(al_get_default_menu_event_source)
-@seealso(al_enable_menu_event_source)
-
-#al5nativedlg.al_get_display_menu
-Returns the menu associated with the @code(display), or @nil if it does not have a menu.
-@seealso(al_set_display_menu)
-#al5nativedlg.al_set_display_menu
-Associates the @code(menu) with the @code(display) and shows it.  If there was a previous menu associated with the display, it will be destroyed.  If you don't want that to happen, you should first remove the menu with @link(al_remove_display_menu).
-
-If the menu is already attached to a display, it will not be attached to the new display.  If @code(menu) is @nil, the current menu will still be destroyed.
-
-@bold(Note)
-
-Attaching a menu may cause the window as available to your application to be resized!  You should listen for a resize event, check how much space was lost, and resize the window accordingly if you want to maintain your window's prior size.
-@return(@true if successful.)
-@seealso(al_create_menu) @seealso(al_remove_display_menu)
-#al5nativedlg.al_popup_menu
-Displays a context menu next to the mouse cursor.  The menu must have been created with @link(al_create_popup_menu). It generates events just like a regular display menu does.  It is possible that the menu will be canceled without any selection being made.
-@param(display Indicates which window the menu is associated with (when you process the menu click event), but does not actually affect where the menu is located on the screen.)
-@return(@true if the context menu was displayed.)
-@seealso(al_create_popup_menu)
-#al5nativedlg.al_remove_display_menu
-Detaches the menu associated with the display and returns it.  The menu can then be used on a different display.
-
-If you simply want to destroy the active menu, you can call
-@link(al_set_display_menu) with a @nil menu.
-@seealso(al_set_display_menu)
-
-#al5nativedlg.al_get_allegro_native_dialog_version
 Returns the (compiled) version of the addon, in the same format as @link(al_get_allegro_version).
 
 
