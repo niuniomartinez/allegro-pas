@@ -1,0 +1,432 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{C458926B-0486-483B-A2FF-ADCD0E9B1207}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="ex_01_helloworld.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_02_events.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_03_bitmap.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_04_bitmap_target.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_05_subbitmap.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_06_timer.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_07_font.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_08_filter.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_09_keyboard.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_10_mouse.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_11_mouse_warp.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_12_mouse_cursor.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_13_color.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_14_joystick.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_15_audio.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_16_audio_stream.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_17_audio_mixer.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_18_audio_properties.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_19_window.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_20_window_multiple.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_21_inject_events.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_22_user_events.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_23_primitives.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_24_draw.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_25_transform.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_26_transform_projection.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_bitmap_memory.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_clipboard.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_convert.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_fixed.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_noframe.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_ogl.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_palette.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="ex_threads.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ex_01_helloworld">
+        <MSBuild Projects="ex_01_helloworld.dproj"/>
+    </Target>
+    <Target Name="ex_01_helloworld:Clean">
+        <MSBuild Projects="ex_01_helloworld.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_01_helloworld:Make">
+        <MSBuild Projects="ex_01_helloworld.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_02_events">
+        <MSBuild Projects="ex_02_events.dproj"/>
+    </Target>
+    <Target Name="ex_02_events:Clean">
+        <MSBuild Projects="ex_02_events.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_02_events:Make">
+        <MSBuild Projects="ex_02_events.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_03_bitmap">
+        <MSBuild Projects="ex_03_bitmap.dproj"/>
+    </Target>
+    <Target Name="ex_03_bitmap:Clean">
+        <MSBuild Projects="ex_03_bitmap.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_03_bitmap:Make">
+        <MSBuild Projects="ex_03_bitmap.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_04_bitmap_target">
+        <MSBuild Projects="ex_04_bitmap_target.dproj"/>
+    </Target>
+    <Target Name="ex_04_bitmap_target:Clean">
+        <MSBuild Projects="ex_04_bitmap_target.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_04_bitmap_target:Make">
+        <MSBuild Projects="ex_04_bitmap_target.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_05_subbitmap">
+        <MSBuild Projects="ex_05_subbitmap.dproj"/>
+    </Target>
+    <Target Name="ex_05_subbitmap:Clean">
+        <MSBuild Projects="ex_05_subbitmap.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_05_subbitmap:Make">
+        <MSBuild Projects="ex_05_subbitmap.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_06_timer">
+        <MSBuild Projects="ex_06_timer.dproj"/>
+    </Target>
+    <Target Name="ex_06_timer:Clean">
+        <MSBuild Projects="ex_06_timer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_06_timer:Make">
+        <MSBuild Projects="ex_06_timer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_07_font">
+        <MSBuild Projects="ex_07_font.dproj"/>
+    </Target>
+    <Target Name="ex_07_font:Clean">
+        <MSBuild Projects="ex_07_font.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_07_font:Make">
+        <MSBuild Projects="ex_07_font.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_08_filter">
+        <MSBuild Projects="ex_08_filter.dproj"/>
+    </Target>
+    <Target Name="ex_08_filter:Clean">
+        <MSBuild Projects="ex_08_filter.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_08_filter:Make">
+        <MSBuild Projects="ex_08_filter.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_09_keyboard">
+        <MSBuild Projects="ex_09_keyboard.dproj"/>
+    </Target>
+    <Target Name="ex_09_keyboard:Clean">
+        <MSBuild Projects="ex_09_keyboard.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_09_keyboard:Make">
+        <MSBuild Projects="ex_09_keyboard.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_10_mouse">
+        <MSBuild Projects="ex_10_mouse.dproj"/>
+    </Target>
+    <Target Name="ex_10_mouse:Clean">
+        <MSBuild Projects="ex_10_mouse.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_10_mouse:Make">
+        <MSBuild Projects="ex_10_mouse.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_11_mouse_warp">
+        <MSBuild Projects="ex_11_mouse_warp.dproj"/>
+    </Target>
+    <Target Name="ex_11_mouse_warp:Clean">
+        <MSBuild Projects="ex_11_mouse_warp.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_11_mouse_warp:Make">
+        <MSBuild Projects="ex_11_mouse_warp.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_12_mouse_cursor">
+        <MSBuild Projects="ex_12_mouse_cursor.dproj"/>
+    </Target>
+    <Target Name="ex_12_mouse_cursor:Clean">
+        <MSBuild Projects="ex_12_mouse_cursor.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_12_mouse_cursor:Make">
+        <MSBuild Projects="ex_12_mouse_cursor.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_13_color">
+        <MSBuild Projects="ex_13_color.dproj"/>
+    </Target>
+    <Target Name="ex_13_color:Clean">
+        <MSBuild Projects="ex_13_color.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_13_color:Make">
+        <MSBuild Projects="ex_13_color.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_14_joystick">
+        <MSBuild Projects="ex_14_joystick.dproj"/>
+    </Target>
+    <Target Name="ex_14_joystick:Clean">
+        <MSBuild Projects="ex_14_joystick.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_14_joystick:Make">
+        <MSBuild Projects="ex_14_joystick.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_15_audio">
+        <MSBuild Projects="ex_15_audio.dproj"/>
+    </Target>
+    <Target Name="ex_15_audio:Clean">
+        <MSBuild Projects="ex_15_audio.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_15_audio:Make">
+        <MSBuild Projects="ex_15_audio.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_16_audio_stream">
+        <MSBuild Projects="ex_16_audio_stream.dproj"/>
+    </Target>
+    <Target Name="ex_16_audio_stream:Clean">
+        <MSBuild Projects="ex_16_audio_stream.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_16_audio_stream:Make">
+        <MSBuild Projects="ex_16_audio_stream.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_17_audio_mixer">
+        <MSBuild Projects="ex_17_audio_mixer.dproj"/>
+    </Target>
+    <Target Name="ex_17_audio_mixer:Clean">
+        <MSBuild Projects="ex_17_audio_mixer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_17_audio_mixer:Make">
+        <MSBuild Projects="ex_17_audio_mixer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_18_audio_properties">
+        <MSBuild Projects="ex_18_audio_properties.dproj"/>
+    </Target>
+    <Target Name="ex_18_audio_properties:Clean">
+        <MSBuild Projects="ex_18_audio_properties.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_18_audio_properties:Make">
+        <MSBuild Projects="ex_18_audio_properties.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_19_window">
+        <MSBuild Projects="ex_19_window.dproj"/>
+    </Target>
+    <Target Name="ex_19_window:Clean">
+        <MSBuild Projects="ex_19_window.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_19_window:Make">
+        <MSBuild Projects="ex_19_window.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_20_window_multiple">
+        <MSBuild Projects="ex_20_window_multiple.dproj"/>
+    </Target>
+    <Target Name="ex_20_window_multiple:Clean">
+        <MSBuild Projects="ex_20_window_multiple.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_20_window_multiple:Make">
+        <MSBuild Projects="ex_20_window_multiple.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_21_inject_events">
+        <MSBuild Projects="ex_21_inject_events.dproj"/>
+    </Target>
+    <Target Name="ex_21_inject_events:Clean">
+        <MSBuild Projects="ex_21_inject_events.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_21_inject_events:Make">
+        <MSBuild Projects="ex_21_inject_events.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_22_user_events">
+        <MSBuild Projects="ex_22_user_events.dproj"/>
+    </Target>
+    <Target Name="ex_22_user_events:Clean">
+        <MSBuild Projects="ex_22_user_events.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_22_user_events:Make">
+        <MSBuild Projects="ex_22_user_events.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_23_primitives">
+        <MSBuild Projects="ex_23_primitives.dproj"/>
+    </Target>
+    <Target Name="ex_23_primitives:Clean">
+        <MSBuild Projects="ex_23_primitives.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_23_primitives:Make">
+        <MSBuild Projects="ex_23_primitives.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_24_draw">
+        <MSBuild Projects="ex_24_draw.dproj"/>
+    </Target>
+    <Target Name="ex_24_draw:Clean">
+        <MSBuild Projects="ex_24_draw.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_24_draw:Make">
+        <MSBuild Projects="ex_24_draw.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_25_transform">
+        <MSBuild Projects="ex_25_transform.dproj"/>
+    </Target>
+    <Target Name="ex_25_transform:Clean">
+        <MSBuild Projects="ex_25_transform.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_25_transform:Make">
+        <MSBuild Projects="ex_25_transform.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_26_transform_projection">
+        <MSBuild Projects="ex_26_transform_projection.dproj"/>
+    </Target>
+    <Target Name="ex_26_transform_projection:Clean">
+        <MSBuild Projects="ex_26_transform_projection.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_26_transform_projection:Make">
+        <MSBuild Projects="ex_26_transform_projection.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_bitmap_memory">
+        <MSBuild Projects="ex_bitmap_memory.dproj"/>
+    </Target>
+    <Target Name="ex_bitmap_memory:Clean">
+        <MSBuild Projects="ex_bitmap_memory.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_bitmap_memory:Make">
+        <MSBuild Projects="ex_bitmap_memory.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_clipboard">
+        <MSBuild Projects="ex_clipboard.dproj"/>
+    </Target>
+    <Target Name="ex_clipboard:Clean">
+        <MSBuild Projects="ex_clipboard.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_clipboard:Make">
+        <MSBuild Projects="ex_clipboard.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_convert">
+        <MSBuild Projects="ex_convert.dproj"/>
+    </Target>
+    <Target Name="ex_convert:Clean">
+        <MSBuild Projects="ex_convert.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_convert:Make">
+        <MSBuild Projects="ex_convert.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_fixed">
+        <MSBuild Projects="ex_fixed.dproj"/>
+    </Target>
+    <Target Name="ex_fixed:Clean">
+        <MSBuild Projects="ex_fixed.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_fixed:Make">
+        <MSBuild Projects="ex_fixed.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_noframe">
+        <MSBuild Projects="ex_noframe.dproj"/>
+    </Target>
+    <Target Name="ex_noframe:Clean">
+        <MSBuild Projects="ex_noframe.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_noframe:Make">
+        <MSBuild Projects="ex_noframe.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_ogl">
+        <MSBuild Projects="ex_ogl.dproj"/>
+    </Target>
+    <Target Name="ex_ogl:Clean">
+        <MSBuild Projects="ex_ogl.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_ogl:Make">
+        <MSBuild Projects="ex_ogl.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_palette">
+        <MSBuild Projects="ex_palette.dproj"/>
+    </Target>
+    <Target Name="ex_palette:Clean">
+        <MSBuild Projects="ex_palette.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_palette:Make">
+        <MSBuild Projects="ex_palette.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ex_threads">
+        <MSBuild Projects="ex_threads.dproj"/>
+    </Target>
+    <Target Name="ex_threads:Clean">
+        <MSBuild Projects="ex_threads.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ex_threads:Make">
+        <MSBuild Projects="ex_threads.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ex_01_helloworld;ex_02_events;ex_03_bitmap;ex_04_bitmap_target;ex_05_subbitmap;ex_06_timer;ex_07_font;ex_08_filter;ex_09_keyboard;ex_10_mouse;ex_11_mouse_warp;ex_12_mouse_cursor;ex_13_color;ex_14_joystick;ex_15_audio;ex_16_audio_stream;ex_17_audio_mixer;ex_18_audio_properties;ex_19_window;ex_20_window_multiple;ex_21_inject_events;ex_22_user_events;ex_23_primitives;ex_24_draw;ex_25_transform;ex_26_transform_projection;ex_bitmap_memory;ex_clipboard;ex_convert;ex_fixed;ex_noframe;ex_ogl;ex_palette;ex_threads"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ex_01_helloworld:Clean;ex_02_events:Clean;ex_03_bitmap:Clean;ex_04_bitmap_target:Clean;ex_05_subbitmap:Clean;ex_06_timer:Clean;ex_07_font:Clean;ex_08_filter:Clean;ex_09_keyboard:Clean;ex_10_mouse:Clean;ex_11_mouse_warp:Clean;ex_12_mouse_cursor:Clean;ex_13_color:Clean;ex_14_joystick:Clean;ex_15_audio:Clean;ex_16_audio_stream:Clean;ex_17_audio_mixer:Clean;ex_18_audio_properties:Clean;ex_19_window:Clean;ex_20_window_multiple:Clean;ex_21_inject_events:Clean;ex_22_user_events:Clean;ex_23_primitives:Clean;ex_24_draw:Clean;ex_25_transform:Clean;ex_26_transform_projection:Clean;ex_bitmap_memory:Clean;ex_clipboard:Clean;ex_convert:Clean;ex_fixed:Clean;ex_noframe:Clean;ex_ogl:Clean;ex_palette:Clean;ex_threads:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ex_01_helloworld:Make;ex_02_events:Make;ex_03_bitmap:Make;ex_04_bitmap_target:Make;ex_05_subbitmap:Make;ex_06_timer:Make;ex_07_font:Make;ex_08_filter:Make;ex_09_keyboard:Make;ex_10_mouse:Make;ex_11_mouse_warp:Make;ex_12_mouse_cursor:Make;ex_13_color:Make;ex_14_joystick:Make;ex_15_audio:Make;ex_16_audio_stream:Make;ex_17_audio_mixer:Make;ex_18_audio_properties:Make;ex_19_window:Make;ex_20_window_multiple:Make;ex_21_inject_events:Make;ex_22_user_events:Make;ex_23_primitives:Make;ex_24_draw:Make;ex_25_transform:Make;ex_26_transform_projection:Make;ex_bitmap_memory:Make;ex_clipboard:Make;ex_convert:Make;ex_fixed:Make;ex_noframe:Make;ex_ogl:Make;ex_palette:Make;ex_threads:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

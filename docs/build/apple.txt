@@ -1,0 +1,9 @@
+
+Despite Allegro works in Apple operating system (iOS and MacOS) and Free Pascal
+and Delphi are able to build executables for them, Allegro.pas doesn't work on
+such systems[*].  The problem is some initialization code needed by Allegro
+that can't be reached due the way Free Pascal links the libraries.
+
+If you try and succeed, please let me know and I'll update it.
+
+[*] Actually it was tested with Free Pascal only.  Delphi wasn't tested yet.

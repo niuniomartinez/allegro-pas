@@ -1,6 +1,6 @@
 
   This document explains how to compile Allegro.pas documentation, examples and
-  demonstration game using the "make" tool and Free Pascal compiler.  Read
+  demonstration games using the "make" tool and Free Pascal compiler.  Read
   "fpc.txt", "lazarus.txt" or "delphi.txt" to know how to use such compilers
   and IDEs.
 
@@ -10,6 +10,8 @@
   Note that makefiles included works only for Free Pascal.  Right now Delphi's
   "make" utility isn't compatible with Free Pascal's one (wich is GNU compliant)
   but in future releases Delphi makefiles would be included.
+
+
 
 The make chain
 --------------

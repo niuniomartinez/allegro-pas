@@ -62,6 +62,9 @@ program ex_23_primitives;
     RotationSpeed = 0.0005;
 
   type
+  (* Array of vertices.  Needed because Delphi. *)
+    TVertexList_12 = array [0..12] of ALLEGRO_VERTEX;
+    TVertexList_20 = array [0..20] of ALLEGRO_VERTEX;
   (* Base class for example screens. *)
     TCustomScreen = class (TObject)
     private
@@ -141,8 +144,8 @@ program ex_23_primitives;
       property Soft: Boolean read fSoft;
     public
     (* Data shared by some examples. *)
-      Vtx, Vtx2: array [0..12] of ALLEGRO_VERTEX;
-      Vtx3: array [0..20] of ALLEGRO_VERTEX;
+      Vtx, Vtx2: TVertexList_12;
+      Vtx3: TVertexList_20;
     end;
 
 
@@ -237,7 +240,7 @@ program ex_23_primitives;
   (* Textured primitives. *)
     TTexturePrimitives = class (TCustomScreen)
     private
-      vtx: array [0..12] of ALLEGRO_VERTEX;
+      vtx: TVertexList_12;
     public
     (* Constructor. *)
       constructor Create;
@@ -250,7 +253,7 @@ program ex_23_primitives;
   (* Filled & testured primitives. *)
     TFilledTexturePrimitives = class (TCustomScreen)
     private
-      vtx: array [0..20] of ALLEGRO_VERTEX;
+      vtx: TVertexList_20;
     public
     (* Constructor. *)
       constructor Create;
@@ -381,7 +384,7 @@ program ex_23_primitives;
   procedure TPrimitivesExample.Update;
 
     procedure ProcessKeyboard (const aKeyEvent: ALLEGRO_KEYBOARD_EVENT);
-      inline;
+      {$IfDef FPC}inline;{$EndIf}
     begin
       case aKeyEvent.keycode of
       ALLEGRO_KEY_ESCAPE:
@@ -470,7 +473,7 @@ program ex_23_primitives;
 (* Renders the example. *)
   procedure TPrimitivesExample.Draw;
 
-    procedure DrawStates; inline;
+    procedure DrawStates; {$IfDef FPC}inline;{$EndIf}
 
     { Helper to print boolean statuses. }
       procedure ShowBoolean (
@@ -512,7 +515,7 @@ program ex_23_primitives;
       ShowBoolean (140, 'Clip (C)', fClip)
     end;
 
-    procedure DrawBackground; inline;
+    procedure DrawBackground; {$IfDef FPC}inline;{$EndIF}
     begin
       if fDrawBkg and Assigned (fBkg) then
       begin
@@ -526,7 +529,7 @@ program ex_23_primitives;
       end
     end;
 
-    procedure DrawExample; inline;
+    procedure DrawExample;{$IfDef FPC}inline;{$EndIf}
     begin
       if fClip then
         al_set_clipping_rectangle (
@@ -737,7 +740,8 @@ program ex_23_primitives;
 {$ELSE}
     { For some reason this seems not to work on Linux (or doesn't in my system).
 
-      My system is Xubuntu 18.04.3 + nVidia GeForce GT610 + nouveau 2.4.97.
+      My system were Xubuntu 18.04.3 + nVidia GeForce GT610 + nouveau 2.4.97.
+      Now I've updated to Debian 12 + nVidia GeForce GT610 + nouveau 2.4.114.
 
       If your system is different you may try.  If it works (or find why mine
       doesn't), let me know.
@@ -811,7 +815,7 @@ program ex_23_primitives;
 
 
 (* Draws text telling the example isn't supported. *)
-  procedure TPrimitivesExample.DrawUnsupported; inline;
+  procedure TPrimitivesExample.DrawUnsupported;
   begin
     Self.DrawText ('%s not supported', [fScreens[fCurScreen].Name], 0, 0)
   end;

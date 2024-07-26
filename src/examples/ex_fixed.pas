@@ -50,7 +50,7 @@ var
 begin
   if not al_init then
   begin
-    WriteLn (stderr, 'Could not init Allegro.');
+    WriteLn ('Could not init Allegro.');
     Halt (1)
   end;
 { convert integers to fixed point like this. }

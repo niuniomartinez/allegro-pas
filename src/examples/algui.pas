@@ -511,7 +511,7 @@ implementation
   begin
     if not al_is_primitives_addon_initialized then
       lIgnore := al_init_primitives_addon;
-    lIgnore := lIgnore; { Avoid compilation warning. }
+    {$IfDef FPC}lIgnore := lIgnore;{$EndIf} { Avoid compilation warning. }
   { Prepare to draw. }
     lMessage := al_string_to_str (aText);
     al_set_target_backbuffer (fDisplay);
@@ -570,7 +570,8 @@ implementation
   begin
     Self.DestroyTextFont;
     fTextFont := aFont;
-    fLineHeight := al_get_font_line_height (fTextFont)
+    if assigned (fTextFont) then
+      fLineHeight := al_get_font_line_height (fTextFont)
   end;
 
 
@@ -1228,9 +1229,8 @@ implementation
 
   procedure TClickableWidget.onKeyChar (aEvent: ALLEGRO_KEYBOARD_EVENT);
   begin
-    if (aEvent.keycode = ALLEGRO_KEY_ENTER)
-    or (aEvent.keycode = ALLEGRO_KEY_SPACE)
-    or (aEvent.keycode = ALLEGRO_KEY_PAD_ENTER)
+    if aEvent.keycode
+    in [ALLEGRO_KEY_ENTER, ALLEGRO_KEY_SPACE, ALLEGRO_KEY_PAD_ENTER]
     then
       Self.DoOnClick
   end;

@@ -76,15 +76,15 @@ interface
     ALLEGRO_RELEASE_NUMBER = 1;
 
     { ALLEGRO_PAS_VERSION_STR = '5.2'; }
-    ALLEGRO_PAS_VERSION_STR = '5.2.beta.1#560';
+    ALLEGRO_PAS_VERSION_STR = '5.2.beta.1#573';
   (* Dates aren't for Allegro but for Allegro.pas. *)
     ALLEGRO_DATE_STR = '2024';
     ALLEGRO_DATE = 20240509; { yyyymmdd }
     ALLEGRO_VERSION_INT  = (
-	   (ALLEGRO_VERSION shl 24)
-	or (ALLEGRO_SUB_VERSION shl 16)
-	or (ALLEGRO_WIP_VERSION shl  8)
-	or  ALLEGRO_RELEASE_NUMBER
+           (ALLEGRO_VERSION shl 24)
+        or (ALLEGRO_SUB_VERSION shl 16)
+        or (ALLEGRO_WIP_VERSION shl  8)
+        or  ALLEGRO_RELEASE_NUMBER
     );
 
   type

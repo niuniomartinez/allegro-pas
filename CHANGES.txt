@@ -9,6 +9,7 @@ Changes between versions 5.2.b.1-1 and 5.2.0
     : Removed constants ALLEGRO_IS_ALPHA and ALLEGRO_IS_BETA.
     : al_init_user_event_source and al_destroy_user_event_source get pointers
       now.  This should prevent issues with optimizations.
+    : Removed threading support as it seems no compatible with Pascal.
 
   News
   ----
@@ -23,6 +24,9 @@ Changes between versions 5.2.b.1-1 and 5.2.0
 
   Other
   -----
+    : Improved Delphi compatibility.
+    : New examples that are more "how to do this" and less "look how cool is
+      this".
     : A few internal changes in al5strings that should improve compatability.
 
 
@@ -96,7 +100,7 @@ Changes between versions 5.2.beta and 5.2.b.1
 
   API changes
   -----------
-     : "Even wait" procedures now expects a pointer to the event variable
+     : "Event wait" procedures now expects a pointer to the event variable
        instead of an "OUT" parameter.  This is because "OUT" parameters doesn't
        allows NIL parameters, and it is useful in such functions.
      : Parameter ident of al_load_bitmap_f is AL_STR now, wich is more

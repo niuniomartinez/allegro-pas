@@ -73,31 +73,19 @@
         <Filename Value="../ex_16_audio_stream.pas"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <CursorPos X="49" Y="5"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="../common.pas"/>
         <UnitName Value="Common"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="94"/>
-        <CursorPos Y="104"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="22"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
-      <Position1>
-        <Filename Value="../ex_16_audio_stream.pas"/>
-        <Caret Line="118" Column="11" TopLine="107"/>
-      </Position1>
-      <Position2>
-        <Filename Value="../ex_16_audio_stream.pas"/>
-        <Caret Line="123" Column="21" TopLine="25"/>
-      </Position2>
-    </JumpHistory>
+    <JumpHistory HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>

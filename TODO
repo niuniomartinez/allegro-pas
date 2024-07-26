@@ -2,8 +2,6 @@ In no special order
 
   * EXAMPLE PROJECTS.
 
-  * Configuration load in ex_draw.pas.
-
   * Check the "pointer types":  Where to use them.
 
   * Check how to detect GTK+ and do correct compilation in ex_menu.
@@ -12,7 +10,3 @@ In no special order
 
   * See the various TODO notes in different units.
 
-  * Sometimes it doesn't load samples.
-    - It doesn't load on Fedora 64bit, but does on Ubuntu 32bit.
-    - Suspect it's a problem with the funcion in C, similar than the problem
-      with 3D rendering on Allegro 4.

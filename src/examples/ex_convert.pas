@@ -3,7 +3,7 @@ program ex_convert;
 
    MUST be compiled as a console application. *)
 (*
-  Copyright (c) 2012-2023 Guillermo Martínez J.
+  Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -49,7 +49,7 @@ begin
 { Initialize Allegro. }
   if not al_init then
   begin
-    WriteLn (stderr, 'Could not init Allegro.');
+    WriteLn ('Could not init Allegro.');
     Halt (1)
   end;
   al_init_image_addon;
@@ -63,15 +63,15 @@ begin
   );
   if not Assigned (Bitmap) then
   begin
-    WriteLn (stderr, 'Error loading input file');
-    Halt (-2)
+    WriteLn ('Error loading input file');
+    Halt (2)
   end;
 { Save the bitmap. }
   t0 := al_get_time;
   if not al_save_bitmap (al_string_to_str (ParamStr (2)), Bitmap) then
   begin
-    WriteLn (stderr, 'Error saving bitmap.');
-    Halt (-3)
+    WriteLn ('Error saving bitmap.');
+    Halt (3)
   end;
 { Just for fun. }
   t1 := al_get_time;

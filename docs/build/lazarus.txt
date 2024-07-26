@@ -7,6 +7,8 @@
 
   You should read "fpc.txt" too as Lazarus uses Free Pascal internally.
 
+
+
 Compiling examples and demonstration game
 -----------------------------------------
 

@@ -31,6 +31,10 @@ program ex_24_draw;
     Common,
     allegro5, al5color, al5font, al5image, al5primitives, al5strings;
 
+  type
+  (* Identifies the primitives. *)
+    TPrimitives = (pFilledRect, pRect, pFilledCircle, pCircle, pLine);
+
   const
   (* Window size. *)
     wWidth = 640; wHeight = 640;
@@ -40,7 +44,7 @@ program ex_24_draw;
     BmpWidth = 32; BmpHeight = BmpWidth;
     ZoomWidth = BmpWidth; ZoomHeight = BmpHeight;
   (* Primitive names. *)
-    PrimitiveNames: array [0..4] of AnsiString = (
+    PrimitiveNames: array [TPrimitives] of AnsiString = (
       'filled rectangles',
       'rectangles',
       'filled circles',
@@ -59,7 +63,7 @@ program ex_24_draw;
   (* Bitmaps *)
     Pattern, Zoom: ALLEGRO_BITMAPptr;
   (* What primitive to draw. *)
-    What: Integer;
+    What: TPrimitives;
   (* Tells if use software.  Otherwise it uses hardware. *)
     Software: Boolean;
   (* ? *)
@@ -73,7 +77,7 @@ program ex_24_draw;
   function Initialize: Boolean;
 
     function GetNumSamples: Integer;
-    { Uses Allegro config API but TIni object is a better choice.}
+    { It uses Allegro config API but TIni object is valid too.}
     var
       lConfig: ALLEGRO_CONFIGptr;
       lValue, lStr: AnsiString;
@@ -198,8 +202,10 @@ program ex_24_draw;
 (* Change to next primitive. *)
   procedure NextPrimitive;
   begin
-    Inc (What);
-    if What >= 5 then What := 0
+    if What = High (TPrimitives) then
+      What := Low (TPrimitives)
+    else
+      Inc (What)
   end;
 
 
@@ -283,7 +289,8 @@ program ex_24_draw;
     );
     var
       cx, cy, rx, ry: Real;
-      lThickness, lWhat: Integer;
+      lThickness: Integer;
+      lWhat: TPrimitives;
     begin
       cx := (aLeft + aRight) / 2;
       cy := (aTop + aBottom) / 2;
@@ -291,16 +298,21 @@ program ex_24_draw;
       ry := (aBottom - aTop) / 2;
       if aNotFilled then lThickness := 0 else lThickness := Thickness;
       lWhat := What;
-      if aNotFilled then
-      begin
-        if lWhat = 0 then lWhat := 1 else if lWhat = 2 then lWhat := 3
+      if aNotFilled then case lWhat of
+        pFilledRect:   lWhat := pRect;
+        pFilledCircle: lWhat := pCircle;
       end;
       case lWhat of
-        0: al_draw_filled_rectangle (aLeft, aTop, aRight, aBottom, aColor);
-        1: al_draw_rectangle (aLeft, aTop, aRight, aBottom, aColor, lThickness);
-        2: al_draw_filled_ellipse (cx, cy, rx, ry, aColor);
-        3: al_draw_ellipse (cx, cy, rx, ry, aColor, lThickness);
-        4: al_draw_line (aLeft, aTop, aRight, aBottom, aColor, lThickness);
+      pFilledRect:
+        al_draw_filled_rectangle (aLeft, aTop, aRight, aBottom, aColor);
+      pRect:
+        al_draw_rectangle (aLeft, aTop, aRight, aBottom, aColor, lThickness);
+      pFilledCircle:
+        al_draw_filled_ellipse (cx, cy, rx, ry, aColor);
+      pCircle:
+        al_draw_ellipse (cx, cy, rx, ry, aColor, lThickness);
+      pLine:
+        al_draw_line (aLeft, aTop, aRight, aBottom, aColor, lThickness);
       end
     end;
 
@@ -394,8 +406,8 @@ program ex_24_draw;
 
 
 
-(* Process key input. *)
-  procedure ProcessKeyInput (const aEvent: ALLEGRO_KEYBOARD_EVENT);
+(* Process keyboard event. *)
+  procedure ProcessKeyboardEvent (const aEvent: ALLEGRO_KEYBOARD_EVENT);
   begin
     case aEvent.keycode of
     ALLEGRO_KEY_ESCAPE:
@@ -425,7 +437,7 @@ begin
     ALLEGRO_EVENT_DISPLAY_CLOSE:
       Terminated := True;
     ALLEGRO_EVENT_KEY_DOWN:
-      ProcessKeyInput (Event.keyboard);
+      ProcessKeyboardEvent (Event.keyboard);
     ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
       NextPrimitive;
     ALLEGRO_EVENT_TIMER:

@@ -2038,7 +2038,7 @@ it manually with @code(al_destroy_user_event_source).
 Destroys an event source initialised with @link(al_init_user_event_source).
 
 This does not free the memory, as that was user allocated to begin with.
-@param(source Pointer to the variable that  stored the source information.)
+@param(source Pointer to the variable that stored the source information.)
 @seealso(ALLEGRO_EVENT_SOURCE)
 #Allegro5.al_emit_user_event
 Emits an event from a user event source. The event source must have been initialised with @link(al_init_user_event_source).
@@ -3962,6 +3962,7 @@ Generally you should use @link(al_broadcast_cond) but @code(al_signal_cond) may 
 
 #Allegro5.ALLEGRO_TIMERptr
 Pointer to timer.  This is an abstract data type representing a timer object.
+@seealso(al_create_timer)
 
 #Allegro5.al_create_timer
 Allocates and initializes a timer. The new timer is initially stopped.

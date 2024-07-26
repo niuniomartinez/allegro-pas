@@ -324,9 +324,9 @@ uses
   { Get color components. }
     al_unmap_rgb_f (fColorBox.Color, lR, lG, lB);
   { For some reason, LCH space makes things go out RGB space. }
-    if lR > 1 then lR := 1; if lR < 0 then lR := 0;
-    if lG > 1 then lG := 1; if lG < 0 then lG := 0;
-    if lB > 1 then lB := 1; if lB < 0 then lB := 0;
+    lR := Clamp (0, lR, 1);
+    lG := Clamp (0, lG, 1);
+    lB := Clamp (0, lB, 1);
   { Deactivate slider events. }
     for lNdx := Low (fSliders) to High (fSliders) do
       fSliders[lNdx].OnChange := Nil;

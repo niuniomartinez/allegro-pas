@@ -166,7 +166,7 @@ program ex_19_window;
     lColor: ALLEGRO_COLOR;
     lMaximiced: AnsiString;
 
-    procedure DrawText (const aText: AnsiString); inline;
+    procedure DrawText (const aText: AnsiString);{$IfDef FPC}inline;{$EndIF}
     begin
       al_draw_text (TextFont, lColor, lPosX, lPosY, 0, al_string_to_str(aText));
       Inc (lPosY, lLineHeight)
@@ -193,6 +193,33 @@ program ex_19_window;
     al_flip_display
   end;
 
+
+
+(* Process keyboard event. *)
+  procedure ProcessKeyboardEvent (const aEvent: ALLEGRO_KEYBOARD_EVENT);
+  begin
+    case aEvent.keycode of
+    ALLEGRO_KEY_ESCAPE:
+      Terminated := True;
+    ALLEGRO_KEY_I:
+      SwapWindowIcons;
+    ALLEGRO_KEY_T:
+      begin
+        Inc (Counter);
+        al_set_window_title (
+          Window,
+          al_str_format ('Title number %d', [Counter])
+        )
+      end;
+    else { otherwise }
+      if aEvent.unichar = Ord ('+') then
+        al_set_display_flag (Window, ALLEGRO_MAXIMIZED, True)
+      else
+      if aEvent.unichar = Ord ('-') then
+        al_set_display_flag (Window, ALLEGRO_MAXIMIZED, False)
+    end
+  end;
+
 begin
 { Program initialization. }
   if not Initialize then Exit;
@@ -217,26 +244,7 @@ begin
     ALLEGRO_EVENT_DISPLAY_EXPOSE:
       Redraw := True;
     ALLEGRO_EVENT_KEY_DOWN:
-      case Event.keyboard.keycode of
-      ALLEGRO_KEY_ESCAPE:
-        Terminated := True;
-      ALLEGRO_KEY_I:
-        SwapWindowIcons;
-      ALLEGRO_KEY_T:
-        begin
-          Inc (Counter);
-          al_set_window_title (
-            Window,
-            al_str_format ('Title number %d', [Counter])
-          )
-        end;
-      else { otherwise }
-        if Event.keyboard.unichar = Ord ('+') then
-          al_set_display_flag (Window, ALLEGRO_MAXIMIZED, True)
-        else
-        if Event.keyboard.unichar = Ord ('-') then
-          al_set_display_flag (Window, ALLEGRO_MAXIMIZED, False)
-      end;
+      ProcessKeyboardEvent (Event.keyboard);
     end
   until Terminated;
 { Program finalization. }

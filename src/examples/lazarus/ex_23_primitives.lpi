@@ -18,7 +18,7 @@
     <i18n>
       <EnableI18N LFM="False"/>
     </i18n>
-    <BuildModes Count="2" Active="Debug">
+    <BuildModes Count="2" Active="Release">
       <Item1 Name="Debug" Default="True"/>
       <Item2 Name="Release">
         <CompilerOptions>
@@ -47,7 +47,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
-              <DebugInfoType Value="dsDwarf2Set"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <StripSymbols Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -69,166 +69,23 @@
         <Mode0 Name="default"/>
       </Modes>
     </RunParams>
-    <Units Count="4">
+    <Units Count="2">
       <Unit0>
         <Filename Value="../ex_23_primitives.pas"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="446"/>
-        <CursorPos X="9" Y="446"/>
         <UsageCount Value="36"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="../common.pas"/>
         <UnitName Value="Common"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="90"/>
-        <CursorPos X="3" Y="74"/>
         <UsageCount Value="20"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
-      <Unit2>
-        <Filename Value="../../lib/allegro5.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="254"/>
-        <CursorPos X="39" Y="263"/>
-        <UsageCount Value="9"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit2>
-      <Unit3>
-        <Filename Value="../../lib/al5base.pas"/>
-        <UnitName Value="al5Base"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="92"/>
-        <CursorPos X="5" Y="92"/>
-        <UsageCount Value="9"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit3>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
-      <Position1>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="92" Column="32" TopLine="78"/>
-      </Position1>
-      <Position2>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="61" Column="15" TopLine="51"/>
-      </Position2>
-      <Position3>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="62" Column="16" TopLine="51"/>
-      </Position3>
-      <Position4>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="117" Column="20" TopLine="103"/>
-      </Position4>
-      <Position5>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="577" Column="10" TopLine="568"/>
-      </Position5>
-      <Position6>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="578" Column="9" TopLine="567"/>
-      </Position6>
-      <Position7>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="579" TopLine="571"/>
-      </Position7>
-      <Position8>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="53" Column="9" TopLine="46"/>
-      </Position8>
-      <Position9>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="121" Column="27" TopLine="110"/>
-      </Position9>
-      <Position10>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="116" Column="18" TopLine="97"/>
-      </Position10>
-      <Position11>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="612" Column="11" TopLine="596"/>
-      </Position11>
-      <Position12>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="608" Column="10" TopLine="594"/>
-      </Position12>
-      <Position13>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="631" Column="15" TopLine="626"/>
-      </Position13>
-      <Position14>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="586" Column="68" TopLine="578"/>
-      </Position14>
-      <Position15>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="650" Column="19" TopLine="645"/>
-      </Position15>
-      <Position16>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="585" Column="26" TopLine="583"/>
-      </Position16>
-      <Position17>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="571" Column="22" TopLine="560"/>
-      </Position17>
-      <Position18>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="666" Column="36" TopLine="654"/>
-      </Position18>
-      <Position19>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="106" Column="54" TopLine="102"/>
-      </Position19>
-      <Position20>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="105" Column="24" TopLine="102"/>
-      </Position20>
-      <Position21>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="376" Column="18" TopLine="361"/>
-      </Position21>
-      <Position22>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="329" Column="20" TopLine="319"/>
-      </Position22>
-      <Position23>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="461" Column="18" TopLine="455"/>
-      </Position23>
-      <Position24>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="670" Column="6" TopLine="655"/>
-      </Position24>
-      <Position25>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="539" Column="10" TopLine="523"/>
-      </Position25>
-      <Position26>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="117" Column="20" TopLine="106"/>
-      </Position26>
-      <Position27>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="542" Column="12" TopLine="539"/>
-      </Position27>
-      <Position28>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="111" Column="21" TopLine="104"/>
-      </Position28>
-      <Position29>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="441" Column="15" TopLine="422"/>
-      </Position29>
-      <Position30>
-        <Filename Value="../ex_23_primitives.pas"/>
-        <Caret Line="446" Column="11" TopLine="436"/>
-      </Position30>
-    </JumpHistory>
+    <JumpHistory HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>

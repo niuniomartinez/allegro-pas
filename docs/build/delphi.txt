@@ -5,19 +5,20 @@
   Before to use Allegro.pas you must install Allegro itself.  If you didn't
   yet, please read the appropriate document for your operating system.
 
-  Also note that Allegro.pas was tested ONLY with Delphi 10.2 Tokio Sarter
-  Edition and Delphi 10.3 Rio Community Edition.  We tried to make it
-  compatible with most Delphi versions available but if you're using another
-  version it may not work as expected.  You can help us to fix any problem by
-  sharing your experience.  See README file to know how to contact with
-  developers.
+  Also note that Allegro.pas was tested ONLY with Delphi 11.3 Community Edition.
+  We tried to make it compatible with most Delphi versions available but if
+  you're using another version it may not work as expected.  You can help us to
+  fix any problem by sharing your experience.  See README.md file to know how to
+  contact with developers.
 
-Compiling examples and demonstration game
------------------------------------------
+
+
+Compiling examples and demonstration games
+------------------------------------------
 
   There are "delphi" subdirectories in both examples and demonstration
-  directories.  Inside there are Delphi projects for each of them.  Load with
-  your IDE and just compile.  Executables are dropped at the "~/bin" directory.
+  directories.  Inside there are Delphi projects and groups.  Load with your
+  IDE and just compile.  Executables are dropped at the "~/bin" subdirectories.
 
   If your Delphi version isn't able to load the project file correclty, you can
   create it by yourself:
@@ -35,6 +36,9 @@ Compiling examples and demonstration game
   * Compile.
   * Profit.
 
+  Note that a few of the examples doesn't work as expected.  I'm trying to find
+  the reason and fix it
+
 
 
 Creating a new game project
@@ -51,8 +55,7 @@ Creating a new game project
 
   Also note STRING management may be problematic.  Allegro expects ASCII-7 or
   UTF-8 stored in ANSISTRING but Delphi uses UTF-16 by default (WIDECHAR).  To
-  help with this use always the AL_STR type (instead of STRING) and the
-  conversion functions of unit al5strings when using Delphi RTL functions.
+  help with this use the conversion functions of unit al5strings.
 
 
 

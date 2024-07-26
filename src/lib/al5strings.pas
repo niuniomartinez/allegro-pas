@@ -258,7 +258,7 @@ implementation
   function al_str_format (const aFmt: AL_STR; const aArgs : array of const)
     : AL_STR;
   begin
-    Result := al_string_to_str (Format (al_str_to_string (aFmt), aArgs))
+    Result := al_string_to_str (Format (al_str_to_ansistring (aFmt), aArgs))
   end;
 
 end.

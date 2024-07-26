@@ -47,6 +47,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <StripSymbols Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -68,14 +69,14 @@
         <Mode0 Name="default"/>
       </Modes>
     </RunParams>
-    <Units Count="2">
+    <Units Count="3">
       <Unit0>
         <Filename Value="../ex_17_audio_mixer.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="ex_17_audio_chain"/>
         <IsVisibleTab Value="True"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="../common.pas"/>
@@ -84,6 +85,13 @@
         <UsageCount Value="21"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="../algui.pas"/>
+        <UnitName Value="alGUI"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit2>
     </Units>
     <JumpHistory HistoryIndex="-1"/>
   </ProjectOptions>

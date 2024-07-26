@@ -47,6 +47,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <StripSymbols Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -72,10 +73,10 @@
       <Unit0>
         <Filename Value="../ex_07_font.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="ex_07font"/>
         <IsVisibleTab Value="True"/>
         <UsageCount Value="21"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="../common.pas"/>

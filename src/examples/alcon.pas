@@ -44,7 +44,7 @@ interface
   procedure PrintLn (const aFmt: String; aParms: array of const); overload;
 (* Show console output on current display. *)
   procedure DrawConsole;
-(* Releases resources used by console. *)
+(* Release resources used by console. *)
   procedure Finalize;
 
 implementation

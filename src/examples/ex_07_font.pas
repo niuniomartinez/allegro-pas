@@ -129,7 +129,7 @@ program ex_07font;
     var
       lTextHeight: Integer;
 
-      procedure PrintText (const aText: AnsiString); inline;
+      procedure PrintText (const aText: AnsiString); {$IfDef FPC}inline;{$EndIf}
       begin
         al_draw_text (
 	  aFont, clrText,

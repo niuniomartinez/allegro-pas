@@ -1,7 +1,7 @@
 unit Game;
 (* Defines the Pascalroid game object. *)
 (*
-  Copyright (c) 2023 Guillermo Martínez J.
+  Copyright (c) 2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -37,14 +37,14 @@ interface
       fAsteroids: TAsteroidsManager;
       fInput: TPlayerInput;
     public
-    (* Initialize the scene. *)
-      procedure Initialize; override;
+    (* Enter the scene. *)
+      procedure Enter; override;
     (* Game logic. *)
       procedure Update; override;
     (* Draw screen. *)
       procedure Draw; override;
     (* Close the scene. *)
-      procedure Finalize; override;
+      procedure Leave; override;
     end;
 
 
@@ -77,9 +77,9 @@ implementation
   const
     MaxLasers = 10;
 
-  procedure TPascalroidsScene.Initialize;
+  procedure TPascalroidsScene.Enter;
   begin
-    inherited Initialize;
+    inherited Enter;
     fInput := TKeyboardInput.Create;
     fLasers := TSpriteManager.Create (MaxLasers, TLaser);
     fAsteroids := TAsteroidsManager.Create;
@@ -113,7 +113,7 @@ fAsteroids.NewAsteroid;
 
 
 
-  procedure TPascalroidsScene.Finalize;
+  procedure TPascalroidsScene.Leave;
   begin
     fShip.Free;
     fLasers.Free;

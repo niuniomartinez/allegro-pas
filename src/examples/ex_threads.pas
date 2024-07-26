@@ -11,7 +11,7 @@ program ex_threads;
  *    critical section API.
  *)
 (*
-  Copyright (c) 2023 Guillermo Martínez J.
+  Copyright (c) 2023-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -117,13 +117,13 @@ program ex_threads;
 
 
 
-  function TExampleThread.Rand01: Single; inline;
+  function TExampleThread.Rand01: Single;
   begin
     Result := (Self.Random mod 10000) / 10000
   end;
 
 
-  function TExampleThread.Rand11: Single; inline;
+  function TExampleThread.Rand11: Single;
   begin
     Result := (-10000 + (Self.Random mod 20000)) / 20000
   end;
@@ -261,7 +261,7 @@ program ex_threads;
         al_destroy_event_queue (fQueue)
       end;
       if Assigned (fTimer) then al_destroy_timer (fTimer);
-      if Assigned (fDisplay) then al_destroy_display (fDisplay);
+      if Assigned (fDisplay) then al_destroy_display (fDisplay)
     end;
 
   var
@@ -344,37 +344,32 @@ var
 
 
 (* Initialize the program. *)
-  procedure InitializeExample;
+  function InitializeExample: Boolean;
   begin
+    WriteLn ('Initializing...');
   { Check command line options. }
     if ParamCount > 0 then
-    begin
-      NumThreads := StrToInt (ParamStr (1));
-      if NumThreads > MaxThreads then
-        NumThreads := NumThreads
-      else if NumThreads < 1 then
-        NumThreads := 1
-    end
+      NumThreads := Clamp (1, StrToInt (ParamStr (1)), MaxThreads)
     else
       NumThreads := 3;
   { Initialize allegro. }
-    if not al_init then AbortExample ('Could not init Allegro.');
-  { Debugging. }
-    OpenLog;
-    LogWriteLn ('Initializing...');
-
-    al_init_primitives_addon;
-    al_install_keyboard;
-    al_install_mouse;
-    LogWriteLn ('Allegro is up and running.');
+    if not al_init or not al_install_keyboard or not al_install_mouse
+    or not al_init_primitives_addon
+    then
+    begin
+      WriteLn ('Could not init Allegro.');
+      Exit (False)
+    end;
+    WriteLn ('Allegro is up and running.');
   { Create threads. }
-    LogWriteLn ('Creating threads...');
+    WriteLn ('Creating threads...');
     for Ndx := 1 to NumThreads do
       Threads[Ndx] :=  TExampleThread.Create
                        (
                          Ndx,
                          Background[(Ndx mod MaxBackgrounds) + 1]
                        );
+    Result := True
   end;
 
 
@@ -385,10 +380,9 @@ var
     lThread: TExampleThread;
   begin
   { Terminate threads. }
-    LogWriteLn ('Closing threads...');
+    WriteLn ('Closing threads...');
     for lThread in Threads do lThread.Free;
-    LogWriteLn ('Done.');
-    CloseLog (True)
+    WriteLn ('Done.')
   end;
 
 
@@ -398,10 +392,10 @@ var
   var
     lThread: TExampleThread;
   begin
-    LogWriteLn ('Starting threads...');
+    WriteLn ('Starting threads...');
     for lThread in Threads do if Assigned (lThread) then lThread.Start;
   { Wait for threads to end. }
-    LogWriteLn ('Waiting for threads ending...');
+    WriteLn ('Waiting for threads ending...');
     for lThread in Threads do
     { Only for running threads. }
       if Assigned (lThread) and not lThread.Suspended then
@@ -409,7 +403,7 @@ var
   end;
 
 begin
-  InitializeExample;
-  RunExample;
+  if InitializeExample then
+    RunExample;
   FinalizeExample
 end.

@@ -3,7 +3,7 @@ unit Engine;
 
    It doesn't include sprites:  they're in their own unit. *)
 (*
-  Copyright (c) 2023 Guillermo Martínez J.
+  Copyright (c) 2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -112,16 +112,20 @@ interface
     private
       fOwner: TGame;
     public
-    (* Initialize the scene. *)
-      procedure Initialize; virtual;
+    (* Initialize the scene.
+
+       Called by @link(TGame) when game chages to this scene. *)
+      procedure Enter; virtual;
     (* Update the scene.
 
        @link(TGame) will call this @link(FPS) times per second. *)
       procedure Update; virtual; abstract;
-    (* Draw the scene. *)
+    (* Draw the scene.  Called by @link(TGame) when needed. *)
       procedure Draw; virtual; abstract;
-    (* Close the scene. *)
-      procedure Finalize; virtual;
+    (* Close the scene.
+
+       Called by @link(TGame) when game changes to another scene. *)
+      procedure Leave; virtual;
 
     (* Reference to the game. *)
       property Game: TGame read fOwner;
@@ -233,7 +237,7 @@ implementation
         Exit (True)
       end
     end;
-  { Something's wrong. }
+  { Something failed. }
     Result := False
   end;
 
@@ -319,11 +323,11 @@ implementation
  * TGameScene
  ************************************************************************)
 
-  procedure TGameScene.Initialize; begin end;
+  procedure TGameScene.Enter; begin end;
 
 
 
-  procedure TGameScene.Finalize; begin end;
+  procedure TGameScene.Leave; begin end;
 
 
 
@@ -443,10 +447,10 @@ implementation
       { Should change scene? }
         if Assigned (fNextScene) then
         begin
-          if Assigned (fCurrentScene) then fCurrentScene.Finalize;
+          if Assigned (fCurrentScene) then fCurrentScene.Leave;
           fCurrentScene := fNextScene;
           fCurrentScene.fOwner := Self;
-          fCurrentScene.Initialize;
+          fCurrentScene.Enter;
           fNextScene := Nil
         end;
       { Update. }
@@ -460,7 +464,7 @@ implementation
       until fTerminated;
     finally
       al_stop_timer (fTimer);
-      if Assigned (fCurrentScene) then fCurrentScene.Finalize
+      if Assigned (fCurrentScene) then fCurrentScene.Leave
     end
     except
       on Error: Exception do ShowError (Error);

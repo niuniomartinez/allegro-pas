@@ -100,6 +100,7 @@ program ex_noframe;
   procedure Finalize;
   begin
     if Assigned (EventQueue) then al_destroy_event_queue (EventQueue);
+    if Assigned (Timer) then al_destroy_timer (Timer);
     if Assigned (Bitmap) then al_destroy_bitmap (Bitmap);
     if Assigned (Window) then al_destroy_display (Window)
   end;

@@ -1,11 +1,10 @@
 
   This document explains how to install Allegro in Windows operating systems.
-  For GNU/Linux operating systems read "linux.txt".  MacOS users should read
-  "macos.txt" instead.
+  For GNU/Linux operating systems read "linux.txt".
 
   First you must install Allegro itself.  Current Allegro.pas version is
   compatible with version 5.2.x only so DON'T install version 5.1.x or older.
-  Versions 5.3.x and newer would not work as well.
+  Versions 5.3.x and newer may not work as well.
 
   Read "fpc.txt", "lazarus.txt" or "delphi.txt" to know how to use such
   compilers and IDEs.
@@ -15,22 +14,15 @@
 Getting precompiled version
 ---------------------------
 
-  You can download the "binary" version of Allegro.pas from SourceForge;  it
-  has "bin-win32" in the name (for example, allegro.pas-5.2.b.1-bin-win32.zip).
-  This package included precompiled Allegro for Windows 32bit (will work with
-  Windows 64bit too).  Precompiled Allegro library and some 3th party DLL files
-  are in the "~/bin/lib" directory.
+  You can download the "binary" version of Allegro from GitHub:
 
-  If you want a more modern version or a 64bit version follow next instructions:
-
-  Go to http://liballeg.org/download.html#windows, to the "Windows Binaries"
-  section, and select one of the given links.  I recommend you the "Allegro 5.2
-  binary packages".  To find wich one is the best for you, think you'll need 
-  a "dynamic" version and that "686" is 32bits while "x86" is 64bits.
-
+  Go to https://github.com/liballeg/allegro5/releases and select one of the
+  "dynamic" packages.  Note i686 are 32bit version and x86_64 are 64 bit.
+ 
   Once downloaded, you need only the DLL files that are in the "bin"
-  subdirectory.  Also note that Allegro.pas links with the "monolith" version
-  of the library by default.  Read below to know what "monolith" means.
+  subdirectory;  the other files are for C and C++ developers only.  Also note
+  that Allegro.pas links with the "monolith" version of the library by default.
+  Read below to know what "monolith" means.
 
   Also note that you may need more DLL files, such as the ones needed to load
   PNG and OGG files, among others.
@@ -41,8 +33,8 @@ Installing precompiled version
 ------------------------------
 
   In most cases you can put the DLL files in to your "C:\windows\system32"
-  directory but may be better to add these DLL files to the directory where
-  your executable is.
+  directory but it's better to put these DLL files in the directory where
+  the executable is.
 
 
 

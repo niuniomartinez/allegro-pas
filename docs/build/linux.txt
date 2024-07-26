@@ -1,7 +1,6 @@
 
   This document explains how to install Allegro in GNU/Linux operating systems.
-  For Windows operating systems read "windows.txt".  MacOS users should read
-  "macos.txt" instead.
+  For Windows operating systems read "windows.txt".
 
   First you must install Allegro itself.  Current Allegro.pas version is
   compatible with version 5.2.x only so DON'T install version 5.1.x or older.
@@ -34,7 +33,8 @@ $ aptitude search allegro
 
 $ sudo aptitude install allegro5-doc liballegro5-dev
 
-  See the use of "sudo" and that it will install the "development" packages.
+  See the use of "sudo" and that it will install the "development" packages;
+  that's needed for proper linking.
 
   Note that repositories don't include the "debug" version of Allegro.  The
   only way to get them is to install from sources (see next section).  Anyway,

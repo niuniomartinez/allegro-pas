@@ -8,6 +8,8 @@
   Before to use Allegro.pas you must install Allegro itself.  If you didn't
   yet, please read the appropriate document for your operating system.
 
+
+
 The Allegro.pas units
 ---------------------
 
@@ -75,9 +77,8 @@ Differences between Delphi, Free Pascal and Lazarus
 
   Also note STRING management may be problematic.  Allegro expects ASCII-7 or
   UTF-8 stored in ANSISTRING, wich is compatible with Free Pascal defaults, but
-  Delphi uses UTF-16 by default (WIDECHAR).  To help with this use always the
-  AL_STR type (instead of STRING) and the conversion functions of unit
-  al5strings when using RTL functions.
+  Delphi uses UTF-16 by default (WIDECHAR).  To help with this use the
+  conversion functions of unit al5strings.
 
 
 
@@ -93,8 +94,8 @@ Windows manifest
   the Lazarus community, I've created manifest template files you can find in
   the ~/resources directory.  Copy both "manifest.rc" and "manifest.xml" to your
   source directory and add the next compiler directive in your program source,
-  between your "PROGRAM" and your "USES" directives as you can see in any of
-  the examples:
+  between your "PROGRAM" and your "USES" directives as you can see in the
+  examples:
 
   {$IFDEF WINDOWS}{$R 'manifest.rc'}{$ENDIF}
 

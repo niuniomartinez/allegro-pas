@@ -3,7 +3,7 @@ program FuriousPaladin;
    See readME for more information. *)
 (*
   Copyright (c) 2018 Handoko
-            (c) 2019-2022 Guillermo Martínez.
+            (c) 2019-2024 Guillermo Martínez.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -31,8 +31,8 @@ program FuriousPaladin;
 
 uses
   Classes, SysUtils,
-  Allegro5, al5Base, al5acodec, al5audio, al5font, al5image, al5nativedlg,
-  al5primitives, al5strings, al5ttf;
+  Allegro5, al5Base, al5acodec, al5audio, al5font, al5image, al5primitives, al5strings,
+  al5ttf;
 
 type
   TAppState = (Intro1, Intro2, Playing, Paused, Lose, Win);
@@ -47,6 +47,7 @@ type
     Delay:  Byte;
   end;
 
+  PActor = ^TActor;
   TActor = record
     PosX, PosY:      Real;
     MinX, MaxX:      Real;
@@ -57,8 +58,6 @@ type
     AnimProgress:    Byte;
     AnimDelay:       Byte;
   end;
-
-  PActor = ^TActor;
 
 const
   ScreenWidth     = 500;
@@ -128,20 +127,41 @@ var
 
 
 
-(* Shows an error message and ends. *)
-  procedure AbortProgram (const Message: String);
+(* Show an error message and ends. *)
+  procedure AbortProgram (const aMessage: String);
+  const
+    TextFontSize = 8;
+    Margin = TextFontSize;
+  var
+    lTextFont: ALLEGRO_FONTptr;
+    lColor: ALLEGRO_COLOR;
+    lKeyboardState: ALLEGRO_KEYBOARD_STATE;
   begin
-    if al_init_native_dialog_addon then
-    begin
-      if Assigned (Display) then al_destroy_display (Display);
-      al_show_native_message_box (
-        Nil,
-        'Error', 'Cannot run Furious Paladin', al_string_to_str (Message),
-        '', 0
-      )
-    end
-    else
-      WriteLn (ErrOutput, Message);
+  { Prepare to draw. }
+    lTextFont := al_create_builtin_font;
+    lColor := al_map_rgb (255, 255, 255);
+  { Draw message. }
+    al_draw_filled_rectangle (
+      0, 0,
+      al_get_display_width (al_get_current_display), TextFontSize * 4,
+      al_map_rgb (255, 51, 51)
+    );
+    al_draw_rectangle (
+      1.5, 1.5,
+      al_get_display_width (al_get_current_display) - 1.5, TextFontSize * 4 - 1.5,
+      lColor, 1
+    );
+    al_draw_text (lTextFont, lColor, Margin, Margin, 0, al_string_to_str (aMessage));
+    al_draw_text (lTextFont, lColor, Margin, Margin * 2, 0, 'Press [C] to close');
+    al_flip_display;
+  { No needed anymore. }
+    al_destroy_font (lTextFont);
+  { Wait keypress. }
+    repeat
+      al_rest (0.1);
+      al_get_keyboard_state (lKeyboardState)
+    until al_key_down (lKeyboardState, ALLEGRO_KEY_C);
+  { Exit. }
     ProcessShutDown;
     Halt (1)
   end;
@@ -825,7 +845,7 @@ begin
   ProcessInit;
   Start(Intro1);
   while GameIsRunning do
- begin
+  begin
     al_wait_for_event (EventQueue, Nil);
     ProcessUserInput;
     ProcessUpdate;

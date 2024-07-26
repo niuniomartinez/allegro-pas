@@ -1,6 +1,7 @@
 program ex_palette;
+(* Show how to use shaders to simulate VGA indexed mode. *)
 (*
-  Copyright (c) 2012-2022 Guillermo Martínez J.
+  Copyright (c) 2012-2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -27,19 +28,57 @@ program ex_palette;
 {$ENDIF}
 
   uses
-    Allegro5, al5base, al5color, al5image,
     Common,
+    Allegro5, al5base, al5color, al5image, al5strings,
     math;
 
-  type
-    TPalette = array [0..255] of record r, g, b: AL_FLOAT; end;
+(*
+ * Palette stuff.
+ ************************************************************************)
 
-    RSprite = record
-      x, y, Angle, t: Real;
-      Flags, i, j: Integer;
-    end;
+  const
+  (* Vertex shader program:  It gets the texel coordinate to use it in the
+     fragment shader.
+   *)
+    VertexShaderSrc = 'attribute vec4 al_pos;'+
+                      'attribute vec4 al_color;'+
+                      'attribute vec2 al_texcoord;'+
+                      'uniform mat4 al_projview_matrix;'+
+                      'varying vec2 varying_texcoord;'+
+                      'void main ()'+
+                      '{'+
+                      '  varying_texcoord = al_texcoord;'+
+                      '  gl_Position = al_projview_matrix * al_pos;'+
+                      '}';
+  (* Fragment shader:  It uses the texel coordinate to get the color from the
+     texture (al_tex) and then use it to get the actual color from the color
+     palette and plot it in the destination.  Note it uses the red component as
+     index and the alpha component for transparency; the other components are
+     ignored.
+   *)
+    PixelShaderSrc = 'uniform sampler2D al_tex;'+
+                     'uniform vec3 pal[256];'+
+                     'varying vec2 varying_texcoord;'+
+                     'void main ()'+
+                     '{'+
+                     '  vec4 c = texture2D (al_tex, varying_texcoord);'+
+                     '  int index = int (c.r * 255.0);'+
+                     '  if (index != 0) {;'+
+                     '    gl_FragColor = vec4 (pal[index], 1);'+
+                     '  }'+
+                     '  else {;'+
+                     '    gl_FragColor = vec4 (0, 0, 0, 0);'+
+                     '  };'+
+                     '}';
+
+  type
+  (* Store palette information. *)
+    TPalette = array [0..255] of record r, g, b: AL_FLOAT end;
 
   var
+  (* Shader used to simulate indexed graphics. *)
+    Shader: ALLEGRO_SHADERptr;
+  (* Color data. *)
     PalHex: array [0..255] of AL_INT = (
       $FF00FF, $000100, $060000, $040006, $000200,
       $000306, $010400, $030602, $02090C, $070A06,
@@ -95,230 +134,327 @@ program ex_palette;
       $FDFFFC
     );
 
+(* Create a shader that simulates indexed graphics. *)
+  function CreateShader: ALLEGRO_SHADERptr;
+  begin
+    Result := al_create_shader (ALLEGRO_SHADER_GLSL);
+    if not Assigned (Result) then
+    begin
+      ErrorMessage ('Cannot use GLSL (OpenGL) shader.');
+      Exit (Nil)
+    end;
+    if not al_attach_shader_source (Result, ALLEGRO_VERTEX_SHADER, VertexShaderSrc)
+    or not al_attach_shader_source (Result, ALLEGRO_PIXEL_SHADER, PixelShaderSrc)
+    or not al_build_shader (Result) then
+    begin
+      ErrorMessage (al_str_to_string (al_get_shader_log (Result)));
+      al_destroy_shader (Result);
+      Exit (Nil)
+    end
+  end;
 
 
+
+(* Interpolate two palettes.
+
+   If t=0 then it use Pal1.
+   If t=1 then it use Pal2.
+   If t=0.5 then it uses (Pal1+Pal2)/2.
+   etc.
+ *)
   function InterpolatePalette (Pal1, Pal2: TPalette; t: AL_FLOAT): TPalette;
   var
-    Pal: TPalette;
-    i: Integer;
+    lNdx: Integer;
   begin
-    for i := 0 to 255 do
+    Result := Default (TPalette);
+    for lNdx := 0 to 255 do
     begin
-      Pal[i].r := Pal1[i].r * (1 - t) + Pal2[i].r * t;
-      Pal[i].g := Pal1[i].g * (1 - t) + Pal2[i].g * t;
-      Pal[i].b := Pal1[i].b * (1 - t) + Pal2[i].b * t
-    end;
-    Exit (Pal)
+      Result[lNdx].r := Pal1[lNdx].r * (1 - t) + Pal2[lNdx].r * t;
+      Result[lNdx].g := Pal1[lNdx].g * (1 - t) + Pal2[lNdx].g * t;
+      Result[lNdx].b := Pal1[lNdx].b * (1 - t) + Pal2[lNdx].b * t
+    end
   end;
 
 
+
+(* Apply the given palette. *)
+  procedure SetPalette (var aPalette: TPalette); inline;
+  begin
+    al_set_shader_float_vector ('pal', 3, @aPalette, 256)
+  end;
+
+
+
+(*
+ * The example.
+ ************************************************************************)
+
+  const
+  (* Window size. *)
+    wWidth = 640; wHeight = 480;
+
+  type
+    TSprite = record
+      x, y, Angle, t: Single;
+      Flags, i, j: Integer;
+    end;
 
   var
-    Display: ALLEGRO_DISPLAYptr;
-    Bitmap, Background: ALLEGRO_BITMAPptr;
-    Timer: ALLEGRO_TIMERptr;
-    Queue: ALLEGRO_EVENT_QUEUEptr;
+    EventQueue: ALLEGRO_EVENT_QUEUEptr;
     Event: ALLEGRO_EVENT;
-    Redraw, EndExample: Boolean;
-    Shader: ALLEGRO_SHADERptr;
-    Pal: TPalette;
+    Window: ALLEGRO_DISPLAYptr;
+    Timer: ALLEGRO_TIMERptr;
+    Redraw, Terminated: Boolean;
+  { Images. }
+    Bitmap, Background: ALLEGRO_BITMAPptr;
+  { Palettes. }
     Pals: array [0..6] of TPalette;
-    i, j, Dir, p1, p2: Integer;
-    r, g, b, h, s, l, t, Position, sc: AL_FLOAT;
-    Sprites: array [0..7] of RSprite;
+  { Sprites stuff. }
+    Sprites: array [0..7] of TSprite;
 
-begin
-  Redraw := True;
-  EndExample := False;
-  t := 0;
+(* Program initialization. *)
+  function Initialize: Boolean;
 
-  if not al_init then AbortExample ('Could not init Allegro.');
-
-  al_install_mouse;
-  al_install_keyboard;
-  al_init_image_addon;
-  InitPlatformSpecific;
-
-  al_set_new_display_flags (ALLEGRO_PROGRAMMABLE_PIPELINE or ALLEGRO_OPENGL);
-  Display := al_create_display (640, 480);
-  if not Assigned (Display) then AbortExample ('Could not create display.');
-
-  al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_SINGLE_CHANNEL_8);
-  Bitmap := al_load_bitmap_flags ('data/alexlogo.bmp', ALLEGRO_KEEP_INDEX);
-  if not Assigned (Bitmap) then
-    AbortExample ('"data/alexlogo.bmp" not found or failed to load.');
-
-{ Create 8 sprites. }
-  for i := Low (Sprites) to High (Sprites) do
-  begin
-    Sprites[i].Angle := ALLEGRO_PI * 2 * i / 8;
-    sincos (Sprites[i].Angle, s, h);
-    Sprites[i].x := 320 + s * (64 + i * 16);
-    Sprites[i].y := 240 - h * (64 + i * 16);
-    if i mod 2 <> 0 then
-      Sprites[i].Flags := ALLEGRO_FLIP_HORIZONTAL
-    else
-      Sprites[i].Flags := 0;
-    Sprites[i].t := i / 8;
-    Sprites[i].i := i mod 6;
-    Sprites[i].j := (Sprites[i].i + 1) mod 6
-  end;
-
-  Background := al_load_bitmap ('data/bkg.png');
-  if not Assigned (Background) then
-    AbortExample ('"data/bkg.png" not found or failed to load.');
-{ Continue even if fail to load. }
-
-{ Create 7 palettes with changed hue. }
-  for j := Low (Pals) to High (Pals) do
-  begin
-    for i := Low (PalHex) to High (PalHex) do
+    function CreateDisplay: Boolean;
     begin
-      r := ((PalHex[i] shr 16) and $0000FFFF) / 255;
-      g := ((PalHex[i] shr  8) and $000000FF) / 255;
-      b := ( PalHex[i]         and $000000FF) / 255;
-
-      al_color_rgb_to_hsl (r, g, b, h, s, l);
-      if j = 6 then
+    { Create display. }
+      al_set_new_display_flags (
+        ALLEGRO_PROGRAMMABLE_PIPELINE { To allow use of shaders. }
+        or ALLEGRO_OPENGL             { To use OpenGL shaders. }
+      );
+      Window := al_create_display (wWidth, wHeight);
+      if not Assigned (Window) then
       begin
-        if (l < 0.3) or (0.7 < l) then
-        begin
-          h := 0;
-          s := 1;
-          l := 0.5
-        end
-      end
-      else begin
-        h := h + (j * 60);
-        if (l < 0.3) or (0.7 < l) then
-        begin
-          if (j and 1) <> 0 then l := 1 - l
-        end
+        ErrorMessage ('Could not create display.');
+        Exit (False)
       end;
-      al_color_hsl_to_rgb (h, s, l, r, g, b);
+    { Create shader. }
+      Shader := CreateShader;
+      if not Assigned (Shader) then Exit (False);
+    { Tell Allegro to use 8bpp pixel formats. }
+      al_set_new_bitmap_format (ALLEGRO_PIXEL_FORMAT_SINGLE_CHANNEL_8);
 
-      Pals[j][i].r := r;
-      Pals[j][i].g := g;
-      Pals[j][i].b := b
-    end
-  end;
-
-  Shader := al_create_shader (ALLEGRO_SHADER_GLSL);
-  if not Assigned (Shader) then
-    AbortExample ('Cannot use GLSL (OpenGL) shader.');
-
-  al_attach_shader_source (
-    Shader,
-    ALLEGRO_VERTEX_SHADER,
-    'attribute vec4 al_pos;'#10+
-    'attribute vec4 al_color;'#10+
-    'attribute vec2 al_texcoord;'#10+
-    'uniform mat4 al_projview_matrix;'#10+
-    'varying vec4 varying_color;'#10+
-    'varying vec2 varying_texcoord;'#10+
-    'void main()'#10+
-    '{'#10+
-    '  varying_color = al_color;'#10+
-    '  varying_texcoord = al_texcoord;'#10+
-    '  gl_Position = al_projview_matrix * al_pos;'#10+
-    '}'#10
-  );
-  al_attach_shader_source(
-    Shader,
-    ALLEGRO_PIXEL_SHADER,
-    'uniform sampler2D al_tex;'#10+
-    'uniform vec3 pal[256];'#10+
-    'varying vec4 varying_color;'#10+
-    'varying vec2 varying_texcoord;'#10+
-    'void main()'#10+
-    '{'#10+
-    '  vec4 c = texture2D(al_tex, varying_texcoord);'#10+
-    '  int index = int(c.r * 255.0);'#10+
-    '  if (index != 0) {;'#10+
-    '    gl_FragColor = vec4(pal[index], 1);'#10+
-    '  }'#10+
-    '  else {;'#10+
-    '    gl_FragColor = vec4(0, 0, 0, 0);'#10+
-    '  };'#10+
-    '}'#10
-  );
-
-  al_build_shader (Shader);
-  al_use_shader (Shader);
-
-  Timer := al_create_timer (1 / 60);
-  Queue := al_create_event_queue;
-  al_register_event_source (Queue, al_get_keyboard_event_source);
-  al_register_event_source (Queue, al_get_display_event_source (Display));
-  al_register_event_source (Queue, al_get_timer_event_source (Timer));
-  al_start_timer (Timer);
-
-  repeat
-    al_wait_for_event (Queue, @Event);
-    case Event.ftype of
-    ALLEGRO_EVENT_DISPLAY_CLOSE:
-      EndExample := True;
-    ALLEGRO_EVENT_KEY_CHAR:
-      if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then EndExample := True;
-    ALLEGRO_EVENT_TIMER:
-      begin
-        Redraw := True;
-        t := t + 1;
-        for i := Low (Sprites) to High (Sprites) do
-        begin
-          if Sprites[i].Flags <> 0 then Dir := 1 else Dir := -1;
-          sincos (Sprites[i].Angle, s, h);
-          Sprites[i].x := Sprites[i].x + h * 2 * Dir;
-          Sprites[i].y := Sprites[i].y + s * 2 * Dir;
-          Sprites[i].Angle := Sprites[i].Angle + ALLEGRO_PI / 180 * Dir
-        end
-      end;
+      Result := True
     end;
 
-    if Redraw and al_is_event_queue_empty (Queue) then
+    function CreateSprites: Boolean;
+    var
+      lNdx: Integer;
+      lSin, lCos: Single;
     begin
-      Position := Trunc (t) mod 60 / 60;
-      p1 := Trunc (t / 60) mod 3;
-      p2 := (p1 + 1) mod 3;
-
-      Redraw := False;
-      al_clear_to_color (al_map_rgb_f (0, 0, 0));
-
-      Pal := InterpolatePalette (Pals[p1 * 2], Pals[p2 * 2], Position);
-
-      al_set_shader_float_vector ('pal', 3, @Pal, 256);
-      if Background <> Nil then al_draw_bitmap (Background, 0, 0, 0);
-
-      for i := Low (Sprites) to High (Sprites) do
+      Bitmap := al_load_bitmap_flags ('data/alexlogo.png', ALLEGRO_KEEP_INDEX);
+      if not Assigned (Bitmap) then
       begin
-        j := 7 - i;
-        Position := (1 + sin ((t / 60 + Sprites[j].t) * 2 * ALLEGRO_PI)) / 2;
-        Pal := InterpolatePalette (
-                 Pals[Sprites[j].i], Pals[Sprites[j].j], Position
-               );
-        al_set_shader_float_vector ('pal', 3, @Pal, 256);
-        al_draw_rotated_bitmap (
-          Bitmap,
-          64, 64,
-          Sprites[j].x, Sprites[j].y, Sprites[j].Angle,
-          Sprites[j].Flags
-        );
+        ErrorMessage ('"data/alexlogo.png" not found or failed to load.');
+        Exit (False)
       end;
 
-      sc := 0.5;
-      if Trunc (t) mod 20 > 15 then i := 6 else i := 0;
-      al_set_shader_float_vector ('pal', 3, @Pals[i], 256);
-      al_draw_scaled_rotated_bitmap (Bitmap, 0, 0,   0,   0,  sc,  sc, 0, 0);
-      al_draw_scaled_rotated_bitmap (Bitmap, 0, 0, 640,   0, -sc,  sc, 0, 0);
-      al_draw_scaled_rotated_bitmap (Bitmap, 0, 0,   0, 480,  sc, -sc, 0, 0);
-      al_draw_scaled_rotated_bitmap (Bitmap, 0, 0, 640, 480, -sc, -sc, 0, 0);
+      for lNdx := Low (Sprites) to High (Sprites) do
+      begin
+        Sprites[lNdx].Angle := ALLEGRO_TAU * lNdx / 8;
+        SinCos (Sprites[lNdx].Angle, lSin, lCos);
+        Sprites[lNdx].x := 320 + lSin * (64 + lNdx * 16);
+        Sprites[lNdx].y := 240 - lCos * (64 + lNdx * 16);
+        if lNdx mod 2 <> 0 then
+          Sprites[lNdx].Flags := ALLEGRO_FLIP_HORIZONTAL
+        else
+          Sprites[lNdx].Flags := 0;
+        Sprites[lNdx].t := lNdx / 8;
+        Sprites[lNdx].i := lNdx mod 6;
+        Sprites[lNdx].j := (Sprites[lNdx].i + 1) mod 6
+      end;
+      Result := True
+    end;
 
-      al_flip_display
+    procedure BuildColorPalettes;
+    var
+      j, i: Integer;
+      r, g, b, h, s, l: AL_FLOAT;
+    begin
+      for j := Low (Pals) to High (Pals) do
+      begin
+        for i := Low (PalHex) to High (PalHex) do
+        begin
+          r := ((PalHex[i] shr 16) and $0000FFFF) / 255;
+          g := ((PalHex[i] shr  8) and $000000FF) / 255;
+          b := ( PalHex[i]         and $000000FF) / 255;
+
+          al_color_rgb_to_hsl (r, g, b, h, s, l);
+          if j = 6 then
+          begin
+            if (l < 0.3) or (0.7 < l) then
+            begin
+              h := 0;
+              s := 1;
+              l := 0.5
+            end
+          end
+          else begin
+            h := h + (j * 60);
+            if (l < 0.3) or (0.7 < l) then
+            begin
+              if (j and 1) <> 0 then l := 1 - l
+            end
+          end;
+          al_color_hsl_to_rgb (h, s, l, r, g, b);
+ 
+          Pals[j][i].r := r;
+          Pals[j][i].g := g;
+          Pals[j][i].b := b
+        end
+      end
+    end;
+
+  begin
+    if not al_init or not al_install_keyboard or not al_init_image_addon then
+    begin
+      WriteLn ('Can''t initialize Allegro!');
+      Exit (False)
+    end;
+
+    Timer := al_create_timer (1 / 60);
+    if not Assigned (Timer) then
+    begin
+      WriteLn ('Can''t initialize timer.');
+      Exit (False)
+    end;
+
+    if not CreateDisplay then Exit (False);
+    if not CreateSprites then Exit (False);
+    Background := al_load_bitmap ('data/bkg.png');
+    if not Assigned (Background) then
+      ErrorMessage ('"data/bkg.png" not found or failed to load.');
+  { Continue even if fail to load. }
+    BuildColorPalettes;
+
+    EventQueue := al_create_event_queue;
+    if not Assigned (EventQueue) then
+    begin
+      ErrorMessage ('Can''t initialize event queue!');
+      Exit (False)
+    end;
+    al_register_event_source (EventQueue, al_get_keyboard_event_source);
+    al_register_event_source (EventQueue, al_get_display_event_source (Window));
+    al_register_event_source (EventQueue, al_get_timer_event_source (Timer));
+
+    Result := True
+  end;
+
+
+
+(* Program finalization. *)
+  procedure Finalize;
+  begin
+    al_use_shader (Nil);
+    if Assigned (EventQueue) then al_destroy_event_queue (EventQueue);
+    if Assigned (Bitmap) then al_destroy_bitmap (Bitmap);
+    if Assigned (Background) then al_destroy_bitmap (Background);
+    if Assigned (Timer) then al_destroy_timer (Timer);
+    if Assigned (Shader) then al_destroy_shader (Shader);
+    if Assigned (Window) then al_destroy_display (Window)
+  end;
+
+
+
+(* Update sprites position and rotation. *)
+  procedure UpdateSprites;
+  var
+    lSpr, lDirection: Integer;
+    lSin, lCos: Single;
+  begin
+    Redraw := True;
+    for lSpr := Low (Sprites) to High (Sprites) do
+    begin
+      if Sprites[lSpr].Flags <> 0 then lDirection := 1 else lDirection := -1;
+      sincos (Sprites[lSpr].Angle, lSin, lCos);
+      Sprites[lSpr].x := Sprites[lSpr].x + lCos * 2 * lDirection;
+      Sprites[lSpr].y := Sprites[lSpr].y + lSin * 2 * lDirection;
+      Sprites[lSpr].Angle := Sprites[lSpr].Angle + ALLEGRO_TAU / 360 * lDirection
     end
-  until EndExample;
+  end;
 
-  al_use_shader (Nil);
 
-  al_destroy_bitmap (Bitmap);
-  al_destroy_shader (Shader)
+
+(* Draw window content. *)
+  procedure UpdateScreen;
+
+    procedure DrawScaledBitmap (const aX, aY: Integer; const aSx, aSy: Single);
+      inline;
+    begin
+      al_draw_scaled_rotated_bitmap (Bitmap, 0, 0, aX, aY, aSx, aSy, 0, 0)
+    end;
+
+  const
+    lScale = 0.5;
+  var
+    lPosition: Single;
+    lTicks, lP1, lP2, lNdx, lSpr: Integer;
+    lPal: TPalette;
+  begin
+    lTicks := al_get_timer_count (Timer);
+    lPosition := lTicks mod 60 / 60;
+    lP1 := (lTicks div 60) mod 3;
+    lP2 := (lP1 + 1) mod 3;
+
+    al_clear_to_color (al_map_rgb_f (0, 0, 0));
+    lPal := InterpolatePalette (Pals[lP1], Pals[lP2], lPosition);
+    SetPalette (lPal);
+    if Assigned (Background) then al_draw_bitmap (Background, 0, 0, 0);
+
+    for lNdx := Low (Sprites) to High (Sprites) do
+    begin
+      lSpr := 7 - lNdx;
+      lPosition := (
+        1 + sin ((lTicks / 60 + Sprites[lSpr].t) * ALLEGRO_TAU)
+      ) / 2;
+      lPal := InterpolatePalette (
+        Pals[Sprites[lSpr].i], Pals[Sprites[lSpr].j], lPosition
+      );
+      SetPalette (lPal);
+      al_draw_rotated_bitmap (
+        Bitmap,
+        64, 64,
+        Sprites[lSpr].x, Sprites[lSpr].y, Sprites[lSpr].Angle,
+        Sprites[lSpr].Flags
+      );
+    end;
+
+    if lTicks mod 20 > 15 then lSpr := 6 else lSpr := 0;
+    SetPalette (Pals[lSpr]);
+    DrawScaledBitmap (  0,   0,  lScale,  lScale);
+    DrawScaledBitmap (640,   0, -lScale,  lScale);
+    DrawScaledBitmap (  0, 480,  lScale, -lScale);
+    DrawScaledBitmap (640, 480, -lScale, -lScale);
+
+    al_flip_display
+  end;
+
+
+begin
+  if not Initialize then Exit;
+{ "Game loop". }
+  al_start_timer (Timer); al_set_timer_count (Timer, 0);
+  Redraw := False;
+  Terminated := False;
+  al_use_shader (Shader);
+  repeat
+  { Screen update. }
+    if Redraw and al_is_event_queue_empty (EventQueue) then
+    begin
+      UpdateScreen;
+      Redraw := False
+    end;
+  { Check events. }
+    al_wait_for_event (EventQueue, @Event);
+    case Event.ftype of
+    ALLEGRO_EVENT_DISPLAY_CLOSE:
+      Terminated := True;
+    ALLEGRO_EVENT_KEY_CHAR:
+      if Event.keyboard.keycode = ALLEGRO_KEY_ESCAPE then Terminated := True;
+    ALLEGRO_EVENT_TIMER:
+      UpdateSprites;
+    end
+  until Terminated;
+{ Program finalization. }
+  Finalize
 end.
