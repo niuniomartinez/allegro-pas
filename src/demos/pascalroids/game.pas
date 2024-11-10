@@ -75,7 +75,7 @@ interface
 implementation
 
   uses
-    Allegro5;
+    Allegro5, al5font, al5strings;
 
 
 
