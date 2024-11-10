@@ -56,30 +56,23 @@ interface
  *************************************************************************)
 
   const
-  (* All these constants exist just to build the ALLEGRO_VERSION_INT one.  I was
-    tempted to remove them but keeping them shows what ALLEGRO_VERSION_INT is
-    build from.
+  (* These "_VERSION" constants exist just to build the ALLEGRO_VERSION_INT one;
+     they are defined just to check if DLL/so/dylib files are compatible and
+     don't represent the actual Allegro.pas version.  They're defined to use
+     version 5.2.6 or later.
 
-    They are defined to make it run with compatible DLL/so/dylib version only.
+     If you want to check or display Allegro.pas' version then Use
+     ALLEGRO_PAS_VERSION_STR instead.
    *)
     ALLEGRO_VERSION      =   5;
     ALLEGRO_SUB_VERSION  =   2;
-    ALLEGRO_WIP_VERSION  =   8;
-  (* Not sure we need it, but ALLEGRO_VERSION_STR contains it:
-     0 = SVN
-     1 = first release
-     2... = hotfixes?
-
-     Note x.y.z (= x.y.z.0) has release number 1, and x.y.z.1 has release
-     number 2, just to confuse you.
-   *)
+    ALLEGRO_WIP_VERSION  =   6;
     ALLEGRO_RELEASE_NUMBER = 1;
 
-    { ALLEGRO_PAS_VERSION_STR = '5.2'; }
-    ALLEGRO_PAS_VERSION_STR = '5.2#574';
+    ALLEGRO_PAS_VERSION_STR = '5.2.0';
   (* Dates aren't for Allegro but for Allegro.pas. *)
     ALLEGRO_DATE_STR = '2024';
-    ALLEGRO_DATE = 20240726; { yyyymmdd }
+    ALLEGRO_DATE = 20241110; { yyyymmdd }
     ALLEGRO_VERSION_INT  = (
            (ALLEGRO_VERSION shl 24)
         or (ALLEGRO_SUB_VERSION shl 16)

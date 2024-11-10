@@ -1,8 +1,7 @@
 program ex_16_audio_stream;
-(*
- * An example program that plays a file from the disk using Allegro5
- * streaming API. The file is being read in small chunks and played on the
- * sound device instead of being loaded at once.
+(* An example program that plays a file from disk using Allegro5 streaming
+ * API. The file is being read in small chunks and played on the sound device
+ * instead of being loaded at once.
  *
  * Original by by Milan Mimica (Translated to Pascal by Gillermo Martínez J.)
  *)

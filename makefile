@@ -101,8 +101,9 @@ DBGOPT += -Ci -Co -Cr -CR
 # DBGOPT += -gv
 # Use heaptrace unit (for memory leak/corruption debugging).
 DBGOPT += -gh
-# Define symbol DEBUG to be used by {$IfDef} blocks.
-DBGOPT += -dDEBUGMODE
+# Define symbol AL_DEBUGMODE to link with the "-debug" version of Allegro.
+# Note you need to build the "-debug" version of Allegro.
+# DBGOPT += -dAL_DEBUGMODE
 
 
 

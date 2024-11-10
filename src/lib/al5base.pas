@@ -33,7 +33,7 @@ interface
 
   const
   (* Defines some constants to build the correct names of the library files. *)
-{$IFDEF DEBUGMODE}
+{$IFDEF AL_DEBUGMODE}
     _DBG_ = '-debug'; (***<@exclude *)
 {$ELSE}
     _DBG_ = ''; (***<@exclude *)

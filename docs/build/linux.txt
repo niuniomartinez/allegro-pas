@@ -38,7 +38,8 @@ $ sudo aptitude install allegro5-doc liballegro5-dev
 
   Note that repositories don't include the "debug" version of Allegro.  The
   only way to get them is to install from sources (see next section).  Anyway,
-  in most cases, the debug version isn't needed.
+  in most cases, the debug version isn't needed as it is used to debug Allegro
+  itself.
 
 
 

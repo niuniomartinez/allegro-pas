@@ -1,5 +1,5 @@
 program ex_01_helloworld;
-(* Show basic initialization of Allegro.
+(* Shows basic initialization of Allegro.
 
    Just opens a window and waits for user to press a key and closes.
  *)

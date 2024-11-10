@@ -1,5 +1,5 @@
 program ex_03_bitmap;
-(* Show how to load a bitmap and draw it. *)
+(* Shows how to load a bitmap and draw it. *)
 (*
   Copyright (c) 2012-2024 Guillermo Martínez J.
 

@@ -1,5 +1,5 @@
 program ex_05_subbitmap;
-(* Show how sub-bitmap work. *)
+(* Shows how sub-bitmap work. *)
 (*
   Copyright (c) 2023 Guillermo Martínez J.
 

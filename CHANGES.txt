@@ -3,8 +3,7 @@ Changes between versions 5.2.b.1-1 and 5.2.0
 
   API changes
   -----------
-    : Most pointers are types instead of aliases now.  This should prevent some
-      mistakes and bugs as it checks parameters and assignations.
+    : Most pointers are types instead of aliases now.
     : al_get_opengl_variant returns an ALLEGRO_OPENGL_VARIANT now.
     : Removed constants ALLEGRO_IS_ALPHA and ALLEGRO_IS_BETA.
     : al_init_user_event_source and al_destroy_user_event_source get pointers
@@ -25,6 +24,7 @@ Changes between versions 5.2.b.1-1 and 5.2.0
 
   Other
   -----
+    : Added FAQ file.
     : Improved Delphi compatibility.
     : New examples that are more "how to do this" and less "look how cool is
       this".

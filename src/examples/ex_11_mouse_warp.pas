@@ -1,5 +1,5 @@
 program ex_11_mouse_warp;
-(* Show how to keep the mouse inside the window. *)
+(* Shows how to keep the mouse inside the window. *)
 (*
   Copyright (c) 2012-2024 Guillermo Martínez J.
 

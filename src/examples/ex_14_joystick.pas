@@ -1,5 +1,5 @@
 program ex_14_joystick;
-(* Show how to get input from joysticks and gamepads.  Note it uses the first
+(* Shows how to get input from joysticks and gamepads.  Note it uses the first
  * joystick only.
  *
  * From an example program by Peter Wang.

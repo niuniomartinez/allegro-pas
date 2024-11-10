@@ -1,5 +1,6 @@
 program ex_12_mouse_cursor;
-(*
+(* Shows how to change mouse cursor.
+ *
  * Example program for the Allegro library, by Peter Wang.
  * Translated to Pascal by Guillermo Martínez J.
  *)

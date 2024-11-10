@@ -1,7 +1,7 @@
 unit Asteroids;
 (* Implements the asteroids. *)
 (*
-  Copyright (c) 2023 Guillermo Martínez J.
+  Copyright (c) 2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -38,8 +38,9 @@ interface
     public
     (* Initialize the sprite.
 
-       It enables the sprite and sets radius and rotation speed.
-       Note that it sets velocity to 0! *)
+       It enables the sprite and sets rabdin velocity, radius and rotation
+       speed.
+     *)
       procedure Initialize; override;
     (* Update asteroid. *)
       procedure Update; override;
@@ -52,13 +53,13 @@ interface
 
   (* Manages the asteroids. *)
     TAsteroidsManager = class (TSpriteManager)
-    private
-      fPolygonLarge, fPolygonMedium, fPolygonSmall: TPolygon;
     public
     (* Constructor. *)
       constructor Create;
     (* Creates a new large asteroid. *)
       procedure NewAsteroid;
+    (* Divide asteroid in half. *)
+      procedure DivideAsteroid (aAsteroid: TAsteroidSprite);
     end;
 
 implementation
@@ -77,16 +78,23 @@ implementation
     MaxRadius = 30;
     SizeRatio = 2;
     Variance = 4; { < The larger, the softer. }
+
     SmallRatio = Ord (TAsteroidSprite.AsteroidSize.asSmall) * SizeRatio;
     MediumRatio = Ord (TAsteroidSprite.AsteroidSize.asMedium) * SizeRatio;
+
     LargeRadius = MaxRadius + Trunc (MaxRadius / Variance);
     MediumRadius = MaxRadius div MediumRatio
                  + Trunc (MaxRadius / Variance / MediumRatio);
     SmallRadius = MaxRadius div SmallRatio
                 + Trunc (MaxRadius / Variance / SmallRatio);
 
-    MaxSpeed = 2;
+    MaxSpeed = 1.5;
     MaxRotation = ALLEGRO_TAU / 125;
+
+  var
+  { Asteroid polygons.  Assigned by TAsteroidsManager constructor. }
+    fPolygonLarge, fPolygonMedium, fPolygonSmall: TPolygon;
+
 
 (*
  * TAsteroidSprite
@@ -97,16 +105,32 @@ implementation
     Factor = 10000;
   begin
     inherited Initialize;
+  { Size. }
     case Self.Size of
     asLarge:
-      Self.Radius := LargeRadius;
+      begin
+        Self.Radius := LargeRadius;
+        Self.Polygon := @fPolygonLarge
+      end;
     asMedium:
-      Self.Radius := MediumRadius;
+      begin
+        Self.Radius := MediumRadius;
+        Self.Polygon := @fPolygonMedium
+      end;
     asSmall:
-      Self.Radius := SmallRadius;
+      begin
+        Self.Radius := SmallRadius;
+        Self.Polygon := @fPolygonSmall
+      end;
     end;
+  { Rotation. }
     fAngleVelocity := Random (Trunc (2 * MaxRotation * Factor)) / Factor;
-    fAngleVelocity := fAngleVelocity - MaxRotation
+    fAngleVelocity := fAngleVelocity - MaxRotation;
+  { Speed. }
+    repeat
+      Self.Vx := RandomBetween (-MaxSpeed, MaxSpeed);
+      Self.Vy := RandomBetween (-MaxSpeed, MaxSpeed)
+    until (Self.Vx <> 0) or (Self.Vy <> 0)
   end;
 
 
@@ -133,7 +157,7 @@ implementation
 
   const
     NumVertexLarge = 9;
-    NumVertexMedium = 4;
+    NumVertexMedium = 6;
     DegToRad = ALLEGRO_TAU / 360;
     LargeAngle = ALLEGRO_TAU / NumVertexLarge;
     MediumAngle = ALLEGRO_TAU / NumVertexMedium;
@@ -147,22 +171,22 @@ implementation
   { Create container and reserve sprites. }
     inherited Create (NumAsteroids, TAsteroidSprite);
   { Create asteroid polygons. }
+    fPolygonLarge.Reset;
+    fPolygonMedium.Reset;
+    fPolygonSmall.Reset;
     lDeviation := Trunc (MaxRadius / Variance);
     for lNdx := 1 to NumVertexLarge do
       fPolygonLarge.AddVertex (
         cos (LargeAngle * lNdx) * MaxRadius + VertexDeviation (lDeviation),
         sin (LargeAngle * lNdx) * MaxRadius + VertexDeviation (lDeviation)
       );
-    fPolygonLarge.Color := clrWhite;
 
-    lDeviation := MaxRadius * Ord (asMedium) * SizeRatio;
-    lDeviation := Trunc (MaxRadius / lDeviation / Variance);
-    lDeviationSmall := MaxRadius * Ord (asSmall) * SizeRatio;
-    lDeviationSmall := Trunc (MaxRadius / lDeviationSmall / Variance);
+    lDeviation := Trunc (MediumRadius / Variance);
+    lDeviationSmall := Trunc (SmallRadius / Variance);
     for lNdx := 1 to NumVertexMedium do
     begin
-      lVx := cos ((lNdx * MediumAngle) * DegToRad) * MaxRadius;
-      lVy := sin ((lNdx * MediumAngle) * DegToRad) * MaxRadius;
+      lVx := cos (lNdx * MediumAngle) * MaxRadius;
+      lVy := sin (lNdx * MediumAngle) * MaxRadius;
       fPolygonMedium.AddVertex (
         (lVx / MediumRatio) + VertexDeviation (lDeviation),
         (lVy / MediumRatio) + VertexDeviation (lDeviation)
@@ -172,6 +196,7 @@ implementation
         (lVy / SmallRatio) + VertexDeviation (lDeviationSmall)
       )
     end;
+    fPolygonLarge.Color := clrWhite;
     fPolygonMedium.Color := clrWhite;
     fPolygonSmall.Color := clrWhite
   end;
@@ -179,12 +204,6 @@ implementation
 
 
   procedure TAsteroidsManager.NewAsteroid;
-
-    function AsteroidSpeed: Double; inline;
-    begin
-      Result := (Random (2 * MaxSpeed * 1000) / 1000) - MaxSpeed
-    end;
-
   var
     lAsteroid: TAsteroidSprite;
   begin
@@ -192,12 +211,8 @@ implementation
     if Assigned (lAsteroid) then
     begin
       lAsteroid.Size := asLarge;
-      lAsteroid.Polygon := @fPolygonLarge;
       lAsteroid.Initialize;
-      repeat
-        lAsteroid.Vx := AsteroidSpeed;
-        lAsteroid.Vy := AsteroidSpeed
-      until (lAsteroid.Vx <> 0) and (lAsteroid.Vy <> 0);
+    { Make it appear from the borders of the screen. }
       lAsteroid.X := Random (DisplayWidth);
       lAsteroid.Y := Random (DisplayHeight);
       case Random (4) of
@@ -207,10 +222,40 @@ implementation
         lAsteroid.X := DisplayWidth + lAsteroid.Radius;
       2:
         lAsteroid.Y := -lAsteroid.Radius;
-      otherwise
+      else { othewise }
         lAsteroid.Y := DisplayHeight + lAsteroid.Radius;
       end
     end
+  end;
+
+
+
+  procedure TAsteroidsManager.DivideAsteroid (aAsteroid: TAsteroidSprite);
+  var
+    lCnt: Integer;
+
+    procedure NewAsteroid (aSize: TAsteroidSprite.AsteroidSize); inline;
+    var
+      lNewAsteroid: TAsteroidSprite;
+    begin
+      lNewAsteroid := TAsteroidSprite (Self.NewSprite);
+      if Assigned (lNewAsteroid) then
+      begin
+        lNewAsteroid.X := aAsteroid.X;
+        lNewAsteroid.y := aAsteroid.Y;
+        lNewAsteroid.size := aSize;
+        lNewAsteroid.Initialize
+      end
+    end;
+
+  begin
+    aAsteroid.Enabled := False;
+    case aAsteroid.Size of
+    asLarge:
+      for lCnt := 1 to 2 do NewAsteroid (asMedium);
+    asMedium:
+      for lCnt := 1 to 2 do NewAsteroid (asSmall);
+    end;
   end;
 
 end.

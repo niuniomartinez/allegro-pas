@@ -50,6 +50,9 @@ status: addbanner
 veryclean: clean
 	$(DELETE) $(EXMBIN)ex_*
 	$(DELETE) $(DEMFILES)
+	$(DELETE) $(EXMBIN)*.dbg
+	$(DELETE) $(FPBIN)*.dbg
+	$(DELETE) $(PABIN)*.dbg
 
 # Clean temporary files.
 clean:

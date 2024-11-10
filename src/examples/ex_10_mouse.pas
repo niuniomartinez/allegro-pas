@@ -1,5 +1,5 @@
 program ex_10_mouse;
-(* Show mouse events. *)
+(* Shows mouse events. *)
 (*
   Copyright (c) 2012-2024 Guillermo Martínez J.
 

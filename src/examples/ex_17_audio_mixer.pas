@@ -1,9 +1,7 @@
 program ex_17_audio_chain;
-(*
- *    Example program for the Allegro library, by Peter Wang,
- *    Ported to Object Pascal by Guillermo Martínez J.
- *
- *    Demonstrate the audio addons.
+(* Demonstrates the audio addons.
+ * Example program for the Allegro library, by Peter Wang,
+ * Ported to Object Pascal by Guillermo Martínez J.
  *)
 (*
   Copyright (c) 2022-2024 Guillermo Martínez J.

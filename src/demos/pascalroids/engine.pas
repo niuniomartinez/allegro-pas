@@ -1,7 +1,9 @@
 unit Engine;
 (* Implements a basic game engine.
 
-   It doesn't include sprites:  they're in their own unit. *)
+   It doesn't include sprites:  they're in their own unit.
+   But includes a few util functions.
+ *)
 (*
   Copyright (c) 2024 Guillermo Martínez J.
 
@@ -166,11 +168,33 @@ interface
       property TextFont: ALLEGRO_FONTptr read fTextFont;
     end;
 
+(* Some random generators. *)
+  function RandomBetween (aMin, aMax: Integer): Integer; overload;
+  function RandomBetween (aMin, aMax: Double): Double; overload;
+
+  var
+  (* Global reference to the game object. *)
+    GameObject: TGame;
+
 implementation
 
   uses
     al5strings,
     sysutils;
+
+  function RandomBetween (aMin, aMax: Integer): Integer; inline;
+  begin
+    Result := Random (aMax - aMin) + aMin
+  end;
+
+
+
+  function RandomBetween (aMin, aMax: Double): Double;
+  begin
+    Result := RandomBetween (Trunc (aMin * 100), Trunc (aMax * 100)) / 100
+  end;
+
+
 
 (*
  * TDisplay
@@ -338,7 +362,8 @@ implementation
   constructor TGame.Create;
   begin
     inherited Create;
-    fDisplay := TDisplay.Create
+    fDisplay := TDisplay.Create;
+    GameObject := Self
   end;
 
 
@@ -349,6 +374,7 @@ implementation
     al_destroy_event_queue (fEventQueue);
     al_destroy_timer (fTimer);
     fDisplay.Free;
+    GameObject := Nil;
     inherited Destroy
   end;
 

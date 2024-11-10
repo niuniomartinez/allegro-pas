@@ -1,7 +1,7 @@
 program ex_15_audio;
-(* Show basic usage of the audio subsystem. *)
+(* Shows basic usage of the audio subsystem. *)
 (*
-  Copyright (c) 2025 Guillermo Martínez J.
+  Copyright (c) 2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages

@@ -58,9 +58,9 @@ Linking with Allegro debug version
 ----------------------------------
 
   If you are working in an add-on or modifying Allegro.pas, may be you want to
-  use the "debug" version of Allegro.  If so, you must add "-dDEBUGMODE" to the
-  compilation line, this way your programs will link with the "debug" version
-  of Allegro.  In most cases this isn't necessary.
+  use the "debug" version of Allegro.  If so, you must add "-dAL_DEBUGMODE" to
+  the compilation command, this way your programs will link with the "debug"
+  version of Allegro.  In most cases this isn't necessary.
 
   Note that may be you have to compile Allegro by yourself to obtain the "debug"
   library.

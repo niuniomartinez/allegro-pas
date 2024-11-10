@@ -1282,6 +1282,8 @@ Locks an entire bitmap for reading or writing. If the bitmap is a display
 bitmap it will be updated from system memory after the bitmap is unlocked
 (unless locked read only).
 
+@bold(Note:)  For some reason, this function seems not to work properly on Windows, neither using Delphi nor Free Pascal.
+
 On some platforms, Allegro automatically backs up the contents of video bitmaps because they may be occasionally lost (see discussion in @link(al_create_bitmap)'s documentation). If you're completely recreating the bitmap contents often (e.g. every frame) then you will get much better performance by creating the target bitmap with @code(ALLEGRO_NO_PRESERVE_TEXTURE) flag.
 
 @bold(Note)

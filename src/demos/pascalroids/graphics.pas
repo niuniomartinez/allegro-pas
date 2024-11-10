@@ -1,7 +1,7 @@
 unit Graphics;
 (* Implements some graphics stuff. *)
 (*
-  Copyright (c) 2023 Guillermo Martínez J.
+  Copyright (c) 2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -74,14 +74,14 @@ interface
       property Polygon: PPolygon read fPolygon write fPolygon;
     (* Image scale. *)
       property Scale: Single read fScale write fScale;
-    (* Rotation angle. *)
+    (* Rotation angle in radians. *)
       property Angle: Single read fAngle write fAngle;
     end;
 
   var
   (* Some colors. *)
     clrWhite, clrBlack,
-    clrGreen, clrRed: ALLEGRO_COLOR;
+    clrGreen, clrRed, clrBlue: ALLEGRO_COLOR;
 
 (* Initialize the unit.  Should be called after create the display. *)
   procedure Initialize;
@@ -97,6 +97,7 @@ implementation
     clrBlack := al_map_rgb (  0,   0,   0);
     clrGreen := al_map_rgb (  0, 255,   0);
     clrRed   := al_map_rgb (255,   0,   0);
+    clrBlue  := al_map_rgb (  0, 102, 255);
     clrWhite := al_map_rgb (255, 255, 255);
     al_identity_transform (fIdentity)
   end;
@@ -177,7 +178,10 @@ implementation
     );
     al_use_transform (lMatrix);
     fPolygon^.Draw;
-    al_use_transform (fIdentity) { Safe drawing. }
+    al_use_transform (fIdentity); { Safe drawing. }
+{$IfDef DEBUGMODE}
+    al_draw_circle (Self.X ,Self.Y, Self.Radius, clrBlue, 1);
+{$EndIf}
   end;
 
 end.

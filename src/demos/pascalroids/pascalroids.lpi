@@ -25,11 +25,12 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="../../lib;.."/>
+            <OtherUnitFiles Value="../../lib"/>
             <UnitOutputDirectory Value="../../../obj"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
+              <SyntaxMode Value="Delphi"/>
               <CStyleOperator Value="False"/>
               <AllowLabel Value="False"/>
             </SyntaxOptions>
@@ -75,56 +76,47 @@
         <Filename Value="engine.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Engine"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="292"/>
-        <CursorPos Y="481"/>
         <UsageCount Value="21"/>
       </Unit1>
       <Unit2>
-        <Filename Value=".ame.pas"/>
-        <UsageCount Value="20"/>
-      </Unit2>
-      <Unit3>
         <Filename Value="sprites.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Sprites"/>
         <UsageCount Value="21"/>
-      </Unit3>
-      <Unit4>
+      </Unit2>
+      <Unit3>
         <Filename Value="graphics.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Graphics"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="166"/>
         <UsageCount Value="21"/>
-      </Unit4>
-      <Unit5>
+      </Unit3>
+      <Unit4>
         <Filename Value="player.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Player"/>
         <UsageCount Value="21"/>
-      </Unit5>
-      <Unit6>
+      </Unit4>
+      <Unit5>
         <Filename Value="asteroids.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Asteroids"/>
         <UsageCount Value="21"/>
-      </Unit6>
-      <Unit7>
+      </Unit5>
+      <Unit6>
         <Filename Value="game.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Game"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="78"/>
-        <CursorPos X="15" Y="82"/>
         <UsageCount Value="21"/>
-      </Unit7>
-      <Unit8>
+      </Unit6>
+      <Unit7>
         <Filename Value="../../lib/allegro5.pas"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="2493"/>
-        <CursorPos X="13" Y="2503"/>
         <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="debris.pas"/>
+        <UnitName Value="Debris"/>
+        <UsageCount Value="11"/>
       </Unit8>
     </Units>
     <JumpHistory HistoryIndex="-1"/>
@@ -136,11 +128,12 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="../../lib;."/>
+      <OtherUnitFiles Value="../../lib"/>
       <UnitOutputDirectory Value="../../../obj"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
+        <SyntaxMode Value="Delphi"/>
         <CStyleOperator Value="False"/>
         <IncludeAssertionCode Value="True"/>
         <AllowLabel Value="False"/>
@@ -168,6 +161,11 @@
         </Win32>
       </Options>
     </Linking>
+    <Other>
+      <Verbosity>
+        <ShowHints Value="False"/>
+      </Verbosity>
+    </Other>
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">

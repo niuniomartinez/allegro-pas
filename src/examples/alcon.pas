@@ -2,7 +2,7 @@ unit alcon;
 (* Defines a console-like output system to be used by some examples.  It aims to
  * be as simple as possible.
  *
- * The console has size of 80x60 characters.  Uses current display as output.
+ * The console has size of 80x60 characters.  It uses current display as output.
  * Must call DrawConsole in each frame to make it visible.
  *)
 (*
@@ -32,7 +32,7 @@ interface
 
 (* Initialize the console.
 
-    It uses the current active display.
+   It uses the current active display.
  *)
   function Initialize: Boolean;
 (* Clear console. *)
@@ -95,7 +95,7 @@ implementation
         Exit (False);
   { Get current display. }
     Display := al_get_current_display;
-    if not Assigned (Display) then Exit (False); { Fatal Error. Halt? }
+    if not Assigned (Display) then Exit (False); { Fatal Error. Halt? Except? }
     DisplayWidth := al_get_display_width (Display);
     DisplayHeight := al_get_display_height (Display);
   { Console output bitmaps. }
@@ -182,14 +182,18 @@ implementation
 
 
   procedure DrawConsole;
+  var
+    lOldBitmap: ALLEGRO_BITMAPptr;
   begin
+    lOldBitmap := al_get_target_bitmap;
     al_set_target_backbuffer (Display);
     al_draw_scaled_bitmap (
       Bitmap,
       0, 0, BmpWidth, BmpHeight,
       0, 0, DisplayWidth, DisplayHeight,
       0
-    )
+    );
+    al_set_target_bitmap (lOldBitmap)
   end;
 
 

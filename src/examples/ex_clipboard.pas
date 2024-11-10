@@ -116,6 +116,7 @@ program ex_clipboard;
   { Allegro will destroy most objects at exit but it is a good idea to get used
     to destroy all created objects.
   }
+    if Assigned (ClipboardText) then al_free (ClipboardText);
     if Assigned (EventQueue) then al_destroy_event_queue (EventQueue);
     if Assigned (Timer) then al_destroy_timer (Timer);
     if Assigned (TextFont) then al_destroy_font (TextFont);

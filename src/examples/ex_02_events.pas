@@ -1,5 +1,5 @@
 program ex_02_events;
-(* Show how does the Allegro's event system work. *)
+(* Shows how does the Allegro's event system work. *)
 (*
   Copyright (c) 2012-2024 Guillermo Martínez J.
 
@@ -147,7 +147,7 @@ begin
     al_wait_for_event (EventQueue, @Event);
   { Check what type of event we got and act accordingly.  ALLEGRO_EVENT is
     a union type and interpretation of its contents is dependent on the
-    event type, which is given by the 'type' field.
+    event type, which is given by the 'ftype' field.
 
     Each event also comes from an event source and has a timestamp.  These
     are accessible through the 'any.source' and 'any.timestamp' fields

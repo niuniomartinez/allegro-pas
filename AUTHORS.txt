@@ -2,7 +2,7 @@ Guillermo "Ñuño" Martínez <http://www.burdjia.com/>
  - did everyghing that nobody else did.
 
 x2nie (forum.lazarus.freepascal.org)
- - Implemented Test 4 in the al_blit example.
+ - Implemented Test 4 in the al_blit example (5.2.b.1-1).
 
 Elias (www.allegro.cc)
  - helped testing the Delphi version (5.0 alpha).

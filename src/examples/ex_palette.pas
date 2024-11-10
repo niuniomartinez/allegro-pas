@@ -157,8 +157,8 @@ program ex_palette;
 
 (* Interpolate two palettes.
 
-   If t=0 then it use Pal1.
-   If t=1 then it use Pal2.
+   If t=0 then it uses Pal1.
+   If t=1 then it uses Pal2.
    If t=0.5 then it uses (Pal1+Pal2)/2.
    etc.
  *)

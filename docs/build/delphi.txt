@@ -63,7 +63,7 @@ Linking with Allegro debug version
 ----------------------------------
 
   If you are working in an add-on or modifying Allegro.pas, may be you want to
-  use the "debug" version of Allegro.  To do so, you must define "DEBUGMODE"
+  use the "debug" version of Allegro.  To do so, you must define "AL_DEBUGMODE"
   symbol, this way your programs will link with the "debug" version of Allegro.
   In most cases this isn't necessary.
 

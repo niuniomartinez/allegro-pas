@@ -1,5 +1,5 @@
 program ex_20_window_multiple;
-(* Show how to manage multiple windows (displays). *)
+(* Shows how to manage multiple windows (displays). *)
 (*
   Copyright (c) 2012-2024 Guillermo Martínez J.
 

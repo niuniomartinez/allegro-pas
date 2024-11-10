@@ -1,5 +1,5 @@
 program ex_25_transform;
-(* Show how to use transformation matrices. *)
+(* Shows how to use transformation matrices. *)
 (*
   Copyright (c) 2012-2024 Guillermo Martínez J.
 

@@ -1,7 +1,7 @@
 unit Sprites;
 (* Implements the base classes for sprites. *)
 (*
-  Copyright (c) 2023 Guillermo Martínez J.
+  Copyright (c) 2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -89,7 +89,10 @@ interface
      It is an object pool. *)
     TSpriteManager = class (TObject)
     protected
-      fSprites: array of TSprite;
+    { I'm not using TObjectList here because it has a quite large footprint that
+      does not give any advantage in this case.  A simple 'array' is fine.
+    }
+      fSpriteList: array of TSprite;
       fNextSprite: Integer;
     public
     (* Constructor.
@@ -112,11 +115,22 @@ interface
        It checks all collisions.  That is, if sprite isn't disabled by aHandler
        method then it will still check for new collisions.
 
-       aSprite is passed as S1, the collided sprite is passed as S2. *)
+       aSprite is passed as S1, the collided sprite is passed as S2.
+     *)
       procedure CheckCollisions (
         aSprite: TSprite;
         aHandler: TCollisionNotification
-      );
+      ); overload;
+    (* Check collisions.
+
+       It checks all collisions between given list sprites and Self sprites.
+
+       Sprite in aSprList is passed as S1, the sprite in Self is passed as S2.
+     *)
+      procedure CheckCollisions (
+        aSprList: TSpriteManager;
+        aHandler: TCollisionNotification
+      ); overload;
     (* Update enabled sprites. *)
       procedure Update;
     (* Draw enabled sprites. *)
@@ -194,8 +208,9 @@ implementation
     lNdx: Integer;
   begin
     inherited Create;
-    SetLength (fSprites, aNumObjects);
-    for lNdx := 0 to aNumObjects - 1 do fSprites[lNdx] := aSpriteClass.Create;
+    SetLength (fSpriteList, aNumObjects);
+    for lNdx := Low (fSpriteList) to High (fSpriteList) do
+      fSpriteList[lNdx] := aSpriteClass.Create;
     fNextSprite := 0
   end;
 
@@ -203,9 +218,10 @@ implementation
 
   destructor TSpriteManager.Destroy;
   var
-    lSprite: TSprite;
+    lNdx: Integer;
   begin
-    for lSprite in fSprites do lSprite.Free;
+    for lNdx := Low (fSpriteList) to High (fSpriteList) do
+      fSpriteList[lNdx].Free;
     inherited Destroy
   end;
 
@@ -213,9 +229,10 @@ implementation
 
   procedure TSpriteManager.DisableAll;
   var
-    lSprite: TSprite;
+    lNdx: Integer;
   begin
-    for lSprite in fSprites do lSprite.Enabled := False
+    for lNdx := Low (fSpriteList) to High (fSpriteList) do
+      fSpriteList[lNdx].Enabled := False
   end;
 
 
@@ -226,9 +243,10 @@ implementation
   { It's a ring buffer. }
     lEnd := fNextSprite;
     repeat
-      if not fSprites[fNextSprite].Enabled then Exit (fSprites[fNextSprite]);
+      if not fSpriteList[fNextSprite].Enabled then
+        Exit (fSpriteList[fNextSprite]);
       Inc (fNextSprite);
-      if fNextSprite > High (fSprites) then fNextSprite := 0
+      if fNextSprite > High (fSpriteList) then fNextSprite := 0
     until fNextSprite = lEnd;
   { Not found. }
     Result := Nil
@@ -241,14 +259,32 @@ implementation
     aHandler: TCollisionNotification
   );
   var
-    lSprite: TSprite;
+    lNdx: Integer;
   begin
     if not aSprite.Enabled then Exit; { Shouldn't happen but just to be sure. }
-    for lSprite in fSprites do
-      if lSprite.Enabled and aSprite.CollideWith (aSprite) then
+    for lNdx := Low (fSpriteList) to High (fSpriteList) do
+      if fSpriteList[lNdx].Enabled and aSprite.CollideWith (fSpriteList[lNdx]) then
       begin
-        aHandler (aSprite, lSprite);
+        aHandler (aSprite, fSpriteList[lNdx]);
         if not aSprite.Enabled then Exit { Maybe aHandler disabled it. }
+      end
+  end;
+
+
+
+  procedure TSpriteManager.CheckCollisions (
+    aSprList: TSpriteManager;
+    aHandler: TCollisionNotification
+  );
+  var
+    lNdx: Integer;
+  begin
+    for lNdx := Low (aSprList.fSpriteList) to High (aSprList.fSpriteList)
+     do
+      if aSprList.fSpriteList[lNdx].Enabled then
+      begin
+        Self.CheckCollisions (aSprList.fSpriteList[lNdx], aHandler);
+        if not aSprList.fSpriteList[lNdx].Enabled then continue { Maybe aHandler disabled it. }
       end
   end;
 
@@ -256,18 +292,20 @@ implementation
 
   procedure TSpriteManager.Update;
   var
-    lSprite: TSprite;
+    lNdx: Integer;
   begin
-    for lSprite in fSprites do if lSprite.Enabled then lSprite.Update
+    for lNdx := Low (fSpriteList) to High (fSpriteList) do
+      if fSpriteList[lNdx].Enabled then fSpriteList[lNdx].Update
   end;
 
 
 
   procedure TSpriteManager.Draw;
   var
-    lSprite: TSprite;
+    lNdx: Integer;
   begin
-    for lSprite in fSprites do if lSprite.Enabled then lSprite.Draw
+    for lNdx := Low (fSpriteList) to High (fSpriteList) do
+      if fSpriteList[lNdx].Enabled then fSpriteList[lNdx].Draw
   end;
 
 end.

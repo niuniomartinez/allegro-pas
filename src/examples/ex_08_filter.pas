@@ -1,5 +1,5 @@
 program ex_08_filter;
-(* Show how to use bitmap filters. *)
+(* Shows how to use bitmap filters. *)
 (*
   Copyright (c) 2012-2024 Guillermo Martínez J.
 
@@ -81,6 +81,7 @@ program ex_08_filter;
       function CreateChessboard: ALLEGRO_BITMAPptr;
       const
         bmpSize = 1024;
+        SquareSize = 3;
       var
         lLock: ALLEGRO_LOCKED_REGIONptr;
         lColor: ALLEGRO_COLOR;
@@ -88,18 +89,25 @@ program ex_08_filter;
       begin
         Result := al_create_bitmap (bmpSize, bmpSize);
         al_set_target_bitmap (Result);
+      {$IFDEF LINUX}
+      { For some reason al_lock_bitmap doesn't work on Windows, neither
+        compilling with FPC nor Delphi.
+      }
         lLock := al_lock_bitmap (Result, al_get_bitmap_format (Result), ALLEGRO_LOCK_WRITEONLY);
+      {$ENDIF}
         for ly := 0 to bmpSize - 1 do
           for lx := 0 to bmpSize - 1 do
           begin
-            lx2 := lx div 3; ly2 := ly div 3; { 3 is square size. }
+            lx2 := lx div SquareSize; ly2 := ly div SquareSize;
             if ((lx2 and ly2 and 1) = 1) or (((lx2 or ly2) and 1) = 0) then
               lColor := clrWhite
             else
               lColor := clrBlack;
             al_draw_pixel (lx + 0.5, ly + 0.5, lColor)
           end;
+      {$IFDEF LINUX}
         al_unlock_bitmap (Result);
+      {$ENDIF}
         al_set_target_backbuffer (Window)
       end;
 
@@ -218,7 +226,7 @@ program ex_08_filter;
       ly := (lNdx mod 2) * wHeight / 2 + wHeight / 4;
     { Bitmap angle. }
       lAngle := Ticks * ALLEGRO_TAU / FPS / 8;
-    { Bitmap angle. }
+    { Bitmap scale. }
       lScaleDelta := 1 - 2 * Abs ((Ticks mod (FPS * 16)) / 16 / FPS - 0.5);
       if lNdx < 4 then
          lScale := 1 - lScaleDelta * 0.9

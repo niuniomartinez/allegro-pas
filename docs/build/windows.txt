@@ -18,7 +18,7 @@ Getting precompiled version
 
   Go to https://github.com/liballeg/allegro5/releases and select one of the
   "dynamic" packages.  Note i686 are 32bit version and x86_64 are 64 bit.
- 
+
   Once downloaded, you need only the DLL files that are in the "bin"
   subdirectory;  the other files are for C and C++ developers only.  Also note
   that Allegro.pas links with the "monolith" version of the library by default.

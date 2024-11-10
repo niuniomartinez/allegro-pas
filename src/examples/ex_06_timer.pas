@@ -1,5 +1,5 @@
 program ex_06_timer;
-(* Show how to use Allegro's timer to control time.
+(* Shows how to use Allegro's timer to control time.
 
    It also uses a backbuffer to simulate an old 320x200 display.
  *)

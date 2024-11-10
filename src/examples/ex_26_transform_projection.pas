@@ -1,5 +1,5 @@
 program ex_26_transform_projection;
-(* Show how to use transformation matrices to render 3D models. *)
+(* Shows how to use transformation matrices to render 3D models. *)
 (*
   Copyright (c) 2012-2024 Guillermo Martínez J.
 
@@ -70,8 +70,7 @@ program ex_26_transform_projection;
 
 
 
- 
-(* Set transformation matrix to perspective. *)
+(* Set transformation matrix to perspective for the given bitmap. *)
   procedure SetPerspectiveTransform (aBmp: ALLEGRO_BITMAPptr);
   var
     lTransform: ALLEGRO_TRANSFORM;

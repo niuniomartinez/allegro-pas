@@ -1,5 +1,5 @@
 program ex_09_keyboard;
-(* Test keyboard events.
+(* Shows how to get keyboard events.
 
    Partially from an example by Peter Wang and Ryan Dickie.
  *)

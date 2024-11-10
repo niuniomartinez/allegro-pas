@@ -1,5 +1,5 @@
 program ex_04_bitmap_target;
-(* Show how to change drawing target. *)
+(* Shows how to change drawing target. *)
 (*
   Copyright (c) 2012-2024 Guillermo Martínez J.
 

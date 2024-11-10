@@ -10,7 +10,7 @@
      Version 5.2                   \/___/                 \/_/
 
   A wrapper to use the Allegro library with Pascal compilers
-  by Guillermo "Ñuño" Martínez, July 18, 2024.
+  by Guillermo "Ñuño" Martínez, November 10, 2024.
 ~~~
 
 
@@ -93,9 +93,9 @@ The [project page](https://allegro-pas.sourceforge.net/) have forums and a
 mailing-list you can use.
 
 I've created a [mirror in GitHub](https://github.com/niuniomartinez/allegro-pas/)
-I try to keep it up-to-date:
+that I try to keep it up-to-date.
 
-You may find interesting the Game Development portal in the [Free Pascal wiki
+You may find the Game Development portal in the [Free Pascal wiki
 pages](https://wiki.freepascal.org/Portal:Game_Development).
 
 Also there are some useful forums:
@@ -107,5 +107,5 @@ Also there are some useful forums:
 
 Useful discord servers:
 - [Allegro community](https://discord.gg/yJ49UusV).  Most Allegro.cc people are
-  here now!
+  here!
 - [Unnoficial Free Pascal](https://discord.gg/nAGPGJjK)

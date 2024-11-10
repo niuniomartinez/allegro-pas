@@ -26,16 +26,25 @@ unit Game;
 interface
 
   uses
-    Asteroids, Engine, Graphics, Player, Sprites;
+    Asteroids, Debris, Engine, Graphics, Player, Sprites;
 
   type
   (* Implements the game scene. *)
     TPascalroidsScene = class (TGameScene)
     private
+      fTime: Integer;
       fShip: TShipSprite;
       fLasers: TSpriteManager;
       fAsteroids: TAsteroidsManager;
+      fDebris: TDebrisManager;
+
       fInput: TPlayerInput;
+      fScore: Integer;
+
+    (* Manages collision between player ship and an asteroid. *)
+      procedure ShipCollidesAsteroid (aShip, aAsteroid: TSprite);
+    (* Manages collision between a player's laser and an asteroid. *)
+      procedure LaserCollidesAseroid (aLaser, aAsteroid: TSprite);
     public
     (* Enter the scene. *)
       procedure Enter; override;
@@ -76,6 +85,38 @@ implementation
 
   const
     MaxLasers = 10;
+  (* Time wetween asteroid spawns. *)
+    TimeSpawn = 5 * FPS;
+  (* How much time to wait for the first asteroid. *)
+    FirstSpawn = TimeSpawn div 5;
+  (* Score. *)
+    AsteroidScore: array [TAsteroidSprite.AsteroidSize] of Integer = (
+      1, 5, 10
+    );
+    ScoreFormat = '%.7d';
+
+  procedure TPascalroidsScene.ShipCollidesAsteroid (aShip, aAsteroid: TSprite);
+  begin
+    fDebris.Blast (aShip.X, aShip.Y, aShip.Vx / 3, aShip.Vy / 3);
+    aShip.Enabled := False;
+  { Small asteroids don't support collision. }
+    if TAsteroidSprite (aAsteroid).Size = asSmall then
+      aAsteroid.Enabled := False
+  end;
+
+
+
+  procedure TPascalroidsScene.LaserCollidesAseroid (aLaser, aAsteroid: TSprite);
+  var
+    lAsteroid: TAsteroidSprite absolute aAsteroid;
+  begin
+    Inc (fScore, AsteroidScore[lAsteroid.Size]);
+    fDebris.Blast (aAsteroid.X, aAsteroid.Y);
+    aLaser.Enabled := False;
+    fAsteroids.DivideAsteroid (lAsteroid)
+  end;
+
+
 
   procedure TPascalroidsScene.Enter;
   begin
@@ -83,12 +124,12 @@ implementation
     fInput := TKeyboardInput.Create;
     fLasers := TSpriteManager.Create (MaxLasers, TLaser);
     fAsteroids := TAsteroidsManager.Create;
-fAsteroids.NewAsteroid;
-fAsteroids.NewAsteroid;
-fAsteroids.NewAsteroid;
-fAsteroids.NewAsteroid;
-    fShip := TShipSprite.Create (fInput, fLasers);
-    fShip.Initialize
+    fDebris := TDebrisManager.Create;
+    fShip := TShipSprite.Create (fInput, fLasers, fDebris);
+    fShip.Initialize;
+    fTime := TimeSpawn - FirstSpawn;
+
+    fScore := 0
   end;
 
 
@@ -96,9 +137,21 @@ fAsteroids.NewAsteroid;
   procedure TPascalroidsScene.Update;
   begin
     if Self.Game.Display.UserClickedClose then Self.Game.Terminate;
-    fShip.Update;
+  { Update objects. }
+    if fShip.Enabled then fShip.Update;
+    Inc (fTime);
+    if fTime >= TimeSpawn then
+    begin
+      fAsteroids.NewAsteroid;
+      fTime := 0
+    end;
     fAsteroids.Update;
-    fLasers.Update
+    fLasers.Update;
+    fDebris.Update;
+  { Check for collisions. }
+    fShip.Polygon^.Color := al_map_rgb (0, 255, 255);
+    fAsteroids.CheckCollisions (fLasers, Self.LaserCollidesAseroid);
+    fAsteroids.CheckCollisions (fShip, Self.ShipCollidesAsteroid)
   end;
 
 
@@ -108,7 +161,15 @@ fAsteroids.NewAsteroid;
     al_clear_to_color (clrBlack);
     fLasers.Draw;
     fAsteroids.Draw;
-    fShip.Draw
+    fDebris.Draw;
+    if fShip.Enabled then fShip.Draw;
+    al_draw_text (
+      TPascalroids (GameObject).TextFont,
+      clrGreen,
+      8, 8,
+      0,
+      al_str_format (ScoreFormat, [fScore])
+    )
   end;
 
 
@@ -118,6 +179,7 @@ fAsteroids.NewAsteroid;
     fShip.Free;
     fLasers.Free;
     fAsteroids.Free;
+    fDebris.Free;
     fInput.Free
   end;
 

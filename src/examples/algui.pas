@@ -106,7 +106,7 @@ interface
 
   (* Base class for dialogs.
    *
-   * Its similar to Delphi/Lazarus TForm but see it extends TApplication.
+   * Its similar to Delphi/Lazarus TForm but it extends TApplication.
    *)
     TDialog = class (TApplication)
     private

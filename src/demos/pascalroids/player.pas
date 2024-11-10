@@ -1,7 +1,7 @@
 unit Player;
 (* Implements all player stuff:  ship, controls and laser. *)
 (*
-  Copyright (c) 2023 Guillermo Martínez J.
+  Copyright (c) 2024 Guillermo Martínez J.
 
   This software is provided 'as-is', without any express or implied
   warranty. In no event will the authors be held liable for any damages
@@ -33,7 +33,9 @@ interface
     TLaser = class (TSprite)
     public
     (* Shoot the laser. *)
-     procedure Shoot (const aX, aY, aAngle: Single);
+      procedure Shoot (const aX, aY, aAngle: Single);
+    (* Initialize laser sprite. *)
+      procedure Initialize; override;
     (* Draw laser. *)
       procedure Draw; override;
     (* Updates laser. *)
@@ -47,7 +49,7 @@ interface
     private
       fPolygon: TPolygon;
       fInput: TPlayerInput;
-      fLasers: TSpriteManager;
+      fDebris, fLasers: TSpriteManager;
 
     (* Shoot a laser. *)
       procedure Shoot;
@@ -57,7 +59,7 @@ interface
        Note that player doesn't own the lasers. *)
       constructor Create (
         aInput: TPlayerInput;
-        aLasers: TSpriteManager
+        aLasers, aDebris: TSpriteManager
       ); overload;
     (* Initializes ship. *)
       procedure Initialize; override;
@@ -76,6 +78,7 @@ implementation
  ************************************************************************)
   const
    LaserSpeed = 10;
+   LaserRadius = LaserSpeed * 0.5;
 
   procedure TLaser.Shoot (const aX, aY, aAngle: Single);
   begin
@@ -87,12 +90,23 @@ implementation
 
 
 
+  procedure TLaser.Initialize;
+  begin
+    inherited Initialize;
+    Self.Radius := LaserRadius
+  end;
+
+
+
   procedure TLaser.Draw;
   begin
     al_draw_line (
-      Self.X, Self.Y, Self.X + Self.vX, Self.Y + Self.vY,
+      Self.X - Self.vX, Self.Y - Self.vY, Self.X + Self.vX, Self.Y + Self.vY,
       clrGreen, 1
-    )
+    );
+{$IfDef DEBUGMODE}
+    al_draw_circle (Self.X ,Self.Y, Self.Radius, clrBlue, 1);
+{$EndIf}
   end;
 
 
@@ -112,8 +126,8 @@ implementation
    const
      RotationSpeed = ALLEGRO_TAU / 64;
      ShipAcceleration = 0.125;
-     ShipRadius = 20;
-     ShipMargin = 20;
+     ShipRadius = 10;
+     ShipMargin = 10;
 
   procedure TShipSprite.Shoot;
   var
@@ -132,11 +146,11 @@ implementation
 
   constructor TShipSprite.Create (
     aInput: TPlayerInput;
-    aLasers: TSpriteManager
+    aLasers, aDebris: TSpriteManager
   );
   const
-    ShipDescriptionX: array [1..4] of Integer = (30, -20, -10, -20);
-    ShipDescriptionY: array [1..4] of Integer = ( 0,  20,   0, -20);
+    ShipDescriptionX: array [1..4] of Integer = (15, -10, -5, -10);
+    ShipDescriptionY: array [1..4] of Integer = ( 0,  10,   0, -10);
   var
     Ndx: Integer;
   begin
@@ -148,7 +162,8 @@ implementation
     for Ndx := Low (ShipDescriptionX) to High (ShipDescriptionX) do
       fPolygon.AddVertex (ShipDescriptionX[Ndx], ShipDescriptionY[Ndx]);
     Self.Polygon := @fPolygon;
-    fLasers := aLasers
+    fLasers := aLasers;
+    fDebris := aDebris
   end;
 
 
@@ -163,6 +178,28 @@ implementation
 
 
   procedure TShipSprite.Update;
+
+    procedure CreateEngineTrail; inline;
+    const
+     TrailSpeed = 1.25;
+     TrailDeviation = Trunc ((ALLEGRO_TAU * 0.01) * 1000);
+    var
+      lSpr: TSprite;
+      lAngle, lSpeed: Double;
+    begin
+      lSpr := fDebris.NewSprite;
+      if not Assigned (lSpr) then Exit;
+
+      lSpr.Initialize;
+      lSpr.X := Self.X + Self.Radius * cos (Self.Angle) * (-1);
+      lSpr.Y := Self.Y + Self.Radius * sin (Self.Angle) * (-1);
+
+      lAngle := Self.Angle + RandomBetween (-10, 10) / 100;
+      lSpeed := (-1) * TrailSpeed + RandomBetween (0, 10) / 1000;
+      lSpr.Vx := lSpeed * cos (lAngle);
+      lSpr.Vy := lSpeed * sin (lAngle)
+    end;
+
   var
     lAxisX, lAxisY, lButton: Integer;
     lSpX, lSpY: Real;
@@ -174,7 +211,8 @@ implementation
       lSpX := ShipAcceleration * cos (Self.Angle);
       lSpY := ShipAcceleration * sin (Self.Angle);
       Self.Vx := Self.Vx + lSpX;
-      Self.Vy := Self.Vy + lSpY
+      Self.Vy := Self.Vy + lSpY;
+      if Random (5) = 1 then CreateEngineTrail
     end;
     if lButton <> 0 then Self.Shoot;
   { Position and angle. }

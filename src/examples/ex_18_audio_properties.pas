@@ -1,7 +1,5 @@
 program ex_18_audio_properties;
-(*
- *    Demonstrate the audio addons.
- *)
+(* Demonstrates the audio addons. *)
 (*
   Copyright (c) 2024 Guillermo Martínez J.
 

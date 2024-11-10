@@ -1,6 +1,5 @@
 program ex_13_color;
-(*
- * Demonstrates some of the conversion functions in the color addon.
+(* Demonstrates some of the conversion functions in the color addon.
  *
  * This example uses "algui", a unit that defines a very simple GUI.  Delphi and
  * Lazarus users would feel familiar with some concepts.

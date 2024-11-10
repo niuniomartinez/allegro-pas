@@ -5,8 +5,8 @@ program ex_threads;
  *    In this example, each thread handles its own window and event queue.
  *
  * Implementation note:
- *    This example should use the Allegro's thread API.  Unfortunatelly there's
- *    something that doesn't work as expected (I suspect it is the MUTEX
+ *    The original example uses the Allegro's thread API.  Unfortunatelly
+ *    there's something that doesn't work as expected (I suspect it's the MUTEX
  *    subsystem) so I've rewritten the example using RTL TThread class and
  *    critical section API.
  *)

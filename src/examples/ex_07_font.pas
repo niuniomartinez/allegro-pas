@@ -1,5 +1,5 @@
 program ex_07font;
-(* Show how to use text fonts. *)
+(* Shows how to use text fonts. *)
 (*
   Copyright (c) 2024 Guillermo Martínez J.
 
@@ -144,13 +144,13 @@ program ex_07font;
       instead of string.  Otherwise Delphi will try to use UnicodeString
       wich is UTF-16 and will mess all the text.
     }
-      TextSamples: array [1..5] of AnsiString = (
+      TextSamples: array [1..6] of AnsiString = (
         'abcdefghijklmnopqrstuvwxyz',
         'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
         '1234567890?!/()&%@{}áéíóúÀÈÌÒÜçÇ',
-      { 'αβγδεζηθικλμνξοπρστυφχψω', }
-        'Εύρηκα, το βρήκα!',
-        '¿Las cigüeñas, en Andalucía, hacen nidos en los ríos?'
+        '¿Las cigüeñas, en Andalucía, hacen nidos en los ríos?',
+        'αβγδεζηθικλμνξοπρστυφχψω',
+        'Εύρηκα, το βρήκα!'
       );
     var
       lCnt: Integer;
